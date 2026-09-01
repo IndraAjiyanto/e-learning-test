@@ -1,8 +1,8 @@
 <!-- ATTENDANCE FORM CONTENT PARTIAL -->
 <div class="px-4 sm:px-8 md:px-14 py-10 space-y-4 font-montserrat"
   x-data="{
-    courseId: {{course.id}},
-    currentUserId: {{user.id}},
+    courseId: '{{course.id}}',
+    currentUserId: '{{user.id}}',
     showEditModal: false,
     showSuccessPopup: false,
     statusDropdownOpen: false,
@@ -149,7 +149,7 @@
       <!-- Unlocked Week -->
       <button
         type="button"
-        @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; loadSessions({{id}}) }"
+        @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; loadSessions('{{id}}') }"
         class="w-full flex items-center justify-between cursor-pointer"
       >
         <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] text-left">
@@ -177,7 +177,7 @@
         <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
           <div class="py-[20px] text-center space-y-3">
             <p class="font-montserrat font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
-            <button type="button" @click="loadSessions({{id}})" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
+            <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
               Retry
             </button>
           </div>

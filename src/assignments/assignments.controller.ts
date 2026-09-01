@@ -42,7 +42,7 @@ export class AssignmentsController {
   async create(
     @Body() createAssignmentDto: CreateAssignmentsDto,
     @UploadedFile() file: Express.Multer.File,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -68,7 +68,7 @@ export class AssignmentsController {
   async formCreate(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
   ) {
     res.render('admin/assignments/create', { user: req.user, sessionId });
   }
@@ -76,8 +76,8 @@ export class AssignmentsController {
   @Roles('admin')
   @Delete(':assignmentId/:sessionId')
   async remove(
-    @Param('sessionId') sessionId: number,
-    @Param('assignmentId') assignmentId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('assignmentId') assignmentId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

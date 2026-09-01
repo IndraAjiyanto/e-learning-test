@@ -14,8 +14,8 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   async deserializeUser(userId: any, done: CallableFunction) {
-    const id = Number(userId);
-    if (isNaN(id)) {
+    const id = String(userId);
+    if (!id) {
       return done(null, null);
     }
     const user = await this.usersService.findOne(id);

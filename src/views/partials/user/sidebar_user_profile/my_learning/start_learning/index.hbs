@@ -152,7 +152,7 @@
     <!-- Week Header (flex justify-between, font-montserrat font-semibold text-[25px] text-[#003060] + icon 35x35) -->
     <button
       type="button"
-      @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if (or (weekUnlocked weekProgresses) @first)}}loadSessions({{id}}){{/if}} }"
+      @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if (or (weekUnlocked weekProgresses) @first)}}loadSessions('{{id}}'){{/if}} }"
       class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
     >
       <div class="flex items-center gap-3">
@@ -188,7 +188,7 @@
       <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
         <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-6 text-center space-y-3">
           <p class="font-montserrat font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
-          <button type="button" @click="loadSessions({{id}})" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
+          <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
             Retry
           </button>
         </div>
@@ -369,8 +369,8 @@
       <!-- QUIZ BOX (centered title + lock icon at the far right edge matching Figma; disabled until every session in this week is attended AND logbook-approved) -->
       <a
         href="#"
-        @click.prevent="if (isWeekQuizUnlocked({{id}})) { window.location.href = '{{#if quiz.[0].id}}/quiz/start/{{quiz.[0].id}}{{else}}#{{/if}}' }"
-        :class="isWeekQuizUnlocked({{id}}) ? 'cursor-pointer' : 'cursor-not-allowed'"
+        @click.prevent="if (isWeekQuizUnlocked('{{id}}')) { window.location.href = '{{#if quiz.[0].id}}/quiz/start/{{quiz.[0].id}}{{else}}#{{/if}}' }"
+        :class="isWeekQuizUnlocked('{{id}}') ? 'cursor-pointer' : 'cursor-not-allowed'"
         class="relative w-full h-[54px] rounded-[12px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-5 sm:px-6 bg-[#D9D9D980] border-[0.1px] border-[#D9D9D980] backdrop-blur-[6.6px] flex items-center justify-center gap-3 transition-all group mt-4"
       >
         <div class="w-6 h-6 flex items-center justify-center text-[#00000080] flex-shrink-0">
@@ -379,7 +379,7 @@
         <span class="font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#00000080]">
           Quiz Week {{weekNumber}}
         </span>
-        <div x-show="!isWeekQuizUnlocked({{id}})" class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
+        <div x-show="!isWeekQuizUnlocked('{{id}}')" class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
           <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
         </div>
       </a>

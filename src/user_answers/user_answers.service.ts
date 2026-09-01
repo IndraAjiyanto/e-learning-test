@@ -75,7 +75,7 @@ export class UserAnswersService {
     return await this.userAnswerRepository.save(answersToInsert);
   }
 
-  async searchAnswerUser(quizId: number, userId: number) {
+  async searchAnswerUser(quizId: string, userId: string) {
     return await this.userAnswerRepository.find({
       where: { question: { quiz: { id: quizId } }, user: { id: userId } },
       relations: ['answer', 'user'],
@@ -130,7 +130,7 @@ export class UserAnswersService {
     }
   }
 
-  async createScore(UserAnswer: UserAnswer[], quizId: number, userId: number) {
+  async createScore(UserAnswer: UserAnswer[], quizId: string, userId: string) {
     if (UserAnswer.length === 0) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
@@ -146,7 +146,7 @@ export class UserAnswersService {
       });
     } else {
       const answerIds = UserAnswer.map((j) => j.answer?.id).filter(
-        (id): id is number => id !== undefined && id !== null,
+        (id): id is string => id !== undefined && id !== null,
       );
       const correctAnswers = await this.answerRepository.findBy({
         id: In(answerIds),
@@ -195,7 +195,7 @@ export class UserAnswersService {
     }
   }
 
-  async updateWeekProgress(weeksId: number, userId: number) {
+  async updateWeekProgress(weeksId: string, userId: string) {
     const weekProgresses = await this.weekProgressRepository.findOne({
       where: { week: { id: weeksId }, user: { id: userId } },
     });
@@ -209,7 +209,7 @@ export class UserAnswersService {
     return weekProgresses;
   }
 
-  async weekProgress(weeksId: number, userId: number) {
+  async weekProgress(weeksId: string, userId: string) {
     const currentWeek = await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
@@ -297,21 +297,21 @@ export class UserAnswersService {
     }
   }
 
-  async findByUserAndQuestion(userId: number, questionId: number) {
+  async findByUserAndQuestion(userId: string, questionId: string) {
     return await this.userAnswerRepository.find({
       where: { user: { id: userId }, question: { id: questionId } },
       relations: ['answer'],
     });
   }
 
-  async findAnswersByUser(userId: number) {
+  async findAnswersByUser(userId: string) {
     return await this.userAnswerRepository.find({
       where: { user: { id: userId } },
       relations: ['answer'],
     });
   }
 
-  async calculateScore(weeksId: number, userId: number) {
+  async calculateScore(weeksId: string, userId: string) {
     const answers = await this.userAnswerRepository.find({
       where: { question: { quiz: { id: weeksId } }, user: { id: userId } },
       relations: ['answer'],
@@ -330,7 +330,7 @@ export class UserAnswersService {
     return totalScore;
   }
 
-  async deleteAnswerUser(userId: number, quizId: number) {
+  async deleteAnswerUser(userId: string, quizId: string) {
     const questions = await this.questionRepository.find({
       where: { quiz: { id: quizId } },
       select: ['id'],

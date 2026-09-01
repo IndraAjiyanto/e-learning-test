@@ -19,8 +19,8 @@ export type Type = 'Special Program' | 'Paid Program' | 'Free Program';
 
 @Entity()
 export class Category {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   name: string;

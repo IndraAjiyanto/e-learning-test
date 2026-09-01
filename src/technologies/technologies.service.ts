@@ -35,7 +35,7 @@ export class TechnologiesService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const technologies = await this.technologiesRepository.findOne({
       where: { id },
     });
@@ -45,7 +45,7 @@ export class TechnologiesService {
     return technologies;
   }
 
-  async update(id: number, updateTechnologiesDto: UpdateTechnologiesDto) {
+  async update(id: string, updateTechnologiesDto: UpdateTechnologiesDto) {
     const technologies = await this.findOne(id);
 
     if (
@@ -59,7 +59,7 @@ export class TechnologiesService {
     return await this.technologiesRepository.save(technologies);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const technologies = await this.findOne(id);
     await this.deleteFile(technologies.imgUrl);
     return await this.technologiesRepository.remove(technologies);

@@ -87,7 +87,7 @@
           selected: null,
           users: [
             {{#each users}}
-              { id: {{this.id}}, username: '{{this.username}}', email: '{{this.email}}' },
+              { id: '{{this.id}}', username: '{{this.username}}', email: '{{this.email}}' },
             {{/each}}
           ],
           get filteredUsers() {

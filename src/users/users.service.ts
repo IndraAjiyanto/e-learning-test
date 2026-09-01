@@ -70,7 +70,7 @@ export class UsersService {
   }) {
     const query = this.userRepository
       .createQueryBuilder('user')
-      .orderBy('user.id', 'DESC');
+      .orderBy('user.createdAt', 'DESC');
 
     if (params.search) {
       query.where(
@@ -85,7 +85,7 @@ export class UsersService {
     return { data, total };
   }
 
-  async findWithCourses(userId: number): Promise<User | null> {
+  async findWithCourses(userId: string): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { id: userId },
       relations: {
@@ -99,7 +99,7 @@ export class UsersService {
     });
   }
 
-  async findPortfolio(userId: number) {
+  async findPortfolio(userId: string) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: [
@@ -112,7 +112,7 @@ export class UsersService {
     });
   }
 
-  async findCompletedCoursesByUser(userId: number) {
+  async findCompletedCoursesByUser(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: [
@@ -133,7 +133,7 @@ export class UsersService {
     return { userCourses: completedCourses };
   }
 
-  async findAllLogbooks(userId: number) {
+  async findAllLogbooks(userId: string) {
     return await this.logbookRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
@@ -146,7 +146,7 @@ export class UsersService {
     });
   }
 
-  async findOne(userId: number) {
+  async findOne(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['biodata'],
@@ -157,7 +157,7 @@ export class UsersService {
     return user;
   }
 
-  async update(userId: number, updateUserDto: UpdateUserDto) {
+  async update(userId: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -166,7 +166,7 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
+  async updatePassword(id: string, updatePaaswordDto: UpdatePasswordDto) {
     if (updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword) {
       throw new BadRequestException('confirm password wrong');
     }
@@ -197,7 +197,7 @@ export class UsersService {
     return { message: 'Password berhasil diubah' };
   }
 
-  async updateProfile(userId: number, updateProfileDto: UpdateProfileDto) {
+  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
     const user = await this.findOne(userId);
     Object.assign(user, updateProfileDto);
     return await this.userRepository.save(user);
@@ -213,7 +213,7 @@ export class UsersService {
     } catch (error) {}
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');

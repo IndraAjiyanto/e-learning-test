@@ -33,19 +33,19 @@ export class MissionService {
     return mission_new;
   }
 
-  async findOne(id: number): Promise<Mission | null> {
+  async findOne(id: string): Promise<Mission | null> {
     return await this.missionRepository.findOneBy({ id });
   }
 
   async update(
-    id: number,
+    id: string,
     updateMissionDto: UpdateMissionDto,
   ): Promise<Mission | null> {
     await this.missionRepository.update(id, updateMissionDto);
     return await this.findOne(id);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const mission = await this.findOne(id);
     if (!mission) {
       throw new Error('Mision not found');

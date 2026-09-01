@@ -80,7 +80,7 @@ export class AuthService {
     return await this.coursesService.findAllLaunch();
   }
 
-  async findCourse(id: number) {
+  async findCourse(id: string) {
     return await this.coursesService.findOne(id);
   }
 }

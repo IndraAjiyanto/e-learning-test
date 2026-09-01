@@ -51,7 +51,7 @@ export class SessionController {
   async createPertemuan(
     @Body() createPertemuanDto: CreateSessionDto,
     @Res() res: Response,
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Req() req: Request,
   ) {
     try {
@@ -70,7 +70,7 @@ export class SessionController {
   @Roles('admin')
   @Get('formCreate/:weeksId')
   async formCreate(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -82,7 +82,7 @@ export class SessionController {
   async formAdd(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     res.render('admin/course/createPertemuan', { user: req.user, id });
   }
@@ -92,7 +92,7 @@ export class SessionController {
   async formEdit(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     const session = await this.sessionService.findOne(id);
     const course = await this.sessionService.findAllCourses();
@@ -111,7 +111,7 @@ export class SessionController {
   @Roles('admin')
   @Get('logbooks/:sessionId')
   async getLogBook(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const logbooks = await this.sessionService.findLogBook(sessionId);
@@ -121,7 +121,7 @@ export class SessionController {
   @Roles('admin')
   @Get('logbooks-mentor/:sessionId')
   async getLogBookMentor(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const mentor_logbook =
@@ -131,7 +131,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('attendance/:sessionId')
-  async getAbsen(@Param('sessionId') sessionId: number, @Res() res: Response) {
+  async getAbsen(@Param('sessionId') sessionId: string, @Res() res: Response) {
     const session = await this.sessionService.findOne(sessionId);
     const attendances = await this.sessionService.findStudentsInCourse(
       session.weeks.course.id,
@@ -142,7 +142,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('task/:sessionId')
-  async getTugas(@Param('sessionId') sessionId: number, @Res() res: Response) {
+  async getTugas(@Param('sessionId') sessionId: string, @Res() res: Response) {
     const assignments = await this.sessionService.findTugas(sessionId);
     res.json(assignments);
   }
@@ -150,7 +150,7 @@ export class SessionController {
   @Roles('admin')
   @Get('pdf/:sessionId')
   async getMateriPdf(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const materialPdf = await this.materialService.findMaterialPdf(sessionId);
@@ -160,7 +160,7 @@ export class SessionController {
   @Roles('admin')
   @Get('video/:sessionId')
   async getMateriVideo(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const materialVideo =
@@ -171,7 +171,7 @@ export class SessionController {
   @Roles('admin')
   @Get('ppt/:sessionId')
   async getMateriPpt(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const materialPpt = await this.materialService.findMaterialPpt(sessionId);
@@ -181,7 +181,7 @@ export class SessionController {
   @Roles('admin')
   @Get(':sessionId')
   async findOne(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -195,7 +195,7 @@ export class SessionController {
   @Roles('admin')
   @Patch(':sessionId')
   async update(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Body() updateSessionDto: UpdateSessionDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -215,8 +215,8 @@ export class SessionController {
   @Roles('admin')
   @Delete(':id/:weeksId')
   async remove(
-    @Param('id') id: number,
-    @Param('weeksId') weeksId: number,
+    @Param('id') id: string,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

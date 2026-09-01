@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UploadedFile,
   UseFilters,
-  ParseIntPipe,
   Query,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
@@ -123,7 +122,7 @@ export class CoursesController {
     @Body() createCourseDto: CreateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
   ) {
     try {
       createCourseDto.image = req.body.uploadedImageUrls?.[0];
@@ -177,10 +176,10 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Post('addStudent/:courseId')
   async addUserToCourse(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
-    @Body('userId') userId: number,
+    @Body('userId') userId: string,
   ) {
     try {
       await this.coursesService.addUserToCourse(userId, courseId);
@@ -254,7 +253,7 @@ export class CoursesController {
   async formCreateKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
   ) {
     const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
@@ -275,7 +274,7 @@ export class CoursesController {
   async formAddUser(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     const users = await this.coursesService.findUser();
     const student = await this.coursesService.findStudent(courseId);
@@ -292,8 +291,8 @@ export class CoursesController {
   @Get('/edit/:courseId{/:categoryId}')
   async formEdit(
     @Res() res: Response,
-    @Param('courseId', ParseIntPipe) courseId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('courseId') courseId: string,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
   ) {
     const course = await this.coursesService.findOne(courseId);
@@ -316,7 +315,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/logbookMentor/:courseId')
   async getMentorLogbook(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const logbookMentor = await this.coursesService.findMentorLogbook(courseId);
@@ -326,7 +325,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/logbookUser/:courseId')
   async getLogbookUser(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const logbookUser = await this.coursesService.findLogBookUser(courseId);
@@ -336,7 +335,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/mentorProgram/:courseId')
   async getMentorKelas(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const mentor = await this.coursesService.findCourseMentors(courseId);
@@ -346,7 +345,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
   async getMinggu(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const weeks = await this.coursesService.findCourseWeeks(courseId);
@@ -356,7 +355,7 @@ export class CoursesController {
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:courseId')
   async getUserKelas(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const userCourses = await this.coursesService.findCourseUsers(courseId);
@@ -366,7 +365,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
   async getCicilan(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const availableMonths = await this.coursesService.findNo(courseId);
@@ -378,7 +377,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/register/:courseId')
   async getRegistration(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const registration =
@@ -389,7 +388,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/paymentInstallment/:courseId')
   async getPaymentInstallment(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const paymentInstallment =
@@ -400,7 +399,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/benefit/:courseId')
   async getProgramBenefit(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const course_benefits =
@@ -411,7 +410,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/participants/:courseId')
   async getProgramParticipants(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const participants =
@@ -422,7 +421,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/faq/:courseId')
   async getCourseQuestions(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const courseQuestions =
@@ -433,7 +432,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/flow/:courseId')
   async getCourseFlow(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const course_flows = await this.coursesService.findCourseFlows(courseId);
@@ -443,7 +442,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/payment/:courseId')
   async getPembayaran(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const payment = await this.coursesService.findCoursePayments(courseId);
@@ -452,7 +451,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/alumni/:courseId')
-  async getAlumni(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getAlumni(@Param('courseId') courseId: string, @Res() res: Response) {
     const alumni = await this.coursesService.findCourseAlumni(courseId);
     res.json(alumni);
   }
@@ -460,7 +459,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/detail/program/admin/:courseId')
   async detailKelas(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Query('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -487,7 +486,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -497,7 +496,7 @@ export class CoursesController {
     const courseType = await this.coursesService.findMyProgramCourseTypes(id);
     const userWithCourses = { userCourses: course.map((c) => ({ course: c })) };
 
-    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
@@ -522,12 +521,12 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment')
   async myCourseFragment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
-    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
@@ -543,12 +542,12 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/assignment')
   async myCourseAssignmentFragment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
-    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
@@ -561,13 +560,13 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/presentation')
   async myCoursePresentationFragment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
-    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
@@ -584,12 +583,12 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/quiz')
   async myCourseQuizFragment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
-    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
@@ -605,7 +604,7 @@ export class CoursesController {
   @Roles('user')
   @Get('program/detail/:courseId')
   async viewDetail(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -686,7 +685,7 @@ export class CoursesController {
 
   @Get(':id')
   async detail(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -835,25 +834,25 @@ export class CoursesController {
   }
 
   @Get('api/detail/:id/benefit')
-  async getBenefit(@Param('id') id: number, @Res() res: Response) {
+  async getBenefit(@Param('id') id: string, @Res() res: Response) {
     const course_benefits = await this.coursesService.findProgramBenefit(id);
     return res.json({ course_benefits });
   }
 
   @Get('api/detail/:id/faq')
-  async getFaq(@Param('id') id: number, @Res() res: Response) {
+  async getFaq(@Param('id') id: string, @Res() res: Response) {
     const courseQuestions = await this.coursesService.findCourseQuestions(id);
     return res.json({ courseQuestions });
   }
 
   @Get('api/detail/:id/flow')
-  async getFlow(@Param('id') id: number, @Res() res: Response) {
+  async getFlow(@Param('id') id: string, @Res() res: Response) {
     const course_flows = await this.coursesService.findCourseFlows(id);
     return res.json({ course_flows });
   }
 
   @Get('api/detail/:id/mentor')
-  async getMentor(@Param('id') id: number, @Res() res: Response) {
+  async getMentor(@Param('id') id: string, @Res() res: Response) {
     const mentor = await this.coursesService.findCourseMentors(id);
     return res.json({ mentor });
   }
@@ -875,7 +874,7 @@ export class CoursesController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -889,7 +888,7 @@ export class CoursesController {
 
       if (updateCourseDto.mentoringsId) {
         const currentMentoringUserId = course.mentorings?.[0]?.user?.id;
-        const newMentoringUserId = Number(updateCourseDto.mentoringsId);
+        const newMentoringUserId = updateCourseDto.mentoringsId;
 
         if (currentMentoringUserId !== newMentoringUserId) {
           await this.coursesService.updateMentoring(
@@ -929,7 +928,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Patch(':courseId/toggle-launch')
   async updateLaunch(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -947,7 +946,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Patch(':courseId/toggle-status')
   async updateStatus(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -965,7 +964,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Delete(':courseId')
   async remove(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body('previous') previous: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -989,8 +988,8 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Delete(':userId/program/:courseId')
   async removeCourseUser(
-    @Param('userId') userId: number,
-    @Param('courseId') courseId: number,
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -1009,7 +1008,7 @@ export class CoursesController {
   async getPertemuan(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
   ) {
     const user = req.user;
     if (!user) {
@@ -1023,7 +1022,7 @@ export class CoursesController {
   @Get('quiz/:weeksId')
   async getQuiz(
     @Res() res: Response,
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Req() req: Request,
   ) {
     const user = req.user;

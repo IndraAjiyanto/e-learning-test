@@ -139,7 +139,7 @@ export class PortfoliosController {
   async myPortfolio(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
   ) {
     const category =
       await this.portfoliosService.findCategoryMyPortfolio(userId);
@@ -157,7 +157,7 @@ export class PortfoliosController {
   @Roles('user')
   @Get('formCreate/:courseId')
   async formCreate(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -167,8 +167,8 @@ export class PortfoliosController {
   @Roles('user')
   @Get(':portofolioId/:courseId')
   async findOne(
-    @Param('portofolioId') portofolioId: number,
-    @Param('courseId') courseId: number,
+    @Param('portofolioId') portofolioId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -183,8 +183,8 @@ export class PortfoliosController {
   @Roles('user')
   @Get('formEdit/:portfolioId/:courseId')
   async formEdit(
-    @Param('portfolioId') portfolioId: number,
-    @Param('courseId') courseId: number,
+    @Param('portfolioId') portfolioId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -210,8 +210,8 @@ export class PortfoliosController {
     folder: 'portfolio',
   })
   async update(
-    @Param('portfolioId') portfolioId: number,
-    @Param('courseId') courseId: number,
+    @Param('portfolioId') portfolioId: string,
+    @Param('courseId') courseId: string,
     @Body() updatePortfolioDto: UpdatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -268,8 +268,8 @@ export class PortfoliosController {
   @Roles('user')
   @Delete(':portfolioId/:courseId')
   async remove(
-    @Param('portfolioId') portfolioId: number,
-    @Param('courseId') courseId: number,
+    @Param('portfolioId') portfolioId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

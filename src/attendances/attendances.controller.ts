@@ -25,8 +25,8 @@ export class AttendanceController {
   @Roles('user')
   @Post(':sessionId/:userId/:courseId')
   async create(
-    @Param('sessionId') sessionId: number,
-    @Param('courseId') courseId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Body() createAttendanceDto: CreateAttendanceDto,
     @Req() req: Request,
@@ -75,7 +75,7 @@ export class AttendanceController {
   @Roles('admin')
   @Post(':sessionId')
   async createAttendance(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Body() createAttendanceDto: CreateAttendanceDto,
     @Req() req: Request,
@@ -98,7 +98,7 @@ export class AttendanceController {
   @Get('form/:id')
   async formAttendance(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
   ) {
     const session = await this.attendanceService.findSession(id);
@@ -117,7 +117,7 @@ export class AttendanceController {
   async attendanceCreate(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
   ) {
     const users = await this.attendanceService.findUsers(sessionId);
     res.render('admin/attendance/create', { user: req.user, users, sessionId });
@@ -126,7 +126,7 @@ export class AttendanceController {
   @Roles('admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: any,
   ) {
@@ -137,7 +137,7 @@ export class AttendanceController {
   @Roles('admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -148,8 +148,8 @@ export class AttendanceController {
   @Roles('admin')
   @Patch(':attendanceId/:sessionId')
   async update(
-    @Param('sessionId') sessionId: number,
-    @Param('attendanceId') attendanceId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('attendanceId') attendanceId: string,
     @Body() updateAttendanceDto: UpdateAttendanceDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -167,8 +167,8 @@ export class AttendanceController {
   @Roles('admin')
   @Delete(':attendanceId/:sessionId')
   async remove(
-    @Param('attendanceId') attendanceId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('attendanceId') attendanceId: string,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

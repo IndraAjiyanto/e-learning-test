@@ -10,7 +10,7 @@ export class CertificatesController {
   @Roles('user')
   @Get(':courseId')
   async generate(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

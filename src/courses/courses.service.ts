@@ -87,7 +87,7 @@ export class CoursesService {
     private readonly portfolioRepository: Repository<Portofolios>,
   ) {}
 
-  async findOneCategory(categoryId: number) {
+  async findOneCategory(categoryId: string) {
     const category = await this.categoryRepository.findOne({
       where: { id: categoryId },
     });
@@ -97,7 +97,7 @@ export class CoursesService {
     return category;
   }
 
-  async findNo(courseId: number) {
+  async findNo(courseId: string) {
     const installment = await this.findCourseInstallments(courseId);
     const usedNumbers = installment.map((i) => Number(i.month));
 
@@ -144,7 +144,7 @@ export class CoursesService {
     return await this.courseRepository.save(course);
   }
 
-  async createMentoring(userId: number, courseId: number) {
+  async createMentoring(userId: string, courseId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId, role: 'admin' },
     });
@@ -166,7 +166,7 @@ export class CoursesService {
     return await this.mentoringRepository.save(mentorings);
   }
 
-  async updateMentoring(userId: number, courseId: number) {
+  async updateMentoring(userId: string, courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
@@ -200,7 +200,7 @@ export class CoursesService {
     }
   }
 
-  async addUserToCourse(userId: number, courseId: number) {
+  async addUserToCourse(userId: string, courseId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -420,7 +420,7 @@ export class CoursesService {
     }
   }
 
-  async sumStudent(courseId: number) {
+  async sumStudent(courseId: string) {
     const course = await this.findOne(courseId);
     if (course.checkPaid === true) {
       const daftar = await this.paymentRepository.find({
@@ -443,7 +443,7 @@ export class CoursesService {
     }
   }
 
-  async findMyCourse(userId: number) {
+  async findMyCourse(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User not found`);
@@ -482,14 +482,14 @@ export class CoursesService {
     });
   }
 
-  async findCourseByMentoring(userId: number) {
+  async findCourseByMentoring(userId: string) {
     return await this.courseRepository.find({
       where: { mentorings: { user: { id: userId } } },
       relations: ['userCourses', 'category', 'courseType'],
     });
   }
 
-  async findQuiz(weeksId: number, userId: number) {
+  async findQuiz(weeksId: string, userId: string) {
     return await this.quizRepository
       .createQueryBuilder('quiz')
       .leftJoinAndSelect(
@@ -503,11 +503,11 @@ export class CoursesService {
         userId,
       })
       .where('quiz.weeksId = :weeksId', { weeksId: weeksId })
-      .orderBy('quiz.id', 'ASC')
+      .orderBy('quiz.createdAt', 'ASC')
       .getMany();
   }
 
-  async findSession(weeksId: number, userId: number) {
+  async findSession(weeksId: string, userId: string) {
     return await this.sessionRepository
       .createQueryBuilder('session')
       .leftJoinAndSelect('session.materials', 'materials')
@@ -542,7 +542,7 @@ export class CoursesService {
       .getMany();
   }
 
-  async findWeeks(courseId: number, userId: number) {
+  async findWeeks(courseId: string, userId: string) {
     const course = await this.findOne(courseId);
     if (!course) {
       throw new NotFoundException('Program not found');
@@ -574,7 +574,7 @@ export class CoursesService {
       .getMany();
   }
 
-  // async findWeeksWithUnlock(courseId: number, userId: number) {
+  // async findWeeksWithUnlock(courseId: string, userId: string) {
   //   const weeks = await this.weeksRepository
   //     .createQueryBuilder('weeks')
   //     .leftJoinAndSelect('weeks.session', 'session')
@@ -601,7 +601,7 @@ export class CoursesService {
   //   });
   // }
 
-  async findLastWeek(courseId: number) {
+  async findLastWeek(courseId: string) {
     const weeks = await this.weeksRepository.find({
       where: { course: { id: courseId }, isFinal: true },
     });
@@ -612,7 +612,7 @@ export class CoursesService {
     }
   }
 
-  async findMentorLogbook(courseId: number) {
+  async findMentorLogbook(courseId: string) {
     return await this.mentorLogbookRepository.find({
       where: { session: { weeks: { course: { id: courseId } } } },
       relations: [
@@ -652,7 +652,7 @@ export class CoursesService {
     });
   }
 
-  async findLogBookUser(courseId: number) {
+  async findLogBookUser(courseId: string) {
     return await this.logbookRepository.find({
       where: { session: { weeks: { course: { id: courseId } } } },
       relations: [
@@ -703,13 +703,13 @@ export class CoursesService {
     return await this.userRepository.find({ where: { role: 'user' } });
   }
 
-  async findCategoryMyProgram(userId: number) {
+  async findCategoryMyProgram(userId: string) {
     return await this.categoryRepository.find({
       where: { courses: { userCourses: { user: { id: userId } } } },
     });
   }
 
-  async findMyProgramCourseTypes(userId: number) {
+  async findMyProgramCourseTypes(userId: string) {
     return await this.courseTypeRepository.find({
       where: { classes: { userCourses: { user: { id: userId } } } },
     });
@@ -731,7 +731,7 @@ export class CoursesService {
     alphabet?: string;
     page: number;
     limit: number;
-    userId?: number; // kalau ada = admin, kalau tidak = super_admin
+    userId?: string; // kalau ada = admin, kalau tidak = super_admin
   }) {
     const query = this.courseRepository
       .createQueryBuilder('course')
@@ -739,7 +739,7 @@ export class CoursesService {
       .leftJoinAndSelect('course.userCourses', 'userCourses')
       .leftJoinAndSelect('course.mentorings', 'mentorings')
       .leftJoinAndSelect('mentorings.user', 'mentorUser')
-      .orderBy('course.id', 'DESC');
+      .orderBy('course.createdAt', 'DESC');
 
     // Filter by mentor (admin only)
     if (params.userId) {
@@ -774,7 +774,7 @@ export class CoursesService {
     });
   }
 
-  async findStudent(id: number) {
+  async findStudent(id: string) {
     return await this.userRepository.find({
       where: { userCourses: { course: { id: id } } },
     });
@@ -786,7 +786,7 @@ export class CoursesService {
     });
   }
 
-  async allClassExcept(courseId: number) {
+  async allClassExcept(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['category', 'courseType'],
@@ -808,7 +808,7 @@ export class CoursesService {
         courseType: { id: course.courseType.id },
       },
       relations: ['userCourses', 'category', 'courseType'],
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       take: 1,
     });
 
@@ -823,7 +823,7 @@ export class CoursesService {
         category: { id: course.category.id },
       },
       relations: ['userCourses', 'category', 'courseType'],
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       take: 1,
     });
 
@@ -838,7 +838,7 @@ export class CoursesService {
         courseType: { id: course.courseType.id },
       },
       relations: ['userCourses', 'category', 'courseType'],
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       take: 1,
     });
 
@@ -866,7 +866,7 @@ export class CoursesService {
     return results;
   }
 
-  async checkUserInCourse(courseId: number, userId: number) {
+  async checkUserInCourse(courseId: string, userId: string) {
     return await this.userCourseRepository.findOne({
       where: { course: { id: courseId }, user: { id: userId } },
     });
@@ -876,40 +876,40 @@ export class CoursesService {
     return await this.technologiesRepository.find();
   }
 
-  async findCourseTechnologies(courseId: number) {
+  async findCourseTechnologies(courseId: string) {
     return await this.technologiesRepository.find({
       where: { course: { id: courseId } },
     });
   }
 
-  async findCourseQuestions(courseId: number) {
+  async findCourseQuestions(courseId: string) {
     return await this.courseQuestionRepository.find({
       where: { course: { id: courseId } },
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
   }
 
-  async findProgramBenefit(courseId: number) {
+  async findProgramBenefit(courseId: string) {
     return await this.programBenefitRepository.find({
       where: { course: { id: courseId } },
     });
   }
 
-  async findCourseParticipants(courseId: number) {
+  async findCourseParticipants(courseId: string) {
     return await this.participantsRepository.find({
       where: { course: { id: courseId } },
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
   }
 
-  async findCourseFlows(courseId: number) {
+  async findCourseFlows(courseId: string) {
     return await this.courseFlowRepository.find({
       where: { course: { id: courseId } },
       order: { sequence: 'ASC' },
     });
   }
 
-  async findOneCourse(courseId: number) {
+  async findOneCourse(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: [
@@ -928,7 +928,7 @@ export class CoursesService {
     return course;
   }
 
-  async findOneUserCourse(courseId: number) {
+  async findOneUserCourse(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId, launch: true },
       relations: [
@@ -948,19 +948,19 @@ export class CoursesService {
     return course;
   }
 
-  async getUserCourseRelation(userId: number, courseId: number) {
+  async getUserCourseRelation(userId: string, courseId: string) {
     return await this.userCourseRepository.findOne({
       where: { course: { id: courseId }, user: { id: userId } },
     });
   }
 
-  async findOnePortfolio(userId: number, courseId: number) {
+  async findOnePortfolio(userId: string, courseId: string) {
     return await this.portfolioRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
   }
 
-  async findOneUserLaunchCourse(courseId: number) {
+  async findOneUserLaunchCourse(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['category', 'courseType', 'userCourses', 'userCourses.user'],
@@ -971,7 +971,7 @@ export class CoursesService {
     return course;
   }
 
-  async findOneAdminCourse(courseId: number) {
+  async findOneAdminCourse(courseId: string) {
     return await this.courseRepository.findOne({
       where: { id: courseId },
       relations: [
@@ -985,7 +985,7 @@ export class CoursesService {
     });
   }
 
-  async findCourseWeeks(courseId: number) {
+  async findCourseWeeks(courseId: string) {
     return await this.weeksRepository.find({
       where: { course: { id: courseId } },
       order: { weekNumber: 'ASC' },
@@ -993,61 +993,61 @@ export class CoursesService {
     });
   }
 
-  async findCourseMentors(courseId: number) {
+  async findCourseMentors(courseId: string) {
     return await this.mentorRepository.find({
       where: { course: { id: courseId } },
       relations: ['technologies'],
     });
   }
 
-  async findCourseUsers(courseId: number) {
+  async findCourseUsers(courseId: string) {
     return await this.userCourseRepository.find({
       where: { course: { id: courseId } },
       relations: ['user'],
     });
   }
 
-  async findCoursePayments(courseId: number) {
+  async findCoursePayments(courseId: string) {
     return await this.paymentRepository.find({
       where: { course: { id: courseId } },
       relations: ['user', 'course'],
     });
   }
 
-  async findCourseRegistrations(courseId: number) {
+  async findCourseRegistrations(courseId: string) {
     return await this.registrationRepository.find({
       where: { course: { id: courseId } },
       relations: ['user', 'course'],
     });
   }
 
-  async findCoursePaymentInstallments(courseId: number) {
+  async findCoursePaymentInstallments(courseId: string) {
     return await this.paymentRepository.find({
       where: { course: { id: courseId }, installment: Not(IsNull()) },
       relations: ['user', 'course', 'installment'],
     });
   }
 
-  async findCourseInstallments(courseId: number) {
+  async findCourseInstallments(courseId: string) {
     return await this.installmentsRepository.find({
       where: { course: { id: courseId } },
       order: { month: 'ASC' },
     });
   }
 
-  async findCourseAlumni(courseId: number) {
+  async findCourseAlumni(courseId: string) {
     return await this.alumniRepository.find({
       where: { course: { id: courseId } },
     });
   }
 
-  async findCourseMentoring(courseId: number) {
+  async findCourseMentoring(courseId: string) {
     return await this.userRepository.findOne({
       where: { mentoring: { course: { id: courseId } } },
     });
   }
 
-  async findOne(courseId: number) {
+  async findOne(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: [
@@ -1065,7 +1065,7 @@ export class CoursesService {
     return course;
   }
 
-  async updateLaunch(courseId: number, updateCourseDto: UpdateCoursesDto) {
+  async updateLaunch(courseId: string, updateCourseDto: UpdateCoursesDto) {
     const course = await this.findOne(courseId);
     if (!course) {
       throw new NotFoundException();
@@ -1079,7 +1079,7 @@ export class CoursesService {
     return await this.courseRepository.save(course);
   }
 
-  async update(id: number, updateCourseDto: UpdateCoursesDto) {
+  async update(id: string, updateCourseDto: UpdateCoursesDto) {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException(`Program not found`);
@@ -1131,7 +1131,7 @@ export class CoursesService {
     return await this.courseRepository.save(course);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException('Program not found');
@@ -1139,7 +1139,7 @@ export class CoursesService {
     return await this.courseRepository.remove(course);
   }
 
-  async removeCourseUser(userId: number, courseId: number) {
+  async removeCourseUser(userId: string, courseId: string) {
     const userCourses = await this.userCourseRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
@@ -1159,7 +1159,7 @@ export class CoursesService {
     } catch (error) {}
   }
 
-  async findPortfolio(userId: number) {
+  async findPortfolio(userId: string) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: [
@@ -1172,7 +1172,7 @@ export class CoursesService {
     });
   }
 
-  async findCompletedCoursesByUser(userId: number) {
+  async findCompletedCoursesByUser(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: [

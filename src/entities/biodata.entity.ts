@@ -19,8 +19,8 @@ export type Education =
 
 @Entity()
 export class Biodata {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   fullName: string;
@@ -52,5 +52,5 @@ export class Biodata {
   user: User;
 
   @Column()
-  userId: number;
+  userId: string;
 }

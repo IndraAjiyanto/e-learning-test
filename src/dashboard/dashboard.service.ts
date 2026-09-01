@@ -74,7 +74,7 @@ export class DashboardService {
   ) {}
 
   async findAllCategories() {
-    return await this.categoryRepository.find({ order: { id: 'ASC' } });
+    return await this.categoryRepository.find({ order: { createdAt: 'ASC' } });
   }
 
   async findAllPartners() {
@@ -87,7 +87,7 @@ export class DashboardService {
   async findAllCourses() {
     return await this.courseRepository.find({
       where: { launch: true },
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       relations: [
         'category',
         'courseType',
@@ -99,7 +99,7 @@ export class DashboardService {
   }
 
   async findCoursesPaginated(params: {
-    userId?: number;
+    userId?: string;
     category?: string;
     courseType?: string;
     method?: string;
@@ -140,7 +140,7 @@ export class DashboardService {
     }
 
     query
-      .orderBy('course.id', 'DESC')
+      .orderBy('course.createdAt', 'DESC')
       .skip((params.page - 1) * params.limit)
       .take(params.limit);
 
@@ -162,7 +162,7 @@ export class DashboardService {
     return await this.valueRepository.find({ order: { valueOrder: 'ASC' } });
   }
 
-  async findCoursesByMentoring(userId: number) {
+  async findCoursesByMentoring(userId: string) {
     return await this.courseRepository.find({
       where: { mentorings: { user: { id: userId } } },
       relations: [
@@ -213,13 +213,13 @@ export class DashboardService {
 
   async findCourses() {
     return await this.courseRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       relations: ['category', 'courseType', 'userCourses'],
     });
   }
 
   async findPortfolio(options?: {
-    userId?: number | null;
+    userId?: string | null;
     categoryId?: string | null;
     courseTypeId?: string | null;
     page?: number;
@@ -316,7 +316,7 @@ export class DashboardService {
   //   });
   // }
 
-  async findOnePortfolio(portfolioId: number) {
+  async findOnePortfolio(portfolioId: string) {
     return await this.portfolioRepository.findOne({
       where: { id: portfolioId },
       relations: ['course', 'course.category', 'course.technologies', 'user'],
@@ -398,7 +398,7 @@ export class DashboardService {
   async findAllGallery(): Promise<Gallery[]> {
     return this.galleryRepository.find({
       relations: ['category'],
-      order: { id: 'DESC' },
+      order: { no: 'ASC' },
     });
   }
 }

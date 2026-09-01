@@ -21,7 +21,7 @@ export class FaqService {
     return await this.faqRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const faq = await this.faqRepository.findOne({ where: { id } });
     if (!faq) {
       throw new NotFoundException('FAQ not found');
@@ -29,13 +29,13 @@ export class FaqService {
     return faq;
   }
 
-  async update(id: number, updateFaqDto: UpdateFaqDto) {
+  async update(id: string, updateFaqDto: UpdateFaqDto) {
     const faq = await this.findOne(id);
     Object.assign(faq, updateFaqDto);
     return await this.faqRepository.save(faq);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const faq = await this.findOne(id);
     return await this.faqRepository.remove(faq);
   }

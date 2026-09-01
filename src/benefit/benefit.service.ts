@@ -21,7 +21,7 @@ export class BenefitService {
     return await this.benefitRepository.find();
   }
 
-  async findOne(benefitId: number) {
+  async findOne(benefitId: string) {
     const benefit = await this.benefitRepository.findOne({
       where: { id: benefitId },
     });
@@ -41,7 +41,7 @@ export class BenefitService {
     return availableNumbers;
   }
 
-  async findNoForEdit(benefitId: number) {
+  async findNoForEdit(benefitId: string) {
     const benefit = await this.findOne(benefitId);
     const available = await this.findNo();
     // slot kosong + nomor milik benefit ini, lalu urutkan
@@ -50,7 +50,7 @@ export class BenefitService {
     );
   }
 
-  async update(benefitId: number, updateBenefitDto: UpdateBenefitDto) {
+  async update(benefitId: string, updateBenefitDto: UpdateBenefitDto) {
     const benefit = await this.findOne(benefitId);
 
     if (!benefit) {
@@ -72,7 +72,7 @@ export class BenefitService {
     return await this.benefitRepository.save(benefit);
   }
 
-  async remove(benefitId: number) {
+  async remove(benefitId: string) {
     const benefit = await this.findOne(benefitId);
     if (!benefit) {
       throw new NotFoundException('benefit not found');

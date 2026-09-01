@@ -446,7 +446,7 @@ document.addEventListener("change", function(e){
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        userId: {{user.id}},
+                        userId: '{{user.id}}',
                         questionsId: questionId,
                         answersId: value
                     })

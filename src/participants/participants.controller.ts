@@ -25,7 +25,7 @@ export class ParticipantsController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createParticipantsDto: CreateParticipantsDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -46,7 +46,7 @@ export class ParticipantsController {
   async formCreateWithKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     res.render('super_admin/participants/create', { user: req.user, courseId });
   }
@@ -54,7 +54,7 @@ export class ParticipantsController {
   @Roles('super_admin')
   @Get('formEdit/:participantId')
   async formEdit(
-    @Param('participantId') participantId: number,
+    @Param('participantId') participantId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -68,8 +68,8 @@ export class ParticipantsController {
   @Roles('super_admin')
   @Patch(':participantId/:courseId')
   async update(
-    @Param('participantId') participantId: number,
-    @Param('courseId') courseId: number,
+    @Param('participantId') participantId: string,
+    @Param('courseId') courseId: string,
     @Body() updateParticipantsDto: UpdateParticipantsDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -90,8 +90,8 @@ export class ParticipantsController {
   @Roles('super_admin')
   @Delete(':participantId/:courseId')
   async remove(
-    @Param('participantId') participantId: number,
-    @Param('courseId') courseId: number,
+    @Param('participantId') participantId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

@@ -1,8 +1,6 @@
 import {
-  Logger,
   MiddlewareConsumer,
   Module,
-  OnApplicationBootstrap,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -73,46 +71,6 @@ import { VoucherModule } from './voucher/voucher.module';
 import { FooterModule } from './footer/footer.module';
 import { FooterMiddleware } from './footer/footer.middleware';
 import path from 'path';
-import { DataSource } from 'typeorm';
-
-const TABLES_WITH_SEQUENCE = [
-  'material',
-  'comments',
-  'answer_task',
-  'assignments',
-  'portofolios',
-  'course_type',
-  'faqs',
-  'category',
-  'installment',
-  'payments',
-  'certificates',
-  'user_courses',
-  'course_questions',
-  'technologies',
-  'mentors',
-  'course_flow',
-  'program_benefits',
-  'registrations',
-  'course',
-  'user_answers',
-  'answers',
-  'questions',
-  'scores',
-  'quiz_progresses',
-  'weeks',
-  'session_progresses',
-  'mentor_logbook',
-  'session',
-  'attendance',
-  'mentor_biodata',
-  'week_progresses',
-  'visions',
-  'paragraph',
-  'mission',
-  'category_partner',
-  'about',
-];
 
 @Module({
   imports: [
@@ -193,33 +151,7 @@ const TABLES_WITH_SEQUENCE = [
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements OnApplicationBootstrap {
-  private readonly logger = new Logger(AppModule.name);
-
-  constructor(private readonly dataSource: DataSource) {}
-
-  async onApplicationBootstrap() {
-    for (const table of TABLES_WITH_SEQUENCE) {
-      try {
-        await this.dataSource.query(
-          `CREATE SEQUENCE IF NOT EXISTS "${table}_id_seq" OWNED BY "${table}"."id"`,
-        );
-        const result = await this.dataSource.query(
-          `SELECT COALESCE(MAX("id"), 0) AS "maxId" FROM "${table}"`,
-        );
-        const maxId = result[0]?.maxId ?? 0;
-        await this.dataSource.query(
-          `SELECT setval('"${table}_id_seq"', GREATEST(${maxId}, 1))`,
-        );
-        await this.dataSource.query(
-          `ALTER TABLE "${table}" ALTER COLUMN "id" SET DEFAULT nextval('"${table}_id_seq"')`,
-        );
-      } catch (e) {
-        this.logger.warn(`Skip sequence restore for "${table}": ${e.message}`);
-      }
-    }
-    this.logger.log('All sequence defaults restored');
-  }
+export class AppModule {
 
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(I18nMiddleware).forRoutes('*');

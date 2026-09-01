@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreatePaymentDto {
@@ -10,15 +10,15 @@ export class CreatePaymentDto {
   @IsOptional()
   process: ProcessStatus;
 
-  @IsInt()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsInt()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 
-  @IsInt()
+  @IsUUID()
   @IsOptional()
-  installmentId: number;
+  installmentId: string;
 
   @IsString()
   @IsOptional()

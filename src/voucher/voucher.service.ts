@@ -20,10 +20,10 @@ function parseFloat(val: any): number | null {
   return isNaN(n) ? null : n;
 }
 
-function parseIds(val: any): number[] {
+function parseIds(val: any): string[] {
   if (val === undefined || val === null) return [];
   if (!Array.isArray(val)) val = [val];
-  return val.map(Number).filter((n: number) => !isNaN(n));
+  return val.map(String).filter((s: string) => s.length > 0);
 }
 
 @Injectable()
@@ -80,7 +80,7 @@ export class VoucherService {
   }
 
   // Ambil satu voucher + daftar program lengkap (untuk halaman edit)
-  async findOne(id: number): Promise<Voucher> {
+  async findOne(id: string): Promise<Voucher> {
     const voucher = await this.voucherRepository.findOne({
       where: { id },
       relations: ['courses'],
@@ -90,7 +90,7 @@ export class VoucherService {
   }
 
   // Update voucher + sinkronisasi daftar program
-  async update(id: number, dto: UpdateVoucherDto): Promise<Voucher> {
+  async update(id: string, dto: UpdateVoucherDto): Promise<Voucher> {
     const voucher = await this.findOne(id);
 
     // Update field scalar
@@ -121,7 +121,7 @@ export class VoucherService {
   }
 
   // Hapus voucher (relasi di voucher_programs ikut terhapus via CASCADE)
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const voucher = await this.findOne(id);
     await this.voucherRepository.remove(voucher);
   }
@@ -137,9 +137,9 @@ export class VoucherService {
   // Validasi voucher untuk frontend
   async validateVoucher(
     code: string,
-    courseId: number,
+    courseId: string,
     subtotal: number,
-    userId?: number,
+    userId?: string,
   ): Promise<{ discountAmount: number; finalTotal: number; voucher: Voucher }> {
     const voucher = await this.voucherRepository.findOne({
       where: { code_voucher: ILike(code), active: true },

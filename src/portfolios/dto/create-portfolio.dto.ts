@@ -1,10 +1,4 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreatePortfolioDto {
   @IsArray()
@@ -31,9 +25,9 @@ export class CreatePortfolioDto {
   @IsOptional()
   technologies: string[];
 
-  @IsNumber()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsNumber()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 }

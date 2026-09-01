@@ -22,7 +22,7 @@ export class FaqsController {
   @Roles('super_admin')
   @Post(':categoryId')
   async create(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Body() createFaqDto: CreateFaqsDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -41,7 +41,7 @@ export class FaqsController {
   @Roles('super_admin')
   @Get('formCreate/:categoryId')
   async formCreate(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -54,7 +54,7 @@ export class FaqsController {
   @Roles('super_admin')
   @Get('formEdit/:faqsId')
   async formEdit(
-    @Param('faqsId') faqsId: number,
+    @Param('faqsId') faqsId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -68,8 +68,8 @@ export class FaqsController {
   @Roles('super_admin')
   @Patch(':faqsId/:categoryId')
   async update(
-    @Param('faqsId') faqsId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('faqsId') faqsId: string,
+    @Param('categoryId') categoryId: string,
     @Body() updateFaqDto: UpdateFaqsDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -87,8 +87,8 @@ export class FaqsController {
   @Roles('super_admin')
   @Delete(':faqsId/:categoryId')
   async remove(
-    @Param('faqsId') faqsId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('faqsId') faqsId: string,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

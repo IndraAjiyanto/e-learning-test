@@ -54,14 +54,14 @@ export class LogbookService {
     return await this.logBookRepository.save(logbooks);
   }
 
-  async findByUser(userId: number) {
+  async findByUser(userId: string) {
     return await this.logBookRepository.find({
       where: { user: { id: userId } },
       relations: ['user'],
     });
   }
 
-  async findLogBook(userId: number, courseId: number) {
+  async findLogBook(userId: string, courseId: string) {
     return await this.logBookRepository.find({
       where: {
         user: { id: userId },
@@ -71,7 +71,7 @@ export class LogbookService {
     });
   }
 
-  async findCourseByUser(userId: number) {
+  async findCourseByUser(userId: string) {
     return await this.courseRepository.find({
       where: { userCourses: { user: { id: userId } } },
       relations: ['userCourses', 'userCourses.user', 'weeks'],
@@ -80,7 +80,7 @@ export class LogbookService {
 
   async findAllCourses() {
     return await this.courseRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -96,7 +96,7 @@ export class LogbookService {
     });
   }
 
-  async findUsers(sessionId: number) {
+  async findUsers(sessionId: string) {
     return await this.userRepository.find({
       where: {
         userCourses: {
@@ -107,7 +107,7 @@ export class LogbookService {
     });
   }
 
-  async findSession(sessionId: number) {
+  async findSession(sessionId: string) {
     const session = await this.sessionRepository.findOne({
       where: { id: sessionId },
       relations: ['weeks', 'weeks.course'],
@@ -128,7 +128,7 @@ export class LogbookService {
     } catch (error) {}
   }
 
-  async findOne(logbookId: number) {
+  async findOne(logbookId: string) {
     const logbooks = await this.logBookRepository.findOne({
       where: { id: logbookId },
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
@@ -139,7 +139,7 @@ export class LogbookService {
     return logbooks;
   }
 
-  async findCapstoneProjects(kategoriId?: number) {
+  async findCapstoneProjects(kategoriId?: string) {
     const query = this.logBookRepository
       .createQueryBuilder('logbook')
       .where('logbook.documentation IS NOT NULL')
@@ -161,7 +161,7 @@ export class LogbookService {
     return query.getMany();
   }
 
-  async update(logbookId: number, updateLogbookDto: UpdateLogbookDto) {
+  async update(logbookId: string, updateLogbookDto: UpdateLogbookDto) {
     const logbooks = await this.findOne(logbookId);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');
@@ -283,7 +283,7 @@ export class LogbookService {
     return await this.logBookRepository.save(logbooks);
   }
 
-  async remove(logbookId: number) {
+  async remove(logbookId: string) {
     const logbooks = await this.findOne(logbookId);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');

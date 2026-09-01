@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 import { Month } from '../../entities/installment.entity';
 
 export class CreateInstallmentsDto {
@@ -10,9 +10,9 @@ export class CreateInstallmentsDto {
   @IsNotEmpty()
   month: Month;
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  courseId: number;
+  courseId: string;
 
   @IsNumber()
   @IsNotEmpty()

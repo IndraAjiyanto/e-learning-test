@@ -13,8 +13,8 @@ export type FileType = 'video' | 'pdf' | 'ppt';
 
 @Entity()
 export class Material {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   title: string;

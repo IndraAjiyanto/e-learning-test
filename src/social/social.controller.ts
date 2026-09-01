@@ -58,7 +58,7 @@ export class SocialController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -69,7 +69,7 @@ export class SocialController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateSocialDto: UpdateSocialDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -87,7 +87,7 @@ export class SocialController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

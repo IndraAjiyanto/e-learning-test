@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsEnum,
-  IsArray,
-  IsNumber,
-} from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateCategoriesDto {
   @IsString()
@@ -30,8 +24,8 @@ export class CreateCategoriesDto {
 
   @IsOptional()
   @IsArray()
-  @IsNumber({}, { each: true })
-  courseType?: number[];
+  @IsUUID('all', { each: true })
+  courseType?: string[];
 
   @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';

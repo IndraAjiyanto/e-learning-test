@@ -92,7 +92,7 @@ export class VoucherController {
 
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -120,7 +120,7 @@ export class VoucherController {
   // Middleware method-override mengubahnya menjadi PATCH sebelum sampai sini
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateVoucherDto: UpdateVoucherDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -141,7 +141,7 @@ export class VoucherController {
   // Middleware method-override mengubahnya menjadi DELETE sebelum sampai sini
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

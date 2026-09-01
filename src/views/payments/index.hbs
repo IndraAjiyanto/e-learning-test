@@ -31,8 +31,8 @@
 </div>
 
 <script>
-  const paymentStorageUserId = Number('{{user.id}}') || 0;
-  const paymentStorageCourseId = Number('{{course.id}}') || 0;
+  const paymentStorageUserId = '{{user.id}}';
+  const paymentStorageCourseId = '{{course.id}}';
   const paymentProgressStorageKey = paymentStorageUserId && paymentStorageCourseId
     ? `payment-${paymentStorageUserId}-${paymentStorageCourseId}-form`
     : null;
