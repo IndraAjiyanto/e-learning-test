@@ -1,7 +1,7 @@
 <!-- MOBILE TEAM MEMBERS GRID (< 640px) -->
 <div class="block sm:hidden grid grid-cols-2 gap-3.5">
   {{#each team}}
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         profile=(default profile "/public/image/about/orang.png")
         name=name
         position=(default (getByLang position ../lang) "Specialist Mentor")
@@ -10,7 +10,7 @@
     }}
   {{else}}
     <!-- Card 1 -->
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         profile="/public/image/about/orang.png"
         name="Rizal Rahadian Ramadhan, S.E"
         position="Specialist Mentor"
@@ -19,7 +19,7 @@
     }}
 
     <!-- Card 2 -->
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         profile="/public/image/about/orang.png"
         name="Adipura Arya Kangsadewa, S.Bns"
         position="Specialist Mentor"
@@ -28,7 +28,7 @@
     }}
 
     <!-- Card 3 -->
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         profile="/public/image/about/orang.png"
         name="Dwi Anggi Wiyanto, S.Kom., MMSI"
         position="Specialist Mentor"
@@ -37,7 +37,7 @@
     }}
 
     <!-- Card 4 -->
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         profile="/public/image/about/orang.png"
         name="Aan Dwi Prasetyo, S.Kom., MMSI"
         position="Specialist Mentor"
@@ -50,7 +50,7 @@
 <!-- DESKTOP TEAM MEMBERS GRID (>= 640px) -->
 <div class='hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center md:justify-items-start'>
   {{#each team}}
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         isDesktop=true
         profile=(default profile "/public/image/about/orang.png")
         name=name
@@ -61,7 +61,7 @@
     }}
   {{else}}
     <!-- Card 1 -->
-    {{> components/about/card_team 
+    {{> components/ui/card/card_team/index 
         isDesktop=true
         profile="/public/image/about/orang.png"
         name="Rizal Rahadian Ramadhan, S.E"

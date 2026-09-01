@@ -47,7 +47,7 @@
     <!-- Mobile Accordion Cards -->
     <div class="flex flex-col gap-3 w-full">
       <template x-for="(faq, index) in faqs" :key="index">
-        {{> components/home/accordion_faq }}
+        {{> components/ui/accordion/faq/index }}
       </template>
     </div>
 
@@ -129,7 +129,7 @@
       <!-- Wrapper Daftar FAQ -->
       <div class="flex flex-col border-t border-[#E0E0E0]">
         <template x-for="(faq, index) in faqs" :key="index">
-          {{> components/home/accordion_faq desktop=true }}
+          {{> components/ui/accordion/faq/index desktop=true }}
         </template>
       </div>
       

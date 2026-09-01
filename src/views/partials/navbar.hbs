@@ -245,9 +245,9 @@ isProgramActive() {
               </button>
 
               <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
-                {{> components/category_program/card_mpp isMobile=true}}
+                {{> components/ui/card/category/mpp/index isMobile=true}}
                 <template x-for='kat in category' :key='kat.id'>
-                  {{> components/category_program/card_dynamic isMobile=true}}
+                  {{> components/ui/card/category/dynamic/index isMobile=true}}
                 </template>
               </div>
             </div>
@@ -342,9 +342,9 @@ isProgramActive() {
               </button>
 
               <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
-                {{> components/category_program/card_mpp isMobile=true}}
+                {{> components/ui/card/category/mpp/index isMobile=true}}
                 <template x-for='kat in category' :key='kat.id'>
-                  {{> components/category_program/card_dynamic isMobile=true}}
+                  {{> components/ui/card/category/dynamic/index isMobile=true}}
                 </template>
               </div>
             </div>
@@ -517,9 +517,9 @@ isProgramActive() {
           >
             <div class='p-6 bg-white rounded-2xl shadow-xl border border-gray-100'>
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                 {{> components/category_program/card_mpp isMobile=false}}
+                 {{> components/ui/card/category/mpp/index isMobile=false}}
                 <template x-for='kat in category' :key='kat.id'>
-                  {{> components/category_program/card_dynamic isMobile=false}}
+                  {{> components/ui/card/category/dynamic/index isMobile=false}}
                 </template>
               </div>
             </div>
@@ -649,9 +649,9 @@ isProgramActive() {
           >
             <div class='p-6 md:p-8 bg-white rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)] border border-gray-400'>
                   <div class='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
-                    {{> components/category_program/card_mpp isMobile=false}}
+                    {{> components/ui/card/category/mpp/index isMobile=false}}
                       <template x-for='kat in category' :key='kat.id'>
-                          {{> components/category_program/card_dynamic isMobile=false isAuthenticated=false}}
+                          {{> components/ui/card/category/dynamic/index isMobile=false isAuthenticated=false}}
                       </template>
     </div>
   </div>

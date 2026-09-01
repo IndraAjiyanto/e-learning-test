@@ -24,7 +24,7 @@
     async toggleActiveSection(sectionName) {
       this.activeSection = sectionName;
       localStorage.setItem('activeSection', sectionName);
-    }
+    },
   }"
 >
   <!-- Fixed Dynamic Background Image per Tab (Contained to About Section) -->
@@ -39,10 +39,10 @@
     <div class="mb-6">
       <div class="overflow-x-auto scrollbar-hide">
         <nav class="flex items-center justify-start gap-2.5 min-w-max pb-2">
-          {{> components/about/tab_btn section="story" icon="fas fa-book-open" text=(t "test.about.tabAbout.story") }}
-          {{> components/about/tab_btn section="mission" icon="fas fa-bullseye" text=(t "test.about.tabAbout.visionsMisi") }}
-          {{> components/about/tab_btn section="values" icon="fas fa-heart" text=(t "test.about.tabAbout.value") }}
-          {{> components/about/tab_btn section="team" icon="fas fa-users" text=(t "test.about.tabAbout.team") }}
+          {{> components/ui/button/tab_btn/index section="story" icon="fas fa-book-open" text=(t "test.about.tabAbout.story") }}
+          {{> components/ui/button/tab_btn/index section="mission" icon="fas fa-bullseye" text=(t "test.about.tabAbout.visionsMisi") }}
+          {{> components/ui/button/tab_btn/index section="values" icon="fas fa-heart" text=(t "test.about.tabAbout.value") }}
+          {{> components/ui/button/tab_btn/index section="team" icon="fas fa-users" text=(t "test.about.tabAbout.team") }}
         </nav>
       </div>
     </div>
@@ -50,16 +50,16 @@
     <!-- Mobile Tab Content Container -->
     <div class="w-full">
       <div x-show="activeSection === 'story'">
-        {{> about/story_tab}}
+        {{> components/ui/sections/story/index}}
       </div>
       <div x-show="activeSection === 'mission'">
-        {{> about/mission_tab}}
+        {{> components/ui/sections/mission/index}}
       </div>
       <div x-show="activeSection === 'team'">
-        {{> about/team_tab}}
+        {{> components/ui/sections/team/index}}
       </div>
       <div x-show="activeSection === 'values'">
-        {{> about/values_tab}}
+        {{> components/ui/sections/values/index}}
       </div>
     </div>
   </div>
@@ -72,31 +72,31 @@
       <div class='hidden lg:block lg:col-span-4 w-full max-w-[488px] sticky top-24 self-start'>
         <div class='space-y-4'>
           <nav class='space-y-4'>
-            {{> components/about/tab_btn section="story" icon="fas fa-book-open" text=(t "test.about.tabAbout.story") }}
-            {{> components/about/tab_btn section="mission" icon="fas fa-bullseye" text=(t "test.about.tabAbout.visionsMisi") }}
-            {{> components/about/tab_btn section="values" icon="fas fa-heart" text=(t "test.about.tabAbout.value") }}
-            {{> components/about/tab_btn section="team" icon="fas fa-users" text=(t "test.about.tabAbout.team") }}
+            {{> components/ui/button/tab_btn/index section="story" icon="fas fa-book-open" text=(t "test.about.tabAbout.story") }}
+            {{> components/ui/button/tab_btn/index section="mission" icon="fas fa-bullseye" text=(t "test.about.tabAbout.visionsMisi") }}
+            {{> components/ui/button/tab_btn/index section="values" icon="fas fa-heart" text=(t "test.about.tabAbout.value") }}
+            {{> components/ui/button/tab_btn/index section="team" icon="fas fa-users" text=(t "test.about.tabAbout.team") }}
           </nav>
         </div>
       </div>
 
       <div class='lg:col-span-8'>
         <div x-show="activeSection === 'story'">
-          {{> about/story_tab}}
+          {{> components/ui/sections/story/index}}
         </div>
 
         <div x-show="activeSection === 'mission'">
-          {{> about/mission_tab}}
+          {{> components/ui/sections/mission/index}}
         </div>
 
         <div x-show="activeSection === 'team'">
-          {{> about/team_tab}}
+          {{> components/ui/sections/team/index}}
         </div>
 
         <div x-show="activeSection === 'values'">
-          {{> about/values_tab}}
+          {{> components/ui/sections/values/index}}
         </div>
       </div>
     </div>
   </div>
-  </div>
+</div>

@@ -18,7 +18,7 @@
     <!-- Cards Stack -->
     <div class="flex flex-col gap-6 w-full">
       {{#each category}}
-        {{> components/home/card_program
+        {{> components/ui/card/card_program/index
             image=this.icon
             name=this.name
             text=this.text
@@ -50,7 +50,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
       
       {{#each category}}
-        {{> components/home/card_program
+        {{> components/ui/card/card_program/index
             image=this.icon
             name=this.name
             text=this.text
