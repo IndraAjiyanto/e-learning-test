@@ -1,0 +1,20 @@
+{{!--
+  Komponen: Icon Logo Kesatria Academy (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/icon/logo_kesatria/index.hbs
+
+  Menampilkan logo brand dengan dukungan ukuran responsif.
+
+  Props:
+  - src        : Path gambar logo (default: "/public/image/logo_baru.png")
+  - alt        : Alt text gambar (default: "Logo Kesatria Academy")
+  - class      : Kelas tambahan khusus ukuran (default: "h-9 w-auto sm:h-16")
+  - wrapperClass : Kelas tambahan untuk pembungkus/container (default: "flex items-center justify-center")
+--}}
+
+<div class="flex items-center justify-center {{wrapperClass}}">
+  <img
+    src="{{default src '/public/image/logo_baru.png'}}"
+    alt="{{default alt 'Logo Kesatria Academy'}}"
+    class="{{default class 'h-9 w-auto sm:h-16'}} object-contain"
+  />
+</div>

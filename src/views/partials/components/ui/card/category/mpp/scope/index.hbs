@@ -1,0 +1,28 @@
+{{!-- 
+  Komponen: Scope Card (Private MPP)
+  Lokasi: src/views/partials/components/mpp/scope_card.hbs
+  Dipakai: mpp/ruang_lingkup.hbs (TERMASUK / TIDAK TERMASUK)
+  
+  Props:
+  - variant : "include" | "exclude" (beda header bg & icon)
+  - title   : Judul header (misal "TERMASUK" / "TIDAK TERMASUK")
+  - items   : Array {text, icon} — icon fa-circle-check / fa-circle-xmark
+--}}
+<div class="w-full max-w-[463px] rounded-3xl bg-white shadow-sm border border-gray-200 overflow-hidden">
+  <div class="px-6 py-4 {{#if (eq variant 'exclude')}}bg-red-50{{else}}bg-[#6EB6E533]/20{{/if}} flex items-center gap-3">
+    <i class="{{#if (eq variant 'exclude')}}fas fa-circle-xmark text-red-500{{else}}fas fa-circle-check text-[#003060]{{/if}}"></i>
+    <h3 class="font-bold text-[#003060]">{{title}}</h3>
+  </div>
+  <div class="p-6 space-y-4">
+    {{#if items}}
+      {{#each items}}
+        <div class="flex items-start gap-3">
+          <i class="{{icon}} mt-1 {{#if (eq ../variant 'exclude')}}text-red-400{{else}}text-[#003060]{{/if}}"></i>
+          <p class="text-[15px] leading-6 text-gray-700">{{{text}}}</p>
+        </div>
+      {{/each}}
+    {{else}}
+      {{> @partial-block}}
+    {{/if}}
+  </div>
+</div>

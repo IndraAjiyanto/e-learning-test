@@ -1,0 +1,130 @@
+<!-- MOBILE HERO SECTION (< 640px) -->
+<div class="block sm:hidden w-full px-5 pt-28 pb-14 bg-[linear-gradient(180deg,_#FAFAFA_0%,_#CEE5F6_50%,_#FAFAFA_100%)] relative font-montserrat overflow-hidden">
+  <!-- Light Classroom Background Image with Light Overlay -->
+  <div class="absolute inset-0 z-0">
+    <img src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}" alt="Hero Background" class="w-full h-full object-cover opacity-15">
+  </div>
+
+  <div class="relative z-10 w-full text-center flex flex-col items-center space-y-6">
+    <!-- Title Section -->
+    <div class="space-y-3 w-full flex flex-col items-center">
+      <h1 class="font-montserrat font-bold text-[32px] text-[#003060] leading-none text-center">
+        Empowering Future
+      </h1>
+      <div class="w-full max-w-[350px] h-[38px] bg-[#003060] text-white rounded-[30px] px-[16px] py-[8px] flex items-center justify-center text-center shadow-md">
+        <span class="font-montserrat font-bold text-[18px] leading-none text-center whitespace-nowrap">Digital Tech Talents</span>
+      </div>
+    </div>
+
+    <!-- Description Subheading -->
+    <p class="font-montserrat font-medium text-[15px] text-[#333333] leading-[24px] text-center max-w-[350px]">
+      {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Be part of the next generation of digital talents. Kesatria Academy helps you learn technology in an interactive, relevant and engaging way.{{/if}}
+    </p>
+
+    <!-- Mobile Buttons Group -->
+    <div class="flex flex-col gap-3 w-full max-w-[350px] mx-auto pt-1">
+      <!-- Button 1: Explore Programs -->
+      {{> components/ui/btn_action 
+          onClick="document.getElementById('courses-section-mobile').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+          text=(t 'test.home.heroSection.buttonExplorePrograms')
+          iconSrc="/public/image/dashboard/hugeicons_start-up-02.svg"
+          variant="primary"
+          class="w-full h-[48px] gap-[10px] py-[14px] font-montserrat text-[16px]"
+          iconClass="w-5 h-5 brightness-0 invert"
+      }}
+
+      <!-- Button 2: Free Consultation -->
+      {{> components/ui/button/consultation/index 
+          phone=social.[0].number
+          text=(t 'test.home.heroSection.buttonConsultation')
+          class="w-full h-[48px] gap-[10px] py-[14px] font-montserrat text-[16px]"
+      }}
+    </div>
+  </div>
+</div>
+
+<!-- DESKTOP HERO SECTION (>= 640px / Figma Baseline W1728) -->
+<div
+  class="hidden sm:flex w-full px-4 pt-24 lg:pt-[130px] pb-16 bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] min-h-screen relative items-center justify-center font-montserrat"
+>
+  <div class="relative w-full max-w-[1554px] min-h-[580px] xl:min-h-[665px] rounded-[24px] overflow-hidden flex flex-col items-center justify-center px-6 py-20 shadow-2xl">
+    
+    <!-- Background Image with Overlay -->
+    <div class="absolute inset-0 z-0">
+      <img src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}" alt="Hero Background" class="w-full h-full object-cover opacity-50">
+      <!-- Dark Overlays to ensure text readability -->
+      <div class="absolute inset-0 bg-[#000000]/70"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 w-full max-w-[1312px] text-center text-white flex flex-col items-center font-montserrat">
+      
+      <!-- Heading -->
+      <h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-[50px] font-[700] xl:leading-none text-center">
+        {{#if about.[0].title}}
+          {{{getByLang about.[0].title lang}}}
+        {{else}}
+          Empowering Future Di<span 
+            class="inline-grid grid-cols-1 grid-rows-1 text-left align-top"
+            x-data="{
+              words: ['gital Tech Talents'],
+              wordIndex: 0,
+              charIndex: 0,
+              currentText: '',
+              speed: 200,
+              init() {
+                this.type();
+              },
+              type() {
+                const target = this.words[this.wordIndex];
+                if (this.charIndex < target.length) {
+                  this.charIndex = Math.min(this.charIndex + 2, target.length);
+                  this.currentText = target.substring(0, this.charIndex);
+                  setTimeout(() => this.type(), this.speed);
+                } else {
+                  setTimeout(() => {
+                    this.currentText = '';
+                    this.charIndex = 0;
+                    setTimeout(() => this.type(), 300);
+                  }, 2000);
+                }
+              }
+            }"
+          >
+            <!-- Reserved space so title center position never shifts -->
+            <span class="invisible col-start-1 row-start-1 select-none pointer-events-none" aria-hidden="true">gital Tech Talents|</span>
+            <!-- Typewriter text -->
+            <span class="col-start-1 row-start-1 text-white"><span x-text="currentText">gital Tech Talents</span><span class="animate-pulse text-white font-light">|</span></span>
+          </span>
+        {{/if}}
+      </h1>
+
+      <!-- Subheading -->
+      <p class="text-base md:text-xl lg:text-[22px] xl:text-3xl font-[500] leading-[1.6] xl:leading-[50px] my-10 md:my-16 lg:my-20 max-w-auto mx-auto text-white text-center">
+        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Be part of the next generation of digital talents. Kesatria Academy helps you learn technology in an interactive, relevant and engaging way.{{/if}}
+      </p>
+
+      <!-- Buttons -->
+      <div class="flex flex-row items-center gap-4 xl:gap-[15px]">
+        <!-- Button 1: Explore Programs -->
+        {{> components/ui/btn_action 
+            onClick="document.getElementById('courses-section').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+            text=(t 'test.home.heroSection.buttonExplorePrograms')
+            iconSrc="/public/image/dashboard/hugeicons_start-up-02.svg"
+            variant="primary"
+            class="w-[370px] h-[85px] gap-[15px] p-[10px] text-lg xl:text-xl font-semibold opacity-100 hover:-translate-y-1"
+            iconClass="w-6 h-6 xl:w-8 xl:h-8"
+        }}
+
+        <!-- Button 2: Free Consultation -->
+        {{> components/ui/button/consultation/index 
+            phone=social.[0].number
+            text=(t 'test.home.heroSection.buttonConsultation')
+            desktop=true
+            class="w-[370px] h-[85px] gap-[15px] p-[10px] text-lg xl:text-xl font-semibold opacity-100 hover:-translate-y-1"
+        }}
+      </div>
+
+    </div>
+  </div>
+</div>

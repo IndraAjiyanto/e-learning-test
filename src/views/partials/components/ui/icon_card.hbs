@@ -1,0 +1,27 @@
+{{!-- 
+  Komponen: Icon Card (Level 1 - UI Dasar, Shared)
+  Lokasi: src/views/partials/components/ui/icon_card.hbs
+  Dipakai: mpp/program_overview (5 kartu), mpp/purpose (3 kartu), dashboard/benefit
+  
+  Props:
+  - icon        : Class FontAwesome (misal "fas fa-code")
+  - iconSrc     : Src image jika pakai <img> (alternatif icon)
+  - title       : Judul kartu
+  - description : Deskripsi kartu
+  - wrapperClass: Class tambahan untuk container kartu
+  - titleClass  : Class judul
+  - descClass   : Class deskripsi
+--}}
+<div class="flex flex-col items-center text-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow {{default wrapperClass 'w-full max-w-[320px] min-h-[280px]'}}">
+  {{#if iconSrc}}
+    <img src="{{iconSrc}}" alt="{{title}}" class="w-[48px] h-[48px] object-contain mb-4" />
+  {{else if icon}}
+    <div class="w-12 h-12 rounded-full bg-[#6EB6E5]/20 flex items-center justify-center mb-4">
+      <i class="{{icon}} text-xl text-[#003060]"></i>
+    </div>
+  {{/if}}
+  <h3 class="{{default titleClass 'font-montserrat font-bold text-lg text-[#003060] mb-2'}}">{{{title}}}</h3>
+  {{#if description}}
+    <p class="{{default descClass 'font-sans text-sm leading-6 text-gray-700'}}">{{{description}}}</p>
+  {{/if}}
+</div>

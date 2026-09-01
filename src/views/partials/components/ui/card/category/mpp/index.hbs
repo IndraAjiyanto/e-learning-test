@@ -1,0 +1,13 @@
+<a
+  href='/dashboard/mpp'
+  @click="setActive('/dashboard/mpp')"
+  class='flex items-start rounded-xl p-3 border border-gray-300 {{#if isMobile}}hover:border-white/20{{else}}hover:border-gray-400{{/if}} hover:bg-white/5 transition-all duration-300'
+>
+  <div class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'>
+    <i class='fas fa-gopuram text-white text-lg'></i>
+  </div>
+  <div class='flex-1 ml-3'>
+    <p class='font-bold text-sm {{#if isMobile}}text-white{{else}}text-gray-900{{/if}} text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+    <p class="{{#if isMobile}}text-white{{else}}text-gray-900{{/if}} text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+  </div>
+</a>

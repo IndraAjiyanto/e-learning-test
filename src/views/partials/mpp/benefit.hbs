@@ -30,45 +30,12 @@
                     </h1>
                 </div>
 
-                <!-- Benefits -->
+                {{!-- Modular: private mpp/list-item (gradient MPP, hanya MPP pakai) --}}
                 <div class="max-w-[606px] space-y-12 mt-12">
-
-                    <div class="flex items-start gap-4">
-                        <span class="mt-1.5 h-[25px] w-[25px] shrink-0 rounded-full bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]"></span>
-
-                        <p class="text-[20px] leading-7 text-gray-900">
-                            Sertifikat pengalaman sebagai Marketing Partner untuk
-                            pengembangan portofolio/CV.
-                        </p>
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <span class="mt-1.5 h-[25px] w-[25px] shrink-0 rounded-full bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]"></span>
-
-                        <p class="text-[20px] leading-7 text-gray-900">
-                            Potongan harga khusus apabila mitra ingin mengikuti
-                            program bootcamp itu sendiri.
-                        </p>
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <span class="mt-1.5 h-[25px] w-[25px] shrink-0 rounded-full bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]"></span>
-
-                        <p class="text-[20px] leading-7 text-gray-900">
-                            Akses campaign eksklusif dan mentoring karier bagi
-                            mitra tingkat Partner Lead.
-                        </p>
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <span class="mt-1.5 h-[25px] w-[25px] shrink-0 rounded-full bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]"></span>
-
-                        <p class="text-[20px] leading-7 text-gray-900">
-                            Kesempatan direkomendasikan untuk posisi magang/kerja
-                            di tim marketing/growth.
-                        </p>
-                    </div>
-
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Sertifikat pengalaman sebagai Marketing Partner untuk pengembangan portofolio/CV."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Potongan harga khusus apabila mitra ingin mengikuti program bootcamp itu sendiri."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Akses campaign eksklusif dan mentoring karier bagi mitra tingkat Partner Lead."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Kesempatan direkomendasikan untuk posisi magang/kerja di tim marketing/growth."}}
                 </div>
 
             </div>

@@ -1,0 +1,299 @@
+{{!--
+  Komponen: Global Auth Form (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/auth/index.hbs
+
+  Komponen global form autentikasi (login/register/forgot-password/reset-password/verify-email/verify-email-success)
+  yang menggabungkan semua sub-komponen (icon, text, input, button, alert).
+
+  Sub-Komponen yang dipakai:
+  - components/ui/icon/logo_kesatria/index  -> logo
+  - components/ui/text/sub_title/index      -> judul
+  - components/ui/text/description/index    -> deskripsi
+  - components/ui/input/email/index         -> input email
+  - components/ui/input/password/index      -> input password
+  - components/ui/input/password/validated  -> input password dengan validasi (untuk register)
+  - components/ui/input/password/confirm    -> input confirm password dengan validasi (untuk register)
+  - components/ui/text/link/index           -> link teks
+  - components/ui/button/submit/index       -> tombol submit
+  - components/ui/alert/index               -> alert success/error
+
+  Props:
+  - variant               : login | register | forgot-password | reset-password | verify-email | verify-email-success (default: login)
+  - action                : URL form action (default: "/login")
+  - method                : method form (default: "post")
+  - success               : Pesan success dari backend (opsional)
+  - error                 : Pesan error dari backend (opsional)
+  - logoClass             : Kelas ukuran logo (default: "h-9 w-auto sm:h-16")
+  - title                 : Judul form (default: "Login")
+  - titleSize             : Ukuran judul: sm | md | lg (default: md)
+  - titleColor            : Warna judul custom (opsional)
+  - description           : Deskripsi form (default: "Welcome back!")
+  - nameLabel             : Label input nama (untuk register)
+  - namePlaceholder       : Placeholder input nama (untuk register)
+  - emailLabel            : Label input email
+  - emailPlaceholder      : Placeholder input email
+  - passwordLabel         : Label input password
+  - passwordPlaceholder   : Placeholder input password
+  - showForgotPassword    : Boolean menampilkan link lupa password (default: true, hanya login)
+  - forgotPasswordText    : Teks link lupa password
+  - forgotPasswordUrl     : URL lupa password
+  - confirmPasswordLabel  : Label konfirmasi password (register/reset-password)
+  - confirmPasswordPlaceholder : Placeholder konfirmasi password
+  - autoComplete          : Boolean pakai autocomplete (default: true)
+  - submitText            : Teks tombol submit
+  - submitClass           : Kelas tambahan tombol submit
+  - bottomTitle           : Teks detail di bawah form (default: "Don't have an account?")
+  - bottomLinkText        : Teks link di samping detail (default: "Sign Up")
+  - bottomLinkUrl         : URL link detail (default: "/register")
+  - lengthText            : Teks validasi panjang password (untuk register)
+  - uppercaseText         : Teks validasi uppercase (untuk register)
+  - lowercaseText         : Teks validasi lowercase (untuk register)
+  - numberText            : Teks validasi angka (untuk register)
+  - specialText           : Teks validasi karakter spesial (untuk register)
+  - matchText             : Teks ketika password cocok (untuk register)
+  - noMatchText           : Teks ketika password tidak cocok (untuk register)
+  - hideBottomLink        : Boolean sembunyikan link bawah (default: false)
+  - showCountdown         : Boolean tampilkan countdown timer (default: false, untuk verify-email/forgot-password)
+  - remainingMs           : Waktu sisa dalam milidetik (untuk countdown)
+  - countdownDayText      : Teks label hari countdown
+  - countdownHourText     : Teks label jam countdown
+  - countdownMinuteText   : Teks label menit countdown
+  - countdownSecondText   : Teks label detik countdown
+  - buttonUrl             : URL untuk button link (untuk verify-email-success)
+  - emailHelp             : Teks bantuan di bawah input email (untuk forgot-password)
+  - showHelpSection       : Boolean tampilkan help section (untuk forgot-password)
+  - helpTitle             : Judul help section
+  - helpDescription       : Deskripsi help section
+--}}
+
+<div class="block sm:flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] px-5 sm:px-6 py-12 sm:py-20 pt-24 font-montserrat">
+  <div class="w-full max-w-sm sm:max-w-lg mx-auto bg-white rounded-[20px] sm:rounded-3xl p-6 sm:p-8 border border-[#D9D9D9] sm:border-white/20 shadow-[0px_4px_12px_0px_#00000010] sm:shadow-2xl sm:backdrop-blur-xl">
+
+    {{!-- ICON / LOGO --}}
+    {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+      <div class="flex justify-center w-full -mt-32">
+        {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto") }}
+      </div>
+    {{else}}
+      {{> components/ui/icon/logo_kesatria/index class=(default logoClass "h-9 w-auto sm:h-16") wrapperClass="mb-4 sm:mb-6" }}
+    {{/if}}
+
+    {{!-- ICON KHUSUS (Email / Success) --}}
+    {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+      <div class="flex items-center justify-center {{#if (eq variant 'verify-email-success')}}-mt-32{{else}}-mt-40{{/if}}">
+        {{#if (eq variant 'verify-email-success')}}
+          {{!-- Success Icon SVG --}}
+          <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="-2 -2 78 78" fill="none">
+            <path d="M39 3 C42.8 3 45.2 7.8 48.8 8.6 C52.4 9.4 55.9 6.4 58.9 8.4 C61.9 10.4 61.1 14.9 63.8 17.6 C66.5 20.3 71 19.5 73 22.5 C75 25.5 72 29 72.8 32.6 C73.6 36.2 78 38.6 78 42.4 C78 46.2 73.6 48.6 72.8 52.2 C72 55.8 75 59.3 73 62.3 C71 65.3 66.5 64.5 63.8 67.2 C61.1 69.9 61.9 74.4 58.9 76.4 C55.9 78.4 52.4 75.4 48.8 76.2 C45.2 77 42.8 81.8 39 81.8 C35.2 81.8 32.8 77 29.2 76.2 C25.6 75.4 22.1 78.4 19.1 76.4 C16.1 74.4 16.9 69.9 14.2 67.2 C11.5 64.5 7 65.3 5 62.3 C3 59.3 6 55.8 5.2 52.2 C4.4 48.6 0 46.2 0 42.4 C0 38.6 4.4 36.2 5.2 32.6 C6 29 3 25.5 5 22.5 C7 19.5 11.5 20.3 14.2 17.6 C16.9 14.9 16.1 10.4 19.1 8.4 C22.1 6.4 25.6 9.4 29.2 8.6 C32.8 7.8 35.2 3 39 3Z" transform="translate(-2 -5)" stroke="#00B51A" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M29 40L35 46L47 34" stroke="#00B51A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        {{else}}
+          {{!-- Email Icon SVG --}}
+          <svg xmlns="http://www.w3.org/2000/svg" width="120" height="72" viewBox="0 0 40 40" preserveAspectRatio="none">
+            <path d="M12 11.5H28C29.66 11.5 31 12.84 31 14.5V32C31 33.66 29.66 35 28 35H12C10.34 35 9 33.66 9 32V14.5C9 12.84 10.34 11.5 12 11.5Z" fill="none" stroke="#000000" stroke-width="2"/>
+            <path d="M11 15L20 22L29 15" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{!-- TITLE --}}
+    {{#if (eq variant 'verify-email-success')}}
+      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") color="text-[#12BD26]" class="mb-1 sm:mb-2 text-[36px] font-semibold" }}
+    {{else if (or (eq variant 'verify-email'))}}
+      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") class="mb-1 sm:mb-2 text-[36px] font-semibold" }}
+    {{else}}
+      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") class="mb-1 sm:mb-2" }}
+    {{/if}}
+
+    {{!-- DESCRIPTION --}}
+    {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+      {{> components/ui/text/description/index text=(default description "Welcome back!") class="mb-4 sm:mb-6 text-[20px]" }}
+    {{else}}
+      {{> components/ui/text/description/index text=(default description "Welcome back!") class="mb-4 sm:mb-6" }}
+    {{/if}}
+
+    {{!-- ALERT SUCCESS --}}
+    {{#if success}}
+      {{> components/ui/alert/index type="success" message=success dismissible=true class="mb-4 sm:mb-6" }}
+    {{/if}}
+
+    {{!-- ALERT ERROR --}}
+    {{#if error}}
+      {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 sm:mb-6" }}
+    {{/if}}
+
+    {{!-- COUNTDOWN TIMER (untuk verify-email) --}}
+    {{#if showCountdown}}
+      <div class="w-full flex flex-col items-center gap-3 mb-4 sm:mb-6">
+        <div class="my-countdown simply-countdown"></div>
+      </div>
+
+      <script>
+        const remainingMs = {{remainingMs}};
+        const target = new Date(Date.now() + remainingMs);
+        simplyCountdown('.my-countdown', {
+          year: target.getFullYear(),
+          month: target.getMonth() + 1,
+          day: target.getDate(),
+          hours: target.getHours(),
+          minutes: target.getMinutes(),
+          seconds: target.getSeconds(),
+          words: {
+            days: { root: '{{countdownDayText}}', lambda: (root, n) => root },
+            hours: { root: '{{countdownHourText}}', lambda: (root, n) => root },
+            minutes: { root: '{{countdownMinuteText}}', lambda: (root, n) => root },
+            seconds: { root: '{{countdownSecondText}}', lambda: (root, n) => root }
+          },
+          onEnd: () => location.reload()
+        });
+      </script>
+    {{/if}}
+
+    {{!-- FORM --}}
+    {{#unless (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+      {{#if (eq variant 'register')}}
+        <form action="{{default action '/login'}}" method="{{default method 'post'}}" x-data="{
+          loading: false,
+          showpassword: false,
+          showconfirmPassword: false,
+          password: '',
+          confirmPassword: '',
+          get hasLength() { return this.password.length >= 8 },
+          get hasUpper() { return /[A-Z]/.test(this.password) },
+          get hasLower() { return /[a-z]/.test(this.password) },
+          get hasNumber() { return /[0-9]/.test(this.password) },
+          get hasSpecial() { return /[^A-Za-z0-9]/.test(this.password) },
+          get isPasswordValid() { return this.hasLength && this.hasUpper && this.hasLower && this.hasNumber && this.hasSpecial },
+          get isConfirmValid() { return this.confirmPassword.length > 0 && this.confirmPassword === this.password }
+        }" @submit="loading = true" class="space-y-4 sm:space-y-6">
+      {{else}}
+        <form action="{{default action '/login'}}" method="{{default method 'post'}}" x-data="{ loading: false }" @submit="loading = true" class="space-y-4 sm:space-y-6">
+      {{/if}}
+
+      {{!-- NAME FIELD (register/reset) --}}
+      {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
+        <div>
+          <label class="block text-xs sm:text-sm font-medium text-[#0B1F3B] mb-1 font-montserrat">{{default nameLabel 'Name'}}</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="{{default namePlaceholder 'Enter your name'}}"
+            required
+            class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm rounded-[12px] sm:rounded-lg bg-white border border-[#D9D9D9] text-[#2D2D2D] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#003060]"
+          />
+        </div>
+      {{/if}}
+
+      {{!-- EMAIL FIELD (kecuali reset-password) --}}
+      {{#unless (eq variant 'reset-password')}}
+        {{> components/ui/input/email/index
+          label=(default emailLabel "Email")
+          placeholder=(default emailPlaceholder "Enter your email")
+          hint=emailHelp
+        }}
+      {{/unless}}
+
+      {{!-- PASSWORD FIELD (kecuali forgot-password) --}}
+      {{#unless (eq variant 'forgot-password')}}
+        {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
+          {{!-- Password dengan validasi untuk register dan reset-password --}}
+          {{> components/ui/input/password/validated
+            label=(default passwordLabel "Password")
+            placeholder=(default passwordPlaceholder "********")
+            lengthText=lengthText
+            uppercaseText=uppercaseText
+            lowercaseText=lowercaseText
+            numberText=numberText
+            specialText=specialText
+          }}
+        {{else}}
+          {{!-- Password biasa untuk login --}}
+          {{> components/ui/input/password/index
+            label=(default passwordLabel "Password")
+            placeholder=(default passwordPlaceholder "********")
+            showForgotPassword=showForgotPassword
+            forgotPasswordText=(default forgotPasswordText "Forgot password?")
+            forgotPasswordUrl=(default forgotPasswordUrl "/users/forgot-password")
+          }}
+        {{/if}}
+      {{/unless}}
+
+      {{!-- CONFIRM PASSWORD FIELD (register/reset-password) --}}
+      {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
+        {{!-- Confirm password dengan validasi untuk register dan reset-password --}}
+        {{> components/ui/input/password/confirm
+          label=(default confirmPasswordLabel "Confirm Password")
+          placeholder=(default confirmPasswordPlaceholder "********")
+          matchText=matchText
+          noMatchText=noMatchText
+        }}
+      {{/if}}
+
+      {{!-- BUTTON SUBMIT --}}
+      {{> components/ui/button/submit/index
+        text=(default submitText "Login")
+        class=(default submitClass "w-full h-[48px] sm:h-12 mt-2 sm:mt-0")
+      }}
+    </form>
+    {{/unless}}
+
+    {{!-- FORM KHUSUS VERIFY EMAIL (Tombol Kirim Ulang) --}}
+    {{#if (eq variant 'verify-email')}}
+      {{#unless showCountdown}}
+        <form action="{{action}}" method="{{default method 'post'}}" class="w-full" x-data="{ loading: false }" @submit="loading = true">
+          {{> components/ui/button/submit/index
+            text=(default submitText "Send Verification Link")
+            class="w-full h-[45px] text-[18px]"
+          }}
+        </form>
+      {{/unless}}
+    {{/if}}
+
+    {{!-- BUTTON LINK (untuk verify-email-success) --}}
+    {{#if (eq variant 'verify-email-success')}}
+      <a href="{{buttonUrl}}"
+        class="btn border-0 text-base w-full h-[45px] rounded-lg bg-[#003060] text-white font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center">
+        <span class="text-[18px]">{{submitText}}</span>
+      </a>
+    {{/if}}
+
+    {{!-- BOTTOM DESCRIPTION + LINK --}}
+    {{#unless (or hideBottomLink (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+      <div class="text-center mt-4 sm:mt-6">
+        <p class="text-xs sm:text-sm text-[#2D2D2D] font-sans">
+          {{default bottomTitle "Don't have an account?"}}
+          {{> components/ui/text/link/index
+            text=(default bottomLinkText "Sign Up")
+            href=(default bottomLinkUrl "/register")
+            size="sm"
+            weight="semibold"
+            class="ml-1"
+          }}
+        </p>
+      </div>
+    {{/unless}}
+
+    {{!-- HELP SECTION (untuk forgot-password) --}}
+    {{#if showHelpSection}}
+      <div class="mt-8 p-4 rounded-xl bg-[#6EB6E580]/50">
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0">
+            <svg width="30" height="30" viewBox="0 0 154 154" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M27 78V105C27 123 33 136 51 137H103C121 136 127 123 127 105V78" stroke="#0B2442" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M24 85V63C24 52 29 48 40 48H114C125 48 130 52 130 63V83C130 87 128 89 124 90L81 105C78 106 76 106 73 105L30 90C26 89 24 87 24 85Z" stroke="#0B2442" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M55 47L59 37C60 34 63 31 67 31H87C91 31 94 34 95 37L99 47" stroke="#0B2442" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M63 87H91V99C91 103 87 106 77 107C67 106 63 103 63 99V87Z" fill="#0B2442" stroke="#0B2442" stroke-width="7" stroke-linejoin="round"/>
+              <path d="M64 87H90V97C90 100 87 102 77 103C67 102 64 100 64 97V87Z" fill="#A8D0E8"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[20px] text-gray-900 font-medium mb-1">{{helpTitle}}</p>
+            <p class="text-[15px] text-gray-900 leading-relaxed">{{helpDescription}}</p>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+
+  </div>
+</div>

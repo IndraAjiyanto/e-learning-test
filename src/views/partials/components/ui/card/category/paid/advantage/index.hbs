@@ -1,0 +1,19 @@
+{{#if isMobile}}
+<div class="flex items-center gap-3">
+  <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+    <img src="{{icon}}" alt="Advantage Icon" class="w-4 h-4 object-contain" />
+  </div>
+  <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
+    {{{text}}}
+  </p>
+</div>
+{{else}}
+<div class="flex items-center gap-4 sm:gap-5">
+  <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+    <img src="{{icon}}" alt="Advantage Icon" class="w-5 h-5 object-contain" />
+  </div>
+  <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
+    {{{text}}}
+  </p>
+</div>
+{{/if}}

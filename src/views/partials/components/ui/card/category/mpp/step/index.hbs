@@ -1,0 +1,32 @@
+{{!-- 
+  Komponen: Step Card (Private MPP)
+  Lokasi: src/views/partials/components/mpp/step_card.hbs
+  Dipakai: mpp/flow_program.hbs (5 step)
+  
+  Props:
+  - number : Nomor step (1..5)
+  - title  : Judul step
+  - items  : Array string bullet points (jika disediakan)
+--}}
+<div class="relative w-full max-w-[276px]">
+  <div class="absolute left-1/2 top-0 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#6EB6E5] shadow-sm">
+    <span class="text-lg font-bold text-white">{{number}}</span>
+  </div>
+  <div class="h-full min-h-[356px] w-full rounded-3xl border border-gray-300 bg-[linear-gradient(180deg,#FFFFFF_0%,rgba(110,182,229,0.8)_100%)] px-6 pb-8 pt-10 shadow-xs">
+    <div class="text-center">
+      <h2 class="text-lg font-bold leading-7 text-[#003060]">{{{title}}}</h2>
+    </div>
+    <div class="mt-8 space-y-5">
+      {{#if items}}
+        {{#each items}}
+          <div class="flex items-start gap-3">
+            <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#003060]"></span>
+            <p class="text-sm leading-6 text-gray-700">{{{this}}}</p>
+          </div>
+        {{/each}}
+      {{else}}
+        {{> @partial-block}}
+      {{/if}}
+    </div>
+  </div>
+</div>

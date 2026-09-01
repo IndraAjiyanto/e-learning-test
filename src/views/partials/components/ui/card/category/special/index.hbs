@@ -1,0 +1,43 @@
+<div class="w-full bg-white border border-gray-200/80 rounded-[24px] px-3 py-3 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col group hover:shadow-md transition-all duration-300">
+  <div class="flex-grow">
+    <div class="w-full max-w-[414px] h-[262px] rounded-[12px] overflow-hidden bg-gray-100 mb-6">
+      {{#if this.image}}
+      <img src="{{this.image}}" alt="{{this.name}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      {{/if}}
+    </div>
+    <div class="px-1">
+      <h3 class="font-montserrat font-semibold text-2xl sm:text-[35px] leading-none text-[#003060] mb-5 text-left">
+        {{this.name}}
+      </h3>
+      <p class="font-sans font-normal text-base sm:text-xl leading-relaxed sm:leading-[20px] text-black mb-5 text-left">
+        {{#if this.description}}{{getByLang this.description ../lang}}{{else}}Create innovative solutions for real-world challenges.{{/if}}
+      </p>
+    </div>
+  </div>
+
+  <!-- Pills anchor to bottom -->
+  <div class="flex flex-wrap items-center gap-2 mb-5 ">
+    {{#if this.method}}
+    <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+      <i class="fa-solid fa-location-dot text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.method}}
+    </span>
+    {{/if}}
+    {{#if this.month}}
+    <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+      <i class="fa-solid fa-clock text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.month}} <p>{{t 'test.special_program.program.month'}}</p>
+    </span>
+    {{/if}}
+    {{#if this.quota}}
+    <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+      <i class="fa-solid fa-couch text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.quota}}<p>{{t 'test.special_program.program.student'}}</p>
+    </span>
+    {{/if}}
+  </div>
+
+  <div class="w-full pt-1">
+    <a href="/program/{{this.id}}" class="w-full h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300">
+      <span>{{t 'test.startLearning.detailProgram'}}</span>
+      <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
+    </a>
+  </div>
+</div>
