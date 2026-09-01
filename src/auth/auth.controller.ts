@@ -55,7 +55,7 @@ export class AuthController {
       res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     } catch (error: any) {
       req.flash('error', error.message || 'failed to regis');
-      res.redirect('/login');
+      res.redirect('/register');
     }
   }
 
