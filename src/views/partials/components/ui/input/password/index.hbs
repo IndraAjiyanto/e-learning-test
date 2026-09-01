@@ -1,0 +1,60 @@
+{{!--
+  Komponen: Input Password (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/input/password/index.hbs
+
+  Input password dengan validasi HTML5, toggle show/hide (Alpine.js),
+  serta opsi link forgot password di kanan bawah.
+
+  Props:
+  - name                 : Atribut name (default: "password")
+  - id                   : Atribut id (default: name)
+  - label                : Teks label (wajib)
+  - placeholder          : Placeholder teks (default: "********")
+  - value                : Nilai input (opsional)
+  - required             : Boolean required (default: true)
+  - autocomplete         : Atribut autocomplete (default: "current-password")
+  - labelClass           : Kelas tambahan label
+  - inputClass           : Kelas tambahan input
+  - wrapperClass         : Kelas tambahan pembungkus
+  - showForgotPassword   : Boolean menampilkan link lupa password (default: false)
+  - forgotPasswordText   : Teks link lupa password (default: "Forgot password?")
+  - forgotPasswordUrl    : URL lupa password (default: "/users/forgot-password")
+  - forgotLinkClass      : Kelas tambahan untuk link forgot password
+--}}
+
+<div class="{{default wrapperClass ''}}" x-data="{ show: false }">
+  <label
+    for="{{default id (default name 'password')}}"
+    class="block text-xs sm:text-sm font-medium text-[#0B1F3B] mb-1 font-montserrat {{default labelClass ''}}"
+  >{{label}}</label>
+
+  <div class="relative">
+    <input
+      :type="show ? 'text' : 'password'"
+      id="{{default id (default name 'password')}}"
+      name="{{default name 'password'}}"
+      {{#if value}}value="{{value}}"{{/if}}
+      placeholder="{{default placeholder '********'}}"
+      autocomplete="{{default autocomplete 'current-password'}}"
+      {{#if required}}required{{/if}}
+      class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm rounded-[12px] sm:rounded-lg bg-white border border-[#D9D9D9] text-[#2D2D2D] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#003060] pr-10 {{default inputClass ''}}"
+    />
+    <button
+      type="button"
+      @click="show = !show"
+      class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-700"
+      aria-label="Toggle password visibility"
+    >
+      <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+    </button>
+  </div>
+
+  {{#if showForgotPassword}}
+    <div class="flex justify-end mt-1.5 sm:mt-2">
+      <a
+        href="{{default forgotPasswordUrl '/users/forgot-password'}}"
+        class="text-xs sm:text-sm text-[#6EB6E5] font-medium hover:underline {{default forgotLinkClass ''}}"
+      >{{default forgotPasswordText 'Forgot password?'}}</a>
+    </div>
+  {{/if}}
+</div>

@@ -1,0 +1,22 @@
+{{!-- 
+  Komponen: Tab Button (Khusus Halaman About)
+  Lokasi: src/views/partials/components/about/tab_btn.hbs
+  
+  Props:
+  - section : ID dari section (contoh: "story", "mission")
+  - icon    : Class FontAwesome (contoh: "fas fa-book-open")
+  - text    : Label tombol
+--}}
+
+<button
+  @click="toggleActiveSection('{{section}}');"
+  :class="activeSection === '{{section}}' ? 'bg-[#003060] text-white shadow-md lg:shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white lg:bg-transparent text-[#0B1F3B] lg:text-[#000000] border border-[#D9D9D9] lg:shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
+  class="
+    transition-all duration-200 flex items-center whitespace-nowrap leading-none tracking-normal text-left
+    px-4 py-2.5 rounded-[12px] gap-2 text-sm font-semibold font-montserrat
+    lg:w-full lg:max-w-[488px] lg:h-[84px] lg:px-[30px] lg:py-[10px] lg:gap-[10px] lg:rounded-[6px] lg:text-[25px] lg:font-medium lg:font-inter
+  "
+>
+  <i class="{{icon}} text-sm lg:text-xl lg:w-7 text-center"></i>
+  <span>{{text}}</span>
+</button>

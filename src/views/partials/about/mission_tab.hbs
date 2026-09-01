@@ -7,12 +7,14 @@
   <!-- MOBILE VISION & MISSION TAB (< 640px) -->
   <div class="block sm:hidden w-full relative font-montserrat overflow-hidden">
     <!-- Header Title & Divider -->
-    <div class="mb-6">
-      <h1 class="font-montserrat font-bold text-[24px] leading-[34px] text-[#003060]">
-        {{t 'test.about.visionsMisi.title'}}
-      </h1>
-      <div class="w-full h-[2px] bg-[#6EB6E5] mt-2"></div>
-    </div>
+    {{> components/ui/section_header
+        align="text-left"
+        wrapperClass="mb-6"
+        title=(t 'test.about.visionsMisi.title')
+        titleClass="font-montserrat font-bold text-[24px] leading-[34px] text-[#003060]"
+        showDivider=true
+        dividerClass="w-full h-[2px] bg-[#6EB6E5] mt-2 mb-0"
+    }}
 
     <!-- Vision Card Mobile -->
     <div class="bg-[#E0F1F9]/65 backdrop-blur-[6.6px] border border-[#E0F1F9] rounded-[20px] p-6 shadow-[0px_4px_12px_0px_#00000010] mb-6">
@@ -121,11 +123,13 @@
 
   <!-- DESKTOP VISION & MISSION TAB (>= 640px) -->
   <div class="hidden sm:block">
-    <div class='mb-6 sm:mb-8'>
-      <h1 class='text-3xl sm:text-4xl font-bold text-[#003060] mb-8 font-montserrat'>
-        {{t 'test.about.visionsMisi.title'}}
-      </h1>
-    </div>
+    {{> components/ui/section_header
+        align="text-left"
+        wrapperClass="mb-6 sm:mb-8"
+        title=(t 'test.about.visionsMisi.title')
+        titleClass="text-3xl sm:text-4xl font-bold text-[#003060] mb-8 font-montserrat"
+        showDivider=false
+    }}
 
     <!-- Vision Card -->
     <div class='bg-[#E0F1F9]/50 p-6 sm:p-8 rounded-2xl border border-sky-100 shadow-sm mb-8'>

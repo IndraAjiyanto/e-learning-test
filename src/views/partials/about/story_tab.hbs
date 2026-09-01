@@ -56,89 +56,63 @@
 
     <!-- Our Commitment Section Mobile -->
     <div class="mt-8">
-      <span class="font-montserrat font-medium text-[12px] leading-[16px] uppercase tracking-wider block mb-1 text-[#6EB6E5]">
-        CORE VALUES
-      </span>
-      <h2 class="font-montserrat font-bold text-[28px] leading-[34px] text-[#003060] mb-2">
-        {{t "test.about.ourStory.commitment"}}
-      </h2>
-      <div class="w-12 h-[3px] bg-[#6EB6E5] rounded-full mb-6"></div>
+      {{#> components/ui/section_header
+          align="text-left"
+          wrapperClass="mb-6"
+          showDivider=true
+          dividerClass="w-12 h-[3px] bg-[#6EB6E5] mb-0"
+      }}
+        {{#*inline "titleBlock"}}
+          <span class="font-montserrat font-medium text-[12px] leading-[16px] uppercase tracking-wider block mb-1 text-[#6EB6E5]">
+            CORE VALUES
+          </span>
+          <h2 class="font-montserrat font-bold text-[28px] leading-[34px] text-[#003060] mb-2">
+            {{t "test.about.ourStory.commitment"}}
+          </h2>
+        {{/inline}}
+      {{/components/ui/section_header}}
 
       <!-- Mobile Commitment Cards List -->
       <div class="space-y-4">
         {{#each commitment}}
-          <div class="bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[16px] p-6 shadow-[0px_4px_8px_0px_#00000015] border border-[#E0F1F9]">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-[#EFF4FE] flex items-center justify-center shadow-sm shrink-0">
-                <img src="/public/image/about/story/{{this.icon}}" alt="{{getByLang title ../lang}}" class="w-6 h-6 object-contain" onerror="this.onerror=null; this.src='/public/image/about/story/inclusive.svg';" />
-              </div>
-              <h4 class="font-montserrat font-semibold text-[18px] leading-[24px] text-[#0B1F3B]">
-                {{getByLang title ../lang}}
-              </h4>
-            </div>
-            <p class="font-sans font-normal text-[14px] leading-[24px] text-[#000000CC]">
-              {{getByLang description ../lang}}
-            </p>
-          </div>
+          {{> components/about/card_value 
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] rounded-full"
+              iconBase="/public/image/about/story/"
+              iconName=this.icon
+              fallbackIcon="/public/image/about/story/inclusive.svg"
+              title=(getByLang title ../lang)
+              description=(getByLang description ../lang)
+          }}
         {{else}}
           <!-- Card 1 -->
-          <div class="bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[16px] p-6 shadow-[0px_4px_8px_0px_#00000015] border border-[#E0F1F9]">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-[#EFF4FE] flex items-center justify-center shadow-sm shrink-0">
-                <img src="/public/image/about/story/inclusive.svg" alt="Inclusive Education" class="w-6 h-6 object-contain" />
-              </div>
-              <h4 class="font-montserrat font-semibold text-[18px] leading-[24px] text-[#0B1F3B]">
-                Inclusive & Accessible Education
-              </h4>
-            </div>
-            <p class="font-sans font-normal text-[14px] leading-[24px] text-[#000000CC]">
-              Providing equal opportunities for all learners through flexible and accessible learning experiences.
-            </p>
-          </div>
+          {{> components/about/card_value 
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] rounded-full"
+              icon="/public/image/about/story/inclusive.svg"
+              title="Inclusive & Accessible Education"
+              description="Providing equal opportunities for all learners through flexible and accessible learning experiences."
+          }}
 
           <!-- Card 2 -->
-          <div class="bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[16px] p-6 shadow-[0px_4px_8px_0px_#00000015] border border-[#E0F1F9]">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-[#EFF4FE] flex items-center justify-center shadow-sm shrink-0">
-                <img src="/public/image/about/story/career.svg" alt="Career Growth" class="w-6 h-6 object-contain" />
-              </div>
-              <h4 class="font-montserrat font-semibold text-[18px] leading-[24px] text-[#0B1F3B]">
-                Career Growth & Mentoring
-              </h4>
-            </div>
-            <p class="font-sans font-normal text-[14px] leading-[24px] text-[#000000CC]">
-              Supporting learners through mentoring, portfolio building, certifications, and career placement pathways.
-            </p>
-          </div>
+          {{> components/about/card_value 
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] rounded-full"
+              icon="/public/image/about/story/industry.svg"
+              title="Industry-Aligned Curriculum"
+              description="Bridging the gap between education and employment with a curriculum tailored to the latest industry standards."
+          }}
 
           <!-- Card 3 -->
-          <div class="bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[16px] p-6 shadow-[0px_4px_8px_0px_#00000015] border border-[#E0F1F9]">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-[#EFF4FE] flex items-center justify-center shadow-sm shrink-0">
-                <img src="/public/image/about/story/real-world.svg" alt="Real-World Experience" class="w-6 h-6 object-contain" />
-              </div>
-              <h4 class="font-montserrat font-semibold text-[18px] leading-[24px] text-[#0B1F3B]">
-                Real-World Experience
-              </h4>
-            </div>
-            <p class="font-sans font-normal text-[14px] leading-[24px] text-[#000000CC]">
-              Offering hands-on projects, case studies, and collaboration with experts to bridge theory and practice.
-            </p>
-          </div>
+          {{> components/about/card_value 
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] rounded-full"
+              icon="/public/image/about/story/lifelong.svg"
+              title="Lifelong Learning Ecosystem"
+              description="Fostering a culture of continuous learning to adapt to the fast-changing tech landscape."
+          }}
 
           <!-- Card 4 -->
-          <div class="bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[16px] p-6 shadow-[0px_4px_8px_0px_#00000015] border border-[#E0F1F9]">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-full bg-[#EFF4FE] flex items-center justify-center shadow-sm shrink-0">
-                <img src="/public/image/about/story/innovative.svg" alt="Innovative Technology" class="w-6 h-6 object-contain" />
-              </div>
-              <h4 class="font-montserrat font-semibold text-[18px] leading-[24px] text-[#0B1F3B]">
-                Innovative Technology
-              </h4>
-            </div>
-            <p class="font-sans font-normal text-[14px] leading-[24px] text-[#000000CC]">
-              Continuously evolving with cutting-edge tools and modern methodologies to stay ahead in the digital era.
-            </p>
           </div>
 
           <!-- Card 5 -->
@@ -236,102 +210,90 @@
       
       <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center md:justify-items-start'>
         {{#each commitment}}
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/{{this.icon}}" alt="{{getByLang title ../lang}}" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" onerror="this.onerror=null; this.src='/public/image/about/story/inclusive.svg';" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              {{getByLang title ../lang}}
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              {{getByLang description ../lang}}
-            </p>
-          </div>
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              iconBase="/public/image/about/story/"
+              iconName=this.icon
+              fallbackIcon="/public/image/about/story/inclusive.svg"
+              title=(getByLang title ../lang)
+              description=(getByLang description ../lang)
+              showDivider=true
+          }}
         {{else}}
-          <!-- Card 1: Inclusive & Accessible Education -->
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/inclusive.svg" alt="Inclusive Education" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              Inclusive & Accessible Education
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              Providing equal opportunities for all learners through flexible and accessible learning experiences.
-            </p>
-          </div>
+          <!-- Card 1 -->
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              icon="/public/image/about/story/inclusive.svg"
+              title="Inclusive & Accessible Education"
+              description="Providing equal opportunities for all learners through flexible and accessible learning experiences."
+              showDivider=true
+          }}
 
-          <!-- Card 2: Career Growth & Professional Mentoring -->
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/career.svg" alt="Career Growth" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              Career Growth & Professional Mentoring
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              Supporting learners through mentoring, portfolio building, certifications, and career placement pathways.
-            </p>
-          </div>
+          <!-- Card 2 -->
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              icon="/public/image/about/story/career.svg"
+              title="Career Growth & Professional Mentoring"
+              description="Supporting learners through mentoring, portfolio building, certifications, and career placement pathways."
+              showDivider=true
+          }}
 
-          <!-- Card 3: Real-World Industry Experience -->
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/real-world.svg" alt="Real-World Experience" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              Real-World Industry Experience
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              Offering hands-on project, case studies, and collaboration with experts to bridge theory and practice.
-            </p>
-          </div>
+          <!-- Card 3 -->
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              icon="/public/image/about/story/real-world.svg"
+              title="Real-World Industry Experience"
+              description="Offering hands-on project, case studies, and collaboration with experts to bridge theory and practice."
+              showDivider=true
+          }}
 
-          <!-- Card 4: Innovative Technology Adoption -->
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/innovative.svg" alt="Innovative Technology" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              Innovative Technology Adoption
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              Continuously integrating modern tech stacks, AI tools, and interactive platforms into learning.
-            </p>
-          </div>
+          <!-- Card 4 -->
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              icon="/public/image/about/story/innovative.svg"
+              title="Innovative Technology Adoption"
+              description="Continuously integrating modern tech stacks, AI tools, and interactive platforms into learning."
+              showDivider=true
+          }}
 
-          <!-- Card 5: Excellence & Industry Relevance -->
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/excellence.svg" alt="Excellence" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              Excellence & Industry Relevance
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              Ensuring all curriculum content meets current market standards and expectations of global companies.
-            </p>
-          </div>
+          <!-- Card 5 -->
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              icon="/public/image/about/story/excellence.svg"
+              title="Excellence & Industry Relevance"
+              description="Ensuring all curriculum content meets current market standards and expectations of global companies."
+              showDivider=true
+          }}
 
-          <!-- Card 6: Empowering Digital Talent -->
-          <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
-            <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-              <img src="/public/image/about/story/empowering.svg" alt="Empowering Talent" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" />
-            </div>
-            <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-              Empowering Digital Talent
-            </h4>
-            <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
-            <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
-              Inspiring and equipping the next generation to build meaningful careers and innovate in technology.
-            </p>
-          </div>
+          <!-- Card 6 -->
+          {{> components/about/card_value 
+              desktopAlign="center"
+              wrapperClass="max-w-[349px] lg:min-h-[362px]"
+              bgClass="bg-[#E0F1F9]/65"
+              iconBgClass="bg-[#EFF4FE] text-white"
+              icon="/public/image/about/story/empowering.svg"
+              title="Empowering Digital Talent"
+              description="Developing highly skilled individuals who are ready to make a significant impact in the tech ecosystem."
+              showDivider=true
+          }}
         {{/each}}
       </div>
     </div>

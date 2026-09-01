@@ -1,170 +1,74 @@
 <!-- MOBILE TEAM MEMBERS GRID (< 640px) -->
 <div class="block sm:hidden grid grid-cols-2 gap-3.5">
   {{#each team}}
-    <div class="bg-[#F0F8FF] border border-[#E0F1F9] rounded-[20px] p-4 flex flex-col items-center text-center shadow-xs">
-      <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 flex items-center justify-center bg-white shadow-xs">
-        <img src="{{#if profile}}{{profile}}{{else}}/public/image/about/orang.png{{/if}}" alt="{{name}}" class="w-[75%] translate-y-[8%]" />
-      </div>
-      <h4 class="font-montserrat font-semibold text-[12px] leading-none text-[#111111] text-center mt-3 mb-1.5 line-clamp-2 min-h-[28px] flex items-center justify-center tracking-normal">
-        {{name}}
-      </h4>
-      <p class="font-montserrat font-medium text-[10px] leading-none text-[#555555] text-center mb-3 line-clamp-1 tracking-normal">
-        {{#if position}}{{getByLang position ../lang}}{{else}}Specialist Mentor{{/if}}
-      </p>
-      <div class="flex items-center justify-center gap-3 mt-auto">
-        <a href="{{#if linkedin}}{{linkedin}}{{else}}#{{/if}}" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-3 h-3 object-contain" />
-        </a>
-        <a href="{{#if instagram}}{{instagram}}{{else}}#{{/if}}" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-3 h-3 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        profile=(default profile "/public/image/about/orang.png")
+        name=name
+        position=(default (getByLang position ../lang) "Specialist Mentor")
+        linkedin=(default linkedin "#")
+        instagram=(default instagram "#")
+    }}
   {{else}}
     <!-- Card 1 -->
-    <div class="bg-[#F0F8FF] border border-[#E0F1F9] rounded-[20px] p-4 flex flex-col items-center text-center shadow-xs">
-      <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 flex items-center justify-center bg-white shadow-xs">
-        <img src="/public/image/about/orang.png" alt="Rizal" class="w-[75%] translate-y-[8%]" />
-      </div>
-      <h4 class="font-montserrat font-semibold text-[12px] leading-none text-[#111111] text-center mt-3 mb-1.5 line-clamp-2 min-h-[28px] flex items-center justify-center tracking-normal">
-        Rizal Rahadian Ramadhan, S.E
-      </h4>
-      <p class="font-montserrat font-medium text-[10px] leading-none text-[#555555] text-center mb-3 tracking-normal">
-        Specialist Mentor
-      </p>
-      <div class="flex items-center justify-center gap-3 mt-auto">
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-3 h-3 object-contain" />
-        </a>
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-3 h-3 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        profile="/public/image/about/orang.png"
+        name="Rizal Rahadian Ramadhan, S.E"
+        position="Specialist Mentor"
+        linkedin="#"
+        instagram="#"
+    }}
 
     <!-- Card 2 -->
-    <div class="bg-[#F0F8FF] border border-[#E0F1F9] rounded-[20px] p-4 flex flex-col items-center text-center shadow-xs">
-      <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 flex items-center justify-center bg-white shadow-xs">
-        <img src="/public/image/about/orang.png" alt="Adipura" class="w-[75%] translate-y-[8%]" />
-      </div>
-      <h4 class="font-montserrat font-semibold text-[12px] leading-none text-[#111111] text-center mt-3 mb-1.5 line-clamp-2 min-h-[28px] flex items-center justify-center tracking-normal">
-        Adipura Arya Kangsadewa, S.Bns
-      </h4>
-      <p class="font-montserrat font-medium text-[10px] leading-none text-[#555555] text-center mb-3 tracking-normal">
-        Specialist Mentor
-      </p>
-      <div class="flex items-center justify-center gap-3 mt-auto">
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-3 h-3 object-contain" />
-        </a>
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-3 h-3 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        profile="/public/image/about/orang.png"
+        name="Adipura Arya Kangsadewa, S.Bns"
+        position="Specialist Mentor"
+        linkedin="#"
+        instagram="#"
+    }}
 
     <!-- Card 3 -->
-    <div class="bg-[#F0F8FF] border border-[#E0F1F9] rounded-[20px] p-4 flex flex-col items-center text-center shadow-xs">
-      <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 flex items-center justify-center bg-white shadow-xs">
-        <img src="/public/image/about/orang.png" alt="Zahra" class="w-[75%] translate-y-[8%]" />
-      </div>
-      <h4 class="font-montserrat font-semibold text-[12px] leading-none text-[#111111] text-center mt-3 mb-1.5 line-clamp-2 min-h-[28px] flex items-center justify-center tracking-normal">
-        Zahra Andriani Mustika Fitri, S.M
-      </h4>
-      <p class="font-montserrat font-medium text-[10px] leading-none text-[#555555] text-center mb-3 tracking-normal">
-        Specialist Mentor
-      </p>
-      <div class="flex items-center justify-center gap-3 mt-auto">
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-3 h-3 object-contain" />
-        </a>
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-3 h-3 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        profile="/public/image/about/orang.png"
+        name="Dwi Anggi Wiyanto, S.Kom., MMSI"
+        position="Specialist Mentor"
+        linkedin="#"
+        instagram="#"
+    }}
 
     <!-- Card 4 -->
-    <div class="bg-[#F0F8FF] border border-[#E0F1F9] rounded-[20px] p-4 flex flex-col items-center text-center shadow-xs">
-      <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 flex items-center justify-center bg-white shadow-xs">
-        <img src="/public/image/about/orang.png" alt="Gilang" class="w-[75%] translate-y-[8%]" />
-      </div>
-      <h4 class="font-montserrat font-semibold text-[12px] leading-none text-[#111111] text-center mt-3 mb-1.5 line-clamp-2 min-h-[28px] flex items-center justify-center tracking-normal">
-        Gilang Priambodo, S.Bns
-      </h4>
-      <p class="font-montserrat font-medium text-[10px] leading-none text-[#555555] text-center mb-3 tracking-normal">
-        Specialist Mentor
-      </p>
-      <div class="flex items-center justify-center gap-3 mt-auto">
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-3 h-3 object-contain" />
-        </a>
-        <a href="#" target="_blank" class="hover:opacity-80 transition-opacity">
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-3 h-3 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        profile="/public/image/about/orang.png"
+        name="Aan Dwi Prasetyo, S.Kom., MMSI"
+        position="Specialist Mentor"
+        linkedin="#"
+        instagram="#"
+    }}
   {{/each}}
 </div>
 
 <!-- DESKTOP TEAM MEMBERS GRID (>= 640px) -->
 <div class='hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center md:justify-items-start'>
   {{#each team}}
-    <div class='w-full max-w-[344px] min-h-[505px] lg:h-[505px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] p-4 lg:px-2.5 lg:py-8 flex flex-col items-center text-center justify-between'>
-      <div class='w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] rounded-full overflow-hidden border-[4px] lg:border-[5px] border-[#9D9D9D] mb-3 lg:mb-7 flex-shrink-0 flex items-center justify-center'>
-        <img
-          src="{{#if profile}}{{profile}}{{else}}/public/image/about/orang.png{{/if}}"
-          alt="{{name}}"
-          class='w-[75%] translate-y-[8%]'
-        />
-      </div>
-      <h3 class='text-base lg:text-xl font-semibold text-[#000000] mb-1.5 lg:mb-2.5 font-montserrat leading-snug'>
-        {{name}}
-      </h3>
-      <p class='text-xs lg:text-xl font-normal text-[#000000] mb-3 lg:mb-7 font-montserrat'>
-        {{getByLang position ../lang}}
-      </p>
-      <p class='text-[#000000CC] text-xs lg:text-base leading-relaxed lg:leading-7 mb-4 lg:mb-7 font-sans font-normal line-clamp-4 flex-1'>
-        {{getByLang description ../lang}}
-      </p>
-      <div class='flex justify-center space-x-3 mt-auto'>
-        <a
-          href='{{#if linkedin}}{{linkedin}}{{else}}#{{/if}}' target="_blank"
-          class='w-10 h-10 lg:w-[60px] lg:h-[60px] bg-white rounded-full flex items-center justify-center shadow-xs'
-        >
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-4 h-4 lg:w-6 lg:h-6 object-contain" />
-        </a>
-        <a
-          href='{{#if instagram}}{{instagram}}{{else}}#{{/if}}' target="_blank"
-          class='w-10 h-10 lg:w-[60px] lg:h-[60px] bg-white rounded-full flex items-center justify-center shadow-xs'
-        >
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-4 h-4 lg:w-6 lg:h-6 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        isDesktop=true
+        profile=(default profile "/public/image/about/orang.png")
+        name=name
+        position=(getByLang position ../lang)
+        description=(getByLang description ../lang)
+        linkedin=(default linkedin "#")
+        instagram=(default instagram "#")
+    }}
   {{else}}
     <!-- Card 1 -->
-    <div class='w-full max-w-[344px] min-h-[505px] lg:h-[505px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] p-4 lg:px-2.5 lg:py-8 flex flex-col items-center text-center justify-between'>
-      <div class='w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] rounded-full overflow-hidden border-[4px] lg:border-[5px] border-[#9D9D9D] mb-3 lg:mb-7 flex-shrink-0 flex items-center justify-center'>
-        <img src="/public/image/about/orang.png" alt="Rizal" class='w-[75%] translate-y-[8%]' />
-      </div>
-      <h3 class='text-base lg:text-xl font-semibold text-[#000000] mb-1.5 lg:mb-2.5 font-montserrat leading-snug'>
-        Rizal Rahadian Ramadhan, S.E
-      </h3>
-      <p class='text-xs lg:text-xl font-normal text-[#000000] mb-3 lg:mb-7 font-montserrat'>
-        Chief Finance Officer
-      </p>
-      <p class='text-[#000000CC] text-xs lg:text-base leading-relaxed lg:leading-7 mb-4 lg:mb-7 font-sans font-normal line-clamp-4 flex-1'>
-        Oversee the company's financial planning, budgeting, and investment strategies. Maintain financial stability and support data-driven decision making.
-      </p>
-      <div class='flex justify-center space-x-3 mt-auto'>
-        <a href='#' target="_blank" class='w-10 h-10 lg:w-[60px] lg:h-[60px] bg-white rounded-full flex items-center justify-center shadow-xs'>
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-4 h-4 lg:w-6 lg:h-6 object-contain" />
-        </a>
-        <a href='#' target="_blank" class='w-10 h-10 lg:w-[60px] lg:h-[60px] bg-white rounded-full flex items-center justify-center shadow-xs'>
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-4 h-4 lg:w-6 lg:h-6 object-contain" />
-        </a>
-      </div>
-    </div>
+    {{> components/about/card_team 
+        isDesktop=true
+        profile="/public/image/about/orang.png"
+        name="Rizal Rahadian Ramadhan, S.E"
+        position="Chief Finance Officer"
+        description="Oversee the company's financial planning, budgeting, and investment strategies. Maintain financial stability and support data-driven decision making."
+        linkedin="#"
+        instagram="#"
+    }}
   {{/each}}
 </div>

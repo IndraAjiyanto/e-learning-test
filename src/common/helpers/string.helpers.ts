@@ -73,4 +73,9 @@ export const stringHelpers = {
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
   },
+  concat: function (...args: any[]) {
+    // Remove the Handlebars options object from the end
+    const strings = args.slice(0, -1);
+    return strings.join('');
+  },
 };

@@ -40,6 +40,7 @@
                 FAQ
             </h2>
         </div>
+        {{!-- Modular: shared ui/accordion tersedia di src/views/partials/components/ui/accordion.hbs untuk reuse di dashboard/faq --}}
         <div class="mx-auto max-w-[1406px] space-y-4">
             <template x-for="(faq, index) in faqs" :key="index">
                 <div class="overflow-hidden rounded-xl bg-white shadow-lg">
@@ -54,37 +55,17 @@
                             class="font-sans text-[25px] font-semibold leading-7 text-[#003060] sm:text-[20px] sm:leading-8 lg:text-[25px]"
                             x-text="(index + 1) + '. ' + faq.question"
                         ></h3>
-
-
-                        <span
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300"
-                        >
-                            <i
-                                class="fas fa-chevron-down text-[16px] text-[#003060] transition-transform duration-300"
-                                :class="activeIndex === index ? 'rotate-180' : ''"
-                            ></i>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300">
+                            <i class="fas fa-chevron-down text-[16px] text-[#003060] transition-transform duration-300" :class="activeIndex === index ? 'rotate-180' : ''"></i>
                         </span>
-
                     </button>
-                    <div
-                        x-cloak
-                        x-show="activeIndex === index"
-                        x-collapse
-                        :id="'faq-answer-' + index"
-                        class="border-t border-gray-200"
-                    >
+                    <div x-cloak x-show="activeIndex === index" x-collapse :id="'faq-answer-' + index" class="border-t border-gray-200">
                         <div class="px-6 py-5 sm:px-8 sm:py-6">
-                            <p
-                                class="font-sans text-[25px] leading-7 text-gray-900 sm:text-[18px] sm:leading-8 lg:text-[25px]"
-                                x-text="faq.answer"
-                            ></p>
+                            <p class="font-sans text-[25px] leading-7 text-gray-900 sm:text-[18px] sm:leading-8 lg:text-[25px]" x-text="faq.answer"></p>
                         </div>
                     </div>
-
                 </div>
-
             </template>
-
         </div>
 
         <div class="mx-auto mt-12 max-w-[1406px]">

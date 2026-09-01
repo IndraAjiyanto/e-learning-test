@@ -1,0 +1,55 @@
+{{!-- 
+  Komponen: Card Program (Paid Program)
+  Lokasi: src/views/partials/components/paid_program/card_program.hbs
+--}}
+<div class="w-full max-w-[465px] bg-white border border-gray-200/80 rounded-[20px] md:rounded-[24px] p-5 md:px-6 md:py-9 shadow-xs md:shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between gap-4 md:gap-[25px] group hover:shadow-md transition-all duration-300 min-h-full">
+  <div>
+    <!-- Batch Badge -->
+    <div class="w-[110px] md:w-[125px] h-[34px] md:h-[47px] rounded-[6px] bg-[#0B1F3B1A] text-[#003060] font-montserrat font-semibold text-xs md:text-sm flex items-center justify-center mb-3 md:mb-4 uppercase">
+      BATCH 6.2
+    </div>
+
+    <!-- Course Image -->
+    <div class="w-full aspect-[16/10] md:h-[262px] md:aspect-auto rounded-[12px] overflow-hidden bg-gray-100 mb-4 md:mb-6">
+      <img 
+        src="{{image}}" 
+        alt="{{name}}" 
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      />
+    </div>
+
+    <!-- Course Info -->
+    <div class="w-full md:px-1">
+      <h3 class="font-montserrat font-bold md:font-semibold text-xl md:text-[35px] leading-tight md:leading-none text-[#003060] mb-3 md:mb-5 text-left">
+        {{name}}
+      </h3>
+      <p class="font-sans font-normal text-[13px] md:text-xl leading-[20px] md:leading-[30px] tracking-normal text-black/80 md:text-black mb-4 md:mb-5 text-left">
+        {{description}}
+      </p>
+
+      <!-- Tags / Badges -->
+      <div class="flex flex-wrap items-center gap-2 md:gap-[10px]">
+        <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
+          <i class="fa-solid fa-location-dot text-[11px] md:text-[12px] text-[#003060]"></i> {{#if (eq method 'online')}}Online{{else}}Offline{{/if}}
+        </span>
+        <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
+          <i class="fa-solid fa-graduation-cap text-[11px] md:text-[12px] text-[#003060]"></i> {{#if month}}{{month}} Months{{else}}? Months{{/if}}
+        </span>
+        <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
+          <i class="fa-solid fa-couch text-[11px] md:text-[12px] text-[#003060]"></i> {{#if quota}}{{quota}} Students{{else}}? Students{{/if}}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Button -->
+  <div class="w-full pt-2 mt-auto">
+    <a 
+      href="/program/{{id}}" 
+      class="w-full h-[48px] md:h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-[14px] md:text-base rounded-[10px] md:rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 md:active:scale-100"
+    >
+      <span>Detail Program</span>
+      <i class="fa-solid fa-arrow-right text-xs md:text-sm"></i>
+    </a>
+  </div>
+</div>

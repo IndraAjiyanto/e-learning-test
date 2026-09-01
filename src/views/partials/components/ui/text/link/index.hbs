@@ -1,0 +1,31 @@
+{{!--
+  Komponen: Text Link (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/text/link/index.hbs
+
+  Menampilkan text link dengan styling konsisten (warna accent brand).
+
+  Props:
+  - text      : Teks link (wajib)
+  - href      : URL tujuan (wajib)
+  - align     : Posisi teks: left | center | right (default: inline)
+  - size      : Ukuran: xs | sm | md | lg (default: sm)
+  - color     : Warna teks (default: "text-[#6EB6E5]")
+  - weight    : Bold: normal | medium | semibold | bold (default: medium)
+  - class     : Kelas tambahan untuk layout/spacing (default: "")
+  - target    : Link target (_blank | _self | _parent, opsional)
+--}}
+
+<a
+  href="{{href}}"
+  {{#if target}}target="{{target}}" rel="noopener"{{/if}}
+  class="
+    hover:underline transition-colors duration-200
+    font-{{default weight 'medium'}}
+    {{default color 'text-[#6EB6E5]'}}
+    {{#if (eq size 'xs')}}text-xs
+    {{else if (eq size 'md')}}text-base
+    {{else if (eq size 'lg')}}text-lg
+    {{else}}text-xs sm:text-sm{{/if}}
+    {{class}}
+  "
+>{{text}}</a>

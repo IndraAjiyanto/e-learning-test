@@ -1,0 +1,31 @@
+{{!-- 
+  Komponen: Card Value / Commitment (Halaman About)
+  Lokasi: src/views/partials/components/about/card_value.hbs
+  
+  Props:
+  - icon        : Nama file gambar ikon
+  - title       : Judul (mendukung HTML/multibahasa)
+  - description : Deskripsi (mendukung HTML/multibahasa)
+  - fallbackIcon: Nama icon SVG fallback jika gagal dimuat
+  - bgClass     : Class background (default: "bg-[#E0F1F9]/65")
+  - iconBgClass : Class background untuk ikon (default: "bg-[#003060] text-white")
+--}}
+
+<div class="{{default bgClass 'bg-[#E0F1F9]/65'}} {{default borderClass 'border border-[#E0F1F9] lg:border-transparent'}} backdrop-blur-[6.6px] rounded-[20px] lg:rounded-[12px] p-6 lg:p-6 shadow-[0px_4px_12px_0px_#00000010] lg:shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col {{#if (eq desktopAlign 'center')}}lg:items-center lg:text-center{{else}}lg:items-start lg:text-left{{/if}} w-full {{wrapperClass}}">
+  <div class="flex flex-row {{#if (eq desktopAlign 'center')}}lg:flex-col lg:items-center{{else}}lg:flex-col lg:items-start{{/if}} items-center gap-4 lg:gap-0 mb-4 lg:mb-0 w-full">
+    <div class="w-12 h-12 lg:w-14 lg:h-14 {{default iconBgClass 'bg-[#003060] text-white'}} rounded-full flex items-center justify-center shrink-0 shadow-sm lg:mb-5">
+      <img src="{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}" alt="{{title}}" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" onerror="this.onerror=null; this.src='{{default fallbackIcon '/public/image/about/values/adaptability.svg'}}';" />
+    </div>
+    <h3 class="font-montserrat font-bold {{#if (eq desktopAlign 'center')}}lg:font-semibold{{/if}} text-[18px] lg:text-xl leading-none lg:leading-snug text-[#0B1F3B] lg:mb-3">
+      {{{title}}}
+    </h3>
+  </div>
+  
+  {{#if showDivider}}
+  <div class="hidden lg:block w-12 h-0.5 bg-[#003060] rounded-full mb-4"></div>
+  {{/if}}
+
+  <p class="font-sans font-normal text-[14px] lg:text-[15px] leading-[24px] lg:leading-[30px] text-[#000000CC]">
+    {{{description}}}
+  </p>
+</div>

@@ -1,0 +1,22 @@
+{{!--
+  Komponen: Text Sub Title (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/text/sub_title/index.hbs
+
+  Menampilkan judul/heading sub-section dengan styling konsisten & responsif.
+
+  Props:
+  - text      : Teks judul (wajib)
+  - align     : Posisi teks: left | center | right (default: center)
+  - size      : Ukuran: sm | md | lg (default: md)
+  - color     : Warna teks (default: "text-[#0B1F3B]")
+  - class     : Kelas tambahan untuk layout/spacing (default: "")
+  - tag       : Elemen HTML: h1 | h2 | h3 | h4 (default: h1)
+--}}
+
+{{#if (eq size 'sm')}}
+  <{{default tag 'h1'}} class="text-lg font-bold {{default color 'text-[#0B1F3B]'}} text-{{default align 'center'}} font-montserrat {{class}}">{{text}}</{{default tag 'h1'}}>
+{{else if (eq size 'lg')}}
+  <{{default tag 'h1'}} class="text-2xl sm:text-3xl font-bold {{default color 'text-[#0B1F3B]'}} text-{{default align 'center'}} font-montserrat {{class}}">{{text}}</{{default tag 'h1'}}>
+{{else}}
+  <{{default tag 'h1'}} class="text-xl sm:text-2xl font-bold {{default color 'text-[#0B1F3B]'}} text-{{default align 'center'}} font-montserrat {{class}}">{{text}}</{{default tag 'h1'}}>
+{{/if}}

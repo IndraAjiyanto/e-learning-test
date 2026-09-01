@@ -28,29 +28,21 @@
 >
   <div class="w-full flex flex-col items-center">
     
-    <!-- Header Section -->
-    <div class="text-center mb-7 relative z-10 flex flex-col items-center">
-      <!-- Badge -->
-      <div class="inline-flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] px-5 py-2 text-[14px] font-medium font-montserrat mx-auto mb-4 shadow-sm">
-        {{t 'test.home.faq.question'}}
-      </div>
-      
-      <!-- Title -->
-      <h2 class="font-montserrat font-bold text-2xl text-[#0B1F3B] leading-tight text-center">
-        {{t 'test.home.faq.title'}}
-      </h2>
-      <h2 class="font-montserrat font-bold text-2xl text-[#6EB6E5] leading-tight text-center mb-3">
-         {{t 'test.home.faq.title2'}}
-      </h2>
-      
-      <!-- Divider -->
-      <div class="w-[68px] h-[5px] bg-[#0B1F3B] mx-auto mb-4 rounded-full"></div>
-
-      <!-- Subtitle -->
-      <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-center max-w-[340px] mx-auto">
-        {{t 'test.home.faq.description'}}
-      </p>
-    </div>
+    {{#> components/ui/section_header
+        wrapperClass="mb-7 relative z-10"
+        badge=(t 'test.home.faq.question')
+        badgeClass="px-5 py-2 text-[14px] mb-4"
+        titleClass="mb-3"
+        showDivider=true
+        dividerClass="w-[68px] bg-[#0B1F3B] mb-4"
+        description=(t 'test.home.faq.description')
+        descClass="font-sans font-normal text-[14px] text-[#2D2D2D] max-w-[340px]"
+    }}
+      {{#*inline "titleBlock"}}
+        <div class="font-montserrat font-bold text-2xl text-[#0B1F3B] leading-tight text-center">{{t 'test.home.faq.title'}}</div>
+        <div class="font-montserrat font-bold text-2xl text-[#6EB6E5] leading-tight text-center">{{t 'test.home.faq.title2'}}</div>
+      {{/inline}}
+    {{/components/ui/section_header}}
 
     <!-- Mobile Accordion Cards -->
     <div class="flex flex-col gap-3 w-full">
@@ -85,26 +77,22 @@
       class="w-full lg:w-5/12 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-1000 ease-out transform"
       :class="isVisible ? 'translate-x-0 opacity-100' : '-translate-x-32 opacity-0'"
     >
-      <!-- Pill Badge -->
-      <div class="flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] w-[200px] h-[45px] text-lg font-medium font-montserrat transition-all mb-8 mx-auto lg:mx-0">
-        {{t 'test.home.faq.question'}}
-      </div>
-
-      <!-- Title -->
-      <h2 class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#0F0F0F] text-center lg:text-left">
-        {{t 'test.home.faq.title'}}
-      </h2>
-      <h2 class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#6EB6E5] mt-1 text-center lg:text-left">
-         {{t 'test.home.faq.title2'}}
-      </h2>
-      
-      <!-- Underline -->
-      <div class="w-[70px] h-[6px] bg-[#0B1F3B] mt-3 mb-6 rounded-full mx-auto lg:mx-0"></div>
-      
-      <!-- Subtitle / Description -->
-      <p class="text-[#545454] text-base leading-relaxed max-w-sm font-sans font-normal text-center lg:text-left">
-        {{t 'test.home.faq.description'}}
-      </p>
+      {{#> components/ui/section_header
+          align="text-center lg:text-left"
+          wrapperClass="mb-10 lg:mb-0"
+          badge=(t 'test.home.faq.question')
+          badgeClass="w-[200px] h-[45px] text-lg mb-8 mx-auto lg:mx-0"
+          titleClass="mb-0"
+          showDivider=true
+          dividerClass="w-[70px] h-[6px] bg-[#0B1F3B] mt-3 mb-6 mx-auto lg:mx-0"
+          description=(t 'test.home.faq.description')
+          descClass="text-[#545454] text-base leading-relaxed max-w-sm font-sans font-normal"
+      }}
+        {{#*inline "titleBlock"}}
+          <div class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#0F0F0F]">{{t 'test.home.faq.title'}}</div>
+          <div class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#6EB6E5] mt-1">{{t 'test.home.faq.title2'}}</div>
+        {{/inline}}
+      {{/components/ui/section_header}}
     </div>
 
     <!-- RIGHT COLUMN: Accordion FAQ Container (Slides Up from Bottom to Top) -->
