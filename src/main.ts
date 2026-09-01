@@ -6,19 +6,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import methodOverride from 'method-override';
 import session from 'express-session';
 import passport from 'passport';
-import { format } from 'date-fns';
-import { enUS, id, ja } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
 import flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
 import cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
-import { I18nContext } from 'nestjs-i18n';
 import { engine } from 'express-handlebars';
-import Handlebars from 'handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
+import { hbsHelpers } from './common/helpers';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -52,7 +49,7 @@ async function bootstrap() {
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, swaggerDocument);
 
-  // Konfigurasi Handlebars dengan engine()
+  // Konfigurasi Handlebars — helpers via agregator 1 pintu (src/common/helpers/index.ts)
   app.engine(
     'hbs',
     engine({
@@ -60,210 +57,7 @@ async function bootstrap() {
       defaultLayout: 'main',
       layoutsDir: join(process.cwd(), 'src', 'views', 'layouts'),
       partialsDir: join(process.cwd(), 'src', 'views', 'partials'),
-      helpers: {
-        // Helper untuk perhitungan
-        addOne: (index: number) => index + 1,
-        mod: (a: number, b: number) => a % b,
-        check: (a: number, b: number) => a < b,
-        eq: (a: any, b: any) => a == b,
-        gte: (a: number, b: number) => a >= b,
-        gt: (a: number, b: number) => a > b,
-        or: (...args: any[]) => {
-          args.pop(); // trailing Handlebars options object
-          return args.some(Boolean);
-        },
-        and: (...args: any[]) => {
-          args.pop(); // trailing Handlebars options object
-          return args.every(Boolean);
-        },
-        // A WeekProgress row existing is not the same as the week being
-        // unlocked — `process` is the actual flag (set true only once the
-        // previous week's quiz is passed, see weeks.service.ts /
-        // user_answers.service.ts#weekProgress). Checking row-existence
-        // alone (the previous behavior) is a weaker, easy-to-drift proxy.
-        weekUnlocked: (weekProgresses: { process?: boolean }[]) =>
-          !!(
-            weekProgresses &&
-            weekProgresses.length &&
-            weekProgresses[0].process === true
-          ),
-        multiply: (a: number, b: number) => a * b,
-        divide: (a: number, b: number) => (b !== 0 ? a / b : 0),
-        subtract: (a: number, b: number) => a - b,
-
-        // Helper untuk array
-        isArray: (value: any) => Array.isArray(value),
-        array: function (...args: any[]) {
-          return args.slice(0, -1);
-        },
-        lookup: (str: any[], index: number) => (str ? str[index] : ''),
-
-        // Helper untuk string
-        substring: (str: string, start: number, end: number) => {
-          if (str && typeof str === 'string') {
-            return str.substring(start, end).toUpperCase();
-          }
-          return '';
-        },
-        truncate: (text: string, length: number) => {
-          if (!text) return '';
-          const str = text.toString();
-          if (str.length <= length) return str;
-          return str.substring(0, length) + '...';
-        },
-        nl2br: (text: string) => {
-          if (!text) return '';
-          const escaped = Handlebars.escapeExpression(text);
-          return new Handlebars.SafeString(escaped.replace(/\n/g, '<br>'));
-        },
-
-        // Helper untuk tanggal dan waktu
-        formDate: (date: Date) => new Date(date).toISOString().split('T')[0],
-        formatDate: (date: string | Date, lang?: string) => {
-          if (!date) return lang ? 'Not set' : '';
-
-          if (lang) {
-            let locale;
-            switch (lang) {
-              case 'id':
-                locale = id;
-                break;
-              case 'en':
-                locale = enUS;
-                break;
-              case 'ja':
-                locale = ja;
-                break;
-              default:
-                locale = id;
-            }
-            return format(new Date(date), 'EEEE, d MMMM yyyy', { locale });
-          }
-
-          const d = new Date(date);
-          const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          };
-          return d.toLocaleDateString('en-US', options);
-        },
-        formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
-        formatMinutes: (ms: number) => Math.floor(ms / 60000),
-
-        // Helper untuk logika bisnis
-        isNowBetween: (
-          tanggal: string,
-          waktu_awal: string,
-          waktu_akhir: string,
-        ) => {
-          const now = new Date();
-          const start = new Date(`${tanggal}T${waktu_awal}`);
-          const end = new Date(`${tanggal}T${waktu_akhir}`);
-          return now >= start && now <= end;
-        },
-        hasUserAbsen: (absenList: any[], userId: string) => {
-          if (!absenList || !Array.isArray(absenList)) {
-            return false;
-          }
-          return absenList.some(
-            (attendances) => attendances.user && attendances.user.id === userId,
-          );
-        },
-        roles: (userRole: string, ...roles: string[]) => {
-          const allowedRoles = roles.slice(0, -1);
-          return allowedRoles.includes(userRole);
-        },
-
-        hasRole: (user: any, role: string, options: any) => {
-          if (user && user.role === role) {
-            return options.fn(this);
-          }
-          return options.inverse(this);
-        },
-        hasAnyRole: (user: any, roles: string[], options: any) => {
-          if (user && roles.includes(user.role)) {
-            return options.fn(this);
-          }
-          return options.inverse(this);
-        },
-
-        formatRupiah: (angka: number) => {
-          if (angka == null || angka === undefined) {
-            return 'Not set';
-          }
-          return angka.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-          });
-        },
-
-        computeIcon: (iconValue: string) => {
-          const raw = (iconValue || '').toString().trim();
-          if (!raw) return 'fa-solid fa-circle-question';
-
-          const v = raw;
-          const hasFaPrefix =
-            /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(
-              v,
-            ) || v.split(/\s+/).some((s: string) => /^fa-/i.test(s));
-
-          if (hasFaPrefix) {
-            if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-            return v;
-          }
-
-          if (!v.includes(' ')) return 'fa-solid fa-' + v;
-          return v;
-        },
-
-        json: (context: any) => JSON.stringify(context),
-        t: (key: string) => {
-          try {
-            const i18n = I18nContext.current();
-            if (i18n) {
-              return i18n.t(key);
-            }
-          } catch (e) {}
-          return key;
-        },
-        isJSON: (str: string) => {
-          if (!str || typeof str !== 'string') return false;
-          try {
-            JSON.parse(str);
-            return true;
-          } catch (e) {
-            return false;
-          }
-        },
-        jsonToText: (jsonStr: string) => {
-          if (!jsonStr || typeof jsonStr !== 'string') return '';
-          try {
-            const data = JSON.parse(jsonStr);
-            if (data.html) {
-              return data.html
-                .replace(/<[^>]*>/g, '')
-                .replace(/&nbsp;/g, ' ')
-                .replace(/&amp;/g, '&')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .trim();
-            } else if (data.text) {
-              return data.text;
-            }
-            return '';
-          } catch (e) {
-            return jsonStr;
-          }
-        },
-
-        default: (value: any, defaultValue: any) => value || defaultValue,
-        getByLang: (obj: any, lang: string) => {
-          if (!obj || typeof obj !== 'object') return '';
-          return obj[lang] || obj['id'] || '';
-        },
-      },
+      helpers: hbsHelpers,
     }),
   );
 

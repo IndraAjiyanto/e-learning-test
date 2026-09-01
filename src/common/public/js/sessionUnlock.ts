@@ -39,12 +39,17 @@ export type StartLearningStatus =
   | 'ALLOWED'
   | 'COMPLETED';
 
-function progressOf(session: SessionLike | null | undefined): SessionProgressLike | null {
-  if (!session || !session.sessionProgress || !session.sessionProgress.length) return null;
+function progressOf(
+  session: SessionLike | null | undefined,
+): SessionProgressLike | null {
+  if (!session || !session.sessionProgress || !session.sessionProgress.length)
+    return null;
   return session.sessionProgress[0];
 }
 
-export function logbookProcessOf(session: SessionLike | null | undefined): LogbookProcess | null {
+export function logbookProcessOf(
+  session: SessionLike | null | undefined,
+): LogbookProcess | null {
   if (!session || !session.logbooks || !session.logbooks.length) return null;
   return session.logbooks[0].process ?? null;
 }
@@ -52,17 +57,25 @@ export function logbookProcessOf(session: SessionLike | null | undefined): Logbo
 export function isAttended(session: SessionLike | null | undefined): boolean {
   const progress = progressOf(session);
   const hasProgressFlag = !!progress && progress.isAttended === true;
-  const hasAttendanceRecord = !!(session && session.attendances && session.attendances.length);
+  const hasAttendanceRecord = !!(
+    session &&
+    session.attendances &&
+    session.attendances.length
+  );
   return hasProgressFlag && hasAttendanceRecord;
 }
 
-export function logbookApproved(session: SessionLike | null | undefined): boolean {
+export function logbookApproved(
+  session: SessionLike | null | undefined,
+): boolean {
   const progress = progressOf(session);
   if (progress && progress.logbook === true) return true;
   return logbookProcessOf(session) === 'approved';
 }
 
-export function canOpenNextSession(session: SessionLike | null | undefined): boolean {
+export function canOpenNextSession(
+  session: SessionLike | null | undefined,
+): boolean {
   return isAttended(session) && logbookApproved(session);
 }
 
@@ -73,7 +86,12 @@ export function previousSession(
   sessions: SessionLike[] | null | undefined,
   session: SessionLike | null | undefined,
 ): SessionLike | null {
-  if (!Array.isArray(sessions) || !session || typeof session.sessionOrder !== 'number') return null;
+  if (
+    !Array.isArray(sessions) ||
+    !session ||
+    typeof session.sessionOrder !== 'number'
+  )
+    return null;
   let prev: SessionLike | null = null;
   for (const candidate of sessions) {
     if (!candidate || typeof candidate.sessionOrder !== 'number') continue;
@@ -112,7 +130,9 @@ export function getStartLearningStatus(
   return 'ALLOWED';
 }
 
-export function isWeekQuizUnlocked(sessions: SessionLike[] | null | undefined): boolean {
+export function isWeekQuizUnlocked(
+  sessions: SessionLike[] | null | undefined,
+): boolean {
   if (!Array.isArray(sessions) || sessions.length === 0) return false;
   return sessions.every((session) => canOpenNextSession(session));
 }

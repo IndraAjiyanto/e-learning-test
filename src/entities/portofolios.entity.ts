@@ -50,7 +50,9 @@ export class Portofolios {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Course, (course) => course.portofolios, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.portofolios, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;

@@ -10,7 +10,7 @@ import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { CommonModule } from 'src/common/common.module';
 import { Quiz } from 'src/entities/quiz.entity';
-import { QuizProgress} from 'src/entities/quiz_progress.entity';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
 
 @Module({
   imports: [
@@ -22,7 +22,8 @@ import { QuizProgress} from 'src/entities/quiz_progress.entity';
       Session,
       MentorLogbook,
       Quiz,
-      QuizProgress]),
+      QuizProgress,
+    ]),
     CommonModule,
   ],
   controllers: [LogbookController],

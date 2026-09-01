@@ -164,11 +164,10 @@ export class User {
   @Exclude()
   weekProgress: WeekProgress[];
 
-  @OneToMany(
-    () => SessionProgress,
-    (sessionProgress) => sessionProgress.user,
-    { cascade: true, onDelete: 'CASCADE' },
-  )
+  @OneToMany(() => SessionProgress, (sessionProgress) => sessionProgress.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   sessionProgress: SessionProgress[];
 

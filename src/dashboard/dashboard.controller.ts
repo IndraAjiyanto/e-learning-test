@@ -57,10 +57,10 @@ export class DashboardController {
       } else if (req.user.role === 'user') {
         const special_program =
           await this.dashboardService.findSpecialProgram();
-      const faq = await this.dashboardService.findFAQ();
-      const courseType = await this.dashboardService.findCourseTypes();
-      const category = await this.dashboardService.findCategories();
-      const alumni = await this.dashboardService.findAllAlumni();
+        const faq = await this.dashboardService.findFAQ();
+        const courseType = await this.dashboardService.findCourseTypes();
+        const category = await this.dashboardService.findCategories();
+        const alumni = await this.dashboardService.findAllAlumni();
         const collaborations = await this.dashboardService.findCollaborations();
         const categoryPartner =
           await this.dashboardService.findCategoryPartners();

@@ -51,7 +51,10 @@ export class BenefitController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const availableNumbers = await this.benefitService.findNo();
 
-    res.render('super_admin/benefit/create', { user: req.user, availableNumbers });
+    res.render('super_admin/benefit/create', {
+      user: req.user,
+      availableNumbers,
+    });
   }
 
   @Roles('super_admin')

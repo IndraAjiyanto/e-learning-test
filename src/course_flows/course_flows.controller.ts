@@ -26,7 +26,10 @@ export class CourseFlowsController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const course_flows = await this.courseFlowsService.findAll();
-    res.render('super_admin/course_flows/index', { user: req.user, course_flows });
+    res.render('super_admin/course_flows/index', {
+      user: req.user,
+      course_flows,
+    });
   }
 
   @Roles('super_admin')
@@ -37,7 +40,10 @@ export class CourseFlowsController {
     @Req() req: Request,
   ) {
     const course_flows = await this.courseFlowsService.findOne(courseFlowId);
-    res.render('super_admin/course_flows/detail', { user: req.user, course_flows });
+    res.render('super_admin/course_flows/detail', {
+      user: req.user,
+      course_flows,
+    });
   }
 
   @Roles('super_admin')
@@ -103,7 +109,10 @@ export class CourseFlowsController {
     @Req() req: Request,
   ) {
     const course_flows = await this.courseFlowsService.findOne(courseFlowId);
-    res.render('super_admin/course_flows/edit', { user: req.user, course_flows });
+    res.render('super_admin/course_flows/edit', {
+      user: req.user,
+      course_flows,
+    });
   }
 
   @Roles('super_admin')

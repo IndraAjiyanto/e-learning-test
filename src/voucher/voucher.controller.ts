@@ -29,12 +29,12 @@ export class VoucherController {
   async findAll(@Res() res: Response, @Req() req: Request) {
     const vouchersRaw = await this.voucherService.findAll();
     const allUsers = await this.voucherService.findAllUsers();
-    
-    const vouchers = vouchersRaw.map(v => {
+
+    const vouchers = vouchersRaw.map((v) => {
       let targetLabel = 'Public (All Users)';
       if (v.allowed_user_ids && v.allowed_user_ids.length > 0) {
-        const allowedNames = v.allowed_user_ids.map(id => {
-          const u = allUsers.find(user => user.id === id);
+        const allowedNames = v.allowed_user_ids.map((id) => {
+          const u = allUsers.find((user) => user.id === id);
           return u ? u.username : `ID:${id}`;
         });
         targetLabel = allowedNames.join(', ');
@@ -78,7 +78,11 @@ export class VoucherController {
       req.flash('success', 'Voucher berhasil dibuat');
       res.redirect('/voucher');
     } catch (error: any) {
-      console.error('CREATE VOUCHER ERROR:', error.message, error.detail || error);
+      console.error(
+        'CREATE VOUCHER ERROR:',
+        error.message,
+        error.detail || error,
+      );
       req.flash('error', error.message || 'Voucher gagal dibuat');
       res.redirect('/voucher/formCreate');
     }

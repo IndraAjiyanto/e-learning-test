@@ -281,15 +281,20 @@ export class DashboardService {
     if (options?.courseId) {
       qb.andWhere('course.id = :courseId', { courseId: options.courseId });
     } else if (options?.categoryId) {
-      qb.andWhere('category.id = :categoryId', { categoryId: options.categoryId });
+      qb.andWhere('category.id = :categoryId', {
+        categoryId: options.categoryId,
+      });
     }
 
     // Pencarian nama & posisi saat ini (kolom jsonb -> cast ke text agar ILIKE valid)
     if (options?.search && options.search.trim() !== '') {
       const keyword = `%${options.search.trim()}%`;
-      qb.andWhere('(alumni.name::text ILIKE :keyword OR alumni."currentPosition"::text ILIKE :keyword)', {
-        keyword,
-      });
+      qb.andWhere(
+        '(alumni.name::text ILIKE :keyword OR alumni."currentPosition"::text ILIKE :keyword)',
+        {
+          keyword,
+        },
+      );
     }
 
     const [data, total] = await qb.getManyAndCount();
@@ -391,9 +396,9 @@ export class DashboardService {
   }
 
   async findAllGallery(): Promise<Gallery[]> {
-      return this.galleryRepository.find({
-        relations: ['category'],
-        order: { id: 'DESC' },
-      });
-    }
+    return this.galleryRepository.find({
+      relations: ['category'],
+      order: { id: 'DESC' },
+    });
+  }
 }

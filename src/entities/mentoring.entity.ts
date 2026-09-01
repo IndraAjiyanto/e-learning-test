@@ -19,7 +19,9 @@ export class Mentorings {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Course, (course) => course.mentorings, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.mentorings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;

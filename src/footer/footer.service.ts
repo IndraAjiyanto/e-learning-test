@@ -21,7 +21,10 @@ export class FooterService {
     const cached = await this.cacheManager.get<Social>(cacheKey);
     if (cached) return cached;
 
-    const data = await this.socialRepository.find({ order: { id: 'ASC' }, take: 1 });
+    const data = await this.socialRepository.find({
+      order: { id: 'ASC' },
+      take: 1,
+    });
     const social = data[0] || null;
     if (social) {
       await this.cacheManager.set(cacheKey, social, 60 * 60 * 1000);

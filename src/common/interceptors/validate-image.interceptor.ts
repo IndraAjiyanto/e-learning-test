@@ -40,15 +40,12 @@ export class ValidateImageInterceptor implements NestInterceptor {
     if (Array.isArray(request.files)) {
       files.push(...request.files);
     } else if (typeof request.files === 'object' && request.files !== null) {
-      Object.values(
-        request.files as { [fieldname: string]: Express.Multer.File[] },
-      ).forEach((fileArray) => {
+      Object.values(request.files).forEach((fileArray) => {
         files.push(...fileArray);
       });
     } else if (request.file) {
       files.push(request.file);
     }
-
 
     const validFiles = files.filter((file) => file.size > 0);
 

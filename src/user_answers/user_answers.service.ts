@@ -55,12 +55,9 @@ export class UserAnswersService {
       });
 
       if (!questions)
-        throw new NotFoundException(
-          `Question id ${j.questionsId} not found`,
-        );
+        throw new NotFoundException(`Question id ${j.questionsId} not found`);
 
-      if (!user)
-        throw new NotFoundException(`User id ${j.userId} not found`);
+      if (!user) throw new NotFoundException(`User id ${j.userId} not found`);
 
       const answers = j.answersId
         ? await this.answerRepository.findOne({ where: { id: j.answersId } })

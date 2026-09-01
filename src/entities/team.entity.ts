@@ -14,10 +14,10 @@ export class Team {
   @Column()
   profile: string;
 
-  @Column({ name: 'name', nullable:true })
+  @Column({ name: 'name', nullable: true })
   name: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   teamOrder: number;
 
   @Column('jsonb', { name: 'position', nullable: true })

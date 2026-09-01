@@ -15,10 +15,9 @@ export class FaqsService {
 
   async create(createFaqDto: CreateFaqsDto) {
     const { categoryId, ...data } = createFaqDto;
-    const category = await this.faqRepository.manager.findOne(
-      Category,
-      { where: { id: categoryId } },
-    );
+    const category = await this.faqRepository.manager.findOne(Category, {
+      where: { id: categoryId },
+    });
     if (!category) {
       throw new NotFoundException('Category not found');
     }
@@ -42,20 +41,16 @@ export class FaqsService {
     });
   }
 
-  async update(
-    faqsId: number,
-    updateFaqDto: UpdateFaqsDto,
-  ) {
+  async update(faqsId: number, updateFaqDto: UpdateFaqsDto) {
     const faqs = await this.findOne(faqsId);
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');
     }
     const { categoryId, ...data } = updateFaqDto;
     if (categoryId) {
-      const category = await this.faqRepository.manager.findOne(
-        Category,
-        { where: { id: categoryId } },
-      );
+      const category = await this.faqRepository.manager.findOne(Category, {
+        where: { id: categoryId },
+      });
       if (!category) {
         throw new NotFoundException('Category not found');
       }

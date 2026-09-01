@@ -11,7 +11,9 @@ describe('BenefitCategoryController', () => {
       providers: [BenefitCategoryService],
     }).compile();
 
-    controller = module.get<BenefitCategoryController>(BenefitCategoryController);
+    controller = module.get<BenefitCategoryController>(
+      BenefitCategoryController,
+    );
   });
 
   it('should be defined', () => {

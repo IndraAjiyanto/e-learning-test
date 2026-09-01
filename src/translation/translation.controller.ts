@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Res,
-  Req,
-} from '@nestjs/common';
+import { Controller, Post, Body, Res, Req } from '@nestjs/common';
 import { TranslationService } from './translation.service';
 import { Request, Response } from 'express';
 

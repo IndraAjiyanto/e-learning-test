@@ -44,7 +44,10 @@ export class MissionController {
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
     const mission = await this.missionService.findAll();
-    res.render('super_admin/missions/index', { user: req.user, missions: mission });
+    res.render('super_admin/missions/index', {
+      user: req.user,
+      missions: mission,
+    });
   }
 
   @Roles('super_admin')
@@ -55,7 +58,10 @@ export class MissionController {
     @Req() req: Request,
   ) {
     const mission = await this.missionService.findOne(id);
-    res.render('super_admin/missions/edit', { user: req.user, missions: mission });
+    res.render('super_admin/missions/edit', {
+      user: req.user,
+      missions: mission,
+    });
   }
 
   @Roles('super_admin')

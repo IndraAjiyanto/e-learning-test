@@ -9,10 +9,12 @@ import { Repository } from 'typeorm';
 export class CategoryPartnerService {
   constructor(
     @InjectRepository(CategoryPartner)
-    private readonly categoryPartnerRepository:Repository<CategoryPartner>
-  ){}
- async create(createCategoryPartnerDto: CreateCategoryPartnerDto) {
-    const data = this.categoryPartnerRepository.create({ ...createCategoryPartnerDto });
+    private readonly categoryPartnerRepository: Repository<CategoryPartner>,
+  ) {}
+  async create(createCategoryPartnerDto: CreateCategoryPartnerDto) {
+    const data = this.categoryPartnerRepository.create({
+      ...createCategoryPartnerDto,
+    });
     return await this.categoryPartnerRepository.save(data);
   }
 
@@ -20,22 +22,24 @@ export class CategoryPartnerService {
     return await this.categoryPartnerRepository.find({
       relations: ['partners'],
       order: { createdAt: 'DESC' },
-    })
+    });
   }
 
   async findOne(id: number) {
-    const data = await this.categoryPartnerRepository.findOne({where:{id}, relations: ['partners']})
-    if(!data) {
-      throw new NotFoundException('categoryPartner Not Found')
+    const data = await this.categoryPartnerRepository.findOne({
+      where: { id },
+      relations: ['partners'],
+    });
+    if (!data) {
+      throw new NotFoundException('categoryPartner Not Found');
     }
     return data;
   }
 
   async update(id: number, updateCategoryPartnerDto: UpdateCategoryPartnerDto) {
-     const data = await this.findOne(id);
+    const data = await this.findOne(id);
     Object.assign(data, updateCategoryPartnerDto);
     return await this.categoryPartnerRepository.save(data);
-    
   }
 
   async remove(id: number) {

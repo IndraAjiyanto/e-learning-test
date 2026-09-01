@@ -21,7 +21,7 @@ export class Commitment {
   @Column()
   icon: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   commitmentOrder: number;
 
   @CreateDateColumn()

@@ -30,7 +30,11 @@ export class InstallmentsController {
     @Param('courseId') courseId: number,
   ) {
     const availableMonths = await this.installmentsService.findNo(courseId);
-    res.render('super_admin/installments/create', { user: req.user, courseId, availableMonths });
+    res.render('super_admin/installments/create', {
+      user: req.user,
+      courseId,
+      availableMonths,
+    });
   }
 
   @Roles('super_admin')
@@ -41,8 +45,14 @@ export class InstallmentsController {
     @Res() res: Response,
   ) {
     const installments = await this.installmentsService.findOne(id);
-    const availableMonths = await this.installmentsService.findNo(installments.course.id);
-    res.render('super_admin/installments/edit', { user: req.user, installments, availableMonths });
+    const availableMonths = await this.installmentsService.findNo(
+      installments.course.id,
+    );
+    res.render('super_admin/installments/edit', {
+      user: req.user,
+      installments,
+      availableMonths,
+    });
   }
 
   @Roles('super_admin')
@@ -63,7 +73,7 @@ export class InstallmentsController {
       }
 
       createCicilanDto.courseId = Number(courseId);
-      createCicilanDto.month = Number(createCicilanDto.month) as 3 ;
+      createCicilanDto.month = Number(createCicilanDto.month) as 3;
 
       await this.installmentsService.create(createCicilanDto);
       req.flash('success', 'Installment created successfully');
@@ -95,7 +105,10 @@ export class InstallmentsController {
         updateCicilanDto.month = Number(updateCicilanDto.month) as 3;
       }
 
-      const installments = await this.installmentsService.update(id, updateCicilanDto);
+      const installments = await this.installmentsService.update(
+        id,
+        updateCicilanDto,
+      );
       req.flash('success', 'Installment updated successfully');
       res.redirect(`/program/detail/program/admin/${installments.course.id}`);
     } catch (error: any) {

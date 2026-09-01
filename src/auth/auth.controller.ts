@@ -53,14 +53,13 @@ export class AuthController {
       const user = await this.authService.createAcount(createUserDto);
       req.flash('success', 'Registration successful! Please login');
       res.redirect('/users/send-verify-email?token=' + user.verificationToken);
-      
     } catch (error: any) {
       req.flash('error', error.message || 'Registration failed');
       // res.redirect('/login');
       res.redirect('/register');
     }
   }
- 
+
   @Post('login')
   async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
     try {

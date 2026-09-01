@@ -45,20 +45,12 @@
       class="flex flex-col gap-[16px] transition-all duration-700 ease-out transform w-full"
     >
       {{#each benefits}}
-      <div class="w-full bg-[rgba(224,241,249,0.85)] rounded-[16px] p-[24px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex flex-col items-start text-left gap-[12px]">
-        <!-- Icon Container -->
-        <div class="w-[48px] h-[48px] rounded-full bg-[#003060] flex items-center justify-center shrink-0">
-          <i class="{{computeIcon icon}} text-xl text-white" aria-hidden="true"></i>
-        </div>
-        <!-- Card Title -->
-        <h3 class="font-montserrat font-semibold text-[18px] text-[#0B1F3B] leading-tight text-left">
-          {{getByLang this.title ../lang}}
-        </h3>
-        <!-- Card Description -->
-        <p class="font-sans font-normal text-[13px] leading-[20px] text-[#2D2D2D] text-left">
-          {{getByLang description ../lang}}
-        </p>
-      </div>
+        {{> components/home/card_benefit 
+            icon=this.icon
+            title=this.title
+            description=this.description
+            lang=../lang
+        }}
       {{/each}}
     </div>
   </div>
@@ -121,18 +113,13 @@
 
       <!-- Cards Loop -->
       {{#each benefits}}
-      <div class="w-[360px] h-[360px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] px-4 py-6 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center border border-white/60">
-        <div class="w-20 h-20 rounded-full bg-[#6EB6E5] flex items-center justify-center mb-6 shadow-sm shrink-0">
-          <i class="{{computeIcon icon}} text-4xl text-[#003060]" aria-hidden="true"></i>
-        </div>
-        <h3 class="font-montserrat font-[600] text-[18px] leading-tight text-[#0B1F3B] mb-4 min-h-[44px] flex items-center justify-center text-center">
-          {{getByLang this.title ../lang}}
-        </h3>
-        <div class="w-[45px] h-[5px] bg-[#0B1F3B] rounded-[6px] mb-4 opacity-90 shrink-0"></div>
-        <p class="font-sans font-[400] text-[15px] leading-[35px] text-black/80 text-center min-h-[140px]">
-          {{getByLang description ../lang}}
-        </p>
-      </div>
+        {{> components/home/card_benefit 
+            icon=this.icon
+            title=this.title
+            description=this.description
+            lang=../lang
+            desktop=true
+        }}
       {{/each}}
       
     </div>

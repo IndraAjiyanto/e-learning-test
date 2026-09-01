@@ -1,4 +1,5 @@
-import { JoinColumn,
+import {
+  JoinColumn,
   Column,
   Entity,
   PrimaryGeneratedColumn,
@@ -21,22 +22,22 @@ export class Session {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'topic', nullable:true })
+  @Column({ name: 'topic', nullable: true })
   topic: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   sessionOrder: number;
 
-  @Column({ name: 'date', nullable:true })
+  @Column({ name: 'date', nullable: true })
   date: Date;
 
-  @Column({ name: 'location', nullable:true })
+  @Column({ name: 'location', nullable: true })
   location: string;
 
-  @Column({ name: 'start_time', type: 'time', nullable:true })
+  @Column({ name: 'start_time', type: 'time', nullable: true })
   startTime: string;
 
-  @Column({ name: 'end_time', type: 'time', nullable:true })
+  @Column({ name: 'end_time', type: 'time', nullable: true })
   endTime: string;
 
   @Column({ name: 'is_final', default: false })
@@ -84,11 +85,10 @@ export class Session {
   @Exclude()
   logbooks: Logbook[];
 
-  @OneToMany(
-    () => MentorLogbook,
-    (logbookMentor) => logbookMentor.session,
-    { cascade: true, onDelete: 'CASCADE' },
-  )
+  @OneToMany(() => MentorLogbook, (logbookMentor) => logbookMentor.session, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   logbookMentors: MentorLogbook[];
 

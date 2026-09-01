@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryPartner } from 'src/entities/category_partner.entity';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([CategoryPartner])],
+  imports: [TypeOrmModule.forFeature([CategoryPartner])],
   controllers: [CategoryPartnerController],
   providers: [CategoryPartnerService],
-  exports: [CategoryPartnerService]
+  exports: [CategoryPartnerService],
 })
 export class CategoryPartnerModule {}

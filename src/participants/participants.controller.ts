@@ -96,8 +96,7 @@ export class ParticipantsController {
     @Req() req: Request,
   ) {
     try {
-      const participant =
-        await this.participantsService.findOne(participantId);
+      const participant = await this.participantsService.findOne(participantId);
       if (!participant) {
         req.flash('error', 'Participant not found');
       }

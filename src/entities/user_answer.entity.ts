@@ -18,7 +18,7 @@ export class UserAnswer {
 
   @ManyToOne(() => Answer, (answer) => answer.userAnswers, {
     onDelete: 'CASCADE',
-    nullable: true
+    nullable: true,
   })
   @JoinColumn({ name: 'answerId' })
   @Exclude()
@@ -29,4 +29,3 @@ export class UserAnswer {
   @Exclude()
   user: User;
 }
-
