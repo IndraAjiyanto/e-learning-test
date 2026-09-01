@@ -34,5 +34,5 @@ export class CreateMentorDto {
   deskripsi: string[];
 
   @IsInt()
-  kelasId: number;
+  kelasId: string;
 }

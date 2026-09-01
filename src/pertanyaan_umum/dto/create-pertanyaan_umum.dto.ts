@@ -8,5 +8,5 @@ export class CreatePertanyaanUmumDto {
   jawaban: string[];
 
   @IsNumber()
-  kategoriId: number;
+  kategoriId: string;
 }

@@ -32,7 +32,7 @@ export class MingguService {
     private readonly quizRepository: Repository<Quiz>,
   ) {}
 
-  async create(createMingguDto: CreateMingguDto, kelasId: number) {
+  async create(createMingguDto: CreateMingguDto, kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
     });
@@ -123,13 +123,13 @@ export class MingguService {
     }
   }
 
-  async noPertemuan(kelasId: number) {
+  async noPertemuan(kelasId: string) {
     const mingguTerakhir = await this.findMingguKelas(kelasId);
     const mingguBaru = mingguTerakhir + 1;
     return mingguBaru;
   }
 
-  async findMingguKelas(kelasId: number) {
+  async findMingguKelas(kelasId: string) {
     const minggu = await this.mingguRepository.findOne({
       where: { kelas: { id: kelasId } },
       order: { minggu_ke: 'DESC' },
@@ -140,33 +140,33 @@ export class MingguService {
     return minggu.minggu_ke;
   }
 
-  async findOne(mingguId: number) {
+  async findOne(mingguId: string) {
     return await this.mingguRepository.findOne({
       where: { id: mingguId },
       relations: ['kelas'],
     });
   }
 
-  async findPertemuan(mingguId: number) {
+  async findPertemuan(mingguId: string) {
     return await this.pertemuanRepository.find({
       where: { minggu: { id: mingguId } },
       order: { pertemuan_ke: 'ASC' },
     });
   }
 
-  async findQuiz(mingguId: number) {
+  async findQuiz(mingguId: string) {
     return await this.quizRepository.find({
       where: { minggu: { id: mingguId } },
     });
   }
 
-  async findPertemuanAkhir(mingguId: number) {
+  async findPertemuanAkhir(mingguId: string) {
     return await this.pertemuanRepository.findOne({
       where: { minggu: { id: mingguId }, akhir: true },
     });
   }
 
-  async update(id: number, updateMingguDto: UpdateMingguDto) {
+  async update(id: string, updateMingguDto: UpdateMingguDto) {
     const minggu = await this.findOne(id);
     if (!minggu) {
       throw new NotFoundException('week not found');
@@ -181,7 +181,7 @@ export class MingguService {
     return await this.mingguRepository.save(minggu);
   }
 
-  async remove(id: number, kelasId: number) {
+  async remove(id: string, kelasId: string) {
     const minggu = await this.findOne(id);
     if (!minggu) {
       throw new NotFoundException('week not found');

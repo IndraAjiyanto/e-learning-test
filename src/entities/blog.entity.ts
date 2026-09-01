@@ -15,8 +15,8 @@ import { Coment } from './coment.entity';
 
 @Entity()
 export class Blog {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   judul: string;

@@ -23,7 +23,7 @@ export class TeamLeadService {
     return await this.teamLeadRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const teamLead = await this.teamLeadRepository.findOne({ where: { id } });
     if (!teamLead) {
       throw new NotFoundException('Team Lead not found');
@@ -31,7 +31,7 @@ export class TeamLeadService {
     return teamLead;
   }
 
-  async update(id: number, updateTeamLeadDto: UpdateTeamLeadDto) {
+  async update(id: string, updateTeamLeadDto: UpdateTeamLeadDto) {
     const teamLead = await this.findOne(id);
     if (!teamLead) {
       throw new NotFoundException('Team Lead not found');
@@ -40,7 +40,7 @@ export class TeamLeadService {
     return await this.teamLeadRepository.save(teamLead);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const teamLead = await this.findOne(id);
     if (!teamLead) {
       throw new NotFoundException('Team Lead not found');

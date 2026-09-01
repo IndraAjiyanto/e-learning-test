@@ -27,7 +27,7 @@ export class GambarBenefitService {
     });
   }
 
-  async findOne(gambarBenefitId: number) {
+  async findOne(gambarBenefitId: string) {
     const gambar_benefit = await this.gambarBenefitRepository.findOne({
       where: { id: gambarBenefitId },
     });
@@ -60,7 +60,7 @@ export class GambarBenefitService {
   }
 
   async update(
-    gambarBenefitId: number,
+    gambarBenefitId: string,
     updateGambarBenefitDto: UpdateGambarBenefitDto,
   ) {
     const gambar_benefit = await this.findOne(gambarBenefitId);
@@ -81,7 +81,7 @@ export class GambarBenefitService {
     return await this.gambarBenefitRepository.save(gambar_benefit);
   }
 
-  async remove(gambarBenefitId: number) {
+  async remove(gambarBenefitId: string) {
     const gambar_benefit = await this.findOne(gambarBenefitId);
     if (!gambar_benefit) {
       throw new NotFoundException();

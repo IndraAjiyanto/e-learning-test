@@ -5,8 +5,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class UserKelas {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ default: false })
   progres: boolean;

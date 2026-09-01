@@ -23,7 +23,7 @@ export class KategoriBlogService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const kategori = await this.kategoriBlogRepository.findOne({
       where: { id },
       relations: ['blog'],
@@ -34,7 +34,7 @@ export class KategoriBlogService {
     return kategori;
   }
 
-  async update(id: number, updateKategoriBlogDto: UpdateKategoriBlogDto) {
+  async update(id: string, updateKategoriBlogDto: UpdateKategoriBlogDto) {
     const kategori = await this.findOne(id);
     if (!kategori) {
       throw new NotFoundException('Kategori Blog not found');
@@ -44,7 +44,7 @@ export class KategoriBlogService {
     return await this.kategoriBlogRepository.save(kategori);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const kategori = await this.findOne(id);
     if (!kategori) {
       throw new NotFoundException('Kategori Blog not found');

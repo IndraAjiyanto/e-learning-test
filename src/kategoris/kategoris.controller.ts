@@ -116,7 +116,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('benefit/:kategoriId')
   async findBenefitByKategori(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
   ) {
     const benefit_category =
@@ -127,7 +127,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('flow/:kategoriId')
   async findFlowByKategori(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
   ) {
     const flow_category =
@@ -138,7 +138,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('superiority/:kategoriId')
   async findSuperiorityByKategori(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
   ) {
     const superiority =
@@ -149,7 +149,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('faq/:kategoriId')
   async findFaqByKategori(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
   ) {
     const pertanyaan_umum =
@@ -160,7 +160,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('admin/program/:kategoriId')
   async findKelasByKategori(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
   ) {
     const kelas =
@@ -171,7 +171,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('alumni/:kategoriId')
   async findAlumniByKategori(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
   ) {
     const alumni = await this.kategorisService.findAlumniByKategori(kategoriId);
@@ -181,7 +181,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get(':kategoriId')
   async findOne(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -196,7 +196,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('formEdit/:kategoriId')
   async formEdit(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -225,7 +225,7 @@ export class KategorisController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async update(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Body() updateKategorisDto: UpdateKategorisDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -249,7 +249,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Delete(':kategoriId')
   async remove(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

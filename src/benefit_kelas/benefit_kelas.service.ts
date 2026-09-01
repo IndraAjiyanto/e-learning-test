@@ -32,23 +32,23 @@ export class BenefitKelasService {
   async findAll() {
     const benefit_kelas = await this.benefitKelasRepository.find({
       relations: ['kelas'],
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return benefit_kelas;
   }
 
   async findAllKelas() {
     const kelas = await this.kelasRepository.find({
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return kelas;
   }
 
-  async findKelas(kelasId: number) {
+  async findKelas(kelasId: string) {
     return await this.kelasRepository.findOne({ where: { id: kelasId } });
   }
 
-  async findOne(benefitKelasId: number) {
+  async findOne(benefitKelasId: string) {
     const benefit_kelas = await this.benefitKelasRepository.findOne({
       where: { id: benefitKelasId },
       relations: ['kelas'],
@@ -60,7 +60,7 @@ export class BenefitKelasService {
   }
 
   async update(
-    benefitKelasId: number,
+    benefitKelasId: string,
     updateBenefitKelaDto: UpdateBenefitKelaDto,
   ) {
     const benefit_kelas = await this.findOne(benefitKelasId);
@@ -72,7 +72,7 @@ export class BenefitKelasService {
     return await this.benefitKelasRepository.save(benefit_kelas);
   }
 
-  async remove(benefitKelasId: number) {
+  async remove(benefitKelasId: string) {
     const benefit_kelas = await this.findOne(benefitKelasId);
     if (!benefit_kelas) {
       throw new NotFoundException('Benefit Program not found');

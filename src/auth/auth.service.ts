@@ -63,7 +63,7 @@ export class AuthService {
     return await this.kelasService.findAllLaunch();
   }
 
-  async findKelas(id: number) {
+  async findKelas(id: string) {
     return await this.kelasService.findOne(id);
   }
 }

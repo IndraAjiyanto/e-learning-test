@@ -11,8 +11,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Mentoring {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, (user) => user.mentoring, { onDelete: 'CASCADE' })
   @Exclude()

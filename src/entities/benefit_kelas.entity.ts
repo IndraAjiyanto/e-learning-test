@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class BenefitKelas {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   benefit: string[];

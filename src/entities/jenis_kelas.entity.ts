@@ -13,8 +13,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class JenisKelas {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   nama_jenis_kelas: string;

@@ -6,7 +6,7 @@ export class CreateKomentarDto {
   komentar: string;
 
   @IsInt()
-  jawaban_tugasId: number;
+  jawaban_tugasId: string;
 
   @IsString()
   proses: Proses;

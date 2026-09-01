@@ -24,7 +24,7 @@ export class SertifikatService {
     private readonly biodataRepository: Repository<Biodata>,
   ) {}
 
-  async generateCertificate(kelasId: number, userId: number) {
+  async generateCertificate(kelasId: string, userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['biodata'],
@@ -245,7 +245,7 @@ export class SertifikatService {
     }
   }
 
-  async findBiodata(userId: number) {
+  async findBiodata(userId: string) {
     return await this.biodataRepository.findOne({
       where: { user: { id: userId } },
     });

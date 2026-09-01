@@ -57,14 +57,14 @@ export class AbsensService {
     });
   }
 
-  async findPertemuan(pertemuanId: number) {
+  async findPertemuan(pertemuanId: string) {
     return await this.pertemuanRepository.findOne({
       where: { id: pertemuanId },
       relations: ['minggu', 'minggu.kelas'],
     });
   }
 
-  async findUsers(pertemuanId: number) {
+  async findUsers(pertemuanId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { minggu: { pertemuan: { id: pertemuanId } } },
     });
@@ -80,7 +80,7 @@ export class AbsensService {
     return await this.kelasRepository.find({ relations: ['pertemuan'] });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const absen = await this.absenRepository.findOne({
       where: { id },
       relations: ['pertemuan', 'user'],
@@ -99,7 +99,7 @@ export class AbsensService {
     return absen;
   }
 
-  async update(id: number, updateAbsenDto: UpdateAbsenDto) {
+  async update(id: string, updateAbsenDto: UpdateAbsenDto) {
     const absen = await this.findOne(id);
     if (!absen) {
       throw new NotFoundException('absen tidak ditemukan');
@@ -108,7 +108,7 @@ export class AbsensService {
     return await this.absenRepository.save(absen);
   }
 
-  async remove(id: number, pertemuanId: number) {
+  async remove(id: string, pertemuanId: string) {
     const absen = await this.findOne(id);
     if (!absen) {
       throw new NotFoundException('absen tidak ditemukan');

@@ -34,7 +34,7 @@ export class TeamService {
     return await this.teamRepository.find({ order: { team_ke: 'ASC' } });
   }
 
-  async findOne(teamId: number) {
+  async findOne(teamId: string) {
     const team = await this.teamRepository.findOne({ where: { id: teamId } });
     if (!team) {
       throw new NotFoundException('team not found');
@@ -42,7 +42,7 @@ export class TeamService {
     return team;
   }
 
-  async update(teamId: number, updateTeamDto: UpdateTeamDto) {
+  async update(teamId: string, updateTeamDto: UpdateTeamDto) {
     const team = await this.findOne(teamId);
     if (!team) {
       throw new NotFoundException('team not found');
@@ -51,7 +51,7 @@ export class TeamService {
     return await this.teamRepository.save(team);
   }
 
-  async remove(teamId: number) {
+  async remove(teamId: string) {
     const team = await this.findOne(teamId);
     if (!team) {
       throw new NotFoundException('team not found');

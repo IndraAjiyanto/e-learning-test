@@ -35,7 +35,7 @@ export class FlowCategoryService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const flowCategory = await this.flowCategoryRepository.findOne({
       where: { id },
       relations: ['kategori'],
@@ -46,7 +46,7 @@ export class FlowCategoryService {
     return flowCategory;
   }
 
-  async update(id: number, updateFlowCategoryDto: UpdateFlowCategoryDto) {
+  async update(id: string, updateFlowCategoryDto: UpdateFlowCategoryDto) {
     const flowCategory = await this.findOne(id);
     if (updateFlowCategoryDto.kategoriId) {
       const kategori = await this.kategoriRepository.findOne({
@@ -61,7 +61,7 @@ export class FlowCategoryService {
     return this.flowCategoryRepository.save(flowCategory);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const flowCategory = await this.findOne(id);
     return this.flowCategoryRepository.remove(flowCategory);
   }

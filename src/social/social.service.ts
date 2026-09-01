@@ -21,7 +21,7 @@ export class SocialService {
     return await this.socialRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const social = await this.socialRepository.findOne({ where: { id } });
     if (!social) {
       throw new NotFoundException('Social not found');
@@ -29,7 +29,7 @@ export class SocialService {
     return social;
   }
 
-  async update(id: number, updateSocialDto: UpdateSocialDto) {
+  async update(id: string, updateSocialDto: UpdateSocialDto) {
     const social = await this.findOne(id);
     if (!social) {
       throw new NotFoundException('Social not found');
@@ -38,7 +38,7 @@ export class SocialService {
     return await this.socialRepository.save(social);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const social = await this.findOne(id);
     if (!social) {
       throw new NotFoundException('Social not found');

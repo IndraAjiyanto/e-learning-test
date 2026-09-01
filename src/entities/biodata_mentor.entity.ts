@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class BiodataMentor {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   role: string;

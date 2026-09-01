@@ -23,7 +23,7 @@ export class OurExperienceService {
     return await this.ourExperienceRepository.save(ourExperience);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const ourExperience = await this.ourExperienceRepository.findOne({
       where: { id },
     });
@@ -33,13 +33,13 @@ export class OurExperienceService {
     return ourExperience;
   }
 
-  async update(id: number, updateOurExperienceDto: UpdateOurExperienceDto) {
+  async update(id: string, updateOurExperienceDto: UpdateOurExperienceDto) {
     const ourExperience = await this.findOne(id);
     Object.assign(ourExperience, updateOurExperienceDto);
     return await this.ourExperienceRepository.save(ourExperience);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const ourExperience = await this.findOne(id);
     return await this.ourExperienceRepository.remove(ourExperience);
   }

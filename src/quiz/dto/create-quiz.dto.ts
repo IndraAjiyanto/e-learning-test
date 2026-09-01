@@ -8,7 +8,7 @@ export class CreateQuizDto {
   nilai_minimal: number;
 
   @IsInt()
-  mingguId: number;
+  mingguId: string;
 
   @IsInt()
   durasi: number;

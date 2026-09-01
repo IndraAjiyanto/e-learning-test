@@ -62,7 +62,7 @@ async findAllPaginated(params: {
   limit: number;
 }) {
   const query = this.userRepository.createQueryBuilder('user')
-    .orderBy('user.id', 'DESC');
+    .orderBy('user.createdAt', 'DESC');
 
   if (params.search) {
     query.where(
@@ -77,7 +77,7 @@ async findAllPaginated(params: {
   return { data, total };
 }
 
-  async findPortfolio(userId: number) {
+  async findPortfolio(userId: string) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'kelas', 'kelas.jenis_kelas', 'kelas.kategori'],
@@ -90,7 +90,7 @@ async findAllPaginated(params: {
     });
   }
 
-  async findOne(userId: number) {
+  async findOne(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['biodata'],
@@ -101,7 +101,7 @@ async findAllPaginated(params: {
     return user;
   }
 
-  async update(userId: number, updateUserDto: UpdateUserDto) {
+  async update(userId: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -110,7 +110,7 @@ async findAllPaginated(params: {
     return await this.userRepository.save(user);
   }
 
-  async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
+  async updatePassword(id: string, updatePaaswordDto: UpdatePasswordDto) {
     if (
       updatePaaswordDto.password_baru !== updatePaaswordDto.confirm_password
     ) {
@@ -146,7 +146,7 @@ async findAllPaginated(params: {
     return { message: 'Password berhasil diubah' };
   }
 
-  async updateProfile(userId: number, updateProfileDto: UpdateProfileDto) {
+  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
     const user = await this.findOne(userId);
     Object.assign(user, updateProfileDto);
     return await this.userRepository.save(user);
@@ -162,7 +162,7 @@ async findAllPaginated(params: {
     } catch (error) {}
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');

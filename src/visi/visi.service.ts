@@ -21,7 +21,7 @@ export class VisiService {
     return await this.visiRepository.find();
   }
 
-  async findOne(visiId: number) {
+  async findOne(visiId: string) {
     const visi = await this.visiRepository.findOne({
       where: { id: visiId },
     });
@@ -31,13 +31,13 @@ export class VisiService {
     return visi;
   }
 
-  async update(visiId: number, updateVisiDto: UpdateVisiDto) {
+  async update(visiId: string, updateVisiDto: UpdateVisiDto) {
     const visi = await this.findOne(visiId);
     Object.assign(visi, updateVisiDto);
     return await this.visiRepository.save(visi);
   }
 
-  async remove(visiId: number) {
+  async remove(visiId: string) {
     const visi = await this.findOne(visiId);
     return await this.visiRepository.remove(visi);
   }

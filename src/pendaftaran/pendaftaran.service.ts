@@ -58,7 +58,7 @@ export class PendaftaranService {
     }
   }
 
-  async checkPendaftaran(userId: number, kelasId: number) {
+  async checkPendaftaran(userId: string, kelasId: string) {
     const pendaftaran = await this.pendaftaranRepository.find({
       where: {
         user: { id: userId },
@@ -87,13 +87,13 @@ export class PendaftaranService {
     return await this.pendaftaranRepository.find();
   }
 
-  async findPendaftaran(userId: number) {
+  async findPendaftaran(userId: string) {
     return await this.pendaftaranRepository.find({
       where: { user: { id: userId } },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const pendaftaran = await this.pendaftaranRepository.findOne({
       where: { id },
       relations: ['user', 'kelas'],
@@ -104,7 +104,7 @@ export class PendaftaranService {
     return pendaftaran;
   }
 
-  async addUserToKelas(userId: number, kelasId: number) {
+  async addUserToKelas(userId: string, kelasId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['user_kelas', 'user_kelas.kelas'],
@@ -138,7 +138,7 @@ export class PendaftaranService {
     return await this.userKelasRepository.save(user_kelas);
   }
 
-  async removeUserKelas(userId: number, kelasId: number): Promise<UserKelas> {
+  async removeUserKelas(userId: string, kelasId: string): Promise<UserKelas> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -165,7 +165,7 @@ export class PendaftaranService {
   }
 
   async update(
-    pendaftaranId: number,
+    pendaftaranId: string,
     updatePendaftaranDto: UpdatePendaftaranDto,
   ) {
     const pendaftaran = await this.findOne(pendaftaranId);

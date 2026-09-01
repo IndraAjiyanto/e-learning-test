@@ -3,7 +3,7 @@
       <!-- Main Featured -->
       <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer">
         <div class="relative h-80">
-          <a href="/blog/detail/{{blog_tranding.id}}" @click="viewBlog({{blog_tranding.id}})">
+          <a href="/blog/detail/{{blog_tranding.id}}" @click="viewBlog('{{blog_tranding.id}}')">
             <img src="{{blog_tranding.gambar.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 p-6 text-white">
@@ -28,7 +28,7 @@
             <i class="{{computeIcon this.icon}}"></i>
             <span class="text-xs text-blue-600 font-semibold">{{getByLang this.nama lang}}</span>
             <h3 class="font-semibold group-hover:text-blue-600">
-              <a href="/blog/detail/{{this.blog.id}}" @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a>
+              <a href="/blog/detail/{{this.blog.id}}" @click="viewBlog('{{this.blog.id}}')">{{this.blog.judul}}</a>
             </h3>
             <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify">{{this.blog.description}}</p>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mt-2">

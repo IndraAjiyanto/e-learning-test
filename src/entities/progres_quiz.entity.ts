@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class ProgresQuiz {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ default: false })
   proses: boolean;

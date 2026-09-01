@@ -41,7 +41,7 @@ export class LogbookController {
     folder: 'logbook_user',
   })
   async create(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('pertemuanId') pertemuanId: string,
     @Body() createLogbookDto: CreateLogbookDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -84,7 +84,7 @@ export class LogbookController {
   async findLogBook(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('kelasId') kelasId: number,
+    @Param('kelasId') kelasId: string,
   ) {
     const logbook = await this.logbookService.findLogBook(
       req.user!.id,
@@ -96,8 +96,8 @@ export class LogbookController {
   @Roles('user')
   @Get('formCreate/:pertemuanId/:kelasId')
   async createLogbook(
-    @Param('pertemuanId') pertemuanId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('pertemuanId') pertemuanId: string,
+    @Param('kelasId') kelasId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -111,7 +111,7 @@ export class LogbookController {
   @Roles('user', 'admin')
   @Get('formEdit/:logbookId')
   async formEdit(
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -126,7 +126,7 @@ export class LogbookController {
   @Roles('user', 'admin')
   @Get(':logbookId')
   async findOne(
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -137,7 +137,7 @@ export class LogbookController {
   @Roles('admin')
   @Get('create/:pertemuanId')
   async createLogbookUser(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('pertemuanId') pertemuanId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -158,7 +158,7 @@ export class LogbookController {
   })
   async update(
     @UploadedFile() dokumentasi: Express.Multer.File,
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Body() updateLogbookDto: UpdateLogbookDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -193,7 +193,7 @@ export class LogbookController {
   @Patch(':logbookId/:proses')
   async updateProses(
     @Body() updateLogbookDto: UpdateLogbookDto,
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Param('proses') proses: Proses,
     @Req() req: Request,
     @Res() res: Response,
@@ -214,8 +214,8 @@ export class LogbookController {
   @Roles('admin')
   @Delete(':pertemuanId/:logbookId')
   async remove(
-    @Param('logbookId') logbookId: number,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('logbookId') logbookId: string,
+    @Param('pertemuanId') pertemuanId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

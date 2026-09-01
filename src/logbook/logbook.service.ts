@@ -55,14 +55,14 @@ export class LogbookService {
     return await this.logBookRepository.save(logbook);
   }
 
-  async findByUser(userId: number) {
+  async findByUser(userId: string) {
     return await this.logBookRepository.find({
       where: { user: { id: userId } },
       relations: ['user'],
     });
   }
 
-  async findLogBook(userId: number, kelasId: number) {
+  async findLogBook(userId: string, kelasId: string) {
     return await this.logBookRepository.find({
       where: {
         user: { id: userId },
@@ -77,7 +77,7 @@ export class LogbookService {
     });
   }
 
-  async findKelasByUser(userId: number) {
+  async findKelasByUser(userId: string) {
     return await this.kelasRepository.find({
       where: { user_kelas: { user: { id: userId } } },
       relations: ['user_kelas', 'user_kelas.user', 'minggu'],
@@ -86,7 +86,7 @@ export class LogbookService {
 
   async findAllKelas() {
     return await this.kelasRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -112,7 +112,7 @@ export class LogbookService {
     });
   }
 
-  async findUsers(pertemuanId: number) {
+  async findUsers(pertemuanId: string) {
     return await this.userRepository.find({
       where: {
         user_kelas: {
@@ -123,7 +123,7 @@ export class LogbookService {
     });
   }
 
-  async findPertemuan(pertemuanId: number) {
+  async findPertemuan(pertemuanId: string) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: { id: pertemuanId },
       relations: ['minggu', 'minggu.kelas'],
@@ -144,7 +144,7 @@ export class LogbookService {
     } catch (error) {}
   }
 
-  async findOne(logbookId: number) {
+  async findOne(logbookId: string) {
     const logbook = await this.logBookRepository.findOne({
       where: { id: logbookId },
       relations: [
@@ -160,7 +160,7 @@ export class LogbookService {
     return logbook;
   }
 
-  async update(logbookId: number, updateLogbookDto: UpdateLogbookDto) {
+  async update(logbookId: string, updateLogbookDto: UpdateLogbookDto) {
     const logbook = await this.findOne(logbookId);
     if (!logbook) {
       throw new NotFoundException('logbook not found');
@@ -279,7 +279,7 @@ export class LogbookService {
     return await this.logBookRepository.save(logbook);
   }
 
-  async remove(logbookId: number) {
+  async remove(logbookId: string) {
     const logbook = await this.findOne(logbookId);
     if (!logbook) {
       throw new NotFoundException('logbook not found');

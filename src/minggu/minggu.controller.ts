@@ -22,7 +22,7 @@ export class MingguController {
   @Roles('admin')
   @Post(':kelasId')
   async create(
-    @Param('kelasId') kelasId: number,
+    @Param('kelasId') kelasId: string,
     @Body() createMingguDto: CreateMingguDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -43,7 +43,7 @@ export class MingguController {
   async formAdd(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     res.render('admin/minggu/create', { user: req.user, id });
   }
@@ -51,7 +51,7 @@ export class MingguController {
   @Roles('admin')
   @Get(':mingguId')
   async findOne(
-    @Param('mingguId') mingguId: number,
+    @Param('mingguId') mingguId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -67,14 +67,14 @@ export class MingguController {
 
   @Roles('admin')
   @Get('/session/:mingguId')
-  async getSession(@Param('mingguId') mingguId: number, @Res() res: Response) {
+  async getSession(@Param('mingguId') mingguId: string, @Res() res: Response) {
     const pertemuan = await this.mingguService.findPertemuan(mingguId);
     res.json(pertemuan);
   }
 
   @Roles('admin')
   @Get('/quiz/:mingguId')
-  async getQuiz(@Param('mingguId') mingguId: number, @Res() res: Response) {
+  async getQuiz(@Param('mingguId') mingguId: string, @Res() res: Response) {
     const quiz = await this.mingguService.findQuiz(mingguId);
     res.json(quiz);
   }
@@ -82,7 +82,7 @@ export class MingguController {
   @Roles('admin')
   @Get('formEdit/:mingguId')
   async formEdit(
-    @Param('mingguId') mingguId: number,
+    @Param('mingguId') mingguId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -93,7 +93,7 @@ export class MingguController {
   @Roles('admin')
   @Patch('update/:mingguId')
   async update(
-    @Param('mingguId') mingguId: number,
+    @Param('mingguId') mingguId: string,
     @Body() updateMingguDto: UpdateMingguDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -111,8 +111,8 @@ export class MingguController {
   @Roles('admin')
   @Delete(':id/:kelasId')
   async remove(
-    @Param('id') id: number,
-    @Param('kelasId') kelasId: number,
+    @Param('id') id: string,
+    @Param('kelasId') kelasId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

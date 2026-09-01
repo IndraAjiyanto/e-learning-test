@@ -46,14 +46,14 @@ export class TopicController {
   }
 
   @Get('formEdit/:id')
-  async findOne(@Param('id') id: number, @Res() res, @Req() req) {
+  async findOne(@Param('id') id: string, @Res() res, @Req() req) {
     const topic = await this.topicService.findOne(id);
     res.render('super_admin/topic/edit', { topic, user: req.user });
   }
 
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateTopicDto: UpdateTopicDto,
     @Res() res,
     @Req() req,
@@ -69,7 +69,7 @@ export class TopicController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number, @Res() res, @Req() req) {
+  async remove(@Param('id') id: string, @Res() res, @Req() req) {
     try {
       await this.topicService.remove(id);
       req.flash('success', 'Topic removed successfully');

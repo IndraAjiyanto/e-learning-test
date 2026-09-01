@@ -9,8 +9,8 @@ import {
 
 @Entity()
 export class Experience {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   content: string[];

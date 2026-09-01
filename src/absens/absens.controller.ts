@@ -25,9 +25,9 @@ export class AbsensController {
   @Roles('user')
   @Post(':pertemuanId/:userId/:kelasId')
   async create(
-    @Param('pertemuanId') pertemuanId: number,
-    @Param('kelasId') kelasId: number,
-    @Param('userId') userId: number,
+    @Param('pertemuanId') pertemuanId: string,
+    @Param('kelasId') kelasId: string,
+    @Param('userId') userId: string,
     @Res() res: Response,
     @Body() createAbsenDto: CreateAbsenDto,
     @Req() req: Request,
@@ -52,7 +52,7 @@ export class AbsensController {
   @Roles('admin')
   @Post(':pertemuanId')
   async createAbsen(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('pertemuanId') pertemuanId: string,
     @Res() res: Response,
     @Body() createAbsenDto: CreateAbsenDto,
     @Req() req: Request,
@@ -75,7 +75,7 @@ export class AbsensController {
   @Get('form/:id')
   async formAbsen(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
   ) {
     const pertemuan = await this.absensService.findPertemuan(id);
@@ -94,7 +94,7 @@ export class AbsensController {
   async absenCreate(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('pertemuanId') pertemuanId: string,
   ) {
     const users = await this.absensService.findUsers(pertemuanId);
     res.render('admin/absen/create', { user: req.user, users, pertemuanId });
@@ -103,7 +103,7 @@ export class AbsensController {
   @Roles('admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: any,
   ) {
@@ -114,7 +114,7 @@ export class AbsensController {
   @Roles('admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -125,8 +125,8 @@ export class AbsensController {
   @Roles('admin')
   @Patch(':absenId/:pertemuanId')
   async update(
-    @Param('pertemuanId') pertemuanId: number,
-    @Param('absenId') absenId: number,
+    @Param('pertemuanId') pertemuanId: string,
+    @Param('absenId') absenId: string,
     @Body() updateAbsenDto: UpdateAbsenDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -144,8 +144,8 @@ export class AbsensController {
   @Roles('admin')
   @Delete(':absenId/:pertemuanId')
   async remove(
-    @Param('absenId') absenId: number,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('absenId') absenId: string,
+    @Param('pertemuanId') pertemuanId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

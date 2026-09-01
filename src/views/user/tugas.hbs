@@ -91,7 +91,7 @@
                       {{#unless (eq this.proses 'acc')}}
                         <button 
                           type="button" 
-                          onclick="toggleEditForm({{this.id}})"
+                          onclick="toggleEditForm('{{this.id}}')"
                           class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
                         >
                           <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@
                           <button 
                             type="button"
                             :disabled="loading"
-                            onclick="toggleEditForm({{this.id}})"
+                            onclick="toggleEditForm('{{this.id}}')"
                             class="btn border-0 px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors"
                           >
                             {{t "test.assigment.cancel"}}

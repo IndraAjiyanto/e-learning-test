@@ -37,7 +37,7 @@ export class BlogController {
 
   @Get('detail/:id')
   async viewBlogDetail(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -88,7 +88,7 @@ export class BlogController {
 
   @Post('view/:id')
   async incrementViews(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -98,7 +98,7 @@ export class BlogController {
 
   @Post('like/:id')
   async likeBlog(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -114,7 +114,7 @@ export class BlogController {
 
   @Post('comment/:id')
   async commentBlog(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body('content') content: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -155,7 +155,7 @@ export class BlogController {
   async adminList(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     const blog = await this.blogService.findOne(id);
     const notSidebar = true;
@@ -169,7 +169,7 @@ export class BlogController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -187,15 +187,15 @@ export class BlogController {
   }
 
   @Get('reply/:comentId')
-  async getReply(@Param('comentId') comentId: number, @Res() res:Response, @Req() req:Request){
+  async getReply(@Param('comentId') comentId: string, @Res() res:Response, @Req() req:Request){
     const result = await this.blogService.getReply(comentId)
      return res.json({ success: true, reply: result });
   }
 
   @Post('reply/create/:comentId/:blogId')
   async createreply(
-    @Param('comentId') comentId: number,
-    @Param('blogId') blogId: number,
+    @Param('comentId') comentId: string,
+    @Param('blogId') blogId: string,
     @Body('content') content: string,
     @Res() res: Response,
     @Req() req:  Request
@@ -308,7 +308,7 @@ export class BlogController {
     folder: 'blog',
   })
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -401,7 +401,7 @@ if (updateBlogDto.isi['ja']) {
 
   @Patch('coment/:id')
   async editComent(
-    @Param('id') id:number,
+    @Param('id') id:string,
     @Body('content') content: string,
     @Res() res: Response,
     @Req() req: Request
@@ -415,7 +415,7 @@ if (updateBlogDto.isi['ja']) {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -454,7 +454,7 @@ await Promise.all(
 
   @Delete('comment/:id')
   async deleteComment(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

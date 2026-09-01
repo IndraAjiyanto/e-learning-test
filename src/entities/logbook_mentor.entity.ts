@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class LogbookMentor {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   kegiatan: string;

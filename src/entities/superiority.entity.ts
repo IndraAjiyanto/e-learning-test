@@ -11,8 +11,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Superiority {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   title: string[];

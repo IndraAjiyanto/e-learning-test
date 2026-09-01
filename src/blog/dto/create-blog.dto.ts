@@ -1,7 +1,7 @@
 import {
   IsArray,
   IsNotEmpty,
-  IsNumber,
+  IsUUID,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -35,11 +35,11 @@ export class CreateBlogDto {
   @IsArray()
   gambar: string[];
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  kategori_blog: number;
+  kategori_blog: string;
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  topic: number;
+  topic: string;
 }

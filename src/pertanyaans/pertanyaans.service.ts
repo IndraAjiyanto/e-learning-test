@@ -36,14 +36,14 @@ export class PertanyaansService {
     return await this.pertanyaanRepository.save(pertanyaan);
   }
 
-  async findPertanyaan(quizId: number) {
+  async findPertanyaan(quizId: string) {
     return await this.pertanyaanRepository.find({
       where: { quiz: { id: quizId } },
       relations: ['jawaban.jawaban_user'],
     });
   }
 
-  async findOne(pertanyaanId: number) {
+  async findOne(pertanyaanId: string) {
     const pertanyaan = await this.pertanyaanRepository.findOne({
       where: { id: pertanyaanId },
       relations: ['jawaban', 'quiz'],
@@ -54,7 +54,7 @@ export class PertanyaansService {
     return pertanyaan;
   }
 
-  async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
+  async update(pertanyaanId: string, updatePertanyaanDto: UpdatePertanyaanDto) {
     const pertanyaan = await this.findOne(pertanyaanId);
     if (!pertanyaan) {
       throw new NotFoundException('Question not found');
@@ -85,7 +85,7 @@ export class PertanyaansService {
     return await this.jawabanRepository.save(jawabanBaru);
   }
 
-  async remove(pertanyaanId: number) {
+  async remove(pertanyaanId: string) {
     const pertanyaan = await this.findOne(pertanyaanId);
     const jawaban = await this.jawabanRepository.find({
       where: { pertanyaan: { id: pertanyaanId } },

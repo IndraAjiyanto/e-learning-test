@@ -75,7 +75,7 @@ export class JawabanUsersService {
     return await this.jawabanUserRepository.save(jawabanToInsert);
   }
 
-  async searchAnswerUser(quizId: number, userId: number) {
+  async searchAnswerUser(quizId: string, userId: string) {
     return await this.jawabanUserRepository.find({
       where: { pertanyaan: { quiz: { id: quizId } }, user: { id: userId } },
       relations: ['jawaban','user'],
@@ -129,7 +129,7 @@ if (!user) {
 
   }
 
-  async nilaiCreate(JawabanUser: JawabanUser[], quizId: number, userId: number) {
+  async nilaiCreate(JawabanUser: JawabanUser[], quizId: string, userId: string) {
     if(JawabanUser.length === 0) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
@@ -145,7 +145,7 @@ if (!user) {
       });
     }else{
 
-    const jawabanIds = JawabanUser.map((j) => j.jawaban?.id).filter((id): id is number => id !== undefined && id !== null);
+    const jawabanIds = JawabanUser.map((j) => j.jawaban?.id).filter((id): id is string => id !== undefined && id !== null);
     const jawabanBenar = await this.jawabanRepository.findBy({
       id: In(jawabanIds),
     });
@@ -193,7 +193,7 @@ if (!user) {
 
   }
 
-  async updateProgresMinggu(mingguId: number, userId: number) {
+  async updateProgresMinggu(mingguId: string, userId: string) {
     const progres_minggu = await this.progresMingguRepository.findOne({
       where: { minggu: { id: mingguId }, user: { id: userId } },
     });
@@ -207,7 +207,7 @@ if (!user) {
     return progres_minggu;
   }
 
-  async progresMinggu(mingguId: number, userId: number) {
+  async progresMinggu(mingguId: string, userId: string) {
     const minggu_sebelum = await this.mingguRepository.findOne({
       where: { id: mingguId },
       relations: ['kelas'],
@@ -292,21 +292,21 @@ if (!user) {
     }
   }
 
-  async findByUserAndPertanyaan(userId: number, pertanyaanId: number) {
+  async findByUserAndPertanyaan(userId: string, pertanyaanId: string) {
     return await this.jawabanUserRepository.find({
       where: { user: { id: userId }, pertanyaan: { id: pertanyaanId } },
       relations: ['jawaban'],
     });
   }
 
-  async findJawabanByUser(userId: number) {
+  async findJawabanByUser(userId: string) {
     return await this.jawabanUserRepository.find({
       where: { user: { id: userId } },
       relations: ['jawaban'],
     });
   }
 
-  async AmountNilai(mingguId: number, userId: number) {
+  async AmountNilai(mingguId: string, userId: string) {
     const jawaban = await this.jawabanUserRepository.find({
       where: { pertanyaan: { quiz: { id: mingguId } }, user: { id: userId } },
       relations: ['jawaban'],
@@ -325,7 +325,7 @@ if (!user) {
     return totalNilai;
   }
 
-  async deleteAnswerUser(userId:number, quizId:number){
+  async deleteAnswerUser(userId:string, quizId:string){
 const pertanyaan = await this.pertanyaanRepository.find({
   where: { quiz: { id: quizId } },
   select: ["id"]

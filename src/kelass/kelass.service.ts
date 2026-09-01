@@ -84,7 +84,7 @@ export class KelassService {
     private readonly portfolioRepository: Repository<Portfolio>,
   ) {}
 
-  async findOneKategori(kategoriId: number) {
+  async findOneKategori(kategoriId: string) {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: kategoriId },
     });
@@ -94,7 +94,7 @@ export class KelassService {
     return kategori;
   }
 
-      async findNo(kelasId: number) {
+      async findNo(kelasId: string) {
         const installment = await this.findCicilanKelas(kelasId);
       const usedNumbers = installment.map((i) => Number(i.bulan));
       
@@ -138,7 +138,7 @@ export class KelassService {
     return await this.kelasRepository.save(kelas);
   }
 
-  async createMentoring(userId: number, kelasId: number) {
+  async createMentoring(userId: string, kelasId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId, role: 'admin' },
     });
@@ -160,7 +160,7 @@ export class KelassService {
     return await this.mentoringRepository.save(mentoring);
   }
 
-  async updateMentoring(userId: number, kelasId: number) {
+  async updateMentoring(userId: string, kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
     });
@@ -194,7 +194,7 @@ export class KelassService {
     }
   }
 
-  async addUserToKelas(userId: number, kelasId: number) {
+  async addUserToKelas(userId: string, kelasId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -418,7 +418,7 @@ export class KelassService {
     }
   }
 
-  async sumStudent(kelasId: number) {
+  async sumStudent(kelasId: string) {
     const kelas = await this.findOne(kelasId);
     if (kelas.check_paid === true) {
       const daftar = await this.pembayaranRepository.find({
@@ -441,7 +441,7 @@ export class KelassService {
     }
   }
 
-  async findMyCourse(userId: number) {
+  async findMyCourse(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User not found`);
@@ -466,14 +466,14 @@ export class KelassService {
     });
   }
 
-  async findKelasByMentoring(userId: number) {
+  async findKelasByMentoring(userId: string) {
     return await this.kelasRepository.find({
       where: { mentoring: { user: { id: userId } } },
       relations: ['user_kelas', 'kategori', 'jenis_kelas'],
     });
   }
 
-  async findQuiz(mingguId: number, userId: number) {
+  async findQuiz(mingguId: string, userId: string) {
     return await this.quizRepository
       .createQueryBuilder('quiz')
       .leftJoinAndSelect(
@@ -487,11 +487,11 @@ export class KelassService {
         userId,
       })
       .where('quiz.mingguId = :mingguId', { mingguId: mingguId })
-      .orderBy('quiz.id', 'ASC')
+      .orderBy('quiz.createdAt', 'ASC')
       .getMany();
   }
 
-  async findPertemuan(mingguId: number, userId: number) {
+  async findPertemuan(mingguId: string, userId: string) {
     return await this.pertemuanRepository
       .createQueryBuilder('pertemuan')
       .leftJoinAndSelect(
@@ -520,7 +520,7 @@ export class KelassService {
       .getMany();
   }
 
-  async findMinggu(kelasId: number, userId: number) {
+  async findMinggu(kelasId: string, userId: string) {
     const kelas = await this.findOne(kelasId);
     if (!kelas) {
       throw new NotFoundException('Program not found');
@@ -552,7 +552,7 @@ export class KelassService {
       .getMany();
   }
 
-  async findMingguTerakhir(kelasId: number) {
+  async findMingguTerakhir(kelasId: string) {
     const minggu = await this.mingguRepository.find({
       where: { kelas: { id: kelasId }, akhir: true },
     });
@@ -563,7 +563,7 @@ export class KelassService {
     }
   }
 
-  async findLogbookMentor(kelasId: number) {
+  async findLogbookMentor(kelasId: string) {
     return await this.logbookMentorRepository.find({
       where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
       relations: [
@@ -603,7 +603,7 @@ export class KelassService {
     });
   }
 
-  async findLogBookUser(kelasId: number) {
+  async findLogBookUser(kelasId: string) {
     return await this.logbookRepository.find({
       where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
       relations: [
@@ -654,12 +654,12 @@ export class KelassService {
     return await this.userRepository.find({ where: { role: 'user' } });
   }
 
-  async findKategoriMyProgram(userId: number){
+  async findKategoriMyProgram(userId: string){
     return await this.kategoriRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
   }
 
 
-  async findJenisKelasMyProgram(userId: number){
+  async findJenisKelasMyProgram(userId: string){
     return await this.jenisKelasRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
   }
 
@@ -679,14 +679,14 @@ export class KelassService {
   alphabet?: string;
   page: number;
   limit: number;
-  userId?: number; // kalau ada = admin, kalau tidak = super_admin
+  userId?: string; // kalau ada = admin, kalau tidak = super_admin
 }) {
   const query = this.kelasRepository.createQueryBuilder('kelas')
     .leftJoinAndSelect('kelas.kategori', 'kategori')
     .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
     .leftJoinAndSelect('kelas.mentoring', 'mentoring')
     .leftJoinAndSelect('mentoring.user', 'mentorUser')
-    .orderBy('kelas.id', 'DESC');
+    .orderBy('kelas.createdAt', 'DESC');
 
   // Filter by mentor (admin only)
   if (params.userId) {
@@ -720,7 +720,7 @@ if (params.search) {
     });
   }
 
-  async findMurid(id: number) {
+  async findMurid(id: string) {
     return await this.userRepository.find({
       where: { user_kelas: { kelas: { id: id } } },
     });
@@ -732,7 +732,7 @@ if (params.search) {
     });
   }
 
-async allClassExcept(kelasId: number) {
+async allClassExcept(kelasId: string) {
   const kelas = await this.kelasRepository.findOne({
     where: { id: kelasId },
     relations: ['kategori', 'jenis_kelas'],
@@ -754,7 +754,7 @@ async allClassExcept(kelasId: number) {
       jenis_kelas: { id: kelas.jenis_kelas.id },
     },
     relations: ['user_kelas', 'kategori', 'jenis_kelas'],
-    order: { id: 'DESC' },
+    order: { createdAt: 'DESC' },
     take: 1,
   });
 
@@ -769,7 +769,7 @@ async allClassExcept(kelasId: number) {
       kategori: { id: kelas.kategori.id },
     },
     relations: ['user_kelas', 'kategori', 'jenis_kelas'],
-    order: { id: 'DESC' },
+    order: { createdAt: 'DESC' },
     take: 1,
   });
 
@@ -784,7 +784,7 @@ async allClassExcept(kelasId: number) {
       jenis_kelas: { id: kelas.jenis_kelas.id },
     },
     relations: ['user_kelas', 'kategori', 'jenis_kelas'],
-    order: { id: 'DESC' },
+    order: { createdAt: 'DESC' },
     take: 1,
   });
 
@@ -812,7 +812,7 @@ async allClassExcept(kelasId: number) {
   return results;
 }
 
-  async checkUserInKelas(kelasId: number, userId: number) {
+  async checkUserInKelas(kelasId: string, userId: string) {
     return await this.userKelasRepository.findOne({
       where: { kelas: { id: kelasId }, user: { id: userId } },
     });
@@ -822,33 +822,33 @@ async allClassExcept(kelasId: number) {
     return await this.teknologiRepository.find();
   }
 
-  async findTeknologiKelas(kelasId: number) {
+  async findTeknologiKelas(kelasId: string) {
     return await this.teknologiRepository.find({
       where: { kelas: { id: kelasId } },
     });
   }
 
-  async findPertanyaanKelas(kelasId: number) {
+  async findPertanyaanKelas(kelasId: string) {
     return await this.pertanyaanKelasRepository.find({
       where: { kelas: { id: kelasId } },
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
   }
 
-  async findBenefitKelas(kelasId: number) {
+  async findBenefitKelas(kelasId: string) {
     return await this.benefitKelasRepository.find({
       where: { kelas: { id: kelasId } },
     });
   }
 
-  async findAlurKelas(kelasId: number) {
+  async findAlurKelas(kelasId: string) {
     return await this.alurKelasRepository.find({
       where: { kelas: { id: kelasId } },
       order: { alur_ke: 'ASC' },
     });
   }
 
-  async findOneKelas(kelasId: number) {
+  async findOneKelas(kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
       relations: ['kategori', 'jenis_kelas', 'teknologi', 'user_kelas'],
@@ -859,7 +859,7 @@ async allClassExcept(kelasId: number) {
     return kelas;
   }
 
-  async findOneKelasUser(kelasId: number) {
+  async findOneKelasUser(kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
       relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user'],
@@ -870,19 +870,19 @@ async allClassExcept(kelasId: number) {
     return kelas;
   }
 
-  async findOneUserKelas(userId: number, kelasId: number) {
+  async findOneUserKelas(userId: string, kelasId: string) {
     return await this.userKelasRepository.findOne({
       where: { kelas: { id: kelasId }, user: { id: userId } },
     });
   }
 
-  async findOnePortfolio(userId: number, kelasId: number) {
+  async findOnePortfolio(userId: string, kelasId: string) {
     return await this.portfolioRepository.findOne({
       where: { user: { id: userId }, kelas: { id: kelasId } },
     });
   }
 
-  async findOneKelasUserLaunch(kelasId: number) {
+  async findOneKelasUserLaunch(kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
       relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user'],
@@ -893,7 +893,7 @@ async allClassExcept(kelasId: number) {
     return kelas;
   }
 
-  async findOneKelasAdmin(kelasId: number) {
+  async findOneKelasAdmin(kelasId: string) {
     return await this.kelasRepository.findOne({
       where: { id: kelasId },
       relations: [
@@ -907,7 +907,7 @@ async allClassExcept(kelasId: number) {
     });
   }
 
-  async findMingguKelas(kelasId: number) {
+  async findMingguKelas(kelasId: string) {
     return await this.mingguRepository.find({
       where: { kelas: { id: kelasId } },
       order: { minggu_ke: 'ASC' },
@@ -915,61 +915,61 @@ async allClassExcept(kelasId: number) {
     });
   }
 
-  async findMentorKelas(kelasId: number) {
+  async findMentorKelas(kelasId: string) {
     return await this.mentorRepository.find({
       where: { kelas: { id: kelasId } },
       relations: ['teknologi'],
     });
   }
 
-  async findUserKelas(kelasId: number) {
+  async findUserKelas(kelasId: string) {
     return await this.userKelasRepository.find({
       where: { kelas: { id: kelasId } },
       relations: ['user'],
     });
   }
 
-  async findPembayaranKelas(kelasId: number) {
+  async findPembayaranKelas(kelasId: string) {
     return await this.pembayaranRepository.find({
       where: { kelas: { id: kelasId } },
       relations: ['user', 'kelas'],
     });
   }
 
-  async findPendaftaranKelas(kelasId: number) {
+  async findPendaftaranKelas(kelasId: string) {
     return await this.pendaftaranRepository.find({
       where: { kelas: { id: kelasId } },
       relations: ['user', 'kelas'],
     });
   }
 
-  async findPaymentInstallmentKelas(kelasId: number) {
+  async findPaymentInstallmentKelas(kelasId: string) {
     return await this.pembayaranRepository.find({
       where: { kelas: { id: kelasId }, cicilan: Not(IsNull()) },
       relations: ['user', 'kelas'],
     });
   }
 
-  async findCicilanKelas(kelasId: number) {
+  async findCicilanKelas(kelasId: string) {
     return await this.cicilanRepository.find({
       where: { kelas: { id: kelasId } },
       order: { bulan: 'ASC' },
     });
   }
 
-  async findAlumniKelas(kelasId: number) {
+  async findAlumniKelas(kelasId: string) {
     return await this.alumniRepository.find({
       where: { kelas: { id: kelasId } },
     });
   }
 
-  async findMentoringKelas(kelasId: number) {
+  async findMentoringKelas(kelasId: string) {
     return await this.userRepository.findOne({
       where: { mentoring: { kelas: { id: kelasId } } },
     });
   }
 
-  async findOne(kelasId: number) {
+  async findOne(kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
       relations: [
@@ -987,7 +987,7 @@ async allClassExcept(kelasId: number) {
     return kelas;
   }
 
-  async updateLaunch(kelasId: number, updateKelassDto: UpdateKelassDto) {
+  async updateLaunch(kelasId: string, updateKelassDto: UpdateKelassDto) {
     const kelas = await this.findOne(kelasId);
     if (!kelas) {
       throw new NotFoundException();
@@ -1001,7 +1001,7 @@ async allClassExcept(kelasId: number) {
     return await this.kelasRepository.save(kelas);
   }
 
-  async update(id: number, updateKelassDto: UpdateKelassDto) {
+  async update(id: string, updateKelassDto: UpdateKelassDto) {
     const kelas = await this.findOne(id);
     if (!kelas) {
       throw new NotFoundException(`Program not found`);
@@ -1049,7 +1049,7 @@ async allClassExcept(kelasId: number) {
     return await this.kelasRepository.save(kelas);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const kelas = await this.findOne(id);
     if (!kelas) {
       throw new NotFoundException('Program not found');
@@ -1057,7 +1057,7 @@ async allClassExcept(kelasId: number) {
     return await this.kelasRepository.remove(kelas);
   }
 
-  async removeUserKelas(userId: number, kelasId: number) {
+  async removeUserKelas(userId: string, kelasId: string) {
     const user_kelas = await this.userKelasRepository.findOne({
       where: { user: { id: userId }, kelas: { id: kelasId } },
     });

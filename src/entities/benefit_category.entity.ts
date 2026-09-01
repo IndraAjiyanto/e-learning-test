@@ -11,8 +11,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class BenefitCategory {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   icon: string;

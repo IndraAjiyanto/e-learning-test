@@ -24,8 +24,8 @@ export class JawabanTugassController {
   @Roles('user')
   @Post(':tugasId/:pertemuanId')
   async create(
-    @Param('tugasId') tugasId: number,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('tugasId') tugasId: string,
+    @Param('pertemuanId') pertemuanId: string,
     @Body() createJawabanTugassDto: CreateJawabanTugassDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -48,8 +48,8 @@ export class JawabanTugassController {
   @Roles('user')
   @Get(':pertemuanId/:tugasId')
   async findJawaban(
-    @Param('tugasId') tugasId: number,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('tugasId') tugasId: string,
+    @Param('pertemuanId') pertemuanId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -75,7 +75,7 @@ export class JawabanTugassController {
   @Roles('admin')
   @Get(':tugasId')
   async findOne(
-    @Param('tugasId') tugasId: number,
+    @Param('tugasId') tugasId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -92,8 +92,8 @@ export class JawabanTugassController {
   @Roles('admin', 'user')
   @Patch(':tugasId/:jawaban_tugasId')
   async update(
-    @Param('jawaban_tugasId') jawaban_tugasId: number,
-    @Param('tugasId') tugasId: number,
+    @Param('jawaban_tugasId') jawaban_tugasId: string,
+    @Param('tugasId') tugasId: string,
     @Body() updateJawabanTugassDto: UpdateJawabanTugassDto,
     @Res() res: Response,
     @Req() req: Request,

@@ -81,7 +81,7 @@ export class QuizService {
     }
   }
 
-  async findNilai(quizId: number) {
+  async findNilai(quizId: string) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
@@ -92,14 +92,14 @@ export class QuizService {
     });
   }
 
-  async findOne(quizId: number) {
+  async findOne(quizId: string) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
       relations: ['minggu', 'minggu.kelas'],
     });
   }
 
-  async checkStartQuestion(userId: number, quizId: number) {
+  async checkStartQuestion(userId: string, quizId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -123,7 +123,7 @@ export class QuizService {
 
   }
 
-  async findNilaiUser(userId: number, quziId: number) {
+  async findNilaiUser(userId: string, quziId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -133,7 +133,7 @@ export class QuizService {
     });
   }
 
-  async getRemainingTime(userId: number, quizId: number) {
+  async getRemainingTime(userId: string, quizId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -172,7 +172,7 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
 
   }
 
-  async findPertanyaan(quizId: number) {
+  async findPertanyaan(quizId: string) {
     return await this.pertanyaanRepository.find({
       where: {
         quiz: { id: quizId },
@@ -182,15 +182,15 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
         quiz: true,
       },
       order: {
-        id: 'ASC',
+        createdAt: 'ASC',
         jawaban: {
-          id: 'ASC',
+          createdAt: 'ASC',
         },
       },
     });
   }
 
-  async update(quizId: number, updateQuizDto: UpdateQuizDto) {
+  async update(quizId: string, updateQuizDto: UpdateQuizDto) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
@@ -200,7 +200,7 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
     return await this.quizRepository.save(quiz);
   }
 
-  async remove(quizId: number) {
+  async remove(quizId: string) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');

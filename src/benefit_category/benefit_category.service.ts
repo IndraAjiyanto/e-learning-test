@@ -29,7 +29,7 @@ export class BenefitCategoryService {
     return await this.benefitCategoryRepository.save(benefitCategory);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const benefitCategory = await this.benefitCategoryRepository.findOne({
       where: { id },
       relations: ['kategori'],
@@ -40,7 +40,7 @@ export class BenefitCategoryService {
     return benefitCategory;
   }
 
-  async update(id: number, updateBenefitCategoryDto: UpdateBenefitCategoryDto) {
+  async update(id: string, updateBenefitCategoryDto: UpdateBenefitCategoryDto) {
     const benefitCategory = await this.findOne(id);
     if (updateBenefitCategoryDto.kategoriId) {
       const kategori = await this.kategoriRepository.findOne({
@@ -55,7 +55,7 @@ export class BenefitCategoryService {
     return await this.benefitCategoryRepository.save(benefitCategory);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const benefitCategory = await this.findOne(id);
     return await this.benefitCategoryRepository.remove(benefitCategory);
   }

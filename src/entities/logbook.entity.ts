@@ -14,8 +14,8 @@ export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
 export class Logbook {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   kegiatan: string;

@@ -32,7 +32,7 @@ export class AlurKelasController {
   @Roles('super_admin')
   @Get('detail/:alurKelasId')
   async findOneDetail(
-    @Param('alurKelasId') alurKelasId: number,
+    @Param('alurKelasId') alurKelasId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -55,7 +55,7 @@ export class AlurKelasController {
     @Req() req: Request,
   ) {
     try {
-      const kelasId = Number(req.body.kelas_id);
+      const kelasId = req.body.kelas_id;
       createAlurKelaDto.kelasId = kelasId;
       await this.alurKelasService.create(createAlurKelaDto);
       req.flash('success', 'Flow Program successfully created');
@@ -69,7 +69,7 @@ export class AlurKelasController {
   @Roles('super_admin')
   @Post(':kelasId')
   async create(
-    @Param('kelasId') kelasId: number,
+    @Param('kelasId') kelasId: string,
     @Body() createAlurKelaDto: CreateAlurKelaDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -88,7 +88,7 @@ export class AlurKelasController {
   @Roles('super_admin')
   @Get('formCreate/:kelasId')
   async formCreateWithKelas(
-    @Param('kelasId') kelasId: number,
+    @Param('kelasId') kelasId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -98,7 +98,7 @@ export class AlurKelasController {
   @Roles('super_admin')
   @Get('formEdit/:alurKelasId')
   async formEdit(
-    @Param('alurKelasId') alurKelasId: number,
+    @Param('alurKelasId') alurKelasId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -109,8 +109,8 @@ export class AlurKelasController {
   @Roles('super_admin')
   @Patch(':alurKelasId/:kelasId')
   async update(
-    @Param('alurKelasId') alurKelasId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('alurKelasId') alurKelasId: string,
+    @Param('kelasId') kelasId: string,
     @Body() updateAlurKelaDto: UpdateAlurKelaDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -128,8 +128,8 @@ export class AlurKelasController {
   @Roles('super_admin')
   @Delete(':alurKelasId/:kelasId')
   async remove(
-    @Param('alurKelasId') alurKelasId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('alurKelasId') alurKelasId: string,
+    @Param('kelasId') kelasId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

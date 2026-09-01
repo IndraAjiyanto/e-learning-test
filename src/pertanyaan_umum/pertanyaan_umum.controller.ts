@@ -22,7 +22,7 @@ export class PertanyaanUmumController {
   @Roles('super_admin')
   @Post(':kategoriId')
   async create(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Body() createPertanyaanUmumDto: CreatePertanyaanUmumDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -41,7 +41,7 @@ export class PertanyaanUmumController {
   @Roles('super_admin')
   @Get('formCreate/:kategoriId')
   async formCreate(
-    @Param('kategoriId') kategoriId: number,
+    @Param('kategoriId') kategoriId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -54,7 +54,7 @@ export class PertanyaanUmumController {
   @Roles('super_admin')
   @Get('formEdit/:pertanyaan_umumId')
   async formEdit(
-    @Param('pertanyaan_umumId') pertanyaan_umumId: number,
+    @Param('pertanyaan_umumId') pertanyaan_umumId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -69,8 +69,8 @@ export class PertanyaanUmumController {
   @Roles('super_admin')
   @Patch(':pertanyaan_umumId/:kategoriId')
   async update(
-    @Param('pertanyaan_umumId') pertanyaan_umumId: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('pertanyaan_umumId') pertanyaan_umumId: string,
+    @Param('kategoriId') kategoriId: string,
     @Body() updatePertanyaanUmumDto: UpdatePertanyaanUmumDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -91,8 +91,8 @@ export class PertanyaanUmumController {
   @Roles('super_admin')
   @Delete(':pertanyaan_umumId/:kategoriId')
   async remove(
-    @Param('pertanyaan_umumId') pertanyaan_umumId: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('pertanyaan_umumId') pertanyaan_umumId: string,
+    @Param('kategoriId') kategoriId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

@@ -8,8 +8,8 @@ import {
 
 @Entity('visi')
 export class Visi {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   visi: string[];

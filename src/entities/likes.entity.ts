@@ -11,8 +11,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Likes {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Blog, (blog) => blog.likes, {
     onDelete: 'CASCADE',

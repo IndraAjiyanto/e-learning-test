@@ -14,8 +14,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Mentor {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   nama: string;

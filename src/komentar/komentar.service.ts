@@ -26,7 +26,7 @@ export class KomentarService {
     return await this.komentarRepository.save(komentar);
   }
 
-  async updateJawabanTugas(jawaban_tugasId: number, proses: Proses) {
+  async updateJawabanTugas(jawaban_tugasId: string, proses: Proses) {
     const jawaban_tugas = await this.jawabanTugasRepository.findOne({
       where: { id: jawaban_tugasId },
     });

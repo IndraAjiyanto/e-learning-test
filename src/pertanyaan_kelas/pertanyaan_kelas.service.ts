@@ -36,17 +36,17 @@ export class PertanyaanKelasService {
   async findAll() {
     return await this.pertanyaanKelasRepository.find({
       relations: ['kelas'],
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
   async findAllKelas() {
     return await this.kelasRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const pertanyaanKelas = await this.pertanyaanKelasRepository.findOne({
       where: { id },
       relations: ['kelas'],
@@ -59,7 +59,7 @@ export class PertanyaanKelasService {
     return pertanyaanKelas;
   }
 
-  async update(id: number, updatePertanyaanKelaDto: UpdatePertanyaanKelaDto) {
+  async update(id: string, updatePertanyaanKelaDto: UpdatePertanyaanKelaDto) {
     const pertanyaanKelas = await this.findOne(id);
 
     if (updatePertanyaanKelaDto.kelasId) {
@@ -78,7 +78,7 @@ export class PertanyaanKelasService {
     return await this.pertanyaanKelasRepository.save(pertanyaanKelas);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const pertanyaanKelas = await this.findOne(id);
     return await this.pertanyaanKelasRepository.remove(pertanyaanKelas);
   }

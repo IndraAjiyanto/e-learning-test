@@ -10,8 +10,8 @@ import { Blog } from './blog.entity';
 
 @Entity()
 export class KategoriBlog {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   nama: string[];

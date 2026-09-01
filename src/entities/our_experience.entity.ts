@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class OurExperience {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   icon: string;

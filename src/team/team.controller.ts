@@ -77,7 +77,7 @@ export class TeamController {
   @Roles('super_admin')
   @Get('formEdit/:teamId')
   async findOne(
-    @Param('teamId') teamId: number,
+    @Param('teamId') teamId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -97,7 +97,7 @@ export class TeamController {
     folder: 'profile_team',
   })
   async update(
-    @Param('teamId') teamId: number,
+    @Param('teamId') teamId: string,
     @Body() updateTeamDto: UpdateTeamDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -120,7 +120,7 @@ export class TeamController {
   @Roles('super_admin')
   @Delete(':teamId')
   async remove(
-    @Param('teamId') teamId: number,
+    @Param('teamId') teamId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

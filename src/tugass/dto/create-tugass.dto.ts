@@ -8,5 +8,5 @@ export class CreateTugassDto {
   judul: string;
 
   @IsNumber()
-  pertemuanId: number;
+  pertemuanId: string;
 }

@@ -21,16 +21,16 @@ export class CreateKelassDto {
   metode: Metode;
 
   @IsInt()
-  kategoriId: number;
+  kategoriId: string;
 
   @IsArray()
   lokasi: string[];
 
   @IsInt()
-  jenis_kelasId: number;
+  jenis_kelasId: string;
 
   @IsInt()
-  mentoringId: number;
+  mentoringId: string;
 
   @IsInt()
   @IsOptional()

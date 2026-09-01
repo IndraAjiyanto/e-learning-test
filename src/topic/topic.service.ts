@@ -21,16 +21,16 @@ export class TopicService {
     return await this.topicRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.topicRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateTopicDto: UpdateTopicDto) {
+  async update(id: string, updateTopicDto: UpdateTopicDto) {
     await this.topicRepository.update(id, updateTopicDto);
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.topicRepository.delete(id);
   }
 }

@@ -54,7 +54,7 @@ export class PortfoliosService {
     return await this.portfolioRepository.save(portfolio);
   }
 
-  async findByUser(userId: number) {
+  async findByUser(userId: string) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: [
@@ -74,18 +74,18 @@ export class PortfoliosService {
     return await this.jenisKelasRepository.find();
   }
 
-  async findKategoriMyPortfolio(userId: number) {
+  async findKategoriMyPortfolio(userId: string) {
     return await this.kategoriRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
   }
 
-  async findJenisKelasMyPortfolio(userId: number) {
+  async findJenisKelasMyPortfolio(userId: string) {
     return await this.jenisKelasRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
   }
 
   async findAll(
     page: number = 1,
     limit: number = 6,
-    kategoriId?: number,
+    kategoriId?: string,
     jenisKelasId?: number,
   ) {
     const skip = (page - 1) * limit;
@@ -122,7 +122,7 @@ export class PortfoliosService {
     };
   }
 
-  async findOne(portfolioId: number) {
+  async findOne(portfolioId: string) {
     const portfolio = await this.portfolioRepository.findOne({
       where: { id: portfolioId },
       relations: ['kelas', 'kelas.teknologi'],
@@ -190,7 +190,7 @@ export class PortfoliosService {
     return JSON.stringify(editorjsData);
   }
 
-  async update(portfolioId: number, updatePortfolioDto: UpdatePortfolioDto) {
+  async update(portfolioId: string, updatePortfolioDto: UpdatePortfolioDto) {
     await this.portfolioRepository.update(portfolioId, updatePortfolioDto);
   }
 
@@ -213,7 +213,7 @@ export class PortfoliosService {
     return newImage;
   }
 
-  async remove(portfolioId: number) {
+  async remove(portfolioId: string) {
     const portfolio = await this.findOne(portfolioId);
     if (!portfolio) {
       throw new NotFoundException('Portfolio Not Found');

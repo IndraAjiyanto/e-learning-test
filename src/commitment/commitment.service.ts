@@ -35,7 +35,7 @@ export class CommitmentService {
     });
   }
 
-  async findOne(id: number): Promise<Commitment> {
+  async findOne(id: string): Promise<Commitment> {
     const commitment = await this.commitmentRepository.findOne({
       where: { id },
     });
@@ -46,7 +46,7 @@ export class CommitmentService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateCommitmentDto: UpdateCommitmentDto,
   ): Promise<Commitment> {
     const commitment = await this.findOne(id);
@@ -54,7 +54,7 @@ export class CommitmentService {
     return await this.commitmentRepository.save(commitment);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const commitment = await this.findOne(id);
     await this.commitmentRepository.remove(commitment);
     const allCommitment = await this.commitmentRepository.find();

@@ -21,8 +21,8 @@ export class KomentarController {
   @Roles('admin')
   @Post(':tugasId/:jawaban_tugasId')
   async create(
-    @Param('tugasId') tugasId: number,
-    @Param('jawaban_tugasId') jawaban_tugasId: number,
+    @Param('tugasId') tugasId: string,
+    @Param('jawaban_tugasId') jawaban_tugasId: string,
     @Body() createKomentarDto: CreateKomentarDto,
     @Req() req: Request,
     @Res() res: Response,

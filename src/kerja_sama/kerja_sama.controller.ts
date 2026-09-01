@@ -80,7 +80,7 @@ export class KerjaSamaController {
   @Roles('super_admin')
   @Get(':kerja_samaId')
   async findOne(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('kerja_samaId') kerja_samaId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -91,7 +91,7 @@ export class KerjaSamaController {
   @Roles('super_admin')
   @Get('formEdit/:kerja_samaId')
   async formEdit(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('kerja_samaId') kerja_samaId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -116,7 +116,7 @@ export class KerjaSamaController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('kerja_samaId') kerja_samaId: string,
     @Body() updateKerjaSamaDto: UpdateKerjaSamaDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -139,7 +139,7 @@ export class KerjaSamaController {
   @Roles('super_admin')
   @Delete(':kerja_samaId')
   async remove(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('kerja_samaId') kerja_samaId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

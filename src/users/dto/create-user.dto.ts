@@ -39,7 +39,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  kelasId?: number[];
+  kelasId?: string[];
 
   @IsEnum(['super_admin', 'admin', 'user'])
   @IsOptional()

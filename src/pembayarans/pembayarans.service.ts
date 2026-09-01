@@ -100,7 +100,7 @@ export class PembayaransService {
     }
   }
 
-  async addUserToKelas(userId: number, kelasId: number) {
+  async addUserToKelas(userId: string, kelasId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: [],
@@ -210,7 +210,7 @@ export class PembayaransService {
     }
   }
 
-  async removeUserKelas(userId: number, kelasId: number): Promise<UserKelas> {
+  async removeUserKelas(userId: string, kelasId: string): Promise<UserKelas> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -236,7 +236,7 @@ export class PembayaransService {
     return await this.userKelasRepository.remove(userKelas);
   }
 
-  async checkPembayaran(userId: number, kelasId: number) {
+  async checkPembayaran(userId: string, kelasId: string) {
     const pembayaran = await this.pembayaranRepository.find({
       where: {
         user: { id: userId },
@@ -251,7 +251,7 @@ export class PembayaransService {
     }
   }
 
-  async findKelas(kelasId: number) {
+  async findKelas(kelasId: string) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
       relations: ['minggu', 'kategori'],
@@ -263,7 +263,7 @@ export class PembayaransService {
     }
   }
 
-  async findPembayaran(userId: number) {
+  async findPembayaran(userId: string) {
     const pembayaran = await this.pembayaranRepository.find({
       where: {
         user: { id: userId },
@@ -279,7 +279,7 @@ export class PembayaransService {
     }
   }
 
-  async findCicilan(userId: number) {
+  async findCicilan(userId: string) {
     return await this.pembayaranRepository.find({
       where: {
         user: { id: userId },
@@ -289,7 +289,7 @@ export class PembayaransService {
     });
   }
 
-  async findPendaftaran(userId: number) {
+  async findPendaftaran(userId: string) {
     return await this.pendaftaranRepository.find({
       where: { user: { id: userId } },
       relations: ['kelas', 'kelas.kategori'],
@@ -316,7 +316,7 @@ export class PembayaransService {
     });
   }
 
-  async findOne(pembayaranId: number) {
+  async findOne(pembayaranId: string) {
     const pembayaran = await this.pembayaranRepository.findOne({
       where: { id: pembayaranId },
       relations: ['user', 'kelas'],
@@ -328,7 +328,7 @@ export class PembayaransService {
     }
   }
 
-  async update(pembayaranId: number, updatePembayaranDto: UpdatePembayaranDto) {
+  async update(pembayaranId: string, updatePembayaranDto: UpdatePembayaranDto) {
     const pembayaran = await this.findOne(pembayaranId);
     if (!pembayaran) {
       return;

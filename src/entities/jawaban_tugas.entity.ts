@@ -16,8 +16,8 @@ export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
 export class JawabanTugas {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   file: string;

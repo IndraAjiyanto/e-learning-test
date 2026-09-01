@@ -58,7 +58,7 @@ export class BlogService {
     });
   }
 
-async getReply(comentId: number) {
+async getReply(comentId: string) {
   return await this.comentRepository.find({
     where: { replies: { id: comentId } },  // ← query by relasi
     relations: ['user'],                    // ← load user-nya sekalian
@@ -180,7 +180,7 @@ async findBlogPaginated(params: {
     return JSON.stringify(editorjsData);
   }
 
-async findOne(id: number) {
+async findOne(id: string) {
   const blog = await this.blogRepository.findOne({
     where: { id },
     relations: [
@@ -202,7 +202,7 @@ async findOne(id: number) {
   return blog;
 }
 
-async createReply(comentId: number, userId: number, blogId: number, content: string) {
+async createReply(comentId: string, userId: string, blogId: string, content: string) {
   const coment = await this.comentRepository.findOne({ where: { id: comentId } });
   if (!coment) throw new NotFoundException('coment not found');
 
@@ -222,7 +222,7 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
   await this.comentRepository.save(data);
 }
 
-  async addComment(blogId: number, userId: number, content: string) {
+  async addComment(blogId: string, userId: string, content: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -243,11 +243,11 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     return await this.comentRepository.save(comment);
   }
 
-  async incrementViews(id: number) {
+  async incrementViews(id: string) {
     await this.blogRepository.increment({ id }, 'views', 1);
   }
 
-  async incrementLikes(id: number, userId: number) {
+  async incrementLikes(id: string, userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -291,14 +291,14 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     });
   }
 
-  async countLikes(blogId: number) {
+  async countLikes(blogId: string) {
     const count = await this.likeRepository.count({
       where: { blog: { id: blogId } },
     });
     return count;
   }
 
-  async userLike(userId: number, blogId: number){
+  async userLike(userId: string, blogId: string){
     const user = await this.userRepository.findOne({where: {id: userId}})
     if(!user){
       throw new NotFoundException("user not found");
@@ -316,7 +316,7 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     return like;
   }
 
-  async getRecentBlogs(id: number) {
+  async getRecentBlogs(id: string) {
   const blog = await this.blogRepository.findOne({
     where: { id },
     relations: ['kategori_blog', 'topic'],
@@ -402,7 +402,7 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     return newImage;
   }
 
-  async update(id: number, updateBlogDto: UpdateBlogDto) {
+  async update(id: string, updateBlogDto: UpdateBlogDto) {
     const blog = await this.findOne(id);
     if (!blog) {
       throw new NotFoundException('Blog not found');
@@ -441,7 +441,7 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     return await this.blogRepository.save(blog);
   }
 
-  async editComment(comentId: number, content: string, userId: number){
+  async editComment(comentId: string, content: string, userId: string){
     const coment = await this.comentRepository.findOne({where: {id: comentId}})
     if(!coment){
       throw new NotFoundException('coment not found')
@@ -455,7 +455,7 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     await this.comentRepository.save({id: coment.id, content: content})
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const blog = await this.findOne(id);
     if (!blog) {
       throw new NotFoundException();
@@ -463,7 +463,7 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
     return await this.blogRepository.remove(blog);
   }
 
-  async deleteComment(id: number) {
+  async deleteComment(id: string) {
     const comment = await this.comentRepository.findOne({
       where: { id },
     });

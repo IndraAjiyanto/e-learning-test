@@ -12,7 +12,7 @@ export class CreateCicilanDto {
 
   @IsNumber()
   @IsNotEmpty()
-  kelasId: number;
+  kelasId: string;
 
   @IsNumber()
   @IsNotEmpty()

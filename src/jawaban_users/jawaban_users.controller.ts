@@ -31,7 +31,7 @@ export class JawabanUsersController {
   @Roles('user')
   @Post(':quizId')
   async create(
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() createJawabanUserDto: CreateJawabanUserDto,
