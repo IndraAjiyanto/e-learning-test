@@ -30,6 +30,14 @@
           password: false,
           role: false
         },
+        passwordTouched: false,
+        passwordRules: {
+          minLength: false,
+          uppercase: false,
+          lowercase: false,
+          number: false,
+          special: false
+        },
 
         validateImage(file) {
           if (!file) {
@@ -125,11 +133,20 @@
               break;
 
             case 'password':
+              this.passwordTouched = true;
+              this.passwordRules = {
+                minLength: value.length >= 8,
+                uppercase: /[A-Z]/.test(value),
+                lowercase: /[a-z]/.test(value),
+                number: /[0-9]/.test(value),
+                special: /[^A-Za-z0-9]/.test(value)
+              };
+
               if (!value) {
                 this.formErrors.password = 'Password is required';
                 this.formValid.password = false;
-              } else if (value.length < 6) {
-                this.formErrors.password = 'Password must be at least 6 characters';
+              } else if (!Object.values(this.passwordRules).every(Boolean)) {
+                this.formErrors.password = 'Password belum memenuhi semua ketentuan di bawah';
                 this.formValid.password = false;
               } else {
                 this.formErrors.password = '';

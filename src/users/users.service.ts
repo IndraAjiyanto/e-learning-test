@@ -33,11 +33,16 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    validatePasswordStrength(createUserDto.password);
+
     const cekEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
     if (!cekEmail) {
-      const user = await this.userRepository.create({ ...createUserDto, isVerified: true });
+      const user = await this.userRepository.create({
+        ...createUserDto,
+        isVerified: true,
+      });
       return await this.userRepository.save(user);
     } else {
       throw new NotFoundException('Email is already registered');
@@ -56,26 +61,27 @@ export class UsersService {
     });
   }
 
-async findAllPaginated(params: {
-  search?: string;
-  page: number;
-  limit: number;
-}) {
-  const query = this.userRepository.createQueryBuilder('user')
-    .orderBy('user.createdAt', 'DESC');
+  async findAllPaginated(params: {
+    search?: string;
+    page: number;
+    limit: number;
+  }) {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .orderBy('user.createdAt', 'DESC');
 
-  if (params.search) {
-    query.where(
-      '(user.username ILIKE :search OR user.email ILIKE :search OR CAST(user.role AS text) ILIKE :search)',
-      { search: `%${params.search}%` }
-    );
+    if (params.search) {
+      query.where(
+        '(user.username ILIKE :search OR user.email ILIKE :search OR CAST(user.role AS text) ILIKE :search)',
+        { search: `%${params.search}%` },
+      );
+    }
+
+    query.skip((params.page - 1) * params.limit).take(params.limit);
+
+    const [data, total] = await query.getManyAndCount();
+    return { data, total };
   }
-
-  query.skip((params.page - 1) * params.limit).take(params.limit);
-
-  const [data, total] = await query.getManyAndCount();
-  return { data, total };
-}
 
   async findPortfolio(userId: string) {
     return await this.portfolioRepository.find({
