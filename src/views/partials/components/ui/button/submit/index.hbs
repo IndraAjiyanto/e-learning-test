@@ -1,0 +1,41 @@
+{{!--
+  Komponen: Button Submit (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/button/submit/index.hbs
+
+  Tombol submit dengan state loading (Alpine.js) untuk form submission.
+
+  Props:
+  - text        : Teks tombol (wajib)
+  - type        : type="submit" | type="button" (default: "submit")
+  - variant     : primary | secondary | outline | white (default: primary)
+  - class       : Kelas tambahan for layout/sizing (default: "w-full h-[48px] sm:h-12")
+  - labelClass  : Kelas tambahan untuk label teks di dalam tombol
+--}}
+
+<button
+  type="{{default type 'submit'}}"
+  :disabled="loading"
+  :class="loading ? 'cursor-not-allowed opacity-50' : ''"
+  class="
+    inline-flex items-center justify-center font-bold transition-all duration-300 active:scale-95 rounded-[12px] font-montserrat
+    {{#if (eq variant 'secondary')}}
+      bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else if (eq variant 'outline')}}
+      bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
+    {{else if (eq variant 'white')}}
+      bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+    {{else}}
+      bg-[#003060] hover:bg-[#001f3f] text-white shadow-md
+    {{/if}}
+    {{default class 'w-full h-[48px] sm:h-12'}}
+  "
+>
+  <span
+    x-show="loading"
+    class="loading loading-spinner loading-xs"
+    aria-hidden="true"
+  ></span>
+  <span x-show="!loading" class="{{default labelClass 'text-sm sm:text-base'}}">
+    {{text}}
+  </span>
+</button>

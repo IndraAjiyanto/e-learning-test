@@ -1,0 +1,46 @@
+{{#if isMobile}}
+<a
+  :href="'/category/program/' + kat.name"
+  @click="setActive('/category/program/' + kat.name)"
+  class='flex items-start rounded-xl p-3 border border-transparent hover:border-white/20 hover:bg-white/5 transition-all duration-300'
+>
+  <div class='w-10 h-10 bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'>
+    <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-5 h-5 object-contain' alt='' />
+  </div>
+  <div class='flex-1 ml-3'>
+    <p class='font-bold text-sm text-white' x-text='kat.name'></p>
+    <p class='text-xs mt-1 text-white/70 leading-relaxed' x-text='truncate(getByLang(kat.text,lang), 80)'></p>
+  </div>
+</a>
+{{else}}
+  {{#if isAuthenticated}}
+  <a
+    :href="'/category/program/' + kat.name"
+    @click="setActive('/category/program/' + kat.name)"
+    :class="isActive('/category/program/' + kat.name) ? 'border-[#70B8E8] ring-1 ring-[#70B8E8] shadow-sm' : 'border-gray-200 hover:border-[#70B8E8] hover:shadow-sm'"
+    class='flex items-start gap-4 rounded-xl p-4 border bg-white transition-all duration-300'
+  >
+    <div class='w-14 h-14 bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'>
+      <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-7 h-7 object-contain' alt='' />
+    </div>
+    <div class='flex-1'>
+      <p class='font-bold text-gray-900 text-base font-montserrat mb-1' x-text='kat.name'></p>
+      <p class='text-sm text-gray-600 leading-relaxed' x-text='truncate(getByLang(kat.text,lang), 120)'></p>
+    </div>
+  </a>
+  {{else}}
+  <a
+    :href="'/category/program/' + kat.name"
+    @click="setActive('/category/program/' + kat.name)"
+    class="group relative flex items-start p-5 rounded-xl border-2 border-gray-300 shadow-sm hover:border-gray-400 hover:shadow-[0_8px_25px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-all duration-300 cursor-pointer"
+  >
+    <div class='w-[56px] h-[56px] rounded-full bg-[#70B4E3] flex-shrink-0 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:bg-[#5CA5D7] transition-all duration-300'>
+      <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-7 h-7 object-contain' alt='' />
+    </div>
+    <div class='ml-4 flex-1'>
+      <p class='text-[15px] font-bold text-gray-900 mb-1.5 group-hover:text-[#0A2540] transition-colors duration-300' x-text='kat.name'></p>
+      <p class='text-[12.5px] leading-relaxed text-gray-500 line-clamp-3' x-text='getByLang(kat.text, lang)'></p>
+    </div>
+  </a>
+  {{/if}}
+{{/if}}

@@ -1,142 +1,32 @@
 <!-- PROGRAM SECTION (CHOOSE YOUR LEARNING PATH) -->
-<section id="programs" class="w-full bg-[#FAFAFA] font-montserrat">
-  
-  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
-  <div class="block sm:hidden w-full py-12 px-5">
+<section id="programs" class="w-full bg-[#FAFAFA] font-montserrat py-12 sm:py-20">
+  <div class="container mx-auto px-5 sm:px-6 lg:px-12 max-w-[1440px]">
     
     <!-- Section Header -->
-    <div class="text-center mb-8">
-      <h2 class="font-montserrat font-bold text-2xl text-center mb-2">
+    <div class="text-center mb-8 sm:mb-12">
+      <h2 class="font-montserrat font-bold sm:font-semibold text-2xl sm:text-3xl lg:text-4xl text-center mb-2 sm:mb-5">
         <span class="text-[#6EB6E5]">Choose</span> <span class="text-black">Your Learning Path</span>
       </h2>
-      <p class="font-sans font-normal text-sm text-black/80 text-center max-w-[340px] mx-auto">
+      <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-black/80 text-center max-w-[340px] sm:max-w-2xl mx-auto">
         Select the program that aligns with your goals and passion.
       </p>
     </div>
 
-    <!-- Course Cards Stack for Mobile -->
-    <div class="flex flex-col gap-6 w-full items-center">
+    <!-- Course Cards Grid -->
+    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-items-center">
       {{#each courses}}
-        <div class="w-full bg-white border border-gray-200/80 rounded-[20px] p-5 shadow-xs flex flex-col justify-between gap-4">
-          <div>
-            <!-- Batch Badge -->
-            <div class="w-[110px] h-[34px] rounded-[6px] bg-[#0B1F3B1A] text-[#003060] font-montserrat font-semibold text-xs flex items-center justify-center mb-3 uppercase">
-              BATCH 6.2
-            </div>
-
-            <!-- Course Image -->
-            <div class="w-full aspect-[16/10] rounded-[12px] overflow-hidden bg-gray-100 mb-4">
-              <img 
-                src="{{this.image}}" 
-                alt="{{this.name}}" 
-                class="w-full h-full object-cover"
-              />
-            </div>
-
-            <!-- Course Info -->
-            <div class="w-full">
-              <h3 class="font-montserrat font-bold text-xl leading-tight text-[#003060] mb-3 text-left">
-                {{this.name}}
-              </h3>
-              <p class="font-sans font-normal text-[13px] leading-[20px] tracking-normal text-black/80 mb-4 text-left">
-                {{getByLang this.description ../lang}}
-              </p>
-
-              <!-- Tags / Badges -->
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 h-[32px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] leading-none px-2.5 rounded-[6px]">
-                  <i class="fa-solid fa-location-dot text-[11px] text-[#003060]"></i> {{#if (eq this.method 'online')}}Online{{else}}Offline{{/if}}
-                </span>
-                <span class="inline-flex items-center gap-1.5 h-[32px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] leading-none px-2.5 rounded-[6px]">
-                  <i class="fa-solid fa-graduation-cap text-[11px] text-[#003060]"></i> {{#if this.month}}{{this.month}} Bulan{{else}}—{{/if}} Months
-                </span>
-                <span class="inline-flex items-center gap-1.5 h-[32px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] leading-none px-2.5 rounded-[6px]">
-                  <i class="fa-solid fa-couch text-[11px] text-[#003060]"></i> {{#if this.quota}}{{this.quota}}{{else}}—{{/if}} Students
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Button -->
-          <div class="w-full pt-2">
-            <a 
-              href="/program/{{this.id}}" 
-              class="w-full h-[48px] flex items-center justify-center gap-2 bg-[#003060] text-white font-montserrat font-semibold text-[14px] rounded-[10px] shadow-sm transition-all active:scale-95"
-            >
-              <span>Detail Program</span>
-              <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
-          </div>
-        </div>
+        {{> components/category_program/card_paid
+            id=this.id
+            image=this.image
+            name=this.name
+            description=(getByLang this.description ../lang)
+            method=this.method
+            month=this.month
+            quota=this.quota
+        }}
       {{/each}}
     </div>
 
   </div>
-
-  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
-  <div class="hidden sm:block py-20">
-    <div class="container mx-auto px-6 lg:px-12 max-w-[1440px]">
-      
-      <!-- Section Header -->
-      <div class="text-center mb-12">
-        <h2 class="font-montserrat font-semibold text-3xl sm:text-4xl text-center mb-5">
-          <span class="text-[#6EB6E5]">Choose</span> <span class="text-black">Your Learning Path</span>
-        </h2>
-        <p class="font-sans font-normal text-base sm:text-lg text-black/80 text-center max-w-2xl mx-auto">
-          Select the program that aligns with your goals and passion.
-        </p>
-      </div>
-
-      <!-- Course Cards Grid -->
-      <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-        {{#each courses}}
-          <div class="w-full max-w-[465px] min-h-[686px] bg-white border border-gray-200/80 rounded-[24px] px-6 py-9 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-[25px] group hover:shadow-md transition-all duration-300">
-            <div>
-              <div class="w-[125px] h-[47px] p-[10px] gap-[10px] rounded-[6px] bg-[#0B1F3B1A] text-[#003060] font-montserrat font-semibold text-sm flex items-center justify-center mb-4 uppercase">
-                BATCH 6.2
-              </div>
-              <div class="w-full max-w-[414px] h-[262px] rounded-[12px] overflow-hidden bg-gray-100 mb-6">
-                <img 
-                  src="{{this.image}}" 
-                  alt="{{this.name}}" 
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div class="px-1">
-                <h3 class="font-montserrat font-semibold text-2xl sm:text-[35px] leading-none text-[#003060] mb-5 text-left">
-                  {{this.name}}
-                </h3>
-                <p class="font-sans font-normal text-base sm:text-xl leading-relaxed sm:leading-[30px] text-black mb-5 text-left">
-                  {{getByLang this.description ../lang}}
-                </p>
-                <div class="flex flex-wrap items-center gap-[10px]">
-                  <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-                    <i class="fa-solid fa-location-dot text-[12px] text-[#003060]"></i> {{#if (eq this.method 'online')}}Online{{else}}Offline{{/if}}
-                  </span>
-                  <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-                    <i class="fa-solid fa-graduation-cap text-[12px] text-[#003060]"></i> {{#if this.month}}{{this.month}} Bulan{{else}}—{{/if}}<p>Months</p>
-                  </span>
-                  <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-                    <i class="fa-solid fa-couch text-[12px] text-[#003060]"></i> {{#if this.quota}}{{this.quota}}{{else}}—{{/if}}
-                    <p>Students</p>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="w-full pt-1 mt-auto">
-              <a 
-                href="/program/{{this.id}}" 
-                class="w-full h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                <span>Detail Program</span>
-                <i class="fa-solid fa-arrow-right text-sm"></i>
-              </a>
-            </div>
-          </div>
-        {{/each}}
-      </div>
-
-    </div>
-  </div>
-
 </section>
+
