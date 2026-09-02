@@ -29,7 +29,7 @@ export class TugassService {
     return await this.tugasRepository.save(tugas);
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const tugas = await this.tugasRepository.findOne({ where: { id: id } });
     if (!tugas) {
       throw new NotFoundException('tugas not found');
@@ -37,7 +37,7 @@ export class TugassService {
     return tugas;
   }
 
-  update(id: string, updateTugassDto: UpdateTugassDto) {
+  update(id: number, updateTugassDto: UpdateTugassDto) {
     return `This action updates a #${id} tugass`;
   }
   async deleteFile(url: string) {
@@ -50,7 +50,7 @@ export class TugassService {
     } catch (error) {}
   }
 
-  async remove(tugasId: string) {
+  async remove(tugasId: number) {
     const tugas = await this.tugasRepository.findOne({
       where: { id: tugasId },
     });

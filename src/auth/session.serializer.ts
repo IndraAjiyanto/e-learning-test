@@ -14,12 +14,11 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   async deserializeUser(userId: any, done: CallableFunction) {
-    // Ids are uuids. Coercing with Number() here would turn every id into NaN
-    // and silently sign everyone out.
-    if (typeof userId !== 'string' || userId.length === 0) {
+    const id = Number(userId);
+    if (isNaN(id)) {
       return done(null, null);
     }
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOne(id);
     if (!user) return done(null, null);
     done(null, user);
   }

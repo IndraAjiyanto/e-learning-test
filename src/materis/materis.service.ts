@@ -30,20 +30,20 @@ export class MaterisService {
     return await this.materiRepository.save(materi);
   }
 
-  async findMateriBypertemuan(pertemuanId: string) {
+  async findMateriBypertemuan(pertemuanId: number) {
     return await this.materiRepository.find({
       where: { pertemuan: { id: pertemuanId } },
       relations: ['pertemuan'],
     });
   }
 
-  async findMateriPdf(pertemuanId: string) {
+  async findMateriPdf(pertemuanId: number) {
     return await this.materiRepository.find({
       where: { pertemuan: { id: pertemuanId }, jenis_file: 'pdf' },
     });
   }
 
-  async findMateriPpt(pertemuanId: string) {
+  async findMateriPpt(pertemuanId: number) {
     const materiList = await this.materiRepository.find({
       where: { pertemuan: { id: pertemuanId }, jenis_file: 'ppt' },
     });
@@ -51,24 +51,24 @@ export class MaterisService {
     return materiList;
   }
 
-  async findPertemuan(pertemuanId: string) {
+  async findPertemuan(pertemuanId: number) {
     return await this.pertemuanRepository.findOne({
       where: { id: pertemuanId },
       relations: ['minggu', 'minggu.kelas'],
     });
   }
 
-  async findMateriVideo(pertemuanId: string) {
+  async findMateriVideo(pertemuanId: number) {
     return await this.materiRepository.find({
       where: { pertemuan: { id: pertemuanId }, jenis_file: 'video' },
     });
   }
 
-  async findPertemuanByKelas(mingguId: string) {
+  async findPertemuanByKelas(mingguId: number) {
     const pertemuan = await this.pertemuanRepository.find({
       where: { minggu: { id: mingguId } },
       relations: ['materi'],
-      order: { createdAt: 'ASC' },
+      order: { id: 'ASC' },
     });
 
     return pertemuan.map((p) => ({
@@ -79,7 +79,7 @@ export class MaterisService {
     }));
   }
 
-  async findMateriByJenisAndPertemuan(mingguId: string, jenis_file: JenisFile) {
+  async findMateriByJenisAndPertemuan(mingguId: number, jenis_file: JenisFile) {
     return await this.materiRepository.find({
       where: {
         jenis_file: jenis_file,
@@ -88,14 +88,14 @@ export class MaterisService {
     });
   }
 
-  async findIdentityMateri(jenis_file: JenisFile, pertemuanId: string) {
+  async findIdentityMateri(jenis_file: JenisFile, pertemuanId: number) {
     return await this.materiRepository.find({
       where: { jenis_file: jenis_file, pertemuan: { id: pertemuanId } },
       relations: ['pertemuan'],
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const materi = await this.materiRepository.findOne({
       where: { id },
       relations: ['pertemuan'],
@@ -122,7 +122,7 @@ export class MaterisService {
     }
   }
 
-  async update(id: string, updateMaterisDto: UpdateMaterisDto) {
+  async update(id: number, updateMaterisDto: UpdateMaterisDto) {
     const materi = await this.findOne(id);
     if (!materi) {
       throw new NotFoundException('materi tidak ditemukan');
@@ -131,7 +131,7 @@ export class MaterisService {
     return await this.materiRepository.save(materi);
   }
 
-  async remove(materiId: string) {
+  async remove(materiId: number) {
     const materi = await this.findOne(materiId);
     if (!materi) {
       throw new NotFoundException('materi tidak ditemukan');

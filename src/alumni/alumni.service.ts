@@ -38,13 +38,13 @@ export class AlumniService {
     return await this.kelasRepository.find();
   }
 
-  async findKelasByKategori(kategoriId: string) {
+  async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId } },
     });
   }
 
-  async findOne(alumniId: string) {
+  async findOne(alumniId: number) {
     const alumni = await this.alumniRepository.findOne({
       where: { id: alumniId },
       relations: ['kelas', 'kelas.kategori'],
@@ -65,7 +65,7 @@ export class AlumniService {
     } catch (error) {}
   }
 
-  async update(alumniId: string, updateAlumnusDto: UpdateAlumnusDto) {
+  async update(alumniId: number, updateAlumnusDto: UpdateAlumnusDto) {
     const alumni = await this.findOne(alumniId);
     if (!alumni) {
       throw new NotFoundException('Alumni not found');
@@ -76,7 +76,7 @@ export class AlumniService {
     return await this.alumniRepository.save(alumni);
   }
 
-  async remove(alumniId: string) {
+  async remove(alumniId: number) {
     const alumni = await this.findOne(alumniId);
     if (!alumni) {
       throw new NotFoundException('Alumni not found');

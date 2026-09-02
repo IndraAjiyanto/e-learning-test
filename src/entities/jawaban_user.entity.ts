@@ -6,8 +6,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class JawabanUser {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @ManyToOne(() => Pertanyaan, (pertanyaan) => pertanyaan.jawaban_user, {
     onDelete: 'CASCADE',

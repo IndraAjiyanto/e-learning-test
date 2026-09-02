@@ -39,7 +39,7 @@ export class CicilanService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const cicilan = await this.cicilanRepository.findOne({
       where: { id },
       relations: ['kelas'],
@@ -52,7 +52,7 @@ export class CicilanService {
     return cicilan;
   }
 
-  async findByKelas(kelasId: string) {
+  async findByKelas(kelasId: number) {
     return await this.cicilanRepository.find({
       where: { kelas: { id: kelasId } },
       relations: ['kelas'],
@@ -60,7 +60,7 @@ export class CicilanService {
     });
   }
 
-    async findNo(kelasId: string) {
+    async findNo(kelasId: number) {
         const installment = await this.findByKelas(kelasId);
       const usedNumbers = installment.map((i) => Number(i.bulan));
       
@@ -70,7 +70,7 @@ export class CicilanService {
       return availableNumbers;
   }
 
-  async update(id: string, updateCicilanDto: UpdateCicilanDto) {
+  async update(id: number, updateCicilanDto: UpdateCicilanDto) {
     const cicilan = await this.findOne(id);
 
     if (updateCicilanDto.kelasId) {
@@ -100,7 +100,7 @@ export class CicilanService {
     return await this.cicilanRepository.save(cicilan);
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const cicilan = await this.findOne(id);
     return await this.cicilanRepository.remove(cicilan);
   }

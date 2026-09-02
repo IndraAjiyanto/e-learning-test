@@ -46,7 +46,7 @@ export class MentorController {
     folder: 'mentor',
   })
   async create(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() createMentorDto: CreateMentorDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -72,7 +72,7 @@ export class MentorController {
   @Roles('super_admin', 'admin')
   @Get('formCreate/:kelasId')
   async formCreate(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -87,7 +87,7 @@ export class MentorController {
   @Roles('super_admin', 'admin')
   @Get(':mentorId')
   async findOne(
-    @Param('mentorId') mentorId: string,
+    @Param('mentorId') mentorId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -103,7 +103,7 @@ export class MentorController {
   @Roles('super_admin', 'admin')
   @Get('formEdit/:mentorId')
   async formEdit(
-    @Param('mentorId') mentorId: string,
+    @Param('mentorId') mentorId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -135,8 +135,8 @@ export class MentorController {
     folder: 'mentor',
   })
   async update(
-    @Param('mentorId') mentorId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('mentorId') mentorId: number,
+    @Param('kelasId') kelasId: number,
     @Body() updateMentorDto: UpdateMentorDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -165,8 +165,8 @@ export class MentorController {
   @Roles('super_admin', 'admin')
   @Delete(':mentorId/:kelasId')
   async remove(
-    @Param('mentorId') mentorId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('mentorId') mentorId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

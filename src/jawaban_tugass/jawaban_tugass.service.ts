@@ -41,7 +41,7 @@ export class JawabanTugassService {
     return await this.jawabanTugasRepository.save(jawaban_tugas);
   }
 
-  async createKomentar(komentarText: string, jawaban_tugasId: string) {
+  async createKomentar(komentarText: string, jawaban_tugasId: number) {
     const jawaban_tugas = await this.jawabanTugasRepository.findOne({
       where: { id: jawaban_tugasId },
     });
@@ -55,7 +55,7 @@ export class JawabanTugassService {
     return await this.komentarRepository.save(komentar);
   }
 
-  async findTugas(tugasId: string) {
+  async findTugas(tugasId: number) {
     const tugas = await this.tugasRepository.findOne({
       where: { id: tugasId },
       relations: ['pertemuan', 'pertemuan.minggu', 'pertemuan.minggu.kelas'],
@@ -66,14 +66,14 @@ export class JawabanTugassService {
     return tugas;
   }
 
-  async findJawabanTugas(userId: string, tugasId: string) {
+  async findJawabanTugas(userId: number, tugasId: number) {
     return await this.jawabanTugasRepository.find({
       where: { user: { id: userId }, tugas: { id: tugasId } },
       relations: ['komentar'],
     });
   }
 
-  async findJawabanExists(userId: string, tugasId: string) {
+  async findJawabanExists(userId: number, tugasId: number) {
     return await this.jawabanTugasRepository.find({
       where: {
         user: { id: userId },
@@ -83,14 +83,14 @@ export class JawabanTugassService {
     });
   }
 
-  async findAllJawabanTugas(tugasId: string) {
+  async findAllJawabanTugas(tugasId: number) {
     return await this.jawabanTugasRepository.find({
       where: { tugas: { id: tugasId } },
       relations: ['user', 'komentar', 'tugas'],
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const jawaban_tugas = await this.jawabanTugasRepository.findOne({
       where: { id: id },
     });
@@ -100,7 +100,7 @@ export class JawabanTugassService {
     return jawaban_tugas;
   }
 
-  async update(id: string, updateJawabanTugassDto: UpdateJawabanTugassDto) {
+  async update(id: number, updateJawabanTugassDto: UpdateJawabanTugassDto) {
     const jawaban_tugas = await this.findOne(id);
     if (!jawaban_tugas) {
       throw new NotFoundException('answer not found');

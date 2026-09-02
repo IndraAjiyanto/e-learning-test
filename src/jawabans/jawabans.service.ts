@@ -26,7 +26,7 @@ export class JawabansService {
     return await this.jawabanRepository.save(jawaban);
   }
 
-  async findJawabanBenar(pertanyaanId: string) {
+  async findJawabanBenar(pertanyaanId: number) {
     return await this.jawabanRepository.find({
       where: { pertanyaan: { id: pertanyaanId } },
     });

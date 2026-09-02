@@ -14,9 +14,9 @@ document.addEventListener("change", function(e){
 
         const radio = e.target;
         const name = radio.name;
-        const value = radio.value;
+        const value = Number(radio.value);
 
-        const questionId = name.replace("q-", "");
+        const questionId = Number(name.replace("q-", ""));
 
         // simpan ke localStorage dulu
         localStorage.setItem(name, value);
@@ -35,7 +35,7 @@ document.addEventListener("change", function(e){
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        userId: "{{user.id}}",
+                        userId: {{user.id}},
                         pertanyaanId: questionId,
                         jawabanId: value
                     })

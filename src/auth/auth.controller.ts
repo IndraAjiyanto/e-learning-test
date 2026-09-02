@@ -26,7 +26,7 @@ export class AuthController {
 
   @Get('daftar/:id')
   async daftarKelas(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: any,
   ) {

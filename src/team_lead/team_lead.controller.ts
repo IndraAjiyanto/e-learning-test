@@ -76,7 +76,7 @@ export class TeamLeadController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async findOne(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -97,7 +97,7 @@ export class TeamLeadController {
   })
   async update(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateTeamLeadDto: UpdateTeamLeadDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -120,7 +120,7 @@ export class TeamLeadController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

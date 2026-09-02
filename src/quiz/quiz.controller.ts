@@ -25,7 +25,7 @@ export class QuizController {
   @Roles('admin')
   @Post(':mingguId')
   async create(
-    @Param('mingguId') mingguId: string,
+    @Param('mingguId') mingguId: number,
     @Body() createQuizDto: CreateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -44,7 +44,7 @@ export class QuizController {
   @Roles('admin')
   @Get('formCreate/:mingguId')
   async formCreate(
-    @Param('mingguId') mingguId: string,
+    @Param('mingguId') mingguId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -54,7 +54,7 @@ export class QuizController {
   @Roles('admin')
   @Get(':quizId')
   async findOne(
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -72,7 +72,7 @@ export class QuizController {
   @Roles('admin')
   @Get('formEdit/:quizId')
   async formEdit(
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -83,7 +83,7 @@ export class QuizController {
   @Roles('user')
   @Get('form/:quizId')
   async formQuiz(
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -96,7 +96,7 @@ export class QuizController {
   @Roles('user')
   @Get('start/:quizId')
   async startQuiz(
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -130,7 +130,7 @@ export class QuizController {
   @Roles('admin')
   @Patch(':quizId')
   async update(
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
     @Body() updateQuizDto: UpdateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -148,8 +148,8 @@ export class QuizController {
   @Roles('admin')
   @Delete(':quizId/:mingguId')
   async remove(
-    @Param('mingguId') mingguId: string,
-    @Param('quizId') quizId: string,
+    @Param('mingguId') mingguId: number,
+    @Param('quizId') quizId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

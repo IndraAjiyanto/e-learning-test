@@ -84,11 +84,11 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const gambar_benefit = await this.gambarBenefitService.findOne(id);
+    const gambar_benefit = await this.gambarBenefitService.findOne(+id);
     res.render('super_admin/gambar_benefit/edit', {
       user: req.user,
       gambar_benefit,
@@ -112,18 +112,18 @@ export class GambarBenefitController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateGambarBenefitDto: UpdateGambarBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const gambar_benefit = await this.gambarBenefitService.findOne(id);
+      const gambar_benefit = await this.gambarBenefitService.findOne(+id);
       if (gambar) {
         await this.gambarBenefitService.deleteFile(gambar_benefit.gambar);
         updateGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
       }
-      await this.gambarBenefitService.update(id, updateGambarBenefitDto);
+      await this.gambarBenefitService.update(+id, updateGambarBenefitDto);
       req.flash('success', 'Image Benefit successfully updated');
       res.redirect('/benefit-image');
     } catch (error: any) {
@@ -135,7 +135,7 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

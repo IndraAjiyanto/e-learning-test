@@ -14,8 +14,8 @@ export class CreateLogbookMentorDto {
   kendala: string;
 
   @IsInt()
-  userId: string;
+  userId: number;
 
   @IsInt()
-  pertemuanId: string;
+  pertemuanId: number;
 }

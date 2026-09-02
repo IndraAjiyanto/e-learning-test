@@ -11,14 +11,14 @@ export class CreatePembayaranDto {
   proses: Proses;
 
   @IsInt()
-  userId: string;
+  userId: number;
 
   @IsInt()
-  kelasId: string;
+  kelasId: number;
 
   @IsInt()
   @IsOptional()
-  cicilanId: string;
+  cicilanId: number;
 
   @IsString()
   @IsOptional()

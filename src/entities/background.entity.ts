@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Background {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column('jsonb', { nullable: true })
   content: string[];

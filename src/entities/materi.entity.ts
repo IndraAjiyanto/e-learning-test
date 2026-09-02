@@ -13,8 +13,8 @@ export type JenisFile = 'video' | 'pdf' | 'ppt';
 
 @Entity()
 export class Materi {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   judul: string;

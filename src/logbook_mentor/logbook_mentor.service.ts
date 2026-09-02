@@ -42,13 +42,13 @@ export class LogbookMentorService {
     return await this.logBookMentorRepository.save(logbook);
   }
 
-  async getKelasList(userId: string) {
+  async getKelasList(userId: number) {
     return await this.kelasRepository.find({
       where: { mentoring: { user: { id: userId } } },
     });
   }
 
-  async findOne(logbook_mentorId: string) {
+  async findOne(logbook_mentorId: number) {
     const logbook_mentor = await this.logBookMentorRepository.findOne({
       where: { id: logbook_mentorId },
       relations: ['pertemuan', 'user'],
@@ -70,7 +70,7 @@ export class LogbookMentorService {
   }
 
   async update(
-    logbook_mentorId: string,
+    logbook_mentorId: number,
     updateLogbookMentorDto: UpdateLogbookMentorDto,
   ) {
     const logbook = await this.findOne(logbook_mentorId);
@@ -81,7 +81,7 @@ export class LogbookMentorService {
     return await this.logBookMentorRepository.save(logbook);
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const logbook = await this.findOne(id);
     if (!logbook) {
       throw new NotFoundException('logbook not found');

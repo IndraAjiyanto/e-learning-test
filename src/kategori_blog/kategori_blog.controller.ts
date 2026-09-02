@@ -43,11 +43,11 @@ export class KategoriBlogController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kategori_blog = await this.kategoriBlogService.findOne(id);
+    const kategori_blog = await this.kategoriBlogService.findOne(+id);
     res.render('super_admin/kategori_blog/edit', {
       user: req.user,
       kategori_blog,
@@ -74,13 +74,13 @@ export class KategoriBlogController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateKategoriBlogDto: UpdateKategoriBlogDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.kategoriBlogService.update(id, updateKategoriBlogDto);
+      await this.kategoriBlogService.update(+id, updateKategoriBlogDto);
       req.flash('success', 'Blog Category successfully updated');
       res.redirect('/category-blog');
     } catch (error: any) {
@@ -92,17 +92,17 @@ export class KategoriBlogController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const kategori = await this.kategoriBlogService.findOne(id);
+      const kategori = await this.kategoriBlogService.findOne(+id);
       if (!kategori) {
         req.flash('error', 'Blog Category not found');
         res.redirect('/category-blog');
       }
-      await this.kategoriBlogService.remove(id);
+      await this.kategoriBlogService.remove(+id);
       req.flash('success', 'Blog Category successfully removed');
       res.redirect('/category-blog');
     } catch (error: any) {

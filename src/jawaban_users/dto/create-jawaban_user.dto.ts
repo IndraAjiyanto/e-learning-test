@@ -1,16 +1,16 @@
-import { ValidateNested, IsArray, IsUUID, IsOptional } from 'class-validator';
+import { ValidateNested, IsArray, IsInt, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class JawabanUserDto {
   @IsOptional()
-  @IsUUID()
-  jawabanId?: string | null;
+  @IsInt()
+  jawabanId?: number | null;
 
-  @IsUUID()
-  pertanyaanId: string;
+  @IsInt()
+  pertanyaanId: number;
 
-  @IsUUID()
-  userId: string;
+  @IsInt()
+  userId: number;
 }
 
 export class CreateJawabanUserDto {

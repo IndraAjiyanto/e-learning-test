@@ -40,7 +40,7 @@ export class LogbookMentorController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Body() createLogbookMentorDto: CreateLogbookMentorDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -61,7 +61,7 @@ export class LogbookMentorController {
   @Roles('admin')
   @Get(':logbook_mentorId')
   async findOne(
-    @Param('logbook_mentorId') logbook_mentorId: string,
+    @Param('logbook_mentorId') logbook_mentorId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -76,7 +76,7 @@ export class LogbookMentorController {
   @Roles('admin')
   @Get('formCreate/:pertemuanId')
   async formCreate(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -86,7 +86,7 @@ export class LogbookMentorController {
   @Roles('admin')
   @Get('formEdit/:logbook_mentorId')
   async formEdit(
-    @Param('logbook_mentorId') logbook_mentorId: string,
+    @Param('logbook_mentorId') logbook_mentorId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -107,7 +107,7 @@ export class LogbookMentorController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async update(
-    @Param('logbook_mentorId') logbook_mentorId: string,
+    @Param('logbook_mentorId') logbook_mentorId: number,
     @UploadedFile() dokumentasi: Express.Multer.File,
     @Body() updateLogbookMentorDto: UpdateLogbookMentorDto,
     @Res() res: Response,
@@ -135,8 +135,8 @@ export class LogbookMentorController {
   @Roles('admin')
   @Delete(':pertemuanId/:logbook_mentorId')
   async remove(
-    @Param('logbook_mentorId') logbook_mentorId: string,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('logbook_mentorId') logbook_mentorId: number,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

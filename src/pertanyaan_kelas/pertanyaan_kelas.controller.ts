@@ -34,7 +34,7 @@ export class PertanyaanKelasController {
   @Roles('super_admin')
   @Get('formCreate/:kelasId')
   async formCreate(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -49,7 +49,7 @@ export class PertanyaanKelasController {
   @Roles('super_admin')
   @Post(':kelasId')
   async create(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() createPertanyaanKelaDto: CreatePertanyaanKelaDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -68,7 +68,7 @@ export class PertanyaanKelasController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -84,14 +84,14 @@ export class PertanyaanKelasController {
   @Roles('super_admin')
   @Patch(':id/:kelasId')
   async update(
-    @Param('id') id: string,
-    @Param('kelasId') kelasId: string,
+    @Param('id') id: number,
+    @Param('kelasId') kelasId: number,
     @Body() updatePertanyaanKelaDto: UpdatePertanyaanKelaDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.pertanyaanKelasService.update(id, updatePertanyaanKelaDto);
+      await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
       req.flash('success', 'FAQ program updated successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error: any) {
@@ -103,13 +103,13 @@ export class PertanyaanKelasController {
   @Roles('super_admin')
   @Delete(':id/:kelasId')
   async remove(
-    @Param('id') id: string,
-    @Param('kelasId') kelasId: string,
+    @Param('id') id: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.pertanyaanKelasService.remove(id);
+      await this.pertanyaanKelasService.remove(+id);
       req.flash('success', 'FAQ program deleted successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error: any) {

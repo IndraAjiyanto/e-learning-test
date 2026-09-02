@@ -31,5 +31,5 @@ export class CreatePertemuanDto {
   akhir_check: string;
 
   @IsInt()
-  mingguId: string;
+  mingguId: number;
 }

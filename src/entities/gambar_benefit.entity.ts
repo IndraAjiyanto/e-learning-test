@@ -10,8 +10,8 @@ export type No = 1 | 2 | 3 | 4;
 
 @Entity()
 export class GambarBenefit {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   gambar: string;

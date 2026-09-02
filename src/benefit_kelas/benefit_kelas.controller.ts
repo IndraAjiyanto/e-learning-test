@@ -25,7 +25,7 @@ export class BenefitKelasController {
   @Roles('super_admin')
   @Post(':kelasId')
   async create(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() createBenefitKelaDto: CreateBenefitKelaDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -46,7 +46,7 @@ export class BenefitKelasController {
   async formCreateWithKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
   ) {
     res.render('super_admin/benefit_kelas/create', { user: req.user, kelasId });
   }
@@ -54,7 +54,7 @@ export class BenefitKelasController {
   @Roles('super_admin')
   @Get('formEdit/:benefitKelasId')
   async formEdit(
-    @Param('benefitKelasId') benefitKelasId: string,
+    @Param('benefitKelasId') benefitKelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -69,8 +69,8 @@ export class BenefitKelasController {
   @Roles('super_admin')
   @Patch(':benefitKelasId/:kelasId')
   async update(
-    @Param('benefitKelasId') benefitKelasId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('benefitKelasId') benefitKelasId: number,
+    @Param('kelasId') kelasId: number,
     @Body() updateBenefitKelaDto: UpdateBenefitKelaDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -91,8 +91,8 @@ export class BenefitKelasController {
   @Roles('super_admin')
   @Delete(':benefitKelasId/:kelasId')
   async remove(
-    @Param('benefitKelasId') benefitKelasId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('benefitKelasId') benefitKelasId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

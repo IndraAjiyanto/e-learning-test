@@ -58,7 +58,7 @@ export class OurExperienceController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -72,7 +72,7 @@ export class OurExperienceController {
   @Roles('super_admin')
   @Patch('formEdit/:id')
   async updateFromForm(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateOurExperienceDto: UpdateOurExperienceDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -90,7 +90,7 @@ export class OurExperienceController {
   @Roles('super_admin')
   @Delete(':id')
   async deleteFromForm(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {

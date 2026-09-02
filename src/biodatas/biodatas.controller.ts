@@ -50,7 +50,7 @@ export class BiodatasController {
   @Roles('user')
   @Get('formEdit/:biodataId')
   async formEdit(
-    @Param('biodataId') biodataId: string,
+    @Param('biodataId') biodataId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -61,7 +61,7 @@ export class BiodatasController {
   @Roles('user')
   @Patch(':biodataId')
   async update(
-    @Param('biodataId') biodataId: string,
+    @Param('biodataId') biodataId: number,
     @Body() updateBiodataDto: UpdateBiodataDto,
     @Res() res: Response,
     @Req() req: Request,

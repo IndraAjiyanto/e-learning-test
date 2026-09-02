@@ -49,7 +49,7 @@ export class MentorService {
     return await this.teknologiRepository.find();
   }
 
-  async findOne(mentorId: string) {
+  async findOne(mentorId: number) {
     const mentor = await this.mentorRepository.findOne({
       where: { id: mentorId },
       relations: ['kelas', 'teknologi'],
@@ -60,7 +60,7 @@ export class MentorService {
     return mentor;
   }
 
-  async update(mentorId: string, updateMentorDto: UpdateMentorDto) {
+  async update(mentorId: number, updateMentorDto: UpdateMentorDto) {
     const mentor = await this.findOne(mentorId);
     if (!mentor) {
       throw new NotFoundException('Program not found');
@@ -81,7 +81,7 @@ export class MentorService {
     return await this.mentorRepository.save(mentor);
   }
 
-  async remove(mentorId: string) {
+  async remove(mentorId: number) {
     const mentor = await this.findOne(mentorId);
     if (!mentor) {
       throw new NotFoundException('Program not found');

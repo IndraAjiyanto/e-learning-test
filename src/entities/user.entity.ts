@@ -35,8 +35,8 @@ export type UserRole = 'super_admin' | 'admin' | 'user';
 
 @Entity('user')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   username: string;

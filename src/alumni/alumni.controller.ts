@@ -49,7 +49,7 @@ export class AlumniController {
     folder: 'alumni',
   })
   async create(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() createAlumnusDto: CreateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -82,7 +82,7 @@ export class AlumniController {
     folder: 'alumni',
   })
   async createAlumni(
-    @Param('kategoriId') kategoriId: string,
+    @Param('kategoriId') kategoriId: number,
     @Body() createAlumnusDto: CreateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -101,7 +101,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formCreate/:kelasId')
   async formCreate(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -111,7 +111,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('category/formCreate/:kategoriId')
   async formCreateByKategori(
-    @Param('kategoriId') kategoriId: string,
+    @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -126,7 +126,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formEdit/:alumniId')
   async formEdit(
-    @Param('alumniId') alumniId: string,
+    @Param('alumniId') alumniId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -137,7 +137,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('category/formEdit/:alumniId')
   async formEditAlumni(
-    @Param('alumniId') alumniId: string,
+    @Param('alumniId') alumniId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -162,8 +162,8 @@ export class AlumniController {
   })
   async update(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('alumniId') alumniId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('alumniId') alumniId: number,
+    @Param('kelasId') kelasId: number,
     @Body() updateAlumnusDto: UpdateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -200,8 +200,8 @@ export class AlumniController {
   })
   async updateAlumni(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('alumniId') alumniId: string,
-    @Param('kategoriId') kategoriId: string,
+    @Param('alumniId') alumniId: number,
+    @Param('kategoriId') kategoriId: number,
     @Body() updateAlumnusDto: UpdateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -224,8 +224,8 @@ export class AlumniController {
   @Roles('super_admin')
   @Delete(':alumniId/:kelasId')
   async remove(
-    @Param('alumniId') alumniId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('alumniId') alumniId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -248,8 +248,8 @@ export class AlumniController {
   @Roles('super_admin')
   @Delete('category/:alumniId/:kategoriId')
   async removeAlumni(
-    @Param('alumniId') alumniId: string,
-    @Param('kategoriId') kategoriId: string,
+    @Param('alumniId') alumniId: number,
+    @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

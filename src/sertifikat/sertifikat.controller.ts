@@ -10,7 +10,7 @@ export class SertifikatController {
   @Roles('user')
   @Get(':kelasId')
   async generate(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

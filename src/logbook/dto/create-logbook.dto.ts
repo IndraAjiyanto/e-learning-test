@@ -18,11 +18,11 @@ export class CreateLogbookDto {
   kendala: string;
 
   @IsInt()
-  userId: string;
+  userId: number;
 
   @IsEnum(['acc', 'proces', 'rejected'])
   proses: Proses;
 
   @IsInt()
-  pertemuanId: string;
+  pertemuanId: number;
 }

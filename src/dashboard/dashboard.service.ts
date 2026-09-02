@@ -79,7 +79,7 @@ export class DashboardService {
     private readonly kategoriBlogRepository: Repository<KategoriBlog>,
   ) {}
 
-async findBlogTrending(userId?: string) {
+async findBlogTrending(userId?: number) {
   const qb = this.blogRepository
     .createQueryBuilder('blog')
     .loadRelationCountAndMap('blog.likesCount', 'blog.likes')
@@ -110,7 +110,7 @@ async findBlogTrending(userId?: string) {
   };
 }
 
-async findKategoriTrending(userId?: string) {
+async findKategoriTrending(userId?: number) {
   const kategoriTrending = await this.kategoriBlogRepository
     .createQueryBuilder('kategori')
     .leftJoin('kategori.blog', 'blog')
@@ -177,14 +177,14 @@ async findKategoriTrending(userId?: string) {
 
   async findOurExperience() {
     return await this.ourExperienceRepository.find({
-      order: { createdAt: 'ASC' },
+      order: { id: 'ASC' },
     });
   }
 
   async findAllKelas() {
     return await this.kelasRepository.find({
       where: { launch: true },
-      order: { createdAt: 'DESC' },
+      order: { id: 'DESC' },
       relations: [
         'kategori',
         'jenis_kelas',
@@ -196,7 +196,7 @@ async findKategoriTrending(userId?: string) {
   }
 
   async findKelasPaginated(params: {
-    userId?: string;
+    userId?: number;
   kategori?: string;
   jenisKelas?: string;
   metode?: string;
@@ -227,7 +227,7 @@ async findKategoriTrending(userId?: string) {
     query.andWhere('kelas.nama_kelas ILIKE :search', { search: `%${params.search}%` });
   }
 
-  query.orderBy('kelas.createdAt', 'DESC')
+  query.orderBy('kelas.id', 'DESC')
     .skip((params.page - 1) * params.limit)
     .take(params.limit);
 
@@ -249,7 +249,7 @@ async findKategoriTrending(userId?: string) {
     return await this.valueRepository.find({ order: { value_ke: 'ASC' } });
   }
 
-  async findKelasByMentoring(userId: string) {
+  async findKelasByMentoring(userId: number) {
     return await this.kelasRepository.find({
       where: { mentoring: { user: { id: userId } } },
       relations: [
@@ -296,7 +296,7 @@ async findKategoriTrending(userId?: string) {
 
   async findKelas() {
     return await this.kelasRepository.find({
-      order: { createdAt: 'DESC' },
+      order: { id: 'DESC' },
       relations: ['kategori', 'jenis_kelas', 'user_kelas'],
     });
   }
@@ -321,7 +321,7 @@ async findBlog(excludeIds: number[] = []) {
 }
 
 async findPortfolio(options?: {
-  userId?: string | null;
+  userId?: number | null;
   kategoriId?: string | null;
   jenisKelasId?: string | null;
   page?: number;
@@ -402,7 +402,7 @@ async findAlumni(options?: {
   //   });
   // }
 
-  async findOnePortfolio(portfolioId: string) {
+  async findOnePortfolio(portfolioId: number) {
     return await this.portfolioRepository.findOne({
       where: { id: portfolioId },
       relations: ['kelas', 'kelas.kategori', 'kelas.teknologi', 'user'],

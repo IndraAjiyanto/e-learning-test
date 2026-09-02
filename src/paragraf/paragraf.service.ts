@@ -33,7 +33,7 @@ export class ParagrafService {
     return await this.paragrafRepository.find();
   }
 
-  async findOne(paragrafId: string) {
+  async findOne(paragrafId: number) {
     const paragraf = await this.paragrafRepository.findOne({
       where: { id: paragrafId },
     });
@@ -43,7 +43,7 @@ export class ParagrafService {
     return paragraf;
   }
 
-  async update(paragrafId: string, updateParagrafDto: UpdateParagrafDto) {
+  async update(paragrafId: number, updateParagrafDto: UpdateParagrafDto) {
     const paragraf = await this.findOne(paragrafId);
     if (!paragraf) {
       throw new NotFoundException('paragraf not found');
@@ -52,7 +52,7 @@ export class ParagrafService {
     return await this.paragrafRepository.save(paragraf);
   }
 
-  async remove(paragrafId: string) {
+  async remove(paragrafId: number) {
     const paragraf = await this.findOne(paragrafId);
     if (!paragraf) {
       throw new NotFoundException('paragraf not found');

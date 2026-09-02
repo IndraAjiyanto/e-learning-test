@@ -5,7 +5,7 @@ export class CreatePertanyaanDto {
   pertanyaan_soal: string;
 
   @IsInt()
-  quizId: string;
+  quizId: number;
 
   @IsArray()
   @IsString({ each: true })

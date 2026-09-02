@@ -12,5 +12,5 @@ export class CreateAlurKelaDto {
   isi: string[];
 
   @IsInt()
-  kelasId: string;
+  kelasId: number;
 }

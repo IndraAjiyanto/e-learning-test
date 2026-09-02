@@ -10,10 +10,10 @@ export class CreateJawabanTugassDto {
   komentar: string;
 
   @IsInt()
-  userId: string;
+  userId: number;
 
   @IsInt()
-  tugasId: string;
+  tugasId: number;
 
   @IsEnum(['acc', 'proces', 'rejected'])
   proses: Proses;

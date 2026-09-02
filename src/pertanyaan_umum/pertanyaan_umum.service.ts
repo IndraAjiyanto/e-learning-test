@@ -35,7 +35,7 @@ export class PertanyaanUmumService {
     });
   }
 
-  async findOne(pertanyaan_umumId: string) {
+  async findOne(pertanyaan_umumId: number) {
     return await this.pertanyaanUmumRepository.findOne({
       where: { id: pertanyaan_umumId },
       relations: ['kategori'],
@@ -43,7 +43,7 @@ export class PertanyaanUmumService {
   }
 
   async update(
-    pertanyaan_umumId: string,
+    pertanyaan_umumId: number,
     updatePertanyaanUmumDto: UpdatePertanyaanUmumDto,
   ) {
     const pertanyaan_umum = await this.findOne(pertanyaan_umumId);
@@ -65,7 +65,7 @@ export class PertanyaanUmumService {
     return await this.pertanyaanUmumRepository.save(pertanyaan_umum);
   }
 
-  async remove(pertanyaan_umumId: string) {
+  async remove(pertanyaan_umumId: number) {
     const pertanyaan_umum = await this.findOne(pertanyaan_umumId);
     if (!pertanyaan_umum) {
       throw new NotFoundException('FAQ Not Found');

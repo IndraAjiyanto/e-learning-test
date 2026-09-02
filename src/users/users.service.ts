@@ -68,7 +68,7 @@ export class UsersService {
   }) {
     const query = this.userRepository
       .createQueryBuilder('user')
-      .orderBy('user.createdAt', 'DESC');
+      .orderBy('user.id', 'DESC');
 
     if (params.search) {
       query.where(
@@ -83,7 +83,7 @@ export class UsersService {
     return { data, total };
   }
 
-  async findPortfolio(userId: string) {
+  async findPortfolio(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'kelas', 'kelas.jenis_kelas', 'kelas.kategori'],
@@ -96,7 +96,7 @@ export class UsersService {
     });
   }
 
-  async findOne(userId: string) {
+  async findOne(userId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['biodata'],
@@ -107,7 +107,7 @@ export class UsersService {
     return user;
   }
 
-  async update(userId: string, updateUserDto: UpdateUserDto) {
+  async update(userId: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -116,7 +116,7 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async updatePassword(id: string, updatePaaswordDto: UpdatePasswordDto) {
+  async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
     if (
       updatePaaswordDto.password_baru !== updatePaaswordDto.confirm_password
     ) {
@@ -152,7 +152,7 @@ export class UsersService {
     return { message: 'Password berhasil diubah' };
   }
 
-  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
+  async updateProfile(userId: number, updateProfileDto: UpdateProfileDto) {
     const user = await this.findOne(userId);
     Object.assign(user, updateProfileDto);
     return await this.userRepository.save(user);
@@ -168,7 +168,7 @@ export class UsersService {
     } catch (error) {}
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');

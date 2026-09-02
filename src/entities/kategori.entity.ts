@@ -20,8 +20,8 @@ export type Type = 'Special Program' | 'Program';
 
 @Entity()
 export class Kategori {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   nama_kategori: string;

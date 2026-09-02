@@ -52,7 +52,7 @@ export class PertanyaansController {
     @Res() res: Response,
     @Req() req: Request,
     @Body() createPertanyaanDto: CreatePertanyaanDto,
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
   ) {
     try {
       createPertanyaanDto.quizId = quizId;
@@ -81,7 +81,7 @@ export class PertanyaansController {
   async formCreate(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('quizId') quizId: string,
+    @Param('quizId') quizId: number,
   ) {
     const quiz = await this.quizService.findOne(quizId);
     res.render('admin/pertanyaan/create', { user: req.user, quiz });
@@ -92,7 +92,7 @@ export class PertanyaansController {
   async findPertanyaan(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('pertanyaanId') pertanyaanId: string,
+    @Param('pertanyaanId') pertanyaanId: number,
   ) {
     const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId);
     res.render('admin/pertanyaan/edit', { user: req.user, pertanyaan });
@@ -101,8 +101,8 @@ export class PertanyaansController {
   @Roles('user')
   @Get('quiz/:pertemuanId/:kelasId')
   async findPertanyaanByPertemuan(
-    @Param('pertemuanId') pertemuanId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('pertemuanId') pertemuanId: number,
+    @Param('kelasId') kelasId: number,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -120,8 +120,8 @@ export class PertanyaansController {
   @Roles('user')
   @Get('quiz/user/:pertemuanId/:userId')
   async findDetailPertanyaanByPertemuan(
-    @Param('pertemuanId') pertemuanId: string,
-    @Param('userId') userId: string,
+    @Param('pertemuanId') pertemuanId: number,
+    @Param('userId') userId: number,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -155,8 +155,8 @@ export class PertanyaansController {
     folder: 'quiz_question',
   })
   async update(
-    @Param('pertanyaanId') pertanyaanId: string,
-    @Param('quizId') quizId: string,
+    @Param('pertanyaanId') pertanyaanId: number,
+    @Param('quizId') quizId: number,
     @Body() updatePertanyaanDto: UpdatePertanyaanDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -181,8 +181,8 @@ export class PertanyaansController {
   @Roles('admin')
   @Delete(':pertanyaanId/:quizId')
   async remove(
-    @Param('quizId') quizId: string,
-    @Param('pertanyaanId') pertanyaanId: string,
+    @Param('quizId') quizId: number,
+    @Param('pertanyaanId') pertanyaanId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {

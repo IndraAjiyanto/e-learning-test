@@ -29,7 +29,7 @@ export class SuperiorityService {
     return await this.superiorityRepository.save(superiority);
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const superiority = await this.superiorityRepository.findOne({
       where: { id },
       relations: ['kategori'],
@@ -40,7 +40,7 @@ export class SuperiorityService {
     return superiority;
   }
 
-  async update(id: string, updateSuperiorityDto: UpdateSuperiorityDto) {
+  async update(id: number, updateSuperiorityDto: UpdateSuperiorityDto) {
     const superiority = await this.findOne(id);
     if (updateSuperiorityDto.kategoriId) {
       const kategori = await this.kategoriRepository.findOne({
@@ -55,7 +55,7 @@ export class SuperiorityService {
     return await this.superiorityRepository.save(superiority);
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const superiority = await this.findOne(id);
     return await this.superiorityRepository.remove(superiority);
   }

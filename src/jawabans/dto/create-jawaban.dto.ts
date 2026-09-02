@@ -8,5 +8,5 @@ export class CreateJawabanDto {
   jawaban_benar: boolean;
 
   @IsInt()
-  pertanyaanId: string;
+  pertanyaanId: number;
 }

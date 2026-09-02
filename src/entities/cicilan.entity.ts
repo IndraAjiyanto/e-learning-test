@@ -16,8 +16,8 @@ export type Bulan = 3 | 6 | 12;
 
 @Entity()
 export class Cicilan {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   dp: number;

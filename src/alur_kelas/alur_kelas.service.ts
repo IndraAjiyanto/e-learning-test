@@ -33,13 +33,13 @@ export class AlurKelasService {
     return await this.alurKelasRepository.save(alur_kelas);
   }
 
-  async noAlur(kelasId: string) {
+  async noAlur(kelasId: number) {
     const alurTerakhir = await this.findAlurKelas(kelasId);
     const aluBaru = alurTerakhir + 1;
     return aluBaru;
   }
 
-  async findAlurKelas(kelasId: string) {
+  async findAlurKelas(kelasId: number) {
     const alur_kelas = await this.alurKelasRepository.findOne({
       where: { kelas: { id: kelasId } },
       order: { alur_ke: 'DESC' },
@@ -53,19 +53,19 @@ export class AlurKelasService {
   async findAll() {
     const alur_kelas = await this.alurKelasRepository.find({
       relations: ['kelas'],
-      order: { kelas: { createdAt: 'ASC' }, alur_ke: 'ASC' },
+      order: { kelas: { id: 'ASC' }, alur_ke: 'ASC' },
     });
     return alur_kelas;
   }
 
   async findAllKelas() {
     const kelas = await this.kelasRepository.find({
-      order: { createdAt: 'ASC' },
+      order: { id: 'ASC' },
     });
     return kelas;
   }
 
-  async findOne(alurKelasId: string) {
+  async findOne(alurKelasId: number) {
     const alur_kelas = await this.alurKelasRepository.findOne({
       where: { id: alurKelasId },
       relations: ['kelas'],
@@ -76,7 +76,7 @@ export class AlurKelasService {
     return alur_kelas;
   }
 
-  async update(alurKelasId: string, updateAlurKelaDto: UpdateAlurKelaDto) {
+  async update(alurKelasId: number, updateAlurKelaDto: UpdateAlurKelaDto) {
     const alur_kelas = await this.findOne(alurKelasId);
     if (!alur_kelas) {
       throw new NotFoundException('Flow Program not found');
@@ -86,7 +86,7 @@ export class AlurKelasService {
     return await this.alurKelasRepository.save(alur_kelas);
   }
 
-  async remove(alurKelasId: string, kelasId) {
+  async remove(alurKelasId: number, kelasId) {
     const alur_kelas = await this.findOne(alurKelasId);
     if (!alur_kelas) {
       throw new NotFoundException('Flow Program not found');

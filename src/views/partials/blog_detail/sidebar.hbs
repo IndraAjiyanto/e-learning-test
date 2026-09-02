@@ -110,7 +110,7 @@
     class="flex items-center gap-4 justify-around py-4"
   >
     <button
-      @click="likeBlog('{{blog.id}}')"
+      @click="likeBlog({{blog.id}})"
       :class="userLike > 0 ? 'text-red-500' : 'text-gray-600'"
       class="flex items-center gap-2 hover:text-red-500 transition-colors focus:outline-none"
     >

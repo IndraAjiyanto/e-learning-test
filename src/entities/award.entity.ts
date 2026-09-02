@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Award {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column('jsonb', { nullable: true })
   content: string[];

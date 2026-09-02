@@ -10,7 +10,7 @@ export class DashboardController {
   async kelasFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('userId') userId?: string,
+    @Query('userId') userId?: number,
     @Query('kategori') kategori?: string,
     @Query('jenis_kelas') jenisKelas?: string,
     @Query('metode') metode?: string,
@@ -131,7 +131,7 @@ export class DashboardController {
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('userId') userId?: string,
+    @Query('userId') userId?: number,
     @Query('kategori_id') kategoriId?: string,
     @Query('jenis_kelas_id') jenisKelasId?: string,
     @Query('page') page?: string,
@@ -175,7 +175,7 @@ export class DashboardController {
   async detailPortfolio(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('portfolioId') portfolioId: string,
+    @Param('portfolioId') portfolioId: number,
   ) {
     const portfolio = await this.dashboardService.findOnePortfolio(portfolioId);
     res.render('detail_portfolio', { user: req.user, portfolio });
@@ -224,7 +224,7 @@ export class DashboardController {
     const excludeIds = [
       blog_tranding?.id,
       ...kategori_tranding.map(k => k.blog?.id),
-    ].filter(Boolean) as string[];
+    ].filter(Boolean) as number[];
 
     // const blog = await this.dashboardService.findBlog(excludeIds);
     const kategori_blog = await this.dashboardService.findBlogCategory();

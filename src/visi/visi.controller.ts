@@ -59,7 +59,7 @@ export class VisiController {
   @Roles('super_admin')
   @Get('formEdit/:visiId')
   async findOne(
-    @Param('visiId') visiId: string,
+    @Param('visiId') visiId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -70,7 +70,7 @@ export class VisiController {
   @Roles('super_admin')
   @Patch(':visiId')
   async update(
-    @Param('visiId') visiId: string,
+    @Param('visiId') visiId: number,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updateVisiDto: UpdateVisiDto,
@@ -88,7 +88,7 @@ export class VisiController {
   @Roles('super_admin')
   @Delete(':visiId')
   async remove(
-    @Param('visiId') visiId: string,
+    @Param('visiId') visiId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

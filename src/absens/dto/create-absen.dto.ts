@@ -19,8 +19,8 @@ export class CreateAbsenDto {
   keterangan: string;
 
   @IsNumber()
-  userId: string;
+  userId: number;
 
   @IsNumber()
-  pertemuanId: string;
+  pertemuanId: number;
 }

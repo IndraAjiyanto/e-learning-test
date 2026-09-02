@@ -52,7 +52,7 @@ export class PertemuansController {
   async createPertemuan(
     @Body() createPertemuanDto: CreatePertemuanDto,
     @Res() res: Response,
-    @Param('mingguId') mingguId: string,
+    @Param('mingguId') mingguId: number,
     @Req() req: Request,
   ) {
     try {
@@ -71,7 +71,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('formCreate/:mingguId')
   async formCreate(
-    @Param('mingguId') mingguId: string,
+    @Param('mingguId') mingguId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -83,7 +83,7 @@ export class PertemuansController {
   async formAdd(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('id') id: number,
   ) {
     res.render('admin/kelas/createPertemuan', { user: req.user, id });
   }
@@ -93,7 +93,7 @@ export class PertemuansController {
   async formEdit(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('id') id: number,
   ) {
     const pertemuan = await this.pertemuansService.findOne(id);
     const kelas = await this.pertemuansService.findAllKelas();
@@ -103,7 +103,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('logbook/:pertemuanId')
   async getLogBook(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const logbook = await this.pertemuansService.findLogBook(pertemuanId);
@@ -113,7 +113,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('logbook-mentor/:pertemuanId')
   async getLogBookMentor(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const logbook_mentor =
@@ -124,7 +124,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('logbook/:pertemuanId/export')
   async exportLogBook(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const logbooks = await this.pertemuansService.findLogBook(pertemuanId);
@@ -145,7 +145,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('logbook-mentor/:pertemuanId/export')
   async exportLogBookMentor(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const logbooks =
@@ -167,7 +167,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('attendance/:pertemuanId')
   async getAbsen(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
@@ -181,7 +181,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('task/:pertemuanId')
   async getTugas(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const tugas = await this.pertemuansService.findTugas(pertemuanId);
@@ -191,7 +191,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('pdf/:pertemuanId')
   async getMateriPdf(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const materiPdf = await this.materisService.findMateriPdf(pertemuanId);
@@ -201,7 +201,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('video/:pertemuanId')
   async getMateriVideo(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const materiVideo = await this.materisService.findMateriVideo(pertemuanId);
@@ -211,7 +211,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get('ppt/:pertemuanId')
   async getMateriPpt(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const materiPpt = await this.materisService.findMateriPpt(pertemuanId);
@@ -221,7 +221,7 @@ export class PertemuansController {
   @Roles('admin')
   @Get(':pertemuanId')
   async findOne(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -235,7 +235,7 @@ export class PertemuansController {
   @Roles('admin')
   @Patch(':pertemuanId')
   async update(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Body() updatePertemuanDto: UpdatePertemuanDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -253,8 +253,8 @@ export class PertemuansController {
   @Roles('admin')
   @Delete(':id/:mingguId')
   async remove(
-    @Param('id') id: string,
-    @Param('mingguId') mingguId: string,
+    @Param('id') id: number,
+    @Param('mingguId') mingguId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

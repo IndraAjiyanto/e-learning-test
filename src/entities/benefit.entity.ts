@@ -10,8 +10,8 @@ export type No = 1 | 2 | 3;
 
 @Entity()
 export class Benefit {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column('jsonb', { nullable: true })
   judul: string[];

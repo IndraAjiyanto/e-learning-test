@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Header {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   judul: string;

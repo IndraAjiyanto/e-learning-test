@@ -59,7 +59,7 @@ export class ValueController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async findOne(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -70,7 +70,7 @@ export class ValueController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateValueDto: UpdateValueDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -88,7 +88,7 @@ export class ValueController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

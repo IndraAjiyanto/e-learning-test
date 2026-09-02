@@ -11,5 +11,5 @@ export class CreatePertanyaanKelaDto {
 
   @IsNumber()
   @IsNotEmpty()
-  kelasId: string;
+  kelasId: number;
 }

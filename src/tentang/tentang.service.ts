@@ -25,7 +25,7 @@ export class TentangService {
     return await this.tentangRepository.find();
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const tentang = await this.tentangRepository.findOne({ where: { id } });
     if (!tentang) {
       throw new NotFoundException('Header not found');
@@ -33,7 +33,7 @@ export class TentangService {
     return tentang;
   }
 
-  async update(id: string, updateTentangDto: UpdateTentangDto) {
+  async update(id: number, updateTentangDto: UpdateTentangDto) {
     const tentang = await this.findOne(id);
     if (!tentang) {
       throw new NotFoundException('Header not found');
@@ -42,7 +42,7 @@ export class TentangService {
     return await this.tentangRepository.save(tentang);
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const tentang = await this.findOne(id);
     if (!tentang) {
       throw new NotFoundException('Header not found');

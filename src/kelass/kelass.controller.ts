@@ -11,7 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseFilters,
-  ParseUUIDPipe,
+  ParseIntPipe,
   Query,
 } from '@nestjs/common';
 import { KelassService } from './kelass.service';
@@ -118,7 +118,7 @@ export class KelassController {
     @Body() createKelassDto: CreateKelassDto,
     @Res() res: Response,
     @Req() req: Request,
-    @Param('kategoriId') kategoriId: string,
+    @Param('kategoriId') kategoriId: number,
   ) {
     try {
       createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
@@ -171,10 +171,10 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Post('addStudent/:kelasId')
   async addUserToKelas(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
-    @Body('userId') userId: string,
+    @Body('userId') userId: number,
   ) {
     try {
       await this.kelassService.addUserToKelas(userId, kelasId);
@@ -248,7 +248,7 @@ export class KelassController {
   async formCreateKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('kategoriId') kategoriId: string,
+    @Param('kategoriId') kategoriId: number,
   ) {
     const kategori = await this.kelassService.findOneKategori(kategoriId);
     const jenis_kelas = await this.kelassService.findJenisKelas();
@@ -269,7 +269,7 @@ export class KelassController {
   async formAddUser(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
   ) {
     const users = await this.kelassService.findUser();
     const murid = await this.kelassService.findMurid(kelasId);
@@ -286,7 +286,7 @@ export class KelassController {
   @Get('/edit/:kelasId')
   async formEdit(
     @Res() res: Response,
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(kelasId);
@@ -308,7 +308,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get('/logbookMentor/:kelasId')
   async getLogbookMentor(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
@@ -318,7 +318,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get('/logbookUser/:kelasId')
   async getLogbookUser(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const logbookUser = await this.kelassService.findLogBookUser(kelasId);
@@ -328,7 +328,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get('/mentorProgram/:kelasId')
   async getMentorKelas(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const mentor = await this.kelassService.findMentorKelas(kelasId);
@@ -337,21 +337,21 @@ export class KelassController {
 
   @Roles('admin')
   @Get('/week/:kelasId')
-  async getMinggu(@Param('kelasId') kelasId: string, @Res() res: Response) {
+  async getMinggu(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const minggu = await this.kelassService.findMingguKelas(kelasId);
     res.json(minggu);
   }
 
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:kelasId')
-  async getUserKelas(@Param('kelasId') kelasId: string, @Res() res: Response) {
+  async getUserKelas(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const user_kelas = await this.kelassService.findUserKelas(kelasId);
     res.json(user_kelas);
   }
 
   @Roles('super_admin')
   @Get('/installment/:kelasId')
-  async getCicilan(@Param('kelasId') kelasId: string, @Res() res: Response) {
+  async getCicilan(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const availableMonths = await this.kelassService.findNo(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
     res.json({ availableMonths, cicilan });
@@ -360,7 +360,7 @@ export class KelassController {
   @Roles('super_admin')
   @Get('/register/:kelasId')
   async getPendaftaran(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
@@ -370,7 +370,7 @@ export class KelassController {
   @Roles('super_admin')
   @Get('/paymentInstallment/:kelasId')
   async getPaymentInstallment(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const paymentInstallment =
@@ -381,7 +381,7 @@ export class KelassController {
   @Roles('super_admin')
   @Get('/benefit/:kelasId')
   async getBenefitKelas(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
@@ -391,7 +391,7 @@ export class KelassController {
   @Roles('super_admin')
   @Get('/faq/:kelasId')
   async getPertanyaanKelas(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const pertanyaan_kelas =
@@ -401,21 +401,21 @@ export class KelassController {
 
   @Roles('super_admin')
   @Get('/flow/:kelasId')
-  async getAlurKelas(@Param('kelasId') kelasId: string, @Res() res: Response) {
+  async getAlurKelas(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
     res.json(alur_kelas);
   }
 
   @Roles('super_admin')
   @Get('/payment/:kelasId')
-  async getPembayaran(@Param('kelasId') kelasId: string, @Res() res: Response) {
+  async getPembayaran(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
     res.json(pembayaran);
   }
 
   @Roles('super_admin')
   @Get('/alumni/:kelasId')
-  async getAlumni(@Param('kelasId') kelasId: string, @Res() res: Response) {
+  async getAlumni(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const alumni = await this.kelassService.findAlumniKelas(kelasId);
     res.json(alumni);
   }
@@ -423,7 +423,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get('/detail/program/admin/:kelasId')
   async detailKelas(
-    @Param('kelasId', ParseUUIDPipe) kelasId: string,
+    @Param('kelasId', ParseIntPipe) kelasId: number,
 
     @Res() res: Response,
     @Req() req: Request,
@@ -449,7 +449,7 @@ export class KelassController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -467,7 +467,7 @@ export class KelassController {
   @Roles('user')
   @Get('program/detail/:kelasId')
   async viewDetail(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -499,7 +499,7 @@ export class KelassController {
 
   @Get(':id')
   async detail(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -584,25 +584,25 @@ export class KelassController {
   }
 
   @Get('api/detail/:id/benefit')
-  async getBenefit(@Param('id') id: string, @Res() res: Response) {
+  async getBenefit(@Param('id') id: number, @Res() res: Response) {
     const benefit_kelas = await this.kelassService.findBenefitKelas(id);
     return res.json({ benefit_kelas });
   }
 
   @Get('api/detail/:id/faq')
-  async getFaq(@Param('id') id: string, @Res() res: Response) {
+  async getFaq(@Param('id') id: number, @Res() res: Response) {
     const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
     return res.json({ pertanyaan_kelas });
   }
 
   @Get('api/detail/:id/flow')
-  async getFlow(@Param('id') id: string, @Res() res: Response) {
+  async getFlow(@Param('id') id: number, @Res() res: Response) {
     const alur_kelas = await this.kelassService.findAlurKelas(id);
     return res.json({ alur_kelas });
   }
 
   @Get('api/detail/:id/mentor')
-  async getMentor(@Param('id') id: string, @Res() res: Response) {
+  async getMentor(@Param('id') id: number, @Res() res: Response) {
     const mentor = await this.kelassService.findMentorKelas(id);
     return res.json({ mentor });
   }
@@ -624,7 +624,7 @@ export class KelassController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() updateKelassDto: UpdateKelassDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -638,7 +638,7 @@ export class KelassController {
 
       if (updateKelassDto.mentoringId) {
         const currentMentoringUserId = kelas.mentoring?.[0]?.user?.id;
-        const newMentoringUserId = updateKelassDto.mentoringId;
+        const newMentoringUserId = Number(updateKelassDto.mentoringId);
 
         if (currentMentoringUserId !== newMentoringUserId) {
           await this.kelassService.updateMentoring(
@@ -671,7 +671,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Patch(':kelasId/toggle-launch')
   async updateLaunch(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() updateKelassDto: UpdateKelassDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -689,7 +689,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Patch(':kelasId/toggle-status')
   async updateStatus(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() updateKelassDto: UpdateKelassDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -707,7 +707,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Delete(':kelasId')
   async remove(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body('previous') previous: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -731,8 +731,8 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Delete(':userId/program/:kelasId')
   async removeUserKelas(
-    @Param('userId') userId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('userId') userId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -751,7 +751,7 @@ export class KelassController {
   async getPertemuan(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('mingguId') mingguId: string,
+    @Param('mingguId') mingguId: number,
   ) {
     const user = req.user;
     if (!user) {
@@ -765,7 +765,7 @@ export class KelassController {
   @Get('quiz/:mingguId')
   async getQuiz(
     @Res() res: Response,
-    @Param('mingguId') mingguId: string,
+    @Param('mingguId') mingguId: number,
     @Req() req: Request,
   ) {
     const user = req.user;

@@ -33,8 +33,8 @@ export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
 export class Kelas {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   nama_kelas: string;

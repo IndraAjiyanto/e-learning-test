@@ -80,7 +80,7 @@ export class TentangController {
   @Roles('super_admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -91,7 +91,7 @@ export class TentangController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -116,7 +116,7 @@ export class TentangController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateTentangDto: UpdateTentangDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -139,7 +139,7 @@ export class TentangController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

@@ -28,5 +28,5 @@ export class CreateBiodataDto {
   program_studi: string;
 
   @IsInt()
-  userId: string;
+  userId: number;
 }

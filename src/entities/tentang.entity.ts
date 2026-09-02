@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Tentang {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column('jsonb', { nullable: true })
   judul: string[];

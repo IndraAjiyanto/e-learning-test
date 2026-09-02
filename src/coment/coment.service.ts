@@ -12,15 +12,15 @@ export class ComentService {
     return `This action returns all coment`;
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return `This action returns a #${id} coment`;
   }
 
-  update(id: string, updateComentDto: UpdateComentDto) {
+  update(id: number, updateComentDto: UpdateComentDto) {
     return `This action updates a #${id} coment`;
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return `This action removes a #${id} coment`;
   }
 }

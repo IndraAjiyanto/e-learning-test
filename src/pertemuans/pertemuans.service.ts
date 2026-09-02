@@ -145,7 +145,7 @@ export class PertemuansService {
     return await this.kelasRepository.find();
   }
 
-  async findPertemuanMinggu(mingguId: string) {
+  async findPertemuanMinggu(mingguId: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: { minggu: { id: mingguId } },
       order: { createdAt: 'DESC' },
@@ -156,13 +156,13 @@ export class PertemuansService {
     return pertemuan.pertemuan_ke;
   }
 
-  async noPertemuan(mingguId: string) {
+  async noPertemuan(mingguId: number) {
     const pertemuanTerakhir = await this.findPertemuanMinggu(mingguId);
     const pertemuanBaru = pertemuanTerakhir + 1;
     return pertemuanBaru;
   }
 
-  async findMuridInKelas(kelasId: string, pertemuanId: string) {
+  async findMuridInKelas(kelasId: number, pertemuanId: number) {
     return await this.userRepository.find({
       where: {
         user_kelas: { kelas: { id: kelasId } },
@@ -172,14 +172,14 @@ export class PertemuansService {
     });
   }
 
-  async findPertanyaan(pertemuanId: string) {
+  async findPertanyaan(pertemuanId: number) {
     return await this.pertanyaanRepository.find({
       where: { quiz: { id: pertemuanId } },
       relations: ['jawaban'],
     });
   }
 
-  async findLogBook(pertemuanId: string) {
+  async findLogBook(pertemuanId: number) {
     return await this.logBookRepository.find({
       where: { pertemuan: { id: pertemuanId } },
       relations: [
@@ -191,7 +191,7 @@ export class PertemuansService {
     });
   }
 
-  async findLogBookMentor(pertemuanId: string) {
+  async findLogBookMentor(pertemuanId: number) {
     return await this.logbookMentorRepository.find({
       where: { pertemuan: { id: pertemuanId } },
       relations: [
@@ -203,13 +203,13 @@ export class PertemuansService {
     });
   }
 
-  async findTugas(pertemuanId: string) {
+  async findTugas(pertemuanId: number) {
     return await this.tugasRepository.find({
       where: { pertemuan: { id: pertemuanId } },
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: { id },
       relations: ['minggu', 'minggu.kelas'],
@@ -225,7 +225,7 @@ export class PertemuansService {
     return pertemuan;
   }
 
-  async update(id: string, updatePertemuanDto: UpdatePertemuanDto) {
+  async update(id: number, updatePertemuanDto: UpdatePertemuanDto) {
     const pertemuan = await this.findOne(id);
     if (!pertemuan) {
       throw new NotFoundException('pertemuan tidak ditemukan');
@@ -240,7 +240,7 @@ export class PertemuansService {
     return await this.pertemuanRepository.save(pertemuan);
   }
 
-  async remove(pertemuanId: string, mingguId: string) {
+  async remove(pertemuanId: number, mingguId: number) {
     const pertemuan = await this.findOne(pertemuanId);
     if (!pertemuan) {
       throw new NotFoundException('pertemuan tidak ditemukan');

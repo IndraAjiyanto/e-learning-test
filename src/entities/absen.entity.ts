@@ -19,8 +19,8 @@ export type Status =
 
 @Entity()
 export class Absen {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({
     type: 'enum',

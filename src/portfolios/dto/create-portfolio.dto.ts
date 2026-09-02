@@ -31,8 +31,8 @@ export class CreatePortfolioDto {
   teknologi: string[];
 
   @IsNumber()
-  userId: string;
+  userId: number;
 
   @IsNumber()
-  kelasId: string;
+  kelasId: number;
 }

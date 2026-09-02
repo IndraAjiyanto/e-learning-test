@@ -34,19 +34,19 @@ export class ExperienceService {
     return await this.experienceRepository.find();
   }
 
-  async findOne(id: string): Promise<Experience | null> {
+  async findOne(id: number): Promise<Experience | null> {
     return await this.experienceRepository.findOneBy({ id });
   }
 
   async update(
-    id: string,
+    id: number,
     updateExperienceDto: UpdateExperienceDto,
   ): Promise<Experience | null> {
     await this.experienceRepository.update(id, updateExperienceDto);
     return this.findOne(id);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     const experience = await this.findOne(id);
     if (!experience) {
       throw new Error('Experience not found');

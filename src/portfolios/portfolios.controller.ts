@@ -68,7 +68,7 @@ export class PortfoliosController {
     folder: 'portfolio',
   })
   async create(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Body() createPortfolioDto: CreatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -119,7 +119,7 @@ export class PortfoliosController {
   async myPortfolio(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('userId') userId: string,
+    @Param('userId') userId: number,
   ) {
     const kategori = await this.portfoliosService.findKategoriMyPortfolio(userId);
     const jenis_kelas = await this.portfoliosService.findJenisKelasMyPortfolio(userId);
@@ -135,7 +135,7 @@ export class PortfoliosController {
   @Roles('user')
   @Get('formCreate/:kelasId')
   async formCreate(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -145,8 +145,8 @@ export class PortfoliosController {
   @Roles('user')
   @Get(':portofolioId/:kelasId')
   async findOne(
-    @Param('portofolioId') portofolioId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('portofolioId') portofolioId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -157,8 +157,8 @@ export class PortfoliosController {
   @Roles('user')
   @Get('formEdit/:portfolioId/:kelasId')
   async formEdit(
-    @Param('portfolioId') portfolioId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('portfolioId') portfolioId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -180,8 +180,8 @@ export class PortfoliosController {
     folder: 'portfolio',
   })
   async update(
-    @Param('portfolioId') portfolioId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('portfolioId') portfolioId: number,
+    @Param('kelasId') kelasId: number,
     @Body() updatePortfolioDto: UpdatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -239,8 +239,8 @@ export class PortfoliosController {
   @Roles('user')
   @Delete(':portfolioId/:kelasId')
   async remove(
-    @Param('portfolioId') portfolioId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('portfolioId') portfolioId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

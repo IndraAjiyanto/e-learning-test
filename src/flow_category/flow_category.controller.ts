@@ -25,7 +25,7 @@ export class FlowCategoryController {
   @Roles('super_admin')
   @Get('formCreate/:kategoriId')
   async formCreate(
-    @Param('kategoriId') kategoriId: string,
+    @Param('kategoriId') kategoriId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -39,7 +39,7 @@ export class FlowCategoryController {
   @Post(':kategoriId')
   async createFromForm(
     @Body() createFlowCategoryDto: CreateFlowCategoryDto,
-    @Param('kategoriId') kategoriId: string,
+    @Param('kategoriId') kategoriId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -57,7 +57,7 @@ export class FlowCategoryController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -71,8 +71,8 @@ export class FlowCategoryController {
   @Roles('super_admin')
   @Patch('formEdit/:id/:kategoriId')
   async updateFromForm(
-    @Param('id') id: string,
-    @Param('kategoriId') kategoriId: string,
+    @Param('id') id: number,
+    @Param('kategoriId') kategoriId: number,
     @Body() updateFlowCategoryDto: UpdateFlowCategoryDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -90,8 +90,8 @@ export class FlowCategoryController {
   @Roles('super_admin')
   @Delete(':id/:kategoriId')
   async deleteFromForm(
-    @Param('id') id: string,
-    @Param('kategoriId') kategoriId: string,
+    @Param('id') id: number,
+    @Param('kategoriId') kategoriId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {

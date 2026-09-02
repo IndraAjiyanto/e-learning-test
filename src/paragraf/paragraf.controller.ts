@@ -56,7 +56,7 @@ export class ParagrafController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async findOne(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -67,7 +67,7 @@ export class ParagrafController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateParagrafDto: UpdateParagrafDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -85,7 +85,7 @@ export class ParagrafController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

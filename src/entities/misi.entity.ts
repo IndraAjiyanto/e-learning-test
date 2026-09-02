@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Misi {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   misi_ke: number;

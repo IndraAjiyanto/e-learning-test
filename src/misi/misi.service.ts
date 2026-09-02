@@ -33,16 +33,16 @@ export class MisiService {
     return misi_new;
   }
 
-  async findOne(id: string): Promise<Misi | null> {
+  async findOne(id: number): Promise<Misi | null> {
     return await this.misiRepository.findOneBy({ id });
   }
 
-  async update(id: string, updateMisiDto: UpdateMisiDto): Promise<Misi | null> {
+  async update(id: number, updateMisiDto: UpdateMisiDto): Promise<Misi | null> {
     await this.misiRepository.update(id, updateMisiDto);
     return await this.findOne(id);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     const misi = await this.findOne(id);
     if (!misi) {
       throw new Error('Misi not found');

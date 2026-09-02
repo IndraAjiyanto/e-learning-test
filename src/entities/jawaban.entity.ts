@@ -13,8 +13,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Jawaban {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   jawaban: string;

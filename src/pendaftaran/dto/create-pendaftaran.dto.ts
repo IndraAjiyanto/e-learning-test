@@ -11,8 +11,8 @@ export class CreatePendaftaranDto {
   proses: Proses;
 
   @IsInt()
-  userId: string;
+  userId: number;
 
   @IsInt()
-  kelasId: string;
+  kelasId: number;
 }

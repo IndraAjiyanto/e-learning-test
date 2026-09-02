@@ -67,7 +67,7 @@ export class KategorisService {
     return await this.kategoriRepository.find();
   }
 
-  async findOne(kategoriId: string) {
+  async findOne(kategoriId: number) {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: kategoriId },
       relations: ['jenis_kelas'],
@@ -78,14 +78,14 @@ export class KategorisService {
     return kategori;
   }
 
-  async findKelasByKategori(kategoriId: string) {
+  async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId }, launch: true },
       relations: ['jenis_kelas', 'kategori', 'user_kelas'],
     });
   }
 
-  async findKelasByKategoriAll(kategoriId: string) {
+  async findKelasByKategoriAll(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId } },
       relations: ['jenis_kelas', 'kategori', 'user_kelas'],
@@ -93,7 +93,7 @@ export class KategorisService {
     });
   }
 
-  async findAlumniByKategori(kategoriId: string) {
+  async findAlumniByKategori(kategoriId: number) {
     return await this.alumniRepository.find({
       where: { kelas: { kategori: { id: kategoriId } } },
       relations: ['kelas'],
@@ -102,31 +102,31 @@ export class KategorisService {
     });
   }
 
-  async findFaqByKategori(kategoriId: string) {
+  async findFaqByKategori(kategoriId: number) {
     return await this.pertanyaanUmumRepository.find({
       where: { kategori: { id: kategoriId } },
     });
   }
 
-  async findSuperiorityByKategori(kategoriId: string) {
+  async findSuperiorityByKategori(kategoriId: number) {
     return await this.superiorityRepository.find({
       where: { kategori: { id: kategoriId } },
     });
   }
 
-  async findBenefitByKategori(kategoriId: string) {
+  async findBenefitByKategori(kategoriId: number) {
     return await this.benefitCategoryRepository.find({
       where: { kategori: { id: kategoriId } },
     });
   }
 
-  async findFlowByKategori(kategoriId: string) {
+  async findFlowByKategori(kategoriId: number) {
     return await this.flowCategoryRepository.find({
       where: { kategori: { id: kategoriId } },
     });
   }
 
-  async update(kategoriId: string, updateKategorisDto: UpdateKategorisDto) {
+  async update(kategoriId: number, updateKategorisDto: UpdateKategorisDto) {
     const kategori = await this.findOne(kategoriId);
     if (!kategori) {
       throw new NotFoundException('Category not found');
@@ -158,7 +158,7 @@ export class KategorisService {
     } catch (error) {}
   }
 
-  async remove(kategoriId: string) {
+  async remove(kategoriId: number) {
     const kategori = await this.findOne(kategoriId);
     if (!kategori) {
       throw new NotFoundException('Category not found');

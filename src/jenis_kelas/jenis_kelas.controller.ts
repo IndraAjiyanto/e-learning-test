@@ -59,7 +59,7 @@ export class JenisKelasController {
   @Roles('super_admin')
   @Get('formEdit/:jenis_kelasId')
   async formEdit(
-    @Param('jenis_kelasId') jenis_kelasId: string,
+    @Param('jenis_kelasId') jenis_kelasId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -71,7 +71,7 @@ export class JenisKelasController {
   @Patch(':jenis_kelasId')
   @UseInterceptors(FileInterceptor('icon', multerConfigImage))
   async update(
-    @Param('jenis_kelasId') jenis_kelasId: string,
+    @Param('jenis_kelasId') jenis_kelasId: number,
     @UploadedFile() icon: Express.Multer.File,
     @Body() updateJenisKelaDto: UpdateJenisKelaDto,
     @Req() req: Request,
@@ -91,7 +91,7 @@ export class JenisKelasController {
   @Roles('super_admin')
   @Delete(':jenis_kelasId')
   async remove(
-    @Param('jenis_kelasId') jenis_kelasId: string,
+    @Param('jenis_kelasId') jenis_kelasId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {

@@ -14,5 +14,5 @@ export class CreateBenefitCategoryDto {
   description: string[];
 
   @IsNotEmpty()
-  kategoriId: string;
+  kategoriId: number;
 }

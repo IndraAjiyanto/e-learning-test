@@ -19,8 +19,8 @@ export type Pendidikan =
 
 @Entity()
 export class Biodata {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   nama_lengkap: string;
@@ -51,6 +51,6 @@ export class Biodata {
   @Exclude()
   user: User;
 
-  @Column({ type: 'uuid' })
-  userId: string;
+  @Column()
+  userId: number;
 }

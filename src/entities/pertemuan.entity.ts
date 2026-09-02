@@ -18,8 +18,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Pertemuan {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   topik: string;

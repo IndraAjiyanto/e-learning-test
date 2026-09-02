@@ -42,7 +42,7 @@ export class TugassController {
   async create(
     @Body() createTugassDto: CreateTugassDto,
     @UploadedFile() file: Express.Multer.File,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -68,7 +68,7 @@ export class TugassController {
   async formCreate(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
   ) {
     res.render('admin/tugas/create', { user: req.user, pertemuanId });
   }
@@ -76,8 +76,8 @@ export class TugassController {
   @Roles('admin')
   @Delete(':tugasId/:pertemuanId')
   async remove(
-    @Param('pertemuanId') pertemuanId: string,
-    @Param('tugasId') tugasId: string,
+    @Param('pertemuanId') pertemuanId: number,
+    @Param('tugasId') tugasId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {

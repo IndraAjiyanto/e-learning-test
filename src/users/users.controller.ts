@@ -276,7 +276,7 @@ async filterUsers(
   @Roles('super_admin')
   @Get('formEdit/:userId')
   async formEdit(
-    @Param('userId') userId: string,
+    @Param('userId') userId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -293,7 +293,7 @@ async filterUsers(
   @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updateUserDto: UpdateUserDto,
@@ -330,7 +330,7 @@ async filterUsers(
   })
   async updateAdmin(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('userId') userId: string,
+    @Param('userId') userId: number,
     @Res() res: Response,
     @Body() updateUserDto: UpdateUserDto,
     @Req() req: Request,
@@ -355,7 +355,7 @@ async filterUsers(
   @Roles('user', 'admin', 'super_admin')
   @Patch('password/:id')
   async updatePassword(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updatePasswordDto: UpdatePasswordDto,
@@ -389,7 +389,7 @@ async filterUsers(
     skipTransformation: true,
   })
   async updateProfile(
-    @Param('userId') userId: string,
+    @Param('userId') userId: number,
     @Res() res: Response,
     @Body() updateProfileDto: UpdateProfileDto,
     @UploadedFile() profile: Express.Multer.File,
@@ -404,7 +404,7 @@ async filterUsers(
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
       }
 
-      const userIdNum = userId;
+      const userIdNum = Number(userId);
 
       if (req.user!.id === userIdNum) {
         await this.usersService.updateProfile(userIdNum, updateProfileDto);
@@ -423,7 +423,7 @@ async filterUsers(
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

@@ -27,7 +27,7 @@ export class CicilanController {
   async formCreate(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
   ) {
     const availableMonths = await this.cicilanService.findNo(kelasId);
     res.render('super_admin/cicilan/create', { user: req.user, kelasId, availableMonths });
@@ -36,7 +36,7 @@ export class CicilanController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -51,7 +51,7 @@ export class CicilanController {
     @Body() createCicilanDto: CreateCicilanDto,
     @Req() req: Request,
     @Res() res: Response,
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
   ) {
     try {
       if (createCicilanDto.harga && Array.isArray(createCicilanDto.harga)) {
@@ -62,7 +62,7 @@ export class CicilanController {
         createCicilanDto.dp = Number(createCicilanDto.dp);
       }
 
-      createCicilanDto.kelasId = kelasId;
+      createCicilanDto.kelasId = Number(kelasId);
       createCicilanDto.bulan = Number(createCicilanDto.bulan) as 3 | 6 | 12;
 
       await this.cicilanService.create(createCicilanDto);
@@ -77,7 +77,7 @@ export class CicilanController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCicilanDto: UpdateCicilanDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -108,7 +108,7 @@ export class CicilanController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {

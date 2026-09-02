@@ -4,7 +4,7 @@ import 'express-session';
 declare global {
   namespace Express {
     interface UserPayload {
-      id: string;
+      id: number;
       username: string;
       profile: string;
       email: string;

@@ -16,7 +16,7 @@ export class BiodatasService {
     return await this.biodataRepository.save(biodata);
   }
 
-  async findOne(biodataId: string) {
+  async findOne(biodataId: number) {
     const biodata = await this.biodataRepository.findOne({
       where: { id: biodataId },
       relations: ['user'],
@@ -27,7 +27,7 @@ export class BiodatasService {
     return biodata;
   }
 
-  async update(biodataId: string, updateBiodataDto: UpdateBiodataDto) {
+  async update(biodataId: number, updateBiodataDto: UpdateBiodataDto) {
     const biodata = await this.findOne(biodataId);
     if (!biodata) {
       throw new NotFoundException('biodata not found');

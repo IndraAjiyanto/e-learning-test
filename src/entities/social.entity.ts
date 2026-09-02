@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Social {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   linkedin: string;

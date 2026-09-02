@@ -50,7 +50,7 @@ export class MaterisController {
   async createPdf(
     @Body() createMaterisDto: CreateMaterisDto,
     @Res() res: Response,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Req() req: Request,
   ) {
     try {
@@ -71,7 +71,7 @@ export class MaterisController {
   async createPpt(
     @Body() createMaterisDto: CreateMaterisDto,
     @Res() res: Response,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Req() req: Request,
   ) {
     try {
@@ -93,7 +93,7 @@ export class MaterisController {
   async createVideo(
     @Body() createMaterisDto: CreateMaterisDto,
     @Res() res: Response,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Req() req: Request,
   ) {
     try {
@@ -111,7 +111,7 @@ export class MaterisController {
   @Roles('admin')
   @Get('formCreate/:id')
   async formCreate(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -129,13 +129,13 @@ export class MaterisController {
 
   @Roles('admin', 'user')
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.materisService.findOne(id);
   }
 
   // @Roles('admin', 'user')
   // @Get('/kelas/:pertemuanId')
-  // findMateriByKelas(@Param('pertemuanId') pertemuanId: string) {
+  // findMateriByKelas(@Param('pertemuanId') pertemuanId: number) {
   //   return this.materisService.findMateriBypertemuan(pertemuanId);
   // }
 
@@ -143,7 +143,7 @@ export class MaterisController {
   @Get(':jenis_file/:pertemuanId')
   async findMateriByJenisFile(
     @Param('jenis_file') jenis_file: JenisFile,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -163,7 +163,7 @@ export class MaterisController {
   @Roles('admin')
   @Get('formCreate/:jenis_file/:pertemuanId')
   async formEditMateri(
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('pertemuanId') pertemuanId: number,
     @Param('jenis_file') jenis_file: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -179,7 +179,7 @@ export class MaterisController {
   @Get('formEdit/:jenis_file/:id')
   async formEditMateriById(
     @Param('jenis_file') jenis_file: JenisFile,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -210,7 +210,7 @@ export class MaterisController {
     folder: 'materi/pdf',
   })
   async updatePdf(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateMaterisDto: UpdateMaterisDto,
     @Req() req: any,
@@ -238,7 +238,7 @@ export class MaterisController {
   @Roles('admin')
   @Patch('ppt/:id')
   async updatePpt(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateMaterisDto: UpdateMaterisDto,
     @Req() req: any,
     @Res() res: Response,
@@ -258,7 +258,7 @@ export class MaterisController {
   @Roles('admin')
   @Patch('video/:id')
   async updateVideo(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateMaterisDto: UpdateMaterisDto,
     @Req() req: any,
     @Res() res: Response,
@@ -278,8 +278,8 @@ export class MaterisController {
   @Roles('admin')
   @Delete(':materiId/:pertemuanId')
   async remove(
-    @Param('materiId') materiId: string,
-    @Param('pertemuanId') pertemuanId: string,
+    @Param('materiId') materiId: number,
+    @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

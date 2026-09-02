@@ -38,8 +38,8 @@ export class PembayaransController {
     folder: 'payment',
   })
   async create(
-    @Param('userId') userId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('userId') userId: number,
+    @Param('kelasId') kelasId: number,
     @Body() createPembayaranDto: CreatePembayaranDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -83,9 +83,9 @@ export class PembayaransController {
     folder: 'payment',
   })
   async createPembayaranCicilan(
-    @Param('cicilanId') cicilanId: string,
-    @Param('userId') userId: string,
-    @Param('kelasId') kelasId: string,
+    @Param('cicilanId') cicilanId: number,
+    @Param('userId') userId: number,
+    @Param('kelasId') kelasId: number,
     @Body() createPembayaranDto: CreatePembayaranDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -121,21 +121,21 @@ export class PembayaransController {
 
  @Roles('user')
 @Get('api/payment/:userId')
-async getPayment(@Param('userId') userId: string, @Res() res: Response) {
+async getPayment(@Param('userId') userId: number, @Res() res: Response) {
   const pembayaran = await this.pembayaransService.findPembayaran(userId);
   return res.json({ data: pembayaran });
 }
 
 @Roles('user')
 @Get('api/registration/:userId')
-async getRegistration(@Param('userId') userId: string, @Res() res: Response) {
+async getRegistration(@Param('userId') userId: number, @Res() res: Response) {
   const pendaftaran = await this.pembayaransService.findPendaftaran(userId);
   return res.json({ data: pendaftaran });
 }
 
 @Roles('user')
 @Get('api/installment/:userId')
-async getInstallment(@Param('userId') userId: string, @Res() res: Response) {
+async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
   const cicilan = await this.pembayaransService.findCicilan(userId);
   return res.json({ data: cicilan });
 }
@@ -143,7 +143,7 @@ async getInstallment(@Param('userId') userId: string, @Res() res: Response) {
   @Roles('user')
   @Get('history/:userId')
   async riwayat(
-    @Param('userId') userId: string,
+    @Param('userId') userId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -156,7 +156,7 @@ async getInstallment(@Param('userId') userId: string, @Res() res: Response) {
   @Roles('user')
   @Get('detail/:kelasId')
   async detail(
-    @Param('kelasId') kelasId: string,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -181,7 +181,7 @@ async getInstallment(@Param('userId') userId: string, @Res() res: Response) {
   @Roles('super_admin')
   @Get(':pembayaranId')
   async findOne(
-    @Param('pembayaranId') pembayaranId: string,
+    @Param('pembayaranId') pembayaranId: number,
     @Res() res: Response,
     @Req() req: any,
   ) {
@@ -192,7 +192,7 @@ async getInstallment(@Param('userId') userId: string, @Res() res: Response) {
   @Roles('super_admin')
   @Patch(':proses/:pembayaranId')
   async update(
-    @Param('pembayaranId') pembayaranId: string,
+    @Param('pembayaranId') pembayaranId: number,
     @Param('proses') proses: string,
     @Body() updatePembayaranDto: UpdatePembayaranDto,
     @Res() res: Response,
