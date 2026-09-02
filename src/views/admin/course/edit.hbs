@@ -183,7 +183,9 @@ function programData(mode) {
     validateDropdown(hiddenName, elId, label) {
       const value = this.hiddenValue(hiddenName);
       let msg = this.nonEmpty(value, label);
-      if (!msg && (!/^\d+$/.test(value) || parseInt(value, 10) <= 0)) {
+      // ID entity berupa UUID sejak migrasi ConvertIdsToUuid1788300000000,
+      // jadi yang divalidasi adalah bentuk UUID-nya, bukan angka.
+      if (!msg && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) {
         msg = label + ' must be selected from the list';
       }
       this.setFieldError(elId, msg);
@@ -191,7 +193,7 @@ function programData(mode) {
       return !msg;
     },
 
-    validateList(nameAttr, elId, label, numericOnly) {
+    validateList(nameAttr, elId, label, idOnly) {
       const inputs = document.querySelectorAll('input[name="' + nameAttr + '"]');
       const values = Array.from(inputs)
         .map(function (i) { return i.value.trim(); })
@@ -199,7 +201,7 @@ function programData(mode) {
       let msg = '';
       if (values.length === 0) {
         msg = 'At least one ' + label + ' is required';
-      } else if (numericOnly && values.some(function (v) { return !/^\d+$/.test(v); })) {
+      } else if (idOnly && values.some(function (v) { return !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v); })) {
         msg = label + ' must be selected from the list';
       }
       this.setFieldError(elId, msg);

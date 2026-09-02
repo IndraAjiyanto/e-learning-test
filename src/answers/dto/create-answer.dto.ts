@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsString, IsUUID } from 'class-validator';
 
 export class CreateAnswerDto {
   @IsString()
@@ -7,6 +7,6 @@ export class CreateAnswerDto {
   @IsBoolean()
   is_correct: boolean;
 
-  @IsInt()
-  questionsId: number;
+  @IsUUID()
+  questionsId: string;
 }

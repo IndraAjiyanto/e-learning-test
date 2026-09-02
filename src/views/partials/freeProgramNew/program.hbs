@@ -16,7 +16,7 @@
       
       {{#if courses.length}}
         {{#each courses}}
-          {{> components/category_program/card_free 
+          {{> components/ui/card/category/free/index 
               id=this.id 
               image=this.image 
               name=this.name 
@@ -27,7 +27,7 @@
         {{/each}}
       {{else}}
         <!-- Default Fallback Card -->
-        {{> components/category_program/card_free 
+        {{> components/ui/card/category/free/index 
             isFallback=true
             name="COMING SOON" 
             method="Offline" 

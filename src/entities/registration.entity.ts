@@ -14,8 +14,8 @@ import { ProcessStatus } from './types/process-status';
 
 @Entity('registrations')
 export class Registration {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   file: string;

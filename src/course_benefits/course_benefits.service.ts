@@ -32,23 +32,23 @@ export class ProgramBenefitService {
   async findAll() {
     const course_benefits = await this.programBenefitRepository.find({
       relations: ['course'],
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return course_benefits;
   }
 
   async findAllCourses() {
     const course = await this.courseRepository.find({
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return course;
   }
 
-  async findCourse(courseId: number) {
+  async findCourse(courseId: string) {
     return await this.courseRepository.findOne({ where: { id: courseId } });
   }
 
-  async findOne(programBenefitId: number) {
+  async findOne(programBenefitId: string) {
     const course_benefits = await this.programBenefitRepository.findOne({
       where: { id: programBenefitId },
       relations: ['course'],
@@ -60,7 +60,7 @@ export class ProgramBenefitService {
   }
 
   async update(
-    programBenefitId: number,
+    programBenefitId: string,
     updateProgramBenefitDto: UpdateCourseBenefitDto,
   ) {
     const course_benefits = await this.findOne(programBenefitId);
@@ -72,7 +72,7 @@ export class ProgramBenefitService {
     return await this.programBenefitRepository.save(course_benefits);
   }
 
-  async remove(programBenefitId: number) {
+  async remove(programBenefitId: string) {
     const course_benefits = await this.findOne(programBenefitId);
     if (!course_benefits) {
       throw new NotFoundException('Benefit Program not found');

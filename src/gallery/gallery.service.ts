@@ -29,11 +29,11 @@ export class GalleryService {
   async findAll(): Promise<Gallery[]> {
     return this.galleryRepository.find({
       relations: ['category'],
-      order: { id: 'DESC' },
+      order: { no: 'ASC' },
     });
   }
 
-  async findOne(id: number): Promise<Gallery> {
+  async findOne(id: string): Promise<Gallery> {
     const gallery = await this.galleryRepository.findOne({
       where: { id },
       relations: ['category'],
@@ -46,16 +46,16 @@ export class GalleryService {
     return gallery;
   }
 
-  async findByKategori(categoryId: number): Promise<Gallery[]> {
+  async findByKategori(categoryId: string): Promise<Gallery[]> {
     return this.galleryRepository.find({
       where: { category: { id: categoryId } },
       relations: ['category'],
-      order: { id: 'DESC' },
+      order: { no: 'ASC' },
     });
   }
 
   async update(
-    galleryId: number,
+    galleryId: string,
     updateGalleryDto: UpdateGalleryDto & { filePath?: string },
   ): Promise<Gallery> {
     const gallery = await this.findOne(galleryId);
@@ -78,7 +78,7 @@ export class GalleryService {
     return saved;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const gallery = await this.findOne(id);
     await this.galleryRepository.remove(gallery);
     await this.deleteFile(gallery.filePath);

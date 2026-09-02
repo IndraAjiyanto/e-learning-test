@@ -19,8 +19,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Session {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'topic', nullable: true })
   topic: string;

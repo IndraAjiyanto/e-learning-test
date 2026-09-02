@@ -22,7 +22,7 @@ export class FooterService {
     if (cached) return cached;
 
     const data = await this.socialRepository.find({
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
       take: 1,
     });
     const social = data[0] || null;
@@ -39,7 +39,7 @@ export class FooterService {
 
     const data = await this.categoryRepository.find({
       select: ['id', 'name'],
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     await this.cacheManager.set(cacheKey, data, 60 * 1000);
     return data;

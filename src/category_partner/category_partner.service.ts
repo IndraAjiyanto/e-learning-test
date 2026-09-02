@@ -25,7 +25,7 @@ export class CategoryPartnerService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const data = await this.categoryPartnerRepository.findOne({
       where: { id },
       relations: ['partners'],
@@ -36,13 +36,13 @@ export class CategoryPartnerService {
     return data;
   }
 
-  async update(id: number, updateCategoryPartnerDto: UpdateCategoryPartnerDto) {
+  async update(id: string, updateCategoryPartnerDto: UpdateCategoryPartnerDto) {
     const data = await this.findOne(id);
     Object.assign(data, updateCategoryPartnerDto);
     return await this.categoryPartnerRepository.save(data);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const data = await this.findOne(id);
     return await this.categoryPartnerRepository.remove(data);
   }

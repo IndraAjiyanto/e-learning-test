@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Faq {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   question: string[];

@@ -21,7 +21,7 @@ export class CourseTypesService {
     return await this.courseTypeRepository.find();
   }
 
-  async findOne(courseTypeId: number) {
+  async findOne(courseTypeId: string) {
     const courseType = await this.courseTypeRepository.findOne({
       where: { id: courseTypeId },
     });
@@ -31,7 +31,7 @@ export class CourseTypesService {
     return courseType;
   }
 
-  async update(courseTypeId: number, updateJenisKelaDto: UpdateCourseTypeDto) {
+  async update(courseTypeId: string, updateJenisKelaDto: UpdateCourseTypeDto) {
     const courseType = await this.findOne(courseTypeId);
     if (!courseType) {
       throw new NotFoundException('Program type not found');
@@ -40,7 +40,7 @@ export class CourseTypesService {
     return await this.courseTypeRepository.save(courseType);
   }
 
-  async remove(courseTypeId: number) {
+  async remove(courseTypeId: string) {
     const courseType = await this.findOne(courseTypeId);
     if (!courseType) {
       throw new NotFoundException('Program type not found');

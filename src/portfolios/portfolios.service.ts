@@ -54,7 +54,7 @@ export class PortfoliosService {
     return await this.portfolioRepository.save(portfolio);
   }
 
-  async findByUser(userId: number) {
+  async findByUser(userId: string) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: [
@@ -74,13 +74,13 @@ export class PortfoliosService {
     return await this.courseTypeRepository.find();
   }
 
-  async findCategoryMyPortfolio(userId: number) {
+  async findCategoryMyPortfolio(userId: string) {
     return await this.categoryRepository.find({
       where: { courses: { userCourses: { user: { id: userId } } } },
     });
   }
 
-  async findMyPortfolioCourseTypes(userId: number) {
+  async findMyPortfolioCourseTypes(userId: string) {
     return await this.courseTypeRepository.find({
       where: { classes: { userCourses: { user: { id: userId } } } },
     });
@@ -89,8 +89,8 @@ export class PortfoliosService {
   async findAll(
     page: number = 1,
     limit: number = 6,
-    categoryId?: number,
-    courseTypeId?: number,
+    categoryId?: string,
+    courseTypeId?: string,
   ) {
     const skip = (page - 1) * limit;
 
@@ -126,7 +126,7 @@ export class PortfoliosService {
     };
   }
 
-  async findOne(portfolioId: number) {
+  async findOne(portfolioId: string) {
     const portfolio = await this.portfolioRepository.findOne({
       where: { id: portfolioId },
       relations: ['course', 'course.technologies'],
@@ -194,7 +194,7 @@ export class PortfoliosService {
     return JSON.stringify(editorjsData);
   }
 
-  async update(portfolioId: number, updatePortfolioDto: UpdatePortfolioDto) {
+  async update(portfolioId: string, updatePortfolioDto: UpdatePortfolioDto) {
     await this.portfolioRepository.update(portfolioId, updatePortfolioDto);
   }
 
@@ -217,7 +217,7 @@ export class PortfoliosService {
     return newImage;
   }
 
-  async remove(portfolioId: number) {
+  async remove(portfolioId: string) {
     const portfolio = await this.findOne(portfolioId);
     if (!portfolio) {
       throw new NotFoundException('Portfolios Not Found');

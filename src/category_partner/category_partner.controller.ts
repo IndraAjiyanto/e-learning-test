@@ -66,7 +66,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -81,7 +81,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateCategoryPartnerDto: UpdateCategoryPartnerDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -102,7 +102,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -117,7 +117,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsString } from 'class-validator';
+import { IsArray, IsInt, IsString, IsUUID } from 'class-validator';
 
 export class CreateCourseBenefitDto {
   @IsArray()
@@ -10,6 +10,6 @@ export class CreateCourseBenefitDto {
   @IsArray()
   description: string[];
 
-  @IsInt()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 }

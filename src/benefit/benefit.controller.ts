@@ -60,7 +60,7 @@ export class BenefitController {
   @Roles('super_admin')
   @Get('formEdit/:benefitId')
   async formEdit(
-    @Param('benefitId') benefitId: number,
+    @Param('benefitId') benefitId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -76,7 +76,7 @@ export class BenefitController {
   @Roles('super_admin')
   @Patch(':benefitId')
   async update(
-    @Param('benefitId') benefitId: number,
+    @Param('benefitId') benefitId: string,
     @Body() updateBenefitDto: UpdateBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -94,7 +94,7 @@ export class BenefitController {
   @Roles('super_admin')
   @Delete(':benefitId')
   async remove(
-    @Param('benefitId') benefitId: number,
+    @Param('benefitId') benefitId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

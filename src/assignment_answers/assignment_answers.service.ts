@@ -41,7 +41,7 @@ export class AnswerTasksService {
     return await this.assignmentAnswerRepository.save(taskAnswers);
   }
 
-  async createComment(commentText: string, assignment_answerId: number) {
+  async createComment(commentText: string, assignment_answerId: string) {
     const answersTask = await this.assignmentAnswerRepository.findOne({
       where: { id: assignment_answerId },
     });
@@ -55,7 +55,7 @@ export class AnswerTasksService {
     return await this.commentRepository.save(comment);
   }
 
-  async findAssignment(assignmentId: number) {
+  async findAssignment(assignmentId: string) {
     const assignments = await this.assignmentRepository.findOne({
       where: { id: assignmentId },
       relations: ['session', 'session.weeks', 'session.weeks.course'],
@@ -66,14 +66,14 @@ export class AnswerTasksService {
     return assignments;
   }
 
-  async findAssignmentAnswer(userId: number, assignmentId: number) {
+  async findAssignmentAnswer(userId: string, assignmentId: string) {
     return await this.assignmentAnswerRepository.find({
       where: { user: { id: userId }, task: { id: assignmentId } },
       relations: ['comment'],
     });
   }
 
-  async findExistingAnswer(userId: number, assignmentId: number) {
+  async findExistingAnswer(userId: string, assignmentId: string) {
     return await this.assignmentAnswerRepository.find({
       where: {
         user: { id: userId },
@@ -83,14 +83,14 @@ export class AnswerTasksService {
     });
   }
 
-  async findAllAssignmentAnswers(assignmentId: number) {
+  async findAllAssignmentAnswers(assignmentId: string) {
     return await this.assignmentAnswerRepository.find({
       where: { task: { id: assignmentId } },
       relations: ['user', 'comment', 'task'],
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const taskAnswers = await this.assignmentAnswerRepository.findOne({
       where: { id: id },
     });
@@ -101,7 +101,7 @@ export class AnswerTasksService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateAssignmentAnswerDto: UpdateAssignmentAnswersDto,
   ) {
     const taskAnswers = await this.findOne(id);

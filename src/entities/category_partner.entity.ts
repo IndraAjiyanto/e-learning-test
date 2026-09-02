@@ -10,8 +10,8 @@ import { Partner } from './partner.entity';
 
 @Entity()
 export class CategoryPartner {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   category: string;

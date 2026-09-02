@@ -15,7 +15,7 @@
     <!-- Program Cards -->
     <div class="w-full grid xl:grid-cols-3 gap-2">
       {{#each courses}}
-        {{> components/category_program/card_special this lang=../lang}}
+        {{> components/ui/card/category/special/index this lang=../lang}}
       {{/each}}
     </div>
     {{else}}

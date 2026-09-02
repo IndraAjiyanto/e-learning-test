@@ -38,8 +38,8 @@ export class RegistrationsController {
     folder: 'registration',
   })
   async create(
-    @Param('userId') userId: number,
-    @Param('courseId') courseId: number,
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
     @Body() createRegistrationDto: CreateRegistrationsDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -97,7 +97,7 @@ export class RegistrationsController {
   @Roles('super_admin')
   @Patch(':proses/:pendaftaranId')
   async update(
-    @Param('pendaftaranId') registrationId: number,
+    @Param('pendaftaranId') registrationId: string,
     @Param('proses') processStatus: string,
     @Body() updateRegistrationDto: UpdateRegistrationsDto,
     @Res() res: Response,

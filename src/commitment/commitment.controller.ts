@@ -65,7 +65,7 @@ export class CommitmentController {
 
   @Get('formEdit/:id')
   @Render('super_admin/commitment/edit')
-  async formEdit(@Param('id') id: number, @Req() req: Request) {
+  async formEdit(@Param('id') id: string, @Req() req: Request) {
     try {
       const commitment = await this.commitmentService.findOne(id);
       return {
@@ -81,7 +81,7 @@ export class CommitmentController {
 
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateCommitmentDto: UpdateCommitmentDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -98,7 +98,7 @@ export class CommitmentController {
 
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

@@ -35,7 +35,7 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get('detail/:courseFlowId')
   async findOneDetail(
-    @Param('courseFlowId') courseFlowId: number,
+    @Param('courseFlowId') courseFlowId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -61,7 +61,7 @@ export class CourseFlowsController {
     @Req() req: Request,
   ) {
     try {
-      const courseId = Number(req.body.kelas_id);
+      const courseId = String(req.body.kelas_id);
       createCourseFlowDto.courseId = courseId;
       await this.courseFlowsService.create(createCourseFlowDto);
       req.flash('success', 'Flow Program successfully created');
@@ -75,7 +75,7 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createCourseFlowDto: CreateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -94,7 +94,7 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get('formCreate/:courseId')
   async formCreateWithKelas(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -104,7 +104,7 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get('formEdit/:courseFlowId')
   async formEdit(
-    @Param('courseFlowId') courseFlowId: number,
+    @Param('courseFlowId') courseFlowId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -118,8 +118,8 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Patch(':courseFlowId/:courseId')
   async update(
-    @Param('courseFlowId') courseFlowId: number,
-    @Param('courseId') courseId: number,
+    @Param('courseFlowId') courseFlowId: string,
+    @Param('courseId') courseId: string,
     @Body() updateCourseFlowDto: UpdateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -137,8 +137,8 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Delete(':courseFlowId/:courseId')
   async remove(
-    @Param('courseFlowId') courseFlowId: number,
-    @Param('courseId') courseId: number,
+    @Param('courseFlowId') courseFlowId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

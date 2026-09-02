@@ -33,13 +33,13 @@ export class CourseFlowsService {
     return await this.courseFlowRepository.save(courseFlow);
   }
 
-  async noAlur(courseId: number) {
+  async noAlur(courseId: string) {
     const finalFlow = await this.findCourseFlows(courseId);
     const startFlow = finalFlow + 1;
     return startFlow;
   }
 
-  async findCourseFlows(courseId: number) {
+  async findCourseFlows(courseId: string) {
     const course_flows = await this.courseFlowRepository.findOne({
       where: { course: { id: courseId } },
       order: { sequence: 'DESC' },
@@ -60,12 +60,12 @@ export class CourseFlowsService {
 
   async findAllCourses() {
     const course = await this.courseRepository.find({
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return course;
   }
 
-  async findOne(courseFlowId: number) {
+  async findOne(courseFlowId: string) {
     const course_flows = await this.courseFlowRepository.findOne({
       where: { id: courseFlowId },
       relations: ['course'],
@@ -76,7 +76,7 @@ export class CourseFlowsService {
     return course_flows;
   }
 
-  async update(courseFlowId: number, updateCourseFlowDto: UpdateCourseFlowDto) {
+  async update(courseFlowId: string, updateCourseFlowDto: UpdateCourseFlowDto) {
     const courseFlow = await this.findOne(courseFlowId);
     if (!courseFlow) {
       throw new NotFoundException('Flow Program not found');
@@ -86,7 +86,7 @@ export class CourseFlowsService {
     return await this.courseFlowRepository.save(courseFlow);
   }
 
-  async remove(courseFlowId: number, courseId) {
+  async remove(courseFlowId: string, courseId) {
     const courseFlow = await this.findOne(courseFlowId);
     if (!courseFlow) {
       throw new NotFoundException('Flow Program not found');

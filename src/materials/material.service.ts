@@ -30,20 +30,20 @@ export class MaterialService {
     return await this.materialRepository.save(material);
   }
 
-  async findMateriBypertemuan(sessionId: number) {
+  async findMateriBypertemuan(sessionId: string) {
     return await this.materialRepository.find({
       where: { session: { id: sessionId } },
       relations: ['session'],
     });
   }
 
-  async findMaterialPdf(sessionId: number) {
+  async findMaterialPdf(sessionId: string) {
     return await this.materialRepository.find({
       where: { session: { id: sessionId }, fileType: 'pdf' },
     });
   }
 
-  async findMaterialPpt(sessionId: number) {
+  async findMaterialPpt(sessionId: string) {
     const materialList = await this.materialRepository.find({
       where: { session: { id: sessionId }, fileType: 'ppt' },
     });
@@ -51,24 +51,24 @@ export class MaterialService {
     return materialList;
   }
 
-  async findSession(sessionId: number) {
+  async findSession(sessionId: string) {
     return await this.sessionRepository.findOne({
       where: { id: sessionId },
       relations: ['weeks', 'weeks.course'],
     });
   }
 
-  async findMaterialVideo(sessionId: number) {
+  async findMaterialVideo(sessionId: string) {
     return await this.materialRepository.find({
       where: { session: { id: sessionId }, fileType: 'video' },
     });
   }
 
-  async findSessionsByCourse(weeksId: number) {
+  async findSessionsByCourse(weeksId: string) {
     const session = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       relations: ['materials'],
-      order: { id: 'ASC' },
+      order: { sessionOrder: 'ASC' },
     });
 
     return session.map((p) => ({
@@ -79,7 +79,7 @@ export class MaterialService {
     }));
   }
 
-  async findMaterialsByTypeAndSession(weeksId: number, fileType: FileType) {
+  async findMaterialsByTypeAndSession(weeksId: string, fileType: FileType) {
     return await this.materialRepository.find({
       where: {
         fileType: fileType,
@@ -88,14 +88,14 @@ export class MaterialService {
     });
   }
 
-  async findIdentityMateri(fileType: FileType, sessionId: number) {
+  async findIdentityMateri(fileType: FileType, sessionId: string) {
     return await this.materialRepository.find({
       where: { fileType: fileType, session: { id: sessionId } },
       relations: ['session'],
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const material = await this.materialRepository.findOne({
       where: { id },
       relations: ['session'],
@@ -121,7 +121,7 @@ export class MaterialService {
     } catch (error) {}
   }
 
-  async update(id: number, updateMaterialDto: UpdateMaterialDto) {
+  async update(id: string, updateMaterialDto: UpdateMaterialDto) {
     const material = await this.findOne(id);
     if (!material) {
       throw new NotFoundException('Material not found');
@@ -130,7 +130,7 @@ export class MaterialService {
     return await this.materialRepository.save(material);
   }
 
-  async remove(materialId: number) {
+  async remove(materialId: string) {
     const material = await this.findOne(materialId);
     if (!material) {
       throw new NotFoundException('Material not found');

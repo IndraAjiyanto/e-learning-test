@@ -72,7 +72,7 @@ export class CategoriesService {
     return await this.categoryRepository.find();
   }
 
-  async findOne(categoryId: number) {
+  async findOne(categoryId: string) {
     const category = await this.categoryRepository.findOne({
       where: { id: categoryId },
       relations: ['courseTypes'],
@@ -83,14 +83,14 @@ export class CategoriesService {
     return category;
   }
 
-  async findCourseByCategory(categoryId: number) {
+  async findCourseByCategory(categoryId: string) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId }, launch: true },
       relations: ['courseType', 'category', 'userCourses'],
     });
   }
 
-  async findCourseByCategoryAll(categoryId: number) {
+  async findCourseByCategoryAll(categoryId: string) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
       relations: ['courseType', 'category', 'userCourses'],
@@ -98,7 +98,7 @@ export class CategoriesService {
     });
   }
 
-  async findAlumniByCategory(categoryId: number) {
+  async findAlumniByCategory(categoryId: string) {
     return await this.alumniRepository.find({
       where: { course: { category: { id: categoryId } } },
       relations: ['course'],
@@ -107,19 +107,19 @@ export class CategoriesService {
     });
   }
 
-  async findFaqByCategory(categoryId: number) {
+  async findFaqByCategory(categoryId: string) {
     return await this.faqRepository.find({
       where: { category: { id: categoryId } },
     });
   }
 
-  async findBenefitByCategory(categoryId: number) {
+  async findBenefitByCategory(categoryId: string) {
     return await this.benefitCategoryRepository.find({
       where: { category: { id: categoryId } },
     });
   }
 
-  async findGalleryByCategory(categoryId: number) {
+  async findGalleryByCategory(categoryId: string) {
     const gallery = await this.galleryRepository.find({
       where: { category: { id: categoryId } },
       order: { no: 'ASC' },
@@ -132,7 +132,7 @@ export class CategoriesService {
     }, Array(6).fill(null));
   }
 
-  async findPortfolioByCategory(categoryId: number) {
+  async findPortfolioByCategory(categoryId: string) {
     return await this.portfolioRepository.find({
       where: { course: { category: { id: categoryId } } },
       relations: ['course', 'course.category'],
@@ -141,7 +141,7 @@ export class CategoriesService {
     });
   }
 
-  async update(categoryId: number, updateCategoriesDto: UpdateCategoriesDto) {
+  async update(categoryId: string, updateCategoriesDto: UpdateCategoriesDto) {
     const category = await this.findOne(categoryId);
     if (!category) {
       throw new NotFoundException('Category not found');
@@ -245,7 +245,7 @@ export class CategoriesService {
     return `/asset/${folder}/${filename}`;
   }
 
-  async remove(categoryId: number) {
+  async remove(categoryId: string) {
     const category = await this.findOne(categoryId);
     if (!category) {
       throw new NotFoundException('Category not found');

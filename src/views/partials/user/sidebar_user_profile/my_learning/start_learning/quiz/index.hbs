@@ -43,7 +43,7 @@
       return this.activeStatus.record;
     }
   }"
-  x-init="{{#each course.weeks}}{{#if quiz.[0].id}}loadWeekQuiz({{id}});{{/if}}{{/each}}"
+  x-init="{{#each course.weeks}}{{#if quiz.[0].id}}loadWeekQuiz('{{id}}');{{/if}}{{/each}}"
 >
   <!-- Quiz List View -->
   <div x-show="!activeWeekId" class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
@@ -60,8 +60,8 @@
             {{description}} : {{quiz.[0].quizName}}
           </span>
           <a href="#"
-             @click.prevent="openQuiz({{id}})"
-             :class="quizStatus[{{id}}] && quizStatus[{{id}}].unlocked ? 'bg-[#003060] hover:bg-[#001F3F] cursor-pointer' : 'bg-[#9CA3AF] cursor-not-allowed'"
+             @click.prevent="openQuiz('{{id}}')"
+             :class="quizStatus['{{id}}'] && quizStatus['{{id}}'].unlocked ? 'bg-[#003060] hover:bg-[#001F3F] cursor-pointer' : 'bg-[#9CA3AF] cursor-not-allowed'"
              class="inline-flex items-center justify-center px-4 py-2 text-white rounded-lg font-montserrat font-medium text-[20px] transition-colors whitespace-nowrap flex-shrink-0">Take Quiz
           </a>
         </div>

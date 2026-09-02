@@ -11,8 +11,8 @@ import { noGallery } from './types/no-gallery';
 
 @Entity('gallery')
 export class Gallery {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   filePath: string;

@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UseFilters,
   BadRequestException,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import { CategoriesService } from '../categories/categories.service';
@@ -60,7 +59,7 @@ export class GalleryController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const category = await this.kategorisService.findOne(+categoryId);
+    const category = await this.kategorisService.findOne(categoryId);
     res.render('super_admin/gallery/create', { user: req.user, category });
   }
 
@@ -114,14 +113,14 @@ export class GalleryController {
     @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
-    const gallery = await this.galleryService.findByKategori(+categoryId);
+    const gallery = await this.galleryService.findByKategori(categoryId);
     res.json(gallery);
   }
 
   @Roles('super_admin')
   @Get('formEdit/:galleryId')
   async formEdit(
-    @Param('galleryId', ParseIntPipe) galleryId: number,
+    @Param('galleryId') galleryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -164,7 +163,7 @@ export class GalleryController {
         data.filePath = req.body.uploadedImageUrls[0];
       }
 
-      const gallery = await this.galleryService.update(+id, data);
+      const gallery = await this.galleryService.update(id, data);
 
       req.flash('success', 'Gallery successfully updated');
 
@@ -185,9 +184,9 @@ export class GalleryController {
     @Req() req: Request,
   ) {
     try {
-      const gallery = await this.galleryService.findOne(+id);
+      const gallery = await this.galleryService.findOne(id);
 
-      await this.galleryService.remove(+id);
+      await this.galleryService.remove(id);
 
       if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
         return res.json({ success: true });
@@ -213,7 +212,7 @@ export class GalleryController {
   @Roles('super_admin')
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
-    const gallery = await this.galleryService.findOne(+id);
+    const gallery = await this.galleryService.findOne(id);
     res.json(gallery);
   }
 }

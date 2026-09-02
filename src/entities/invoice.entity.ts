@@ -11,8 +11,8 @@ import { Payment } from './payment.entity';
 
 @Entity('invoice')
 export class Invoice {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   xendit_invoice_id: string;

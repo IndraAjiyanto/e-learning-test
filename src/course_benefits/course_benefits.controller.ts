@@ -25,7 +25,7 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createProgramBenefitDto: CreateCourseBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -46,7 +46,7 @@ export class ProgramBenefitController {
   async formCreateWithKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     res.render('super_admin/course_benefits/create', {
       user: req.user,
@@ -57,7 +57,7 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Get('formEdit/:programBenefitId')
   async formEdit(
-    @Param('programBenefitId') programBenefitId: number,
+    @Param('programBenefitId') programBenefitId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -72,8 +72,8 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Patch(':programBenefitId/:courseId')
   async update(
-    @Param('programBenefitId') programBenefitId: number,
-    @Param('courseId') courseId: number,
+    @Param('programBenefitId') programBenefitId: string,
+    @Param('courseId') courseId: string,
     @Body() updateProgramBenefitDto: UpdateCourseBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -94,8 +94,8 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Delete(':programBenefitId/:courseId')
   async remove(
-    @Param('programBenefitId') programBenefitId: number,
-    @Param('courseId') courseId: number,
+    @Param('programBenefitId') programBenefitId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

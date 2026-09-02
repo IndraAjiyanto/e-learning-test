@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('session_progresses')
 export class SessionProgress {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ default: false })
   logbook: boolean;

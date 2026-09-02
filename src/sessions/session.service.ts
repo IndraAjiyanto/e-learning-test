@@ -145,7 +145,7 @@ export class SessionService {
     return await this.courseRepository.find();
   }
 
-  async findWeekSessions(weeksId: number) {
+  async findWeekSessions(weeksId: string) {
     const session = await this.sessionRepository.findOne({
       where: { weeks: { id: weeksId } },
       order: { createdAt: 'DESC' },
@@ -156,13 +156,13 @@ export class SessionService {
     return session.sessionOrder;
   }
 
-  async getNextOrder(weeksId: number) {
+  async getNextOrder(weeksId: string) {
     const lastSession = await this.findWeekSessions(weeksId);
     const newSession = lastSession + 1;
     return newSession;
   }
 
-  async findStudentsInCourse(courseId: number, sessionId: number) {
+  async findStudentsInCourse(courseId: string, sessionId: string) {
     return await this.userRepository.find({
       where: {
         userCourses: { course: { id: courseId } },
@@ -172,34 +172,34 @@ export class SessionService {
     });
   }
 
-  async findQuestions(sessionId: number) {
+  async findQuestions(sessionId: string) {
     return await this.questionRepository.find({
       where: { quiz: { id: sessionId } },
       relations: ['answers'],
     });
   }
 
-  async findLogBook(sessionId: number) {
+  async findLogBook(sessionId: string) {
     return await this.logBookRepository.find({
       where: { session: { id: sessionId } },
       relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
-  async findLogBookMentor(sessionId: number) {
+  async findLogBookMentor(sessionId: string) {
     return await this.mentorLogbookRepository.find({
       where: { session: { id: sessionId } },
       relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
-  async findTugas(sessionId: number) {
+  async findTugas(sessionId: string) {
     return await this.assignmentRepository.find({
       where: { session: { id: sessionId } },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const session = await this.sessionRepository.findOne({
       where: { id },
       relations: ['weeks', 'weeks.course'],
@@ -215,7 +215,7 @@ export class SessionService {
     return session;
   }
 
-  async update(id: number, updateSessionDto: UpdateSessionDto) {
+  async update(id: string, updateSessionDto: UpdateSessionDto) {
     const session = await this.findOne(id);
     if (!session) {
       throw new NotFoundException('session tidak ditemukan');
@@ -230,7 +230,7 @@ export class SessionService {
     return await this.sessionRepository.save(session);
   }
 
-  async remove(sessionId: number, weeksId: number) {
+  async remove(sessionId: string, weeksId: string) {
     const session = await this.findOne(sessionId);
     if (!session) {
       throw new NotFoundException('session tidak ditemukan');

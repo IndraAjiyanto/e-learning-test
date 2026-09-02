@@ -11,8 +11,8 @@ import { CategoryPartner } from './category_partner.entity';
 
 @Entity()
 export class Partner {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   image: string;

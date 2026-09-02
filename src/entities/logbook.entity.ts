@@ -13,8 +13,8 @@ import { ProcessStatus } from './types/process-status';
 
 @Entity()
 export class Logbook {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'activity', nullable: true })
   activity: string;

@@ -49,7 +49,7 @@ export class AlumniController {
     folder: 'alumni',
   })
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createAlumnusDto: CreateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -82,7 +82,7 @@ export class AlumniController {
     folder: 'alumni',
   })
   async createAlumni(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Body() createAlumnusDto: CreateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -101,7 +101,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formCreate/:courseId')
   async formCreate(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -111,7 +111,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('category/formCreate/:categoryId')
   async formCreateByKategori(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -126,7 +126,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formEdit/:alumniId')
   async formEdit(
-    @Param('alumniId') alumniId: number,
+    @Param('alumniId') alumniId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -137,7 +137,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('category/formEdit/:alumniId')
   async formEditAlumni(
-    @Param('alumniId') alumniId: number,
+    @Param('alumniId') alumniId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -169,8 +169,8 @@ export class AlumniController {
   })
   async update(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('alumniId') alumniId: number,
-    @Param('courseId') courseId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('courseId') courseId: string,
     @Body() updateAlumnusDto: UpdateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -207,8 +207,8 @@ export class AlumniController {
   })
   async updateAlumni(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('alumniId') alumniId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('categoryId') categoryId: string,
     @Body() updateAlumnusDto: UpdateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -232,10 +232,10 @@ export class AlumniController {
   async filterAlumni(@Req() req: Request, @Res() res: Response) {
     try {
       const kategoriId = req.query.category_id
-        ? Number(req.query.category_id)
+        ? String(req.query.category_id)
         : undefined;
       const courseId = req.query.course_id
-        ? Number(req.query.course_id)
+        ? String(req.query.course_id)
         : undefined;
       const search = req.query.search ? String(req.query.search) : undefined;
       const page = req.query.page ? Number(req.query.page) : 1;
@@ -263,8 +263,8 @@ export class AlumniController {
   @Roles('super_admin')
   @Delete(':alumniId/:courseId')
   async remove(
-    @Param('alumniId') alumniId: number,
-    @Param('courseId') courseId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -287,8 +287,8 @@ export class AlumniController {
   @Roles('super_admin')
   @Delete('category/:alumniId/:categoryId')
   async removeAlumni(
-    @Param('alumniId') alumniId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

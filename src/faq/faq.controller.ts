@@ -57,7 +57,7 @@ export class FaqController {
   @Roles('super_admin')
   @Get('formEdit/:faqId')
   async formEdit(
-    @Param('faqId') faqId: number,
+    @Param('faqId') faqId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -71,13 +71,13 @@ export class FaqController {
   @Roles('super_admin')
   @Patch(':faqId')
   async update(
-    @Param('faqId') faqId: number,
+    @Param('faqId') faqId: string,
     @Body() updateFaqDto: UpdateFaqDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      await this.faqService.update(+faqId, updateFaqDto);
+      await this.faqService.update(faqId, updateFaqDto);
       req.flash('success', 'FAQ successfully updated');
       res.redirect('/faq');
     } catch (error: any) {
@@ -89,7 +89,7 @@ export class FaqController {
   @Roles('super_admin')
   @Delete(':faqId')
   async remove(
-    @Param('faqId') faqId: number,
+    @Param('faqId') faqId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

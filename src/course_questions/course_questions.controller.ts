@@ -34,7 +34,7 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Get('formCreate/:courseId')
   async formCreate(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -49,7 +49,7 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createCourseQuestionDto: CreateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -68,7 +68,7 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -84,14 +84,14 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Patch(':id/:courseId')
   async update(
-    @Param('id') id: number,
-    @Param('courseId') courseId: number,
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
     @Body() updateCourseQuestionDto: UpdateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.courseQuestionsService.update(+id, updateCourseQuestionDto);
+      await this.courseQuestionsService.update(id, updateCourseQuestionDto);
       req.flash('success', 'FAQ program updated successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -103,13 +103,13 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Delete(':id/:courseId')
   async remove(
-    @Param('id') id: number,
-    @Param('courseId') courseId: number,
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.courseQuestionsService.remove(+id);
+      await this.courseQuestionsService.remove(id);
       req.flash('success', 'FAQ program deleted successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
