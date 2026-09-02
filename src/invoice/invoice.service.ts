@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from 'src/entities/payment.entity';
@@ -7,6 +7,7 @@ import { UserCourse } from 'src/entities/user_course.entity';
 import { Invoice as InvoiceClient } from 'xendit-node';
 import { Course } from 'src/entities/course.entity';
 import { UnauthorizedException } from '@nestjs/common';
+import { PaymentsService } from 'src/payments/payments.service';
 
 @Injectable()
 export class InvoiceService {
@@ -21,6 +22,8 @@ export class InvoiceService {
     private readonly userCourseRepository: Repository<UserCourse>,
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @Inject(forwardRef(() => PaymentsService))
+    private readonly paymentsService: PaymentsService,
   ) {
     if (process.env.XENDIT_SECRET_KEY) {
       this.xenditInvoiceClient = new InvoiceClient({
@@ -110,20 +113,7 @@ export class InvoiceService {
     await this.paymentRepository.save(payment);
 
     try {
-      const existing = await this.userCourseRepository.findOne({
-        where: {
-          user: { id: payment.user.id },
-          course: { id: payment.course.id },
-        },
-      });
-      if (!existing) {
-        const newUserCourse = this.userCourseRepository.create({
-          user: { id: payment.user.id },
-          course: { id: payment.course.id },
-          progress: false,
-        });
-        await this.userCourseRepository.save(newUserCourse);
-      }
+      await this.paymentsService.addUserToCourse(payment.user.id, payment.course.id);
     } catch (err) {
       console.error('Error auto-enrolling user after simulated payment:', err);
     }
@@ -181,12 +171,7 @@ export class InvoiceService {
         },
       });
       if (!existing) {
-        const newUserCourse = this.userCourseRepository.create({
-          user: { id: payment.user.id },
-          course: { id: payment.course.id },
-          progress: false,
-        });
-        await this.userCourseRepository.save(newUserCourse);
+        await this.paymentsService.addUserToCourse(payment.user.id, payment.course.id);
       }
     } else if (status === 'EXPIRED') {
       payment.process = 'rejected';

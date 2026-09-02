@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -33,7 +33,7 @@ import { InvoiceModule } from 'src/invoice/invoice.module';
     ]),
     CommonModule,
     VoucherModule,
-    InvoiceModule,
+    forwardRef(() => InvoiceModule),
   ],
   controllers: [PaymentsController, ApiPaymentController],
   providers: [PaymentsService],
