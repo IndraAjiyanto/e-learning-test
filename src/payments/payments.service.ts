@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
@@ -47,6 +49,7 @@ export class PaymentsService {
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
     private readonly voucherService: VoucherService,
+    @Inject(forwardRef(() => InvoiceService))
     private readonly invoiceService: InvoiceService,
   ) {}
 
