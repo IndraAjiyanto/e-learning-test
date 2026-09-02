@@ -49,7 +49,7 @@
   </div>
 
   <!-- No Results Message -->
-  {{> components/alumni/empty_state
+  {{> components/ui/empty_state/index
   show="alumniItems.length === 0"
   icon="fas fa-users"
   title=(t 'test.alumni.noAlumni')
@@ -59,7 +59,7 @@
 }}
 
   <!-- Pagination -->
-   {{> components/alumni/pagination
+   {{> components/ui/pagination/index
     currentPage="currentPage"
     totalPages="totalPages"
     onPageChange="changePage"

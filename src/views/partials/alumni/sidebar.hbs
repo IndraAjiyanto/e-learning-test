@@ -11,7 +11,7 @@
         </h3>
         
         {{! components/common/dropdown }}
-        {{> components/alumni/sidebar_program
+        {{> components/ui/dropdown/filter_dropdown/index
             items="filteredKelasList"
             selectedValue="selectedKelasId"
             placeholder=(t 'test.alumni.allProgram')
@@ -26,21 +26,16 @@
           class="flex items-center flex-1 min-w-0 gap-2 lg:gap-4"
           @input.debounce.500ms="currentPage = 1; fetchAlumni()"
         >
-          {{> components/alumni/sidebar_search
+          {{> components/ui/input/search/index
             value="searchQuery"
             placeholder=(t "test.alumni.searchAlumniPlaceholder")
           }}
         </div>
 
         <!-- Clear Filter Button -->
-        <button
-          @click="resetFilters()"
-          class="flex items-center justify-center shrink-0 h-auto gap-1.5 px-2 py-2 whitespace-nowrap font-montserrat font-semibold text-[11px] text-[#676767] hover:text-[#0B1F3B] transition-colors lg:h-[60px] lg:gap-3 lg:px-3 lg:py-0 lg:font-medium lg:text-[22px]"
-        >
-          <i class="fas fa-trash text-xs lg:text-xl"></i>
-          <span>{{t 'test.alumni.resetFilters'}}</span>
-        </button>
-
+        {{> components/ui/button/reset_filters/index
+            onClick="resetFilters()"
+        }}
     </div>
   </div>
 </div>

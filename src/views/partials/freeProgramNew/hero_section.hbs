@@ -1,5 +1,5 @@
 <section 
-  class="relative z-10 w-full font-montserrat min-h-[calc(100vh-80px)] flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
+  class="relative z-10 w-full font-montserrat flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
   x-data="{
     currentIndex: 0,
     intervalId: null,
@@ -27,7 +27,7 @@
     }
   }"
 >
-  <!-- Animated Background Stack Layers (bg2 -> bg1 -> bg4 -> bg3) -->
+  <!-- Animated Background Stack Layers (bg1 -> bg2 -> bg3) -->
   <div class="absolute inset-0 z-0 w-full h-full pointer-events-none select-none overflow-hidden">
     <img 
       src="/public/image/freeProgram/bg1.png" 
@@ -47,13 +47,48 @@
       class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
       :class="currentIndex === 2 ? 'opacity-100' : 'opacity-0'"
     />
+  </div>
+
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div 
+    class="block sm:hidden relative z-10 w-full pt-10 pb-10 px-5 flex flex-col items-center text-center justify-start"
+    style="background: linear-gradient(180deg, #FAFAFA 0%, #CEE5F6 50%, #FAFAFA 100%);"
+  >
+    
+    <!-- Title, Subtitle & Button Mobile -->
+    <div class="flex flex-col items-center text-center max-w-[362px] w-full">
+      <h1 class="font-montserrat font-bold text-[28px] leading-[36px] tracking-normal text-[#0B1F3B] text-center mb-4">
+        {{t 'test.categoryFreeProgram.hero.title'}} {{category.name}} {{t 'test.categoryFreeProgram.hero.title1'}} {{t 'test.categoryFreeProgram.hero.title2'}} {{t 'test.categoryFreeProgram.hero.title3'}}
+      </h1>
+
+      <p class="font-sans font-normal text-[15px] leading-[24px] tracking-normal text-[#4B5563] text-center mb-6">
+        Select the program that aligns with your goals and passion. Start building practical skills today.
+      </p>
+
+      <button
+        onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
+        class="inline-flex items-center justify-center gap-2.5 bg-[#003060] active:bg-[#001f3f] text-white rounded-[12px] w-full max-w-[362px] h-[46px] shadow-md transition-all cursor-pointer mb-8"
+      >
+        <span class="font-montserrat font-semibold text-[15px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.hero.button'}}</span>
+        <i class="fa-solid fa-arrow-left text-[15px]"></i>
+      </button>
+    </div>
+
+    <!-- Image / Banner Card Mobile -->
+    <div class="w-full max-w-[362px] h-[120px] flex justify-center items-center overflow-hidden rounded-[16px] bg-[#E0F2F980] shadow-sm">
+      <img 
+        src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}https://upload.wikimedia.org/wikipedia/commons/2/29/Kepala_Badan_Koordinasi_Penanaman_Modal_Bahlil_Lahadalia_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled{{/if}}"
+        alt="{{category.name}}" 
+        class="w-full h-full object-cover rounded-[16px] opacity-60"
+      >
+    </div>
 
   </div>
 
-  <!-- Content Container (Left Aligned Wide Text + Flush-to-Bottom Right Image) -->
-  <div class="relative z-10 container mx-auto mt-32 px-6 sm:px-10 lg:px-12 max-w-[1440px] xl:max-w-[1536px] w-full flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-8 pt-8">
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:flex relative z-10 container mx-auto mt-32 px-6 sm:px-10 lg:px-12 max-w-[1440px] xl:max-w-[1536px] w-full flex-1 flex-col lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-8 pt-8 min-h-[calc(100vh-80px)]">
     
-    <!-- Left Column: Title & Button (Vertically centered) -->
+    <!-- Left Column: Title & Button Desktop -->
     <div class="flex-1 max-w-[960px] flex flex-col items-start text-left mb-10 lg:mb-64 self-center lg:self-center">
       <!-- Title -->
       <h1 class="font-montserrat font-semibold text-3xl sm:text-5xl lg:text-[70px] text-[#000000] leading-tight lg:leading-[85px] tracking-normal text-left mb-8">
@@ -70,7 +105,7 @@
       </button>
     </div>
 
-    <!-- Right Column: Kylian Mbappé Render Image (Mepet Kebawah / Flush to Bottom) -->
+    <!-- Right Column: Render Image Desktop (Flush to Bottom) -->
     <div class="w-full lg:w-auto flex justify-center lg:justify-end flex-shrink-0 self-end">
       <img 
         src="{{category.hero_section_image}}"

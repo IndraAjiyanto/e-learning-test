@@ -9,24 +9,24 @@
 
     <!-- UNIFIED GALLERY HEADER (Mobile & Desktop) -->
     <div class="flex flex-col items-center pt-4 mb-6 lg:pt-0 lg:mb-[50px]">
-      <!-- Badge -->
-      {{> components/alumni/badge text=(t 'test.gallery.gallery')}}
-
-      <!-- Title & Subtitle Container -->
-      <div class="flex flex-col items-center w-full gap-2 lg:gap-[10px]">
-        {{> components/alumni/title
-          title=(t 'test.gallery.title')}}
-        <div class="w-10 h-1 mx-auto my-1 bg-[#0B1F3B] rounded-full lg:w-[70px] lg:h-[5px] lg:my-0 lg:rounded-[6px]"></div>
-        {{> components/alumni/description
-          text=(t 'test.gallery.description')}}
-      </div>
+        {{> components/ui/section_header
+        wrapperClass="mb-4 relative z-10 px-5 sm:px-6 lg:px-20"
+        badge=(t 'test.gallery.gallery')
+        badgeClass="w-[305px] h-[49px] text-[20px] font-[500] mb-0"
+        title=(t 'test.gallery.title')
+        titleClass="text-3xl md:text-4xl lg:text-4xl font-semibold text-[#000000] mt-8 mb-4 font-montserrat tracking-tight text-center"
+        showDivider=true
+        dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
+        description=(t 'test.gallery.description')
+        descClass="text-base md:text-xl leading-relaxed text-[#000000]/80 max-w-auto mx-auto font-sans font-normal text-center"
+      }}
     </div>
 
     <!-- UNIFIED FILTERS (Mobile & Desktop) -->
     <div class="flex flex-col items-center justify-end w-full gap-3 mb-6 lg:flex-row lg:gap-[30px] lg:mb-[50px]">
       
       <!-- Dropdown Program -->
-      {{> components/alumni/sidebar_program
+      {{> components/ui/dropdown/filter_dropdown/index
             items="programs"
             selectedValue="selectedProgram"
             placeholder=(t 'test.gallery.allPrograms')
@@ -38,7 +38,7 @@
       <!-- Search Box -->
       <div class="relative w-full lg:w-[423px] lg:shrink-0"
         @input.debounce.500ms="search = searchInput; currentPage = 1">
-          {{> components/alumni/sidebar_search
+          {{> components/ui/input/search/index
             value="searchInput"
             placeholder=(t 'test.gallery.searchPlaceholder')
           }}
@@ -72,14 +72,14 @@
       </div>
 
       <!-- Empty state -->
-      {{> components/alumni/empty_state
+      {{> components/ui/empty_state/index
         show="amount === 0"
         icon="fas fa-image text-3xl lg:text-4xl"
         title=(t 'test.gallery.noResults')
       }}
 
       <!-- Pagination -->
-      {{> components/alumni/pagination
+      {{> components/ui/pagination/index
         currentPage="currentPage"
         totalPages="totalPages"
         onPageChange="changePage"
