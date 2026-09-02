@@ -1,0 +1,18 @@
+{{!--
+  Komponen: Reset / Clear Filter Button
+  Lokasi: src/views/partials/components/ui/button/reset_filter/index.hbs
+
+  Props Opsional:
+  - onClick : Expression Alpine saat diklik (default: "resetFilters()")
+  - icon    : Class FontAwesome icon (default: "fas fa-trash")
+  - text    : Label tombol (default: (t 'test.alumni.resetFilters'))
+--}}
+
+<button
+  @click="{{onClick}}"
+  type="button"
+  class="flex items-center justify-center shrink-0 h-auto gap-1.5 px-2 py-2 whitespace-nowrap font-montserrat font-semibold text-[11px] text-[#676767] hover:text-[#0B1F3B] transition-colors lg:h-[60px] lg:gap-3 lg:px-3 lg:py-0 lg:font-medium lg:text-[22px]"
+>
+  <i class="{{default icon 'fas fa-trash'}} text-xs lg:text-xl"></i>
+  <span>{{default text (t 'test.alumni.resetFilters')}}</span>
+</button>

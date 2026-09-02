@@ -1,0 +1,213 @@
+{{!--
+  Komponen: Dropdown Generik yang Dapat Digunakan Kembali
+  Lokasi: src/views/partials/components/common/dropdown.hbs
+
+  Props Wajib:
+  - items         : Expression Alpine yang berisi daftar item dropdown
+                    Contoh: "filteredKelasList"
+  - selectedValue : Expression Alpine yang berisi nilai item yang sedang dipilih
+                    Contoh: "selectedKelasId"
+  - placeholder   : Teks yang ditampilkan ketika belum ada item yang dipilih
+                    Contoh: (t 'test.alumni.allProgram')
+  - valueKey      : Nama properti pada item yang digunakan sebagai nilai/id
+                    Contoh: "id"
+  - labelKey      : Nama properti pada item yang digunakan sebagai teks/label
+                    Contoh: "name"
+  Props Opsional:
+  - onSelect      : Nama method Alpine yang dipanggil ketika item dipilih
+                    Contoh: "selectKelas"
+--}}
+
+<div
+  class="
+    relative
+    flex-1 shrink-0
+
+    lg:w-[340px]
+    lg:flex-none
+  "
+  x-data="{ open: false }"
+  @click.outside="open = false"
+>
+  <!-- Dropdown Button -->
+  <button
+    type="button"
+    @click="open = !open"
+    class="
+      flex items-center justify-between
+      w-full
+      h-auto
+      px-3 py-2
+      font-montserrat
+      text-[12px]
+      font-semibold
+      text-[#0B1F3B]
+      bg-[#E0F1F9]
+      rounded-[10px]
+      shadow-2xs
+      transition-all
+      focus:outline-none
+
+      lg:h-[60px]
+      lg:px-[18px]
+      lg:py-0
+      lg:text-[22px]
+      lg:font-medium
+      lg:rounded-[12px]
+      lg:shadow-[0px_0px_5px_rgba(0,0,0,0.5)]
+    "
+  >
+    <!-- Selected Value / Placeholder -->
+    <span class="flex-1 truncate text-left">
+
+      <!-- Placeholder -->
+      <template x-if="!{{selectedValue}}">
+        <span>{{{placeholder}}}</span>
+      </template>
+
+      <!-- Selected Item -->
+      <template x-if="{{selectedValue}}">
+        <span
+          x-text="
+            {{items}}.find(
+              item => item['{{valueKey}}'] == {{selectedValue}}
+            )?.['{{labelKey}}'] || ''
+          "
+        ></span>
+      </template>
+
+    </span>
+
+    <!-- Chevron -->
+    <i
+      class="
+        fas fa-chevron-down
+        ml-2
+        text-xs
+        text-[#003060]
+        transition-transform
+
+        lg:text-xl
+      "
+      :class="open ? 'rotate-180' : ''"
+    ></i>
+  </button>
+
+
+  <!-- Dropdown Options -->
+  <div
+    x-show="open"
+    x-transition
+    class="
+      absolute left-0 z-50
+      w-full
+      max-h-52
+      mt-1
+      p-1
+      overflow-y-auto
+
+      bg-white
+      border border-[#E0F1F9]
+      rounded-[10px]
+      shadow-lg
+      space-y-0.5
+
+      lg:mt-2
+      lg:max-h-60
+      lg:p-2
+      lg:rounded-[12px]
+      lg:space-y-1
+    "
+  >
+
+    <!-- Reset / All Option -->
+    <button
+      type="button"
+      @click="
+        {{#if onSelect}}
+          {{onSelect}}(null);
+        {{else}}
+          {{selectedValue}} = null;
+        {{/if}}
+        open = false
+      "
+      :class="
+        !{{selectedValue}}
+          ? 'bg-[#0B1F3B] text-white'
+          : 'text-gray-700 hover:bg-gray-50'
+      "
+      class="
+        flex items-center justify-between
+        w-full
+        px-3 py-2
+        font-montserrat
+        text-[11px]
+        font-medium
+        text-left
+        rounded-md
+
+        lg:px-4
+        lg:py-3
+        lg:text-lg
+        lg:rounded-lg
+      "
+    >
+      <span>{{{placeholder}}}</span>
+
+      <i
+        x-show="!{{selectedValue}}"
+        class="fas fa-check"
+      ></i>
+    </button>
+
+
+    <!-- Items -->
+    <template
+      x-for="item in {{items}}"
+      :key="item['{{valueKey}}']"
+    >
+      <button
+        type="button"
+        @click="
+          {{#if onSelect}}
+            {{onSelect}}(item['{{valueKey}}']);
+          {{else}}
+            {{selectedValue}} = item['{{valueKey}}'];
+          {{/if}}
+          open = false
+        "
+        :class="
+          {{selectedValue}} == item['{{valueKey}}']
+            ? 'bg-[#0B1F3B] text-white'
+            : 'text-gray-700 hover:bg-gray-50'
+        "
+        class="
+          flex items-center justify-between
+          w-full
+          px-3 py-2
+          font-montserrat
+          text-[11px]
+          font-medium
+          text-left
+          rounded-md
+
+          lg:px-4
+          lg:py-3
+          lg:text-lg
+          lg:rounded-lg
+        "
+      >
+        <span
+          class="truncate"
+          x-text="item['{{labelKey}}']"
+        ></span>
+
+        <i
+          x-show="{{selectedValue}} == item['{{valueKey}}']"
+          class="fas fa-check"
+        ></i>
+      </button>
+    </template>
+
+  </div>
+</div>

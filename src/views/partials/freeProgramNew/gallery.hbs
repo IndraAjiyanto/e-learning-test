@@ -1,7 +1,8 @@
 <!-- GALLERY SECTION -->
-<section id="gallery" class="w-full py-20 font-montserrat">
+<section id="gallery" class="w-full bg-[#FAFAFA] font-montserrat">
   
-  <div class="w-auto mx-auto px-8 lg:px-16 flex flex-col items-center">
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-12 px-5">
     
     <!-- Header Section -->
     {{> components/ui/section_header
@@ -32,13 +33,12 @@
         {{> components/ui/card_gallery heightClass="h-[225px] md:h-[240px]" image=(default gallery.[2].filePath "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&fit=crop") }}
         {{> components/ui/card_gallery heightClass="h-[433px] md:h-[460px]" image=(default gallery.[5].filePath "https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=600&h=800&fit=crop") }}
       </div>
-      
     </div>
 
-    <!-- 3. Teks Bawah (Tautan) -->
-    <div class="mt-16">
-      <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-[#0B1F3B] text-[16px] font-semibold transition-all hover:text-[#7AA3C4] border-b-[1.5px] border-[#0B1F3B] hover:border-[#7AA3C4] pb-1">
-        {{t 'test.categoryFreeProgram.gallery.allGaleries'}} <i class="fa-solid fa-arrow-right-long text-[15px]"></i>
+    <!-- See All Link Mobile -->
+    <div class="text-center mt-10">
+      <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-[#0B1F3B] text-sm font-semibold border-b-[1.5px] border-[#0B1F3B] pb-1">
+        {{t 'test.categoryFreeProgram.gallery.allGaleries'}} <i class="fa-solid fa-arrow-right-long text-xs"></i>
       </a>
     </div>
 
