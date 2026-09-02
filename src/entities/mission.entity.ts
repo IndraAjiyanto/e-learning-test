@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Mission {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   missionOrder: number;

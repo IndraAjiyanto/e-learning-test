@@ -50,7 +50,7 @@ export class MaterialController {
   async createPdf(
     @Body() createMaterialDto: CreateMaterialDto,
     @Res() res: Response,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
   ) {
     try {
@@ -71,7 +71,7 @@ export class MaterialController {
   async createPpt(
     @Body() createMaterialDto: CreateMaterialDto,
     @Res() res: Response,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
   ) {
     try {
@@ -93,7 +93,7 @@ export class MaterialController {
   async createVideo(
     @Body() createMaterialDto: CreateMaterialDto,
     @Res() res: Response,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
   ) {
     try {
@@ -111,7 +111,7 @@ export class MaterialController {
   @Roles('admin')
   @Get('formCreate/:id')
   async formCreate(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -130,7 +130,7 @@ export class MaterialController {
   @Roles('admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -146,13 +146,13 @@ export class MaterialController {
 
   @Roles('admin', 'user')
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.materialService.findOne(id);
   }
 
   // @Roles('admin', 'user')
   // @Get('/course/:sessionId')
-  // findMateriByKelas(@Param('sessionId') sessionId: number) {
+  // findMateriByKelas(@Param('sessionId') sessionId: string) {
   //   return this.materisService.findMateriBypertemuan(sessionId);
   // }
 
@@ -160,7 +160,7 @@ export class MaterialController {
   @Get(':fileType/:sessionId')
   async findMateriByJenisFile(
     @Param('fileType') fileType: FileType,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -180,7 +180,7 @@ export class MaterialController {
   @Roles('admin')
   @Get('formCreate/:jenis_file/:sessionId')
   async formEditMateri(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Param('jenis_file') jenis_file: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -205,7 +205,7 @@ export class MaterialController {
     folder: 'materi/pdf',
   })
   async updatePdf(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateMaterialDto: UpdateMaterialDto,
     @Req() req: Request,
@@ -232,7 +232,7 @@ export class MaterialController {
   @Roles('admin')
   @Patch('ppt/:id')
   async updatePpt(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateMaterialDto: UpdateMaterialDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -253,7 +253,7 @@ export class MaterialController {
   @Roles('admin')
   @Patch('video/:id')
   async updateVideo(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateMaterialDto: UpdateMaterialDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -274,8 +274,8 @@ export class MaterialController {
   @Roles('admin')
   @Delete(':materialId/:sessionId')
   async remove(
-    @Param('materialId') materialId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('materialId') materialId: string,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

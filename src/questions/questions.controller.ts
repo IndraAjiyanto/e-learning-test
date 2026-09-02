@@ -51,7 +51,7 @@ export class QuestionsController {
     @Res() res: Response,
     @Req() req: Request,
     @Body() createQuestionDto: CreateQuestionDto,
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
   ) {
     try {
       createQuestionDto.quizId = quizId;
@@ -79,7 +79,7 @@ export class QuestionsController {
   async formCreate(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
   ) {
     const quiz = await this.quizService.findOne(quizId);
     res.render('admin/questions/create', { user: req.user, quiz });
@@ -90,7 +90,7 @@ export class QuestionsController {
   async findQuestions(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('questionId') questionId: number,
+    @Param('questionId') questionId: string,
   ) {
     const question = await this.questionsService.findOne(questionId);
     res.render('admin/questions/edit', { user: req.user, question });
@@ -99,8 +99,8 @@ export class QuestionsController {
   @Roles('user')
   @Get('quiz/:sessionId/:courseId')
   async findQuestionsBySession(
-    @Param('sessionId') sessionId: number,
-    @Param('courseId') courseId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('courseId') courseId: string,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -117,8 +117,8 @@ export class QuestionsController {
   @Roles('user')
   @Get('quiz/user/:sessionId/:userId')
   async findQuestionDetailsBySession(
-    @Param('sessionId') sessionId: number,
-    @Param('userId') userId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('userId') userId: string,
     @Req() req: any,
     @Res() res: Response,
   ) {
@@ -150,8 +150,8 @@ export class QuestionsController {
     folder: 'quiz_question',
   })
   async update(
-    @Param('questionId') questionId: number,
-    @Param('quizId') quizId: number,
+    @Param('questionId') questionId: string,
+    @Param('quizId') quizId: string,
     @Body() updateQuestionDto: UpdateQuestionDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -176,8 +176,8 @@ export class QuestionsController {
   @Roles('admin')
   @Delete(':questionId/:quizId')
   async remove(
-    @Param('quizId') quizId: number,
-    @Param('questionId') questionId: number,
+    @Param('quizId') quizId: string,
+    @Param('questionId') questionId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

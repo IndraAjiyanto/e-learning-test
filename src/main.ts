@@ -10,6 +10,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
+import { InternalServerErrorExceptionFilter } from './common/filters/internal-server-error.filter';
 import cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
 import { engine } from 'express-handlebars';
@@ -21,6 +22,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Global filters
+  app.useGlobalFilters(new InternalServerErrorExceptionFilter());
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useGlobalFilters(new NotFoundExceptionFilter());
 

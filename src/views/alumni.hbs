@@ -1,108 +1,56 @@
-<div class='pt-24 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed' style="background-image: url('/public/image/dashboard/bgAlumniPage.png');" x-data='alumniApp()'>
+<div class="pt-24 pb-16 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed" style="background-image: url('/public/image/dashboard/bgAlumniPage.png');" x-data="alumniApp()">
 
-  <div class='container mx-auto px-8 max-w-[1440px]'>
+  <div class="container mx-auto px-8 max-w-[1440px]">
     
-    <!-- MOBILE HEADER (< 640px) -->
-    <div class="block sm:hidden flex flex-col items-center mb-6 pt-4">
-      <div class="flex justify-center items-center rounded-full px-4 py-1 mb-4 border border-[#003060] bg-[#6EB6E5]/20">
-        <span class="font-montserrat font-medium text-[13px] text-[#003060]">{{t 'test.alumni.alumni'}}</span>
-      </div>
-      <h1 class="font-montserrat font-bold text-center text-[#003060] text-[28px] leading-[34px] mb-2 tracking-normal">
-        {{{t 'test.alumni.title'}}}
-      </h1>
-      <div class="w-10 h-1 bg-[#0B1F3B] rounded-full mx-auto mb-3"></div>
-      <p class="font-sans font-normal text-[14px] leading-[20px] text-[#000000]/80 text-center px-2 tracking-normal">
-        {{t 'test.alumni.description'}}
-      </p>
+    <!-- ALUMNI HEADER (Unified Mobile & Desktop) -->
+    <div class="flex flex-col items-center pt-4 mb-6 lg:pt-0 lg:mb-[50px]">
+      {{> components/ui/section_header
+        wrapperClass="mb-4 relative z-10 px-5 sm:px-6 lg:px-20"
+        badge=(t 'test.alumni.alumni')
+        badgeClass="w-[305px] h-[49px] text-[20px] font-[500] mb-0"
+        title=(t 'test.alumni.title')
+        titleClass="text-3xl md:text-4xl lg:text-4xl font-semibold text-[#000000] mt-8 mb-4 font-montserrat tracking-tight text-center"
+        showDivider=true
+        dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
+        description=(t 'test.alumni.description')
+        descClass="text-base md:text-xl leading-relaxed text-[#000000]/80 max-w-auto mx-auto font-sans font-normal text-center"
+      }}
     </div>
 
-    <!-- MOBILE STATS (< 640px) -->
-    <div class="block sm:hidden flex flex-col gap-3 mb-8">
-      <!-- Alumni Stat -->
-      <div class="bg-white/90 backdrop-blur-xs border border-[#E0F1F9] rounded-[16px] p-4 flex items-center gap-4 shadow-xs">
-        <div class="w-12 h-12 rounded-[12px] bg-[#E0F1F9] flex items-center justify-center text-[#0B1F3B] shrink-0">
-          <i class="fas fa-users text-lg"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-sans font-bold text-[22px] leading-none text-[#2D2D2D]">1,000+</span>
-          <span class="font-sans font-normal text-[13px] leading-none text-[#676767] mt-1">{{t 'test.alumni.statAlumni'}}</span>
-        </div>
-      </div>
-
-      <!-- Career Growth Stat -->
-      <div class="bg-white/90 backdrop-blur-xs border border-[#E0F1F9] rounded-[16px] p-4 flex items-center gap-4 shadow-xs">
-        <div class="w-12 h-12 rounded-[12px] bg-[#E0F1F9] flex items-center justify-center text-[#0B1F3B] shrink-0">
-          <i class="fas fa-chart-line text-lg"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-sans font-bold text-[22px] leading-none text-[#2D2D2D]">95%</span>
-          <span class="font-sans font-normal text-[13px] leading-none text-[#676767] mt-1">{{t 'test.alumni.statCareerGrowth'}}</span>
-        </div>
-      </div>
-
-      <!-- Hiring Partners Stat -->
-      <div class="bg-white/90 backdrop-blur-xs border border-[#E0F1F9] rounded-[16px] p-4 flex items-center gap-4 shadow-xs">
-        <div class="w-12 h-12 rounded-[12px] bg-[#E0F1F9] flex items-center justify-center text-[#0B1F3B] shrink-0">
-          <i class="fas fa-briefcase text-lg"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-sans font-bold text-[22px] leading-none text-[#2D2D2D]">200+</span>
-          <span class="font-sans font-normal text-[13px] leading-none text-[#676767] mt-1">{{t 'test.alumni.statHiringPartners'}}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- DESKTOP HEADER (>= 640px) -->
-    <div class='hidden sm:flex flex-col items-center mb-[50px]'>
-      <!-- Badge -->
-      <div class='flex justify-center items-center rounded-full mb-[30px]' style="width: 250px; height: 35px; background: rgba(110, 182, 229, 0.2); border: 1px solid #003060;">
-        <span class='font-montserrat font-medium' style="font-size: 20px; color: #003060;">{{t 'test.alumni.alumni'}}</span>
-      </div>
-
-      <!-- Title & Subtitle -->
-      <div class='flex flex-col items-center gap-[10px] w-full'>
-        <h1 class='font-montserrat font-semibold text-center text-black' style="font-size: 40px; line-height: 55px;">{{{t 'test.alumni.title'}}}</h1>
-        <div class="rounded-[6px]" style="width: 70px; height: 5px; background: #0B1F3B;"></div>
-        <p class='text-center' style="max-width: 1396px; font-family: 'Open Sans'; font-weight: 400; font-size: 25px; line-height: 45px; color: rgba(0, 0, 0, 0.8);">
-          {{t 'test.alumni.description'}}
-        </p>
-      </div>
-    </div>
-
-    <!-- DESKTOP STATS (>= 640px) -->
-    <div class='hidden sm:block mx-auto px-4' style="max-width: 819px; margin-bottom: 100px;">
-      <div class='flex flex-row items-center justify-between w-full' style="height: 102px; padding: 0 28px; background: rgba(224, 241, 249, 0.5); box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); backdrop-filter: blur(3.3px); border-radius: 12px;">
+    <!-- ALUMNI STATS (Unified Mobile & Desktop) -->
+    <div class="w-full max-w-[819px] mx-auto mb-8 lg:mb-[100px]">
+      <div class="flex flex-col items-stretch justify-between gap-3 w-full lg:flex-row lg:items-center lg:gap-0 lg:h-[102px] lg:px-7 lg:bg-[rgba(224,241,249,0.5)] lg:rounded-[12px] lg:shadow-[0px_0px_5px_rgba(0,0,0,0.5)] lg:backdrop-blur-[3.3px]">
         
-        <!-- Alumni -->
-        <div class='flex flex-row items-center gap-[10px]' style="width: 208.67px;">
-          <div class='flex items-center justify-center rounded-full flex-shrink-0' style="width: 59.67px; height: 59.67px; background: rgba(110, 182, 229, 0.3);">
-            <i class='fas fa-users text-[#0B1F3B] text-xl'></i>
+        <!-- Alumni Stat -->
+        <div class="flex items-center gap-4 p-4 shadow-xs w-full bg-white/90 border border-[#E0F1F9] rounded-[16px] lg:flex-row lg:items-center lg:gap-[10px] lg:w-[208.67px] lg:p-0 lg:bg-transparent lg:border-0 lg:rounded-none lg:shadow-none">
+          <div class="flex items-center justify-center shrink-0 size-12 rounded-[12px] text-[#0B1F3B] bg-[#E0F1F9] lg:size-[59.67px] lg:rounded-full lg:bg-[#6EB6E5]/30">
+            <i class="fas fa-users text-lg lg:text-xl"></i>
           </div>
-          <div class='flex flex-col'>
-            <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">1000+</span>
-            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statAlumni'}}</span>
-          </div>
-        </div>
-
-        <!-- Career Growth -->
-        <div class='flex flex-row items-center gap-[10px]' style="width: 199.67px;">
-          <div class='flex items-center justify-center rounded-full flex-shrink-0' style="width: 59.67px; height: 59.67px; background: rgba(110, 182, 229, 0.3);">
-            <i class='fas fa-chart-line text-[#0B1F3B] text-xl'></i>
-          </div>
-          <div class='flex flex-col'>
-            <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">95%</span>
-            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statCareerGrowth'}}</span>
+          <div class="flex flex-col">
+            <span class="font-sans font-bold text-[22px] text-[#2D2D2D] leading-none lg:text-[25px] lg:leading-[34px]">1,000+</span>
+            <span class="font-sans font-normal text-[13px] text-[#676767] leading-none mt-1 lg:mt-0 lg:text-[18px] lg:text-[#2D2D2D] lg:leading-[25px]">{{t 'test.alumni.statAlumni'}}</span>
           </div>
         </div>
 
-        <!-- Hiring Partners -->
-        <div class='flex flex-row items-center gap-[10px]' style="width: 201.67px;">
-          <div class='flex items-center justify-center rounded-full flex-shrink-0' style="width: 59.67px; height: 59.67px; background: rgba(110, 182, 229, 0.3);">
-            <i class='fas fa-briefcase text-[#0B1F3B] text-xl'></i>
+        <!-- Career Growth Stat -->
+        <div class="flex items-center gap-4 p-4 shadow-xs w-full bg-white/90 border border-[#E0F1F9] rounded-[16px] lg:flex-row lg:items-center lg:gap-[10px] lg:w-[199.67px] lg:p-0 lg:bg-transparent lg:border-0 lg:rounded-none lg:shadow-none">
+          <div class="flex items-center justify-center shrink-0 size-12 rounded-[12px] text-[#0B1F3B] bg-[#E0F1F9] lg:size-[59.67px] lg:rounded-full lg:bg-[#6EB6E5]/30">
+            <i class="fas fa-chart-line text-lg lg:text-xl"></i>
           </div>
-          <div class='flex flex-col'>
-            <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">200+</span>
-            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statHiringPartners'}}</span>
+          <div class="flex flex-col">
+            <span class="font-sans font-bold text-[22px] text-[#2D2D2D] leading-none lg:text-[25px] lg:leading-[34px]">95%</span>
+            <span class="font-sans font-normal text-[13px] text-[#676767] leading-none mt-1 lg:mt-0 lg:text-[18px] lg:text-[#2D2D2D] lg:leading-[25px]">{{t 'test.alumni.statCareerGrowth'}}</span>
+          </div>
+        </div>
+
+        <!-- Hiring Partners Stat -->
+        <div class="flex items-center gap-4 p-4 shadow-xs w-full bg-white/90 border border-[#E0F1F9] rounded-[16px] lg:flex-row lg:items-center lg:gap-[10px] lg:w-[201.67px] lg:p-0 lg:bg-transparent lg:border-0 lg:rounded-none lg:shadow-none">
+          <div class="flex items-center justify-center shrink-0 size-12 rounded-[12px] text-[#0B1F3B] bg-[#E0F1F9] lg:size-[59.67px] lg:rounded-full lg:bg-[#6EB6E5]/30">
+            <i class="fas fa-briefcase text-lg lg:text-xl"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-sans font-bold text-[22px] text-[#2D2D2D] leading-none lg:text-[25px] lg:leading-[34px]">200+</span>
+            <span class="font-sans font-normal text-[13px] text-[#676767] leading-none mt-1 lg:mt-0 lg:text-[18px] lg:text-[#2D2D2D] lg:leading-[25px]">{{t 'test.alumni.statHiringPartners'}}</span>
           </div>
         </div>
 
@@ -110,7 +58,7 @@
     </div>
 
     <!-- Content & Sidebar -->
-    <div class='w-full mx-auto mb-12'>
+    <div class="w-full mx-auto">
       {{> alumni/sidebar}}
       {{> alumni/content}}
     </div>
@@ -121,7 +69,6 @@
 function alumniApp() {
   return {
     selectedKategoriId: {{#if kategoriId}}{{kategoriId}}{{else}}null{{/if}},
-   kategoriList: {{#if kategoriList}}{{{json kategoriList}}}{{else}}[]{{/if}},
 
     kelasList: {{#if course}}{{{json course}}}{{else}}[]{{/if}},
     filteredKelasList: [],
@@ -203,7 +150,7 @@ function alumniApp() {
         this.alumniItems = json.data || [];
         this.totalItems = json.totalItems || 0;
         this.totalPages = json.totalPages || 1;
-        this.currentPage = json.currentPage || 1; 
+        this.currentPage = json.currentPage || 1;
       } catch (err) {
         console.error('Fetch alumni error:', err);
       } finally {

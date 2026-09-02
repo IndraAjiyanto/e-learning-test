@@ -12,7 +12,7 @@ export class ApiVoucherController {
 
   @Post('validate')
   async validate(
-    @Body() body: { code: string; courseId: number; subtotal: number },
+    @Body() body: { code: string; courseId: string; subtotal: number },
     @Res() res: Response,
     @Req() req: Request & { user?: any },
   ) {
@@ -34,7 +34,7 @@ export class ApiVoucherController {
 
       const result = await this.voucherService.validateVoucher(
         code.trim().toUpperCase(),
-        Number(courseId),
+        String(courseId),
         Number(subtotal),
         userId,
       );

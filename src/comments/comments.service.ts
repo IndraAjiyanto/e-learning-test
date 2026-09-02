@@ -28,7 +28,7 @@ export class CommentsService {
   }
 
   async updateAssignmentAnswer(
-    assignment_answerId: number,
+    assignment_answerId: string,
     process: ProcessStatus,
   ) {
     const taskAnswers = await this.assignmentAnswerRepository.findOne({

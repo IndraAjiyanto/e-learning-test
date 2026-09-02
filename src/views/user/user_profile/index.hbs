@@ -11,7 +11,7 @@
     openMyLearning: true,
     openRoblox: false,
     openedCourses: {},
-    activeCourseId: {{#if activeCourse}}{{activeCourse.id}}{{else}}null{{/if}},
+    activeCourseId: {{#if activeCourse}}'{{activeCourse.id}}'{{else}}null{{/if}},
     userCourses: window.userCourses || [],
     allLogbooks: window.userLogbooks || [],
     logbookSearchInput: '',
@@ -292,77 +292,77 @@
                 <div class="space-y-[20px]">
                   <div
                     class="w-full h-[54px] px-[16px] py-[8px] gap-[12px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[17px] flex items-center justify-between transition-all"
-                    :class="openedCourses[{{this.course.id}}] ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-800 border-[#D9D9D9] hover:bg-slate-50'"
+                    :class="openedCourses['{{this.course.id}}'] ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-800 border-[#D9D9D9] hover:bg-slate-50'"
                   >
                     <button
                       type="button"
-                      @click="selectCourse({{this.course.id}})"
+                      @click="selectCourse('{{this.course.id}}')"
                       aria-label="Open {{this.course.name}}"
-                      :aria-expanded="openedCourses[{{this.course.id}}] ? 'true' : 'false'"
+                      :aria-expanded="openedCourses['{{this.course.id}}'] ? 'true' : 'false'"
                       class="w-full flex items-center gap-[12px] min-w-0 text-left cursor-pointer"
                     >
                       <div class="w-6 flex justify-center items-center flex-shrink-0">
-                        <img src="/public/image/user_profile/uiUxDesigner.svg" alt="{{this.course.name}}" class="w-5 h-5 object-contain transition-all" :class="openedCourses[{{this.course.id}}] ? 'brightness-0 invert' : 'brightness-0'">
+                        <img src="/public/image/user_profile/uiUxDesigner.svg" alt="{{this.course.name}}" class="w-5 h-5 object-contain transition-all" :class="openedCourses['{{this.course.id}}'] ? 'brightness-0 invert' : 'brightness-0'">
                       </div>
                       <span class="whitespace-nowrap truncate flex-1 min-w-0">{{this.course.name}}</span>
-                      <i class="fas fa-chevron-down text-xs transition-transform duration-200 flex-shrink-0" :class="openedCourses[{{this.course.id}}] ? 'rotate-180' : ''"></i>
+                      <i class="fas fa-chevron-down text-xs transition-transform duration-200 flex-shrink-0" :class="openedCourses['{{this.course.id}}'] ? 'rotate-180' : ''"></i>
                     </button>
                   </div>
   
                   <!-- Nested Items (sub-menu gap-y: 20px) -->  
-                  <div x-show="openedCourses[{{this.course.id}}]" x-transition class="pl-4 space-y-[20px]">
+                  <div x-show="openedCourses['{{this.course.id}}']" x-transition class="pl-4 space-y-[20px]">
                     
                     <button
-                      @click="selectCourseSection({{this.course.id}}, 'presentation');"
-                      :class="(activeSection === 'presentation' && activeCourseId === {{this.course.id}}) ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
+                      @click="selectCourseSection('{{this.course.id}}', 'presentation');"
+                      :class="(activeSection === 'presentation' && activeCourseId === '{{this.course.id}}') ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
                       class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                     >
                       <div class="w-5 flex justify-center items-center flex-shrink-0">
-                        <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'presentation' && activeCourseId === {{this.course.id}}) ? 'brightness-0 invert' : 'brightness-0'">
+                        <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'presentation' && activeCourseId === '{{this.course.id}}') ? 'brightness-0 invert' : 'brightness-0'">
                       </div>
                       <span class="whitespace-nowrap">Presentation</span>
                     </button>
 
                     <button
-                      @click="selectCourseSection({{this.course.id}}, 'logbook');"
-                      :class="(activeSection === 'logbook' && activeCourseId === {{this.course.id}}) ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
+                      @click="selectCourseSection('{{this.course.id}}', 'logbook');"
+                      :class="(activeSection === 'logbook' && activeCourseId === '{{this.course.id}}') ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
                       class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                     >
                       <div class="w-5 flex justify-center items-center flex-shrink-0">
-                        <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'logbook' && activeCourseId === {{this.course.id}}) ? 'brightness-0 invert' : 'brightness-0'">
+                        <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'logbook' && activeCourseId === '{{this.course.id}}') ? 'brightness-0 invert' : 'brightness-0'">
                       </div>
                       <span class="whitespace-nowrap">My Logbook</span>
                     </button>
 
                     <button
-                      @click="selectCourseSection({{this.course.id}}, 'assignment');"
-                      :class="(activeSection === 'assignment' && activeCourseId === {{this.course.id}}) ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
+                      @click="selectCourseSection('{{this.course.id}}', 'assignment');"
+                      :class="(activeSection === 'assignment' && activeCourseId === '{{this.course.id}}') ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
                       class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                     >
                       <div class="w-5 flex justify-center items-center flex-shrink-0">
-                        <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'assignment' && activeCourseId === {{this.course.id}}) ? 'brightness-0 invert' : 'brightness-0'">
+                        <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'assignment' && activeCourseId === '{{this.course.id}}') ? 'brightness-0 invert' : 'brightness-0'">
                       </div>
                       <span class="whitespace-nowrap">Assignment</span>
                     </button>
 
                     <button
-                      @click="selectCourseSection({{this.course.id}}, 'quiz');"
-                      :class="(activeSection === 'quiz' && activeCourseId === {{this.course.id}}) ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
+                      @click="selectCourseSection('{{this.course.id}}', 'quiz');"
+                      :class="(activeSection === 'quiz' && activeCourseId === '{{this.course.id}}') ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
                       class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                     >
                       <div class="w-5 flex justify-center items-center flex-shrink-0">
-                        <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'quiz' && activeCourseId === {{this.course.id}}) ? 'brightness-0 invert' : 'brightness-0'">
+                        <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'quiz' && activeCourseId === '{{this.course.id}}') ? 'brightness-0 invert' : 'brightness-0'">
                       </div>
                       <span class="whitespace-nowrap">Quiz</span>
                     </button>
 
                     <button
-                      @click="selectCourseSection({{this.course.id}}, 'certificate');"
-                      :class="(activeSection === 'certificate' && activeCourseId === {{this.course.id}}) ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
+                      @click="selectCourseSection('{{this.course.id}}', 'certificate');"
+                      :class="(activeSection === 'certificate' && activeCourseId === '{{this.course.id}}') ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
                       class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                     >
                       <div class="w-5 flex justify-center items-center flex-shrink-0">
-                        <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'certificate' && activeCourseId === {{this.course.id}}) ? 'brightness-0 invert' : 'brightness-0'">
+                        <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain transition-all" :class="(activeSection === 'certificate' && activeCourseId === '{{this.course.id}}') ? 'brightness-0 invert' : 'brightness-0'">
                       </div>
                       <span class="whitespace-nowrap">Certificate</span>
                     </button>

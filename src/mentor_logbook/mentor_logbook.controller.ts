@@ -40,7 +40,7 @@ export class MentorLogbookController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Body() createMentorLogbookDto: CreateMentorLogbookDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -61,7 +61,7 @@ export class MentorLogbookController {
   @Roles('admin')
   @Get('formCreate/:sessionId')
   async formCreate(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -71,7 +71,7 @@ export class MentorLogbookController {
   @Roles('admin')
   @Get('formEdit/:mentor_logbookId')
   async formEdit(
-    @Param('mentor_logbookId') mentor_logbookId: number,
+    @Param('mentor_logbookId') mentor_logbookId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -83,7 +83,7 @@ export class MentorLogbookController {
   @Roles('admin')
   @Get(':mentor_logbookId')
   async findOne(
-    @Param('mentor_logbookId') mentor_logbookId: number,
+    @Param('mentor_logbookId') mentor_logbookId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -107,7 +107,7 @@ export class MentorLogbookController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async update(
-    @Param('mentor_logbookId') mentor_logbookId: number,
+    @Param('mentor_logbookId') mentor_logbookId: string,
     @UploadedFile() documentation: Express.Multer.File,
     @Body() updateMentorLogbookDto: UpdateMentorLogbookDto,
     @Res() res: Response,
@@ -137,8 +137,8 @@ export class MentorLogbookController {
   @Roles('admin')
   @Delete(':sessionId/:mentor_logbookId')
   async remove(
-    @Param('mentor_logbookId') mentor_logbookId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('mentor_logbookId') mentor_logbookId: string,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

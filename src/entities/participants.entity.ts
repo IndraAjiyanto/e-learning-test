@@ -11,8 +11,8 @@ import { Course } from './course.entity';
 
 @Entity()
 export class Participants {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   title: string[];

@@ -1,34 +1,72 @@
 <!-- EXPLORE PROGRAM SECTION (CTA) -->
-<section id="explore-program" class="w-full mt-16 mb-24 md:mt-20 md:mb-32 font-montserrat relative">
-  <div class="w-full relative min-h-[372px] flex items-center justify-center py-12 px-6">
-    
-    <!-- Figma Layer Blur 10 Banner Rectangle -->
-    <div class="absolute inset-0 z-0 bg-[#6EB6E5]"
-         style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"></div>
+<section id="explore-program" class="w-full font-montserrat relative">
 
-    <!-- Content (Crisp & Clear) -->
-    <div class="max-w-6xl mx-auto text-center flex flex-col items-center justify-center relative z-10">
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-10 px-5 my-8 relative">
+    <div class="w-full relative min-h-[300px] flex items-center justify-center py-8 px-5 rounded-[16px] overflow-hidden shadow-sm">
       
-      <!-- Title -->
-      <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight">
-       {{{t 'test.categoryFreeProgram.cta.title'}}}
-      </h2>
+      <!-- Background Banner Mobile -->
+      <div 
+        class="absolute inset-0 z-0 bg-[#6EB6E5]"
+        style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"
+      ></div>
 
-      <!-- Subtitle -->
-      <p class="text-black text-sm md:text-base lg:text-2xl font-sans font-normal max-w-full mx-auto my-12 text-center leading-relaxed lg:leading-[45px]">
-        {{t 'test.categoryFreeProgram.cta.description'}} {{category.name}} {{t 'test.categoryFreeProgram.cta.description2'}}
-      </p>
+      <!-- Content Mobile -->
+      <div class="max-w-[340px] mx-auto text-center flex flex-col items-center justify-center relative z-10">
+        
+        <h2 class="text-xl font-bold tracking-tight leading-snug text-black mb-3">
+          {{{t 'test.categoryFreeProgram.cta.title'}}}
+        </h2>
 
-      <!-- Button -->
-      <div>
-        <a
-          href="#programs"
-          class="inline-flex items-center justify-center gap-[15px] w-full sm:w-[370px] h-[85px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-semibold text-xl rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md opacity-100"
-        >
-          <span>{{{t 'test.categoryFreeProgram.cta.button'}}}</span>
-        </a>
+        <p class="text-black text-xs font-sans font-normal max-w-full mx-auto my-4 text-center leading-relaxed">
+          {{t 'test.categoryFreeProgram.cta.description'}} {{category.name}} {{t 'test.categoryFreeProgram.cta.description2'}}
+        </p>
+
+        <div class="w-full mt-2">
+          <a
+            href="#programs"
+            class="inline-flex items-center justify-center gap-2 w-full h-[52px] bg-[#003060] active:bg-[#001f3f] text-white font-semibold text-sm rounded-[12px] border border-[#003060] transition-all shadow-md"
+          >
+            <span>{{{t 'test.categoryFreeProgram.cta.button'}}}</span>
+          </a>
+        </div>
+
       </div>
-
     </div>
   </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block mt-16 mb-24 md:mt-20 md:mb-32 relative">
+    <div class="w-full relative min-h-[372px] flex items-center justify-center py-12 px-6">
+      
+      <!-- Background Banner Desktop -->
+      <div 
+        class="absolute inset-0 z-0 bg-[#6EB6E5]"
+        style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"
+      ></div>
+
+      <!-- Content Desktop -->
+      <div class="max-w-6xl mx-auto text-center flex flex-col items-center justify-center relative z-10">
+        
+        <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight">
+          {{{t 'test.categoryFreeProgram.cta.title'}}}
+        </h2>
+
+        <p class="text-black text-sm md:text-base lg:text-2xl font-sans font-normal max-w-full mx-auto my-12 text-center leading-relaxed lg:leading-[45px]">
+          {{t 'test.categoryFreeProgram.cta.description'}} {{category.name}} {{t 'test.categoryFreeProgram.cta.description2'}}
+        </p>
+
+        <div>
+          <a
+            href="#programs"
+            class="inline-flex items-center justify-center gap-[15px] w-full sm:w-[370px] h-[85px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-semibold text-xl rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md opacity-100"
+          >
+            <span>{{{t 'test.categoryFreeProgram.cta.button'}}}</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </section>

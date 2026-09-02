@@ -58,7 +58,7 @@ export class RegistrationsService {
     }
   }
 
-  async checkRegistration(userId: number, courseId: number) {
+  async checkRegistration(userId: string, courseId: string) {
     const registration = await this.registrationRepository.find({
       where: {
         user: { id: userId },
@@ -87,13 +87,13 @@ export class RegistrationsService {
     return await this.registrationRepository.find();
   }
 
-  async findRegistration(userId: number) {
+  async findRegistration(userId: string) {
     return await this.registrationRepository.find({
       where: { user: { id: userId } },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const registration = await this.registrationRepository.findOne({
       where: { id },
       relations: ['user', 'course'],
@@ -104,7 +104,7 @@ export class RegistrationsService {
     return registration;
   }
 
-  async addUserToCourse(userId: number, courseId: number) {
+  async addUserToCourse(userId: string, courseId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['userCourses', 'userCourses.course'],
@@ -139,8 +139,8 @@ export class RegistrationsService {
   }
 
   async removeCourseUser(
-    userId: number,
-    courseId: number,
+    userId: string,
+    courseId: string,
   ): Promise<UserCourse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -168,7 +168,7 @@ export class RegistrationsService {
   }
 
   async update(
-    registrationId: number,
+    registrationId: string,
     updateRegistrationDto: UpdateRegistrationsDto,
   ) {
     const registration = await this.findOne(registrationId);

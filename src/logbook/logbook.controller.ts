@@ -11,7 +11,6 @@ import {
   UploadedFile,
   Res,
   Req,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { LogbookService } from './logbook.service';
 import { CreateLogbookDto } from './dto/create-logbook.dto';
@@ -42,7 +41,7 @@ export class LogbookController {
     folder: 'logbook_user',
   })
   async create(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Body() createLogbookDto: CreateLogbookDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -89,7 +88,7 @@ export class LogbookController {
   async findLogBook(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     const logbooks = await this.logbookService.findLogBook(
       req.user!.id,
@@ -106,8 +105,8 @@ export class LogbookController {
   @Roles('user')
   @Get('formCreate/:sessionId/:courseId')
   async createLogbook(
-    @Param('sessionId', ParseIntPipe) sessionId: number,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('courseId') courseId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -121,7 +120,7 @@ export class LogbookController {
   @Roles('user', 'admin')
   @Get('formEdit/:logbookId')
   async formEdit(
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -136,7 +135,7 @@ export class LogbookController {
   @Roles('user', 'admin')
   @Get(':logbookId')
   async findOne(
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -147,7 +146,7 @@ export class LogbookController {
   @Roles('admin')
   @Get('create/:sessionId')
   async createLogbookUser(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -168,7 +167,7 @@ export class LogbookController {
   })
   async update(
     @UploadedFile() documentation: Express.Multer.File,
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Body() updateLogbookDto: UpdateLogbookDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -212,7 +211,7 @@ export class LogbookController {
   @Patch(':logbookId/:proses')
   async updateProses(
     @Body() updateLogbookDto: UpdateLogbookDto,
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Param('proses') proses: ProcessStatus,
     @Req() req: Request,
     @Res() res: Response,
@@ -233,8 +232,8 @@ export class LogbookController {
   @Roles('admin')
   @Delete(':sessionId/:logbookId')
   async remove(
-    @Param('logbookId') logbookId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('logbookId') logbookId: string,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

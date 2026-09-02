@@ -1,0 +1,45 @@
+{{!--
+  Komponen: Empty State
+  Lokasi: src/views/partials/components/ui/empty_state/index.hbs
+
+  Kapan ini muncul? -> Dipakai pas data masih kosong dan user belum membuat portfolio atau project
+
+  Props:
+  - show         : Expression Alpine untuk menentukan kapan ditampilkan
+  - icon         : Class icon Font Awesome
+  - title        : Judul
+  - description  : Deskripsi
+  - actionText   : Teks tombol
+  - onAction     : Expression Alpine untuk action tombol
+--}}
+
+<div
+  x-show="{{show}}"
+  class="py-12 text-center"
+>
+  <!-- Icon -->
+  <div class="flex size-14 items-center justify-center mx-auto mb-4 bg-gray-300 rounded-full lg:size-24">
+    <i class="{{icon}} text-lg text-gray-900 lg:text-2xl"></i>
+  </div>
+
+  <!-- Title -->
+  <h3 class="mb-2 font-sans font-semibold text-base text-gray-900 lg:text-xl">
+    {{title}}
+  </h3>
+
+  <!-- Description -->
+  <p class="mb-6 font-sans font-normal text-sm text-gray-600 lg:text-lg">
+    {{description}}
+  </p>
+
+  <!-- Action -->
+  {{#if actionText}}
+    <button
+      type="button"
+      @click="{{onAction}}"
+      class="px-4 py-1 font-sans font-medium text-sm text-white bg-secondary border border-gray-700 rounded-lg transition-all duration-300 hover:bg-gray-700 lg:px-6 lg:py-2 lg:text-xl"
+    >
+      {{actionText}}
+    </button>
+  {{/if}}
+</div>

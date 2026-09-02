@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateMentorDto {
   @IsString()
@@ -17,13 +17,13 @@ export class CreateMentorDto {
   linkedin: string;
 
   @IsArray()
-  @IsInt({ each: true })
+  @IsUUID('all', { each: true })
   @IsOptional()
-  technologyId: number[];
+  technologyId: string[];
 
   @IsArray()
   description: string[];
 
-  @IsInt()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 }

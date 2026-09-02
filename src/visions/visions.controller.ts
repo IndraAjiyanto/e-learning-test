@@ -59,7 +59,7 @@ export class VisionsController {
   @Roles('super_admin')
   @Get('formEdit/:visionsId')
   async findOne(
-    @Param('visionsId') visionId: number,
+    @Param('visionsId') visionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -70,7 +70,7 @@ export class VisionsController {
   @Roles('super_admin')
   @Patch(':visionsId')
   async update(
-    @Param('visionsId') visionId: number,
+    @Param('visionsId') visionId: string,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updateVisionDto: UpdateVisionsDto,
@@ -88,7 +88,7 @@ export class VisionsController {
   @Roles('super_admin')
   @Delete(':visionsId')
   async remove(
-    @Param('visionsId') visionId: number,
+    @Param('visionsId') visionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

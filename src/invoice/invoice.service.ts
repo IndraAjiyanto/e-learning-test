@@ -121,7 +121,7 @@ export class InvoiceService {
     return payment;
   }
 
-  async findCourseById(courseId: number) {
+  async findCourseById(courseId: string) {
     return this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['weeks', 'category', 'installments'],

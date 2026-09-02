@@ -14,7 +14,7 @@ export class ApiPaymentController {
   async createPayment(
     @Body()
     body: {
-      courseId: number;
+      courseId: string;
       paymentMethod: string; // 'Full Payment' | 'Installment'
       promoCode?: string;
       formData?: any;
@@ -44,7 +44,7 @@ export class ApiPaymentController {
 
       const orderData = await this.paymentsService.createXenditInvoice(
         userId,
-        Number(courseId),
+        String(courseId),
         paymentMethod,
         promoCode,
         formattedFormData,

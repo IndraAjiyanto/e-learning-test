@@ -1,4 +1,4 @@
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsString, IsUUID } from 'class-validator';
 
 export class CreateQuizDto {
   @IsString()
@@ -7,8 +7,8 @@ export class CreateQuizDto {
   @IsInt()
   minScore: number;
 
-  @IsInt()
-  weeksId: number;
+  @IsUUID()
+  weeksId: string;
 
   @IsInt()
   duration: number;

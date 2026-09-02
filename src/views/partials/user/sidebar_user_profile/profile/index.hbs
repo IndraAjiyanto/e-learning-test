@@ -169,7 +169,7 @@
     <form 
       class="space-y-[30px] max-w-[1146px]"
       x-data="{
-        biodataId: {{#if user.biodata}}{{user.biodata.id}}{{else}}null{{/if}},
+        biodataId: {{#if user.biodata}}'{{user.biodata.id}}'{{else}}null{{/if}},
         originalValues: {
           fullName: '{{user.biodata.fullName}}',
           city: '{{user.biodata.city}}',

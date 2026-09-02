@@ -32,12 +32,12 @@ function makeSession(
     noProgress = false,
   } = opts;
   return {
-    id: sessionOrder,
+    id: String(sessionOrder),
     sessionOrder,
     sessionProgress: noProgress ? [] : [{ isAttended: attended, logbook }],
     logbooks: logbookProcess ? [{ process: logbookProcess }] : [],
     attendances: attendanceRow
-      ? [{ id: sessionOrder, status: 'present', notes: '' }]
+      ? [{ id: String(sessionOrder), status: 'present', notes: '' }]
       : [],
   };
 }
@@ -229,7 +229,7 @@ describe('sessionUnlock — edge cases (PRD §10)', () => {
 
   test('E2: null/undefined isAttended and logbook are treated as false', () => {
     const session: SessionLike = {
-      id: 1,
+      id: '1',
       sessionOrder: 1,
       sessionProgress: [{ isAttended: null, logbook: undefined }],
       logbooks: [],

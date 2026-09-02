@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class CreateAssignmentsDto {
   @IsString()
@@ -7,6 +7,6 @@ export class CreateAssignmentsDto {
   @IsString()
   title: string;
 
-  @IsNumber()
-  sessionId: number;
+  @IsUUID()
+  sessionId: string;
 }

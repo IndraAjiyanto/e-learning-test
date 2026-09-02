@@ -26,7 +26,7 @@ export class WeeksController {
   @Roles('admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createWeekDto: CreateWeeksDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -48,7 +48,7 @@ export class WeeksController {
   async formAdd(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     res.render('admin/weeks/create', { user: req.user, id });
   }
@@ -56,7 +56,7 @@ export class WeeksController {
   @Roles('admin')
   @Get(':weeksId')
   async findOne(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -71,14 +71,14 @@ export class WeeksController {
 
   @Roles('admin')
   @Get('/session/:weeksId')
-  async getSession(@Param('weeksId') weeksId: number, @Res() res: Response) {
+  async getSession(@Param('weeksId') weeksId: string, @Res() res: Response) {
     const session = await this.weeksService.findSession(weeksId);
     res.json(session);
   }
 
   @Roles('admin')
   @Get('/quiz/:weeksId')
-  async getQuiz(@Param('weeksId') weeksId: number, @Res() res: Response) {
+  async getQuiz(@Param('weeksId') weeksId: string, @Res() res: Response) {
     const quiz = await this.weeksService.findQuiz(weeksId);
     res.json(quiz);
   }
@@ -86,7 +86,7 @@ export class WeeksController {
   @Roles('admin')
   @Get('formEdit/:weeksId')
   async formEdit(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -108,7 +108,7 @@ export class WeeksController {
   @Roles('admin')
   @Patch('update/:weeksId')
   async update(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Body() updateWeekDto: UpdateWeeksDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -126,8 +126,8 @@ export class WeeksController {
   @Roles('admin')
   @Delete(':id/:courseId')
   async remove(
-    @Param('id') id: number,
-    @Param('courseId') courseId: number,
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

@@ -1,133 +1,67 @@
-<!-- Alumni Grid -->
-<div class='w-full mt-8 flex flex-col justify-between'>
-  <!-- MOBILE ALUMNI CARDS STACK (< 640px) -->
-  <div x-show="alumniItems.length > 0" class="block sm:hidden flex flex-col gap-4 min-h-[1280px]">
+<div class="w-full mt-6 lg:mt-8 flex flex-col justify-between">
+  <!-- UNIFIED ALUMNI CARDS GRID -->
+  <div x-show="alumniItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[500px]">
     <template x-for="alumni in alumniItems" :key="alumni.id">
-      <div class="bg-white border border-[#E0F1F9] rounded-[20px] p-5 shadow-xs flex flex-col">
-        <!-- Top Profile Row -->
-        <div class="flex items-center gap-3.5 mb-3">
-          <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 bg-white flex items-center justify-center shadow-2xs">
-            <img
-              :src="alumni.profile || '/public/image/about/orang.png'"
-              :alt="getByLang(alumni.name, lang)"
-              class="w-[75%] translate-y-[8%]"
-            />
-          </div>
-          <div class="flex flex-col overflow-hidden">
-            <h4 class="font-sans font-bold text-[15px] leading-none text-[#2D2D2D] truncate tracking-normal" x-text="getByLang(alumni.name, lang)"></h4>
-            <p class="font-sans font-normal text-[12px] leading-none text-[#676767] mt-1 line-clamp-1 tracking-normal" x-text="getByLang(alumni.currentPosition, lang)"></p>
-          </div>
-        </div>
-
-        <!-- Quote Icon -->
-        <i class="fas fa-quote-left text-[#0B1F3B] text-[16px] mb-2"></i>
-
-        <!-- Testimonial Message -->
-        <p class="font-sans font-normal text-[13px] leading-[20px] text-[#2D2D2D] text-justify mb-4 tracking-normal" x-text="getByLang(alumni.message, lang)"></p>
-
-        <!-- Program Tag Badge -->
-        <div class="self-start bg-[#F1EDFD] text-[#4F2CD7] text-[11px] font-semibold leading-none px-3 py-1.5 rounded-[6px] tracking-normal">
-          <span x-text="(alumni.course?.category?.nama_kategori ? alumni.course.category.nama_kategori + ' ' : '') + getKelasName(alumni)"></span>
-        </div>
-      </div>
-    </template>
-  </div>
-
-  <!-- DESKTOP ALUMNI CARDS GRID (>= 640px) -->
-  <div x-show="alumniItems.length > 0" class='hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[1036px]'>
-    <template x-for='alumni in alumniItems' :key='alumni.id'>
       
-      <!-- Desain Card (Glassmorphism & Layout presisi dari Figma) -->
-      <div 
-        class='flex flex-col relative transition-all duration-300 hover:-translate-y-2' 
-        style="width: 100%; min-height: 506px; background: rgba(224, 241, 249, 0.5); box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5); backdrop-filter: blur(3.3px); border-radius: 12px; padding: 29px 26px;"
-      >
-        <!-- Kontainer Utama (Profil & Kutipan) -> Gap 30px -->
-        <div class='flex flex-col w-full' style="gap: 30px;">
+      <!-- Unified Responsive Card -->
+      <div class="flex flex-col relative w-full p-5 bg-[#E0F1F9]/50 rounded-[12px] shadow-[0px_0px_8px_rgba(0,0,0,0.5)] backdrop-blur-[3.3px] transition-all duration-300 hover:-translate-y-2 lg:min-h-[506px] lg:p-[29px_26px]">
+        
+        <!-- Kontainer Utama (Profil & Kutipan) -->
+        <div class="flex flex-col w-full gap-4 lg:gap-[30px]">
           
-          <!-- Wrapper Profil (Gambar + Teks) -> Gap 26px (Row layout) -->
-          <div class='flex flex-row items-center w-full' style="gap: 26px;">
-            <!-- Foto Profil (100x100) -->
+          <!-- Wrapper Profil (Gambar + Teks) -->
+          <div class="flex flex-row items-center w-full gap-3 lg:gap-[26px]">
+            <!-- Foto Profil -->
             <img
               :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
-              :alt='alumni.name'
-              class='rounded-full object-cover flex-shrink-0'
-              style="width: 100px; height: 100px;"
+              :alt="getByLang(alumni.name, lang)"
+              class="shrink-0 size-[60px] rounded-full object-cover lg:size-[100px]"
             />
             
-            <!-- Nama & Posisi (Kolom) -> Gap 6px -->
-            <div class='flex flex-col items-start overflow-hidden w-full' style="gap: 6px;">
-              <h3 class='truncate w-full m-0 p-0' style="font-family: 'Open Sans'; font-weight: 600; font-size: 20px; line-height: 27px; color: #000000;" x-text='getByLang(alumni.name, lang)'></h3>
-              <p class='w-full line-clamp-2 m-0 p-0' style="font-family: 'Open Sans'; font-weight: 400; font-size: 20px; line-height: 27px; color: #000000;" x-text='getByLang(alumni.currentPosition, lang)'></p>
+            <!-- Nama & Posisi -->
+            <div class="flex flex-col items-start overflow-hidden w-full gap-1 lg:gap-[6px]">
+              <h3 class="w-full font-sans font-semibold text-base leading-tight text-[#000000] truncate lg:text-[20px] lg:leading-[27px]" x-text="getByLang(alumni.name, lang)"></h3>
+              <p class="w-full font-sans font-normal text-xs leading-snug text-[#000000] line-clamp-2 lg:text-[20px] lg:leading-[27px]" x-text="getByLang(alumni.currentPosition, lang)"></p>
             </div>
           </div>
 
-          <!-- Wrapper Kutipan (Icon + Teks) -> Gap 13px -->
-          <div class='flex flex-col items-start w-full' style="gap: 13px;">
-            <!-- Icon Kutipan (50x50, Warna #0B1F3B) -->
-            <div class='flex justify-center items-center flex-shrink-0 text-[#0B1F3B]' style="width: 50px; height: 50px;">
-              <i class='fas fa-quote-left' style="font-size: 40px;"></i>
+          <!-- Wrapper Kutipan (Icon + Teks) -->
+          <div class="flex flex-col items-start w-full gap-2 lg:gap-[13px]">
+            <!-- Icon Kutipan -->
+            <div class="flex items-center justify-center shrink-0 size-[32px] text-[#0B1F3B] lg:size-[50px]">
+              <i class="fas fa-quote-left text-2xl lg:text-[40px]"></i>
             </div>
             <!-- Teks Kutipan -->
-            <p class='line-clamp-5 m-0 p-0 w-full' style="font-family: 'Open Sans'; font-weight: 400; font-size: 20px; line-height: 30px; color: #000000;" x-text='getByLang(alumni.message, lang)'></p>
+            <p class="w-full font-sans font-normal text-xs leading-relaxed text-[#000000] line-clamp-5 lg:text-[20px] lg:leading-[30px]" x-text="getByLang(alumni.message, lang)"></p>
           </div>
         </div>
 
-        <!-- Wrapper Badge Program (Bawah) -> Margin atas otomatis agar selalu di bagian paling bawah -->
-        <div class='flex flex-row justify-center items-center w-full mt-auto'>
-          <!-- Badge Background -> Height 26px, bg #F1EDFD -->
-          <div class='flex flex-row justify-center items-center' style="gap: 10px; background: #F1EDFD; border-radius: 6px; height: 26px; padding: 0 15px;">
-            <span class='truncate max-w-full m-0 p-0' style="font-family: 'Open Sans'; font-weight: 400; font-size: 15px; line-height: 20px; color: #4F2CD7;" x-text="(alumni.kelas?.kategori?.nama_kategori ? alumni.kelas.kategori.nama_kategori + ': ' : '') + getKelasName(alumni)"></span>
+        <!-- Wrapper Badge Program (Bawah) -->
+        <div class="flex flex-row items-center justify-center w-full mt-6 lg:mt-auto">
+          <div class="flex flex-row items-center justify-center h-[26px] gap-[10px] px-3.5 bg-[#F1EDFD] rounded-[6px] lg:px-[15px]">
+            <span class="max-w-full font-sans font-normal text-xs leading-none text-[#4F2CD7] truncate lg:text-[15px] lg:leading-[20px]" x-text="(alumni.kelas?.kategori?.nama_kategori || alumni.course?.category?.nama_kategori ? (alumni.kelas?.kategori?.nama_kategori || alumni.course?.category?.nama_kategori) + ': ' : '') + getKelasName(alumni)"></span>
           </div>
         </div>
+
       </div>
 
     </template>
   </div>
 
   <!-- No Results Message -->
-  <div x-show='alumniItems.length === 0' class='text-center py-12'>
-    <div class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-      <i class='fas fa-users text-gray-400 text-2xl'></i>
-    </div>
-    <h3 class='text-xl font-semibold text-gray-900 mb-2'>{{t 'test.alumni.noAlumni'}}</h3>
-    <p class='text-gray-600 mb-6'>{{t 'test.alumni.tryAdjusting'}}</p>
-    <button
-      @click='resetFilters()'
-      class='bg-secondary text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700'
-    >
-      {{t 'test.alumni.resetFilters'}}
-    </button>
-  </div>
+  {{> components/ui/empty_state/index
+  show="alumniItems.length === 0"
+  icon="fas fa-users"
+  title=(t 'test.alumni.noAlumni')
+  description=(t 'test.alumni.tryAdjusting')
+  actionText=(t 'test.alumni.resetFilters')
+  onAction="resetFilters()"
+}}
 
   <!-- Pagination -->
-  <div
-    class='flex justify-center items-center gap-2 mt-auto pt-10'
-    x-show='totalPages > 1'
-  >
-    <button
-      @click='changePage(Math.max(1, currentPage - 1))'
-      :disabled='currentPage === 1'
-      class='w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
-    >
-      <i class='fas fa-chevron-left text-sm'></i>
-    </button>
-
-    <template x-for='page in totalPages' :key='page'>
-      <button
-        @click='changePage(page)'
-        class='w-9 h-9 flex items-center justify-center rounded-full text-sm font-semibold border transition shadow-sm'
-        :class="currentPage === page ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
-        x-text='page'
-      ></button>
-    </template>
-
-    <button
-      @click='changePage(Math.min(totalPages, currentPage + 1))'
-      :disabled='currentPage === totalPages'
-      class='w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
-    >
-      <i class='fas fa-chevron-right text-sm'></i>
-    </button>
-  </div>
+   {{> components/ui/pagination/index
+    currentPage="currentPage"
+    totalPages="totalPages"
+    onPageChange="changePage"
+  }}
 </div>

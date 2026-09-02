@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('faqs')
 export class CategoryFaq {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   question: string[];

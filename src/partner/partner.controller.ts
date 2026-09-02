@@ -88,7 +88,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Get(':partnerId')
   async findOne(
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -99,7 +99,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Get('formEdit/:partnerId')
   async formEdit(
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -129,7 +129,7 @@ export class PartnerController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Body() updatePartnerDto: UpdatePartnerDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -152,7 +152,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Delete(':partnerId')
   async remove(
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

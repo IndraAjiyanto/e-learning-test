@@ -32,23 +32,23 @@ export class ParticipantsService {
   async findAll() {
     const participants = await this.participantsRepository.find({
       relations: ['course'],
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return participants;
   }
 
   async findAllCourses() {
     const course = await this.courseRepository.find({
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
     return course;
   }
 
-  async findCourse(courseId: number) {
+  async findCourse(courseId: string) {
     return await this.courseRepository.findOne({ where: { id: courseId } });
   }
 
-  async findOne(participantId: number) {
+  async findOne(participantId: string) {
     const participants = await this.participantsRepository.findOne({
       where: { id: participantId },
       relations: ['course'],
@@ -60,7 +60,7 @@ export class ParticipantsService {
   }
 
   async update(
-    participantId: number,
+    participantId: string,
     updateParticipantsDto: UpdateParticipantsDto,
   ) {
     const participants = await this.findOne(participantId);
@@ -72,7 +72,7 @@ export class ParticipantsService {
     return await this.participantsRepository.save(participants);
   }
 
-  async remove(participantId: number) {
+  async remove(participantId: string) {
     const participants = await this.findOne(participantId);
     if (!participants) {
       throw new NotFoundException('Participant not found');

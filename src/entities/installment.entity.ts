@@ -16,8 +16,8 @@ export type Month = 3;
 
 @Entity()
 export class Installment {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   downPayment: number;

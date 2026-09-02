@@ -34,19 +34,19 @@ export class BackgroundService {
     return await this.backgroundRepository.find();
   }
 
-  async findOne(id: number): Promise<Background | null> {
+  async findOne(id: string): Promise<Background | null> {
     return await this.backgroundRepository.findOneBy({ id });
   }
 
   async update(
-    id: number,
+    id: string,
     updateBackgroundDto: UpdateBackgroundDto,
   ): Promise<Background | null> {
     await this.backgroundRepository.update(id, updateBackgroundDto);
     return this.findOne(id);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const background = await this.findOne(id);
     if (!background) {
       throw new Error('Background not found');

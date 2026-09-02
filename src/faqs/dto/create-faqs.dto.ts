@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsArray } from 'class-validator';
+import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class CreateFaqsDto {
   @IsArray()
@@ -7,6 +7,6 @@ export class CreateFaqsDto {
   @IsArray()
   answer: string[];
 
-  @IsNumber()
-  categoryId: number;
+  @IsUUID()
+  categoryId: string;
 }

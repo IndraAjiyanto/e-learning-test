@@ -1,10 +1,4 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsDateString,
-  IsNumber,
-} from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Status } from 'src/entities/attendance.entity';
 
 export class CreateAttendanceDto {
@@ -18,9 +12,9 @@ export class CreateAttendanceDto {
   @IsString()
   notes: string;
 
-  @IsNumber()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsNumber()
-  sessionId: number;
+  @IsUUID()
+  sessionId: string;
 }

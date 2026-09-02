@@ -273,8 +273,8 @@
 
 <script>
   (function initRegistrationDraftStorage() {
-    const userId = Number('{{user.id}}') || 0;
-    const courseId = Number('{{course.id}}') || 0;
+    const userId = '{{user.id}}';
+    const courseId = '{{course.id}}';
     if (!userId || !courseId) return;
 
     const storageKey =

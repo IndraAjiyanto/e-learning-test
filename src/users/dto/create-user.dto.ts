@@ -1,14 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsDate,
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { UserRole } from 'src/entities/user.entity';
 
 export class CreateUserDto {
@@ -38,8 +28,8 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsArray()
-  @IsNumber({}, { each: true })
-  courseId?: number[];
+  @IsUUID('all', { each: true })
+  courseId?: string[];
 
   @IsEnum(['super_admin', 'admin', 'user'])
   @IsOptional()
