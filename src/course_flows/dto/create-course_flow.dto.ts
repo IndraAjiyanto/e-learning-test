@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsOptional } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateCourseFlowDto {
   @IsInt()
@@ -11,6 +11,6 @@ export class CreateCourseFlowDto {
   @IsArray()
   content: string[];
 
-  @IsInt()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 }

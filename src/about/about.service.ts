@@ -36,7 +36,7 @@ export class AboutService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const about = await this.aboutRepository.findOne({ where: { id } });
     if (!about) {
       throw new NotFoundException('Header not found');
@@ -44,7 +44,7 @@ export class AboutService {
     return about;
   }
 
-  async update(id: number, updateTentangDto: UpdateAboutDto) {
+  async update(id: string, updateTentangDto: UpdateAboutDto) {
     const about = await this.findOne(id);
     if (!about) {
       throw new NotFoundException('Header not found');
@@ -53,7 +53,7 @@ export class AboutService {
     return await this.aboutRepository.save(about);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const about = await this.findOne(id);
     if (!about) {
       throw new NotFoundException('Header not found');

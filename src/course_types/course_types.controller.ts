@@ -59,7 +59,7 @@ export class CourseTypesController {
   @Roles('super_admin')
   @Get('formEdit/:courseTypeId')
   async formEdit(
-    @Param('courseTypeId') courseTypeId: number,
+    @Param('courseTypeId') courseTypeId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -71,7 +71,7 @@ export class CourseTypesController {
   @Patch(':courseTypeId')
   @UseInterceptors(FileInterceptor('icon', multerConfigImage))
   async update(
-    @Param('courseTypeId') courseTypeId: number,
+    @Param('courseTypeId') courseTypeId: string,
     @UploadedFile() icon: Express.Multer.File,
     @Body() updateJenisKelaDto: UpdateCourseTypeDto,
     @Req() req: Request,
@@ -91,7 +91,7 @@ export class CourseTypesController {
   @Roles('super_admin')
   @Delete(':courseTypeId')
   async remove(
-    @Param('courseTypeId') courseTypeId: number,
+    @Param('courseTypeId') courseTypeId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

@@ -24,8 +24,8 @@ export class AnswerTasksController {
   @Roles('user')
   @Post(':assignmentId/:sessionId')
   async create(
-    @Param('assignmentId') assignmentId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('assignmentId') assignmentId: string,
+    @Param('sessionId') sessionId: string,
     @Body() createAssignmentAnswerDto: CreateAssignmentAnswersDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -67,8 +67,8 @@ export class AnswerTasksController {
   @Roles('user')
   @Get(':sessionId/:assignmentId')
   async findAnswer(
-    @Param('assignmentId') assignmentId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('assignmentId') assignmentId: string,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -95,7 +95,7 @@ export class AnswerTasksController {
   @Roles('admin')
   @Get(':assignmentId')
   async findOne(
-    @Param('assignmentId') assignmentId: number,
+    @Param('assignmentId') assignmentId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -113,8 +113,8 @@ export class AnswerTasksController {
   @Roles('admin', 'user')
   @Patch(':assignmentId/:assignment_answerId')
   async update(
-    @Param('assignment_answerId') assignment_answerId: number,
-    @Param('assignmentId') assignmentId: number,
+    @Param('assignment_answerId') assignment_answerId: string,
+    @Param('assignmentId') assignmentId: string,
     @Body() updateAssignmentAnswerDto: UpdateAssignmentAnswersDto,
     @Res() res: Response,
     @Req() req: Request,

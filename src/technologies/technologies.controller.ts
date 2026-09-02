@@ -88,7 +88,7 @@ export class TechnologiesController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -111,7 +111,7 @@ export class TechnologiesController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
   })
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateTechnologiesDto: UpdateTechnologiesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -161,7 +161,7 @@ export class TechnologiesController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

@@ -11,8 +11,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('user_courses')
 export class UserCourse {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'progress', default: false })
   progress: boolean;

@@ -29,7 +29,7 @@ export class AnswersService {
     return await this.answerRepository.save(answers);
   }
 
-  async findCorrectAnswer(questionId: number) {
+  async findCorrectAnswer(questionId: string) {
     return await this.answerRepository.find({
       where: { question: { id: questionId } },
     });

@@ -179,7 +179,7 @@ const checkPromo = debounce(async () => {
     if(currentCode !== code) return;
 
     try {
-        const courseId = {{#if course.id}}{{course.id}}{{else}}1{{/if}};
+        const courseId = '{{course.id}}';
 
         const response = await fetch('/api/voucher/validate', {
             method: 'POST',
@@ -393,8 +393,8 @@ function updatePricingUI(sub, disc, total) {
 
 <script>
   (function initPaymentMethodDraftStorage() {
-    const userId = Number('{{user.id}}') || 0;
-    const courseId = Number('{{course.id}}') || 0;
+    const userId = '{{user.id}}';
+    const courseId = '{{course.id}}';
     if (!userId || !courseId) return;
 
     const storageKey =

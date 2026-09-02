@@ -18,13 +18,13 @@ export interface LogbookLike {
 }
 
 export interface AttendanceLike {
-  id?: number;
+  id?: string;
   status?: string;
   notes?: string;
 }
 
 export interface SessionLike {
-  id?: number | string;
+  id?: string | string;
   sessionOrder: number;
   sessionProgress?: SessionProgressLike[] | null;
   logbooks?: LogbookLike[] | null;

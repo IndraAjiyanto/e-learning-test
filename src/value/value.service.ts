@@ -32,7 +32,7 @@ export class ValueService {
     return await this.valueRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const value = await this.valueRepository.findOne({ where: { id } });
     if (!value) {
       throw new NotFoundException('Value not found');
@@ -40,7 +40,7 @@ export class ValueService {
     return value;
   }
 
-  async update(id: number, updateValueDto: UpdateValueDto) {
+  async update(id: string, updateValueDto: UpdateValueDto) {
     const value = await this.findOne(id);
     if (!value) {
       throw new NotFoundException('Value not found');
@@ -49,7 +49,7 @@ export class ValueService {
     return await this.valueRepository.save(value);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const value = await this.findOne(id);
     await this.valueRepository.remove(value);
     const allValue = await this.valueRepository.find();

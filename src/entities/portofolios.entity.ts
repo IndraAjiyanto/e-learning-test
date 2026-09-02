@@ -13,8 +13,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Portofolios {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { name: 'image' })
   image: string[];

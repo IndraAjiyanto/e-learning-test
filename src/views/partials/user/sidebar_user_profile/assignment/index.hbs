@@ -45,7 +45,7 @@
     >
 
       <!-- Week Header -->
-      <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== {{id}}) loadSessions({{id}})">
+      <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')">
         <h2 class="font-montserrat font-semibold text-[25px] leading-[30px] text-[#003060]">
           Week {{weekNumber}} : {{description}}
         </h2>
@@ -69,7 +69,7 @@
         <template x-if="!sessionsLoading && sessionsError">
           <div class="w-full max-w-[1232px] bg-white/50 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] backdrop-blur-[3.3px] rounded-[12px] p-6 sm:p-8 text-center space-y-3">
             <p class="font-montserrat font-medium text-red-600">Failed to load sessions. Please try again.</p>
-            <button type="button" @click="loadSessions({{id}})" class="font-montserrat font-medium text-[#003060] underline cursor-pointer">
+            <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-[#003060] underline cursor-pointer">
               Retry
             </button>
           </div>

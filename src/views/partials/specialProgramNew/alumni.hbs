@@ -180,7 +180,7 @@
   window.__alumniCarousel = [
     {{#each alumni}}
     {
-      id: {{this.id}},
+      id: '{{this.id}}',
       name: {{{json (getByLang this.name ../lang)}}},
       position: {{{json (getByLang this.currentPosition ../lang)}}},
       company: {{{json (default this.course.name '')}}},

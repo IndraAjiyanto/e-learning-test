@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  ParseIntPipe,
   NotFoundException,
   UseGuards,
   UseInterceptors,
@@ -103,8 +102,8 @@ export class PaymentsController {
   @Roles('user')
   @Post(':userId/:courseId')
   async create(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Param('courseId') courseId: number,
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
     @Body() body: any,
     @Res() res: Response,
     @Req() req: Request,
@@ -113,7 +112,7 @@ export class PaymentsController {
       const paymentMethod = body.paymentMethod || 'XENDIT_UI';
       const orderData = await this.paymentsService.createXenditInvoice(
         userId,
-        Number(courseId),
+        String(courseId),
         paymentMethod,
         undefined, // promoCode
         body, // kirim sisa form data ke service
@@ -143,9 +142,9 @@ export class PaymentsController {
     folder: 'payment',
   })
   async createInstallmentPayment(
-    @Param('installmentsId') installmentsId: number,
-    @Param('userId', ParseIntPipe) userId: number,
-    @Param('courseId') courseId: number,
+    @Param('installmentsId') installmentsId: string,
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
     @Body() createPaymentDto: CreatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -180,7 +179,7 @@ export class PaymentsController {
   @Roles('user')
   @Get('api/payment/:userId')
   async getPayment(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
   ) {
     const payment = await this.paymentsService.findPayment(userId);
@@ -190,7 +189,7 @@ export class PaymentsController {
   @Roles('user')
   @Get('api/registration/:userId')
   async getRegistration(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
   ) {
     const registration = await this.paymentsService.findRegistration(userId);
@@ -200,7 +199,7 @@ export class PaymentsController {
   @Roles('user')
   @Get('api/installment/:userId')
   async getInstallment(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
   ) {
     const installments = await this.paymentsService.findInstallments(userId);
@@ -210,7 +209,7 @@ export class PaymentsController {
   @Roles('user')
   @Get('history/:userId')
   async riwayat(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -223,7 +222,7 @@ export class PaymentsController {
   @Roles('user')
   @Get('detail/:courseId')
   async detail(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -234,7 +233,7 @@ export class PaymentsController {
   @Roles('user')
   @Get('registration/:courseId')
   async registrationPage(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -262,7 +261,7 @@ export class PaymentsController {
   @Roles('super_admin')
   @Get(':paymentId')
   async findPaymentDetails(
-    @Param('paymentId') paymentId: number,
+    @Param('paymentId') paymentId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -273,7 +272,7 @@ export class PaymentsController {
   @Roles('super_admin')
   @Patch(':proses/:paymentId')
   async update(
-    @Param('paymentId') paymentId: number,
+    @Param('paymentId') paymentId: string,
     @Param('proses') proses: string,
     @Body() updatePaymentDto: UpdatePaymentDto,
     @Res() res: Response,

@@ -16,8 +16,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Quiz {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'quiz_name' })
   quizName: string;

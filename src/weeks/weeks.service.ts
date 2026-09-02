@@ -36,7 +36,7 @@ export class WeeksService {
     private readonly quizRepository: Repository<Quiz>,
   ) {}
 
-  async create(createWeekDto: CreateWeeksDto, courseId: number) {
+  async create(createWeekDto: CreateWeeksDto, courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
@@ -129,13 +129,13 @@ export class WeeksService {
     }
   }
 
-  async getSessionNumber(courseId: number) {
+  async getSessionNumber(courseId: string) {
     const lastWeek = await this.findCourseWeeks(courseId);
     const newWeek = lastWeek + 1;
     return newWeek;
   }
 
-  async findCourseWeeks(courseId: number) {
+  async findCourseWeeks(courseId: string) {
     const weeks = await this.weeksRepository.findOne({
       where: { course: { id: courseId } },
       order: { weekNumber: 'DESC' },
@@ -146,33 +146,33 @@ export class WeeksService {
     return weeks.weekNumber;
   }
 
-  async findOne(weeksId: number) {
+  async findOne(weeksId: string) {
     return await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
     });
   }
 
-  async findSession(weeksId: number) {
+  async findSession(weeksId: string) {
     return await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       order: { sessionOrder: 'ASC' },
     });
   }
 
-  async findQuiz(weeksId: number) {
+  async findQuiz(weeksId: string) {
     return await this.quizRepository.find({
       where: { weeks: { id: weeksId } },
     });
   }
 
-  async findLastSession(weeksId: number) {
+  async findLastSession(weeksId: string) {
     return await this.sessionRepository.findOne({
       where: { weeks: { id: weeksId }, isFinal: true },
     });
   }
 
-  async update(id: number, updateWeekDto: UpdateWeeksDto) {
+  async update(id: string, updateWeekDto: UpdateWeeksDto) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
@@ -193,7 +193,7 @@ export class WeeksService {
     return await this.weeksRepository.save(weeks);
   }
 
-  async remove(id: number, courseId: number) {
+  async remove(id: string, courseId: string) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');

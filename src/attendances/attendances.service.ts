@@ -83,14 +83,14 @@ export class AttendanceService {
     });
   }
 
-  async findSession(sessionId: number) {
+  async findSession(sessionId: string) {
     return await this.sessionRepository.findOne({
       where: { id: sessionId },
       relations: ['weeks', 'weeks.course'],
     });
   }
 
-  async findUsers(sessionId: number) {
+  async findUsers(sessionId: string) {
     const course = await this.courseRepository.findOne({
       where: { weeks: { session: { id: sessionId } } },
     });
@@ -106,7 +106,7 @@ export class AttendanceService {
     return await this.courseRepository.find({ relations: ['session'] });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const attendance = await this.attendanceRepository.findOne({
       where: { id },
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
@@ -125,7 +125,7 @@ export class AttendanceService {
     return attendance;
   }
 
-  async update(id: number, updateAttendanceDto: UpdateAttendanceDto) {
+  async update(id: string, updateAttendanceDto: UpdateAttendanceDto) {
     const attendance = await this.findOne(id);
     if (!attendance) {
       throw new NotFoundException('Attendance not found');
@@ -134,7 +134,7 @@ export class AttendanceService {
     return await this.attendanceRepository.save(attendance);
   }
 
-  async remove(id: number, sessionId: number) {
+  async remove(id: string, sessionId: string) {
     const attendance = await this.findOne(id);
     if (!attendance) {
       throw new NotFoundException('Attendance not found');

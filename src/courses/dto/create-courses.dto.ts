@@ -1,13 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  isDateString,
-  IsDateString,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsOptional, IsString, IsUUID, isDateString } from 'class-validator';
 import { Method } from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
@@ -21,17 +12,17 @@ export class CreateCoursesDto {
   @IsEnum(['online', 'offline'])
   method: Method;
 
-  @IsInt()
-  categoryId: number;
+  @IsUUID()
+  categoryId: string;
 
   @IsArray()
   locations: string[];
 
-  @IsInt()
-  courseTypeId: number;
+  @IsUUID()
+  courseTypeId: string;
 
-  @IsInt()
-  mentoringsId: number;
+  @IsUUID()
+  mentoringsId: string;
 
   @IsInt()
   @IsOptional()
@@ -76,8 +67,8 @@ export class CreateCoursesDto {
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  technologiesIds?: number[];
+  @IsUUID('all', { each: true })
+  technologiesIds?: string[];
 
   @IsArray()
   materials: string[];

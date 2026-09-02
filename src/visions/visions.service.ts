@@ -21,7 +21,7 @@ export class VisionsService {
     return await this.visionRepository.find();
   }
 
-  async findOne(visionId: number) {
+  async findOne(visionId: string) {
     const vision = await this.visionRepository.findOne({
       where: { id: visionId },
     });
@@ -31,13 +31,13 @@ export class VisionsService {
     return vision;
   }
 
-  async update(visionId: number, updateVisionDto: UpdateVisionsDto) {
+  async update(visionId: string, updateVisionDto: UpdateVisionsDto) {
     const vision = await this.findOne(visionId);
     Object.assign(vision, updateVisionDto);
     return await this.visionRepository.save(vision);
   }
 
-  async remove(visionId: number) {
+  async remove(visionId: string) {
     const vision = await this.findOne(visionId);
     return await this.visionRepository.remove(vision);
   }

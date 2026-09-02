@@ -105,7 +105,7 @@ export class PaymentsService {
     }
   }
 
-  async addUserToCourse(userId: number, courseId: number) {
+  async addUserToCourse(userId: string, courseId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: [],
@@ -215,8 +215,8 @@ export class PaymentsService {
   }
 
   async removeCourseUser(
-    userId: number,
-    courseId: number,
+    userId: string,
+    courseId: string,
   ): Promise<UserCourse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -243,7 +243,7 @@ export class PaymentsService {
     return await this.userCourseRepository.remove(userCourse);
   }
 
-  async checkPayment(userId: number, courseId: number) {
+  async checkPayment(userId: string, courseId: string) {
     const payment = await this.paymentRepository.find({
       where: {
         user: { id: userId },
@@ -258,7 +258,7 @@ export class PaymentsService {
     }
   }
 
-  async findCourse(courseId: number) {
+  async findCourse(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['weeks', 'category', 'installments'],
@@ -270,7 +270,7 @@ export class PaymentsService {
     }
   }
 
-  async findPayment(userId: number) {
+  async findPayment(userId: string) {
     const payments = await this.paymentRepository.find({
       where: {
         user: { id: userId },
@@ -282,7 +282,7 @@ export class PaymentsService {
     return payments || [];
   }
 
-  async findInstallments(userId: number) {
+  async findInstallments(userId: string) {
     return await this.paymentRepository.find({
       where: {
         user: { id: userId },
@@ -292,7 +292,7 @@ export class PaymentsService {
     });
   }
 
-  async findRegistration(userId: number) {
+  async findRegistration(userId: string) {
     console.log('🔵 [PaymentsService] findRegistration for userId:', userId);
     const result = await this.registrationRepository.find({
       where: { user: { id: userId } },
@@ -328,7 +328,7 @@ export class PaymentsService {
     });
   }
 
-  async findOne(paymentId: number) {
+  async findOne(paymentId: string) {
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
       relations: ['user', 'course', 'invoice'],
@@ -340,7 +340,7 @@ export class PaymentsService {
     }
   }
 
-  async update(paymentId: number, updatePaymentDto: UpdatePaymentDto) {
+  async update(paymentId: string, updatePaymentDto: UpdatePaymentDto) {
     const payment = await this.findOne(paymentId);
     if (!payment) {
       return;
@@ -360,8 +360,8 @@ export class PaymentsService {
   }
 
   async createXenditInvoice(
-    userId: number,
-    courseId: number,
+    userId: string,
+    courseId: string,
     paymentMethod: string,
     promoCode?: string,
     formData?: any,
@@ -440,7 +440,7 @@ export class PaymentsService {
   }
 
   // Get course by ID
-  async findCourseById(courseId: number) {
+  async findCourseById(courseId: string) {
     return this.courseRepository.findOneBy({ id: courseId });
   }
 }

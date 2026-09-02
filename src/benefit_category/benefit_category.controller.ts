@@ -27,7 +27,7 @@ export class BenefitCategoryController {
   @Roles('super_admin')
   @Get('formCreate/:categoryId')
   async formCreate(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -41,7 +41,7 @@ export class BenefitCategoryController {
   @Post(':categoryId')
   async createFromForm(
     @Body() createBenefitCategoryDto: CreateBenefitCategoryDto,
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -59,7 +59,7 @@ export class BenefitCategoryController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -73,8 +73,8 @@ export class BenefitCategoryController {
   @Roles('super_admin')
   @Patch('formEdit/:id/:categoryId')
   async updateFromForm(
-    @Param('id') id: number,
-    @Param('categoryId') categoryId: number,
+    @Param('id') id: string,
+    @Param('categoryId') categoryId: string,
     @Body() updateBenefitCategoryDto: UpdateBenefitCategoryDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -92,8 +92,8 @@ export class BenefitCategoryController {
   @Roles('super_admin')
   @Delete(':id/:categoryId')
   async deleteFromForm(
-    @Param('id') id: number,
-    @Param('categoryId') categoryId: number,
+    @Param('id') id: string,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

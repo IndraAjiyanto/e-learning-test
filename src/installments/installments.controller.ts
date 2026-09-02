@@ -27,7 +27,7 @@ export class InstallmentsController {
   async formCreate(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     const availableMonths = await this.installmentsService.findNo(courseId);
     res.render('super_admin/installments/create', {
@@ -40,7 +40,7 @@ export class InstallmentsController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -61,7 +61,7 @@ export class InstallmentsController {
     @Body() createCicilanDto: CreateInstallmentsDto,
     @Req() req: Request,
     @Res() res: Response,
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     try {
       if (createCicilanDto.price && Array.isArray(createCicilanDto.price)) {
@@ -72,7 +72,7 @@ export class InstallmentsController {
         createCicilanDto.downPayment = Number(createCicilanDto.downPayment);
       }
 
-      createCicilanDto.courseId = Number(courseId);
+      createCicilanDto.courseId = String(courseId);
       createCicilanDto.month = Number(createCicilanDto.month) as 3;
 
       await this.installmentsService.create(createCicilanDto);
@@ -87,7 +87,7 @@ export class InstallmentsController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateCicilanDto: UpdateInstallmentsDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -121,7 +121,7 @@ export class InstallmentsController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {

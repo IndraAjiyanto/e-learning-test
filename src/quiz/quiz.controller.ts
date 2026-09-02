@@ -29,7 +29,7 @@ export class QuizController {
   @Roles('admin')
   @Post(':weeksId')
   async create(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Body() createQuizDto: CreateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -48,7 +48,7 @@ export class QuizController {
   @Roles('admin')
   @Get('formCreate/:weeksId')
   async formCreate(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -58,7 +58,7 @@ export class QuizController {
   @Roles('admin')
   @Get(':quizId')
   async findOne(
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -76,7 +76,7 @@ export class QuizController {
   @Roles('admin')
   @Get('formEdit/:quizId')
   async formEdit(
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -87,7 +87,7 @@ export class QuizController {
   @Roles('user')
   @Get('form/:quizId')
   async formQuiz(
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -100,7 +100,7 @@ export class QuizController {
   @Roles('user')
   @Get('start/:quizId')
   async startQuiz(
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -154,7 +154,7 @@ export class QuizController {
   @Roles('admin')
   @Patch(':quizId')
   async update(
-    @Param('quizId') quizId: number,
+    @Param('quizId') quizId: string,
     @Body() updateQuizDto: UpdateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -172,8 +172,8 @@ export class QuizController {
   @Roles('admin')
   @Delete(':quizId/:weeksId')
   async remove(
-    @Param('weeksId') weeksId: number,
-    @Param('quizId') quizId: number,
+    @Param('weeksId') weeksId: string,
+    @Param('quizId') quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

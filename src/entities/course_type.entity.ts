@@ -13,8 +13,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('course_type')
 export class CourseType {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   nameClassesType: string;

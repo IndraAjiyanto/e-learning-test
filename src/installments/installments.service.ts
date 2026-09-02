@@ -39,7 +39,7 @@ export class InstallmentsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const installments = await this.installmentsRepository.findOne({
       where: { id },
       relations: ['course'],
@@ -52,7 +52,7 @@ export class InstallmentsService {
     return installments;
   }
 
-  async findByKelas(courseId: number) {
+  async findByKelas(courseId: string) {
     return await this.installmentsRepository.find({
       where: { course: { id: courseId } },
       relations: ['course'],
@@ -60,7 +60,7 @@ export class InstallmentsService {
     });
   }
 
-  async findNo(courseId: number) {
+  async findNo(courseId: string) {
     const installment = await this.findByKelas(courseId);
     const usedNumbers = installment.map((i) => Number(i.month));
 
@@ -68,7 +68,7 @@ export class InstallmentsService {
     return availableNumbers;
   }
 
-  async update(id: number, updateCicilanDto: UpdateInstallmentsDto) {
+  async update(id: string, updateCicilanDto: UpdateInstallmentsDto) {
     const installments = await this.findOne(id);
 
     if (updateCicilanDto.courseId) {
@@ -98,7 +98,7 @@ export class InstallmentsService {
     return await this.installmentsRepository.save(installments);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const installments = await this.findOne(id);
     return await this.installmentsRepository.remove(installments);
   }

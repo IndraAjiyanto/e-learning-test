@@ -177,7 +177,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('benefit/:categoryId')
   async findBenefitByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
     const benefit_category =
@@ -188,7 +188,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('faq/:categoryId')
   async findFaqByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
     const faqs = await this.categoriesService.findFaqByCategory(categoryId);
@@ -198,7 +198,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('admin/program/:categoryId')
   async findCourseByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
     const courses =
@@ -209,7 +209,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('alumni/:categoryId')
   async findAlumniByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
     const alumni =
@@ -220,7 +220,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get(':categoryId')
   async findOne(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -235,7 +235,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('formEdit/:categoryId')
   async formEdit(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -260,7 +260,7 @@ export class CategoriesController {
     ),
   )
   async update(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Body() updateCategoriesDto: UpdateCategoriesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -338,7 +338,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Delete(':categoryId')
   async remove(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

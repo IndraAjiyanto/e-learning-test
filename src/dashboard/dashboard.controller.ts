@@ -16,7 +16,7 @@ export class DashboardController {
   async kelasFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('userId') userId?: number,
+    @Query('userId') userId?: string,
     @Query('category') category?: string,
     @Query('courseType') courseType?: string,
     @Query('method') method?: string,
@@ -127,7 +127,7 @@ export class DashboardController {
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('userId') userId?: number,
+    @Query('userId') userId?: string,
     @Query('categoryId') categoryId?: string,
     @Query('course_type_id') courseTypeId?: string,
     @Query('page') page?: string,
@@ -170,7 +170,7 @@ export class DashboardController {
   async detailPortfolio(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('portfolioId') portfolioId: number,
+    @Param('portfolioId') portfolioId: string,
   ) {
     const portfolio = await this.dashboardService.findOnePortfolio(portfolioId);
     res.render('detail_portfolio', { user: req.user, portfolio });

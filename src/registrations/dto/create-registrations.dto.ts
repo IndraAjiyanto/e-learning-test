@@ -1,10 +1,4 @@
-import {
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsBooleanString,
-} from 'class-validator';
+import { IsBooleanString, IsEnum, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateRegistrationsDto {
@@ -16,11 +10,11 @@ export class CreateRegistrationsDto {
   @IsOptional()
   process: ProcessStatus;
 
-  @IsInt()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsInt()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 
   @IsString()
   user_fullname: string;

@@ -38,13 +38,13 @@ export class AlumniService {
     return await this.courseRepository.find();
   }
 
-  async findCourseByKategori(categoryId: number) {
+  async findCourseByKategori(categoryId: string) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
     });
   }
 
-  async findOne(alumniId: number) {
+  async findOne(alumniId: string) {
     const alumni = await this.alumniRepository.findOne({
       where: { id: alumniId },
       relations: ['course', 'course.category'],
@@ -65,7 +65,7 @@ export class AlumniService {
     } catch (error) {}
   }
 
-  async update(alumniId: number, updateAlumnusDto: UpdateAlumnusDto) {
+  async update(alumniId: string, updateAlumnusDto: UpdateAlumnusDto) {
     const alumni = await this.findOne(alumniId);
     if (!alumni) {
       throw new NotFoundException('Alumni not found');
@@ -76,7 +76,7 @@ export class AlumniService {
 
     if (courseId) {
       const course = await this.courseRepository.findOne({
-        where: { id: Number(courseId) },
+        where: { id: courseId },
       });
       if (!course) {
         throw new NotFoundException('Program not found');
@@ -87,7 +87,7 @@ export class AlumniService {
     return await this.alumniRepository.save(alumni);
   }
 
-  async remove(alumniId: number) {
+  async remove(alumniId: string) {
     const alumni = await this.findOne(alumniId);
     if (!alumni) {
       throw new NotFoundException('Alumni not found');
@@ -96,8 +96,8 @@ export class AlumniService {
   }
 
   async filterAlumni(
-    kategoriId?: number,
-    courseId?: number,
+    kategoriId?: string,
+    courseId?: string,
     search?: string,
     page: number = 1,
     limit: number = 6,
@@ -126,7 +126,7 @@ export class AlumniService {
     }
 
     // Order by ID descending
-    query = query.orderBy('alumni.id', 'DESC');
+    query = query.orderBy('alumni.createdAt', 'DESC');
 
     // Pagination
     const skip = (page - 1) * limit;
