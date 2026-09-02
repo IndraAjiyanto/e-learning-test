@@ -1,0 +1,14 @@
+{{!-- 
+  Komponen: Page Section Wrapper (Level 1 - UI Dasar, Shared)
+  Lokasi: src/views/partials/components/ui/page_section.hbs
+  
+  Props:
+  - wrapperClass : Class tambahan untuk section (bg, py, etc)
+  - containerClass: Class untuk inner container (default max-w [1728px] px-6 lg:px-12)
+  - bgImage       : URL background image jika ada
+--}}
+<section class="w-full {{wrapperClass}}" {{#if bgImage}}style="background-image: url('{{bgImage}}'); background-size: cover; background-position: center;"{{/if}}>
+  <div class="{{default containerClass 'mx-auto max-w-[1728px] px-6 lg:px-12'}}">
+    {{> @partial-block}}
+  </div>
+</section>

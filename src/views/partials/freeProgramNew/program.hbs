@@ -16,109 +16,27 @@
       
       {{#if courses.length}}
         {{#each courses}}
-        <div class="w-full max-w-[549px] bg-white border border-slate-200/80 rounded-[20px] shadow-[0px_2px_10px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col justify-between group">
-          
-          <div>
-            <!-- Card Image -->
-            <div class="w-full h-[250px] sm:h-[270px] rounded-[16px] overflow-hidden bg-gray-100 mb-6">
-              <img 
-                src="{{#if this.image}}{{this.image}}{{else}}https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop{{/if}}" 
-                alt="{{this.name}}" 
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-
-            <!-- Card Content -->
-            <div class="px-1">
-              <h3 class="font-montserrat font-semibold text-xl sm:text-[25px] leading-[35px] tracking-normal text-[#003060] text-left mb-7 line-clamp-2">
-                {{this.name}}
-              </h3>
-
-              <!-- Badges Row -->
-              <div class="flex flex-wrap items-center gap-[20px] mb-8">
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-tag text-xs text-[#003060]"></i> {{t 'test.categoryFreeProgram.program.free'}} 
-                </span>
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-regular fa-clock text-xs text-[#003060]"></i> {{#if this.day}}{{this.day}} {{t 'test.categoryFreeProgram.program.day'}}{{else}}1 {{t 'test.categoryFreeProgram.program.day'}}{{/if}}
-                </span>
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> {{this.method}}
-                </span>
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> {{this.quota}} {{t 'test.categoryFreeProgram.program.students'}}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Action Button -->
-          <div class="w-full pt-2">
-            <a 
-              href="/program/{{this.id}}" 
-              class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.program.detailProgram'}}</span>
-              <i class="fa-solid fa-arrow-right text-base sm:text-lg"></i>
-            </a>
-          </div>
-
-        </div>
+          {{> components/ui/card/category/free/index 
+              id=this.id 
+              image=this.image 
+              name=this.name 
+              day=this.day 
+              method=this.method 
+              quota=this.quota
+          }}
         {{/each}}
-
       {{else}}
-        <!-- Default Fallback Card (HARD CODE) -->
-        <div class="w-full max-w-[549px] bg-white border rounded-[20px] shadow-[0px_2px_10px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col justify-between group">
-          
-          <div>
-            <!-- Card Image -->
-            <div class="w-full h-[250px] sm:h-[270px] rounded-[16px] overflow-hidden bg-gray-100 mb-9">
-              <img 
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop" 
-                alt="COMING SOON" 
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-
-            <!-- Card Content -->
-            <div class="px-1">
-              <h3 class="font-montserrat font-semibold text-xl sm:text-[25px] leading-[35px] tracking-normal text-[#003060] text-left mb-7 line-clamp-2">
-                COMING SOON
-              </h3>
-
-              <!-- Badges Row -->
-              <div class="flex flex-wrap items-center gap-[20px] mb-9">
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-tag text-xs text-[#003060]"></i> {{t 'test.categoryFreeProgram.program.free'}}
-                </span>
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-regular fa-clock text-xs text-[#003060]"></i> 1 {{t 'test.categoryFreeProgram.program.day'}}
-                </span>
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> Offline
-                </span>
-                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> 100 {{t 'test.categoryFreeProgram.program.students'}}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Action Button -->
-          <div class="w-full pt-2">
-            <a 
-              href="#program" 
-              class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.program.detailProgram'}}</span>
-              <i class="fa-solid fa-arrow-right text-base sm:text-lg"></i>
-            </a>
-          </div>
-
-        </div>
+        <!-- Default Fallback Card -->
+        {{> components/ui/card/category/free/index 
+            isFallback=true
+            name="COMING SOON" 
+            method="Offline" 
+            quota="100"
+        }}
       {{/if}}
 
     </div>
 
   </div>
 </section>
+

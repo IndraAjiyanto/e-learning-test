@@ -10,60 +10,18 @@
       </p>
     </div>
     
-    <!-- Hapus justify-items-center agar grid bisa stretch (tinggi sama rata) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       
       {{#each courses}}
-        <!-- Tambahkan h-full dan hapus height:433px -->
-        <div class="overflow-hidden flex flex-col h-full transition-transform duration-300 hover:-translate-y-2 group w-full mx-auto" style="max-width: 384px; border-radius: 12px; background: linear-gradient(180deg, rgba(240, 240, 240, 0.5) 33.18%, rgba(224, 241, 249, 0.5) 94.72%); backdrop-filter: blur(6.6px); box-shadow: 0px 0px 6px 0px #00000080;">
-          
-          <!-- Thumbnail -->
-          <div class="w-full bg-[#EAF4F9] overflow-hidden relative flex-shrink-0 flex items-center justify-center" style="height: 225px;">
-            {{#if this.image}}
-            <div class="absolute inset-0 w-full h-full">
-              <img src="{{this.image}}" alt="Class Thumbnail" onerror="this.src = 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=800&auto=format&fit=crop'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
-            </div>
-            {{else}}
-            <div class="flex flex-col items-center justify-center text-[#6EB6E5]/70">
-              <i class="fa-solid fa-image text-[40px] mb-2"></i>
-              <span class="text-[13px] font-semibold tracking-wide">No Image Available</span>
-            </div>
-            {{/if}}
-          </div>
-          
-          <div class="p-5 flex flex-col flex-grow">
-            <!-- Tambahkan min-h-[48px] di sini agar porsi judul selalu sama (2 baris) -->
-            <h3 class="text-[16px] md:text-[17px] font-bold text-[#0B1F3B] leading-snug mb-4 uppercase line-clamp-2 min-h-[48px]">{{this.name}}</h3>
-            
-            <div class="flex flex-wrap gap-2 mb-4">
-              <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
-                <i class="fa-solid fa-tags text-[#6EB6E5] text-[12px]"></i>
-                <span>{{#if this.price}}Rp {{this.price}}{{else}}Free{{/if}}</span>
-              </div>
-              <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
-                <i class="fa-regular fa-clock text-[#6EB6E5] text-[12px]"></i>
-                <span>{{#if this.month}}{{this.month}}{{else}}1 Day{{/if}}</span>
-              </div>
-              <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
-                <i class="fa-solid fa-location-dot text-[#6EB6E5] text-[12px]"></i>
-                <span>{{#if this.method}}{{this.method}}{{else}}Offline{{/if}}</span>
-              </div>
-              <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
-                <i class="fa-solid fa-users text-[#6EB6E5] text-[12px]"></i>
-                <span>{{#if this.quota}}{{this.quota}}{{else}}100{{/if}} Students</span>
-              </div>
-            </div>
-            
-            <!-- mt-auto akan selalu menekan tombol ke paling bawah kartu -->
-            <div class="mt-auto pt-4">
-              <a href="/program/{{this.id}}" class="w-full flex items-center justify-center gap-2 bg-[#0B1F3B] hover:bg-[#07162A] text-white py-3 rounded-[8px] font-semibold text-[15px] transition-all duration-300 shadow-sm hover:shadow-md">
-                Detail Program
-                <i class="fa-solid fa-arrow-right text-[13px]"></i>
-              </a>
-            </div>
-          </div>
-          
-        </div>
+        {{> components/ui/card/category/shortclass/index
+            id=this.id
+            image=this.image
+            name=this.name
+            price=this.price
+            month=this.month
+            method=this.method
+            quota=this.quota
+        }}
       {{/each}}
 
       <!-- Placeholder Empty State -->
@@ -80,3 +38,4 @@
     </div>
   </div>
 </section>
+

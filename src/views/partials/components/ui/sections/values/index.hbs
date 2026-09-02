@@ -1,0 +1,215 @@
+<!-- Values Section Container -->
+<div
+  x-transition:enter='transition ease-out duration-300'
+  x-transition:enter-start='opacity-0 transform translate-y-4'
+  x-transition:enter-end='opacity-100 transform translate-y-0'
+>
+  <!-- MOBILE VALUES TAB (< 640px) -->
+  <div class="block sm:hidden w-full relative font-montserrat overflow-hidden">
+    <!-- Header Title & Divider -->
+    {{> components/ui/section_header
+        align="text-left"
+        wrapperClass="mb-6"
+        title=(t 'test.about.value.title')
+        titleClass="font-montserrat font-semibold text-[28px] leading-none text-[#003060]"
+        description=(t 'test.about.value.description')
+        descClass="font-montserrat font-normal text-[15px] leading-[20px] text-[#003060] mt-1.5"
+        showDivider=true
+        dividerClass="w-full h-[2px] bg-[#6EB6E5] mt-3 mb-0"
+    }}
+
+    <!-- Mobile Values Cards List -->
+    <div class="space-y-4">
+      {{#each value}}
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            iconBase="/public/image/about/values/"
+            iconName=this.icon
+            fallbackIcon="/public/image/about/values/adaptability.svg"
+            title=(getByLang title ../lang)
+            description=(getByLang description ../lang)
+        }}
+      {{else}}
+        <!-- Card 1: Adaptability -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/adaptability.svg"
+            title="Adaptability"
+            description="We uphold speed and agility in facing technological trend shifts. We encourage continuous skill improvement to adapt effectively."
+        }}
+
+        <!-- Card 2: Authenticity -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/authenticity.svg"
+            title="Authenticity"
+            description="We highly value the uniqueness of every individual and total transparency. We encourage every member to contribute with their true ideas and character."
+        }}
+
+        <!-- Card 3: Impact -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/impact.svg"
+            title="Impact"
+            description="Every learning process must yield a tangible contribution. We are committed to creating solutions that have a positive and significant impact on our surrounding environment."
+        }}
+
+        <!-- Card 4: Curiosity -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/curiosity.svg"
+            title="Curiosity"
+            description="We position curiosity as the main key to innovation. We motivate unlimited exploration, continuous critical questioning, and the discovery of new frontiers."
+        }}
+
+        <!-- Card 5: Resilience -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/resilience.svg"
+            title="Resilience"
+            description="We see challenges and failures as the best learning opportunities. We build mental toughness and a never-give-up attitude to achieve complex goals."
+        }}
+
+        <!-- Card 6: Balance -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/balance.svg"
+            title="Balance"
+            description="We believe optimal productivity comes from a healthy lifestyle. We promote a balance between intensive work focus and adequate rest."
+        }}
+
+        <!-- Card 7: Ability -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            bgClass="bg-[#E0F1F9]/65"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/ability.svg"
+            title="Ability"
+            description="We are committed to professionally developing the potential, skills, and capabilities of the next generation of digital talent in the IT industry."
+        }}
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- DESKTOP VALUES TAB (>= 640px) -->
+  <div class="hidden sm:block">
+    <!-- Header -->
+    {{> components/ui/section_header
+        align="text-left"
+        wrapperClass="mb-6 sm:mb-8"
+        title=(t 'test.about.value.title')
+        titleClass="text-xl sm:text-2xl md:text-4xl font-semibold text-[#003060] mb-2 font-montserrat"
+        description=(t 'test.about.value.description')
+        descClass="text-lg sm:text-xl md:text-2xl text-[#003060] font-montserrat font-normal tracking-normal"
+        showDivider=false
+    }}
+
+    <!-- Values Grid (2 Columns) -->
+    <div class='grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center md:justify-items-start'>
+      {{#each value}}
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            iconBase="/public/image/about/values/"
+            iconName=this.icon
+            fallbackIcon="/public/image/about/values/adaptability.svg"
+            title=(getByLang title ../lang)
+            description=(getByLang description ../lang)
+        }}
+      {{else}}
+        <!-- Card 1: Adaptability -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/adaptability.svg"
+            title="Adaptability"
+            description="We uphold speed and agility in facing technological trend shifts. We encourage continuous skill improvement to adapt effectively."
+        }}
+
+        <!-- Card 2: Authenticity -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/authenticity.svg"
+            title="Authenticity"
+            description="We highly value the uniqueness of every individual and total transparency. We encourage every member to contribute with their true ideas and character."
+        }}
+
+        <!-- Card 3: Impact -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/impact.svg"
+            title="Impact"
+            description="Every learning process must yield a tangible contribution. We are committed to creating solutions that have a positive and significant impact on our surrounding environment."
+        }}
+
+        <!-- Card 4: Curiosity -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/curiosity.svg"
+            title="Curiosity"
+            description="We position curiosity as the main key to innovation. We motivate unlimited exploration, continuous critical questioning, and the discovery of new frontiers."
+        }}
+
+        <!-- Card 5: Resilience -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/resilience.svg"
+            title="Resilience"
+            description="We see challenges and failures as the best learning opportunities. We build mental toughness and a never-give-up attitude to achieve complex goals."
+        }}
+
+        <!-- Card 6: Balance -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/balance.svg"
+            title="Balance"
+            description="We believe optimal productivity comes from a healthy lifestyle. We promote a balance between intensive work focus and adequate rest."
+        }}
+
+        <!-- Card 7: Ability -->
+        {{> components/ui/card/card_value/index 
+            desktopAlign="left"
+            wrapperClass="max-w-[530px] lg:min-h-[280px]"
+            bgClass="bg-[#E0F1F9]/50"
+            iconBgClass="bg-[#003060] text-white"
+            icon="/public/image/about/values/ability.svg"
+            title="Ability"
+            description="We are committed to professionally developing the potential, skills, and capabilities of the next generation of digital talent in the IT industry."
+        }}
+      {{/each}}
+    </div>
+  </div>
+</div>

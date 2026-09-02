@@ -2,17 +2,13 @@
     <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
 
         <!-- Heading -->
-        <div class="mx-auto max-w-[904px] text-center">
-            <h1 class="mb-8 text-[36px] font-bold text-[#003060] sm:text-4xl">
-                Skema Komisi dan Insentif
-            </h1>
-
-            <p class="font-sans text-[20px] leading-8 text-gray-900">
-                Skema berikut merupakan contoh kerangka tingkatan mitra.
-                Nominal komisi perlu disesuaikan dengan struktur margin dan
-                kebijakan bisnis internal sebelum diimplementasikan.
-            </p>
-        </div>
+        {{> components/ui/section_header
+            wrapperClass="mx-auto max-w-[904px] text-center"
+            title="Skema Komisi dan Insentif"
+            titleClass="mb-8 text-[36px] font-bold text-[#003060] sm:text-4xl"
+            description="Skema berikut merupakan contoh kerangka tingkatan mitra. Nominal komisi perlu disesuaikan dengan struktur margin dan kebijakan bisnis internal sebelum diimplementasikan."
+            descClass="font-sans text-[20px] leading-8 text-gray-900"
+        }}
 
         <!-- Table -->
         <div class="mx-auto mt-12 flex h-[481px] overflow-hidden rounded-xl border border-gray-300 shadow-lg">

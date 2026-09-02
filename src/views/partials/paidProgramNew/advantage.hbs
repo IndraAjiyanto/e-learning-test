@@ -24,44 +24,16 @@
       <!-- 4 Advantage List Items Mobile -->
       <div class="space-y-4 w-full">
         <!-- Item 1 -->
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-            <img src="/public/image/paidProgram/Vector-1.svg" alt="Affordable Investment" class="w-4 h-4 object-contain" />
-          </div>
-          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
-            More affordable investment compared to similar training programs.
-          </p>
-        </div>
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Vector-1.svg" text=(t 'test.categoryPaidProgram.advantage.point1') isMobile=true}}
 
         <!-- Item 2 -->
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-            <img src="/public/image/paidProgram/Group-1.svg" alt="Expert Mentors" class="w-4 h-4 object-contain" />
-          </div>
-          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
-            Guided by experienced industry professionals and expert mentors.
-          </p>
-        </div>
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group-1.svg" text=(t 'test.categoryPaidProgram.advantage.point2') isMobile=true}}
 
         <!-- Item 3 -->
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-            <img src="/public/image/paidProgram/Group.svg" alt="Industry Projects" class="w-4 h-4 object-contain" />
-          </div>
-          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
-            Training is built around real-world, industry-based capstone projects.
-          </p>
-        </div>
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group.svg" text=(t 'test.categoryPaidProgram.advantage.point3') isMobile=true}}
 
         <!-- Item 4 -->
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-            <img src="/public/image/icons/paid_program/benefit/industry.svg" alt="Portfolio" class="w-4 h-4 object-contain" />
-          </div>
-          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
-            Graduate with a portfolio that meets current industry expectations.
-          </p>
-        </div>
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/icons/paid_program/benefit/industry.svg" text=(t 'test.categoryPaidProgram.advantage.point4') isMobile=true}}
       </div>
 
     </div>
@@ -99,59 +71,16 @@
           <div class="space-y-6 sm:space-y-7 max-w-4xl">
             
             <!-- Item 1 -->
-            <div class="flex items-center gap-4 sm:gap-5">
-              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-                <img src="/public/image/paidProgram/Vector-1.svg" alt="Affordable Investment" class="w-5 h-5 object-contain" />
-              </div>
-              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-                More affordable investment compared to similar training programs.
-              </p>
-            </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-               {{t 'test.categoryPaidProgram.advantage.point1'}}
-            </p>
-          </div>
-
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Vector-1.svg" text=(t 'test.categoryPaidProgram.advantage.point1') isMobile=false}}
+            
             <!-- Item 2 -->
-            <div class="flex items-center gap-4 sm:gap-5">
-              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-                <img src="/public/image/paidProgram/Group-1.svg" alt="Expert Mentors" class="w-5 h-5 object-contain" />
-              </div>
-              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-                Guided by experienced industry professionals and expert mentors.
-              </p>
-            </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              {{t 'test.categoryPaidProgram.advantage.point2'}}
-            </p>
-          </div>
-
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group-1.svg" text=(t 'test.categoryPaidProgram.advantage.point2') isMobile=false}}
+            
             <!-- Item 3 -->
-            <div class="flex items-center gap-4 sm:gap-5">
-              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-                <img src="/public/image/paidProgram/Group.svg" alt="Industry Projects" class="w-5 h-5 object-contain" />
-              </div>
-              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-                Training is built around real-world, industry-based capstone projects.
-              </p>
-            </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              {{t 'test.categoryPaidProgram.advantage.point3'}}
-            </p>
-          </div>
-
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group.svg" text=(t 'test.categoryPaidProgram.advantage.point3') isMobile=false}}
+            
             <!-- Item 4 -->
-            <div class="flex items-center gap-4 sm:gap-5">
-              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-                <img src="/public/image/icons/paid_program/benefit/industry.svg" alt="Portfolio" class="w-5 h-5 object-contain" />
-              </div>
-              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-                Graduate with a portfolio that meets current industry expectations.
-              </p>
-            </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              {{t 'test.categoryPaidProgram.advantage.point4'}}
-            </p>
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/icons/paid_program/benefit/industry.svg" text=(t 'test.categoryPaidProgram.advantage.point4') isMobile=false}}
           </div>
 
         </div>

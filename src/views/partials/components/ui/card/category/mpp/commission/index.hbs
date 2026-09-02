@@ -1,0 +1,34 @@
+{{!-- 
+  Komponen: Commission Table (Private MPP)
+  Lokasi: src/views/partials/components/mpp/commission_table.hbs
+  Dipakai: mpp/skema_komisi.hbs
+  
+  Props:
+  - rows : Array {level, syarat, komisi, benefit}
+--}}
+<div class="w-full overflow-x-auto rounded-xl border border-gray-200">
+  <table class="w-full text-left">
+    <thead class="bg-[#003060] text-white">
+      <tr>
+        <th class="px-4 py-3 text-sm font-bold">TINGKATAN</th>
+        <th class="px-4 py-3 text-sm font-bold">SYARAT</th>
+        <th class="px-4 py-3 text-sm font-bold">KOMISI</th>
+        <th class="px-4 py-3 text-sm font-bold">BENEFIT</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      {{#if rows}}
+        {{#each rows}}
+          <tr>
+            <td class="px-4 py-3 text-sm">{{{level}}}</td>
+            <td class="px-4 py-3 text-sm">{{{syarat}}}</td>
+            <td class="px-4 py-3 text-sm font-bold text-[#003060]">{{{komisi}}}</td>
+            <td class="px-4 py-3 text-sm">{{{benefit}}}</td>
+          </tr>
+        {{/each}}
+      {{else}}
+        {{> @partial-block}}
+      {{/if}}
+    </tbody>
+  </table>
+</div>

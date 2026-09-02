@@ -5,14 +5,15 @@
   Smart Tag: Otomatis render <a> jika prop `href` diisi, <button> jika tidak.
   
   Props:
-  - href        : URL tujuan. Jika diisi → render <a>, jika kosong → render <button>
+  - href        : URL tujuan. Jika diisi -> render <a>, jika kosong -> render <button>
   - text        : Label teks pada tombol
   - icon        : Kelas ikon FontAwesome (contoh: "fas fa-rocket text-2xl")
   - iconSrc     : URL ikon gambar (SVG/PNG). Jika diisi, render <img> bukan <i>
   - iconClass   : Kelas tambahan untuk ikon gambar (contoh: "w-5 h-5 brightness-0 invert")
-  - variant     : primary | secondary | outline (default: primary)
+  - variant     : primary | secondary | outline | white (default: primary)
   - type        : button | submit | reset (hanya untuk <button>, default: button)
   - class       : Kelas tambahan KHUSUS untuk layout/spacing (mt-4, w-full, gap-3, dll)
+  - textClass   : Kelas tambahan untuk styling teks (contoh: "text-[25px] font-medium")
   - onClick     : Standard JavaScript onclick (opsional)
   - xClick      : Alpine.js @click expression (opsional)
   - xDisabled   : Alpine.js :disabled expression (opsional)
@@ -22,6 +23,7 @@
 {{!-- MODE LINK (<a>) --}}
 <a
   href="{{href}}"
+  {{#if target}}target="{{target}}"{{/if}}
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
   class="
@@ -33,7 +35,11 @@
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
       {{else}}
-        bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+        {{#if (eq variant 'white')}}
+          bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+        {{else}}
+          bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+        {{/if}}
       {{/if}}
     {{/if}}
 
@@ -41,7 +47,7 @@
   "
 >
   {{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}
-  <span>{{text}}</span>
+  <span class="{{textClass}}">{{text}}</span>
 </a>
 
 {{else}}
@@ -60,7 +66,11 @@
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
       {{else}}
-        bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+        {{#if (eq variant 'white')}}
+          bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+        {{else}}
+          bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+        {{/if}}
       {{/if}}
     {{/if}}
 
@@ -72,7 +82,7 @@
   "
 >
   {{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}
-  <span>{{text}}</span>
+  <span class="{{textClass}}">{{text}}</span>
   {{#if xDisabled}}
     <span x-show="{{xDisabled}}" class="loading loading-spinner loading-sm ml-2"></span>
   {{/if}}
