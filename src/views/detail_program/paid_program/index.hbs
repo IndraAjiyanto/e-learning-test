@@ -1,12 +1,11 @@
 <div class="bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] min-h-screen pt-32 pb-24 font-montserrat overflow-x-hidden">
   <div class="container mx-auto px-8 lg:px-12 max-w-[1400px]">
-    
-    <!-- Back Button -->
-    <div class="mb-10">
-      <a href="javascript:history.back()" class="inline-flex items-center justify-center w-10 h-10 md:w-[50px] md:h-[50px] rounded-[100px] border-[1px] border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.25)] bg-transparent text-[#0B1F3B]">
-        <i class="fas fa-arrow-left text-[14px] md:text-[16px]"></i>
-      </a>
-    </div>
+
+    {{> components/ui/button/back/index
+      href="javascript:history.back()"
+      buttonClass="mb-10"
+      iconClass="size-4"
+    }}
 
     <div class="flex flex-col lg:flex-row gap-12 justify-between">
       
@@ -18,14 +17,22 @@
         </div>
 
         <!-- Title -->
-        <h1 class="text-[40px] font-[600] text-[#000000] leading-none mb-4 lg:mb-6">
-          {{course.name}}
-        </h1>
+        {{> components/ui/text/sub_title/index
+          text=course.name
+          align="left"
+          size="lg"
+          color="text-[#000000]"
+          class="mb-4 lg:mb-6"
+        }}
 
         <!-- Description -->
-        <p class="text-[#000000] font-['Open_Sans'] font-[400] text-[25px] leading-[50px] text-justify mb-8 lg:mb-0">
-          {{getByLang course.description lang}}
-        </p>
+        {{> components/ui/text/description/index
+          text=(getByLang course.description lang)
+          align="left"
+          size="lg"
+          color="text-[#000000]"
+          class="leading-[50px] mb-8 lg:mb-0"
+        }}
       </div>
 
       <!-- Right Content (Card) -->
@@ -72,10 +79,12 @@
             <p class="text-[#D32F2F] font-bold text-[17px]">{{t 'test.paidProgram.header.registrationTime'}} {{formatDate course.date_registration lang}}</p>
           </div>
 
-          <!-- Button -->
-          <a href="/payment/registration/{{course.id}}" class="btn bg-[#003060] hover:bg-[#002244] w-full text-white text-lg h-14 rounded-lg shadow-md border-none flex items-center justify-center">
-            {{t 'test.paidProgram.header.registrationNow'}}
-          </a>
+          {{> components/ui/btn_action
+            href="/payment/registration/{{course.id}}"
+            text=(t 'test.paidProgram.header.registrationNow')
+            variant="primary"
+            class="py-3"
+          }}
         </div>
       </div>
     </div>
@@ -86,32 +95,7 @@
 {{> paid_program/nav_menu }}
 
 <!-- PARTICIPANTS SECTION -->
-<section id="participants" class="bg-[#FAFAFA] py-20 font-montserrat">
-  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
-    
-    <!-- Title Pill -->
-    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      {{t 'test.paidProgram.title.participants'}}
-    </div>
-
-    <!-- Cards Grid (2x2) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 w-full max-w-[1000px]">
-      
-      {{#each course.participants}}
-      <div class="bg-white border border-[#E0E0E0] rounded-[16px] p-8 flex gap-6 hover:shadow-lg transition-shadow duration-300">
-        <div class="text-[#0F0F0F] text-[32px] mt-1">
-          <i class="fas {{this.icon}}"></i>
-        </div>
-        <div>
-           <h3 class="text-[#0F0F0F] font-[700] text-[17px] mb-2">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#545454] text-[14px] leading-[1.6]">{{getByLang this.description ../lang}}</p>
-        </div>
-      </div>
-      {{/each}}
-
-    </div>
-  </div>
-</section>
+{{> components/ui/sections/participants/index}}
 
 <!-- WHAT YOU'LL LEARN SECTION -->
 <section id="what-you-will-learn" class="bg-[#FAFAFA] py-20 font-montserrat overflow-x-hidden">
@@ -340,7 +324,7 @@
 {{> paid_program/schedule_fees }}
 
 <!-- GALLERY SECTION -->
-{{> paid_program/gallery }}
+{{> components/ui/sections/gallery/index}}
 
 <!-- FAQ SECTION -->
 {{> paid_program/faq }}
