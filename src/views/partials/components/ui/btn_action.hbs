@@ -17,6 +17,15 @@
   - onClick     : Standard JavaScript onclick (opsional)
   - xClick      : Alpine.js @click expression (opsional)
   - xDisabled   : Alpine.js :disabled expression (opsional)
+  - saving      : Alpine.js expression boolean untuk toggle label saat proses submit (opsional).
+                   Jika diisi, `text` otomatis ditampilkan via x-show="!(saving)" dan `savingLabel`
+                   via x-show="(saving)". Cocok dipasangkan dengan xDisabled agar tombol
+                   ter-disable saat proses berjalan.
+  - savingLabel : Label pengganti saat `saving` bernilai true (default: "Saving...")
+  - enabledClass : Class background/text saat xDisabled bernilai false (opsional, hanya <button>).
+                    Wajib dipasangkan dengan `disabledClass` & `xDisabled` — jika salah satu
+                    kosong, warna tetap mengikuti `variant` seperti biasa.
+  - disabledClass: Class background/text saat xDisabled bernilai true (opsional, hanya <button>).
 --}}
 
 {{#if href}}
@@ -57,22 +66,25 @@
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
   {{#if xDisabled}}:disabled="{{xDisabled}}"{{/if}}
+  {{#if enabledClass}}{{#if disabledClass}}:class="({{xDisabled}}) ? '{{disabledClass}}' : '{{enabledClass}}'"{{/if}}{{/if}}
   class="
     inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
 
-    {{#if (eq variant 'secondary')}}
-      bg-gray-200 text-gray-800 hover:bg-gray-300
-    {{else}}
-      {{#if (eq variant 'outline')}}
-        bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
+    {{#unless enabledClass}}
+      {{#if (eq variant 'secondary')}}
+        bg-gray-200 text-gray-800 hover:bg-gray-300
       {{else}}
-        {{#if (eq variant 'white')}}
-          bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+        {{#if (eq variant 'outline')}}
+          bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
         {{else}}
-          bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+          {{#if (eq variant 'white')}}
+            bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+          {{else}}
+            bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+          {{/if}}
         {{/if}}
       {{/if}}
-    {{/if}}
+    {{/unless}}
 
     {{#if xDisabled}}
       {{xDisabled}} ? 'opacity-50 cursor-not-allowed' : ''
@@ -82,9 +94,14 @@
   "
 >
   {{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}
-  <span class="{{textClass}}">{{text}}</span>
-  {{#if xDisabled}}
-    <span x-show="{{xDisabled}}" class="loading loading-spinner loading-sm ml-2"></span>
+  {{#if saving}}
+    <span class="{{textClass}}" x-show="!({{saving}})">{{text}}</span>
+    <span class="{{textClass}}" x-show="({{saving}})" x-cloak>{{default savingLabel 'Saving...'}}</span>
+  {{else}}
+    <span class="{{textClass}}">{{text}}</span>
+  {{/if}}
+  {{#if saving}}
+    <span x-show="({{saving}})" x-cloak class="loading loading-spinner loading-sm ml-2"></span>
   {{/if}}
 </button>
 {{/if}}
