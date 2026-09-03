@@ -1,0 +1,36 @@
+{{!--
+  Komponen: Editable Field (Input teks/tel dengan mode klik-untuk-edit)
+  Lokasi: src/views/partials/components/ui/input/editable_field/index.hbs
+  Level: L1 Atomik
+
+  Butuh Alpine x-data induk yang menyediakan:
+  - editingField (string|null)
+  - startEditing(field)
+  - checkChanges()
+
+  Props:
+  - label       : string (wajib) — teks label di atas input
+  - model       : string (wajib) — target x-model, contoh "username" atau "currentValues.fullName"
+  - editingKey  : string (wajib) — key dibandingkan ke `editingField`, contoh "username"
+  - type        : string (opsional, default "text") — tipe input HTML, mis. "text" | "tel"
+  - placeholder : string (opsional)
+  - required    : boolean (opsional, default false) — tampilkan tanda * & atribut required
+  - wrapperClass: string (opsional) — class tambahan pembungkus
+--}}
+
+<div class="{{wrapperClass}}">
+  <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+    {{label}}{{#if required}}<span class="text-red-500">*</span>{{/if}}
+  </label>
+  <input
+    type="{{default type 'text'}}"
+    {{#if required}}required{{/if}}
+    x-model="{{model}}"
+    :readonly="editingField !== '{{editingKey}}'"
+    @click="startEditing('{{editingKey}}')"
+    @blur="checkChanges()"
+    :class="editingField === '{{editingKey}}' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+    class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
+    placeholder="{{default placeholder ''}}"
+  >
+</div>

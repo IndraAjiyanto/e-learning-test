@@ -1,0 +1,140 @@
+{{!--
+  Komponen: Preview Photo Modal (preview foto profil sebelum disimpan)
+  Lokasi: src/views/partials/components/ui/modal/preview_photo/index.hbs
+  Level: L1 Atomik
+
+  Kontrak Alpine yang wajib disediakan x-data induk (lihat pola `profilePictureCrop()`
+  di src/views/partials/user/sidebar_user_profile/profile/index.hbs):
+  - open (boolean)
+  - validationError (string)
+  - previewUrl (string)
+  - imageInfo (string)
+  - croppedBlob (Blob|null)
+  - fileName (string)
+  - closeModal()
+  - $refs.fileInput, $refs.profileForm (form upload tersembunyi)
+
+  Props:
+  - title        : string (opsional, default "Preview Profile Photo")
+  - invalidTitle : string (opsional, default "Invalid Image")
+  - cancelLabel  : string (opsional, default "Cancel")
+  - saveLabel    : string (opsional, default "Save Changes")
+  - saveBtnClass : string (opsional, default "bg-[#003060]") — warna tombol simpan
+  - showLoading  : boolean (opsional, default false) — tampilkan state loading terpisah
+                   (x-data lokal {loading:false}) & spinner saat submit
+  - wrapperClass : string (opsional) — class tambahan pembungkus overlay
+--}}
+
+<div
+  x-show="open"
+  x-cloak
+  class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 {{wrapperClass}}"
+  x-transition
+  @click.self="closeModal()"
+>
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+    <button
+      @click="closeModal()"
+      class="absolute top-4 right-4 text-slate-600 hover:text-slate-900 text-2xl w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-all duration-300"
+    >
+      &times;
+    </button>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4 font-montserrat">{{default title 'Preview Profile Photo'}}</h3>
+
+    <!-- Validation Error Alert -->
+    <div
+      x-show="validationError"
+      x-transition
+      class="mb-4 p-4 rounded-xl bg-red-50 border-2 border-red-300"
+    >
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-exclamation-triangle text-white text-lg"></i>
+        </div>
+        <div class="flex-1">
+          <p class="font-bold text-red-800 text-base mb-1">{{default invalidTitle 'Invalid Image'}}</p>
+          <p class="text-red-700 text-sm" x-text="validationError"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Preview -->
+    <img
+      :src="previewUrl"
+      alt="Preview Profile"
+      class="rounded-xl w-full object-contain max-h-[60vh] border border-slate-200"
+    />
+
+    <!-- Image Info -->
+    <div
+      x-show="imageInfo"
+      class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200"
+    >
+      <div class="flex items-center justify-between text-sm">
+        <div>
+          <i class="fas fa-image text-slate-600 mr-2"></i>
+          <span class="text-slate-700 font-medium" x-text="imageInfo"></span>
+        </div>
+      </div>
+    </div>
+
+    {{#if showLoading}}
+      <div class="flex justify-end gap-3 mt-6" x-data="{ loading: false }">
+        <button
+          @click="closeModal()"
+          :disabled="loading"
+          :class="loading ? 'bg-slate-100 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'"
+          class="px-6 py-3 rounded-xl border-2 border-slate-300 transition-all duration-300 font-semibold"
+        >
+          {{default cancelLabel 'Cancel'}}
+        </button>
+
+        <button
+          @click="
+            if (croppedBlob) {
+              const file = new File([croppedBlob], fileName || 'profile.jpg', { type: 'image/jpeg' });
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              $refs.fileInput.files = dataTransfer.files;
+            }
+            $refs.profileForm.submit();
+            loading = true;
+          "
+          :disabled="validationError !== '' || loading"
+          :class="validationError !== '' || loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'"
+          class="px-6 py-3 rounded-xl {{default saveBtnClass 'bg-[#003060]'}} text-white shadow-lg transition-all duration-300 font-semibold"
+        >
+          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+          <span x-show="!loading">{{default saveLabel 'Save Changes'}}</span>
+        </button>
+      </div>
+    {{else}}
+      <div class="flex justify-end gap-3 mt-6">
+        <button
+          @click="closeModal()"
+          class="px-6 py-3 rounded-xl border-2 border-slate-300 hover:bg-slate-50 text-slate-700 transition-all duration-300 font-semibold"
+        >
+          {{default cancelLabel 'Cancel'}}
+        </button>
+
+        <button
+          @click="
+            if (croppedBlob) {
+              const file = new File([croppedBlob], fileName || 'profile.jpg', { type: 'image/jpeg' });
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              $refs.fileInput.files = dataTransfer.files;
+            }
+            $refs.profileForm.submit();
+          "
+          :disabled="validationError !== ''"
+          :class="validationError !== '' ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'"
+          class="px-6 py-3 rounded-xl {{default saveBtnClass 'bg-[#003060]'}} text-white shadow-lg transition-all duration-300 font-semibold"
+        >
+          {{default saveLabel 'Save Changes'}}
+        </button>
+      </div>
+    {{/if}}
+  </div>
+</div>

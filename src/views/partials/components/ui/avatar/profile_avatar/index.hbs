@@ -1,0 +1,76 @@
+{{!--
+  Komponen: Profile Avatar
+  Lokasi: src/views/partials/components/ui/avatar/profile_avatar/index.hbs
+  Level: L1 Atomik
+
+  Catatan: harus dirender di dalam scope Alpine yang punya method upload/crop foto
+  (`previewUrl`, `handleFileUpload($event)`, `$refs.fileInput`, `$refs.profileForm`) —
+  contoh: `profilePictureCrop()` / `profilePreview()`.
+
+  Props:
+  - user            : object (wajib, butuh user.id, user.username, user.profile)
+  - sizeClass       : string (default "w-[100px] h-[100px]")
+  - bgClass         : string (default "bg-[#003060]") — warna background fallback inisial
+  - borderClass     : string (default "") — border lingkaran avatar, contoh "border-4 border-slate-200"
+  - textSizeClass   : string (default "text-[20px]") — ukuran teks inisial
+  - initialsLength  : number (default 2) — jumlah huruf inisial fallback
+  - inputId         : string (wajib) — id unik untuk <input type="file">, hindari bentrok bila avatar dipakai >1 di 1 halaman
+  - editIconSrc     : string (opsional) — path svg/img tombol edit; jika kosong pakai inline pencil SVG
+  - editBtnClass    : string (default "absolute bottom-0 -right-5 w-[35px] h-[35px] flex items-center justify-center transition-opacity hover:opacity-80 cursor-pointer")
+  - wrapperExtraClass : string (default "") — class tambahan di luar ukuran, contoh "mb-12"
+  - formAction      : string (default "/users/update/profile/{{user.id}}?_method=PATCH")
+--}}
+
+<div class="relative {{default sizeClass 'w-[100px] h-[100px]'}} {{wrapperExtraClass}}">
+  <div class="w-full h-full rounded-full {{borderClass}} {{default bgClass 'bg-[#003060]'}} text-white flex items-center justify-center shadow-md overflow-hidden">
+    <template x-if="previewUrl">
+      <img :src="previewUrl" alt="Profile" class="w-full h-full object-cover rounded-full">
+    </template>
+    <template x-if="!previewUrl">
+      {{#if user.profile}}
+        <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
+      {{else}}
+        <span class="font-montserrat font-medium {{default textSizeClass 'text-[20px]'}} leading-none">{{substring user.username 0 (default initialsLength 2)}}</span>
+      {{/if}}
+    </template>
+  </div>
+
+  <label
+    for="{{inputId}}"
+    class="{{default editBtnClass 'absolute bottom-0 -right-8 w-[36px] h-[36px] flex items-center justify-center transition-opacity hover:opacity-80 cursor-pointer'}}"
+    aria-label="Edit Profile Picture"
+  >
+    {{#if editIconSrc}}
+      <img src="{{editIconSrc}}" alt="Edit" class="w-[36px] h-[36px] object-contain">
+    {{else}}
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586
+             a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15
+             m-4 0h4m-4 0v4m0-4H5m4 0v-4"
+        />
+      </svg>
+    {{/if}}
+  </label>
+
+  <form
+    x-ref="profileForm"
+    action="{{default formAction (concat '/users/update/profile/' user.id '?_method=PATCH')}}"
+    method="post"
+    enctype="multipart/form-data"
+    class="hidden"
+  >
+    <input
+      id="{{inputId}}"
+      type="file"
+      name="profile"
+      accept="image/jpeg,image/jpg,image/png"
+      class="hidden"
+      x-ref="fileInput"
+      @change="handleFileUpload($event)"
+    >
+  </form>
+</div>
