@@ -8,13 +8,18 @@
   <div>
     <!-- Header Block (h1 to p spacing: 15px, header to avatar spacing: 64px) -->
     {{> components/ui/section_header
-      wrapperClass="mb-12"
       align="text-left"
       titleTag="h1"
       title=(concat "Welcome, " user.username)
       titleClass="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]"
-      description="Below is your profile information."
-      descClass="font-montserrat font-normal text-base sm:text-lg md:text-[20px] text-[#003060] leading-none"
+    }}
+    {{> components/ui/text/description/index
+      text="Below is your profile information."
+      tag="p"
+      align="left"
+      color="text-[#003060]"
+      size="md"
+      class="!font-montserrat sm:!text-lg md:!text-[20px] !leading-none mb-12"
     }}
 
     <!-- Avatar Section (avatar to form spacing: 55px) -->
@@ -110,13 +115,18 @@
   <div>
     <!-- Header Block -->
     {{> components/ui/section_header
-      wrapperClass="mb-12"
       align="text-left"
       titleTag="h2"
       title="Your Biodata"
       titleClass="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]"
-      description="Below is your profile information."
-      descClass="font-montserrat font-normal text-[20px] text-[#003060] leading-none"
+    }}
+    {{> components/ui/text/description/index
+      text="Below is your profile information."
+      tag="p"
+      align="left"
+      color="text-[#003060]"
+      size="md"
+      class="!font-montserrat !text-[20px] !leading-none mb-12"
     }}
 
     <!-- Biodata Form -->
