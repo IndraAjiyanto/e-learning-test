@@ -124,7 +124,7 @@
         <div 
           id="overviewDetail"
           class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed space-y-2"
-          x-html="selectedPortfolio && selectedPortfolio.overview ? renderOverview(selectedPortfolio.overview) : 'disini isinya adalah project overview'"
+          x-html="renderOverview(selectedPortfolio ? selectedPortfolio.overview : '') || '<p class=\'italic text-[#999999]\'>No project overview provided yet.</p>'"
         ></div>
       </div>
 
@@ -228,6 +228,130 @@
       >
         View Portofolio
       </a>
+
+      <!-- Share To Social Media Card -->
+      <div 
+        class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-4 font-montserrat"
+        x-data="{
+          copied: false,
+          shareUrl() {
+            // Bagikan halaman portofolio publik di situs ini (GET /dashboard/portfolio/:id),
+            // bukan selectedPortfolio.link yang merupakan URL project milik student.
+            if (selectedPortfolio && selectedPortfolio.id) {
+              return window.location.origin + '/dashboard/portfolio/' + selectedPortfolio.id;
+            }
+            return window.location.href;
+          },
+          shareText() {
+            const title = selectedPortfolio ? selectedPortfolio.title : 'Portofolio';
+            const author = selectedPortfolio ? selectedPortfolio.author : '';
+            return author ? title + ' by ' + author : title;
+          },
+          openShare(target) {
+            const u = encodeURIComponent(this.shareUrl());
+            const t = encodeURIComponent(this.shareText());
+            const urls = {
+              whatsapp: 'https://api.whatsapp.com/send?text=' + t + '%20' + u,
+              linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + u,
+              facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + u,
+              twitter: 'https://twitter.com/intent/tweet?url=' + u + '&text=' + t,
+              telegram: 'https://t.me/share/url?url=' + u + '&text=' + t
+            };
+            window.open(urls[target], '_blank', 'noopener,noreferrer,width=600,height=600');
+          },
+          async copyLink() {
+            const url = this.shareUrl();
+            try {
+              await navigator.clipboard.writeText(url);
+            } catch (e) {
+              const ta = document.createElement('textarea');
+              ta.value = url;
+              ta.style.position = 'fixed';
+              ta.style.opacity = '0';
+              document.body.appendChild(ta);
+              ta.select();
+              try { document.execCommand('copy'); } catch (err) {}
+              document.body.removeChild(ta);
+            }
+            this.copied = true;
+            setTimeout(() => { this.copied = false; }, 2000);
+          }
+        }"
+      >
+        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+          Share This Portofolio
+        </h3>
+        <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666] leading-relaxed">
+          Share this project to your social media so more people can see it.
+        </p>
+
+        <!-- Social Media Buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+          <button 
+            type="button"
+            @click="openShare('whatsapp')"
+            aria-label="Share to WhatsApp"
+            title="WhatsApp"
+            class="w-11 h-11 rounded-full bg-[#25D366] hover:bg-[#1da851] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+          >
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+          </button>
+          <button 
+            type="button"
+            @click="openShare('linkedin')"
+            aria-label="Share to LinkedIn"
+            title="LinkedIn"
+            class="w-11 h-11 rounded-full bg-[#0A66C2] hover:bg-[#084d94] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+          >
+            <i class="fa-brands fa-linkedin-in text-lg"></i>
+          </button>
+          <button 
+            type="button"
+            @click="openShare('facebook')"
+            aria-label="Share to Facebook"
+            title="Facebook"
+            class="w-11 h-11 rounded-full bg-[#1877F2] hover:bg-[#0f5bc4] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+          >
+            <i class="fa-brands fa-facebook-f text-lg"></i>
+          </button>
+          <button 
+            type="button"
+            @click="openShare('twitter')"
+            aria-label="Share to X"
+            title="X (Twitter)"
+            class="w-11 h-11 rounded-full bg-black hover:bg-[#1f1f1f] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+          >
+            <i class="fa-brands fa-x-twitter text-lg"></i>
+          </button>
+          <button 
+            type="button"
+            @click="openShare('telegram')"
+            aria-label="Share to Telegram"
+            title="Telegram"
+            class="w-11 h-11 rounded-full bg-[#229ED9] hover:bg-[#1b7fae] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+          >
+            <i class="fa-brands fa-telegram text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Copy Link -->
+        <div class="flex items-center gap-2 pt-1">
+          <input 
+            type="text" 
+            readonly
+            :value="shareUrl()"
+            class="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 bg-[#FAFAFA] font-montserrat font-normal text-xs sm:text-sm text-[#666666] truncate focus:outline-none"
+          >
+          <button 
+            type="button"
+            @click="copyLink()"
+            class="h-[42px] px-4 rounded-[8px] bg-[#CFE6F5] hover:bg-[#b9dcf0] text-[#003060] font-montserrat font-medium text-xs sm:text-sm flex items-center justify-center gap-2 flex-shrink-0 transition-all active:scale-95 cursor-pointer"
+          >
+            <i class="fa-solid text-sm" :class="copied ? 'fa-check' : 'fa-link'"></i>
+            <span x-text="copied ? 'Copied!' : 'Copy'">Copy</span>
+          </button>
+        </div>
+      </div>
 
     </div>
 
