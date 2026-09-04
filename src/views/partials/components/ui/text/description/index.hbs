@@ -4,21 +4,14 @@
 
   Menampilkan paragraf deskripsi dengan styling konsisten & responsif.
 
-  Props:
-  - text      : Teks deskripsi (wajib)
-  - align     : Posisi teks: left | center | right (default: center)
-  - size      : Ukuran: xs | sm | md | lg (default: sm)
-  - color     : Warna teks (default: "text-[#2D2D2D]")
-  - class     : Kelas tambahan untuk layout/spacing (default: "")
-  - tag       : Elemen HTML: p | span | div (default: p)
+  Props (semua support shorthand & raw value):
+  - text   : Teks deskripsi (wajib)
+  - align  : left | center | right | justify (default: center)
+  - size   : xs | sm | md | lg | xl | 2xl | 3xl | 4xl (default: sm)
+  - color  : primary | secondary | dark | muted | gray | white (default: muted)
+  - font   : sans | montserrat | inter | opensans (default: sans)
+  - class  : Kelas tambahan untuk layout/spacing (default: "")
+  - tag    : Elemen HTML: p | span | div (default: p)
 --}}
 
-{{#if (eq size 'xs')}}
-  <{{default tag 'p'}} class="text-xs {{default color 'text-[#2D2D2D]'}} text-{{default align 'center'}} font-sans {{class}}">{{text}}</{{default tag 'p'}}>
-{{else if (eq size 'md')}}
-  <{{default tag 'p'}} class="text-base {{default color 'text-[#2D2D2D]'}} text-{{default align 'center'}} font-sans {{class}}">{{text}}</{{default tag 'p'}}>
-{{else if (eq size 'lg')}}
-  <{{default tag 'p'}} class="text-lg {{default color 'text-[#2D2D2D]'}} text-{{default align 'center'}} font-sans {{class}}">{{text}}</{{default tag 'p'}}>
-{{else}}
-  <{{default tag 'p'}} class="text-xs sm:text-sm {{default color 'text-[#2D2D2D]'}} text-{{default align 'center'}} font-sans {{class}}">{{text}}</{{default tag 'p'}}>
-{{/if}}
+<{{default tag 'p'}} class="{{sizeClass size}} {{colorClass (default color 'muted')}} {{alignClass (default align 'center')}} {{fontClass (default font 'sans')}} {{class}}">{{text}}</{{default tag 'p'}}>

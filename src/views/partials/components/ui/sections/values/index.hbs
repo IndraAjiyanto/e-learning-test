@@ -7,7 +7,7 @@
   <!-- MOBILE VALUES TAB (< 640px) -->
   <div class="block sm:hidden w-full relative font-montserrat overflow-hidden">
     <!-- Header Title & Divider -->
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
         align="text-left"
         wrapperClass="mb-6"
         title=(t 'test.about.value.title')
@@ -108,7 +108,7 @@
   <!-- DESKTOP VALUES TAB (>= 640px) -->
   <div class="hidden sm:block">
     <!-- Header -->
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
         align="text-left"
         wrapperClass="mb-6 sm:mb-8"
         title=(t 'test.about.value.title')

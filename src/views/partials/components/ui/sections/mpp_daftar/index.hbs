@@ -1,0 +1,30 @@
+{{!-- 
+  Section: MPP Daftar CTA
+  Lokasi: src/views/partials/components/ui/sections/mpp_daftar/index.hbs
+  Level: L2 Section
+  Komponen L1: text/section_header, button/btn_action
+--}}
+<section class="mt-20 mb-20 w-full overflow-hidden bg-[#DEECF6] py-16 lg:py-24">
+    <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
+
+        <div class="flex flex-col items-center text-center">
+            {{> components/ui/text/section_header/index
+                wrapperClass="max-w-[1027px]"
+                title="Nggak Cuma Belajar, Tapi Bisa Cuan Juga! 💰"
+                titleClass="font-sans text-[25px] font-bold leading-9 text-[#003060]"
+                description="Promosiin program, bantu orang berkembang, dan nikmatin komisi dari setiap referral yang berhasil."
+                descClass="mt-3 font-sans text-[20px] leading-8 text-gray-900 sm:text-[25px]"
+            }}
+            <div class="mt-8">
+                {{> components/ui/button/btn_action/index
+                    href="#"
+                    text="Daftar Sekarang"
+                    variant="primary"
+                    textClass="text-xl"
+                    class="h-[85px] w-[370px] rounded-xl sm:h-[75px] sm:w-[370px]"
+                }}
+            </div>
+        </div>
+
+    </div>
+</section>

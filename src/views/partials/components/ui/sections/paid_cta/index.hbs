@@ -1,0 +1,92 @@
+<!-- CTA SECTION -->
+<section id="explore-program" class="w-full bg-[#FAFAFA] font-montserrat relative">
+
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-12 px-5 text-center flex flex-col items-center justify-center">
+    
+    <!-- Icon Mobile -->
+    <div class="mb-6 text-[#003060] flex items-center justify-center text-[48px] leading-none">
+      <i class="fa-solid fa-users"></i>
+    </div>
+
+    <!-- Main Headline Mobile -->
+    {{> components/ui/text/sub_title/index
+        text=(concat '1 + ' (t 'test.categoryPaidProgram.cta.title'))
+        tag="h2"
+        size="2xl"
+        color="dark"
+        font="montserrat"
+        fontWeight="font-semibold"
+        align="center"
+        class="mb-12"
+    }}
+
+    <!-- Subtitle Mobile -->
+    {{> components/ui/text/description/index
+        text=(t 'test.categoryPaidProgram.cta.description')
+        size="lg"
+        color="muted"
+        font="sans"
+        align="center"
+        class="mb-12 leading-none"
+    }}
+
+    <!-- CTA Button Mobile -->
+    <div class="w-full max-w-[340px]">
+      {{> components/ui/button/btn_action/index
+          href="#programs"
+          text=(t 'test.categoryPaidProgram.cta.button')
+          icon="fa-solid fa-arrow-up"
+          variant="primary"
+          class="w-full h-[60px] font-montserrat font-semibold text-base"
+          textClass="ml-2"
+      }}
+    </div>
+
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block py-20">
+    <div class="container mx-auto px-6 max-w-6xl text-center flex flex-col items-center justify-center">
+      
+      <!-- Icon Desktop -->
+      <div class="mb-8 text-[#003060] flex items-center justify-center text-[60px] leading-none">
+        <i class="fa-solid fa-users"></i>
+      </div>
+
+      <!-- Main Headline Desktop -->
+      {{> components/ui/text/sub_title/index
+          text=(concat '1 + ' (t 'test.categoryPaidProgram.cta.title'))
+          tag="h2"
+          size="2xl"
+          color="dark"
+          font="montserrat"
+          fontWeight="font-semibold"
+          align="center"
+          class="mb-12"
+      }}
+
+      <!-- Subtitle Desktop -->
+      {{> components/ui/text/description/index
+          text=(t 'test.categoryPaidProgram.cta.description')
+          size="xl"
+          color="muted"
+          font="sans"
+          align="center"
+          class="mb-12 leading-none"
+      }}
+
+      <!-- CTA Button Desktop -->
+      {{> components/ui/button/btn_action/index
+          href="#programs"
+          text="Explore Learning Path"
+          icon="fa-solid fa-arrow-up"
+          variant="primary"
+          class="w-[370px] h-[85px] font-montserrat font-semibold text-2xl"
+          textClass="ml-3"
+      }}
+
+    </div>
+  </div>
+
+</section>

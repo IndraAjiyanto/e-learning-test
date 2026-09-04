@@ -1,0 +1,174 @@
+{{!--
+  Komponen: Free Benefit Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/free_benefit/index.hbs
+  
+  Props:
+  - category        : Object dengan category.name
+  - benefit_category : Array of benefit items dengan title field
+  - lang            : Bahasa aktif
+--}}
+
+<!-- BENEFIT SECTION -->
+<section id="benefit" class="relative w-full bg-[#FAFAFA] font-montserrat overflow-hidden">
+
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden relative z-10 w-full py-12 px-5">
+    <div class="w-full flex flex-col items-center text-center">
+      
+      <!-- Title Mobile -->
+      {{> components/ui/text/sub_title/index
+          text=(concat (t 'test.categoryFreeProgram.benefit.title') ' ' category.name)
+          tag="h2"
+          size="xl"
+          color="primary"
+          font="montserrat"
+          fontWeight="font-semibold"
+          align="center"
+          class="mb-3"
+      }}
+
+      <!-- Subtitle Mobile -->
+      {{> components/ui/text/description/index
+          text=(concat (t 'test.categoryFreeProgram.benefit.description1') ' ' category.name ' ' (t 'test.categoryFreeProgram.benefit.description2'))
+          size="xs"
+          color="muted"
+          font="sans"
+          align="center"
+          class="mb-6"
+      }}
+
+      <!-- Benefit Pills Mobile -->
+      <div 
+        class="flex flex-col items-start gap-4 w-full"
+        x-data="{
+          isVisible: false,
+          init() {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  this.isVisible = true;
+                }
+              });
+            }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+            observer.observe(this.$el);
+          }
+        }"
+      >
+        {{#each benefit_category}}
+          {{> components/ui/card/benefit/index title=(getByLang this.title ../lang)}}
+        {{/each}}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block relative w-full min-h-[1090px] py-16 lg:py-20 justify-center">
+    
+    <!-- Background Image Desktop -->
+    <div 
+      class="absolute inset-0 z-0 w-full h-full min-h-[1090px] bg-cover bg-center md:bg-right bg-no-repeat pointer-events-none opacity-100"
+      style="background-image: url('/public/image/freeProgram/bgBenefit.png');"
+    ></div>
+
+    <!-- Content Container Desktop -->
+    <div class="relative z-10 container mx-auto px-6 lg:px-16 max-w-[1440px]">
+      <div class="w-full lg:w-full flex flex-col items-start text-left">
+        
+        <!-- Title Desktop -->
+        {{> components/ui/text/sub_title/index
+            text=(concat (t 'test.categoryFreeProgram.benefit.title') ' ' category.name)
+            tag="h2"
+            size="4xl"
+            color="primary"
+            font="montserrat"
+            fontWeight="font-semibold"
+            align="left"
+            class="mb-4"
+        }}
+
+        <!-- Subtitle Desktop -->
+        {{> components/ui/text/description/index
+            text=(concat (t 'test.categoryFreeProgram.benefit.description1') ' ' category.name ' ' (t 'test.categoryFreeProgram.benefit.description2'))
+            size="xl"
+            color="muted"
+            font="sans"
+            align="left"
+            class="mb-10 max-w-none lg:whitespace-nowrap"
+        }}
+
+        <!-- Benefit Pills Desktop -->
+        <div 
+          class="flex flex-col items-start gap-10 w-full max-w-2xl"
+          x-data="{
+            isVisible: false,
+            init() {
+              const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                    this.isVisible = true;
+                  }
+                });
+              }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+              observer.observe(this.$el);
+            }
+          }"
+        >
+          {{#if benefit_category.length}}
+            {{#each benefit_category}}
+            <div
+              class="bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-6 py-5 sm:h-[78px] flex items-center justify-start text-[#003060] font-sans font-normal text-lg sm:text-[25px] leading-snug sm:leading-[45px] tracking-normal text-left transition-all duration-700 ease-out"
+              :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-[250px]'"
+              style="transition-delay: 100ms;"
+            >
+              {{getByLang this.title ../lang}}
+            </div>
+            {{/each}}
+          {{else}}
+            <!-- Dummy Benefit 1 -->
+            <div
+              class="w-full bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-6 py-5 sm:h-[78px] flex items-center justify-start text-[#003060] font-sans font-normal text-lg sm:text-[25px] leading-snug sm:leading-[45px] tracking-normal text-left transition-all duration-700 ease-out"
+              :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-[250px]'"
+            >
+              Practical Industry-Relevant Skills & Hands-on Projects
+            </div>
+            <!-- Dummy Benefit 2 -->
+            <div
+              class="w-full bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-6 py-5 sm:h-[78px] flex items-center justify-start text-[#003060] font-sans font-normal text-lg sm:text-[25px] leading-snug sm:leading-[45px] tracking-normal text-left transition-all duration-700 ease-out"
+              :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-[250px]'"
+              style="transition-delay: 100ms;"
+            >
+              Direct Mentorship from Senior Tech Industry Experts
+            </div>
+            <!-- Dummy Benefit 3 -->
+            <div
+              class="w-full bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-6 py-5 sm:h-[78px] flex items-center justify-start text-[#003060] font-sans font-normal text-lg sm:text-[25px] leading-snug sm:leading-[45px] tracking-normal text-left transition-all duration-700 ease-out"
+              :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-[250px]'"
+              style="transition-delay: 200ms;"
+            >
+              Flexible Short Class Schedule & Live Interactive Webinars
+            </div>
+            <!-- Dummy Benefit 4 -->
+            <div
+              class="w-full bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-6 py-5 sm:h-[78px] flex items-center justify-start text-[#003060] font-sans font-normal text-lg sm:text-[25px] leading-snug sm:leading-[45px] tracking-normal text-left transition-all duration-700 ease-out"
+              :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-[250px]'"
+              style="transition-delay: 300ms;"
+            >
+              Official Certificate of Completion for Portfolio Boost
+            </div>
+            <!-- Dummy Benefit 5 -->
+            <div
+              class="w-full bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-6 py-5 sm:h-[78px] flex items-center justify-start text-[#003060] font-sans font-normal text-lg sm:text-[25px] leading-snug sm:leading-[45px] tracking-normal text-left transition-all duration-700 ease-out"
+              :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-[250px]'"
+              style="transition-delay: 400ms;"
+            >
+              Exclusive Access to Learning Community & Career Network
+            </div>
+          {{/if}}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</section>

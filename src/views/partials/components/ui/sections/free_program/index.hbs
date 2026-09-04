@@ -1,0 +1,98 @@
+{{!--
+  Komponen: Free Program Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/free_program/index.hbs
+  
+  Props:
+  - category : Object dengan category.name
+  - courses  : Array of course objects
+  - lang     : Bahasa aktif
+--}}
+
+<!-- FREE PROGRAM LIST SECTION -->
+<section id="programs" class="w-full bg-[#FAFAFA] font-montserrat">
+  
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-12 px-5">
+    
+    <!-- Section Header Mobile -->
+    {{> components/ui/text/section_header/index
+        wrapperClass="mb-8"
+        badge="PROGRAM LIST"
+        badgeClass="px-3 py-[6px] text-[11px] font-semibold bg-[#CFE6F5] text-[#003060] mb-3"
+        title=(concat category.name ' ' (t 'test.categoryFreeProgram.program.title'))
+        titleClass="font-montserrat font-semibold text-[22px] leading-[28px] tracking-normal text-[#0B1F3B] mb-3"
+        description=(concat (t 'test.categoryFreeProgram.program.description1') ' ' category.name ' ' (t 'test.categoryFreeProgram.program.description2'))
+        descClass="font-sans font-normal text-[14px] leading-[22px] tracking-normal text-[#4B5563] max-w-[340px]"
+    }}
+
+    <!-- Course Cards List Mobile -->
+    <div class="flex flex-col gap-5 w-full items-center">
+      
+      {{#if courses.length}}
+        {{#each courses}}
+          {{> components/ui/card/category/free/index 
+              id=this.id 
+              image=this.image 
+              name=this.name 
+              day=this.day 
+              method=this.method 
+              quota=this.quota
+          }}
+        {{/each}}
+      {{else}}
+        <!-- Default Fallback Card -->
+        {{> components/ui/card/category/free/index 
+            isFallback=true
+            name="COMING SOON" 
+            method="Offline" 
+            quota="100"
+        }}
+      {{/if}}
+
+    </div>
+
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block py-20">
+    <div class="w-full px-6 max-w-[1440px] mx-auto">
+      
+      <!-- Section Header Desktop -->
+      {{> components/ui/text/section_header/index
+          wrapperClass="mb-14"
+          title=(concat category.name ' ' (t 'test.categoryFreeProgram.program.title'))
+          titleClass="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl text-[#6EB6E5] leading-none tracking-normal mb-7"
+          description=(concat (t 'test.categoryFreeProgram.program.description1') ' ' category.name ' ' (t 'test.categoryFreeProgram.program.description2'))
+          descClass="font-sans font-normal text-base sm:text-lg lg:text-xl leading-relaxed lg:leading-[45px] tracking-normal text-black/80"
+      }}
+
+      <!-- Course Cards Grid Desktop -->
+      <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-start">
+        
+        {{#if courses.length}}
+          {{#each courses}}
+            {{> components/ui/card/category/free/index 
+                id=this.id 
+                image=(default this.thumbnail this.image)
+                name=this.name 
+                day=this.day 
+                method=this.method 
+                quota=this.quota
+            }}
+          {{/each}}
+        {{else}}
+          <!-- Default Fallback Card -->
+          {{> components/ui/card/category/free/index 
+              isFallback=true
+              name="COMING SOON" 
+              method="Offline" 
+              quota="100"
+          }}
+        {{/if}}
+
+      </div>
+
+    </div>
+  </div>
+
+</section>

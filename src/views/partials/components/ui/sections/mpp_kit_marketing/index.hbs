@@ -1,0 +1,46 @@
+{{!-- 
+  Section: MPP Kit Marketing dan Materi Pendukung
+  Lokasi: src/views/partials/components/ui/sections/mpp_kit_marketing/index.hbs
+  Level: L2 Section
+  Komponen L1: text/section_header, ui/list_item
+--}}
+<section class="w-full bg-white py-16 lg:py-24">
+    <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
+
+        <div class="flex w-full items-stretch gap-16">
+
+            <div class="flex h-[769px] flex-1 flex-col ">
+
+                <!-- Header -->
+                {{> components/ui/text/section_header/index
+                    align="text-left"
+                    wrapperClass="max-w-[613px]"
+                    badge="Kit Marketing dan Materi Pendukung"
+                    badgeClass="mb-2 h-[49px] w-fit rounded-full justify-items-center border border-[#003060] bg-[#6EB6E533] px-4 py-2 text-[20px] text-gray-900"
+                    title="Nggak Jago Desain? <br> Tenang Aja, kita udah siapin:"
+                    titleClass="text-[36px] font-bold mt-12 text-[#003060]"
+                }}
+
+                {{!-- Modular: ui/list_item (mirrored gradient) --}}
+                <div class="max-w-[606px] space-y-12 font-sans mt-12">
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(168.85deg,#FFED00_6.31%,#003060_109%)]" text="Template caption media sosial (Instagram, TikTok, WhatsApp Status) yang dapat  disesuaikan."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(168.85deg,#FFED00_6.31%,#003060_109%)]" text="Poster digital dan banner promosi dalam berbagai ukuran/format."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(168.85deg,#FFED00_6.31%,#003060_109%)]" text="Video pendek (15-30 detik) berisi highlight keunggulan program bootcamp."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(168.85deg,#FFED00_6.31%,#003060_109%)]" text="Skrip percakapan dasar (FAQ singkat) untuk menjawab pertanyaan umum calon  peserta."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(168.85deg,#FFED00_6.31%,#003060_109%)]" text="Panduan visual brand (logo, warna, font) agar konten tetap konsisten dengan  identitas brand."}}
+                </div>
+
+            </div>
+
+            <div class="flex flex-1 items-center">
+                <img
+                    src="/public/image/mpp/kit_marketing.png"
+                    alt="Benefit Marketing Partner"
+                    class="block h-[594px] w-[743.24px] rounded-xl" 
+                >
+            </div>
+
+        </div>
+
+    </div>
+</section>

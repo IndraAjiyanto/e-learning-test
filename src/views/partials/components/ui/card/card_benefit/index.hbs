@@ -1,41 +1,56 @@
 {{!-- 
-  Komponen: Card Benefit (Khusus Halaman Home)
-  Lokasi: src/views/partials/components/home/card_benefit.hbs
+  Komponen: Card Benefit (Responsive)
+  Lokasi: src/views/partials/components/ui/card/card_benefit/index.hbs
   
   Props:
   - icon        : Nama ikon dari data (akan diproses helper computeIcon)
   - title       : Objek judul (multibahasa)
   - description : Objek deskripsi (multibahasa)
   - lang        : Bahasa yang aktif
-  - desktop     : boolean (true untuk styling desktop)
+  
+  Refactored: Menggabungkan mobile + desktop menjadi satu template responsif (sm: breakpoint)
 --}}
 
-{{#if desktop}}
-  <div class="w-[360px] h-[360px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] px-4 py-6 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center border border-white/60">
-    <div class="w-20 h-20 rounded-full bg-[#6EB6E5] flex items-center justify-center mb-6 shadow-sm shrink-0">
-      <i class="{{computeIcon icon}} text-4xl text-[#003060]" aria-hidden="true"></i>
-    </div>
-    <h3 class="font-montserrat font-[600] text-[18px] leading-tight text-[#0B1F3B] mb-4 min-h-[44px] flex items-center justify-center text-center">
-      {{getByLang title lang}}
-    </h3>
-    <div class="w-[45px] h-[5px] bg-[#0B1F3B] rounded-[6px] mb-4 opacity-90 shrink-0"></div>
-    <p class="font-sans font-[400] text-[15px] leading-[35px] text-black/80 text-center min-h-[140px]">
-      {{getByLang description lang}}
-    </p>
+<div class="
+  w-full sm:w-[360px] sm:h-[360px] sm:min-h-[360px]
+  flex flex-col gap-[12px] sm:gap-0
+  overflow-hidden
+  bg-[rgba(224,241,249,0.85)] sm:bg-[#E0F1F9]/50
+  sm:backdrop-blur-[6.6px]
+  rounded-[16px] sm:rounded-[12px]
+  p-[24px] sm:px-4 sm:py-6
+  shadow-[0_4px_12px_rgba(0,0,0,0.06)] sm:shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]
+  border-0 sm:border sm:border-white/60
+  items-start sm:items-center justify-start sm:justify-center
+  text-left sm:text-center
+">
+  <!-- Icon Container -->
+  <div class="w-[48px] h-[48px] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shrink-0
+    bg-[#003060] sm:bg-[#6EB6E5]
+    sm:mb-6 sm:shadow-sm
+  ">
+    <i class="{{computeIcon icon}} text-xl sm:text-4xl text-white sm:text-[#003060]" aria-hidden="true"></i>
   </div>
-{{else}}
-  <div class="w-full bg-[rgba(224,241,249,0.85)] rounded-[16px] p-[24px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex flex-col items-start text-left gap-[12px]">
-    <!-- Icon Container -->
-    <div class="w-[48px] h-[48px] rounded-full bg-[#003060] flex items-center justify-center shrink-0">
-      <i class="{{computeIcon icon}} text-xl text-white" aria-hidden="true"></i>
-    </div>
-    <!-- Card Title -->
-    <h3 class="font-montserrat font-semibold text-[18px] text-[#0B1F3B] leading-tight text-left">
-      {{getByLang title lang}}
-    </h3>
-    <!-- Card Description -->
-    <p class="font-sans font-normal text-[13px] leading-[20px] text-[#2D2D2D] text-left">
-      {{getByLang description lang}}
-    </p>
-  </div>
-{{/if}}
+  <!-- Card Title -->
+  <h3 class="font-montserrat text-[#0B1F3B] leading-tight
+    font-semibold sm:font-[600]
+    text-[18px] sm:text-[18px]
+    text-left sm:text-center sm:min-h-[44px] sm:flex sm:items-center sm:justify-center
+    sm:mb-4
+  ">
+    {{getByLang title lang}}
+  </h3>
+  <!-- Divider - Desktop Only -->
+  <div class="hidden sm:block w-[45px] h-[5px] bg-[#0B1F3B] rounded-[6px] mb-4 opacity-90 shrink-0"></div>
+  <!-- Card Description -->
+  <p class="font-sans
+    font-normal sm:font-[400]
+    text-[13px] sm:text-[15px]
+    leading-[20px] sm:leading-[35px]
+    text-[#2D2D2D] sm:text-black/80
+    text-left sm:text-center
+    sm:min-h-[140px]
+  ">
+    {{getByLang description lang}}
+  </p>
+</div>

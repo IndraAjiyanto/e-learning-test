@@ -1,0 +1,109 @@
+<!-- ADVANTAGE SECTION (CORE KNOWLEDGE FIRST) -->
+<section id="advantage" class="w-full bg-[#FAFAFA] font-montserrat">
+  
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-10 px-5">
+    <!-- Yellow Advantage Card Mobile -->
+    <div class="w-full bg-[#FFFBCB] rounded-[20px] p-5 shadow-xs relative overflow-hidden flex flex-col justify-center gap-6">
+      
+      <!-- Header Mobile -->
+      <div class="flex items-center gap-3">
+        <div class="w-[48px] h-[48px] rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+          <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[28px] h-[28px] object-contain" />
+        </div>
+        {{> components/ui/text/sub_title/index
+            text=(t 'test.categoryPaidProgram.advantage.title')
+            tag="h3"
+            size="xl"
+            color="dark"
+            font="montserrat"
+            fontWeight="font-semibold"
+            align="left"
+            class="leading-none"
+        }}
+      </div>
+
+      <!-- Description Mobile -->
+      {{> components/ui/text/description/index
+          text=(t 'test.categoryPaidProgram.advantage.description')
+          size="sm"
+          color="muted"
+          font="sans"
+          align="left"
+          class="leading-relaxed text-black/85"
+      }}
+
+      <!-- 4 Advantage List Items Mobile -->
+      <div class="space-y-4 w-full">
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Vector-1.svg" text=(t 'test.categoryPaidProgram.advantage.point1') isMobile=true}}
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group-1.svg" text=(t 'test.categoryPaidProgram.advantage.point2') isMobile=true}}
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group.svg" text=(t 'test.categoryPaidProgram.advantage.point3') isMobile=true}}
+        {{> components/ui/card/category/paid/advantage/index icon="/public/image/icons/paid_program/benefit/industry.svg" text=(t 'test.categoryPaidProgram.advantage.point4') isMobile=true}}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block py-16">
+    <div class="container mx-auto px-6 lg:px-12 max-w-[1260px]">
+      
+      <!-- Yellow Advantage Card Desktop -->
+      <div class="w-full bg-[#FFFBCB] rounded-[24px] px-8 py-12 sm:px-14 sm:py-16 lg:px-16 lg:py-16 min-h-[500px] lg:min-h-[669px] shadow-xs relative overflow-hidden flex flex-col justify-center">
+        
+        <!-- Header Desktop -->
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-[65px] h-[65px] rounded-[100px] bg-[#EFF4FE] flex items-center justify-center shrink-0">
+            <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[40px] h-[40px] object-contain" />
+          </div>
+          {{> components/ui/text/sub_title/index
+              text=(t 'test.categoryPaidProgram.advantage.title')
+              tag="h3"
+              size="3xl"
+              color="dark"
+              font="montserrat"
+              fontWeight="font-semibold"
+              align="left"
+              class="leading-none"
+          }}
+        </div>
+
+        <!-- Description Subtitle -->
+        {{> components/ui/text/description/index
+            text=(t 'test.categoryPaidProgram.advantage.description')
+            size="xl"
+            color="muted"
+            font="sans"
+            align="left"
+            class="mb-10 max-w-4xl leading-relaxed lg:leading-[40px] text-black/85"
+        }}
+
+        <!-- Content (Indented to align with Core Knowledge First title) -->
+        <div class="sm:pl-[82px]">
+          
+          <!-- Description Subtitle -->
+          {{> components/ui/text/description/index
+              text=(t 'test.categoryPaidProgram.advantage.description')
+              size="xl"
+              color="muted"
+              font="sans"
+              align="left"
+              class="mb-10 max-w-4xl leading-relaxed lg:leading-[40px] text-black/85"
+          }}
+
+          <!-- 4 Advantage List Items -->
+          <div class="space-y-6 sm:space-y-7 max-w-4xl">
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Vector-1.svg" text=(t 'test.categoryPaidProgram.advantage.point1') isMobile=false}}
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group-1.svg" text=(t 'test.categoryPaidProgram.advantage.point2') isMobile=false}}
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group.svg" text=(t 'test.categoryPaidProgram.advantage.point3') isMobile=false}}
+            {{> components/ui/card/category/paid/advantage/index icon="/public/image/icons/paid_program/benefit/industry.svg" text=(t 'test.categoryPaidProgram.advantage.point4') isMobile=false}}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</section>

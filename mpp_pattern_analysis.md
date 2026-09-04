@@ -70,7 +70,7 @@ Analyzed Handlebars partials in `src/views/partials/mpp/` to identify repeated U
 - background.hbs (simple toggle for extra content)
 **Recommended Component**: `<Accordion items={{ question: string, answer: string }} />` or `<ToggleButton>{label}</ToggleButton>` with collapsible content.
 **Usage Example** (for FAQ):
-```handlebars
+```handlebarsbutton
 <Accordion 
   items={{ 
     question: 'Apakah mitra harus mengikuti training terlebih dahulu?', 
@@ -82,11 +82,11 @@ Analyzed Handlebars partials in `src/views/partials/mpp/` to identify repeated U
 ### 4. Section Header
 **Description**: A reusable component for section headers with optional badge, title, and description.
 **Files Found**:
-- target.hbs (uses `{{> components/ui/section_header }}`)
-- skema_komisi.hbs (uses `{{> components/ui/section_header }}`)
-- hero_section.hbs (uses `{{> components/ui/section_header }}`)
+- target.hbs (uses `{{> components/ui/text/section_header/index }}`)
+- skema_komisi.hbs (uses `{{> components/ui/text/section_header/index }}`)
+- hero_section.hbs (uses `{{> components/ui/text/section_header/index }}`)
 **Note**: This pattern is already partially componentized but could be standardized further.
-**Recommended Component**: Already exists as `components/ui/section_header`; ensure consistent usage and documentation.
+**Recommended Component**: Already exists as `components/ui/text/section_header/index`; ensure consistent usage and documentation.
 
 ### 5. Button Variants
 **Description**: Multiple button styles observed across files.

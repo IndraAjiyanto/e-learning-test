@@ -1,0 +1,36 @@
+<section class="w-full bg-white py-16 lg:py-24">
+    <div class="container mx-auto px-6 lg:px-12 max-w-[1728px]">
+
+        <div class="flex justify-center mb-16">
+            {{> components/ui/text/badge/index text="Program Overview" tag="h2"}}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 text-gray-900 text-center">
+            {{> components/ui/icon/icon_card/index
+                title="Target Mitra"
+                description="Mahasiswa Aktif & Fresh Graduate" 
+                icon="fas fa-users"}}
+
+            {{> components/ui/icon/icon_card/index 
+                title="Durasi Onboarding" 
+                description="1 - 2 Jam<br>(tanpa training panjang)" 
+                icon="far fa-clock"}}
+
+            {{> components/ui/icon/icon_card/index 
+                title="Status Mitra" 
+                description="Freelance, Remote<br>(Fleksibel)" 
+                icon="fas fa-briefcase"}}
+
+            {{> components/ui/icon/icon_card/index 
+                title="Kompensasi" 
+                description="Komisi per closing<br>+ Bonus Berjenjang" 
+                icon="fas fa-coins"}}
+
+            {{> components/ui/icon/icon_card/index 
+                title="Waktu Aktivasi" 
+                description="&lt; 3 hari<br>sejak pendaftaran" 
+                icon="fas fa-bolt"}}
+        </div>
+
+    </div>
+</section>

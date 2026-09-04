@@ -1,0 +1,24 @@
+{{!-- 
+  Komponen: Badge/Chip (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/text/badge/index.hbs
+
+  Menampilkan badge/chip dengan styling konsisten & responsif.
+
+  Props:
+  - text        : Teks badge (wajib)
+  - tag         : Elemen HTML: span | h2 | h3 | div (default: span)
+  - color       : Warna teks (default: primary → "text-[#003060]")
+  - bgColor     : Warna background (default: "bg-[#6EB6E533]")
+  - borderColor : Warna border (default: "border-[#003060]")
+  - size        : Ukuran: sm | md | lg (default: md)
+  - class       : Kelas tambahan (default: "")
+--}}
+
+<{{default tag 'span'}} class="inline-block rounded-full border shadow-sm 
+  {{default bgColor 'bg-[#6EB6E533]'}} 
+  {{default borderColor 'border-[#003060]'}} 
+  {{colorClass (default color 'primary')}}
+  {{#if (eq size 'sm')}}px-4 py-1 text-sm font-medium{{else if (eq size 'lg')}}px-8 py-2.5 text-2xl font-semibold{{else}}px-6 py-2 text-xl font-semibold{{/if}}
+  {{class}}">
+  {{text}}
+</{{default tag 'span'}}>

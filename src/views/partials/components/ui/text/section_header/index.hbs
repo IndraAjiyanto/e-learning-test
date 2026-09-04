@@ -1,0 +1,32 @@
+{{!-- 
+  Komponen: Section Header (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/text/section_header/index.hbs
+--}}
+
+<div class="w-full flex flex-col {{#if (eq align 'text-left')}}items-start{{else if (eq align 'text-right')}}items-end{{else}}items-center{{/if}} {{default align 'text-center'}} {{wrapperClass}}">
+  {{#if badge}}
+    <div class="inline-flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] shadow-sm {{default badgeClass 'px-5 py-2 text-[14px] font-medium font-montserrat mb-4'}}">
+      {{{badge}}}
+    </div>
+  {{/if}}
+
+  {{#if (eq titleTag 'h1')}}
+    <h1 class="leading-tight {{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}">
+      {{#> titleBlock}}{{{title}}}{{/titleBlock}}
+    </h1>
+  {{else}}
+    <h2 class="leading-tight {{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}">
+      {{#> titleBlock}}{{{title}}}{{/titleBlock}}
+    </h2>
+  {{/if}}
+
+  {{#if showDivider}}
+    <div class="w-[68px] h-[5px] rounded-full {{default dividerClass 'bg-[#0B1F3B] mb-4'}}"></div>
+  {{/if}}
+
+  {{#if description}}
+    <p class="leading-relaxed {{default descClass 'font-sans font-normal text-sm text-[#2D2D2D]'}}">
+      {{{description}}}
+    </p>
+  {{/if}}
+</div>

@@ -1,0 +1,47 @@
+{{!-- 
+  Section: MPP Benefit (Insentif Non-Finansial)
+  Lokasi: src/views/partials/components/ui/sections/mpp_benefit/index.hbs
+  Level: L2 Section
+  Komponen L1: text/section_header, ui/list_item
+--}}
+<section class="w-full bg-white py-16 lg:py-24">
+    <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
+
+        <div class="flex w-full items-stretch gap-16">
+
+            <!-- LEFT: Image -->
+            <div class="flex flex-1 items-center">
+                <img
+                    src="/public/image/mpp/benefit.png"
+                    alt="Benefit Marketing Partner"
+                    class="block h-[594px] w-[743.24px]"
+                >
+            </div>
+
+            <!-- RIGHT: Content -->
+            <div class="flex h-[594px] flex-1 flex-col ">
+
+                <!-- Header -->
+                {{> components/ui/text/section_header/index
+                    align="text-left"
+                    wrapperClass=""
+                    badge="Insentif Non-Finansial"
+                    badgeClass="mb-2 h-[49px] w-fit rounded-full justify-items-center border border-[#003060] bg-[#6EB6E533] px-4 py-2 text-[20px] text-gray-900"
+                    title="Apa yang kamu dapatkan?"
+                    titleClass="text-[36px] font-bold mt-20 text-[#003060]"
+                }}
+
+                {{!-- Modular: ui/list_item (gradient MPP) --}}
+                <div class="max-w-[606px] space-y-12 mt-12">
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Sertifikat pengalaman sebagai Marketing Partner untuk pengembangan portofolio/CV."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Potongan harga khusus apabila mitra ingin mengikuti program bootcamp itu sendiri."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Akses campaign eksklusif dan mentoring karier bagi mitra tingkat Partner Lead."}}
+                    {{> components/ui/list_item backgroundClass="bg-[linear-gradient(160.09deg,#6EB6E5_-2.7%,#FFED00_145.39%)]" text="Kesempatan direkomendasikan untuk posisi magang/kerja di tim marketing/growth."}}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
