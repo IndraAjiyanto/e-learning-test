@@ -1,0 +1,21 @@
+{{!--
+  Komponen: Back Button
+  Lokasi: src/views/partials/components/ui/button/back/index.hbs
+  Level: L1 Atomik
+
+  Props:
+  - href         : string (opsional, default 'javascript:history.back()')
+  - buttonClass  : string (opsional, class tambahan untuk wrapper button)
+  - iconClass    : string (opsional, class tambahan untuk icon)
+--}}
+
+<a
+  href="{{default href 'javascript:history.back()'}}"
+  class="
+    inline-flex items-center justify-center size-10 text-[#0B1F3B] bg-transparent
+    border border-[#003060] rounded-full shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]
+    transition-all duration-300 active:scale-95 {{buttonClass}} md:size-[50px]
+  "
+>
+  <i class="fas fa-arrow-left text-[14px] {{iconClass}} md:text-base"></i>
+</a>

@@ -109,25 +109,36 @@
 }"
 >
 
-
 <!-- Ganti semua awalan detail_free_program menjadi free_program -->
-{{> free_program/hero_section }}
+{{> components/ui/sections/program_detail_hero/index
+  showBatchPill=false
+  showTime=true
+  showLearnMore=true
+  learnMoreHref="#participants"
+  regisClick="openRegistrationModal()"
+}}
 
-{{> free_program/nav_menu }}
+{{#> components/ui/sections/program_detail_nav/index}}
+  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.freeProgram.navMenu.participants') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
+  {{> components/ui/text/nav_link/index href="#what-you-get" text=(t 'test.freeProgram.navMenu.benefit') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
+  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.freeProgram.navMenu.schedule') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
+  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.freeProgram.navMenu.gallery') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
+  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.freeProgram.navMenu.faq') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
+{{/components/ui/sections/program_detail_nav/index}}
 
-{{> free_program/participants_section }}
+{{> components/ui/sections/participants/index
+  badgeTitle=(t 'test.freeProgram.badge.participants')
+  showDescription=false
+  gridColsClass="grid-cols-1 md:grid-cols-3 max-w-[1100px]"
+}}
 
-{{> free_program/what_you_get_section }}
+{{> components/ui/sections/free_detail_what_you_get/index }}
 
-{{> free_program/schedule_fees_section }}
+{{> components/ui/sections/free_detail_schedule_fee/index }}
 
-{{> free_program/gallery }}
+{{> components/ui/sections/program_detail_gallery/index }}
 
-{{> free_program/faq }}
-
-{{!-- {{> free_program/program }} --}}
-{{!-- {{> free_program/benefit }} --}}
-{{!-- {{> free_program/cta }} --}}
+{{> components/ui/sections/program_detail_faq/index }}
 
   <!-- Modal Registrasi Short Class -->
   <div

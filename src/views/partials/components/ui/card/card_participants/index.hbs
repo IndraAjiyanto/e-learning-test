@@ -1,0 +1,32 @@
+{{!--
+  Komponen: Card Participants (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/card/card_participants/index.hbs
+
+  Props:
+  - icon            : string (wajib, nama/kelas ikon FontAwesome)
+  - title           : string|object (wajib, judul peserta, support getByLang)
+  - description     : string|object (opsional, deskripsi peserta, support getByLang)
+  - showDescription : boolean (opsional, default true)
+  - lang            : string (opsional, kode bahasa aktif 'en' | 'id' | 'ja')
+  - cardClass       : string (opsional, class tambahan untuk wrapper card)
+--}}
+
+<div
+  class="flex gap-6 p-8 bg-white border border-[#E0E0E0] rounded-[16px] transition-shadow duration-300 hover:shadow-lg {{cardClass}}"
+>
+  <div class="mt-1 text-[32px] text-[#0F0F0F] shrink-0 flex items-center">
+    <i class="{{computeIcon icon}}"></i>
+  </div>
+  <div class="flex flex-col justify-center">
+    <h3 class="{{#if (default showDescription true)}}mb-2{{/if}} font-bold text-[17px] text-[#0F0F0F]">
+      {{getByLang title lang}}
+    </h3>
+    {{#if (default showDescription true)}}
+      {{#if description}}
+        <p class="text-[14px] leading-[1.6] text-[#545454]">
+          {{getByLang description lang}}
+        </p>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>

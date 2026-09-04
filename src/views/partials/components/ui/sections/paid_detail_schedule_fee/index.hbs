@@ -2,10 +2,11 @@
 <section id="schedule-fees" class="bg-[#FAFAFA] py-20 font-montserrat">
   <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
     
-    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-8">
-      {{t 'test.paidProgram.schedule&Fees.badge'}}
-    </div>
-    
+    {{> components/ui/text/section_header/index
+      badge=(default badgeTitle (t 'test.paidProgram.navbarMenu.schedule&Fees'))
+      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
+    }}
+
     <h1 class="text-2xl md:text-4xl font-bold text-[#0F0F0F] mb-10 text-center">{{t 'test.paidProgram.schedule&Fees.title'}}</h1>
     <div class="w-full max-w-[1000px]" x-data="{ tab: 'full', openInfo: false }">
       
@@ -90,8 +91,17 @@
 
         <!-- Buttons (Shared) -->
         <div class="flex flex-col gap-4 w-full">
-          <a href="/payment/registration/{{course.id}}" class="w-full bg-[#003060] text-white font-[600] text-[18px] md:text-[35px] py-4 md:py-6 rounded-[8px] hover:bg-[#002244] transition-colors flex items-center justify-center">{{t 'test.paidProgram.schedule&Fees.registrationNow'}}</a>
-          <button class="w-full bg-[#F5F5F5] border border-[#E0E0E0] text-[#003060] font-[600] text-[18px] md:text-[35px] py-4 md:py-6 rounded-[8px] hover:bg-[#EAEAEA] transition-colors">{{t 'test.paidProgram.schedule&Fees.freeConsultation'}}</button>
+          {{> components/ui/button/btn_action/index
+            href="/payment/registration/{{course.id}}"
+            text=(t 'test.paidProgram.schedule&Fees.registrationNow')
+            variant="primary"
+            class="py-4 md:py-6 w-full text-[18px] md:text-[35px] font-[600] rounded-[8px]"
+          }}
+          {{> components/ui/button/btn_action/index
+            text=(t 'test.paidProgram.schedule&Fees.freeConsultation')
+            variant="outline"
+            class="py-4 md:py-6 w-full text-[18px] md:text-[35px] font-[600] rounded-[8px] bg-[#F5F5F5] border border-[#E0E0E0] text-[#003060] hover:bg-[#EAEAEA]"
+          }}
         </div>
 
       </div>
