@@ -11,28 +11,33 @@
         <div class="w-[48px] h-[48px] rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
           <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[28px] h-[28px] object-contain" />
         </div>
-        <h3 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-[30px] leading-none text-black">
-          {{t 'test.categoryPaidProgram.advantage.title'}}
-        </h3>
+        {{> components/ui/text/sub_title/index
+            text=(t 'test.categoryPaidProgram.advantage.title')
+            tag="h3"
+            size="xl"
+            color="dark"
+            font="montserrat"
+            fontWeight="font-semibold"
+            align="left"
+            class="leading-none"
+        }}
       </div>
 
       <!-- Description Mobile -->
-      <p class="font-sans font-normal text-sm leading-relaxed text-black/85">
-        Learn from the ground up with a structured, mentor-guided approach. Progress from fundamental concepts to advanced skills through interactive learning experiences, expert reviews, and hands-on projects that prepare you for real industry demands.
-      </p>
+      {{> components/ui/text/description/index
+          text=(t 'test.categoryPaidProgram.advantage.description')
+          size="sm"
+          color="muted"
+          font="sans"
+          align="left"
+          class="leading-relaxed text-black/85"
+      }}
 
       <!-- 4 Advantage List Items Mobile -->
       <div class="space-y-4 w-full">
-        <!-- Item 1 -->
         {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Vector-1.svg" text=(t 'test.categoryPaidProgram.advantage.point1') isMobile=true}}
-
-        <!-- Item 2 -->
         {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group-1.svg" text=(t 'test.categoryPaidProgram.advantage.point2') isMobile=true}}
-
-        <!-- Item 3 -->
         {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group.svg" text=(t 'test.categoryPaidProgram.advantage.point3') isMobile=true}}
-
-        <!-- Item 4 -->
         {{> components/ui/card/category/paid/advantage/index icon="/public/image/icons/paid_program/benefit/industry.svg" text=(t 'test.categoryPaidProgram.advantage.point4') isMobile=true}}
       </div>
 
@@ -43,43 +48,54 @@
   <div class="hidden sm:block py-16">
     <div class="container mx-auto px-6 lg:px-12 max-w-[1260px]">
       
-      <!-- Yellow Advantage Card Desktop (100% Fixed & Untouched) -->
+      <!-- Yellow Advantage Card Desktop -->
       <div class="w-full bg-[#FFFBCB] rounded-[24px] px-8 py-12 sm:px-14 sm:py-16 lg:px-16 lg:py-16 min-h-[500px] lg:min-h-[669px] shadow-xs relative overflow-hidden flex flex-col justify-center">
         
+        <!-- Header Desktop -->
         <div class="flex items-center gap-4 mb-8">
           <div class="w-[65px] h-[65px] rounded-[100px] bg-[#EFF4FE] flex items-center justify-center shrink-0">
             <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[40px] h-[40px] object-contain" />
           </div>
-          <h3 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-[30px] leading-none text-black">
-            Core Knowledge First
-          </h3>
+          {{> components/ui/text/sub_title/index
+              text=(t 'test.categoryPaidProgram.advantage.title')
+              tag="h3"
+              size="3xl"
+              color="dark"
+              font="montserrat"
+              fontWeight="font-semibold"
+              align="left"
+              class="leading-none"
+          }}
         </div>
+
         <!-- Description Subtitle -->
-        <p class="font-sans font-normal text-base sm:text-xl lg:text-[25px] text-black/85 mb-10 max-w-4xl leading-relaxed lg:leading-[40px]">
-           {{t 'test.categoryPaidProgram.advantage.description'}}
-        </p>
+        {{> components/ui/text/description/index
+            text=(t 'test.categoryPaidProgram.advantage.description')
+            size="xl"
+            color="muted"
+            font="sans"
+            align="left"
+            class="mb-10 max-w-4xl leading-relaxed lg:leading-[40px] text-black/85"
+        }}
 
         <!-- Content (Indented to align with Core Knowledge First title) -->
         <div class="sm:pl-[82px]">
           
           <!-- Description Subtitle -->
-          <p class="font-sans font-normal text-base sm:text-xl lg:text-[25px] text-black/85 mb-10 max-w-4xl leading-relaxed lg:leading-[40px]">
-            Learn from the ground up with a structured, mentor-guided approach. Progress from fundamental concepts to advanced skills through interactive learning experiences, expert reviews, and hands-on projects that prepare you for real industry demands.
-          </p>
+          {{> components/ui/text/description/index
+              text=(t 'test.categoryPaidProgram.advantage.description')
+              size="xl"
+              color="muted"
+              font="sans"
+              align="left"
+              class="mb-10 max-w-4xl leading-relaxed lg:leading-[40px] text-black/85"
+          }}
 
           <!-- 4 Advantage List Items -->
           <div class="space-y-6 sm:space-y-7 max-w-4xl">
-            
-            <!-- Item 1 -->
             {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Vector-1.svg" text=(t 'test.categoryPaidProgram.advantage.point1') isMobile=false}}
-            
-            <!-- Item 2 -->
             {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group-1.svg" text=(t 'test.categoryPaidProgram.advantage.point2') isMobile=false}}
-            
-            <!-- Item 3 -->
             {{> components/ui/card/category/paid/advantage/index icon="/public/image/paidProgram/Group.svg" text=(t 'test.categoryPaidProgram.advantage.point3') isMobile=false}}
-            
-            <!-- Item 4 -->
             {{> components/ui/card/category/paid/advantage/index icon="/public/image/icons/paid_program/benefit/industry.svg" text=(t 'test.categoryPaidProgram.advantage.point4') isMobile=false}}
           </div>
 

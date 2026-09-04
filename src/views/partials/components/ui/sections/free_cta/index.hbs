@@ -1,0 +1,104 @@
+{{!--
+  Komponen: Free CTA Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/free_cta/index.hbs
+  
+  Props:
+  - category : Object dengan category.name
+  - lang     : Bahasa aktif
+--}}
+
+<!-- EXPLORE PROGRAM SECTION (CTA) -->
+<section id="explore-program" class="w-full font-montserrat relative">
+
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-10 px-5 my-8 relative">
+    <div class="w-full relative min-h-[300px] flex items-center justify-center py-8 px-5 rounded-[16px] overflow-hidden shadow-sm">
+      
+      <!-- Background Banner Mobile -->
+      <div 
+        class="absolute inset-0 z-0 bg-[#6EB6E5]"
+        style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"
+      ></div>
+
+      <!-- Content Mobile -->
+      <div class="max-w-[340px] mx-auto text-center flex flex-col items-center justify-center relative z-10">
+        
+        {{> components/ui/text/sub_title/index
+            text=(t 'test.categoryFreeProgram.cta.title')
+            tag="h2"
+            size="xl"
+            color="dark"
+            font="montserrat"
+            fontWeight="font-bold"
+            align="center"
+            class="mb-3"
+        }}
+
+        {{> components/ui/text/description/index
+            text=(concat (t 'test.categoryFreeProgram.cta.description') ' ' category.name ' ' (t 'test.categoryFreeProgram.cta.description2'))
+            size="xs"
+            color="dark"
+            font="sans"
+            align="center"
+            class="my-4"
+        }}
+
+        <div class="w-full mt-2">
+          {{> components/ui/button/btn_action/index
+              href="#programs"
+              text=(t 'test.categoryFreeProgram.cta.button')
+              variant="primary"
+              class="w-full h-[52px] font-semibold text-sm"
+          }}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block mt-16 mb-24 md:mt-20 md:mb-32 relative">
+    <div class="w-full relative min-h-[372px] flex items-center justify-center py-12 px-6">
+      
+      <!-- Background Banner Desktop -->
+      <div 
+        class="absolute inset-0 z-0 bg-[#6EB6E5]"
+        style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"
+      ></div>
+
+      <!-- Content Desktop -->
+      <div class="max-w-6xl mx-auto text-center flex flex-col items-center justify-center relative z-10">
+        
+        {{> components/ui/text/sub_title/index
+            text=(t 'test.categoryFreeProgram.cta.title')
+            tag="h2"
+            size="4xl"
+            color="dark"
+            font="montserrat"
+            fontWeight="font-semibold"
+            align="center"
+        }}
+
+        {{> components/ui/text/description/index
+            text=(concat (t 'test.categoryFreeProgram.cta.description') ' ' category.name ' ' (t 'test.categoryFreeProgram.cta.description2'))
+            size="2xl"
+            color="dark"
+            font="sans"
+            align="center"
+            class="my-12 leading-relaxed lg:leading-[45px]"
+        }}
+
+        <div>
+          {{> components/ui/button/btn_action/index
+              href="#programs"
+              text=(t 'test.categoryFreeProgram.cta.button')
+              variant="primary"
+              class="w-full sm:w-[370px] h-[85px] font-semibold text-xl"
+          }}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</section>

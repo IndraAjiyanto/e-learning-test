@@ -1,0 +1,125 @@
+{{!--
+  Komponen: Free Hero Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/free_hero/index.hbs
+  
+  Props:
+  - category  : Object dengan category.name dan category.hero_section_image
+  - lang      : Bahasa aktif
+  - alumni    : Data alumni (tidak dipakai di hero, tapi di-pass untuk konteks)
+  - social    : Data social (tidak dipakai di hero)
+--}}
+
+<!-- HERO SECTION (FREE PROGRAM) -->
+<section 
+  class="relative z-10 w-full font-montserrat flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
+  x-data="{
+    currentIndex: 0,
+    intervalId: null,
+    images: [
+      '/public/image/freeProgram/bg1.png',
+      '/public/image/freeProgram/bg2.png',
+      '/public/image/freeProgram/bg3.png'
+    ],
+    init() {
+      this.images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      this.intervalId = setInterval(() => {
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      }, 1500);
+    }
+  }"
+>
+  <!-- Animated Background Stack Layers -->
+  <div class="absolute inset-0 z-0 w-full h-full pointer-events-none select-none overflow-hidden">
+    <img 
+      src="/public/image/freeProgram/bg1.png" 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
+      :class="currentIndex === 0 ? 'opacity-100' : 'opacity-0'"
+    />
+    <img 
+      src="/public/image/freeProgram/bg2.png" 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
+      :class="currentIndex === 1 ? 'opacity-100' : 'opacity-0'"
+    />
+    <img 
+      src="/public/image/freeProgram/bg3.png" 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
+      :class="currentIndex === 2 ? 'opacity-100' : 'opacity-0'"
+    />
+  </div>
+
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div 
+    class="block sm:hidden relative z-10 w-full pt-10 pb-10 px-5 flex flex-col items-center text-center justify-start"
+    style="background: linear-gradient(180deg, #FAFAFA 0%, #CEE5F6 50%, #FAFAFA 100%);"
+  >
+    
+    <!-- Title, Subtitle & Button Mobile -->
+    <div class="flex flex-col items-center text-center max-w-[362px] w-full">
+      <h1 class="font-montserrat font-bold text-[28px] leading-[36px] tracking-normal text-[#0B1F3B] text-center mb-4">
+        {{t 'test.categoryFreeProgram.hero.title'}} {{category.name}} {{t 'test.categoryFreeProgram.hero.title1'}} {{t 'test.categoryFreeProgram.hero.title2'}} {{t 'test.categoryFreeProgram.hero.title3'}}
+      </h1>
+
+      <p class="font-sans font-normal text-[15px] leading-[24px] tracking-normal text-[#4B5563] text-center mb-6">
+        Select the program that aligns with your goals and passion. Start building practical skills today.
+      </p>
+
+      {{> components/ui/button/btn_action/index
+          onClick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
+          text=(t 'test.categoryFreeProgram.hero.button')
+          icon="fa-solid fa-arrow-left"
+          variant="primary"
+          class="w-full max-w-[362px] h-[46px] font-montserrat font-semibold text-[15px] mb-8"
+      }}
+    </div>
+
+    <!-- Image / Banner Card Mobile -->
+    <div class="w-full max-w-[362px] h-[120px] flex justify-center items-center overflow-hidden rounded-[16px] bg-[#E0F2F980] shadow-sm">
+      <img 
+        src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}https://upload.wikimedia.org/wikipedia/commons/2/29/Kepala_Badan_Koordinasi_Penanaman_Modal_Bahlil_Lahadalia_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled{{/if}}"
+        alt="{{category.name}}" 
+        class="w-full h-full object-cover rounded-[16px] opacity-60"
+      >
+    </div>
+
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:flex relative z-10 container mx-auto mt-32 px-6 sm:px-10 lg:px-12 max-w-[1440px] xl:max-w-[1536px] w-full flex-1 flex-col lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-8 pt-8 min-h-[calc(100vh-80px)]">
+    
+    <!-- Left Column: Title & Button Desktop -->
+    <div class="flex-1 max-w-[960px] flex flex-col items-start text-left mb-10 lg:mb-64 self-center lg:self-center">
+      <!-- Title -->
+      <h1 class="font-montserrat font-semibold text-3xl sm:text-5xl lg:text-[70px] text-[#000000] leading-tight lg:leading-[85px] tracking-normal text-left mb-8">
+        {{t 'test.categoryFreeProgram.hero.title'}} {{category.name}} {{t 'test.categoryFreeProgram.hero.title1'}} <br class="hidden sm:inline"> {{t 'test.categoryFreeProgram.hero.title2'}} <br class="hidden sm:inline"> {{t 'test.categoryFreeProgram.hero.title3'}}
+      </h1>
+
+      <!-- View Program Button -->
+      {{> components/ui/button/btn_action/index
+          onClick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
+          text=(t 'test.categoryFreeProgram.hero.button')
+          icon="fa-solid fa-arrow-down"
+          variant="primary"
+          class="w-full sm:w-[281px] h-[54px] font-montserrat font-medium text-lg sm:text-[25px]"
+      }}
+    </div>
+
+    <!-- Right Column: Render Image Desktop (Flush to Bottom) -->
+    <div class="w-full lg:w-auto flex justify-center lg:justify-end flex-shrink-0 self-end">
+      <img 
+        src="{{category.hero_section_image}}"
+        alt="{{category.name}}" 
+        class="max-h-[420px] sm:max-h-[520px] lg:max-h-[620px] xl:max-h-[660px] w-auto object-contain object-bottom drop-shadow-2xl transition-transform duration-300 hover:scale-102"
+      >
+    </div>
+
+  </div>
+</section>

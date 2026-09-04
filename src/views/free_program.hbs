@@ -8,15 +8,37 @@
 </style>
 
 <div class="w-full bg-white">
-  {{> freeProgramNew/hero_section}}
+  {{> components/ui/sections/free_hero/index category=category lang=lang}}
 
-  {{> freeProgramNew/program}}
+  {{> components/ui/sections/free_program/index category=category courses=courses lang=lang}}
 
-  {{> freeProgramNew/benefit}}
+  {{> components/ui/sections/free_benefit/index category=category benefit_category=benefit_category lang=lang}}
 
-  {{> freeProgramNew/alumni}}
+  {{!-- Alumni Section - reuse existing alumni component with paid variant --}}
+  {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      showMobile=true
+      titleKey="test.categoryFreeProgram.alumni.title"
+      descKey="test.categoryFreeProgram.alumni.description"
+      footerTextKey="test.categoryFreeProgram.alumni.footer"
+      footerLinkTextKey="test.categoryFreeProgram.alumni.allStories"
+      desktopBgStyle="background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);"
+      alumni=alumni
+      category=category
+      lang=lang
+  }}
 
-  {{> freeProgramNew/gallery}}
+  {{!-- Gallery Section - reuse existing gallery component --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=false
+      showDivider=false
+      showBottomLink=true
+      titleKey="test.categoryFreeProgram.gallery.title"
+      descKey="test.categoryFreeProgram.gallery.description"
+      linkKey="test.categoryFreeProgram.gallery.allGaleries"
+      gallery=gallery
+  }}
 
-  {{> freeProgramNew/cta}}
+  {{> components/ui/sections/free_cta/index category=category lang=lang}}
 </div>

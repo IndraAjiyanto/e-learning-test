@@ -9,25 +9,38 @@
       <i class="fa-solid fa-users"></i>
     </div>
 
-    <!-- Main Headline (Montserrat 600, text-4xl / 36px, leading-none) -->
-    <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl leading-none text-black text-center mb-12">
-      <span> 1 + </span> {{t 'test.categoryPaidProgram.cta.title'}}
-    </h2>
+    <!-- Main Headline Mobile -->
+    {{> components/ui/text/sub_title/index
+        text=(concat '1 + ' (t 'test.categoryPaidProgram.cta.title'))
+        tag="h2"
+        size="2xl"
+        color="dark"
+        font="montserrat"
+        fontWeight="font-semibold"
+        align="center"
+        class="mb-12"
+    }}
 
-    <!-- Subtitle (Open Sans 400, text-[25px], leading-none) -->
-    <p class="font-sans font-normal text-lg sm:text-xl lg:text-[25px] leading-none text-black/80 text-center mb-12">
-      {{t 'test.categoryPaidProgram.cta.description'}}
-    </p>
+    <!-- Subtitle Mobile -->
+    {{> components/ui/text/description/index
+        text=(t 'test.categoryPaidProgram.cta.description')
+        size="lg"
+        color="muted"
+        font="sans"
+        align="center"
+        class="mb-12 leading-none"
+    }}
 
     <!-- CTA Button Mobile -->
     <div class="w-full max-w-[340px]">
-      <a
-        href="#programs"
-        class="inline-flex items-center justify-center w-full h-[60px] gap-2.5 bg-[#003060] active:bg-[#001f3f] text-white font-montserrat font-semibold text-base rounded-[12px] transition-all duration-300 shadow-md"
-      >
-        <span>{{t 'test.categoryPaidProgram.cta.button'}}</span>
-        <i class="fa-solid fa-arrow-up text-[23px]"></i>
-      </a>
+      {{> components/ui/button/btn_action/index
+          href="#programs"
+          text=(t 'test.categoryPaidProgram.cta.button')
+          icon="fa-solid fa-arrow-up"
+          variant="primary"
+          class="w-full h-[60px] font-montserrat font-semibold text-base"
+          textClass="ml-2"
+      }}
     </div>
 
   </div>
@@ -42,25 +55,36 @@
       </div>
 
       <!-- Main Headline Desktop -->
-      <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl leading-none text-black text-center mb-12">
-        <span> 1 + </span> Graduates Successfully Working in Digital Technology
-      </h2>
+      {{> components/ui/text/sub_title/index
+          text=(concat '1 + ' (t 'test.categoryPaidProgram.cta.title'))
+          tag="h2"
+          size="2xl"
+          color="dark"
+          font="montserrat"
+          fontWeight="font-semibold"
+          align="center"
+          class="mb-12"
+      }}
 
       <!-- Subtitle Desktop -->
-      <p class="font-sans font-normal text-lg sm:text-xl lg:text-[25px] leading-none text-black/80 text-center mb-12">
-        Now It's Your Turn
-      </p>
+      {{> components/ui/text/description/index
+          text=(t 'test.categoryPaidProgram.cta.description')
+          size="xl"
+          color="muted"
+          font="sans"
+          align="center"
+          class="mb-12 leading-none"
+      }}
 
       <!-- CTA Button Desktop -->
-      <div>
-        <a
+      {{> components/ui/button/btn_action/index
           href="#programs"
-          class="inline-flex items-center justify-center w-[370px] h-[85px] gap-3 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-2xl px-4 py-4 rounded-[12px] transition-all duration-300 shadow-md hover:shadow-lg"
-        >
-          <span>Explore Learning Path</span>
-          <i class="fa-solid fa-arrow-up text-[23px]"></i>
-        </a>
-      </div>
+          text="Explore Learning Path"
+          icon="fa-solid fa-arrow-up"
+          variant="primary"
+          class="w-[370px] h-[85px] font-montserrat font-semibold text-2xl"
+          textClass="ml-3"
+      }}
 
     </div>
   </div>

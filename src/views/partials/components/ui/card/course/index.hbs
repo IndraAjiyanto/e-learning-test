@@ -1,0 +1,198 @@
+{{!--
+  Komponen: Card Course (Generic - L1 Atomic)
+  Lokasi: src/views/partials/components/ui/card/course/index.hbs
+
+  Kartu program generik yang bisa dipakai untuk free, paid, special, shortclass.
+  
+  Props:
+  - id            : ID Program (wajib untuk link)
+  - image         : URL Gambar Program
+  - thumbnail     : URL Gambar Alternatif (fallback ke image)
+  - name          : Nama Program
+  - description   : Deskripsi Program (multilang, opsional)
+  - method        : Metode Belajar (Online/Offline)
+  - day           : Lama hari belajar (untuk free program)
+  - month         : Lama bulan belajar (untuk paid/special program)
+  - quota         : Kuota siswa
+  - variant       : free | paid | special (default: special)
+  - lang          : Bahasa aktif
+  - isFallback    : Jika true, link ke #program (untuk fallback card)
+  - detailButtonText : Teks button (default: i18n 'Detail Program')
+
+  Contoh penggunaan:
+  {{> components/ui/card/course/index
+      id=this.id
+      image=this.image
+      name=this.name
+      description=this.description
+      method=this.method
+      month=this.month
+      quota=this.quota
+      variant="special"
+      lang=../lang
+  }}
+--}}
+
+{{#if (eq variant 'free')}}
+  {{!-- VARIANT: FREE PROGRAM --}}
+  <div class="w-full max-w-[549px] bg-white border border-slate-200/80 rounded-[20px] shadow-[0px_2px_10px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col justify-between group hover:shadow-md transition-all duration-300">
+    <div>
+      <!-- Card Image -->
+      <div class="w-full h-[250px] sm:h-[270px] rounded-[16px] overflow-hidden bg-gray-100 mb-6">
+        <img 
+          src="{{default (default thumbnail image) 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop'}}" 
+          alt="{{name}}" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+
+      <!-- Card Content -->
+      <div class="px-1">
+        <h3 class="font-montserrat font-semibold text-xl sm:text-[25px] leading-[35px] tracking-normal text-[#003060] text-left mb-7 line-clamp-2">
+          {{name}}
+        </h3>
+
+        <!-- Badges Row -->
+        <div class="flex flex-wrap items-center gap-[20px] mb-8">
+          <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
+            <i class="fa-solid fa-tag text-xs text-[#003060]"></i> {{t 'test.categoryFreeProgram.program.free'}} 
+          </span>
+          <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
+            <i class="fa-regular fa-clock text-xs text-[#003060]"></i> {{default day '1'}} {{t 'test.categoryFreeProgram.program.day'}}
+          </span>
+          {{#if method}}
+          <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
+            <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> {{method}}
+          </span>
+          {{/if}}
+          {{#if quota}}
+          <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
+            <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> {{quota}} {{t 'test.categoryFreeProgram.program.students'}}
+          </span>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Action Button -->
+    <div class="w-full pt-2">
+      <a 
+        href="{{#if isFallback}}#program{{else}}/program/{{id}}{{/if}}" 
+        class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
+      >
+        <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">{{default detailButtonText (t 'test.categoryFreeProgram.program.detailProgram')}}</span>
+        <i class="fa-solid fa-arrow-right text-base sm:text-lg"></i>
+      </a>
+    </div>
+  </div>
+
+{{else if (eq variant 'paid')}}
+  {{!-- VARIANT: PAID PROGRAM --}}
+  <div class="w-full max-w-[465px] bg-white border border-gray-200/80 rounded-[20px] md:rounded-[24px] p-5 md:px-6 md:py-9 shadow-xs md:shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between gap-4 md:gap-[25px] group hover:shadow-md transition-all duration-300 min-h-full">
+    <div>
+      <!-- Batch Badge -->
+      <div class="w-[110px] md:w-[125px] h-[34px] md:h-[47px] rounded-[6px] bg-[#0B1F3B1A] text-[#003060] font-montserrat font-semibold text-xs md:text-sm flex items-center justify-center mb-3 md:mb-4 uppercase">
+        BATCH 6.2
+      </div>
+
+      <!-- Course Image -->
+      <div class="w-full aspect-[16/10] md:h-[262px] md:aspect-auto rounded-[12px] overflow-hidden bg-gray-100 mb-4 md:mb-6">
+        <img 
+          src="{{default (default thumbnail image) 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop'}}" 
+          alt="{{name}}" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+
+      <!-- Course Info -->
+      <div class="w-full md:px-1">
+        <h3 class="font-montserrat font-bold md:font-semibold text-xl md:text-[35px] leading-tight md:leading-none text-[#003060] mb-3 md:mb-5 text-left">
+          {{name}}
+        </h3>
+        {{#if description}}
+        <p class="font-sans font-normal text-[13px] md:text-xl leading-[20px] md:leading-[30px] tracking-normal text-black/80 md:text-black mb-4 md:mb-5 text-left">
+          {{getByLang description ../lang}}
+        </p>
+        {{/if}}
+
+        <!-- Tags / Badges -->
+        <div class="flex flex-wrap items-center gap-2 md:gap-[10px]">
+          {{#if method}}
+          <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
+            <i class="fa-solid fa-location-dot text-[11px] md:text-[12px] text-[#003060]"></i> {{method}}
+          </span>
+          {{/if}}
+          {{#if month}}
+          <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
+            <i class="fa-solid fa-graduation-cap text-[11px] md:text-[12px] text-[#003060]"></i> {{month}} {{t 'test.special_program.program.month'}}
+          </span>
+          {{/if}}
+          {{#if quota}}
+          <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
+            <i class="fa-solid fa-couch text-[11px] md:text-[12px] text-[#003060]"></i> {{quota}} {{t 'test.special_program.program.student'}}
+          </span>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Button -->
+    <div class="w-full pt-2 mt-auto">
+      <a 
+        href="{{#if isFallback}}#program{{else}}/program/{{id}}{{/if}}" 
+        class="w-full h-[48px] md:h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-[14px] md:text-base rounded-[10px] md:rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 md:active:scale-100"
+      >
+        <span>{{default detailButtonText (t 'test.startLearning.detailProgram')}}</span>
+        <i class="fa-solid fa-arrow-right text-xs md:text-sm"></i>
+      </a>
+    </div>
+  </div>
+
+{{else}}
+  {{!-- VARIANT: SPECIAL PROGRAM (DEFAULT) --}}
+  <div class="w-full bg-white border border-gray-200/80 rounded-[24px] px-3 py-3 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col group hover:shadow-md transition-all duration-300">
+    <div class="flex-grow">
+      <div class="w-full max-w-[414px] h-[262px] rounded-[12px] overflow-hidden bg-gray-100 mb-6">
+        {{#if (default (default thumbnail image) false)}}
+        <img src="{{default thumbnail image}}" alt="{{name}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        {{/if}}
+      </div>
+      <div class="px-1">
+        <h3 class="font-montserrat font-semibold text-2xl sm:text-[35px] leading-none text-[#003060] mb-5 text-left">
+          {{name}}
+        </h3>
+        {{#if description}}
+        <p class="font-sans font-normal text-base sm:text-xl leading-relaxed sm:leading-[20px] text-black mb-5 text-left">
+          {{getByLang description ../lang}}
+        </p>
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- Pills anchor to bottom -->
+    <div class="flex flex-wrap items-center gap-2 mb-5">
+      {{#if method}}
+      <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+        <i class="fa-solid fa-location-dot text-[12px] text-[#003060]" aria-hidden="true"></i> {{method}}
+      </span>
+      {{/if}}
+      {{#if month}}
+      <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+        <i class="fa-solid fa-clock text-[12px] text-[#003060]" aria-hidden="true"></i> {{month}} {{t 'test.special_program.program.month'}}
+      </span>
+      {{/if}}
+      {{#if quota}}
+      <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+        <i class="fa-solid fa-couch text-[12px] text-[#003060]" aria-hidden="true"></i> {{quota}} {{t 'test.special_program.program.student'}}
+      </span>
+      {{/if}}
+    </div>
+
+    <div class="w-full pt-1">
+      <a href="{{#if isFallback}}#program{{else}}/program/{{id}}{{/if}}" class="w-full h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300">
+        <span>{{default detailButtonText (t 'test.startLearning.detailProgram')}}</span>
+        <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+{{/if}}

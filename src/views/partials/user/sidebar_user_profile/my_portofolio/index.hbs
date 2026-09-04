@@ -814,14 +814,162 @@
     line-height: 1.25rem;
     font-weight: 500;
   }
+
+  /* Tailwind preflight me-reset elemen di bawah ini, jadi dikembalikan manual
+     supaya HTML dari Editor.js tampil rapi di blok Project Overview. */
+  #overviewDetail h1,
+  #overviewDetail h2,
+  #overviewDetail h3 {
+    color: #003060;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  #overviewDetail h1 { font-size: 1.5rem; line-height: 2rem; }
+  #overviewDetail h2 { font-size: 1.25rem; line-height: 1.75rem; }
+  #overviewDetail h3 { font-size: 1.125rem; line-height: 1.75rem; }
+
+  #overviewDetail h4,
+  #overviewDetail h5,
+  #overviewDetail h6 {
+    color: #003060;
+  }
+
+  #overviewDetail p {
+    margin-bottom: 0.5rem;
+  }
+
+  #overviewDetail p:last-child {
+    margin-bottom: 0;
+  }
+
+  #overviewDetail ul,
+  #overviewDetail ol {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+  }
+
+  #overviewDetail ul { list-style-type: disc; }
+  #overviewDetail ol { list-style-type: decimal; }
+
+  #overviewDetail li {
+    margin-bottom: 0.25rem;
+  }
+
+  #overviewDetail a {
+    color: #003060;
+    font-weight: 500;
+    text-decoration: underline;
+    overflow-wrap: break-word;
+  }
+
+  #overviewDetail a:hover {
+    color: #001f3f;
+  }
+
+  #overviewDetail b,
+  #overviewDetail strong {
+    font-weight: 600;
+    color: #003060;
+  }
+
+  #overviewDetail i,
+  #overviewDetail em {
+    font-style: italic;
+  }
+
+  #overviewDetail blockquote {
+    border-left: 4px solid #CFE6F5;
+    padding-left: 1rem;
+    font-style: italic;
+    margin: 1rem 0;
+  }
+
+  #overviewDetail pre {
+    background-color: #f1f5f9;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-size: 0.8125rem;
+  }
+
+  #overviewDetail code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  #overviewDetail hr {
+    margin: 1.5rem 0;
+    border-top: 2px solid #e2e8f0;
+  }
+
+  #overviewDetail table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+  }
+
+  #overviewDetail th,
+  #overviewDetail td {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  #overviewDetail th {
+    background-color: #F1F8FC;
+    color: #003060;
+    font-weight: 600;
+  }
 </style>
 
 <script>
+  // Whitelist tag/atribut untuk HTML overview. Dipakai karena `contentHtml`
+  // di-inject lewat x-html, sedangkan sanitize-html hanya jalan di server.
+  var OVERVIEW_ALLOWED_TAGS = [
+    'P','BR','B','STRONG','I','EM','U','S','MARK','SMALL','SUB','SUP','SPAN','DIV',
+    'H1','H2','H3','H4','H5','H6','UL','OL','LI','A','BLOCKQUOTE','PRE','CODE','HR',
+    'FIGURE','FIGCAPTION','IMG','TABLE','THEAD','TBODY','TR','TH','TD'
+  ];
+  var OVERVIEW_ALLOWED_ATTRS = ['href','src','alt','title','colspan','rowspan','class'];
+
+  function sanitizeOverviewHtml(html) {
+    // DOMParser menghasilkan dokumen inert: script tidak jalan, resource tidak di-fetch.
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+
+    doc.body.querySelectorAll('*').forEach(function (el) {
+      if (OVERVIEW_ALLOWED_TAGS.indexOf(el.tagName) === -1) {
+        el.remove();
+        return;
+      }
+      Array.prototype.slice.call(el.attributes).forEach(function (attr) {
+        var name = attr.name.toLowerCase();
+        var value = (attr.value || '').replace(/[\s\u0000-\u001F]/g, '').toLowerCase();
+        if (OVERVIEW_ALLOWED_ATTRS.indexOf(name) === -1) {
+          el.removeAttribute(attr.name);
+        } else if ((name === 'href' || name === 'src') && /^(javascript|data|vbscript):/.test(value)) {
+          el.removeAttribute(attr.name);
+        }
+      });
+      if (el.tagName === 'A') {
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+
+    return doc.body.innerHTML;
+  }
+
   function renderOverview(raw) {
     if (!raw) return '';
-    if (typeof raw === 'string' && raw.trim().startsWith('{')) {
+    if (typeof raw !== 'string') return '';
+    const trimmed = raw.trim();
+    if (!trimmed) return '';
+    // 1. Editor.js JSON (kolom `content`)
+    if (trimmed.startsWith('{')) {
       try {
-        const parsed = JSON.parse(raw);
+        const parsed = JSON.parse(trimmed);
         if (parsed && Array.isArray(parsed.blocks)) {
           return parsed.blocks.map(function (b) {
             const d = b.data || {};
@@ -855,8 +1003,13 @@
         // not editor JSON, fallback below
       }
     }
+    // 2. HTML jadi hasil editorjsHTML.parse() di server (kolom `contentHtml`)
+    if (/<\/?[a-z][\s\S]*>/i.test(trimmed)) {
+      return sanitizeOverviewHtml(trimmed);
+    }
+    // 3. Teks biasa -> escape supaya aman
     const el = document.createElement('div');
-    el.textContent = raw;
+    el.textContent = trimmed;
     return el.innerHTML;
   }
 </script>

@@ -10,7 +10,7 @@
   - icon        : Kelas ikon FontAwesome (contoh: "fas fa-rocket text-2xl")
   - iconSrc     : URL ikon gambar (SVG/PNG). Jika diisi, render <img> bukan <i>
   - iconClass   : Kelas tambahan untuk ikon gambar (contoh: "w-5 h-5 brightness-0 invert")
-  - variant     : primary | secondary | outline | white (default: primary)
+  - variant     : primary | secondary | outline | outline-white | white (default: primary)
   - type        : button | submit | reset (hanya untuk <button>, default: button)
   - class       : Kelas tambahan KHUSUS untuk layout/spacing (mt-4, w-full, gap-3, dll)
   - textClass   : Kelas tambahan untuk styling teks (contoh: "text-[25px] font-medium")
@@ -34,10 +34,14 @@
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
       {{else}}
-        {{#if (eq variant 'white')}}
-          bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+        {{#if (eq variant 'outline-white')}}
+          bg-transparent text-white border border-white hover:bg-white/10
         {{else}}
-          bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+          {{#if (eq variant 'white')}}
+            bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+          {{else}}
+            bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+          {{/if}}
         {{/if}}
       {{/if}}
     {{/if}}
@@ -64,10 +68,14 @@
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
       {{else}}
-        {{#if (eq variant 'white')}}
-          bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+        {{#if (eq variant 'outline-white')}}
+          bg-transparent text-white border border-white hover:bg-white/10
         {{else}}
-          bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+          {{#if (eq variant 'white')}}
+            bg-[#FFFFFF] text-[#003060] hover:bg-gray-50
+          {{else}}
+            bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+          {{/if}}
         {{/if}}
       {{/if}}
     {{/if}}
