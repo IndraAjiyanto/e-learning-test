@@ -8,19 +8,47 @@
 </style>
 
 <div class="w-full bg-[#FAFAFA]">
-  {{> specialProgramNew/hero_section}}
+  {{> components/ui/sections/special_hero/index category=category lang=lang}}
 
-  {{> specialProgramNew/program}}
+  {{> components/ui/sections/special_program/index category=category courses=courses lang=lang}}
 
-  {{> specialProgramNew/benefit}}
+  {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang}}
 
-  {{> specialProgramNew/topic}}
+  {{> components/ui/sections/special_topic/index category=category lang=lang}}
 
-  {{> specialProgramNew/alumni}}
+  {{!-- Alumni Section - reuse existing alumni component --}}
+  {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      showMobile=true
+      titleKey="test.special_program.alumni.title"
+      descKey="test.special_program.alumni.description"
+      footerTextKey="test.special_program.alumni.footer"
+      footerLinkTextKey="test.special_program.alumni.allStories"
+      desktopBgStyle="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
+      alumni=alumni
+      category=category
+      lang=lang
+  }}
 
-  {{> specialProgramNew/gallery}}
+  {{!-- Gallery Section - reuse existing gallery component --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=false
+      showDivider=false
+      showBottomLink=true
+      titleKey="test.special_program.gallery.title"
+      descKey="test.special_program.gallery.description"
+      linkKey="test.special_program.gallery.allGaleries"
+      gallery=gallery
+  }}
 
-  {{> specialProgramNew/contact}}
+  {{> components/ui/sections/special_cta/index category=category lang=lang}}
 
-  {{> specialProgramNew/faq}}
+  {{!-- FAQ Section - reuse existing FAQ component --}}
+  {{> components/ui/sections/faq/index
+      titleKey="test.special_program.faq.title"
+      descKey="test.special_program.faq.description"
+      faqs=faqs
+      lang=lang
+  }}
 </div>
