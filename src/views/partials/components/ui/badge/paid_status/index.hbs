@@ -1,0 +1,40 @@
+{{!--
+  Komponen: Badge Paid Status (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/badge/paid_status/index.hbs
+
+  Badge status khusus paid program (ENROLLMENT OPEN, COMING SOON, dll).
+  Menggunakan diamond icon + teks dengan styling pill shape.
+
+  Props:
+  - text        : Teks badge (wajib, default: "ENROLLMENT OPEN")
+  - icon        : Kelas ikon FontAwesome (opsional, default: diamond icon)
+  - size        : sm | md | lg (default: md)
+  - class       : Kelas tambahan (opsional)
+
+  Size mappings:
+  - sm: 188x30, icon 18px, text 13px
+  - md: 188x30 mobile / 328x47 desktop, icon 18-20px, text 13-16px
+  - lg: 328x47, icon 20px, text 16-20px
+--}}
+
+<div class="inline-flex items-center bg-[#0B1F3B1A] text-[#003060] rounded-[50px] shadow-xs
+  {{#if (eq size 'sm')}}
+    w-[188px] h-[30px] px-[12px] py-[6px] gap-[8px]
+  {{else if (eq size 'lg')}}
+    w-[280px] sm:w-[328px] h-[40px] sm:h-[47px] p-[10px] gap-[10px]
+  {{else}}
+    w-[188px] h-[30px] px-[12px] py-[6px] gap-[8px] sm:w-[328px] sm:h-[47px] sm:p-[10px] sm:gap-[10px]
+  {{/if}}
+  {{class}}">
+  {{#if icon}}
+    <i class="{{icon}} text-[#003060]
+      {{#if (eq size 'sm')}}text-sm{{else if (eq size 'lg')}}text-base sm:text-xl{{else}}text-sm sm:text-base md:text-xl{{/if}}"></i>
+  {{else}}
+    <span class="bg-[#003060] transform rotate-45 inline-block shrink-0
+      {{#if (eq size 'sm')}}w-[18px] h-[18px]{{else if (eq size 'lg')}}w-[18px] h-[18px] sm:w-[20px] sm:h-[20px]{{else}}w-[18px] h-[18px]{{/if}}"></span>
+  {{/if}}
+  <span class="font-montserrat font-semibold leading-none tracking-normal
+    {{#if (eq size 'sm')}}text-[13px]{{else if (eq size 'lg')}}text-[13px] sm:text-base md:text-xl{{else}}text-[13px] sm:text-base{{/if}}">
+    {{default text 'ENROLLMENT OPEN'}}
+  </span>
+</div>
