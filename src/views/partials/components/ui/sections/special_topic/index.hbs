@@ -1,0 +1,74 @@
+{{!--
+  Komponen: Special Topic Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/special_topic/index.hbs
+  
+  Props:
+  - category : Object dengan category.courseTypes[]
+  - lang     : Bahasa aktif
+--}}
+
+<!-- TOPIC SECTION -->
+<section 
+  id="topics" 
+  class="w-full bg-[#FAFAFA] py-20 lg:py-24 font-montserrat"
+  x-data="{ sectionShown: false }"
+  x-init="
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        sectionShown = true;
+        observer.disconnect();
+      }
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+    observer.observe($el);
+  "
+>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1240px] flex flex-col items-center">
+    
+    <!-- Section Header -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
+      class="w-full max-w-4xl text-center mb-12 sm:mb-16 transition-all duration-700 ease-out transform"
+    >
+      {{> components/ui/text/section_header/index
+          title=(t 'test.special_program.topic.title')
+          titleClass="font-montserrat font-semibold text-3xl sm:text-4xl lg:text-4xl text-center mb-7"
+          description=(t 'test.special_program.topic.description')
+          descClass="font-sans font-normal text-sm sm:text-base lg:text-2xl text-[#000000CC] text-center"
+      }}
+    </div>
+
+    <!-- Cards Grid -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-items-center w-full max-w-[1200px] transition-all duration-700 ease-out delay-150 transform"
+    >
+      
+      {{#each category.courseTypes}}
+      <div class="w-full sm:w-[357px] h-auto lg:h-[278px] bg-[linear-gradient(245.8deg,rgba(240,240,240,0.5)_41.11%,rgba(224,241,249,0.5)_100.24%)] backdrop-blur-[6.6px] rounded-xl border border-white/60 p-6 sm:p-7 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-start text-left">
+        <div class="w-12 h-12 rounded-full bg-[#003060] flex items-center justify-center text-white mb-5 shadow-sm shrink-0">
+          <i class="{{computeIcon icon}} text-xl text-white"></i>
+        </div>
+        {{> components/ui/text/sub_title/index
+            text=this.nameClassesType
+            tag="h3"
+            size="xl"
+            color="dark"
+            font="montserrat"
+            fontWeight="font-semibold"
+            align="left"
+            class="mb-3"
+        }}
+        {{> components/ui/text/description/index
+            text=(getByLang this.description ../lang)
+            size="base"
+            color="gray"
+            font="sans"
+            align="left"
+        }}
+      </div>
+      {{/each}}
+
+    </div>
+
+  </div>
+</section>

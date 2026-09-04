@@ -1,0 +1,78 @@
+{{!--
+  Komponen: Special Program Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/special_program/index.hbs
+  
+  Props:
+  - category : Object dengan category.name
+  - courses  : Array of course objects
+  - lang     : Bahasa aktif
+--}}
+
+<!-- SPECIAL PROGRAM LIST SECTION -->
+<section id="programs" class="relative z-10 w-full my-20 py-20 pt-24 sm:pt-28 lg:pt-36 font-montserrat">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1200px] flex flex-col items-center">
+    
+    <!-- Section Header -->
+    {{> components/ui/text/section_header/index
+        wrapperClass="w-full max-w-4xl text-center mb-12 sm:mb-16"
+        title=(concat (t 'test.special_program.program.title') ' ' category.name)
+        titleClass="font-montserrat font-bold text-2xl sm:text-3xl lg:text-[40px] text-[#003060] leading-tight mb-4"
+        description=(t 'test.special_program.program.description')
+        descClass="font-['Open_Sans'] font-normal text-sm sm:text-base lg:text-[18px] text-gray-600 leading-relaxed"
+    }}
+
+    {{#if courses}}
+    <!-- Program Cards -->
+    <div class="w-full grid xl:grid-cols-3 gap-2">
+      {{#each courses}}
+        {{> components/ui/card/course/index 
+            id=this.id
+            image=this.image
+            name=this.name
+            description=this.description
+            method=this.method
+            month=this.month
+            quota=this.quota
+            variant="special"
+            lang=../lang
+        }}
+      {{/each}}
+    </div>
+    {{else}}
+    <!-- Program Coming Soon Card -->
+    <div class="w-full max-w-[706px] bg-white border border-gray-200/80 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center text-center px-6 sm:px-10 py-14 sm:py-16 lg:py-20">
+
+      <!-- Icon Circle -->
+      <div class="w-14 h-14 sm:w-16 sm:h-16 bg-[#003060] rounded-full flex items-center justify-center text-white mb-6 shadow-md shrink-0" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-8 sm:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+
+      <!-- Card Title -->
+      {{> components/ui/text/sub_title/index
+          text="Program Coming Soon"
+          tag="h3"
+          size="2xl"
+          color="primary"
+          font="montserrat"
+          fontWeight="font-bold"
+          align="center"
+          class="mb-4"
+      }}
+
+      <!-- Card Description -->
+      {{> components/ui/text/description/index
+          text="We're preparing this program to deliver the best learning experience. Stay tuned for updates."
+          size="base"
+          color="gray"
+          font="opensans"
+          align="center"
+          class="max-w-md"
+      }}
+
+    </div>
+    {{/if}}
+
+  </div>
+</section>
