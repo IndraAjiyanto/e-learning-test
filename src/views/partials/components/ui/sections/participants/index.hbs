@@ -3,28 +3,31 @@
   Lokasi: src/views/partials/components/ui/sections/participants/index.hbs
 
   Props:
-  - participants : array (opsional, default course.participants)
-  - badgeTitle   : string (opsional, default test.paidProgram.title.participants)
-  - lang         : string (opsional, kode bahasa aktif)
-  - sectionClass : string (opsional, class tambahan untuk section)
+  - participants    : array (opsional, default course.participants)
+  - badgeTitle      : string (opsional, default test.paidProgram.title.participants)
+  - lang            : string (opsional, kode bahasa aktif)
+  - sectionClass    : string (opsional, class tambahan untuk section)
+  - showDescription : boolean (opsional, default true)
+  - gridColsClass   : string (opsional, default 'grid-cols-1 md:grid-cols-2')
 --}}
 
 <!-- PARTICIPANTS SECTION -->
 <section id="participants" class="py-20 font-montserrat bg-[#FAFAFA] {{sectionClass}}">
   <div class="flex flex-col items-center max-w-[1400px] container mx-auto px-4 lg:px-12">
     
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
       badge=(default badgeTitle (t 'test.paidProgram.title.participants'))
       badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
     }}
 
-    <!-- Cards Grid (2x2) -->
-    <div class="grid grid-cols-1 w-full max-w-[1000px] gap-8 md:grid-cols-2 lg:gap-10">
+    <!-- Cards Grid -->
+    <div class="grid w-full max-w-[1000px] gap-8 {{default gridColsClass 'grid-cols-1 md:grid-cols-2'}} lg:gap-10">
       {{#each (default participants course.participants)}}
         {{> components/ui/card/card_participants/index
           icon=this.icon
           title=this.title
           description=this.description
+          showDescription=../showDescription
           lang=../lang
         }}
       {{/each}}

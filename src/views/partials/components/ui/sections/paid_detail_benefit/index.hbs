@@ -1,0 +1,24 @@
+<!-- BENEFITS SECTION -->
+<section id="benefits" class="bg-[#FAFAFA] py-20 font-montserrat overflow-x-hidden">
+  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
+    
+    {{> components/ui/text/section_header/index
+      badge=(default badgeTitle (t 'test.paidProgram.navbarMenu.benefits'))
+      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
+    }}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1000px]">
+      {{#each course.programBenefits}}
+      <div data-animate="slide-right" class="bg-white border border-[#E0E0E0] rounded-[16px] p-6 md:p-8 flex gap-5 hover:shadow-lg transition-shadow duration-300">       
+        <div class="text-[#0F0F0F] text-[28px] mt-1 flex-shrink-0">
+          <i class="fas {{this.icon}}"></i>
+        </div>
+        <div>
+          <h3 class="text-[#0F0F0F] font-[700] text-[17px] mb-2">{{getByLang this.benefit ../lang}}</h3>
+          <p class="text-[#545454] text-[14px] leading-[1.6]">{{getByLang this.description ../lang}}</p>
+        </div>
+      </div>
+      {{/each}}  
+    </div>
+  </div>
+</section>
