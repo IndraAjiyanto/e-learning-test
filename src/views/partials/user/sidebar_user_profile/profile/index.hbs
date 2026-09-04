@@ -7,7 +7,7 @@
   <!-- Welcome & Account Information Section -->
   <div>
     <!-- Header Block (h1 to p spacing: 15px, header to avatar spacing: 64px) -->
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
       align="text-left"
       titleTag="h1"
       title=(concat "Welcome, " user.username)
@@ -114,7 +114,7 @@
   <!-- Your Biodata Section -->
   <div>
     <!-- Header Block -->
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
       align="text-left"
       titleTag="h2"
       title="Your Biodata"
