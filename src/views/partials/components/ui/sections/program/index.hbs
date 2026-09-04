@@ -3,7 +3,7 @@
   <div class="w-full">
 
     <!-- Header Section -->
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
         wrapperClass="mb-8"
         badge=(t 'test.home.programSection.ourProgram')
         badgeClass="px-5 py-2 text-[14px] mb-4"
@@ -34,7 +34,7 @@
   <div class="container mx-auto px-4 lg:px-8 max-w-[1324px]">
 
     <!-- Header Section -->
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
         wrapperClass="mb-8 sm:mb-12 relative"
         badge=(t 'test.home.programSection.ourProgram')
         badgeClass="w-[305px] h-[49px] text-[20px] mb-0"
@@ -55,7 +55,6 @@
             name=this.name
             text=this.text
             lang=../lang
-            desktop=true
         }}
       {{/each}}
 

@@ -30,6 +30,7 @@ export const logicHelpers = {
       (attendances) => attendances.user && attendances.user.id === userId,
     );
   },
+  ternary: (condition: any, ifTrue: any, ifFalse: any) => (condition ? ifTrue : ifFalse),
   roles: (userRole: string, ...roles: string[]) => {
     const allowedRoles = roles.slice(0, -1);
     return allowedRoles.includes(userRole);

@@ -1,13 +1,38 @@
-{{> paidProgramNew/hero_section}}
+{{!-- PAID PROGRAM PAGE --}}
+{{!-- Hero Section - khusus paid program --}}
+{{> components/ui/sections/paid_hero/index}}
 
-{{> paidProgramNew/program}}
+{{!-- Program Section - khusus paid (card/category/paid) --}}
+{{> components/ui/sections/paid_program/index}}
 
-{{> paidProgramNew/advantage}}
+{{!-- Advantage Section - khusus paid --}}
+{{> components/ui/sections/paid_advantage/index}}
 
-{{> paidProgramNew/flow}}
+{{!-- Flow Section - khusus paid (portfolio showcase) --}}
+{{> components/ui/sections/paid_flow/index}}
 
-{{> paidProgramNew/alumni}}
+{{!-- Alumni Section - reuse section alumni dengan headerVariant paid --}}
+{{> components/ui/sections/alumni/index
+    headerVariant="paid"
+    showMobile=false
+    titleKey="test.categoryPaidProgram.alumni.title"
+    descKey="test.categoryPaidProgram.alumni.description"
+    footerTextKey="test.categoryPaidProgram.alumni.footer"
+    footerLinkTextKey="test.categoryPaidProgram.alumni.allStories"
+}}
 
-{{> paidProgramNew/gallery}}
+{{!-- Gallery Section - reuse section gallery dengan konfigurasi paid --}}
+{{> components/ui/sections/gallery/index
+    renderMobile=false
+    showBadge=false
+    showDivider=false
+    showBottomLink=true
+    titleKey="test.categoryPaidProgram.gallery.title"
+    descKey="test.categoryPaidProgram.gallery.description"
+    linkKey="test.categoryPaidProgram.gallery.allGaleries"
+    desktopSectionClass="w-full py-20 font-montserrat"
+    desktopWrapperClass="w-auto mx-auto px-8 lg:px-16 flex flex-col items-center"
+}}
 
-{{> paidProgramNew/cta}}
+{{!-- CTA Section - khusus paid --}}
+{{> components/ui/sections/paid_cta/index}}

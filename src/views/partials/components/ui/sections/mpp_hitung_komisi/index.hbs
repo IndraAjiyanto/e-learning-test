@@ -1,0 +1,107 @@
+{{!-- 
+  Section: MPP Ilustrasi Perhitungan Komisi
+  Lokasi: src/views/partials/components/ui/sections/mpp_hitung_komisi/index.hbs
+  Level: L2 Section
+  Komponen L1: text/section_header, card/category/mpp/calc
+--}}
+<section class="w-full bg-white py-16 lg:py-24">
+    <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
+
+        <div class="flex flex-col gap-12 lg:flex-row">
+
+            <!-- Description -->
+            <div class="w-full lg:w-[463px] lg:shrink-0 lg:border-r lg:border-gray-300 lg:pr-10">
+                {{> components/ui/text/section_header/index
+                    align="text-left"
+                    title="Bagaimana Ilustrasi Perhitungan Komisi?"
+                    titleClass="mb-2 font-sans text-[36px] font-bold leading-tight text-[#003060]"
+                }}
+
+                <div class="font-sans text-[25px] leading-9">
+                    <p class="mb-2 text-[#6EB6E5]">
+                        Contoh:
+                    </p>
+
+                    {{> components/ui/text/description/index
+                        text="Seorang mitra pada tingkatan partner active berhasil membawa 5 pendaftar closing dalam satu bulan dengan komisi Rp 458.500 per closing."
+                        color="gray"
+                        align="left"
+                        class="text-[25px] leading-9"
+                    }}
+                </div>
+            </div>
+
+            <!-- Illustration -->
+            <div class="flex min-w-0 flex-1 flex-col justify-center gap-8">
+
+                <!-- Calculation -->
+                <div class="flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+
+                    <!-- Closing -->
+                    {{> components/ui/card/category/mpp/calc/index
+                        value="5"
+                        label="Closing"
+                        icon="fa-solid fa-bullseye text-[35px] text-black"
+                    }}
+
+                    <!-- Multiply -->
+                    <i class="fa-solid fa-xmark shrink-0 text-[18px] text-gray-400"></i>
+
+                    <!-- Commission per Closing -->
+                    {{> components/ui/card/category/mpp/calc/index
+                        value="Rp 458.500"
+                        label="per closing"
+                        icon="fa-solid fa-hand-holding-dollar text-[28px] text-[#003060]"
+                    }}
+
+                    <!-- Equals -->
+                    <i class="fa-solid fa-equals shrink-0 text-[18px] text-gray-400"></i>
+
+                    <!-- Total Commission -->
+                    {{> components/ui/card/category/mpp/calc/index
+                        value="Rp 2.292.500"
+                        label="Total Komisi"
+                        icon="fa-regular fa-money-bill-1 text-[28px] text-[#003060]"
+                    }}
+
+                    <!-- Plus -->
+                    <i class="fa-solid fa-plus shrink-0 text-[18px] text-gray-400"></i>
+
+                    <!-- Bonus -->
+                    {{> components/ui/card/category/mpp/calc/index
+                        value="Rp 1.637.300"
+                        label="Bonus per batch (5%)"
+                        icon="fa-solid fa-gift text-[28px] text-[#003060]"
+                    }}
+
+                    <!-- Equals -->
+                    <i class="fa-solid fa-equals shrink-0 text-[18px] text-gray-400"></i>
+
+                    <!-- Total Income -->
+                    {{> components/ui/card/category/mpp/calc/index
+                        variant="primary"
+                        value="Rp 3.930.000"
+                        label="Total Pendapatan"
+                        icon="fa-solid fa-wallet text-[26px] text-[#003060]"
+                    }}
+
+                </div>
+
+                <!-- Information -->
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info mt-1 shrink-0 text-[24px] text-[#003060]"></i>
+
+                    {{> components/ui/text/description/index
+                        text="Total komisi dapat disesuaikan dengan kebijakan yang berlaku pada tingkatannya."
+                        color="primary"
+                        align="left"
+                        class="text-[20px] leading-7"
+                    }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
