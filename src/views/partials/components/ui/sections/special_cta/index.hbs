@@ -1,0 +1,57 @@
+{{!--
+  Komponen: Special CTA Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/special_cta/index.hbs
+  
+  Props:
+  - category : Object dengan category.contact (WhatsApp number)
+  - lang     : Bahasa aktif
+--}}
+
+<!-- CTA SECTION (CONTACT) -->
+<section id="explore-program" class="w-full mt-16 mb-24 md:mt-20 md:mb-32 font-montserrat relative">
+  <div class="w-full relative min-h-[372px] flex items-center justify-center py-12 px-6">
+    
+    <!-- Background Banner -->
+    <div class="absolute inset-0 z-0 bg-[#6EB6E5]"
+         style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"></div>
+
+    <!-- Content -->
+    <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center relative z-10">
+      
+      <!-- Title -->
+      {{> components/ui/text/sub_title/index
+          text=(t 'test.special_program.contact.title')
+          tag="h2"
+          size="4xl"
+          color="dark"
+          font="montserrat"
+          fontWeight="font-semibold"
+          align="center"
+      }}
+
+      <!-- Subtitle -->
+      {{> components/ui/text/description/index
+          text=(t 'test.special_program.contact.description')
+          size="2xl"
+          color="dark"
+          font="inter"
+          align="center"
+          class="mt-7 mb-20"
+      }}
+
+      <!-- Button -->
+      <div>
+        {{> components/ui/button/btn_action/index
+            href=(concat 'https://wa.me/+' category.contact '?text=Halo%20Saya%20tertarik%20dengan%20program%20ini.')
+            target="_blank"
+            text=(t 'test.special_program.contact.contact')
+            icon="fas fa-phone"
+            variant="primary"
+            class="w-full sm:w-[370px] h-[85px] font-semibold text-xl"
+            textClass="ml-3"
+        }}
+      </div>
+
+    </div>
+  </div>
+</section>

@@ -1,0 +1,96 @@
+{{!--
+  Komponen: Special Benefit Section (L2 Section)
+  Lokasi: src/views/partials/components/ui/sections/special_benefit/index.hbs
+  
+  Props:
+  - category        : Object dengan category.name
+  - benefit_category : Array of benefit items dengan icon, title, description fields
+  - lang            : Bahasa aktif
+--}}
+
+<!-- BENEFIT SECTION -->
+<section 
+  class="w-full relative pt-16 pb-24 z-0 overflow-hidden bg-[#FAFAFA]"
+  x-data="{ sectionShown: false }"
+  x-init="
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        sectionShown = true;
+        observer.disconnect();
+      }
+    }, { threshold: 0.25, rootMargin: '0px 0px -50px 0px' });
+    observer.observe($el);
+  "
+>
+  
+  <!-- Background Image without gradient overlay -->
+  <div class="absolute inset-0 -z-10">
+    <img src="/public/image/specialProgram/bgBenefit.png" alt="Benefit Background" class="w-full h-full object-cover">
+  </div>
+
+  <div class="container mx-auto px-4 lg:px-8 max-w-[1324px] relative z-10 text-center">
+    
+    <!-- Header Section -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+      class="transition-all duration-700 ease-out text-center mb-16 space-y-4 transform"
+    >
+      <!-- Title -->
+      {{> components/ui/text/sub_title/index
+          text=(concat (t 'test.special_program.whyChooseUs.title') ' ' category.name '?')
+          tag="h2"
+          size="4xl"
+          color="dark"
+          font="montserrat"
+          fontWeight="font-semibold"
+          align="center"
+          class="mb-4"
+      }}
+      
+      <!-- Subtitle -->
+      {{> components/ui/text/description/index
+          text=(t 'test.special_program.whyChooseUs.description')
+          size="xl"
+          color="muted"
+          font="sans"
+          align="center"
+          class="max-w-3xl mx-auto"
+      }}
+    </div>
+
+    <!-- Cards Grid Container -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center transition-all duration-700 ease-out delay-150 transform"
+    >
+
+    {{#each benefit_category}}
+      <!-- Card -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+         <i class="{{computeIcon icon}} text-white text-2xl"></i>
+        </div>
+        {{> components/ui/text/sub_title/index
+            text=(getByLang this.title ../lang)
+            tag="h3"
+            size="xl"
+            color="primary"
+            font="montserrat"
+            fontWeight="font-semibold"
+            align="center"
+            class="mb-4"
+        }}
+        {{> components/ui/text/description/index
+            text=(getByLang this.description ../lang)
+            size="base"
+            color="gray"
+            font="sans"
+            align="center"
+        }}
+      </div>
+    {{/each}}
+
+    </div>
+    
+  </div>
+</section>
