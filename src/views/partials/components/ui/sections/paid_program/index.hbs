@@ -3,14 +3,13 @@
   <div class="container mx-auto px-5 sm:px-6 lg:px-12 max-w-[1440px]">
     
     <!-- Section Header -->
-    <div class="text-center mb-8 sm:mb-12">
-      <h2 class="font-montserrat font-bold sm:font-semibold text-2xl sm:text-3xl lg:text-4xl text-center mb-2 sm:mb-5">
-        <span class="text-[#6EB6E5]">Choose</span> <span class="text-black">Your Learning Path</span>
-      </h2>
-      <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-black/80 text-center max-w-[340px] sm:max-w-2xl mx-auto">
-        Select the program that aligns with your goals and passion.
-      </p>
-    </div>
+    {{> components/ui/text/section_header/index
+        wrapperClass="mb-8 sm:mb-12"
+        title=(t 'test.categoryPaidProgram.program.title')
+        titleClass="font-montserrat font-bold sm:font-semibold text-2xl sm:text-3xl lg:text-4xl text-center mb-2 sm:mb-5"
+        description=(t 'test.categoryPaidProgram.program.description')
+        descClass="font-sans font-normal text-sm sm:text-base lg:text-lg text-black/80 text-center max-w-[340px] sm:max-w-2xl mx-auto"
+    }}
 
     <!-- Course Cards Grid -->
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-items-center">
