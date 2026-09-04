@@ -13,7 +13,7 @@
       :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
       class="transition-all duration-700 ease-out transform text-center flex flex-col items-center w-full"
     >
-      {{> components/ui/section_header
+      {{> components/ui/text/section_header/index
           badge=(t 'test.home.imagine.whyChooseUs')
           badgeClass="px-[16px] py-[8px] font-montserrat font-medium text-[14px] text-[#003060] leading-none mb-4"
           title=(t 'test.home.imagine.title')
@@ -72,7 +72,7 @@
       :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-16'"
       class="transition-all duration-1000 ease-out transform text-center"
     >
-      {{> components/ui/section_header
+      {{> components/ui/text/section_header/index
           badge=(t 'test.home.imagine.whyChooseUs')
           badgeClass="w-[305px] h-[49px] text-[20px] mb-8"
           title=(t 'test.home.imagine.title')
@@ -104,14 +104,8 @@
             title=this.title
             description=this.description
             lang=../lang
-            desktop=true
         }}
       {{/each}}
-      
-    </div>
-    
-  </div>
-</section>
       
     </div>
     

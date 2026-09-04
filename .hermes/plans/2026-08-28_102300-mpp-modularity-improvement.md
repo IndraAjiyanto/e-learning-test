@@ -52,7 +52,7 @@
 | Table with headers and rows | A table comparing tiers, requirements, commissions, benefits | skema_komisi.hbs |
 | Icon-text item | An item with an icon (circle or gradient) and descriptive text | benefit.hbs, kit_marketing.hbs |
 | Accordion | A vertically stacked list of items that can be expanded/collapsed | faq.hbs |
-| Section header | A heading with optional description (already partially componentized via `components/ui/section_header`) | Multiple files |
+| Section header | A heading with optional description (already partially componentized via `components/ui/text/section_header/index/`) | Multiple files |
 
 **Step 3: Decide on components to create**
 

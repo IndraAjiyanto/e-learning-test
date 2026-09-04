@@ -24,7 +24,7 @@
     <!-- Mobile Buttons Group -->
     <div class="flex flex-col gap-3 w-full max-w-[350px] mx-auto pt-1">
       <!-- Button 1: Explore Programs -->
-      {{> components/ui/btn_action 
+      {{> components/ui/button/btn_action/index 
           onClick="document.getElementById('courses-section-mobile').scrollIntoView({ behavior: 'smooth', block: 'start' })"
           text=(t 'test.home.heroSection.buttonExplorePrograms')
           iconSrc="/public/image/dashboard/hugeicons_start-up-02.svg"
@@ -107,7 +107,7 @@
       <!-- Buttons -->
       <div class="flex flex-row items-center gap-4 xl:gap-[15px]">
         <!-- Button 1: Explore Programs -->
-        {{> components/ui/btn_action 
+        {{> components/ui/button/btn_action/index 
             onClick="document.getElementById('courses-section').scrollIntoView({ behavior: 'smooth', block: 'start' })"
             text=(t 'test.home.heroSection.buttonExplorePrograms')
             iconSrc="/public/image/dashboard/hugeicons_start-up-02.svg"
@@ -120,7 +120,6 @@
         {{> components/ui/button/consultation/index 
             phone=social.[0].number
             text=(t 'test.home.heroSection.buttonConsultation')
-            desktop=true
             class="w-[370px] h-[85px] gap-[15px] p-[10px] text-lg xl:text-xl font-semibold opacity-100 hover:-translate-y-1"
         }}
       </div>

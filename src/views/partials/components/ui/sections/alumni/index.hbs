@@ -1,21 +1,111 @@
-<!-- MOBILE ALUMNI SECTION (< 640px / Figma Frame "Stories From Alumni") -->
-<section class="block sm:hidden py-12 px-5 relative overflow-hidden bg-[#CEE5F6] w-full font-montserrat">
-  <!-- Header Section -->
-  {{> components/ui/section_header
+{{!-- 
+  Section: Alumni (L2 Section) - reusable untuk home & paid program
+  Lokasi: src/views/partials/components/ui/sections/alumni/index.hbs
+
+  Props (opsional, default = home agar backward-compatible):
+  - headerVariant   : 'home' | 'paid' (default: 'home')
+  - badgeKey, titleKey, descKey, footerTextKey, footerLinkTextKey : i18n keys
+  - showMobile, showDesktop : bool (default: true)
+  - sectionClass, mobileSectionClass : override kelas section
+  - desktopBgStyle : inline style override untuk desktop
+--}}
+
+{{!-- Shared carousel partial --}}
+{{#*inline "_alumni_carousel"}}
+  <!-- Carousel Container -->
+  <div class="relative w-full mx-auto z-10">
+    <div class="overflow-hidden md:overflow-visible py-8 w-full">
+      <div
+        class="flex gap-4 md:gap-8 transition-transform duration-500 ease-in-out"
+        :style="`transform: translateX(calc(50vw - ${(active * (window.innerWidth < 768 ? 336 : 527.45)) + (window.innerWidth < 768 ? 160 : 247.725)}px)); width: max-content;`"
+      >
+        <template x-for="(item, index) in testimonials" :key="item.id || index">
+          <div
+            class="w-[320px] md:w-[495.45px] flex-shrink-0 transition-all duration-500 ease-in-out transform cursor-pointer origin-center"
+            :class="isCenter(index) 
+              ? 'scale-100 opacity-100 z-10 shadow-[0px_0px_4.41px_0px_rgba(0,0,0,0.25)]' 
+              : 'scale-[0.906] opacity-60 z-0 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] hidden md:block'"
+            @click="goTo(index)"
+          >
+            <div :class="isCenter(index) ? 'rounded-[13.24px]' : 'rounded-[12px]'">
+              {{> components/ui/card/card_alumni/index isDesktop=true}}
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Navigation & Pagination Controls -->
+    <div class="flex justify-center items-center mt-8 gap-4 min-h-[52px]">
+      <button
+        x-show="active > 0"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-75"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-75"
+        class="w-12 h-12 flex items-center justify-center rounded-full bg-[#003060] text-white shadow-md hover:bg-[#0B1F3B] transition-all hover:scale-105"
+        @click="prev()"
+        aria-label="Previous Testimonial"
+      >
+        <i class="fas fa-chevron-left text-lg"></i>
+      </button>
+
+      <div class="relative flex items-center gap-4 mx-4 py-2">
+        <template x-for="(item, index) in testimonials" :key="'swap-dot-' + index">
+          <div
+            class="w-5 h-5 rounded-full transition-all duration-500 ease-in-out transform pointer-events-none"
+            :class="getDotClass(index)"
+            :style="`transform: translateX(${getDotOffset(index)}px);`"
+          ></div>
+        </template>
+        <div class="absolute inset-0 flex items-center gap-4">
+          <template x-for="(item, index) in testimonials" :key="'click-dot-' + index">
+            <button
+              class="w-5 h-5 rounded-full cursor-pointer focus:outline-none opacity-0"
+              @click="goTo(index)"
+              :aria-label="'Go to slide ' + (index + 1)"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <button
+        x-show="active < maxIndex"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-75"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-75"
+        class="w-12 h-12 flex items-center justify-center rounded-full bg-[#003060] text-white shadow-md hover:bg-[#0B1F3B] transition-all hover:scale-105"
+        @click="next()"
+        aria-label="Next Testimonial"
+      >
+        <i class="fas fa-chevron-right text-lg"></i>
+      </button>
+    </div>
+  </div>
+{{/inline}}
+
+{{#if (ternary (eq showMobile undefined) true showMobile)}}
+<!-- MOBILE ALUMNI SECTION (< 640px) -->
+<section class="{{default mobileSectionClass 'block sm:hidden py-12 px-5 relative overflow-hidden bg-[#CEE5F6] w-full font-montserrat'}}">
+  {{> components/ui/text/section_header/index
       wrapperClass="mb-8 relative z-10"
-      badge=(t 'test.home.alumniSection.badge')
+      badge=(t (default badgeKey 'test.home.alumniSection.badge'))
       badgeClass="px-5 py-2 text-[14px] mb-3"
-      title=(t 'test.home.alumniSection.title')
+      title=(t (default titleKey 'test.home.alumniSection.title'))
       titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] mb-3"
       showDivider=true
       dividerClass="w-[68px] bg-[#0B1F3B] mb-2"
   }}
 
-  <!-- Cards Stack -->
   <div class="flex flex-col gap-5 w-full relative z-10">
     {{#if alumni.length}}
       {{#each alumni}}
-        {{> components/ui/card_alumni 
+        {{> components/ui/card/card_alumni/index 
             message=this.message
             profile=this.profile
             name=this.name
@@ -25,205 +115,124 @@
         }}
       {{/each}}
     {{else}}
-      <!-- Fallback Dummy Cards for Preview (from Figma Screenshot) -->
-      <!-- Card 1: John Calvin Sukarman -->
       <div class="w-full bg-white rounded-[16px] p-6 shadow-[0px_4px_12px_0px_#00000010] border border-white/80 flex flex-col">
-        <span class="text-4xl text-[#0B1F3B] font-serif leading-none mb-3 select-none">❝</span>
+        <span class="text-4xl text-[#0B1F3B] font-serif leading-none mb-3 select-none">&#10077;</span>
         <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-left flex-1 mb-4">
-          "This bootcamp gave me more than just knowledge; I built a strong professional network. Collaborating with fellow participants on projects simulated the real-world dynamics of teamwork."
+          "This bootcamp gave me more than just knowledge; I built a strong professional network."
         </p>
-        
         <div class="w-full h-px bg-slate-200/80 mb-4"></div>
-        
         <div class="flex items-center gap-3.5">
-          <img src="/public/image/orang.png" alt="John Calvin Sukarman" class="w-11 h-11 rounded-full object-cover shadow-sm shrink-0"/>
+          <img src="/public/image/orang.png" alt="Alumni" class="w-11 h-11 rounded-full object-cover shadow-sm shrink-0"/>
           <div class="text-left">
             <h4 class="font-montserrat font-semibold text-[14px] leading-none text-[#0B1F3B]">John Calvin Sukarman</h4>
-            <p class="font-sans font-normal text-[12px] leading-[16px] text-[#2D2D2D] mt-1">Backend Developer at PT. Wiratek Solusi Asia</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 2: Aqmal Mistahul Husna -->
-      <div class="w-full bg-white rounded-[16px] p-6 shadow-[0px_4px_12px_0px_#00000010] border border-white/80 flex flex-col">
-        <span class="text-4xl text-[#0B1F3B] font-serif leading-none mb-3 select-none">❝</span>
-        <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-left flex-1 mb-4">
-          "Continue to foster a culture of mentorship that is humble yet critical. Mentors who can position themselves as learning partners are this bootcamp's greatest asset."
-        </p>
-        
-        <div class="w-full h-px bg-slate-200/80 mb-4"></div>
-        
-        <div class="flex items-center gap-3.5">
-          <img src="/public/image/orang.png" alt="Aqmal Mistahul Husna" class="w-11 h-11 rounded-full object-cover shadow-sm shrink-0"/>
-          <div class="text-left">
-            <h4 class="font-montserrat font-semibold text-[14px] leading-none text-[#0B1F3B]">Aqmal Mistahul Husna</h4>
-            <p class="font-sans font-normal text-[12px] leading-[16px] text-[#2D2D2D] mt-1">Quality Assurance (QA)</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3: Saeful Haq Faruqi -->
-      <div class="w-full bg-white rounded-[16px] p-6 shadow-[0px_4px_12px_0px_#00000010] border border-white/80 flex flex-col">
-        <span class="text-4xl text-[#0B1F3B] font-serif leading-none mb-3 select-none">❝</span>
-        <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-left flex-1 mb-4">
-          "This bootcamp completely changed the way I understand JavaScript and React. What I liked most was the final project, which helped me build my portfolio."
-        </p>
-        
-        <div class="w-full h-px bg-slate-200/80 mb-4"></div>
-        
-        <div class="flex items-center gap-3.5">
-          <img src="/public/image/orang.png" alt="Saeful Haq Faruqi" class="w-11 h-11 rounded-full object-cover shadow-sm shrink-0"/>
-          <div class="text-left">
-            <h4 class="font-montserrat font-semibold text-[14px] leading-none text-[#0B1F3B]">Saeful Haq Faruqi</h4>
-            <p class="font-sans font-normal text-[12px] leading-[16px] text-[#2D2D2D] mt-1">Frontend Developer at PT. Bank SMBC (BTPN) Indonesia</p>
+            <p class="font-sans font-normal text-[12px] leading-[16px] text-[#2D2D2D] mt-1">Backend Developer</p>
           </div>
         </div>
       </div>
     {{/if}}
   </div>
-
-  <!-- See All Link -->
-  {{!-- <div class="text-center mt-8 relative z-10">
-    <p class="text-[#2D2D2D] mb-2 font-sans font-normal text-[14px]">
-      {{t "test.home.alumniSection.moreStories"}}
-    </p>
-    <a
-      href="/dashboard/alumni"
-      class="inline-flex items-center gap-2 text-[#0B1F3B] font-bold text-[14px] font-sans hover:underline"
-    >
-      {{t "test.home.alumniSection.seeAll"}}
-      <i class="fas fa-arrow-right text-xs"></i>
-    </a>
-  </div> --}}
 </section>
+{{/if}}
 
-<!-- DESKTOP ALUMNI SECTION (>= 640px / Figma Baseline W1728) -->
+{{#if (ternary (eq showDesktop undefined) true showDesktop)}}
+{{#if (eq (default headerVariant 'home') 'paid')}}
+<!-- PAID ALUMNI DESKTOP (stabilo header + carousel) -->
 <section
-  class="hidden sm:block py-12 sm:py-20 relative overflow-hidden bg-cover bg-center"
-  style="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
+  class="{{default sectionClass 'py-20 relative overflow-hidden'}}"
+  style="{{default desktopBgStyle 'background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);'}}"
   x-data="testimonialCarousel(window.__alumniCarousel)"
 >
-  <!-- Background Blur Effects -->
   <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
     <div class="w-64 h-64 bg-white rounded-full blur-3xl absolute -top-20 -right-20"></div>
   </div>
 
-  <!-- Header Section -->
-  {{> components/ui/section_header
+  <!-- Header Section (Stabilo Highlight) -->
+  <div class="text-center mb-8 relative z-10 px-6 lg:px-20">
+    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#000000] font-montserrat tracking-tight mb-6 flex flex-wrap items-center justify-center gap-2">
+      <span>{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}}</span>
+      <span 
+        class="relative inline-flex items-center justify-center overflow-hidden align-middle my-1"
+        x-data="{
+          isHighlighted: false,
+          init() {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) { this.isHighlighted = true; }
+              });
+            }, { threshold: 0.4, rootMargin: '0px 0px -50px 0px' });
+            observer.observe(this.$el);
+          }
+        }"
+      >
+        <span class="opacity-0 font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
+          Alumni {{category.name}}
+        </span>
+        <span 
+          class="absolute inset-y-0 left-0 bg-[#003060] rounded-[8px] sm:rounded-[10px] transition-all duration-[800ms] ease-out overflow-hidden flex items-center justify-center whitespace-nowrap shadow-md pointer-events-none"
+          :class="isHighlighted ? 'w-full' : 'w-0'"
+        >
+          <span class="font-montserrat font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
+            Alumni {{category.name}}
+          </span>
+        </span>
+      </span>
+    </h2>
+    <p class="text-base md:text-xl text-[#000000]/80 max-w-6xl mx-auto font-sans font-normal">
+      {{t (default descKey 'test.categoryPaidProgram.alumni.description')}} {{category.name}}.
+    </p>
+  </div>
+
+  {{> _alumni_carousel}}
+
+  <div class="text-center mt-10">
+    <p class="text-[#000000]/80 font-sans font-normal text-base md:text-xl mb-4">
+      {{t (default footerTextKey 'test.categoryPaidProgram.alumni.footer')}}
+    </p>
+    <a href="/dashboard/alumni" class="inline-flex items-center gap-2 text-[#0B1F3B] font-normal text-base md:text-lg font-sans hover:underline">
+      {{t (default footerLinkTextKey 'test.categoryPaidProgram.alumni.allStories')}}
+      <i class="fas fa-arrow-right text-sm"></i>
+    </a>
+  </div>
+</section>
+{{else}}
+<!-- HOME ALUMNI DESKTOP (section_header + carousel) -->
+<section
+  class="{{default sectionClass 'hidden sm:block py-12 sm:py-20 relative overflow-hidden bg-cover bg-center'}}"
+  style="{{default desktopBgStyle "background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"}}"
+  x-data="testimonialCarousel(window.__alumniCarousel)"
+>
+  <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
+    <div class="w-64 h-64 bg-white rounded-full blur-3xl absolute -top-20 -right-20"></div>
+  </div>
+
+  {{> components/ui/text/section_header/index
       wrapperClass="mb-4 relative z-10 px-5 sm:px-6 lg:px-20"
-      badge=(t 'test.home.alumniSection.badge')
+      badge=(t (default badgeKey 'test.home.alumniSection.badge'))
       badgeClass="w-[305px] h-[49px] text-[20px] font-[500] mb-0"
-      title=(t 'test.home.alumniSection.title')
+      title=(t (default titleKey 'test.home.alumniSection.title'))
       titleClass="text-3xl md:text-4xl lg:text-4xl font-semibold text-[#000000] mt-8 mb-4 font-montserrat tracking-tight text-center"
       showDivider=true
       dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
-      description=(t 'test.home.alumniSection.description')
+      description=(t (default descKey 'test.home.alumniSection.description'))
       descClass="text-base md:text-xl leading-relaxed text-[#000000]/80 max-w-auto mx-auto font-sans font-normal text-center"
   }}
 
-  <!-- Carousel Container -->
-  <div class="relative w-full mx-auto z-10">
-    
-    <!-- Slide Viewport -->
-    <div class="overflow-hidden md:overflow-visible py-6 sm:py-8 w-full">
-      <!-- Slide Track with 500ms smooth translation -->
-      <div
-        class="flex gap-4 md:gap-8 transition-transform duration-500 ease-in-out"
-        :style="`transform: translateX(calc(50vw - ${(active * (window.innerWidth < 768 ? 336 : 527.45)) + (window.innerWidth < 768 ? 160 : 247.725)}px)); width: max-content;`"
-      >
-        <!-- Dynamic Testimonial Cards -->
-        <template x-for="(item, index) in testimonials" :key="item.id || index">
-          <div
-            class="w-[320px] md:w-[495.45px] flex-shrink-0 transition-all duration-500 ease-in-out transform cursor-pointer origin-center"
-            :class="isCenter(index) 
-              ? 'scale-100 opacity-100 z-10 shadow-[0px_0px_4.41px_0px_rgba(0,0,0,0.25)]' 
-              : 'scale-[0.906] opacity-60 z-0 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] hidden md:block'"
-            @click="goTo(index)"
-          >
-            {{> components/ui/card_alumni isDesktop=true}}
-          </div>
-        </template>
-      </div>
-    </div>
+  {{> _alumni_carousel}}
 
-    <!-- Navigation & Pagination Controls -->
-    <div class="flex justify-center items-center mt-6 sm:mt-8 gap-3 sm:gap-4 min-h-[48px] sm:min-h-[52px]">
-      
-      <!-- Previous Button (Hidden completely when active === 0) -->
-      <button
-        x-show="active > 0"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-75"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-75"
-        class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#003060] text-white shadow-md hover:bg-[#0B1F3B] transition-all hover:scale-105"
-        @click="prev()"
-        aria-label="Previous Testimonial"
-      >
-        <i class="fas fa-chevron-left text-base sm:text-lg"></i>
-      </button>
-
-      <!-- 2-Way Physical Swipe Swap Dots Track -->
-      <div class="relative flex items-center gap-3 sm:gap-4 mx-2 sm:mx-4 py-2">
-        <!-- Render physical animated dots -->
-        <template x-for="(item, index) in testimonials" :key="'swap-dot-' + index">
-          <div
-            class="w-4 h-4 sm:w-5 sm:h-5 rounded-full transition-all duration-500 ease-in-out transform pointer-events-none"
-            :class="getDotClass(index)"
-            :style="`transform: translateX(${getDotOffset(index)}px);`"
-          ></div>
-        </template>
-
-        <!-- Fixed Click Overlay Buttons -->
-        <div class="absolute inset-0 flex items-center gap-3 sm:gap-4">
-          <template x-for="(item, index) in testimonials" :key="'click-dot-' + index">
-            <button
-              class="w-4 h-4 sm:w-5 sm:h-5 rounded-full cursor-pointer focus:outline-none opacity-0"
-              @click="goTo(index)"
-              :aria-label="'Go to slide ' + (index + 1)"
-            ></button>
-          </template>
-        </div>
-      </div>
-
-      <!-- Next Button (Hidden completely when active === maxIndex) -->
-      <button
-        x-show="active < maxIndex"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-75"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-75"
-        class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-[#003060] text-white shadow-md hover:bg-[#0B1F3B] transition-all hover:scale-105"
-        @click="next()"
-        aria-label="Next Testimonial"
-      >
-        <i class="fas fa-chevron-right text-base sm:text-lg"></i>
-      </button>
-    </div>
-
-    <!-- See All Link -->
-    <div class="text-center mt-8 sm:mt-10">
-      <p class="text-[#2D2D2D] sm:text-[#000000]/80 mb-2 font-sans font-normal text-[14px] sm:text-base md:text-xl sm:mb-4">
-        {{t "test.home.alumniSection.moreStories"}}
-      </p>
-      <a
-        href="/dashboard/alumni"
-        class="inline-flex items-center gap-2 text-[#0B1F3B] font-medium sm:font-normal text-[14px] sm:text-base md:text-lg font-sans hover:underline"
-      >
-        {{t "test.home.alumniSection.seeAll"}}
-        <i class="fas fa-arrow-right text-sm"></i>
-      </a>
-    </div>
+  <div class="text-center mt-8 sm:mt-10">
+    <p class="text-[#2D2D2D] sm:text-[#000000]/80 mb-2 font-sans font-normal text-[14px] sm:text-base md:text-xl sm:mb-4">
+      {{t (default footerTextKey 'test.home.alumniSection.moreStories')}}
+    </p>
+    <a href="/dashboard/alumni" class="inline-flex items-center gap-2 text-[#0B1F3B] font-medium sm:font-normal text-[14px] sm:text-base md:text-lg font-sans hover:underline">
+      {{t (default footerLinkTextKey 'test.home.alumniSection.seeAll')}}
+      <i class="fas fa-arrow-right text-sm"></i>
+    </a>
   </div>
 </section>
+{{/if}}
+{{/if}}
 
 <script>
-  // Data alumni dari database untuk carousel testimonial
-  // getByLang mengambil teks sesuai bahasa aktif (id/en/ja)
   window.__alumniCarousel = [
     {{#each alumni}}
     {

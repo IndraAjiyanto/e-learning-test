@@ -1,0 +1,22 @@
+{{!-- 
+  Komponen: Tab Filter Button (Responsive)
+  Lokasi: src/views/partials/components/ui/button/tab_filter/index.hbs
+--}}
+
+<button
+  @click="{{#if activeVar}}{{activeVar}}{{else}}activeTab{{/if}} = '{{targetValue}}'"
+  :class="{{#if activeVar}}{{activeVar}}{{else}}activeTab{{/if}} === '{{targetValue}}' ? 'bg-[#6EB6E5] text-white' : 'bg-[#003060] text-white'"
+  class="
+    font-montserrat font-medium text-white text-center
+    flex items-center justify-center 
+    transition-all duration-300
+    text-xs sm:text-lg
+    rounded-full sm:rounded-3xl
+    px-4 py-2 sm:px-12 sm:py-4
+    w-full sm:max-w-[428px]
+    shadow-sm sm:shadow-lg
+    sm:backdrop-blur-sm
+  "
+>
+  {{text}}
+</button>

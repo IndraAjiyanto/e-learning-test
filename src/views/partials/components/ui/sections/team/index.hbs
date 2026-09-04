@@ -4,7 +4,7 @@
   x-transition:enter-start='opacity-0 transform translate-y-4'
   x-transition:enter-end='opacity-100 transform translate-y-0'
 >
-  {{> components/ui/section_header
+  {{> components/ui/text/section_header/index
       align="text-left"
       wrapperClass="mb-6 sm:mb-8"
       title=(t 'test.about.team.title')
@@ -29,7 +29,7 @@
       {{t 'test.about.team.joinDescription'}}
     </p>
     <div class='flex justify-center'>
-      {{> components/ui/btn_action
+      {{> components/ui/button/btn_action/index
           href=social.[0].linkForm
           target="_blank"
           variant="primary"
