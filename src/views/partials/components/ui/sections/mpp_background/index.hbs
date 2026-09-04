@@ -1,0 +1,56 @@
+<section class="w-full bg-white py-16 lg:py-24">
+    <div class="container mx-auto px-6 lg:px-12 max-w-[1728px]">
+        <div class="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-16">
+            <div class="w-full lg:w-1/2 flex flex-col gap-6 justify-center">
+                {{> components/ui/text/badge/index text="Latar Belakang" tag="h2" class="w-fit self-start"}}
+                {{> components/ui/text/sub_title/index
+                    text="Latar Belakang dan Konteks Pasar"
+                    color="text-[#003060]"
+                    align="left"
+                    size="xl"
+                    class="leading-tight"
+                }}
+                {{> components/ui/text/description/index
+                    text="Industri IT bootcamp di Indonesia tumbuh pesat seiring meningkatnya permintaan talenta digital, namun persaingan akuisisi peserta antar penyelenggara pelatihan turut meningkat. Di sisi lain, biaya akuisisi peserta (Cost per Acquisition) melalui kanal iklan berbayar konvensional cenderung terus naik, sementara tingkat kepercayaan calon peserta terhadap rekomendasi dari teman sebaya (peer recommendation) tetap tinggi."
+                    color="text-gray-900"
+                    align="left"
+                    size="lg"
+                    font="font-montserrat"
+                    class="leading-tight"
+                }}
+                <div id="extra-content" class="hidden flex flex-col gap-6">
+                {{> components/ui/text/description/index
+                text="Industri IT bootcamp di Indonesia tumbuh pesat seiring meningkatnya permintaan talenta digital, namun persaingan akuisisi peserta antar penyelenggara pelatihan turut meningkat. Di sisi lain, biaya akuisisi peserta (Cost per Acquisition) melalui kanal iklan berbayar konvensional cenderung terus naik, sementara tingkat kepercayaan calon peserta terhadap rekomendasi dari teman sebaya (peer recommendation) tetap tinggi."
+                color="text-gray-900"
+                align="left"
+                size="lg"
+                font="font-montserrat"
+                class="leading-tight"
+                }}
+                </div>
+                <button id="toggle-btn" class="w-fit text-[#6EB6E5] font-semibold underline flex items-center gap-2"><span id="toggle-text">Lihat lebih</span><i id="toggle-icon" class="fas fa-chevron-down"></i></button>
+                <script>
+                    const btn = document.getElementById('toggle-btn');
+                    const extra = document.getElementById('extra-content');
+                    const text = document.getElementById('toggle-text');
+                    const icon = document.getElementById('toggle-icon');
+
+                    btn.onclick = () => {
+                        extra.classList.toggle('hidden');
+
+                        if (extra.classList.contains('hidden')) {
+                            text.innerText = 'Lihat lebih';
+                            icon.className = 'fas fa-chevron-down';
+                        } else {
+                            text.innerText = 'Lihat sedikit';
+                            icon.className = 'fas fa-chevron-up';
+                        }
+                    };
+                </script>
+            </div>
+            <div class="w-full lg:w-1/2">
+                <img src="/public/image/mpp/bg_background.png" alt="Latar Belakang">
+            </div>
+        </div>
+    </div>
+</section>

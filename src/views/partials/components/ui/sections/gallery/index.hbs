@@ -1,16 +1,31 @@
+{{!-- 
+  Section: Gallery (L2 Section) - reusable untuk home & paid program
+  Lokasi: src/views/partials/components/ui/sections/gallery/index.hbs
+
+  Props (opsional, default = home agar backward-compatible):
+  - badgeKey, titleKey, descKey, linkKey : i18n keys
+  - showBadge   : bool (default: true)
+  - showDivider : bool (default: true)
+  - showBottomLink : bool (default: true)
+  - renderMobile  : bool (default: true)
+  - renderDesktop : bool (default: true)
+  - mobileSectionClass, desktopSectionClass, desktopWrapperClass : kelas opsional
+--}}
+
+{{#if (ternary (eq renderMobile undefined) true renderMobile)}}
 <!-- MOBILE GALLERY SECTION (< 640px) -->
-<section id="gallery-mobile" class="block sm:hidden w-full py-12 px-5 bg-[#FAFAFA] font-montserrat">
+<section id="gallery-mobile" class="{{default mobileSectionClass 'block sm:hidden w-full py-12 px-5 bg-[#FAFAFA] font-montserrat'}}">
   <div class="w-full flex flex-col items-center">
     
-    {{> components/ui/section_header
+    {{> components/ui/text/section_header/index
         wrapperClass="mb-6 relative z-10"
-        badge=(t 'test.home.gallery.gallery')
+        badge=(ternary (eq showBadge false) '' (t (default badgeKey 'test.home.gallery.gallery')))
         badgeClass="px-5 py-2 text-[14px] mb-4"
-        title=(t 'test.home.gallery.title')
+        title=(t (default titleKey 'test.home.gallery.title'))
         titleClass="font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3"
-        showDivider=true
+        showDivider=(ternary (eq showDivider undefined) true showDivider)
         dividerClass="w-[68px] bg-[#0B1F3B] mb-4"
-        description=(t 'test.home.gallery.description')
+        description=(t (default descKey 'test.home.gallery.description'))
         descClass="font-sans font-normal text-sm text-[#2D2D2D] max-w-[340px]"
     }}
 
@@ -18,41 +33,43 @@
     <div class="flex flex-col gap-4 w-full">
       {{#if gallery.length}}
         {{#each gallery}}
-          {{> components/ui/card_gallery image=this.filePath}}
+          {{> components/ui/card/gallery/index image=this.filePath}}
         {{/each}}
       {{else}}
-        <!-- Fallback Dummy Images for Preview -->
-        {{> components/ui/card_gallery image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&h=800&fit=crop"}}
-        {{> components/ui/card_gallery image="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&h=800&fit=crop"}}
-        {{> components/ui/card_gallery image="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&h=400&fit=crop"}}
-        {{> components/ui/card_gallery image="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&fit=crop"}}
+        {{> components/ui/card/gallery/index image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&h=800&fit=crop"}}
+        {{> components/ui/card/gallery/index image="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&h=800&fit=crop"}}
+        {{> components/ui/card/gallery/index image="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&h=400&fit=crop"}}
+        {{> components/ui/card/gallery/index image="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&fit=crop"}}
       {{/if}}
     </div>
 
-    <!-- Tautan Bawah Mobile -->
+    {{#if (ternary (eq showBottomLink undefined) true showBottomLink)}}
     <div class="mt-8 text-center">
       <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-[#0B1F3B] font-bold text-[14px] font-sans hover:underline">
-        {{t 'test.home.gallery.chooseGallery'}}
+        {{t (default linkKey 'test.home.gallery.chooseGallery')}}
         <i class="fas fa-arrow-right text-xs"></i>
       </a>
     </div>
+    {{/if}}
 
   </div>
 </section>
+{{/if}}
 
+{{#if (ternary (eq renderDesktop undefined) true renderDesktop)}}
 <!-- DESKTOP GALLERY SECTION (>= 640px / Figma Baseline W1728) -->
-<section id="gallery" class="hidden sm:block w-full py-12 sm:py-20 bg-[#FAFAFA] font-montserrat">
+<section id="gallery" class="{{default desktopSectionClass 'hidden sm:block w-full py-12 sm:py-20 bg-[#FAFAFA] font-montserrat'}}">
   
-  <div class="max-w-[1537px] mx-auto px-5 sm:px-8 lg:px-16 flex flex-col items-center">
+  <div class="{{default desktopWrapperClass 'max-w-[1537px] mx-auto px-5 sm:px-8 lg:px-16 flex flex-col items-center'}}">
     
-    {{> components/ui/section_header
-        badge=(t 'test.home.gallery.gallery')
-        badgeClass="w-[305px] h-[49px] text-[20px] mb-0"
-        title=(t 'test.home.gallery.title')
+    {{> components/ui/text/section_header/index
+        badge=(ternary (eq showBadge false) '' (t (default badgeKey 'test.home.gallery.gallery')))
+        badgeClass=(ternary (eq showBadge false) '' 'w-[305px] h-[49px] text-[20px] mb-0')
+        title=(t (default titleKey 'test.home.gallery.title'))
         titleClass="text-3xl md:text-4xl lg:text-[42px] my-8 font-[600] text-black font-montserrat tracking-tight"
-        showDivider=true
+        showDivider=(ternary (eq showDivider undefined) true showDivider)
         dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
-        description=(t 'test.home.gallery.description')
+        description=(t (default descKey 'test.home.gallery.description'))
         descClass="font-sans font-normal text-[20px] leading-[45px] text-[#000000CC] mb-14 max-w-auto"
     }}
 
@@ -62,31 +79,33 @@
       <!-- KOLOM 1 -->
       <div class="flex flex-col gap-6 lg:gap-8 w-full">
         {{#if gallery.[0]}}
-          {{> components/ui/card_gallery heightClass="h-[225px] md:h-[240px]" image=gallery.[0].filePath}}
+          {{> components/ui/card/gallery/index heightClass="h-[225px] md:h-[240px]" image=gallery.[0].filePath}}
         {{/if}}
-        {{> components/ui/card_gallery heightClass="h-[433px] md:h-[460px]" image=(default gallery.[1].filePath "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&h=800&fit=crop")}}
+        {{> components/ui/card/gallery/index heightClass="h-[433px] md:h-[460px]" image=(default gallery.[1].filePath "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&h=800&fit=crop")}}
       </div>
       
       <!-- KOLOM 2 -->
       <div class="flex flex-col gap-6 lg:gap-8 w-full">
-        {{> components/ui/card_gallery heightClass="h-[433px] md:h-[460px]" image=(default gallery.[2].filePath "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&h=800&fit=crop")}}
-        {{> components/ui/card_gallery heightClass="h-[225px] md:h-[240px]" image=(default gallery.[3].filePath "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&h=400&fit=crop")}}
+        {{> components/ui/card/gallery/index heightClass="h-[433px] md:h-[460px]" image=(default gallery.[2].filePath "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&h=800&fit=crop")}}
+        {{> components/ui/card/gallery/index heightClass="h-[225px] md:h-[240px]" image=(default gallery.[3].filePath "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&h=400&fit=crop")}}
       </div>
       
       <!-- KOLOM 3 -->
       <div class="flex flex-col gap-6 lg:gap-8 w-full">
-        {{> components/ui/card_gallery heightClass="h-[225px] md:h-[240px]" image=(default gallery.[4].filePath "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&fit=crop")}}
-        {{> components/ui/card_gallery heightClass="h-[433px] md:h-[460px]" image=(default gallery.[5].filePath "https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=600&h=800&fit=crop")}}
+        {{> components/ui/card/gallery/index heightClass="h-[225px] md:h-[240px]" image=(default gallery.[4].filePath "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&fit=crop")}}
+        {{> components/ui/card/gallery/index heightClass="h-[433px] md:h-[460px]" image=(default gallery.[5].filePath "https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=600&h=800&fit=crop")}}
       </div>
       
     </div>
 
-    <!-- 3. Teks Bawah (Tautan) -->
+    {{#if (ternary (eq showBottomLink undefined) true showBottomLink)}}
     <div class="mt-16">
       <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-[#0B1F3B] text-[16px] font-semibold transition-all hover:text-[#7AA3C4] border-b-[1.5px] border-[#0B1F3B] hover:border-[#7AA3C4] pb-1">
-        {{t 'test.home.gallery.chooseGallery'}} <i class="fa-solid fa-arrow-right-long text-[15px]"></i>
+        {{t (default linkKey 'test.home.gallery.chooseGallery')}} <i class="fa-solid fa-arrow-right-long text-[15px]"></i>
       </a>
     </div>
+    {{/if}}
 
   </div>
 </section>
+{{/if}}
