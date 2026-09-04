@@ -7,53 +7,29 @@
   <!-- Welcome & Account Information Section -->
   <div>
     <!-- Header Block (h1 to p spacing: 15px, header to avatar spacing: 64px) -->
-    <div class="mb-12">
-      <h1 class="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]">
-        Welcome,{{user.username}}
-      </h1>
-      <p class="font-montserrat font-normal text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
-        Below is your profile information.
-      </p>
-    </div>
+    {{> components/ui/section_header
+      align="text-left"
+      titleTag="h1"
+      title=(concat "Welcome, " user.username)
+      titleClass="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]"
+    }}
+    {{> components/ui/text/description/index
+      text="Below is your profile information."
+      tag="p"
+      align="left"
+      color="text-[#003060]"
+      size="md"
+      class="!font-montserrat sm:!text-lg md:!text-[20px] !leading-none mb-12"
+    }}
 
     <!-- Avatar Section (avatar to form spacing: 55px) -->
-    <div class="relative w-[100px] h-[100px] mb-12">
-      <div class="w-[100px] h-[100px] rounded-[50px] bg-[#003060] text-white p-[10px] gap-[5px] flex items-center justify-center shadow-md overflow-hidden">
-        <template x-if="previewUrl">
-          <img :src="previewUrl" alt="Profile" class="w-full h-full object-cover rounded-full">
-        </template>
-        <template x-if="!previewUrl">
-          {{#if user.profile}}
-            <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
-          {{else}}
-            <span class="font-montserrat font-medium text-white text-[20px] leading-none">{{substring user.username 0 2}}</span>
-          {{/if}}
-        </template>
-      </div>
-      <label 
-        for="profile-upload-sidebar"
-        class="absolute bottom-0 -right-5 w-[35px] h-[35px] flex items-center justify-center transition-opacity hover:opacity-80 cursor-pointer"
-        aria-label="Edit Profile Picture"
-      >
-        <img src="/public/image/user_profile/edit.svg" alt="Edit" class="w-[35px] h-[35px] object-contain">
-      </label>
-      <form 
-        x-ref="profileForm"
-        action="/users/update/profile/{{user.id}}?_method=PATCH" 
-        method="post" 
-        enctype="multipart/form-data"
-        class="hidden"
-      >
-        <input 
-          id="profile-upload-sidebar" 
-          type="file" 
-          name="profile" 
-          accept="image/jpeg,image/jpg,image/png"
-          class="hidden" 
-          x-ref="fileInput"
-          @change="handleFileUpload($event)"
-        >
-      </form>
+    <div class="mb-12">
+      {{> components/ui/avatar/profile_avatar/index
+        user=user
+        inputId="profile-upload-sidebar"
+        sizeClass="w-[100px] h-[100px]"
+        editIconSrc="/public/image/user_profile/edit.svg"
+      }}
     </div>
 
     <!-- Account Inputs Form (input spacing: 30px, label to input spacing: 25px) -->
@@ -105,65 +81,53 @@
       @submit.prevent="save()"
     >
       <!-- Username -->
-      <div>
-        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-          Username
-        </label>
-        <input 
-          type="text" 
-          x-model="username"
-          :readonly="editingField !== 'username'"
-          @click="startEditing('username')"
-          @blur="checkChanges()"
-          :class="editingField === 'username' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
-          placeholder="Input Your Username" 
-        >
-      </div>
+      {{> components/ui/input/editable_field/index
+        label="Username"
+        model="username"
+        editingKey="username"
+        placeholder="Input Your Username"
+      }}
 
       <!-- Email -->
-      <div>
-        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-          Email
-        </label>
-        <input 
-          type="email" 
-          x-model="email"
-          :readonly="editingField !== 'email'"
-          @click="startEditing('email')"
-          @blur="checkChanges()"
-          :class="editingField === 'email' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
-          placeholder="Input Your Email" 
-        >
-      </div>
+      {{> components/ui/input/editable_field/index
+        label="Email"
+        type="email"
+        model="email"
+        editingKey="email"
+        placeholder="Input Your Email"
+      }}
 
       <!-- Save Changes Button -->
-      <div>
-        <button 
-          type="submit" 
-          :disabled="!hasChanges || saving"
-          :class="hasChanges && !saving ? 'bg-[#003060] cursor-pointer hover:opacity-90' : 'bg-[#D9D9D9] cursor-not-allowed pointer-events-none'"
-          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200"
-        >
-          <span x-show="!saving">Save Changes</span>
-          <span x-show="saving" x-cloak>Saving...</span>
-        </button>
-      </div>
+      {{> components/ui/btn_action
+        type="submit"
+        text="Save Changes"
+        saving="saving"
+        savingLabel="Saving..."
+        xDisabled="!hasChanges || saving"
+        enabledClass="bg-[#003060] cursor-pointer hover:opacity-90"
+        disabledClass="bg-[#D9D9D9] cursor-not-allowed pointer-events-none"
+        class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-base text-white"
+      }}
     </form>
   </div>
 
   <!-- Your Biodata Section -->
   <div>
     <!-- Header Block -->
-    <div class="mb-12">
-      <h2 class="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]">
-        Your Biodata
-      </h2>
-      <p class="font-montserrat font-normal text-[20px] text-[#003060] leading-none">
-        Below is your profile information.
-      </p>
-    </div>
+    {{> components/ui/section_header
+      align="text-left"
+      titleTag="h2"
+      title="Your Biodata"
+      titleClass="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]"
+    }}
+    {{> components/ui/text/description/index
+      text="Below is your profile information."
+      tag="p"
+      align="left"
+      color="text-[#003060]"
+      size="md"
+      class="!font-montserrat !text-[20px] !leading-none mb-12"
+    }}
 
     <!-- Biodata Form -->
     <form 
@@ -240,241 +204,88 @@
       @submit.prevent="save()"
     >
       <!-- Full Name -->
-      <div>
-        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-          Full Name<span class="text-red-500">*</span>
-        </label>
-        <input 
-          type="text" 
-          required
-          x-model="currentValues.fullName"
-          :readonly="editingField !== 'fullName'"
-          @click="startEditing('fullName')"
-          @blur="checkChanges()"
-          :class="editingField === 'fullName' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
-          placeholder="Input Your Full Name" 
-        >
-      </div>
+      {{> components/ui/input/editable_field/index
+        label="Full Name"
+        model="currentValues.fullName"
+        editingKey="fullName"
+        required=true
+        placeholder="Input Your Full Name"
+      }}
 
       <!-- Address -->
-      <div>
-        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-          Address
-        </label>
-        <input 
-          type="text" 
-          x-model="currentValues.city"
-          :readonly="editingField !== 'city'"
-          @click="startEditing('city')"
-          @blur="checkChanges()"
-          :class="editingField === 'city' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
-          placeholder="Input Your City" 
-        >
-      </div>
+      {{> components/ui/input/editable_field/index
+        label="Address"
+        model="currentValues.city"
+        editingKey="city"
+        placeholder="Input Your City"
+      }}
 
       <!-- Grid 2 Columns -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[117px] gap-y-[30px] max-w-[1146px]">
-        
+
         <!-- Education Select -->
-        <div>
-          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-            Education
-          </label>
-          <select
-            x-model="currentValues.education"
-            @click="startEditing('education')"
-            :class="editingField === 'education' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black transition-all duration-200"
-          >
-            <option value="" disabled>Select Your Education Level</option>
-            <option value="SMP/Sederajat">SMP / Sederajat</option>
-            <option value="SMA/SMK/Sederajat">SMA / SMK / Sederajat</option>
-            <option value="Diploma(D3/D4)">Diploma (D3/D4)</option>
-            <option value="Sarjana(S1)">Sarjana (S1)</option>
-          </select>
-        </div>
+        {{#> components/ui/input/editable_select/index
+          label="Education"
+          model="currentValues.education"
+          editingKey="education"
+          placeholderOption="Select Your Education Level"
+        }}
+          <option value="SMP/Sederajat">SMP / Sederajat</option>
+          <option value="SMA/SMK/Sederajat">SMA / SMK / Sederajat</option>
+          <option value="Diploma(D3/D4)">Diploma (D3/D4)</option>
+          <option value="Sarjana(S1)">Sarjana (S1)</option>
+        {{/components/ui/input/editable_select/index}}
 
         <!-- Studi Program -->
-        <div>
-          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-            Studi Program
-          </label>
-          <input 
-            type="text" 
-            x-model="currentValues.studyProgram"
-            :readonly="editingField !== 'studyProgram'"
-            @click="startEditing('studyProgram')"
-            @blur="checkChanges()"
-            :class="editingField === 'studyProgram' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
-            placeholder="Input Your Studi Program" 
-          >
-        </div>
+        {{> components/ui/input/editable_field/index
+          label="Studi Program"
+          model="currentValues.studyProgram"
+          editingKey="studyProgram"
+          placeholder="Input Your Studi Program"
+        }}
 
         <!-- Gender Select -->
-        <div>
-          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-            Gender
-          </label>
-          <select
-            x-model="currentValues.gender"
-            @click="startEditing('gender')"
-            :class="editingField === 'gender' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black transition-all duration-200"
-          >
-            <option value="" disabled>Select Your Gender</option>
-            <option value="Laki laki">Laki laki</option>
-            <option value="Perempuan">Perempuan</option>
-          </select>
-        </div>
+        {{#> components/ui/input/editable_select/index
+          label="Gender"
+          model="currentValues.gender"
+          editingKey="gender"
+          placeholderOption="Select Your Gender"
+        }}
+          <option value="Laki laki">Laki laki</option>
+          <option value="Perempuan">Perempuan</option>
+        {{/components/ui/input/editable_select/index}}
 
         <!-- WhatsApp Number -->
-        <div>
-          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-            WhatsApp Number
-          </label>
-          <input 
-            type="tel" 
-            x-model="currentValues.no"
-            :readonly="editingField !== 'no'"
-            @click="startEditing('no')"
-            @blur="checkChanges()"
-            :class="editingField === 'no' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
-            placeholder="Input Your WhatsApp Number" 
-          >
-        </div>
+        {{> components/ui/input/editable_field/index
+          label="WhatsApp Number"
+          type="tel"
+          model="currentValues.no"
+          editingKey="no"
+          placeholder="Input Your WhatsApp Number"
+        }}
       </div>
 
       <!-- Save Changes Button -->
       <div class="pt-2">
-        <button 
+        {{> components/ui/btn_action
           type="submit"
-          :disabled="!hasChanges || saving"
-          :class="hasChanges && !saving ? 'bg-[#003060] cursor-pointer hover:opacity-90' : 'bg-[#D9D9D9] cursor-not-allowed pointer-events-none'"
-          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200"
-        >
-          <span x-show="!saving">Save Changes</span>
-          <span x-show="saving" x-cloak>Saving...</span>
-        </button>
+          text="Save Changes"
+          saving="saving"
+          savingLabel="Saving..."
+          xDisabled="!hasChanges || saving"
+          enabledClass="bg-[#003060] cursor-pointer hover:opacity-90"
+          disabledClass="bg-[#D9D9D9] cursor-not-allowed pointer-events-none"
+          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-base text-white"
+        }}
       </div>
     </form>
   </div>
 
   <!-- Crop Modal -->
-  <div
-    x-show="showCropModal"
-    x-cloak
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-    @click.self="closeCropModal()"
-  >
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-      <div class="p-6 border-b border-gray-200">
-        <h3 class="text-xl font-semibold text-slate-900">Crop Profile Photo</h3>
-        <p class="text-sm text-slate-600 mt-1">Sesuaikan area crop untuk foto profil kamu</p>
-      </div>
-      <div class="p-6 overflow-auto max-h-[60vh]">
-        <img id="cropImageSidebar" :src="tempImageUrl" class="max-w-full" style="display: block;"/>
-      </div>
-      <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
-        <button type="button"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-          @click="closeCropModal()">
-          Batal
-        </button>
-        <button type="button"
-          class="px-6 py-2 rounded-lg bg-[#003060] text-white hover:bg-[#0B3A68] transition"
-          @click="applyCrop()">
-          Apply Crop
-        </button>
-      </div>
-    </div>
-  </div>
+  {{> components/ui/modal/crop_photo/index cropImageId="cropImageSidebar"}}
 
   <!-- Profile Picture Preview Modal -->
-  <div
-    x-show="open"
-    x-cloak
-    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
-    x-transition
-    @click.self="closeModal()"
-  >
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
-      <button
-        @click="closeModal()"
-        class="absolute top-4 right-4 text-slate-600 hover:text-slate-900 text-2xl w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-all duration-300"
-      >
-        &times;
-      </button>
-
-      <h3 class="text-xl font-bold text-slate-800 mb-4 font-montserrat">Preview Profile Photo</h3>
-
-      <!-- Validation Error Alert -->
-      <div
-        x-show="validationError"
-        x-transition
-        class="mb-4 p-4 rounded-xl bg-red-50 border-2 border-red-300"
-      >
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-exclamation-triangle text-white text-lg"></i>
-          </div>
-          <div class="flex-1">
-            <p class="font-bold text-red-800 text-base mb-1">Invalid Image</p>
-            <p class="text-red-700 text-sm" x-text="validationError"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Image Preview -->
-      <img
-        :src="previewUrl"
-        alt="Preview Profile"
-        class="rounded-xl w-full object-contain max-h-[60vh] border border-slate-200"
-      />
-
-      <!-- Image Info -->
-      <div
-        x-show="imageInfo"
-        class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200"
-      >
-        <div class="flex items-center justify-between text-sm">
-          <div>
-            <i class="fas fa-image text-slate-600 mr-2"></i>
-            <span class="text-slate-700 font-medium" x-text="imageInfo"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-3 mt-6">
-        <button
-          @click="closeModal()"
-          class="px-6 py-3 rounded-xl border-2 border-slate-300 hover:bg-slate-50 text-slate-700 transition-all duration-300 font-semibold"
-        >
-          Cancel
-        </button>
-
-        <button
-          @click="
-            if (croppedBlob) {
-              const file = new File([croppedBlob], fileName || 'profile.jpg', { type: 'image/jpeg' });
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(file);
-              $refs.fileInput.files = dataTransfer.files;
-            }
-            $refs.profileForm.submit();
-          "
-          :disabled="validationError !== ''"
-          :class="validationError !== '' ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'"
-          class="px-6 py-3 rounded-xl bg-[#003060] text-white shadow-lg transition-all duration-300 font-semibold"
-        >
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
+  {{> components/ui/modal/preview_photo/index}}
 
 </div>
 
