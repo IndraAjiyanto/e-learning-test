@@ -27,15 +27,16 @@
       {{> components/ui/button/btn_action/index 
           onClick="document.getElementById('courses-section-mobile').scrollIntoView({ behavior: 'smooth', block: 'start' })"
           text=(t 'test.home.heroSection.buttonExplorePrograms')
-          iconSrc="/public/image/dashboard/hugeicons_start-up-02.svg"
+          icon="fas fa-arrow-right text-[16px] shrink-0"
+          iconPosition="right"
           variant="primary"
           class="w-full h-[48px] gap-[10px] py-[14px] font-montserrat text-[16px]"
-          iconClass="w-5 h-5 brightness-0 invert"
       }}
 
       <!-- Button 2: Free Consultation -->
       {{> components/ui/button/consultation/index 
           phone=social.[0].number
+          variant="light"
           text=(t 'test.home.heroSection.buttonConsultation')
           class="w-full h-[48px] gap-[10px] py-[14px] font-montserrat text-[16px]"
       }}
@@ -43,31 +44,33 @@
   </div>
 </div>
 
-<!-- DESKTOP HERO SECTION (>= 640px / Figma Baseline W1728) -->
+<!-- DESKTOP HERO SECTION (>= 640px) — Figma: hero-section (250:2796) -->
 <div
-  class="hidden sm:flex w-full px-4 pt-24 lg:pt-[130px] pb-16 bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] min-h-screen relative items-center justify-center font-montserrat"
+  class="hidden sm:flex w-full bg-[#F8F9FA] px-8 lg:px-[80px] py-[80px] lg:py-[120px] gap-10 lg:gap-[80px] items-center justify-center font-montserrat"
+  data-node-id="250:2796"
 >
-  <div class="relative w-full max-w-[1554px] min-h-[580px] xl:min-h-[665px] rounded-[24px] overflow-hidden flex flex-col items-center justify-center px-6 py-20 shadow-2xl">
-    
-    <!-- Background Image with Overlay -->
-    <div class="absolute inset-0 z-0">
-      <img src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}" alt="Hero Background" class="w-full h-full object-cover opacity-50">
-      <!-- Dark Overlays to ensure text readability -->
-      <div class="absolute inset-0 bg-[#000000]/70"></div>
-    </div>
+  <div class="w-full max-w-[1554px] flex flex-col lg:flex-row items-center gap-10 lg:gap-[80px]">
 
-    <!-- Content -->
-    <div class="relative z-10 w-full max-w-[1312px] text-center text-white flex flex-col items-center font-montserrat">
-      
-      <!-- Heading -->
-      <h1 class="text-3xl md:text-4xl lg:text-5xl xl:text-[50px] font-[700] xl:leading-none text-center">
+    <!-- hero-content (250:2797) -->
+    <div class="flex-1 min-w-0 flex flex-col items-start gap-[32px]">
+
+      <!-- animated-tag (250:2798) -->
+      <div class="flex items-center gap-[8px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-[100px] px-[16px] py-[6px]">
+        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5] shrink-0" aria-hidden="true"></i>
+        <span class="font-montserrat font-bold text-[12px] uppercase text-[#0B1F3B] whitespace-nowrap">
+          {{t 'test.home.heroSection.badge'}}
+        </span>
+      </div>
+
+      <!-- Heading (250:2801) -->
+      <h1 class="font-montserrat font-extrabold text-[36px] lg:text-[48px] xl:text-[56px] tracking-[-1px] leading-[1.15] text-[#0B1F3B] max-w-[619px]">
         {{#if about.[0].title}}
-          {{{getByLang about.[0].title lang}}}
+          {{highlightLastWords (getByLang about.[0].title lang) 2 '#6EB6E5'}}
         {{else}}
-          Empowering Future Di<span 
+          Shape your path in the <span
             class="inline-grid grid-cols-1 grid-rows-1 text-left align-top"
             x-data="{
-              words: ['gital Tech Talents'],
+              words: ['digital frontier'],
               wordIndex: 0,
               charIndex: 0,
               currentText: '',
@@ -91,39 +94,53 @@
               }
             }"
           >
-            <!-- Reserved space so title center position never shifts -->
-            <span class="invisible col-start-1 row-start-1 select-none pointer-events-none" aria-hidden="true">gital Tech Talents|</span>
+            <!-- Reserved space so heading position never shifts -->
+            <span class="invisible col-start-1 row-start-1 select-none pointer-events-none" aria-hidden="true">digital frontier|</span>
             <!-- Typewriter text -->
-            <span class="col-start-1 row-start-1 text-white"><span x-text="currentText">gital Tech Talents</span><span class="animate-pulse text-white font-light">|</span></span>
+            <span class="col-start-1 row-start-1 text-[#6EB6E5]"><span x-text="currentText">digital frontier</span><span class="animate-pulse text-[#6EB6E5] font-light">|</span></span>
           </span>
         {{/if}}
       </h1>
 
-      <!-- Subheading -->
-      <p class="text-base md:text-xl lg:text-[22px] xl:text-3xl font-[500] leading-[1.6] xl:leading-[50px] my-10 md:my-16 lg:my-20 max-w-auto mx-auto text-white text-center">
-        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Be part of the next generation of digital talents. Kesatria Academy helps you learn technology in an interactive, relevant and engaging way.{{/if}}
+      <!-- Subheading (250:2802) -->
+      <p class="font-sans font-normal text-[16px] lg:text-[18px] xl:text-[20px] leading-[1.6] text-[#4A5568] max-w-[719px]">
+        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Kesatria Academy delivers interactive, industry-grade learning experiences to turn ambition into professional impact. Gain real project expertise from global tech mentors.{{/if}}
       </p>
 
-      <!-- Buttons -->
-      <div class="flex flex-row items-center gap-4 xl:gap-[15px]">
-        <!-- Button 1: Explore Programs -->
-        {{> components/ui/button/btn_action/index 
+      <!-- hero-ctas (250:2803) -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-[20px]">
+        <!-- primary-cta (250:2804) -->
+        {{> components/ui/button/btn_action/index
             onClick="document.getElementById('courses-section').scrollIntoView({ behavior: 'smooth', block: 'start' })"
             text=(t 'test.home.heroSection.buttonExplorePrograms')
-            iconSrc="/public/image/dashboard/hugeicons_start-up-02.svg"
+            icon="fas fa-arrow-right text-[16px] shrink-0"
+            iconPosition="right"
             variant="primary"
-            class="w-[370px] h-[85px] gap-[15px] p-[10px] text-lg xl:text-xl font-semibold opacity-100 hover:-translate-y-1"
-            iconClass="w-6 h-6 xl:w-8 xl:h-8"
+            class="gap-[10px] px-[32px] py-[18px] text-[16px] shadow-none hover:-translate-y-0.5 hover:shadow-lg"
         }}
 
-        <!-- Button 2: Free Consultation -->
-        {{> components/ui/button/consultation/index 
+        <!-- secondary-cta (250:2809) -->
+        {{> components/ui/button/consultation/index
             phone=social.[0].number
+            variant="light"
             text=(t 'test.home.heroSection.buttonConsultation')
-            class="w-[370px] h-[85px] gap-[15px] p-[10px] text-lg xl:text-xl font-semibold opacity-100 hover:-translate-y-1"
+            class="gap-[10px] px-[32px] py-[18px] text-[16px]"
         }}
       </div>
 
     </div>
+
+    <!-- hero-visual (250:2814) -->
+    <div class="w-full lg:w-[759px] lg:shrink-0">
+      <div class="relative w-full h-[360px] lg:h-[460px] xl:h-[520px] rounded-[24px] overflow-hidden">
+        <img
+          src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+          alt="Hero"
+          onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+          class="absolute inset-0 w-full h-full object-cover rounded-[24px]"
+        >
+      </div>
+    </div>
+
   </div>
 </div>
