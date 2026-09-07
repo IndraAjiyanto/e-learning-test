@@ -3,6 +3,15 @@
 Keep the board and the repo telling the same story. These rules are tool-agnostic
 (they survive a task-manager migration).
 
+## TL;DR
+
+- **Branch name = ticket ID** (`<ticket-id>-short-desc`).
+- **No ticket, no PR.**
+- **One page or one module per PR.** Delete the old partials for that page in the same PR.
+- **Move your own card**: In Progress when you branch, Review when the PR is up.
+- **Post your ticket ID in the WA group once a day.**
+- `npm run build` must pass before you open the PR.
+
 ## Branches
 
 - One branch per ticket. Name it `<ticket-id>-short-desc`
