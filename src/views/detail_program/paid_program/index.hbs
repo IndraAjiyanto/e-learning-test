@@ -1,349 +1,40 @@
-<div class="bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] min-h-screen pt-32 pb-24 font-montserrat overflow-x-hidden">
-  <div class="container mx-auto px-8 lg:px-12 max-w-[1400px]">
-    
-    <!-- Back Button -->
-    <div class="mb-10">
-      <a href="javascript:history.back()" class="inline-flex items-center justify-center w-10 h-10 md:w-[50px] md:h-[50px] rounded-[100px] border-[1px] border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.25)] bg-transparent text-[#0B1F3B]">
-        <i class="fas fa-arrow-left text-[14px] md:text-[16px]"></i>
-      </a>
-    </div>
-
-    <div class="flex flex-col lg:flex-row gap-12 justify-between">
-      
-      <!-- Left Content -->
-      <div class="flex-1 lg:max-w-2xl pt-2">
-        <!-- Batch Pill -->
-        <div class="inline-flex items-center justify-center px-5 lg:px-6 py-2 lg:py-2.5 mb-6 lg:mb-8 rounded-full border-2 border-white bg-white/80 backdrop-blur-[6.6px] shadow-[0_0_4px_rgba(0,0,0,0.1)] w-fit max-w-full">
-          <span class="text-[#0B1F3B] font-[600] text-[30px] leading-none text-center">{{course.group}} - {{t 'test.paidProgram.header.startLearning'}} {{formatDate course.startDate lang}}</span>
-        </div>
-
-        <!-- Title -->
-        <h1 class="text-[40px] font-[600] text-[#000000] leading-none mb-4 lg:mb-6">
-          {{course.name}}
-        </h1>
-
-        <!-- Description -->
-        <p class="text-[#000000] font-['Open_Sans'] font-[400] text-[25px] leading-[50px] text-justify mb-8 lg:mb-0">
-          {{getByLang course.description lang}}
-        </p>
-      </div>
-
-      <!-- Right Content (Card) -->
-      <div class="lg:w-[480px]">
-        <div class="card bg-white/60 backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] p-8 md:p-10 border border-[#F0F0F0] rounded-xl">
-          
-          <div class="space-y-7 mb-10">
-            <!-- Learning Date -->
-            <div class="flex items-start gap-5">
-              <div class="mt-0.5">
-                <img src="/public/image/icons/paid_program/calendar.svg" alt="Calendar Icon" class="w-[30px] h-[30px]" />
-              </div>
-              <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.learningDate'}}</h3>
-                <p class="text-[#545454] font-[400] text-[20px]">{{formatDate course.startDate lang}} - {{formatDate course.startEnd lang}} - {{course.method}}</p>
-              </div>
-            </div>
-
-            <!-- Location -->
-            <div class="flex items-start gap-5">
-              <div class="mt-0.5 ml-0.5">
-                <img src="/public/image/icons/paid_program/location.svg" alt="Location Icon" class="w-[23px] h-[32px]" />
-              </div>
-              <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.location'}}</h3>
-                <p class="text-[#545454] font-[400] text-[20px]">{{getByLang course.locations lang}}</p>
-              </div>
-            </div>
-
-            <!-- Capacity -->
-            <div class="flex items-start gap-5">
-              <div class="mt-0.5">
-                <img src="/public/image/icons/paid_program/capacity.svg" alt="Capacity Icon" class="w-[30px] h-[21px]" />
-              </div>
-              <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.capacity'}}</h3>
-                <p class="text-[#545454] font-[400] text-[20px]">{{course.quota}} {{t 'test.paidProgram.header.students'}}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Registration Status -->
-          <div class="text-center mb-6">
-            <p class="text-[#D32F2F] font-bold text-[17px]">{{t 'test.paidProgram.header.registrationTime'}} {{formatDate course.date_registration lang}}</p>
-          </div>
-
-          <!-- Button -->
-          <a href="/payment/registration/{{course.id}}" class="btn bg-[#003060] hover:bg-[#002244] w-full text-white text-lg h-14 rounded-lg shadow-md border-none flex items-center justify-center">
-            {{t 'test.paidProgram.header.registrationNow'}}
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- HERO SECTION -->
+{{> components/ui/sections/program_detail_hero/index
+  showBatchPill=true
+  regisHref=(concat '/payment/registration/' course.id)
+}}
 
 <!-- Tabs Bar -->
-{{> paid_program/nav_menu }}
+{{#> components/ui/sections/program_detail_nav/index}}
+  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.paidProgram.navbarMenu.participants') }}
+  {{> components/ui/text/nav_link/index href="#what-you-will-learn" text=(t 'test.paidProgram.navbarMenu.whatYouLearn') }}
+  {{> components/ui/text/nav_link/index href="#benefits" text=(t 'test.paidProgram.navbarMenu.benefits') }}
+  {{> components/ui/text/nav_link/index href="#learning-flow" text=(t 'test.paidProgram.navbarMenu.learningFlow') }}
+  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.paidProgram.navbarMenu.schedule&Fees') }}
+  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.paidProgram.navbarMenu.gallery') }}
+  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.paidProgram.navbarMenu.FAQ') }}
+{{/components/ui/sections/program_detail_nav/index}}
 
 <!-- PARTICIPANTS SECTION -->
-<section id="participants" class="bg-[#FAFAFA] py-20 font-montserrat">
-  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
-    
-    <!-- Title Pill -->
-    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      {{t 'test.paidProgram.title.participants'}}
-    </div>
-
-    <!-- Cards Grid (2x2) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 w-full max-w-[1000px]">
-      
-      {{#each course.participants}}
-      <div class="bg-white border border-[#E0E0E0] rounded-[16px] p-8 flex gap-6 hover:shadow-lg transition-shadow duration-300">
-        <div class="text-[#0F0F0F] text-[32px] mt-1">
-          <i class="fas {{this.icon}}"></i>
-        </div>
-        <div>
-           <h3 class="text-[#0F0F0F] font-[700] text-[17px] mb-2">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#545454] text-[14px] leading-[1.6]">{{getByLang this.description ../lang}}</p>
-        </div>
-      </div>
-      {{/each}}
-
-    </div>
-  </div>
-</section>
+{{> components/ui/sections/participants/index}}
 
 <!-- WHAT YOU'LL LEARN SECTION -->
-<section id="what-you-will-learn" class="bg-[#FAFAFA] py-20 font-montserrat overflow-x-hidden">
-  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
-    
-    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      {{t 'test.paidProgram.navbarMenu.whatYouLearn'}}
-    </div>
-
-    <div class="flex flex-col lg:flex-row items-center gap-4 w-full max-w-[1200px]">
-      <div class="flex-1 w-full" data-animate="slide-right">
-        <ul class="space-y-6 text-[#0F0F0F] text-[14px] md:text-[15px]">
-          {{#if (eq lang 'en')}}
-            {{#each course.learningTargetsEn}}
-              <li class="flex items-start gap-4">
-                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#0F0F0F] flex-shrink-0"></span>
-                <span class="leading-relaxed">{{this}}</span>
-              </li>
-            {{/each}}
-          {{else if (eq lang 'ja')}}
-            {{#each course.learningTargetsJa}}
-              <li class="flex items-start gap-4">
-                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#0F0F0F] flex-shrink-0"></span>
-                <span class="leading-relaxed">{{this}}</span>
-              </li>
-            {{/each}}
-          {{else}}
-            {{#each course.learningTargetsId}}
-              <li class="flex items-start gap-4">
-                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#0F0F0F] flex-shrink-0"></span>
-                <span class="leading-relaxed">{{this}}</span>
-              </li>
-            {{/each}}
-          {{/if}}
-        </ul>
-      </div>
-
-      <div class="flex-1 w-full flex justify-center" data-animate="scale-up">
-        <img src="/public/image/image_learn.png" alt="What You'll Learn Illustration" class="w-full max-w-[500px] object-contain">
-      </div>
-    </div>
-  </div>
-</section>
+{{> components/ui/sections/paid_detail_what_you_learn/index}}
 
 <!-- BENEFITS SECTION -->
-<section id="benefits" class="bg-[#FAFAFA] py-20 font-montserrat overflow-x-hidden">
-  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
-    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      {{t 'test.paidProgram.navbarMenu.benefits'}}
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1000px]">
-      {{#each course.programBenefits}}
-      <div data-animate="slide-right" class="bg-white border border-[#E0E0E0] rounded-[16px] p-6 md:p-8 flex gap-5 hover:shadow-lg transition-shadow duration-300">       
-        <div class="text-[#0F0F0F] text-[28px] mt-1 flex-shrink-0">
-          <i class="fas {{this.icon}}"></i>
-        </div>
-        <div>
-          <h3 class="text-[#0F0F0F] font-[700] text-[17px] mb-2">{{getByLang this.benefit ../lang}}</h3>
-          <p class="text-[#545454] text-[14px] leading-[1.6]">{{getByLang this.description ../lang}}</p>
-        </div>
-      </div>
-      {{/each}}  
-    </div>
-  </div>
-</section>
-
+{{> components/ui/sections/paid_detail_benefit/index}}
 
 <!-- LEARNING FLOW SECTION -->
-<section id="learning-flow" class="bg-[#FAFAFA] py-20 font-montserrat relative z-0">
-  <div class="container mx-auto px-4 lg:px-8 max-w-[1200px] flex flex-col items-center">
-    
-    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      {{t 'test.paidProgram.navbarMenu.learningFlow'}}
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-x-3 gap-y-16 w-full">
-
-      <!-- Flow 1 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:left-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-1 lg:order-1">
-        {{#with (lookup course.courseFlow 0)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">1</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/1.svg" alt="Step 1" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 2 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:left-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-2 lg:order-2">
-        {{#with (lookup course.courseFlow 1)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">2</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/2.svg" alt="Step 2" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 3 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:left-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-3 lg:order-3">
-         {{#with (lookup course.courseFlow 2)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">3</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/3.svg" alt="Step 3" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 4 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:left-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-4 lg:order-4">
-        {{#with (lookup course.courseFlow 3)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">4</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/4.svg" alt="Step 4" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 5 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:left-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-5 lg:order-5">
-        {{#with (lookup course.courseFlow 4)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">5</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/5.svg" alt="Step 5" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 6 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:left-[50%] before:w-[calc(50%+1.5rem)] before:h-[calc(100%+4rem)] before:border-t-[1px] before:border-r-[1px] before:border-b-[1px] before:border-[#0F0F0F] before:-z-10 order-6 lg:order-6">
-        {{#with (lookup course.courseFlow 5)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">6</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/6.svg" alt="Step 6" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 7 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:right-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-7 lg:order-[12]">
-        {{#with (lookup course.courseFlow 6)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">7</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/7.svg" alt="Step 7" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 8 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:right-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-8 lg:order-[11]">
-        {{#with (lookup course.courseFlow 7)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">8</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/8.svg" alt="Step 8" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 9 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:right-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-9 lg:order-[10]">
-        {{#with (lookup course.courseFlow 8)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">9</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/9.svg" alt="Step 9" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 10 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:right-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-10 lg:order-[9]">
-        {{#with (lookup course.courseFlow 9)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">10</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/10.svg" alt="Step 10" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 11 -->
-      <div class="flex flex-col items-center text-center relative lg:before:block before:hidden before:absolute before:top-[19px] before:right-[50%] before:w-full before:h-[1px] before:bg-[#0F0F0F] before:-z-10 order-11 lg:order-[8]">
-        {{#with (lookup course.courseFlow 10)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">11</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/11.svg" alt="Step 11" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-  
-      <!-- Flow 12 -->
-      <div class="flex flex-col items-center text-center relative  order-12 lg:order-[7]">
-        {{#with (lookup course.courseFlow 11)}}
-        <div class="w-10 h-10 min-w-[40px] min-h-[40px] flex-shrink-0 flex-grow-0 rounded-full bg-[#6EB6E5] text-black flex items-center justify-center font-[600] text-[12px] mb-4 relative z-10">12</div>
-        <div class="bg-white backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-[16px] p-4 w-full h-full min-h-[260px] flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <img src="/public/image/icons/paid_program/learning-flow/12.svg" alt="Step 12" class="w-[28px] h-[28px] mb-4 object-contain" />
-          <h3 class="text-[#2D2D2D] font-[600] text-[15px] mb-3 leading-tight max-w-[140px]">{{getByLang this.title ../lang}}</h3>
-          <p class="text-[#2D2D2D] text-[12px] leading-[25px] w-[137px]">{{getByLang this.content ../lang}}</p>
-        </div>
-        {{/with}}
-      </div>
-      </div>
-  </div>
-</section>
+{{> components/ui/sections/paid_detail_learning_flow/index}}
 
 <!-- SCHEDULE & FEES SECTION -->
-{{> paid_program/schedule_fees }}
+{{> components/ui/sections/paid_detail_schedule_fee/index}}
 
 <!-- GALLERY SECTION -->
-{{> paid_program/gallery }}
+{{> components/ui/sections/program_detail_gallery/index}}
 
 <!-- FAQ SECTION -->
-{{> paid_program/faq }}
+{{> components/ui/sections/program_detail_faq/index}}
 
 <style>
   /* Untuk menyembunyikan scrollbar di menu tab namun tetap bisa di-scroll di HP */

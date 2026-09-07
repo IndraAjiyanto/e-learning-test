@@ -1,0 +1,20 @@
+{{!--
+  Komponen: Program Detail Sticky Nav (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/program_detail_nav/index.hbs
+
+  Props:
+  - items : array (opsional, [{ href: string, text: string, linkClass?: string }])
+  - Supports Block Partial via {{#> components/ui/sections/program_detail_nav/index }} ... {{/components/ui/sections/program_detail_nav/index}}
+--}}
+
+<section class="sticky top-0 z-40 w-full py-6 font-montserrat bg-[#fafafa] border-y border-gray-200 shadow-sm">
+  <div class="flex items-center justify-center max-w-[1537px] mx-auto px-8 gap-10 overflow-x-auto no-scrollbar md:gap-16 lg:gap-24">
+    {{#if items}}
+      {{#each items}}
+        {{> components/ui/text/nav_link/index href=this.href text=this.text linkClass=this.linkClass }}
+      {{/each}}
+    {{else}}
+      {{> @partial-block }}
+    {{/if}}
+  </div>
+</section>

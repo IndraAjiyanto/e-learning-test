@@ -5,9 +5,10 @@
   <div class="max-w-[1537px] mx-auto px-8 lg:px-16 flex flex-col items-center">
     
     <!-- 1. Badge Judul (Tengah) -->
-    <div class="inline-flex items-center justify-center border border-[#7AA3C4] bg-[#EBF3F9] text-[#0B1F3B] px-10 py-2.5 rounded-full font-medium text-[16px] mb-14">
-      {{t 'test.freeProgram.badge.benefit'}}
-    </div>
+    {{> components/ui/text/section_header/index
+      badge=(default badgeTitle (t 'test.freeProgram.badge.benefit'))
+      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
+    }}
 
     <!-- 2. Grid Kartu (Dibuat 2 Kolom) -->
     <!-- Dibatasi max-w-[800px] agar 4 kartu mengelompok rapi di tengah -->
