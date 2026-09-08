@@ -1,7 +1,27 @@
 {{!-- 
   Komponen: Section Header (Level 1 - UI Dasar)
   Lokasi: src/views/partials/components/ui/text/section_header/index.hbs
+
+  Props:
+  - badge            : string|HTML (opsional) — isi pill badge, boleh HTML (mis. dot + teks)
+  - badgeClass       : string (opsional) — override styling pill badge
+  - title            : string|HTML (wajib)
+  - titleTag         : 'h1' | 'h2' (default: 'h2')
+  - titleClass       : string (opsional)
+  - description      : string|HTML (opsional)
+  - descClass        : string (opsional)
+  - showDivider      : boolean (opsional)
+  - dividerClass     : string (opsional)
+  - dividerAfterDesc : boolean (default: false) — true = accent line dirender SETELAH description
+  - align            : 'text-left' | 'text-center' | 'text-right' (default: 'text-center')
+  - wrapperClass     : string (opsional)
 --}}
+
+{{#*inline "sectionHeaderDivider"}}
+  {{#if showDivider}}
+    <div class="w-[68px] h-[5px] rounded-full {{default dividerClass 'bg-[#0B1F3B] mb-4'}}"></div>
+  {{/if}}
+{{/inline}}
 
 <div class="w-full flex flex-col {{#if (eq align 'text-left')}}items-start{{else if (eq align 'text-right')}}items-end{{else}}items-center{{/if}} {{default align 'text-center'}} {{wrapperClass}}">
   {{#if badge}}
@@ -20,13 +40,13 @@
     </h2>
   {{/if}}
 
-  {{#if showDivider}}
-    <div class="w-[68px] h-[5px] rounded-full {{default dividerClass 'bg-[#0B1F3B] mb-4'}}"></div>
-  {{/if}}
+  {{#unless dividerAfterDesc}}{{> sectionHeaderDivider}}{{/unless}}
 
   {{#if description}}
     <p class="leading-relaxed {{default descClass 'font-sans font-normal text-sm text-[#2D2D2D]'}}">
       {{{description}}}
     </p>
   {{/if}}
+
+  {{#if dividerAfterDesc}}{{> sectionHeaderDivider}}{{/if}}
 </div>

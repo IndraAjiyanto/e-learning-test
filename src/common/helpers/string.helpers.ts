@@ -73,6 +73,41 @@ export const stringHelpers = {
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
   },
+  highlightLastWords: (
+    text: string,
+    count: number,
+    color: string,
+    cjkCount?: any,
+  ): Handlebars.SafeString => {
+    const raw = (text || '').toString().trim();
+    if (!raw) return new Handlebars.SafeString('');
+    const esc = Handlebars.escapeExpression;
+    const wrap = (part: string) =>
+      `<span style="color: ${esc(color)}">${esc(part)}</span>`;
+
+    const n = Number(count) > 0 ? Number(count) : 2;
+    const words = raw.split(/\s+/);
+
+    // Bahasa tanpa spasi (Jepang/Cina/Korea): potong per karakter, bukan per kata
+    const isCjk = /[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(
+      raw,
+    );
+    if (words.length < 2 && isCjk) {
+      const chars = Number(cjkCount) > 0 ? Number(cjkCount) : 4;
+      const chunk = Array.from(raw);
+      if (chunk.length <= chars) return new Handlebars.SafeString(wrap(raw));
+      const cut = chunk.length - chars;
+      return new Handlebars.SafeString(
+        esc(chunk.slice(0, cut).join('')) + wrap(chunk.slice(cut).join('')),
+      );
+    }
+
+    const head = words.slice(0, Math.max(words.length - n, 0));
+    const tail = words.slice(Math.max(words.length - n, 0));
+    return new Handlebars.SafeString(
+      head.length ? `${esc(head.join(' '))} ${wrap(tail.join(' '))}` : wrap(tail.join(' ')),
+    );
+  },
   concat: function (...args: any[]) {
     // Remove the Handlebars options object from the end
     const strings = args.slice(0, -1);

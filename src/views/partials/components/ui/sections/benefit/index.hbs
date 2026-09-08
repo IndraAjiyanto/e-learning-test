@@ -17,7 +17,7 @@
           badge=(t 'test.home.imagine.whyChooseUs')
           badgeClass="px-[16px] py-[8px] font-montserrat font-medium text-[14px] text-[#003060] leading-none mb-4"
           title=(t 'test.home.imagine.title')
-          titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] mb-4"
+          titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] [&_span]:text-[#003060] mb-4"
           showDivider=true
           dividerClass="w-[70px] bg-[#0B1F3B] mb-4"
           description=(t 'test.home.imagine.description')
@@ -49,65 +49,67 @@
   </div>
 </section>
 
-<!-- DESKTOP BENEFIT SECTION (>= 640px / Figma Baseline W1728) -->
-<section class="hidden sm:block w-full relative pt-16 pb-24 z-0 overflow-hidden bg-[#FAFAFA]">
-  
-  <!-- Background Image -->
-  <div class="absolute inset-0 -z-10">
-    <img src="/public/image/dashboard/bgBenefit.png" alt="Benefit Background" class="w-full h-full object-cover">
-    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-b from-transparent to-white"></div>
-  </div>
+<!-- DESKTOP BENEFIT SECTION (>= 640px) — Figma: why-choose-us (250:2815) -->
+<section class="hidden sm:flex w-full bg-[#F8F9FA] px-8 lg:px-[80px] pt-[100px] pb-[120px] justify-center font-montserrat" data-node-id="250:2815">
+  <div class="w-full max-w-[1554px] flex flex-col gap-[64px]" data-node-id="250:2816">
 
-  <div class="container mx-auto px-4 lg:px-8 max-w-[1324px] relative z-10 text-center">
-    
-    <!-- Header Section -->
-    <div 
-      x-data="{ shown: false }" 
+    <!-- section-header (250:2817) -->
+    <div
+      x-data="{ shown: false }"
       x-init="
         const observer = new IntersectionObserver(([entry]) => {
           if (entry.isIntersecting) { shown = true; observer.disconnect(); }
         }, { threshold: 0.35, rootMargin: '0px 0px -50px 0px' });
         observer.observe($el);
       "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-16'"
-      class="transition-all duration-1000 ease-out transform text-center"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
+      class="w-full flex flex-col items-center gap-[16px] transition-all duration-1000 ease-out transform"
     >
-      {{> components/ui/text/section_header/index
-          badge=(t 'test.home.imagine.whyChooseUs')
-          badgeClass="w-[305px] h-[49px] text-[20px] mb-8"
-          title=(t 'test.home.imagine.title')
-          titleClass="text-3xl md:text-4xl lg:text-[42px] mb-4 font-[600] text-black font-montserrat tracking-tight"
-          showDivider=true
-          dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
-          description=(t 'test.home.imagine.description')
-          descClass="text-base md:text-xl text-[#000000]/80 leading-[45px] max-w-auto font-sans font-[400]"
-      }}
+      <!-- animated-tag (250:2818) -->
+      <div class="flex items-center gap-[8px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-[100px] px-[16px] py-[6px]">
+        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5] shrink-0" aria-hidden="true"></i>
+        <span class="font-montserrat font-bold text-[12px] uppercase text-[#0B1F3B] whitespace-nowrap">
+          {{t 'test.home.imagine.whyChooseUs'}}
+        </span>
+      </div>
+
+      <!-- Heading (250:2822) -->
+      <h2 class="font-montserrat font-bold text-[28px] lg:text-[36px] leading-tight text-[#111827] text-center [&_span]:text-[#6EB6E5]">
+        {{{t 'test.home.imagine.title'}}}
+      </h2>
+
+      <!-- Subheading (250:2826) -->
+      <p class="font-sans font-normal text-[16px] lg:text-[20px] leading-[1.6] text-[#4A5568] text-center max-w-[720px]">
+        {{t 'test.home.imagine.description'}}
+      </p>
+
+      <!-- accent-line (250:2827) -->
+      <div class="w-[60px] h-[4px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    <!-- Div Pembungkus Seluruh Cards Grid -->
-    <div 
-      x-data="{ shown: false }" 
+    <!-- features-grid (250:2828) -->
+    <div
+      x-data="{ shown: false }"
       x-init="
         const observer = new IntersectionObserver(([entry]) => {
           if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.25, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
         observer.observe($el);
       "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-24'"
-      class="flex flex-wrap justify-center gap-6 md:gap-12 mt-8 transition-all duration-1000 ease-out transform w-full"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'"
+      class="w-full flex flex-wrap justify-center gap-[24px] transition-all duration-1000 ease-out transform"
     >
-
-      <!-- Cards Loop -->
       {{#each benefits}}
-        {{> components/ui/card/card_benefit/index 
-            icon=this.icon
-            title=this.title
-            description=this.description
-            lang=../lang
-        }}
+        <div class="w-full md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] flex">
+          {{> components/ui/card/card_benefit/index
+              icon=this.icon
+              title=this.title
+              description=this.description
+              lang=../lang
+          }}
+        </div>
       {{/each}}
-      
     </div>
-    
+
   </div>
 </section>
