@@ -7,7 +7,9 @@
   - text    : Label tombol
   - class   : Kelas tambahan untuk layout
   - variant : "light" (teks/border navy di semua breakpoint, untuk background terang)
+              "solid" (pill putih solid + teks navy, tanpa ikon, untuk banner background gelap)
               default: navy di mobile, putih di desktop (untuk background gelap)
+  - roundedClass : string (opsional, default "rounded-[12px]")
   
   Refactored: Menggabungkan mobile + desktop styling dengan responsive classes
 --}}
@@ -17,11 +19,14 @@
   :href="$waLink('{{phone}}')"
   target="_blank" rel="noopener noreferrer"
   class="
-    flex items-center justify-center font-semibold transition-all duration-300 rounded-[12px] cursor-pointer
+    flex items-center justify-center font-semibold transition-all duration-300 {{default roundedClass "rounded-[12px]"}} cursor-pointer
     {{#if (eq variant 'light')}}
       border border-[#E5E7EB] text-[#0B1F3B] bg-transparent
       hover:bg-white hover:border-[#0B1F3B]/20
       lg:hover:shadow-lg lg:hover:-translate-y-0.5
+    {{else if (eq variant 'solid')}}
+      bg-white text-[#003060]
+      hover:bg-[#E0F2F9] hover:-translate-y-0.5
     {{else}}
       border-[1.5px] lg:border
       border-[#003060] lg:border-white
@@ -37,6 +42,8 @@
   {{#if (eq variant 'light')}}
   <!-- Icon: Font Awesome (pengganti message-square.svg) -->
   <i class="fa-regular fa-comment text-base leading-none shrink-0" aria-hidden="true"></i>
+  {{else if (eq variant 'solid')}}
+  {{!-- varian solid: tanpa ikon --}}
   {{else}}
   <!-- Icon - Different for mobile vs desktop -->
   <svg class="w-5 h-5 fill-[#003060] lg:hidden" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
