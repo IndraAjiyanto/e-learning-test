@@ -1,0 +1,20 @@
+{{!--
+  Komponen: Info Dropdown Item (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/nav/info_item/index.hbs
+  Satu baris menu di dropdown "Information" navbar.
+  Props: href, icon (kelas Font Awesome tanpa prefix `fa-`... pakai penuh mis. "fa-image"), title, desc
+--}}
+<a
+  href="{{href}}"
+  @click="setActive('{{href}}')"
+  class="group flex items-center gap-4 border-b border-[#E2E8F0] pb-4 last:border-0 last:pb-0"
+>
+  <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#F1F5F9] text-[#003060] transition group-hover:bg-[#E0F2F9]">
+    <i class="fas {{icon}} text-sm"></i>
+  </span>
+  <span class="flex flex-1 flex-col gap-0.5">
+    <span class="font-inter text-[15px] font-bold text-[#1E3E8F]">{{title}}</span>
+    <span class="font-inter text-[11px] leading-relaxed text-[#555A64]">{{desc}}</span>
+  </span>
+  <i class="fas fa-chevron-right text-[10px] text-[#666673] transition group-hover:translate-x-0.5"></i>
+</a>

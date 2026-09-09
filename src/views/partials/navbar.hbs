@@ -1,818 +1,265 @@
-<div
-  class='w-full bg-[#F5F5F5] shadow-sm fixed top-0 left-0 right-0 z-50 text-white'
+<header
+  class="fixed inset-x-0 top-0 z-50 border-b-[3px] border-[#F3F4F6] bg-white font-montserrat text-[#4A5568] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]"
   x-data="{
     open: false,
-    isDesktop: window.innerWidth >= 768,
+    isDesktop: window.innerWidth >= 1024,
+    classOpen: false,
+    infoOpen: false,
+    lang: '{{lang}}',
+    active: '/dashboard',
+    category: [],
+    setActive(path) {
+      this.active = path;
+      this.open = false;
+      this.classOpen = false;
+      this.infoOpen = false;
+      document.body.style.overflow = '';
+    },
+    isActive(path) {
+      const cur = this.active;
+      if (path === cur) return true;
+      if (path.includes('/category/') && cur.includes('/category/')) {
+        return path.split('/').pop() === cur.split('/').pop();
+      }
+      return false;
+    },
+    isClassActive() {
+      return this.active.includes('/category/') || this.active.includes('/dashboard/mpp');
+    },
+    isInfoActive() {
+      return ['/dashboard/about', '/dashboard/alumni', '/dashboard/gallery', '/dashboard/portofolios']
+        .some(p => this.active.startsWith(p));
+    },
+    isUserActive() {
+      return this.active.includes('/users/') || this.active.includes('/program/myProgram') ||
+        this.active.includes('/portfolio/myportfolio') || this.active.includes('/payment/history');
+    },
+    getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj['id'] || '';
+    },
+    truncate(text, len) {
+      if (!text) return '';
+      const s = text.toString();
+      return s.length <= len ? s : s.slice(0, len) + '...';
+    },
     toggleMenu() {
       this.open = !this.open;
       document.body.style.overflow = this.open ? 'hidden' : '';
     },
-    closeMenu() {
-      this.open = false;
-      document.body.style.overflow = '';
-    },
-    init() {
+    async init() {
+      this.active = window.location.pathname;
       window.addEventListener('resize', () => {
-        this.isDesktop = window.innerWidth >= 768;
-        if (this.isDesktop) {
-          this.open = false;
-          document.body.style.overflow = '';
-        }
+        this.isDesktop = window.innerWidth >= 1024;
+        if (this.isDesktop) { this.open = false; document.body.style.overflow = ''; }
       });
+      window.addEventListener('popstate', () => { this.active = window.location.pathname; });
+      try {
+        const res = await fetch('/dashboard/api/category');
+        this.category = await res.json();
+      } catch (e) {}
     }
   }"
 >
-  <div
-    x-data="{
-    open: false,
-    programOpen: false,
-    lang: '{{lang}}',
-    active: '/dashboard',
-    category: [],      
-      setActive(path) {
-        this.active = path;
-        this.open = false;
-        this.programOpen = false;
-        
-      },
-      
-      isActive(path) {
-        const currentPath = this.active;
-        
-        if (path === currentPath) {
-          return true;
-        }
-        
-        if (path.includes('/category/') && currentPath.includes('/category/')) {
-          const pathCategory = path.split('/').pop();
-          const currentCategory = currentPath.split('/').pop();
-          if (pathCategory === currentCategory) {
-            return true;
-          }
-        }
-        
-        if (path.includes('/users/profile') && currentPath.includes('/users/profile')) return true;
-        if (path.includes('/program/myProgram') && currentPath.includes('/program/myProgram')) return true;
-        if (path.includes('/portfolio/myportfolio') && currentPath.includes('/portfolio/myportfolio')) return true;
-        if (path.includes('/blog/detail') && currentPath.includes('/blog/detail')) return true;
-        if (path.includes('/payment/history') && currentPath.includes('/payment/history')) return true;
-        
-        return false;
-      },
+  <div class="page-shell relative flex h-16 items-center justify-between lg:h-[76px]">
 
-isProgramActive() {
-  const currentPath = this.active;
+    {{!-- Logo --}}
+    <a href="/dashboard" @click="setActive('/dashboard')" class="flex shrink-0 items-center">
+      <img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-7 w-auto object-contain sm:h-8 lg:h-[52px]" />
+    </a>
 
-  return (
-    currentPath.includes('/category/') ||
-    currentPath.includes('/dashboard/category/') ||
-    (this.category && this.category.length > 0 && this.category.some(kat =>
-      currentPath === `/category/${kat.name}`
-    ))
-  );
-},
-
-    getByLang(obj, lang) {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || ''; 
-  },
-
-  truncate(text, length) {
-    if (!text) return '';
-    const str = text.toString();
-    if (str.length <= length) return str;
-    return str.substring(0, length) + '...';
-  },
-
-  isUserActive() {
-        const currentPath = this.active;
-        return currentPath.includes('/users/') || 
-               currentPath.includes('/program/myProgram') || 
-               currentPath.includes('/portfolio/myportfolio') || 
-               currentPath.includes('/blog/detail') ||
-               currentPath.includes('/payment/history');
-      },
-      
-      async init() {
-        this.active = window.location.pathname;
-        
-        try {
-          const response = await fetch('/dashboard/api/category');
-          this.category = await response.json();
-        } catch (error) {
-        }
-        
-        window.addEventListener('popstate', () => {
-          this.active = window.location.pathname;
-        });
-        
-        document.addEventListener('click', (e) => {
-          const link = e.target.closest('a');
-          if (link && link.href) {
-            const url = new URL(link.href);
-            if (url.origin === window.location.origin) {
-              setTimeout(() => {
-                this.active = window.location.pathname;
-              }, 100);
-            }
-          }
-        });
-      }
-    }"
-    class='page-shell flex items-center justify-between h-14 sm:h-16 relative'
-  >
-    <div class='flex items-center justify-between w-full md:w-auto h-full'>
+    {{!-- Desktop nav links --}}
+    <nav class="hidden items-center gap-8 lg:flex xl:gap-14" x-show="isDesktop">
       <a
-        href='/dashboard'
-        class='inline-block flex items-center'
+        href="/dashboard"
         @click="setActive('/dashboard')"
-      >
-        <img
-          src='/public/image/logo_baru.png'
-          alt='Logo'
-          class='h-6 sm:h-8 md:h-9 w-auto object-contain focus:outline-none focus:shadow-outline'
-        />
-      </a>
+        :class="isActive('/dashboard') ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
+        class="text-sm transition-colors"
+      >{{t 'test.navbar.home'}}</a>
 
-      <!-- Tombol toggle mobile menu (Dark Navy rounded-[14px] button) -->
-      <button
-        class='w-9 h-9 sm:w-10 sm:h-10 bg-[#003060] rounded-[12px] md:hidden flex items-center justify-center text-white focus:outline-none shadow-md hover:bg-[#001f3f] transition-all z-50 shrink-0'
-        @click='toggleMenu()'
-        aria-label="Toggle Navigation Menu"
-      >
-        <svg fill='currentColor' viewBox='0 0 20 20' class='w-5 h-5'>
-          <path
-            x-show='!open'
-            fill-rule='evenodd'
-            d='M3 5a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1z'
-            clip-rule='evenodd'
-          ></path>
-          <path
-            x-show='open'
-            fill-rule='evenodd'
-            d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
-            clip-rule='evenodd'
-          ></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Overlay gelap untuk mobile menu -->
-    <div
-      x-show='open'
-      x-transition:enter='transition-opacity ease-linear duration-300'
-      x-transition:enter-start='opacity-0'
-      x-transition:enter-end='opacity-100'
-      x-transition:leave='transition-opacity ease-linear duration-300'
-      x-transition:leave-start='opacity-100'
-      x-transition:leave-end='opacity-0'
-      class='fixed inset-0 bg-black/50 z-40 md:hidden'
-      @click='closeMenu()'
-    ></div>
-
-    <nav
-      x-show='open'
-      x-transition:enter='transition ease-out duration-300 transform'
-      x-transition:enter-start='translate-x-full'
-      x-transition:enter-end='translate-x-0'
-      x-transition:leave='transition ease-in duration-300 transform'
-      x-transition:leave-start='translate-x-0'
-      x-transition:leave-end='translate-x-full'
-      class='fixed top-0 right-0 h-full w-80 bg-gradient-to-br from-primary to-secondary shadow-2xl z-50 overflow-y-auto md:hidden'
-      @click.away='closeMenu()'
-    >
-      <div class='flex flex-col h-full'>
-        <!-- Mobile Menu Header -->
-        <div
-          class='flex items-center justify-between p-4 border-b border-white/20'
+      {{!-- Class dropdown --}}
+      <div class="relative" @click.away="classOpen = false">
+        <button
+          @click="classOpen = !classOpen; infoOpen = false"
+          :class="isClassActive() || classOpen ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
+          class="flex items-center gap-1.5 text-sm transition-colors"
         >
-          <img
-            src='/public/image/logo_kotak_putih.png'
-            alt='Logo'
-            class='h-8 w-auto'
-          />
-          <button
-            @click='closeMenu()'
-            class='p-2 rounded-lg hover:bg-white/10 transition-colors'
-          >
-            <svg fill='currentColor' viewBox='0 0 20 20' class='w-6 h-6'>
-              <path
-                fill-rule='evenodd'
-                d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
-                clip-rule='evenodd'
-              ></path>
-            </svg>
-          </button>
+          {{t 'test.navbar.class'}}
+          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="classOpen && 'rotate-180'"></i>
+        </button>
+        <div
+          x-show="classOpen"
+          x-transition.origin.top
+          class="absolute left-1/2 z-[100] mt-5 w-[min(92vw,1050px)] -translate-x-1/2"
+          style="display:none"
+        >
+          <div class="grid gap-10 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] lg:grid-cols-[310px_1fr] lg:p-12">
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                <span class="grid size-8 place-items-center rounded-2xl bg-[#003060] text-white"><i class="fas fa-graduation-cap text-sm"></i></span>
+                <span class="font-inter text-2xl font-extrabold text-[#003060]">{{t 'test.navbar.class'}}</span>
+              </div>
+              <p class="font-inter text-sm leading-relaxed text-[#1F2937]">{{t 'test.navbar.classMenuIntro'}}</p>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              {{> components/ui/card/category/mpp/index isMobile=false}}
+              <template x-for="kat in category" :key="kat.id">
+                {{> components/ui/card/category/dynamic/index isMobile=false}}
+              </template>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Mobile Menu Content -->
-        <div class='flex-1 py-4'>
-          {{#if isAuthenticated}}
-            <a
-              href='/dashboard'
-              @click="setActive('/dashboard')"
-              :class="isActive('/dashboard') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.home'}}</a>
+      <a
+        href="/dashboard/corporate-training"
+        @click="setActive('/dashboard/corporate-training')"
+        :class="isActive('/dashboard/corporate-training') ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
+        class="whitespace-nowrap text-sm transition-colors"
+      >{{t 'test.navbar.corporateTraining'}}</a>
 
-            <a
-              href='/dashboard/about'
-              @click="setActive('/dashboard/about')"
-              :class="isActive('/dashboard/about') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.about'}}</a>
-
-            <!-- Program Menu Mobile -->
-            <div class='mx-2'>
-              <button
-                @click='programOpen = !programOpen'
-                :class="isProgramActive() ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-                class='flex items-center justify-between w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors'
-              >
-                <span>{{t 'test.navbar.program'}}</span>
-                <svg
-                  fill='currentColor'
-                  viewBox='0 0 20 20'
-                  :class="{'rotate-180': programOpen, 'rotate-0': !programOpen}"
-                  class='w-4 h-4 ml-1 transition-transform duration-200'
-                >
-                  <path
-                    fill-rule='evenodd'
-                    d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                    clip-rule='evenodd'
-                  ></path>
-                </svg>
-              </button>
-
-              <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
-                {{> components/ui/card/category/mpp/index isMobile=true}}
-                <template x-for='kat in category' :key='kat.id'>
-                  {{> components/ui/card/category/dynamic/index isMobile=true}}
-                </template>
+      {{!-- Information dropdown --}}
+      <div class="relative" @click.away="infoOpen = false">
+        <button
+          @click="infoOpen = !infoOpen; classOpen = false"
+          :class="isInfoActive() || infoOpen ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
+          class="flex items-center gap-1.5 text-sm transition-colors"
+        >
+          {{t 'test.navbar.information'}}
+          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="infoOpen && 'rotate-180'"></i>
+        </button>
+        <div
+          x-show="infoOpen"
+          x-transition.origin.top
+          class="absolute right-0 z-[100] mt-5 w-[min(92vw,1050px)]"
+          style="display:none"
+        >
+          <div class="grid gap-10 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] lg:grid-cols-[310px_1fr] lg:p-12">
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                <span class="grid size-8 place-items-center rounded-2xl border-2 border-[#003060] font-inter text-base font-bold text-[#003060]">i</span>
+                <span class="font-inter text-2xl font-extrabold text-[#003060]">{{t 'test.navbar.information'}}</span>
               </div>
+              <p class="font-inter text-sm leading-relaxed text-[#1F2937]">{{t 'test.navbar.infoMenuIntro'}}</p>
             </div>
-
-            <a
-              href='/dashboard/portofolios'
-              @click="setActive('/dashboard/portofolios')"
-              :class="isActive('/dashboard/portofolios') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.portfolio'}}</a>
-
-            <a
-              href='/dashboard/blog'
-              @click="setActive('/dashboard/blog')"
-              :class="isActive('/dashboard/blog') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.blog'}}</a>
-
-            <a
-              href='/dashboard/alumni'
-              @click="setActive('/dashboard/alumni')"
-              :class="isActive('/dashboard/alumni') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.alumni'}}</a>
-
-            <!-- User Menu Mobile -->
-            <div class='mx-2 mt-2 border-t border-white/20 pt-2'>
-              <a
-                href='/users/profile'
-                class='flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors text-white/80 hover:bg-white/10'
-              >
-                <div
-                  class='w-8 h-8 rounded-full overflow-hidden border-2 border-white/30'
-                >
-                  {{#if user.profile}}
-                    <img
-                      src="{{user.profile}}"
-                      alt='{{user.username}}'
-                      class='w-full h-full object-cover'
-                    />
-                  {{else}}
-                    <div
-                      class='w-full h-full bg-white/20 flex items-center justify-center'
-                    >
-                      <span class='text-white font-bold text-lg'>{{substring
-                          user.username
-                          0
-                          1
-                        }}</span>
-                    </div>
-                  {{/if}}
+            <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+              {{> components/ui/nav/info_item/index href="/dashboard/about"       icon="fa-circle-info"   title=(t 'test.navbar.about')     desc=(t 'test.navbar.infoAboutDesc') }}
+              {{> components/ui/nav/info_item/index href="/dashboard/gallery"     icon="fa-image"         title=(t 'test.navbar.gallery')   desc=(t 'test.navbar.infoGalleryDesc') }}
+              {{> components/ui/nav/info_item/index href="/dashboard/portofolios" icon="fa-briefcase"     title=(t 'test.navbar.portfolio') desc=(t 'test.navbar.infoPortfolioDesc') }}
+              {{> components/ui/nav/info_item/index href="/dashboard/alumni"      icon="fa-users"         title=(t 'test.navbar.alumni')    desc=(t 'test.navbar.infoAlumniDesc') }}
+              {{#unless isAuthenticated}}
+                <div class="flex flex-col gap-3 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:col-span-2">
+                  <p class="font-inter text-sm font-bold text-[#003060]">{{t 'test.navbar.infoLoginCtaTitle'}}</p>
+                  <p class="font-inter text-xs leading-relaxed text-[#555A64]">{{t 'test.navbar.infoLoginCtaDesc'}}</p>
+                  <a href="/login" @click="setActive('/login')" class="inline-flex w-fit items-center rounded-xl bg-[#003060] px-4 py-2 font-inter text-xs font-bold text-white transition hover:bg-[#00244a]">{{t 'test.navbar.login'}}</a>
                 </div>
-                <span class='truncate w-20 block'>{{user.username}}</span>
-              </a>
-            </div>
-
-          {{else}}
-            <!-- Non-logged in user menu mobile -->
-            <a
-              href='/dashboard'
-              @click="setActive('/dashboard')"
-              :class="isActive('/dashboard') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.home'}}</a>
-
-            <a
-              href='/dashboard/about'
-              @click="setActive('/dashboard/about')"
-              :class="isActive('/dashboard/about') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.about'}}</a>
-
-            <div class='mx-2'>
-              <button
-                @click='programOpen = !programOpen'
-                :class="isProgramActive() ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-                class='flex items-center justify-between w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors'
-              >
-                <span>{{t 'test.navbar.program'}}</span>
-                <svg
-                  fill='currentColor'
-                  viewBox='0 0 20 20'
-                  :class="{'rotate-180': programOpen, 'rotate-0': !programOpen}"
-                  class='w-4 h-4 ml-1 transition-transform duration-200'
-                >
-                  <path
-                    fill-rule='evenodd'
-                    d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                    clip-rule='evenodd'
-                  ></path>
-                </svg>
-              </button>
-
-              <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
-                {{> components/ui/card/category/mpp/index isMobile=true}}
-                <template x-for='kat in category' :key='kat.id'>
-                  {{> components/ui/card/category/dynamic/index isMobile=true}}
-                </template>
-              </div>
-            </div>
-
-            <a
-              href='/dashboard/portofolios'
-              @click="setActive('/dashboard/portofolios')"
-              :class="isActive('/dashboard/portofolios') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.portfolio'}}</a>
-
-            <a
-              href='/dashboard/blog'
-              @click="setActive('/dashboard/blog')"
-              :class="isActive('/dashboard/blog') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.blog'}}</a>
-
-            <a
-              href='/dashboard/alumni'
-              @click="setActive('/dashboard/alumni')"
-              :class="isActive('/dashboard/alumni') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'"
-              class='block px-4 py-3 text-sm font-semibold transition-colors mx-2 rounded-lg'
-            >{{t 'test.navbar.alumni'}}</a>
-
-            <a
-              href='/login'
-              @click="setActive('/login')"
-              class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-            >{{t 'test.navbar.login'}}</a>
-          {{/if}}
-
-          <!-- Language Selector Mobile -->
-          <div
-            class='mx-2 mt-4 border-t border-white/20 pt-4'
-            x-data="{ langOpen: false, currentLang: '{{lang}}' }"
-          >
-            <button
-              @click='langOpen = !langOpen'
-              class='flex items-center justify-between w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors text-white/80 hover:bg-white/10'
-            >
-              <div class='flex items-center gap-2'>
-                <span
-                  :class="currentLang === 'id' ? 'fi fi-id' : currentLang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"
-                  class='text-lg'
-                ></span>
-                <span
-                  x-text='currentLang === "id" ? "Bahasa Indonesia" : currentLang === "en" ? "English" : "日本語"'
-                ></span>
-              </div>
-              <svg
-                fill='currentColor'
-                viewBox='0 0 20 20'
-                :class="{'rotate-180': langOpen, 'rotate-0': !langOpen}"
-                class='w-4 h-4 transition-transform duration-200'
-              >
-                <path
-                  fill-rule='evenodd'
-                  d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                  clip-rule='evenodd'
-                ></path>
-              </svg>
-            </button>
-
-            <div x-show='langOpen' x-collapse class='ml-4 mt-2 space-y-2'>
-              <form
-                action='/translation'
-                method='post'
-                @submit='currentLang = "en"; langOpen = false'
-              >
-                <input type='text' value='en' name='lang' hidden />
-                <button
-                  type='submit'
-                  class='flex items-center gap-3 w-full px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-white/80'
-                >
-                  <span class='fi fi-gb'></span>
-                  <span class='text-sm font-medium'>English (EN)</span>
-                </button>
-              </form>
-
-              <form
-                action='/translation'
-                method='post'
-                @submit='currentLang = "id"; langOpen = false'
-              >
-                <input type='text' value='id' name='lang' hidden />
-                <button
-                  type='submit'
-                  class='flex items-center gap-3 w-full px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-white/80'
-                >
-                  <span class='fi fi-id'></span>
-                  <span class='text-sm font-medium'>Bahasa Indonesia (ID)</span>
-                </button>
-              </form>
-
-              <form
-                action='/translation'
-                method='post'
-                @submit='currentLang = "ja"; langOpen = false'
-              >
-                <input type='text' value='ja' name='lang' hidden />
-                <button
-                  type='submit'
-                  class='flex items-center gap-3 w-full px-4 py-3 rounded-lg hover:bg-white/10 transition-colors text-white/80'
-                >
-                  <span class='fi fi-jp'></span>
-                  <span class='text-sm font-medium'>日本語 (JP)</span>
-                </button>
-              </form>
+              {{/unless}}
             </div>
           </div>
         </div>
       </div>
     </nav>
 
-    <nav
-      class='hidden md:flex flex-1 items-center justify-center space-x-8 h-full'
-      x-show='isDesktop'
-    >
+    {{!-- Desktop actions --}}
+    <div class="hidden items-center gap-4 lg:flex" x-show="isDesktop">
+      {{> components/ui/nav/lang_switcher/index }}
+
       {{#if isAuthenticated}}
         <a
-          href='/dashboard'
-          @click="setActive('/dashboard')"
-          :class="isActive('/dashboard')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.home'}}</a>
-
-        <a
-          href='/dashboard/about'
-          @click="setActive('/dashboard/about')"
-          :class="isActive('/dashboard/about')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.about'}}</a>
-
-        <div class='relative'>
-          <button
-            @click='programOpen = !programOpen'
-            @click.away='programOpen = false'
-            :class="isProgramActive()
-              ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-            class='flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
-          >
-            <span class='whitespace-nowrap'>{{t 'test.navbar.program'}}</span>
-            <svg
-              fill='currentColor'
-              viewBox='0 0 20 20'
-              :class="{'rotate-180': programOpen, 'rotate-0': !programOpen}"
-              class='w-4 h-4 ml-1 transition-transform duration-200'
-            >
-              <path
-                fill-rule='evenodd'
-                d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                clip-rule='evenodd'
-              ></path>
-            </svg>
-          </button>
-
-          <div
-            x-show='programOpen'
-            @click.away='programOpen = false'
-            x-transition:enter='transition ease-out duration-100'
-            x-transition:enter-start='transform opacity-0 scale-95'
-            x-transition:enter-end='transform opacity-100 scale-100'
-            class='absolute right-0 w-full md:max-w-3xl md:w-[800px] mt-4 origin-top-right z-[100]'
-          >
-            <div class='p-6 bg-white rounded-2xl shadow-xl border border-gray-100'>
-              <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                 {{> components/ui/card/category/mpp/index isMobile=false}}
-                <template x-for='kat in category' :key='kat.id'>
-                  {{> components/ui/card/category/dynamic/index isMobile=false}}
-                </template>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{!-- <a
-          href='/dashboard/portofolios'
-          @click="setActive('/dashboard/portofolios')"
-          :class="isActive('/dashboard/portofolios')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.portfolio'}}</a> --}}
-
-        {{!-- <a
-          href='/dashboard/blog'
-          @click="setActive('/dashboard/blog')"
-          :class="isActive('/dashboard/blog') 
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.blog'}}</a> --}}
-
-        <a
-          href='/dashboard/alumni'
-          @click="setActive('/dashboard/alumni')"
-          :class="isActive('/dashboard/alumni') 
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.alumni'}}</a>
-
-        <a
-          href='/dashboard/gallery'
-          @click="setActive('/dashboard/gallery')"
-          :class="isActive('/dashboard/gallery') 
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.gallery'}}</a>
-
-        <a
-          href='/users/profile'
-          :class="isUserActive()
-            ? 'bg-gray-200 text-gray-900' 
-            : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          href="/users/profile"
+          :class="isUserActive() ? 'bg-gray-100' : 'hover:bg-gray-100'"
+          class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
         >
-          <span class='truncate w-20 block'>{{user.username}}</span>
-          <div
-            class='w-7 h-7 rounded-full overflow-hidden border-2 border-gray-600 hover:border-gray-400 transition-colors'
-          >
+          <span class="block w-24 truncate">{{user.username}}</span>
+          <span class="grid size-7 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-gray-300 bg-gray-600 text-white">
             {{#if user.profile}}
-              <img
-                src="{{user.profile}}"
-                alt='{{user.username}}'
-                class='w-full h-full object-cover'
-              />
+              <img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />
             {{else}}
-              <div
-                class='w-full h-full bg-gray-600 flex items-center justify-center'
-              >
-                <span class='text-white font-bold text-lg'>{{substring
-                    user.username
-                    0
-                    1
-                  }}</span>
-              </div>
+              <span class="text-xs font-bold">{{substring user.username 0 1}}</span>
             {{/if}}
-          </div>
+          </span>
         </a>
-
       {{else}}
         <a
-          href='/dashboard'
-          @click="setActive('/dashboard')"
-          :class="isActive('/dashboard')
-          ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.home'}}</a>
-
-        <a
-          href='/dashboard/about'
-          @click="setActive('/dashboard/about')"
-          :class="isActive('/dashboard/about')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.about'}}</a>
-
-        <div class='relative'>
-          <button
-            @click='programOpen = !programOpen'
-            @click.away='programOpen = false'
-            :class="isProgramActive()
-              ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-            class='flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
-          >
-            <span class='whitespace-nowrap'>{{t 'test.navbar.program'}}</span>
-            <svg
-              fill='currentColor'
-              viewBox='0 0 20 20'
-              :class="{'rotate-180': programOpen, 'rotate-0': !programOpen}"
-              class='w-4 h-4 ml-1 transition-transform duration-200'
-            >
-              <path
-                fill-rule='evenodd'
-                d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                clip-rule='evenodd'
-              ></path>
-            </svg>
-          </button>
-
-        <div
-            x-show='programOpen'
-            @click.away='programOpen = false'
-            x-transition:enter='transition ease-out duration-300'
-            x-transition:enter-start='opacity-0 -translate-y-4 scale-95'
-            x-transition:enter-end='opacity-100 translate-y-0 scale-100'
-            x-transition:leave='transition ease-in duration-200'
-            x-transition:leave-start='opacity-100 translate-y-0 scale-100'
-            x-transition:leave-end='opacity-0 -translate-y-4 scale-95'
-            class='absolute left-1/2 -translate-x-1/2 mt-5 w-[92vw] md:w-[760px] origin-top z-[100]'
-          >
-            <div class='p-6 md:p-8 bg-white rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)] border border-gray-400'>
-                  <div class='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
-                    {{> components/ui/card/category/mpp/index isMobile=false}}
-                      <template x-for='kat in category' :key='kat.id'>
-                          {{> components/ui/card/category/dynamic/index isMobile=false isAuthenticated=false}}
-                      </template>
-    </div>
-  </div>
-</div>
-        </div>
-
-        {{!-- <a
-          href='/dashboard/portofolios'
-          @click="setActive('/dashboard/portofolios')"
-          :class="isActive('/dashboard/portofolios')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.portfolio'}}</a> --}}
-
-        {{!-- <a
-          href='/dashboard/blog'
-          @click="setActive('/dashboard/blog')"
-          :class="isActive('/dashboard/blog') 
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.blog'}}</a> --}}
-
-        <a
-          href='/dashboard/alumni'
-          @click="setActive('/dashboard/alumni')"
-          :class="isActive('/dashboard/alumni')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.alumni'}}</a>
-
-        <a
-          href='/dashboard/gallery'
-          @click="setActive('/dashboard/gallery')"
-          :class="isActive('/dashboard/gallery')
-           ? 'bg-gray-200 text-gray-900' 
-          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.gallery'}}</a>
-
-    </nav>
-    <nav  class='hidden md:flex items-center justify-center space-x-8 h-full'
-      x-show='isDesktop'>
-
-        <div class='flex justify-end items-center space-x-4 h-full'>
-
-        <a
-          href='/login'
+          href="/login"
           @click="setActive('/login')"
-          :class="isActive('/login') 
-          ? 'bg-secondary text-white border-2 border-white' 
-          : 'bg-secondary text-white border-2 border-white hover:bg-secondary hover:text-gray-900'"
-          class='flex items-center gap-2 block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        ><svg
-            xmlns='http://w3.org'
-            viewBox='0 0 16 16'
-            fill='none'
-            stroke='currentColor'
-            stroke-width='2'
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            class='w-3 h-3'
-          >
-            <!-- Kepala -->
-            <circle cx='8' cy='4.5' r='2' />
-            <!-- Bahu -->
-            <path d='M 2,13.5 A 6,5.5 0 0 1 14,13.5 Z' />
-          </svg>
-          {{t 'test.navbar.login'}}</a>
+          class="inline-flex items-center gap-2 rounded-lg bg-[#003060] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00244a]"
+        >
+          <i class="fas fa-user text-xs"></i>
+          {{t 'test.navbar.login'}}
+        </a>
+      {{/if}}
+    </div>
+
+    {{!-- Mobile hamburger --}}
+    <button
+      class="grid size-9 shrink-0 place-items-center rounded-xl bg-[#003060] text-white shadow-md transition hover:bg-[#00244a] lg:hidden"
+      @click="toggleMenu()"
+      aria-label="Toggle menu"
+    >
+      <i class="fas text-base" :class="open ? 'fa-xmark' : 'fa-bars'"></i>
+    </button>
+  </div>
+
+  {{!-- Mobile drawer --}}
+  <div x-show="open" x-transition.opacity class="fixed inset-0 z-40 bg-black/50 lg:hidden" style="display:none" @click="toggleMenu()"></div>
+  <nav
+    x-show="open"
+    x-transition:enter="transition ease-out duration-300 transform"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transition ease-in duration-200 transform"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+    class="fixed right-0 top-0 z-50 flex h-full w-80 max-w-[85vw] flex-col overflow-y-auto bg-[#003060] text-white lg:hidden"
+    style="display:none"
+  >
+    <div class="flex items-center justify-between border-b border-white/15 p-4">
+      <img src="/public/image/logo_kotak_putih.png" alt="Kesatria Academy" class="h-8 w-auto" />
+      <button @click="toggleMenu()" class="grid size-9 place-items-center rounded-lg hover:bg-white/10"><i class="fas fa-xmark text-lg"></i></button>
+    </div>
+
+    <div class="flex flex-1 flex-col gap-1 p-3 text-sm font-semibold">
+      <a href="/dashboard" @click="setActive('/dashboard')" class="rounded-lg px-4 py-3 hover:bg-white/10">{{t 'test.navbar.home'}}</a>
+
+      <button @click="classOpen = !classOpen" class="flex items-center justify-between rounded-lg px-4 py-3 hover:bg-white/10">
+        {{t 'test.navbar.class'}}
+        <i class="fas fa-chevron-down text-xs transition-transform" :class="classOpen && 'rotate-180'"></i>
+      </button>
+      <div x-show="classOpen" x-collapse class="flex flex-col gap-2 py-1 pl-3" style="display:none">
+        {{> components/ui/card/category/mpp/index isMobile=true}}
+        <template x-for="kat in category" :key="kat.id">
+          {{> components/ui/card/category/dynamic/index isMobile=true}}
+        </template>
+      </div>
+
+      <a href="/dashboard/corporate-training" @click="setActive('/dashboard/corporate-training')" class="rounded-lg px-4 py-3 hover:bg-white/10">{{t 'test.navbar.corporateTraining'}}</a>
+
+      <button @click="infoOpen = !infoOpen" class="flex items-center justify-between rounded-lg px-4 py-3 hover:bg-white/10">
+        {{t 'test.navbar.information'}}
+        <i class="fas fa-chevron-down text-xs transition-transform" :class="infoOpen && 'rotate-180'"></i>
+      </button>
+      <div x-show="infoOpen" x-collapse class="flex flex-col py-1 pl-3" style="display:none">
+        <a href="/dashboard/about" @click="setActive('/dashboard/about')" class="rounded-lg px-4 py-2.5 text-white/85 hover:bg-white/10">{{t 'test.navbar.about'}}</a>
+        <a href="/dashboard/gallery" @click="setActive('/dashboard/gallery')" class="rounded-lg px-4 py-2.5 text-white/85 hover:bg-white/10">{{t 'test.navbar.gallery'}}</a>
+        <a href="/dashboard/portofolios" @click="setActive('/dashboard/portofolios')" class="rounded-lg px-4 py-2.5 text-white/85 hover:bg-white/10">{{t 'test.navbar.portfolio'}}</a>
+        <a href="/dashboard/alumni" @click="setActive('/dashboard/alumni')" class="rounded-lg px-4 py-2.5 text-white/85 hover:bg-white/10">{{t 'test.navbar.alumni'}}</a>
+      </div>
+
+      {{#if isAuthenticated}}
+        <a href="/users/profile" class="mt-2 flex items-center gap-3 border-t border-white/15 px-4 pt-4 hover:text-white/80">
+          <span class="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white/30 bg-white/20">
+            {{#if user.profile}}<img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />{{else}}<span class="font-bold">{{substring user.username 0 1}}</span>{{/if}}
+          </span>
+          <span class="truncate">{{user.username}}</span>
+        </a>
+      {{else}}
+        <a href="/login" @click="setActive('/login')" class="mt-2 rounded-lg bg-white px-4 py-3 text-center font-semibold text-[#003060]">{{t 'test.navbar.login'}}</a>
       {{/if}}
 
-      <!-- Language Selector Desktop -->
-      <div
-        class='relative'
-        x-data="{ langOpen: false, currentLang: '{{lang}}' }"
-      >
-        <button
-          @click='langOpen = !langOpen'
-          @click.away='langOpen = false'
-          class='flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-colors border-2 bg-[#F5F5F5] text-gray-900 hover:bg-white/10'
-        >
-          <span
-            :class="currentLang === 'id' ? 'fi fi-id' : currentLang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"
-            class='text-lg'
-          ></span>
-          <span
-            x-text='currentLang === "id" ? "ID" : currentLang === "en" ? "EN" : "JP"'
-          ></span>
-          <svg
-            fill='currentColor'
-            viewBox='0 0 20 20'
-            :class="{'rotate-180': langOpen, 'rotate-0': !langOpen}"
-            class='w-4 h-4 transition-transform duration-200'
-          >
-            <path
-              fill-rule='evenodd'
-              d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-              clip-rule='evenodd'
-            ></path>
-          </svg>
-        </button>
-
-        <div
-          x-show='langOpen'
-          @click.away='langOpen = false'
-          x-transition:enter='transition ease-out duration-100'
-          x-transition:enter-start='transform opacity-0 scale-95'
-          x-transition:enter-end='transform opacity-100 scale-100'
-          class='absolute right-0 w-32 mt-2 rounded-lg shadow-lg z-[100] bg-white overflow-hidden'
-        >
-          <form
-            action='/translation'
-            method='post'
-            @submit='currentLang = "en"; langOpen = false'
-          >
-            <input type='text' value='en' name='lang' hidden />
-            <button
-              type='submit'
-              class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
-            >
-              <span class='fi fi-gb'></span>
-              <span class='text-sm font-medium'>EN</span>
-            </button>
-          </form>
-
-          <form
-            action='/translation'
-            method='post'
-            @submit='currentLang = "id"; langOpen = false'
-          >
-            <input type='text' value='id' name='lang' hidden />
-            <button
-              type='submit'
-              class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
-            >
-              <span class='fi fi-id'></span>
-              <span class='text-sm font-medium'>ID</span>
-            </button>
-          </form>
-
-          <form
-            action='/translation'
-            method='post'
-            @submit='currentLang = "ja"; langOpen = false'
-          >
-            <input type='text' value='ja' name='lang' hidden />
-            <button
-              type='submit'
-              class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
-            >
-              <span class='fi fi-jp'></span>
-              <span class='text-sm font-medium'>JP</span>
-            </button>
-          </form>
-        </div>
+      <div class="mt-4 border-t border-white/15 pt-4">
+        {{> components/ui/nav/lang_switcher/index mobile=true }}
       </div>
-      </nav>
-    
-  </div>
-
-
-</div>
+    </div>
+  </nav>
+</header>
