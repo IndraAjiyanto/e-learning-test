@@ -3,6 +3,7 @@
   x-data="{
     open: false,
     isDesktop: window.innerWidth >= 1024,
+    menu: null,
     classOpen: false,
     infoOpen: false,
     lang: '{{lang}}',
@@ -11,6 +12,7 @@
     setActive(path) {
       this.active = path;
       this.open = false;
+      this.menu = null;
       this.classOpen = false;
       this.infoOpen = false;
       document.body.style.overflow = '';
@@ -77,19 +79,28 @@
         class="text-sm transition-colors"
       >{{t 'test.navbar.home'}}</a>
 
+      {{!-- Class + Corporate Training + Information share one click-away scope so
+           switching between the two dropdowns never triggers a close/open race. --}}
+      <div class="contents" @click.away="menu = null">
+
       {{!-- Class dropdown --}}
-      <div class="relative" @click.away="classOpen = false">
+      <div class="relative">
         <button
-          @click="classOpen = !classOpen; infoOpen = false"
-          :class="isClassActive() || classOpen ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
+          @click="menu = menu === 'class' ? null : 'class'"
+          :class="isClassActive() || menu === 'class' ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
           class="flex items-center gap-1.5 text-sm transition-colors"
         >
           {{t 'test.navbar.class'}}
-          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="classOpen && 'rotate-180'"></i>
+          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="menu === 'class' && 'rotate-180'"></i>
         </button>
         <div
-          x-show="classOpen"
-          x-transition.origin.top
+          x-show="menu === 'class'"
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-100"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
           class="fixed left-1/2 top-[68px] z-[100] w-[min(94vw,1080px)] -translate-x-1/2"
           style="display:none"
         >
@@ -147,18 +158,23 @@
       >{{t 'test.navbar.corporateTraining'}}</a>
 
       {{!-- Information dropdown --}}
-      <div class="relative" @click.away="infoOpen = false">
+      <div class="relative">
         <button
-          @click="infoOpen = !infoOpen; classOpen = false"
-          :class="isInfoActive() || infoOpen ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
+          @click="menu = menu === 'info' ? null : 'info'"
+          :class="isInfoActive() || menu === 'info' ? 'font-bold text-[#003060]' : 'font-medium text-[#4A5568] hover:text-[#003060]'"
           class="flex items-center gap-1.5 text-sm transition-colors"
         >
           {{t 'test.navbar.information'}}
-          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="infoOpen && 'rotate-180'"></i>
+          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="menu === 'info' && 'rotate-180'"></i>
         </button>
         <div
-          x-show="infoOpen"
-          x-transition.origin.top
+          x-show="menu === 'info'"
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-100"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
           class="fixed left-1/2 top-[68px] z-[100] w-[min(94vw,1080px)] -translate-x-1/2"
           style="display:none"
         >
@@ -192,6 +208,7 @@
           </div>
         </div>
       </div>
+      </div>{{!-- /click-away scope --}}
     </nav>
 
     {{!-- Desktop actions --}}
