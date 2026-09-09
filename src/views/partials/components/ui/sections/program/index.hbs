@@ -1,201 +1,53 @@
 {{!--
-  Section: Program (Specialized Career Pathways)
+  Section: Program / "Specialized Career Pathways" (L2) - Figma programs-section 250:2866
   Lokasi: src/views/partials/components/ui/sections/program/index.hbs
-  Level: L2 Section
-
-  Data (dari dashboard.controller):
-  - category : Category[] ({ name, text, icon, ... })
-  - social   : Social[]   (social.[0].number dipakai untuk CTA WhatsApp)
-  - lang     : string
-
-  Desktop mengikuti Figma "programs-section" (250:2866).
+  Satu pohon markup, base + lg. Data: category[] (jsonb name/text + icon), social.[0].number.
 --}}
+<section class="relative z-10 w-full bg-[#F8F9FA] py-14 font-montserrat lg:pt-[50px] lg:pb-[120px]" id="courses-section">
+  <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-<!-- MOBILE PROGRAM SECTION (< 640px / Figma Frame "Choose Your Program") -->
-<section class="block sm:hidden bg-[#F8F9FA] py-12 px-5 relative z-10 w-full font-montserrat" id="courses-section-mobile">
-  <div class="w-full">
-
-    <!-- Header Section -->
-    {{> components/ui/text/section_header/index
-        wrapperClass="mb-8"
-        badge=(t 'test.home.programSection.ourProgram')
-        badgeClass="px-5 py-2 text-[14px] font-montserrat font-bold uppercase mb-4"
-        title=(t 'test.home.programSection.title')
-        titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] mb-3"
-        showDivider=true
-        dividerClass="w-[60px] h-[4px] bg-[#003060] mb-4"
-        description=(t 'test.home.programSection.description')
-        descClass="font-sans font-normal text-[14px] text-[#4A5568] max-w-[340px]"
-    }}
-
-    <!-- Cards Stack -->
-    <div class="flex flex-col gap-6 w-full">
-      {{#each category}}
-        {{> components/ui/card/card_program/index
-            image=this.icon
-            name=this.name
-            text=this.text
-            learnMore=(t 'test.home.programSection.learnMore')
-            lang=../lang
-        }}
-      {{else}}
-        {{!-- Fallback dummy: tampil bila data `category` dari BE belum tersedia --}}
-        {{> components/ui/card/card_program/index
-            image="/public/image/Bootcamp.png"
-            name="Bootcamp"
-            text="Intensive career-switch track with mentor-led projects and job-ready portfolio."
-            learnMore=(t 'test.home.programSection.learnMore')
-        }}
-        {{> components/ui/card/card_program/index
-            image="/public/image/Course.png"
-            name="Course"
-            text="Self-paced modules to sharpen a specific technical skill at your own rhythm."
-            learnMore=(t 'test.home.programSection.learnMore')
-        }}
-        {{> components/ui/card/card_program/index
-            image="/public/image/InHouseTraining.png"
-            name="In House Training"
-            text="Tailored team training designed around your company's stack and objectives."
-            learnMore=(t 'test.home.programSection.learnMore')
-        }}
-      {{/each}}
-
-      <!-- program-banner (286:3598) -->
-      <div class="flex flex-col gap-[16px] rounded-[16px] bg-[#003060] p-6 text-left">
-        <h3 class="font-montserrat font-bold text-[20px] leading-snug text-white">
-          {{t 'test.home.programSection.bannerTitle'}}
-        </h3>
-        <p class="font-sans font-normal text-[13px] leading-[1.6] text-[#E0F2F9]">
-          {{t 'test.home.programSection.bannerDescription'}}
-        </p>
-        <a
-          x-data
-          :href="$waLink('{{social.[0].number}}')"
-          target="_blank" rel="noopener noreferrer"
-          class="self-start rounded-[8px] bg-white px-[24px] py-[12px] font-montserrat font-semibold text-[14px] text-[#003060] transition-colors hover:bg-[#E0F2F9]"
-        >
-          {{t 'test.home.programSection.bannerCta'}}
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DESKTOP PROGRAM SECTION (>= 640px) — Figma: programs-section (250:2866) -->
-<section class="hidden sm:flex w-full bg-[#F8F9FA] pt-[50px] pb-[120px] font-montserrat relative z-10" id="courses-section">
-  <div class="page-shell flex flex-col items-center gap-[64px]">
-
-    <!-- section-header (250:2867) -->
+    {{!-- section header --}}
     <div
       x-data="{ shown: false }"
-      x-init="
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.35, rootMargin: '0px 0px -50px 0px' });
-        observer.observe($el);
-      "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
-      class="w-full flex flex-col items-center gap-[16px] transition-all duration-1000 ease-out transform"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'"
+      class="flex flex-col items-center gap-4 text-center transition-all duration-700 ease-out"
     >
-      <!-- animated-tag (250:2868) -->
-      {{> components/ui/text/badge/index
-          text=(t 'test.home.programSection.ourProgram')
-          variant='section'
-      }}
-
-      <!-- Heading (250:2871) -->
-      {{> components/ui/text/section_header/index
-          title=(t 'test.home.programSection.title')
-          titleTag='h2'
-          align='text-center'
-          titleClass='font-montserrat font-bold text-[28px] lg:text-[36px] text-[#0B1F3B]'
-      }}
-
-      <!-- Subheading (250:2872) -->
-      {{> components/ui/text/sub_title/index
-          text=(t 'test.home.programSection.description')
-          tag='p'
-          align='center'
-          size='text-[16px] lg:text-[20px]'
-          color='text-[#4A5568]'
-          font='sans'
-          fontWeight='font-normal'
-          class='leading-[1.6] max-w-[542px]'
-      }}
-
-      <!-- accent-line (250:2873) -->
-      <div class="w-[60px] h-[4px] rounded-[2px] bg-[#003060]"></div>
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 py-1.5 {{sizeClass 'eyebrow'}} font-montserrat font-bold text-[#0B1F3B]">
+        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5]" aria-hidden="true"></i>
+        {{t 'test.home.programSection.ourProgram'}}
+      </span>
+      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{t 'test.home.programSection.title'}}</h2>
+      <p class="{{sizeClass 'lead'}} max-w-[542px] font-open-sans text-[#4A5568]">{{t 'test.home.programSection.description'}}</p>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    <!-- programs-grid (286:3523) -->
+    {{!-- programs grid --}}
     <div
       x-data="{ shown: false }"
-      x-init="
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
-        observer.observe($el);
-      "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'"
-      class="w-full flex flex-wrap justify-center gap-[30px] transition-all duration-1000 ease-out transform"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+      class="grid w-full grid-cols-1 gap-6 transition-all duration-700 ease-out sm:grid-cols-2 lg:grid-cols-3 lg:gap-[30px]"
     >
       {{#each category}}
-        <div class="w-full md:w-[calc((100%-30px)/2)] lg:w-[calc((100%-60px)/3)] flex">
-          {{> components/ui/card/card_program/index
-              image=this.icon
-              name=this.name
-              text=this.text
-              learnMore=(t 'test.home.programSection.learnMore')
-              lang=../lang
-          }}
-        </div>
+        {{> components/ui/card/card_program/index image=this.icon name=this.name text=this.text learnMore=(t 'test.home.programSection.learnMore') lang=../lang}}
       {{else}}
-        {{!-- Fallback dummy: tampil bila data `category` dari BE belum tersedia --}}
-        <div class="w-full md:w-[calc((100%-30px)/2)] lg:w-[calc((100%-60px)/3)] flex">
-          {{> components/ui/card/card_program/index
-              image="/public/image/Bootcamp.png"
-              name="Bootcamp"
-              text="Intensive career-switch track with mentor-led projects and job-ready portfolio."
-              learnMore=(t 'test.home.programSection.learnMore')
-          }}
-        </div>
-        <div class="w-full md:w-[calc((100%-30px)/2)] lg:w-[calc((100%-60px)/3)] flex">
-          {{> components/ui/card/card_program/index
-              image="/public/image/Course.png"
-              name="Course"
-              text="Self-paced modules to sharpen a specific technical skill at your own rhythm."
-              learnMore=(t 'test.home.programSection.learnMore')
-          }}
-        </div>
-        <div class="w-full md:w-[calc((100%-30px)/2)] lg:w-[calc((100%-60px)/3)] flex">
-          {{> components/ui/card/card_program/index
-              image="/public/image/InHouseTraining.png"
-              name="In House Training"
-              text="Tailored team training designed around your company's stack and objectives."
-              learnMore=(t 'test.home.programSection.learnMore')
-          }}
-        </div>
+        {{> components/ui/card/card_program/index image="/public/image/Bootcamp.png" name="Bootcamp" text="Intensive career-switch track with mentor-led projects and job-ready portfolio." learnMore=(t 'test.home.programSection.learnMore')}}
+        {{> components/ui/card/card_program/index image="/public/image/Course.png" name="Course" text="Self-paced modules to sharpen a specific technical skill at your own rhythm." learnMore=(t 'test.home.programSection.learnMore')}}
+        {{> components/ui/card/card_program/index image="/public/image/InHouseTraining.png" name="In House Training" text="Tailored team training designed around your company's stack and objectives." learnMore=(t 'test.home.programSection.learnMore')}}
       {{/each}}
 
-      <!-- program-banner (286:3598) -->
-      <div class="w-full md:w-[calc((100%-30px)/2)] lg:w-[calc((100%-60px)/3)] flex">
-        <div class="flex w-full min-h-[442px] flex-col justify-center gap-[24px] rounded-[16px] bg-[#003060] p-[40px]">
-          <h3 class="font-montserrat font-bold text-[24px] lg:text-[28px] leading-snug text-white">
-            {{t 'test.home.programSection.bannerTitle'}}
-          </h3>
-          <p class="font-sans font-normal text-[14px] leading-[1.6] text-[#E0F2F9]">
-            {{t 'test.home.programSection.bannerDescription'}}
-          </p>
-          {{> components/ui/button/consultation/index
-              phone=social.[0].number
-              variant="solid"
-              roundedClass="rounded-[8px]"
-              text=(t 'test.home.programSection.bannerCta')
-              class="self-start px-[24px] py-[12px] font-montserrat text-[14px]"
-          }}
-        </div>
+      {{!-- program banner (Figma 286:3598) --}}
+      <div class="flex flex-col justify-center gap-6 rounded-2xl bg-[#003060] p-8 lg:p-10">
+        <h3 class="{{sizeClass 'h3'}} font-montserrat font-bold leading-snug text-white">{{t 'test.home.programSection.bannerTitle'}}</h3>
+        <p class="{{sizeClass 'body'}} font-open-sans text-[#E0F2F9]">{{t 'test.home.programSection.bannerDescription'}}</p>
+        {{> components/ui/button/consultation/index
+            phone=social.[0].number
+            variant="solid"
+            roundedClass="rounded-lg"
+            text=(t 'test.home.programSection.bannerCta')
+            class="self-start px-6 py-3 font-montserrat text-sm" }}
       </div>
     </div>
-
   </div>
 </section>
