@@ -1,0 +1,38 @@
+{{!--
+  Komponen: User Toolbar (Super Admin) — search + create action
+  Lokasi: src/views/partials/components/ui/super_admin/index/toolbar.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Figma: node 768:42368 — Row 2: Search + Filter & Sort Toolbar
+  - h 44, space-between, gap 12
+  - Input 400x44, px14 py10, radius 8, border #d4d4d4, placeholder 16/24 #a3a3a3, trailing search icon 20px
+  - Button px18 py10, radius 8, bg #003060, shadow 0 1px 2px rgba(0,0,0,0.05), text white 16/24
+
+  Alpine (dari userTable()): searchInput, handleSearch()
+--}}
+<div class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+  <label class='relative block w-full sm:w-[400px]'>
+    <span class='sr-only'>Search user</span>
+    <input
+      type='search'
+      placeholder='Search user..'
+      x-model='searchInput'
+      @input='handleSearch()'
+      class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-3.5 pr-11 font-inter text-base leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+    />
+    <span class='pointer-events-none absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[#a3a3a3]'>
+      {{!-- lucide: search --}}
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+        <circle cx='11' cy='11' r='8' />
+        <path d='m21 21-4.3-4.3' />
+      </svg>
+    </span>
+  </label>
+
+  <a
+    href='/users/formCreate'
+    class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
+  >
+    Create User
+  </a>
+</div>

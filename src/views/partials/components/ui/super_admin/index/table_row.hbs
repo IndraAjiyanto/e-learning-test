@@ -1,0 +1,68 @@
+{{!--
+  Komponen: User Table Row (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/index/table_row.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Figma: node 768:42382 — Content (baris tabel)
+  - tinggi baris 72px, cell px24 py16, border-bottom 1px #e5e5e5
+  - body text Inter 14/20 #525252, avatar 40x40 rounded-full
+  - cell Action px16 py16
+
+  Dipakai di dalam <template x-for='(user, index) in users'> pada table.hbs.
+--}}
+<tr class='transition-colors hover:bg-[#fafafa]'>
+  {{!-- Profile (sebelumnya "Name") --}}
+  <td class='h-[72px] border-b border-[#e5e5e5] px-6 py-4 align-middle'>
+    <template x-if='user.profile'>
+      <img
+        :src='user.profile'
+        :alt='user.username'
+        class='h-10 w-10 rounded-full object-cover'
+      />
+    </template>
+    <template x-if='!user.profile'>
+      <div class='flex h-10 w-10 items-center justify-center rounded-full bg-[#c7b9da]'>
+        <span
+          class='font-inter text-sm font-semibold leading-5 text-white'
+          x-text='(user.username || "?").charAt(0).toUpperCase()'
+        ></span>
+      </div>
+    </template>
+  </td>
+
+  {{!-- Username --}}
+  <td
+    class='h-[72px] border-b border-[#e5e5e5] px-6 py-4 align-middle font-inter text-sm leading-5 text-[#525252]'
+    x-text='user.username'
+  ></td>
+
+  {{!-- Email address --}}
+  <td
+    class='h-[72px] border-b border-[#e5e5e5] px-6 py-4 align-middle font-inter text-sm leading-5 text-[#525252]'
+    x-text='user.email'
+  ></td>
+
+  {{!-- Role — Figma node 768:42451 --}}
+  <td class='h-[72px] border-b border-[#e5e5e5] px-6 py-4 align-middle'>
+    {{> components/ui/super_admin/badge/index
+      text='roleLabel(user.role)'
+      class='bg-[#f9f5ff] text-[#6941c6]'
+    }}
+  </td>
+
+  {{!-- Status — Figma node 768:42480 (Verified) / 768:42486 (Unverified).
+       Sumber data: `user.isVerified`, satu-satunya field penentu status. --}}
+  <td class='h-[72px] border-b border-[#e5e5e5] px-6 py-4 align-middle'>
+    {{> components/ui/super_admin/badge/index
+      dot=true
+      text='user.isVerified ? "Verified" : "Unverified"'
+      classExpr="user.isVerified ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#d9d9d9] text-[#718096]'"
+      dotClassExpr="user.isVerified ? 'bg-[#22c55e]' : 'bg-[#718096]'"
+    }}
+  </td>
+
+  {{!-- Action --}}
+  <td class='h-[72px] border-b border-[#e5e5e5] p-4 align-middle'>
+    {{> components/ui/super_admin/index/row_actions }}
+  </td>
+</tr>

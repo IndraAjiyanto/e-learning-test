@@ -1,0 +1,28 @@
+{{!--
+  Komponen: Page Header (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/page_header/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Judul halaman untuk halaman-halaman Super Admin.
+  Styling default mengikuti Figma LMS Kesatria node 768:42365 (Heading):
+  Montserrat Bold 34/36, letter-spacing -1px, #003060.
+
+  Deskripsi/sub heading TIDAK ditangani di sini — pasangkan dengan
+  ui/super_admin/description di halaman, dibungkus wrapper ber-gap 4px.
+
+  Props:
+  - title      : string (wajib) — judul halaman
+  - titleTag   : 'h1' | 'h2' (default 'h1') — pakai 'h2' bila halaman sudah punya h1 lain
+  - titleClass : string (opsional) — override penuh styling judul
+
+  Contoh:
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index title='Users' }}
+      {{> components/ui/super_admin/description/index text='Manage program...' }}
+    </div>
+--}}
+{{#if (eq titleTag 'h2')}}
+  <h2 class='{{default titleClass "font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]"}}'>{{title}}</h2>
+{{else}}
+  <h1 class='{{default titleClass "font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]"}}'>{{title}}</h1>
+{{/if}}
