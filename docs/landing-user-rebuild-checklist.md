@@ -20,12 +20,14 @@ shell, and verified the whole surface. `npm run build` green; every route return
 - [x] hero / benefit / program / alumni / partner / gallery / faq - **pre-existing (interns)**, Figma-node-referenced, render OK
 - [x] section: final_cta - **NEW** (Figma 250:3070), prop-overridable, wired into dashboard.hbs
 - [x] landing i18n: home.finalCta.* en/id/ja
-- [x] container alignment: hero / benefit / program / alumni / partner / gallery / faq
-      desktop wrappers swapped from `max-w-[1554/1375/1537/1400] px-[80px/20]` to `.page-shell`
-      so section content shares one edge with navbar + footer
-- [ ] DEFERRED: those sections still use the dual mobile/desktop block pattern + arbitrary
-      `text-[NNpx]` on headings. Not converted to single-tree + `sizeClass` (working animated
-      code, blind-edit regression risk). Needs an incremental pass with the dev server open.
+- [x] container alignment: all sections on `.page-shell`
+- [x] **single-tree + sizeClass conversion DONE** for all 7 landing sections
+      (hero, benefit, program, alumni, partner, gallery, faq): collapsed the dual
+      `block sm:hidden` / `hidden sm:block` blocks into one base+`lg:` tree; `sizeClass`
+      keys instead of `text-[NNpx]` on headings/leads; `grid` instead of `flex-wrap +
+      w-[calc()]`. Alpine (carousels, IntersectionObserver reveals, accordion), data
+      loops, card partials and i18n keys all preserved. Reused-by pages (free/special/
+      paid program, corporate-training) verified 200.
 
 ## 3. Corporate Training (NEW)
 - [x] route GET /dashboard/corporate-training (dashboard.controller, Promise.all)
@@ -65,10 +67,12 @@ shell, and verified the whole surface. `npm run build` green; every route return
 - [x] i18n complete en/id/ja for every new key (JSON-valid)
 - [x] `npm run build` green (nest build + tailwind + esbuild)
 - [x] commits on dev-miko as mikkoikoi (no Claude attribution)
-- [x] container alignment: landing sections now on `.page-shell`
-- [ ] DEFERRED: delete superseded old section partials - none superseded this pass
-- [ ] DEFERRED: dual-block -> single-tree + `sizeClass` conversion of the intern
-      landing/alumni/gallery sections (incremental, dev-server-open pass)
+- [x] container alignment: landing sections on `.page-shell`
+- [x] dual-block -> single-tree + `sizeClass` conversion of all 7 landing sections
+- [ ] DEFERRED: alumni.hbs + gallery view (full pages, not the landing blocks) still
+      own `max-w-[1600/1440]` shells + arbitrary px - smaller follow-up
+- [ ] DEFERRED: `card_*` L1 partials (card_alumni, card_program, card_benefit, accordion/faq)
+      internals still have some `text-[NNpx]` - cosmetic follow-up
 
 ## Commits on dev-miko (this pass)
 - feat(shell): rebuild navbar + footer to the Figma redesign
