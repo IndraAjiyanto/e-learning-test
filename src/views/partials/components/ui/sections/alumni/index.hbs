@@ -31,7 +31,7 @@
     <div class="relative z-10 flex w-full flex-col items-center gap-[16px] text-center {{wrapperClass}}">
       {{!-- title & description = 1 grup rapat (8px); jarak antar grup tetap 16px --}}
       <div class="flex w-full flex-col items-center gap-[8px]">
-        <h2 class="flex flex-wrap items-center justify-center gap-2 font-montserrat font-semibold tracking-tight text-[#000000] {{titleClass}}">
+        <h2 class="flex flex-wrap items-center justify-center gap-2 {{sizeClass (default titleSize 'h2')}} font-montserrat font-semibold tracking-tight text-[#000000] {{titleClass}}">
           <span>{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}}</span>
           <span 
             class="relative my-1 inline-flex items-center justify-center overflow-hidden align-middle"
@@ -79,6 +79,7 @@
         {{> components/ui/text/section_header/index
             title=(t (default titleKey 'test.home.alumniSection.title'))
             titleTag='h2'
+            titleSize=(default titleSize 'h2')
             align='text-center'
             titleClass=titleClass
         }}
@@ -171,49 +172,27 @@
   </div>
 {{/inline}}
 
-{{#if (ternary (eq showMobile undefined) true showMobile)}}
-<!-- ================= MOBILE ALUMNI SECTION (< 640px) ================= -->
+<!-- ================= ALUMNI SECTION (satu pohon, base + lg) ================= -->
 <section
-  class="{{default mobileSectionClass 'block sm:hidden py-12 px-5 relative overflow-hidden bg-white w-full'}}"
-  style="{{mobileBgStyle}}"
-  x-data="alumniGrid(window.__alumniCarousel)"
->
-  {{> _alumni_header
-      wrapperClass="mb-[40px]"
-      titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] text-center"
-      descSize="text-sm"
-      descClass="font-normal !leading-[1.6] max-w-[542px]"
-      dividerClass="h-[4px] w-[60px]"
-  }}
-
-  {{> _alumni_grid gridClass="grid-cols-1" navBtnClass="h-[52px] w-[52px]"}}
-
-  {{> _alumni_footer textClass="text-sm" linkClass="text-sm"}}
-</section>
-{{/if}}
-
-{{#if (ternary (eq showDesktop undefined) true showDesktop)}}
-<!-- ================= DESKTOP ALUMNI SECTION (>= 640px) ================= -->
-<section
-  class="{{default sectionClass 'hidden sm:block py-16 sm:py-24 relative overflow-hidden bg-white'}}"
+  class="{{default sectionClass 'w-full relative overflow-hidden bg-white py-14 lg:py-24'}}"
   style="{{default desktopBgStyle (ternary (eq (default headerVariant 'home') 'paid') 'background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);' '')}}"
   x-data="alumniGrid(window.__alumniCarousel)"
 >
   <div class="page-shell">
     {{> _alumni_header
-        wrapperClass="mb-[64px]"
-        titleClass="font-montserrat font-bold text-[32px] lg:text-[36px] text-[#0B1F3B] text-center"
-        descSize="text-lg lg:text-[20px]"
-        descClass="font-normal !leading-[1.6] max-w-[542px] lg:max-w-[592px]"
-        dividerClass="h-[4px] w-[60px]"
+        wrapperClass="mb-12 lg:mb-16"
+        titleSize="h2"
+        titleClass="font-montserrat font-bold text-[#0B1F3B] text-center"
+        descSize="body"
+        descClass="font-normal max-w-[592px]"
+        dividerClass="h-1 w-[60px]"
     }}
 
-    {{> _alumni_grid gridClass="grid-cols-2 lg:grid-cols-3" navBtnClass="h-[78px] w-[78px]"}}
+    {{> _alumni_grid gridClass="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" navBtnClass="h-14 w-14 lg:h-[72px] lg:w-[72px]"}}
 
-    {{> _alumni_footer textClass="text-base md:text-xl" linkClass="text-base md:text-lg"}}
+    {{> _alumni_footer textClass="text-sm lg:text-base" linkClass="text-sm lg:text-base"}}
   </div>
 </section>
-{{/if}}
 
 <script>
   window.__alumniCarousel = [
