@@ -29,12 +29,12 @@
       class="w-full object-cover h-[190px] sm:h-[220px]"
     />
 
-    <div class="flex flex-col p-5 sm:p-[24px] gap-2.5 sm:gap-[12px]">
-      <h3 class="font-montserrat text-left text-[#0B1F3B] font-bold sm:font-semibold text-[20px] sm:text-[22px] sm:leading-normal">
+    <div class="flex flex-col p-5 lg:p-6 gap-2.5 lg:gap-3">
+      <h3 class="{{sizeClass 'h3'}} font-montserrat text-left text-[#0B1F3B] font-bold sm:font-semibold">
         {{name}}
       </h3>
 
-      <p class="font-sans text-left font-normal text-[13px] sm:text-[14px] leading-[20px] sm:leading-[1.5] text-[#2D2D2D] sm:text-[#4A5568]">
+      <p class="{{sizeClass 'body'}} font-sans text-left font-normal text-[#2D2D2D] sm:text-[#4A5568]">
         {{default (getByLang text lang) text}}
       </p>
     </div>
@@ -49,7 +49,7 @@
       font="font-montserrat"
       weight="semibold"
       color="text-[#003060]"
-      size="text-[12px] sm:text-[13px]"
+      size="text-xs lg:text-sm"
       icon="fas fa-arrow-right"
     }}
   </div>

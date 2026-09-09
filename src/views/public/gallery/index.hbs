@@ -1,29 +1,32 @@
 <div
-  class="pt-24 pb-16 lg:px-5 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed bg-[url('/public/image/dashboard/bgGallery.png')]"
+  class="pt-24 pb-16 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed bg-[url('/public/image/dashboard/bgGallery.png')]"
   x-data="galleryTable({
     gallery: {{{json gallery}}},
     programs: {{{json programs}}}
   })"
 >
-  <div class="container mx-auto px-5 max-w-[1440px]">
+  <div class="page-shell">
 
-    <!-- UNIFIED GALLERY HEADER (Mobile & Desktop) -->
-    <div class="flex flex-col items-center pt-4 mb-6 lg:pt-0 lg:mb-[50px]">
+    <!-- GALLERY HEADER -->
+    <div class="flex flex-col items-center pt-4 mb-8 lg:pt-0 lg:mb-12">
         {{> components/ui/text/section_header/index
-        wrapperClass="mb-4 relative z-10 px-5 sm:px-6 lg:px-20"
+        wrapperClass="mb-4 relative z-10"
         badge=(t 'test.gallery.gallery')
-        badgeClass="w-[305px] h-[49px] text-[20px] font-[500] mb-0"
+        badgeClass="text-sm font-medium mb-0"
         title=(t 'test.gallery.title')
-        titleClass="text-3xl md:text-4xl lg:text-4xl font-semibold text-[#000000] mt-8 mb-4 font-montserrat tracking-tight text-center"
+        titleTag="h1"
+        titleSize="h2"
+        titleClass="font-semibold text-[#000000] mt-8 mb-4 font-montserrat tracking-tight text-center"
         showDivider=true
-        dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
+        dividerClass="w-[68px] h-1 bg-[#0B1F3B] mb-8"
         description=(t 'test.gallery.description')
-        descClass="text-base md:text-xl leading-relaxed text-[#000000]/80 max-w-auto mx-auto font-sans font-normal text-center"
+        descSize="lead"
+        descClass="leading-relaxed text-[#000000]/80 mx-auto font-sans font-normal text-center"
       }}
     </div>
 
-    <!-- UNIFIED FILTERS (Mobile & Desktop) -->
-    <div class="flex flex-col items-center justify-end w-full gap-3 mb-6 lg:flex-row lg:gap-[30px] lg:mb-[50px]">
+    <!-- FILTERS -->
+    <div class="flex flex-col items-center justify-end w-full gap-3 mb-8 lg:flex-row lg:gap-6 lg:mb-12">
       
       <!-- Dropdown Program -->
       {{> components/ui/dropdown/filter_dropdown/index
@@ -36,7 +39,7 @@
         }}
 
       <!-- Search Box -->
-      <div class="relative w-full lg:w-[423px] lg:shrink-0"
+      <div class="relative w-full lg:w-[420px] lg:shrink-0"
         @input.debounce.500ms="search = searchInput; currentPage = 1">
           {{> components/ui/input/search/index
             value="searchInput"
@@ -45,17 +48,17 @@
       </div>
     </div>
 
-    <!-- GALLERY CONTENT CONTAINER (Flex Col + Justify Between like Alumni) -->
+    <!-- GALLERY CONTENT CONTAINER -->
     <div class="flex flex-col justify-between w-full min-h-[550px] lg:min-h-[650px]">
-      
-      <!-- UNIFIED GALLERY CARDS GRID (Mobile & Desktop) -->
-      <div x-show="amount > 0" class="grid min-h-[400px] grid-cols-2 gap-3.5 mb-8 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[460px] lg:content-start lg:gap-[30px] lg:mb-12 lg:min-h-[1440px]">
+
+      <!-- GALLERY CARDS GRID -->
+      <div x-show="amount > 0" class="grid grid-cols-2 gap-4 mb-10 lg:grid-cols-3 lg:gap-6">
         <template x-for="item in paginatedGallery" :key="item.id">
           <div
-            class="flex flex-col relative w-full overflow-hidden bg-white border border-[#E0F1F9] rounded-[16px] shadow-xs backdrop-blur-[3.3px] transition-all duration-300 hover:-translate-y-2 lg:min-h-[460px] lg:bg-[rgba(245,245,245,0.5)] lg:border-2 lg:border-white/10 lg:rounded-[12px] lg:shadow-[0px_0px_4px_rgba(0,0,0,0.25)]"
+            class="flex flex-col relative w-full overflow-hidden bg-white border border-[#E0F1F9] rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2"
           >
             <!-- Image -->
-            <div class="w-full aspect-[4/3] bg-gray-100 overflow-hidden lg:h-[374px] lg:aspect-none lg:bg-[#FAFAFA]">
+            <div class="w-full aspect-[4/3] bg-gray-100 overflow-hidden">
               <img
                 :src="item.filePath"
                 :alt="getByLang(item.title, lang)"
@@ -63,8 +66,8 @@
               />
             </div>
             <!-- Title -->
-            <div class="flex flex-col items-center justify-center flex-1 p-3 bg-white text-center min-h-[44px] lg:p-[14px] lg:bg-transparent">
-              <h3 class="w-full font-montserrat font-bold text-[12px] leading-tight text-[#111111] line-clamp-2 text-center lg:font-medium lg:text-[23px] lg:leading-[28px] lg:text-[#0B1F3B] lg:truncate lg:line-clamp-none" x-text="getByLang(item.title, lang)">
+            <div class="flex flex-col items-center justify-center flex-1 p-3 lg:p-4 bg-white text-center">
+              <h3 class="w-full font-montserrat font-semibold text-sm lg:text-base leading-tight text-[#0B1F3B] line-clamp-2 text-center" x-text="getByLang(item.title, lang)">
               </h3>
             </div>
           </div>

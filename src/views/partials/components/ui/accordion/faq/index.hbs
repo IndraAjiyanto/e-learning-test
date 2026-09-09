@@ -36,9 +36,7 @@
       <div class="hidden sm:block w-[1px] h-5 flex-shrink-0 transition-colors duration-300 sm:group-hover:bg-white/40"
            :class="activeIndex === index ? 'bg-white/40' : 'bg-gray-300'"></div>
       
-      <h3 class="font-montserrat font-semibold leading-snug tracking-normal transition-colors duration-300 sm:group-hover:text-white
-        text-[15px] sm:text-xl sm:leading-none
-      " 
+      <h3 class="{{sizeClass 'h3'}} font-montserrat font-semibold leading-snug tracking-normal transition-colors duration-300 sm:group-hover:text-white"
           :class="activeIndex === index ? 'text-white' : 'text-[#0B1F3B] sm:text-[#0F0F0F]'" 
           x-text="faq.question"></h3>
     </div>
@@ -67,11 +65,8 @@
       border-t sm:border-t-0 border-[#EAEAEA] sm:border-none
     "
   >
-    <div class="p-4 sm:p-6 sm:pl-[42px]">
-      <p class="font-sans font-normal leading-relaxed text-[#2D2D2D]
-        text-[13px] sm:text-base
-        leading-[20px] sm:leading-relaxed
-      " x-html="faq.answer"></p>
+    <div class="p-4 lg:p-6 lg:pl-10">
+      <p class="{{sizeClass 'body'}} font-sans font-normal leading-relaxed text-[#2D2D2D]" x-html="faq.answer"></p>
     </div>
   </div>
 </div>
