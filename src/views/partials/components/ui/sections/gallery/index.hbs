@@ -60,7 +60,7 @@
 <!-- DESKTOP GALLERY SECTION (>= 640px / Figma Baseline W1728) -->
 <section id="gallery" class="{{default desktopSectionClass 'hidden sm:block w-full py-12 sm:py-20 bg-[#FAFAFA] font-montserrat'}}">
   
-  <div class="{{default desktopWrapperClass 'max-w-[1537px] mx-auto px-5 sm:px-8 lg:px-16 flex flex-col items-center'}}">
+  <div class="{{default desktopWrapperClass 'page-shell flex flex-col items-center'}}">
     
     {{> components/ui/text/section_header/index
         badge=(ternary (eq showBadge false) '' (t (default badgeKey 'test.home.gallery.gallery')))

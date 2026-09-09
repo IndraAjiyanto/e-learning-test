@@ -20,10 +20,12 @@ shell, and verified the whole surface. `npm run build` green; every route return
 - [x] hero / benefit / program / alumni / partner / gallery / faq - **pre-existing (interns)**, Figma-node-referenced, render OK
 - [x] section: final_cta - **NEW** (Figma 250:3070), prop-overridable, wired into dashboard.hbs
 - [x] landing i18n: home.finalCta.* en/id/ja
-- [ ] DEFERRED: intern sections use the dual mobile/desktop block pattern + arbitrary
-      `text-[NNpx]` + per-section `max-w-[1554/1760/1375...]` instead of the approved
-      single-tree + `sizeClass` + `.page-shell`. Not refactored this pass (working code,
-      blind-edit regression risk). Follow-up ticket.
+- [x] container alignment: hero / benefit / program / alumni / partner / gallery / faq
+      desktop wrappers swapped from `max-w-[1554/1375/1537/1400] px-[80px/20]` to `.page-shell`
+      so section content shares one edge with navbar + footer
+- [ ] DEFERRED: those sections still use the dual mobile/desktop block pattern + arbitrary
+      `text-[NNpx]` on headings. Not converted to single-tree + `sizeClass` (working animated
+      code, blind-edit regression risk). Needs an incremental pass with the dev server open.
 
 ## 3. Corporate Training (NEW)
 - [x] route GET /dashboard/corporate-training (dashboard.controller, Promise.all)
@@ -34,7 +36,8 @@ shell, and verified the whole surface. `npm run build` green; every route return
 ## 4. Alumni + Gallery
 - [x] alumni.hbs - **pre-existing (interns)**, redesigned, renders OK
 - [x] public/gallery/index.hbs - **pre-existing (interns)**, redesigned, renders OK
-- [ ] DEFERRED: same standard-compliance note as landing sections
+- [ ] DEFERRED: alumni.hbs + gallery view outer containers not yet on `.page-shell`
+      (own their `max-w-[1600/1440]` shells) - same incremental-pass note
 
 ## 5. Auth set
 - [x] shared partial components/ui/auth/index.hbs + all 6 views (login/regis/forgot/reset/
@@ -48,10 +51,11 @@ shell, and verified the whole surface. `npm run build` green; every route return
 - [x] i18n - reused existing about.team.* keys
 
 ## 7. Seed
-- [ ] NOT DONE. Local DB `e_learning_test` (port 5433) is **empty** - all 8 content tables
-      have 0 rows, so every section renders its hardcoded `{{else}}` fallback. A seeder was
-      not written/run (DB mutation blind against inferred schema = confirm-first). Pages
-      look complete via fallbacks; real seed is a follow-up.
+- [x] DONE. `src/database/seeds/content.seed.ts` (+ `npm run seed:content`). Seeded local
+      `e_learning_test`: Benefit x5, Category x4, Alumni x6, CategoryPartner x4 + Partner x12,
+      Gallery x6, Faq x7, Social x1, Vision, Mission x5, Value x6, Commitment x6, Paragraph x3,
+      TeamLead, Background x2, Experience x2, Team x6. Multi-lang jsonb as `{id,en,ja}`.
+      Guarded on non-empty benefit table. Pages now render real data.
 
 ## 8. Sweep
 - [x] .page-shell on all NEW page views (navbar, footer, final_cta, corporate_training,
@@ -61,8 +65,10 @@ shell, and verified the whole surface. `npm run build` green; every route return
 - [x] i18n complete en/id/ja for every new key (JSON-valid)
 - [x] `npm run build` green (nest build + tailwind + esbuild)
 - [x] commits on dev-miko as mikkoikoi (no Claude attribution)
+- [x] container alignment: landing sections now on `.page-shell`
 - [ ] DEFERRED: delete superseded old section partials - none superseded this pass
-- [ ] DEFERRED: standard-compliance refactor of intern landing/alumni/gallery sections
+- [ ] DEFERRED: dual-block -> single-tree + `sizeClass` conversion of the intern
+      landing/alumni/gallery sections (incremental, dev-server-open pass)
 
 ## Commits on dev-miko (this pass)
 - feat(shell): rebuild navbar + footer to the Figma redesign

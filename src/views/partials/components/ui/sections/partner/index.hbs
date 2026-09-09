@@ -101,7 +101,7 @@
 
 {{#if (ternary (eq showDesktop undefined) true showDesktop)}}
 <!-- ================= DESKTOP PARTNER SECTION (>= 640px) ================= -->
-<section class="{{default sectionClass 'hidden sm:block py-24 px-6 lg:px-20 relative overflow-hidden bg-[#FAFAFA] w-full'}}">
+<section class="{{default sectionClass 'hidden sm:block py-24 relative overflow-hidden bg-[#FAFAFA] w-full'}}">
   {{> _partner_header
       titleClass="font-montserrat font-bold text-[32px] lg:text-[36px] text-[#0B1F3B] mb-4 text-center"
       descClass="font-sans font-normal text-lg lg:text-[20px] text-[#000000]/80 !leading-[1.6] lg:!leading-[45px] max-w-[1052px] mx-auto text-center"
@@ -109,7 +109,7 @@
   }}
 
   {{> _partner_body
-      wrapperClass="max-w-[1375px]"
+      wrapperClass="page-shell"
       filterWrapperClass="mb-14 gap-6 lg:gap-[50px]"
       tabButtonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-lg lg:text-[24px] px-6 py-3 lg:px-8 lg:py-[18px]"
       logoWrapperClass="gap-6 lg:gap-[33px]"

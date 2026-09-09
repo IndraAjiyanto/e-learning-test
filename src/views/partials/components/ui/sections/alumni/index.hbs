@@ -195,21 +195,23 @@
 {{#if (ternary (eq showDesktop undefined) true showDesktop)}}
 <!-- ================= DESKTOP ALUMNI SECTION (>= 640px) ================= -->
 <section
-  class="{{default sectionClass 'hidden sm:block py-16 sm:py-24 px-6 lg:px-20 relative overflow-hidden bg-white'}}"
+  class="{{default sectionClass 'hidden sm:block py-16 sm:py-24 relative overflow-hidden bg-white'}}"
   style="{{default desktopBgStyle (ternary (eq (default headerVariant 'home') 'paid') 'background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);' '')}}"
   x-data="alumniGrid(window.__alumniCarousel)"
 >
-  {{> _alumni_header
-      wrapperClass="mb-[64px]"
-      titleClass="font-montserrat font-bold text-[32px] lg:text-[36px] text-[#0B1F3B] text-center"
-      descSize="text-lg lg:text-[20px]"
-      descClass="font-normal !leading-[1.6] max-w-[542px] lg:max-w-[592px]"
-      dividerClass="h-[4px] w-[60px]"
-  }}
+  <div class="page-shell">
+    {{> _alumni_header
+        wrapperClass="mb-[64px]"
+        titleClass="font-montserrat font-bold text-[32px] lg:text-[36px] text-[#0B1F3B] text-center"
+        descSize="text-lg lg:text-[20px]"
+        descClass="font-normal !leading-[1.6] max-w-[542px] lg:max-w-[592px]"
+        dividerClass="h-[4px] w-[60px]"
+    }}
 
-  {{> _alumni_grid gridClass="grid-cols-2 lg:grid-cols-3" navBtnClass="h-[78px] w-[78px]"}}
+    {{> _alumni_grid gridClass="grid-cols-2 lg:grid-cols-3" navBtnClass="h-[78px] w-[78px]"}}
 
-  {{> _alumni_footer textClass="text-base md:text-xl" linkClass="text-base md:text-lg"}}
+    {{> _alumni_footer textClass="text-base md:text-xl" linkClass="text-base md:text-lg"}}
+  </div>
 </section>
 {{/if}}
 
