@@ -2,11 +2,32 @@
   Komponen: Section Header (Level 1 - UI Dasar)
   Lokasi: src/views/partials/components/ui/text/section_header/index.hbs
 
-  Optional: titleSize / descSize -> semantic responsive size key
-  (display | h1 | h2 | h3 | eyebrow | lead | body | body-sm, see ui.helpers.ts).
-  When passed, the size class comes from the scale and titleClass/descClass
-  should carry only font/color/spacing. When omitted, output is unchanged.
+  Props:
+  - badge            : string|HTML (opsional) — isi pill badge, boleh HTML (mis. dot + teks)
+  - badgeClass       : string (opsional) — override styling pill badge
+  - title            : string|HTML (wajib)
+  - titleTag         : 'h1' | 'h2' (default: 'h2')
+  - titleClass       : string (opsional)
+  - titleSize        : semantic size key (display | h1 | h2 | h3 | eyebrow | lead | body | body-sm, see ui.helpers.ts)
+  - description      : string|HTML (opsional)
+  - descClass        : string (opsional)
+  - descSize         : semantic size key (sama seperti titleSize)
+  - showDivider      : boolean (opsional)
+  - dividerClass     : string (opsional)
+  - dividerAfterDesc : boolean (default: false) — true = accent line dirender SETELAH description
+  - align            : 'text-left' | 'text-center' | 'text-right' (default: 'text-center')
+  - wrapperClass     : string (opsional)
+
+  titleSize / descSize: kalau diisi, kelas ukuran diambil dari skala dan
+  titleClass / descClass cukup bawa font/warna/spacing saja. Kalau dikosongkan,
+  output identik dengan sebelumnya.
 --}}
+
+{{#*inline "sectionHeaderDivider"}}
+  {{#if showDivider}}
+    <div class="w-[68px] h-[5px] rounded-full {{default dividerClass 'bg-[#0B1F3B] mb-4'}}"></div>
+  {{/if}}
+{{/inline}}
 
 <div class="w-full flex flex-col {{#if (eq align 'text-left')}}items-start{{else if (eq align 'text-right')}}items-end{{else}}items-center{{/if}} {{default align 'text-center'}} {{wrapperClass}}">
   {{#if badge}}
@@ -25,13 +46,13 @@
     </h2>
   {{/if}}
 
-  {{#if showDivider}}
-    <div class="w-[68px] h-[5px] rounded-full {{default dividerClass 'bg-[#0B1F3B] mb-4'}}"></div>
-  {{/if}}
+  {{#unless dividerAfterDesc}}{{> sectionHeaderDivider}}{{/unless}}
 
   {{#if description}}
     <p class="leading-relaxed {{#if descSize}}{{sizeClass descSize}} {{default descClass 'font-sans font-normal text-[#2D2D2D]'}}{{else}}{{default descClass 'font-sans font-normal text-sm text-[#2D2D2D]'}}{{/if}}">
       {{{description}}}
     </p>
   {{/if}}
+
+  {{#if dividerAfterDesc}}{{> sectionHeaderDivider}}{{/if}}
 </div>

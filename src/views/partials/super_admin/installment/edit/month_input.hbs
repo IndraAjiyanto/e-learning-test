@@ -11,7 +11,7 @@
           id='month'
           name='month'
           x-model='formData.month'
-          @change='validateField("month", $event.target.value); month = $event.target.value; priceDisplays = Array(parseInt(month)).fill(""); priceValues = Array(parseInt(month)).fill(""); formValid.price = Array(parseInt(month)).fill(false); formErrors.price = Array(parseInt(month)).fill("")'
+          @change='validateField("month", $event.target.value); month = $event.target.value; priceDisplays = Array(parseInt(month)).fill(""); priceValues = Array(parseInt(month)).fill(""); formValid.price = Array(parseInt(month)).fill(false); formErrors.price = Array(parseInt(month)).fill(""); dueDateDisplays = Array(parseInt(month)).fill(""); formValid.dueDates = Array(parseInt(month)).fill(false); formErrors.dueDates = Array(parseInt(month)).fill("")'
           required
           :class="formErrors.month ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.month ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'

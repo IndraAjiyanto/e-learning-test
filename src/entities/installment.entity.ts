@@ -2,9 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -28,6 +27,9 @@ export class Installment {
   @Column({ type: 'enum', enum: [3] })
   month: Month;
 
+  @Column({ type: 'date', array: true })
+  dueDates: string[];
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -40,9 +42,9 @@ export class Installment {
   @Exclude()
   course: Course;
 
-  @OneToOne(() => Payment, (payments) => payments.installment, {
+  @OneToMany(() => Payment, (payments) => payments.installment, {
     onDelete: 'CASCADE',
   })
   @Exclude()
-  payment: Payment;
+  payment: Payment[];
 }

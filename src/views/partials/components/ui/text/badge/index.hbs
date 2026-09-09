@@ -7,18 +7,43 @@
   Props:
   - text        : Teks badge (wajib)
   - tag         : Elemen HTML: span | h2 | h3 | div (default: span)
+  - variant     : 'default' | 'section' (default: 'default')
+                  'section' = pill eyebrow Figma (dot biru + UPPERCASE, abu-abu muda),
+                  dipakai di atas judul section — warna, ukuran & dot sudah diatur,
+                  cukup kirim `text` saja.
   - color       : Warna teks (default: primary → "text-[#003060]")
   - bgColor     : Warna background (default: "bg-[#6EB6E533]")
   - borderColor : Warna border (default: "border-[#003060]")
-  - size        : Ukuran: sm | md | lg (default: md)
+  - size        : Ukuran: sm | md | lg (default: md) — menentukan padding, text size & font weight
+  - textSize    : Override ukuran teks, mis. "text-[12px]" (default: ikut `size`)
+  - fontWeight  : Override tebal teks, mis. "font-bold" (default: ikut `size`)
+  - shadowClass : Override bayangan, mis. "shadow-none" (default: "shadow-sm")
   - class       : Kelas tambahan (default: "")
+
+  Catatan: display, padding, text size, font weight & shadow WAJIB lewat prop/variant
+  di atas, bukan lewat `class`. Tailwind menyelesaikan konflik utility berdasarkan
+  urutan di file CSS hasil build, bukan urutan penulisan di atribut class — mis.
+  `class="font-bold"` tetap kalah dari `font-medium` bawaan `size='sm'`.
 --}}
 
-<{{default tag 'span'}} class="inline-block rounded-full border shadow-sm 
-  {{default bgColor 'bg-[#6EB6E533]'}} 
-  {{default borderColor 'border-[#003060]'}} 
-  {{colorClass (default color 'primary')}}
-  {{#if (eq size 'sm')}}px-4 py-1 text-sm font-medium{{else if (eq size 'lg')}}px-8 py-2.5 text-2xl font-semibold{{else}}px-6 py-2 text-xl font-semibold{{/if}}
+{{#if (eq variant 'section')}}
+<{{default tag 'span'}} class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border
+  border-[#E5E7EB] bg-[#F8F9FA] text-[#0B1F3B] shadow-none
+  px-4 py-1.5 font-montserrat text-[12px] font-bold uppercase tracking-wide
+  before:inline-block before:h-2 before:w-2 before:shrink-0 before:rounded-full before:bg-[#6EB6E5] before:content-['']
   {{class}}">
   {{text}}
 </{{default tag 'span'}}>
+{{else}}
+<{{default tag 'span'}} class="inline-block rounded-full border
+  {{default shadowClass 'shadow-sm'}}
+  {{default bgColor 'bg-[#6EB6E533]'}}
+  {{default borderColor 'border-[#003060]'}}
+  {{colorClass (default color 'primary')}}
+  {{#if (eq size 'sm')}}px-4 py-1{{else if (eq size 'lg')}}px-8 py-2.5{{else}}px-6 py-2{{/if}}
+  {{#if textSize}}{{textSize}}{{else}}{{#if (eq size 'sm')}}text-sm{{else if (eq size 'lg')}}text-2xl{{else}}text-xl{{/if}}{{/if}}
+  {{#if fontWeight}}{{fontWeight}}{{else}}{{#if (eq size 'sm')}}font-medium{{else}}font-semibold{{/if}}{{/if}}
+  {{class}}">
+  {{text}}
+</{{default tag 'span'}}>
+{{/if}}

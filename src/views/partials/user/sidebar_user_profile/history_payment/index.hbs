@@ -11,6 +11,8 @@
     init() {
       if (window.location.hash === '#pendaftaran') {
         this.paymentType = 'registration';
+      } else if (window.location.hash === '#installment') {
+        this.paymentType = 'installment';
       }
     }
   }"

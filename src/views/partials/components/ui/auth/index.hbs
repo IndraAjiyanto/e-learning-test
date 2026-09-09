@@ -23,7 +23,7 @@
   - method                : method form (default: "post")
   - success               : Pesan success dari backend (opsional)
   - error                 : Pesan error dari backend (opsional)
-  - logoClass             : Kelas ukuran logo (default: "h-9 w-auto sm:h-16")
+  - logoClass             : Kelas ukuran logo (default: "w-[140px] h-auto lg:w-[202.71px] lg:h-auto")
   - title                 : Judul form (default: "Login")
   - titleSize             : Ukuran judul: sm | md | lg (default: md)
   - titleColor            : Warna judul custom (opsional)
@@ -66,16 +66,16 @@
   - helpDescription       : Deskripsi help section
 --}}
 
-<div class="block sm:flex min-h-screen items-center justify-center bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] px-5 sm:px-6 py-12 sm:py-20 pt-24 font-montserrat">
-  <div class="w-full max-w-sm sm:max-w-lg mx-auto bg-white rounded-[20px] sm:rounded-3xl p-6 sm:p-8 border border-[#D9D9D9] sm:border-white/20 shadow-[0px_4px_12px_0px_#00000010] sm:shadow-2xl sm:backdrop-blur-xl">
+<div class="block lg:flex min-h-screen items-center justify-center px-5 py-12 pt-24 font-inter bg-[linear-gradient(0deg,#FFFFFF_0%,rgba(255,255,255,0.7)_45%,rgba(255,255,255,0.2)_75%,rgba(255,255,255,0)_100%),url('/public/image/dashboard/login_bg.png')] bg-cover bg-center bg-no-repeat lg:px-6 lg:py-20">
+  <div class="w-full max-w-sm mx-auto p-6 bg-white border border-[#D9D9D9] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:w-[822px] lg:max-w-[822px] lg:p-12 lg:bg-[#FFFFFF87] lg:border-[#FFFFFF17] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[20.4px]">
 
     {{!-- ICON / LOGO --}}
     {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-      <div class="flex justify-center w-full -mt-32">
-        {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto") }}
+      <div class="flex justify-center w-full mt-32">
+        {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto text-[#003060]") wrapperClass="text-[#003060]" }}
       </div>
     {{else}}
-      {{> components/ui/icon/logo_kesatria/index class=(default logoClass "h-9 w-auto sm:h-16") wrapperClass="mb-4 sm:mb-6" }}
+      {{> components/ui/icon/logo_kesatria/index class=(default logoClass "w-[140px] h-auto lg:w-[202.71px] lg:h-auto") wrapperClass="mb-4 lg:mb-8" }}
     {{/if}}
 
     {{!-- ICON KHUSUS (Email / Success) --}}
@@ -99,33 +99,33 @@
 
     {{!-- TITLE --}}
     {{#if (eq variant 'verify-email-success')}}
-      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") color="text-[#12BD26]" class="mb-1 sm:mb-2 text-[36px] font-semibold" }}
+      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") color="text-[#12BD26]" font="inter" fontWeight="font-semibold" class="mb-1 text-center leading-none text-[22px] lg:mb-2 lg:text-[30px]" }}
     {{else if (or (eq variant 'verify-email'))}}
-      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") class="mb-1 sm:mb-2 text-[36px] font-semibold" }}
+      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") font="inter" fontWeight="font-semibold" class="mb-1 text-center leading-none text-[22px] lg:mb-2 lg:text-[30px]" }}
     {{else}}
-      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") class="mb-1 sm:mb-2" }}
+      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") font="inter" fontWeight="font-semibold" class="mb-1 text-center leading-none text-[22px] lg:mb-5 lg:text-[30px]" }}
     {{/if}}
 
     {{!-- DESCRIPTION --}}
     {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-      {{> components/ui/text/description/index text=(default description "Welcome back!") class="mb-4 sm:mb-6 text-[20px]" }}
+      {{> components/ui/text/description/index text=(default description "Welcome back!") color="text-[#2D2D2DCC]" font="inter" class=(concat "mb-4 text-center leading-none text-sm lg:mb-6 lg:text-lg " (default descriptionClass "")) }}
     {{else}}
-      {{> components/ui/text/description/index text=(default description "Welcome back!") class="mb-4 sm:mb-6" }}
+      {{> components/ui/text/description/index text=(default description "Welcome back!") color="text-[#2D2D2DCC]" font="inter" class=(concat "mb-4 text-center leading-none text-sm lg:mb-12 lg:text-lg " (default descriptionClass "")) }}
     {{/if}}
 
     {{!-- ALERT SUCCESS --}}
     {{#if success}}
-      {{> components/ui/alert/index type="success" message=success dismissible=true class="mb-4 sm:mb-6" }}
+      {{> components/ui/alert/index type="success" message=success dismissible=true class="mb-4 lg:mb-6" }}
     {{/if}}
 
     {{!-- ALERT ERROR --}}
     {{#if error}}
-      {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 sm:mb-6" }}
+      {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 lg:mb-6" }}
     {{/if}}
 
     {{!-- COUNTDOWN TIMER (untuk verify-email) --}}
     {{#if showCountdown}}
-      <div class="w-full flex flex-col items-center gap-3 mb-4 sm:mb-6">
+      <div class="flex flex-col items-center gap-3 w-full mb-4 lg:mb-6">
         <div class="my-countdown simply-countdown"></div>
       </div>
 
@@ -166,22 +166,30 @@
           get hasSpecial() { return /[^A-Za-z0-9]/.test(this.password) },
           get isPasswordValid() { return this.hasLength && this.hasUpper && this.hasLower && this.hasNumber && this.hasSpecial },
           get isConfirmValid() { return this.confirmPassword.length > 0 && this.confirmPassword === this.password }
-        }" @submit="loading = true" class="space-y-4 sm:space-y-6">
+        }" @submit="loading = true" class="space-y-4 lg:space-y-6">
       {{else}}
-        <form action="{{default action '/login'}}" method="{{default method 'post'}}" x-data="{ loading: false }" @submit="loading = true" class="space-y-4 sm:space-y-6">
+        <form action="{{default action '/login'}}" method="{{default method 'post'}}" x-data="{ loading: false }" @submit="loading = true" class="space-y-4 lg:space-y-6">
       {{/if}}
 
       {{!-- NAME FIELD (register/reset) --}}
       {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
         <div>
-          <label class="block text-xs sm:text-sm font-medium text-[#0B1F3B] mb-1 font-montserrat">{{default nameLabel 'Name'}}</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="{{default namePlaceholder 'Enter your name'}}"
-            required
-            class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm rounded-[12px] sm:rounded-lg bg-white border border-[#D9D9D9] text-[#2D2D2D] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#003060]"
-          />
+          <label class="block mb-5 text-[15px] font-medium text-[#0B1F3B] leading-none font-inter lg:text-[20px]">{{default nameLabel 'Name'}}</label>
+          <div class="relative">
+            <div class="flex absolute inset-y-0 left-[25px] items-center pointer-events-none text-[#003060]">
+              <svg class="size-5 text-[#003060] lg:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <input
+              type="text"
+              name="username"
+              placeholder="{{default namePlaceholder 'Enter your name'}}"
+              required
+              class="w-full h-[48px] pl-[74px] pr-3.5 py-2.5 text-[15px] font-normal text-[#2D2D2D] leading-none font-inter bg-white border border-[#D9D9D9] rounded-[6px] shadow-[0px_0px_4px_0px_#00000040] placeholder:text-[15px] placeholder:font-normal placeholder:text-[#2D2D2DCC] focus:outline-none focus:ring-2 focus:ring-[#003060] lg:h-[59px] lg:pl-[74px] lg:pr-4 lg:py-3"
+            />
+          </div>
         </div>
       {{/if}}
 
@@ -200,7 +208,6 @@
           {{!-- Password dengan validasi untuk register dan reset-password --}}
           {{> components/ui/input/password/validated
             label=(default passwordLabel "Password")
-            placeholder=(default passwordPlaceholder "********")
             lengthText=lengthText
             uppercaseText=uppercaseText
             lowercaseText=lowercaseText
@@ -211,7 +218,6 @@
           {{!-- Password biasa untuk login --}}
           {{> components/ui/input/password/index
             label=(default passwordLabel "Password")
-            placeholder=(default passwordPlaceholder "********")
             showForgotPassword=showForgotPassword
             forgotPasswordText=(default forgotPasswordText "Forgot password?")
             forgotPasswordUrl=(default forgotPasswordUrl "/users/forgot-password")
@@ -232,8 +238,8 @@
 
       {{!-- BUTTON SUBMIT --}}
       {{> components/ui/button/submit/index
-        text=(default submitText "Login")
-        class=(default submitClass "w-full h-[48px] sm:h-12 mt-2 sm:mt-0")
+        text=(default submitText "Log In to System")
+        class=(default submitClass "w-full h-[48px] mt-2 lg:h-12 lg:mt-0")
       }}
     </form>
     {{/unless}}
@@ -253,15 +259,15 @@
     {{!-- BUTTON LINK (untuk verify-email-success) --}}
     {{#if (eq variant 'verify-email-success')}}
       <a href="{{buttonUrl}}"
-        class="btn border-0 text-base w-full h-[45px] rounded-lg bg-[#003060] text-white font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center">
+        class="btn flex items-center justify-center w-full h-[45px] text-base text-white font-semibold bg-[#003060] border-0 rounded-lg shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
         <span class="text-[18px]">{{submitText}}</span>
       </a>
     {{/if}}
 
     {{!-- BOTTOM DESCRIPTION + LINK --}}
     {{#unless (or hideBottomLink (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-      <div class="text-center mt-4 sm:mt-6">
-        <p class="text-xs sm:text-sm text-[#2D2D2D] font-sans">
+      <div class="mt-4 text-center lg:mt-6">
+        <p class="text-xs text-[#2D2D2D] font-sans lg:text-sm">
           {{default bottomTitle "Don't have an account?"}}
           {{> components/ui/text/link/index
             text=(default bottomLinkText "Sign Up")
@@ -278,7 +284,7 @@
     {{#if showHelpSection}}
       <div class="mt-8 p-4 rounded-xl bg-[#6EB6E580]/50">
         <div class="flex items-start gap-3">
-          <div class="flex-shrink-0">
+          <div class="shrink-0">
             <svg width="30" height="30" viewBox="0 0 154 154" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M27 78V105C27 123 33 136 51 137H103C121 136 127 123 127 105V78" stroke="#0B2442" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M24 85V63C24 52 29 48 40 48H114C125 48 130 52 130 63V83C130 87 128 89 124 90L81 105C78 106 76 106 73 105L30 90C26 89 24 87 24 85Z" stroke="#0B2442" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -288,7 +294,7 @@
             </svg>
           </div>
           <div>
-            <p class="text-[20px] text-gray-900 font-medium mb-1">{{helpTitle}}</p>
+            <p class="mb-1 text-[20px] text-gray-900 font-medium">{{helpTitle}}</p>
             <p class="text-[15px] text-gray-900 leading-relaxed">{{helpDescription}}</p>
           </div>
         </div>

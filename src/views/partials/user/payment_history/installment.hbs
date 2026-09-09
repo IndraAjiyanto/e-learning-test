@@ -69,7 +69,7 @@
                 <div class="flex items-center text-xs md:text-sm">
                   <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i>
                   <span class="font-medium text-slate-700">{{t "test.historyPayment.installment.installmentMenu"}}</span>
-                  <span class="ml-2 text-blue-700 font-bold" x-text="item.installments.name"></span>
+                  <span class="ml-2 text-blue-700 font-bold" x-text="'Cicilan ' + (item.installment?.month || 3) + 'x'"></span>
                 </div>
 
                 <div class="flex items-center text-xs md:text-sm">
@@ -78,6 +78,21 @@
                   <span x-show="item.process === 'approved'" class="ml-2 text-emerald-700 font-bold">{{t "test.historyPayment.installment.accepted"}}</span>
                   <span x-show="item.process === 'process'" class="ml-2 text-amber-700 font-bold">{{t "test.historyPayment.installment.processing"}}</span>
                   <span x-show="item.process !== 'approved' && item.process !== 'process'" class="ml-2 text-red-700 font-bold">{{t "test.historyPayment.installment.rejected"}}</span>
+                </div>
+
+                <div x-show="(item.installment?.dueDates || []).length > 0" class="border-t border-slate-100 pt-3 mt-3">
+                  <div class="flex items-center text-xs md:text-sm mb-2">
+                    <i class="fas fa-calendar-check mr-2 text-blue-600"></i>
+                    <span class="font-medium text-slate-700">{{t "test.historyPayment.installment.dueDate"}}</span>
+                  </div>
+                  <div class="space-y-1">
+                    <template x-for="(d, i) in (item.installment?.dueDates || [])" :key="i">
+                      <div class="flex items-center justify-between text-xs md:text-sm">
+                        <span class="text-slate-600">{{t "test.historyPayment.installment.payslip"}} <span x-text="i + 1"></span></span>
+                        <span class="font-semibold text-slate-800" x-text="formatDate(d)"></span>
+                      </div>
+                    </template>
+                  </div>
                 </div>
               </div>
 

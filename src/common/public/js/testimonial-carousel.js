@@ -3,9 +3,8 @@
  * Pure Vanilla JavaScript + Alpine.js integration for NestJS Handlebars (HBS)
  */
 
-function testimonialCarousel(customData = []) {
-  // Fallback testimonial data array
-  const defaultTestimonials = [
+// Fallback testimonial data (dipakai testimonialCarousel & alumniGrid)
+const defaultTestimonials = [
     {
       id: 1,
       name: "John Calvin Sukarman",
@@ -44,10 +43,11 @@ function testimonialCarousel(customData = []) {
       position: "UI/UX Designer",
       company: "Creative Digital Studio",
       photo: "https://ui-avatars.com/api/?name=Budi+Santoso&background=CBE8FA&color=003060",
-      testimonial: "Creating user-centered products through hands-on portfolio projects allowed me to showcase my skills to top employers with confidence."
-    }
-  ];
+    testimonial: "Creating user-centered products through hands-on portfolio projects allowed me to showcase my skills to top employers with confidence."
+  }
+];
 
+function testimonialCarousel(customData = []) {
   return {
     testimonials: Array.isArray(customData) && customData.length > 0 ? customData : defaultTestimonials,
     active: 0,
@@ -124,6 +124,80 @@ function testimonialCarousel(customData = []) {
 
     getDotClass(index) {
       return index === 0 ? 'bg-[#003060] z-10 shadow-sm' : 'bg-[#D9D9D9] hover:bg-[#CCCCCC] z-0';
+    }
+  };
+}
+
+/**
+ * Alumni Grid Component Logic (Figma "testimonials-section")
+ * Menampilkan alumni dalam grid 3 kolom (desktop) / 1 kolom (mobile)
+ * dengan pagination prev-next + dots.
+ */
+function alumniGrid(customData = []) {
+  return {
+    items: Array.isArray(customData) && customData.length > 0 ? customData : defaultTestimonials,
+    page: 0,
+    perPage: 3,
+    timer: null,
+
+    init() {
+      this.syncPerPage();
+      this._onResize = () => this.syncPerPage();
+      window.addEventListener('resize', this._onResize);
+      this.startAutoSlide();
+    },
+
+    destroy() {
+      window.removeEventListener('resize', this._onResize);
+      this.stopAutoSlide();
+    },
+
+    syncPerPage() {
+      const next = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+      if (next !== this.perPage) {
+        this.perPage = next;
+        this.page = Math.min(this.page, this.totalPages - 1);
+      }
+    },
+
+    get totalPages() {
+      return Math.max(1, Math.ceil(this.items.length / this.perPage));
+    },
+
+    get visible() {
+      return this.items.slice(this.page * this.perPage, this.page * this.perPage + this.perPage);
+    },
+
+    startAutoSlide() {
+      this.stopAutoSlide();
+      if (this.totalPages <= 1) return;
+      this.timer = setInterval(() => {
+        this.page = (this.page + 1) % this.totalPages;
+      }, 6000);
+    },
+
+    stopAutoSlide() {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+    },
+
+    next() {
+      this.page = (this.page + 1) % this.totalPages;
+      this.startAutoSlide();
+    },
+
+    prev() {
+      this.page = (this.page - 1 + this.totalPages) % this.totalPages;
+      this.startAutoSlide();
+    },
+
+    goTo(index) {
+      if (index >= 0 && index < this.totalPages) {
+        this.page = index;
+        this.startAutoSlide();
+      }
     }
   };
 }

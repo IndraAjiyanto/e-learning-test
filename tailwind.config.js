@@ -22,11 +22,16 @@ module.exports = {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' },
         },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(16px) scale(0.98)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
       },
       animation: {
         slide: 'slide 20s linear infinite',
         slideFast: 'slide 10s linear infinite',
         slideSlow: 'slide 40s linear infinite',
+        fadeInUp: 'fadeInUp 0.5s ease-out both',
       },
       fontFamily: {
         sans: ['"Open Sans"', 'sans-serif'],

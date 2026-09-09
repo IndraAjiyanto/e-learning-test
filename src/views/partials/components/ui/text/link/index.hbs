@@ -7,10 +7,14 @@
   Props:
   - text      : Teks link (wajib)
   - href      : URL tujuan (wajib)
-  - align     : Posisi teks: left | center | right (default: inline)
-  - size      : Ukuran: xs | sm | md | lg (default: sm)
+  - size      : Ukuran: xs | sm | md | lg, atau kelas Tailwind custom
+                (contoh "text-[12px] sm:text-[13px]"; default: text-xs sm:text-sm)
   - color     : Warna teks (default: "text-[#6EB6E5]")
   - weight    : Bold: normal | medium | semibold | bold (default: medium)
+  - font      : Font family class (opsional, contoh "font-montserrat")
+  - icon      : Class icon FontAwesome (opsional, contoh "fas fa-arrow-right")
+  - iconPos   : Posisi icon: left | right (default: right)
+  - iconClass : Kelas tambahan untuk icon (default: "text-[11px] sm:text-[12px]")
   - class     : Kelas tambahan untuk layout/spacing (default: "")
   - target    : Link target (_blank | _self | _parent, opsional)
 --}}
@@ -20,12 +24,15 @@
   {{#if target}}target="{{target}}" rel="noopener"{{/if}}
   class="
     hover:underline transition-colors duration-200
+    {{#if icon}}inline-flex items-center gap-[4px]{{/if}}
+    {{font}}
     font-{{default weight 'medium'}}
     {{default color 'text-[#6EB6E5]'}}
     {{#if (eq size 'xs')}}text-xs
     {{else if (eq size 'md')}}text-base
     {{else if (eq size 'lg')}}text-lg
+    {{else if size}}{{size}}
     {{else}}text-xs sm:text-sm{{/if}}
     {{class}}
   "
->{{text}}</a>
+>{{#if (eq iconPos 'left')}}{{#if icon}}<i class="{{icon}} {{default iconClass 'text-[11px] sm:text-[12px]'}} leading-none transition-transform duration-300 group-hover:-translate-x-1" aria-hidden="true"></i>{{/if}}{{/if}}<span>{{text}}</span>{{#unless (eq iconPos 'left')}}{{#if icon}}<i class="{{icon}} {{default iconClass 'text-[11px] sm:text-[12px]'}} leading-none transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true"></i>{{/if}}{{/unless}}</a>

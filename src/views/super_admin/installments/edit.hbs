@@ -6,34 +6,42 @@
     priceDisplays: [], 
     downPaymentValue: `{{installments.downPayment}}`, 
     downPaymentDisplay: "",
+    dueDateValues: {{json installments.dueDates}} || [],
+    dueDateDisplays: [],
 
     // Form validation states
     formData: {
       month: `{{installments.month}}`,
       downPayment: `{{installments.downPayment}}`,
-      price: {{json installments.price}}
+      price: {{json installments.price}},
+      dueDates: {{json installments.dueDates}} || []
     },
     formErrors: {
       month: "",
       downPayment: "",
-      price: []
+      price: [],
+      dueDates: []
     },
     formValid: {
       month: false,
       downPayment: false,
-      price: []
+      price: [],
+      dueDates: []
     },
 
     validateField(field, value, index = null) {
-      if (field === "price") {
-        this.formData.price[index] = value;
+      if (field === "price" || field === "dueDates") {
+        this.formData[field][index] = value;
         const numValue = parseInt(value);
-        if (!value || isNaN(numValue)) {
-          this.formErrors.price[index] = "Valid payment amount required";
-          this.formValid.price[index] = false;
+        const valid = field === "price"
+          ? !!value && !isNaN(numValue)
+          : !!value;
+        if (!valid) {
+          this.formErrors[field][index] = field === "price" ? "Valid payment amount required" : "Valid due date required";
+          this.formValid[field][index] = false;
         } else {
-          this.formErrors.price[index] = "";
-          this.formValid.price[index] = true;
+          this.formErrors[field][index] = "";
+          this.formValid[field][index] = true;
         }
       } else {
         this.formData[field] = value;
@@ -66,7 +74,8 @@
     get canSubmit() {
       const monthCount = parseInt(this.month);
       const allPriceValid = Array.from({length: monthCount}, (_, i) => this.formValid.price[i] || false).every(valid => valid);
-      return this.formValid.month && this.formValid.downPayment && allPriceValid;
+      const allDueDatesValid = Array.from({length: monthCount}, (_, i) => this.formValid.dueDates[i] || false).every(valid => valid);
+      return this.formValid.month && this.formValid.downPayment && allDueDatesValid && allPriceValid;
     },
 
     hasFormErrors() {
@@ -91,9 +100,13 @@
         this.downPaymentDisplay = new Intl.NumberFormat("id-ID").format(angka);
         this.validateField("downPayment", angka);
       } 
+    },
+
+    formatDueDate(event, index) {
+      this.validateField("dueDates", event.target.value, index);
     }
   }'
-  x-init="priceDisplays = priceValues.map(h => new Intl.NumberFormat('id-ID').format(h)); downPaymentDisplay = new Intl.NumberFormat('id-ID').format(downPaymentValue); formValid.price = Array(parseInt(month)).fill(true); formErrors.price = Array(parseInt(month)).fill('')"
+  x-init="priceDisplays = priceValues.map(h => new Intl.NumberFormat('id-ID').format(h)); downPaymentDisplay = new Intl.NumberFormat('id-ID').format(downPaymentValue); formValid.price = Array(parseInt(month)).fill(true); formErrors.price = Array(parseInt(month)).fill(''); dueDateDisplays = Array.from({length: parseInt(month)}, (_, i) => dueDateValues[i] || ''); formValid.dueDates = Array(parseInt(month)).fill(true); formErrors.dueDates = Array(parseInt(month)).fill(''); dueDateDisplays.forEach((d, i) => validateField('dueDates', d, i))"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Installment</h2>
@@ -107,6 +120,8 @@
     >
 
     {{> super_admin/installment/edit/month_input }}
+
+{{> super_admin/installment/edit/due_day_input }}
 
 {{> super_admin/installment/edit/price_input }}
 

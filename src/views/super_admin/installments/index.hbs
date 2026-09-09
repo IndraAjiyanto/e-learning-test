@@ -82,6 +82,9 @@
           >Durasi</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Tanggal Tenggat</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Price/Month</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
@@ -99,6 +102,11 @@
               class='px-6 py-4 text-sm font-semibold text-gray-800'
             >{{course.name}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>{{month}} Months</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{#each dueDates}}
+                <span class='mr-1'>B{{addOne @index}}: {{this}}</span>
+              {{/each}}
+            </td>
             <td class='px-6 py-4 text-sm text-gray-700'>
               <div class='flex flex-col'>
                 <span>DP: Rp {{formatRupiah installments.downPayment}}</span>

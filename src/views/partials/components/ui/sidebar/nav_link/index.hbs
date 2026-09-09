@@ -1,0 +1,52 @@
+{{!--
+  Komponen: Sidebar Nav Link (item daun / tanpa dropdown)
+  Lokasi: src/views/partials/components/ui/sidebar/nav_link/index.hbs
+  Level: L1 Atomik
+
+  Item navigasi sidebar yang mengarah ke sebuah route. State aktif
+  dibaca dari Alpine `active` (di-set oleh `setActive(path)` pada
+  root sidebar). Tersedia state hover, active, dan disabled.
+
+  Props:
+  - href     : string (wajib) tujuan link, contoh "/users"
+  - path     : string (opsional, default = href) nilai yang dibandingkan dengan Alpine `active`
+  - label    : string (wajib) teks item
+  - icon     : string (opsional) nama file ikon di /public/image/sidebar, contoh "icon_users"
+  - level    : number (opsional, default 1) 1 = menu utama, 2 = submenu, 3 = sub-submenu
+  - disabled : boolean (opsional) menonaktifkan item (tidak bisa diklik)
+--}}
+
+{{#if disabled}}
+  <span
+    aria-disabled="true"
+    class="flex items-center w-full rounded-[8px] font-montserrat text-[#4A5568] opacity-50 cursor-not-allowed select-none
+      {{#if (eq level 3)}}h-[36px] gap-[10px] px-[14px] text-[12px] font-medium
+      {{else if (eq level 2)}}h-[40px] gap-[12px] px-[14px] text-[13px] font-medium
+      {{else}}h-[44px] gap-[12px] px-[14px] text-[14px] leading-[21px] font-medium{{/if}}"
+  >
+    {{#if icon}}
+      {{> components/ui/sidebar/nav_icon/index name=icon size=(default iconSize '20px')}}
+    {{/if}}
+    <span class="truncate">{{label}}</span>
+  </span>
+{{else}}
+  <a
+    href="{{href}}"
+    @click="setActive('{{default path href}}')"
+    :class="active === '{{default path href}}'
+      ? 'bg-[#E7F3FB] text-[#003060] font-semibold shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05)]'
+      : 'text-[#4A5568] hover:bg-[#E7F3FB]/60 hover:text-[#003060] active:bg-[#E7F3FB]'"
+    class="flex items-center w-full rounded-[8px] font-montserrat transition-colors duration-150
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40
+      {{#if (eq level 3)}}h-[36px] gap-[10px] px-[14px] text-[12px] font-medium
+      {{else if (eq level 2)}}h-[40px] gap-[12px] px-[14px] text-[13px] font-medium
+      {{else}}h-[44px] gap-[12px] px-[14px] text-[14px] leading-[21px] font-medium{{/if}}"
+  >
+    {{#if icon}}
+      <span :class="active === '{{default path href}}' ? 'text-[#055C90]' : 'text-[#335980]'" class="flex shrink-0">
+        {{> components/ui/sidebar/nav_icon/index name=icon size=(default iconSize '20px')}}
+      </span>
+    {{/if}}
+    <span class="truncate">{{label}}</span>
+  </a>
+{{/if}}

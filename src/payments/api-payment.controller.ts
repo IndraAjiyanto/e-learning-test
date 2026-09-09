@@ -74,4 +74,45 @@ export class ApiPaymentController {
       });
     }
   }
+
+  @Post('installment-month')
+  async createInstallmentMonthPayment(
+    @Body()
+    body: {
+      paymentId: string;
+      month: number;
+    },
+    @Res() res: Response,
+    @Req() req: Request & { user?: any },
+  ) {
+    try {
+      const userId = req.user?.id;
+      const { paymentId, month } = body;
+
+      if (!userId || !paymentId || !month) {
+        return res
+          .status(400)
+          .json({ status: 'error', message: 'Data tidak lengkap' });
+      }
+
+      const orderData =
+        await this.paymentsService.createMonthlyInstallmentInvoice(
+          userId,
+          String(paymentId),
+          Number(month),
+        );
+
+      return res.json({
+        status: 'success',
+        redirect_url: orderData.xendit_invoice_url,
+        message: 'Mengalihkan ke halaman pembayaran cicilan Xendit...',
+      });
+    } catch (error: any) {
+      console.error('Installment Month Payment Error:', error);
+      return res.status(400).json({
+        status: 'error',
+        message: error.message || 'Terjadi kesalahan saat bayar cicilan.',
+      });
+    }
+  }
 }
