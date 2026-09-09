@@ -1,115 +1,44 @@
-<!-- MOBILE BENEFIT SECTION (< 640px / Figma Frame 6586:4920) -->
-<section class="block sm:hidden w-full py-12 px-5 bg-[#6EB6E5] relative z-0 overflow-hidden font-montserrat">
-  <div class="w-full flex flex-col gap-[28px] relative z-10 text-center items-center">
-    <!-- Header Section -->
-    <div 
-      x-data="{ shown: false }" 
-      x-init="
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.2, rootMargin: '0px 0px -30px 0px' });
-        observer.observe($el);
-      "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
-      class="transition-all duration-700 ease-out transform text-center flex flex-col items-center w-full"
-    >
-      {{> components/ui/text/section_header/index
-          badge=(t 'test.home.imagine.whyChooseUs')
-          badgeClass="px-[16px] py-[8px] font-montserrat font-medium text-[14px] text-[#003060] leading-none mb-4"
-          title=(t 'test.home.imagine.title')
-          titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] [&_span]:text-[#003060] mb-4"
-          showDivider=true
-          dividerClass="w-[70px] bg-[#0B1F3B] mb-4"
-          description=(t 'test.home.imagine.description')
-          descClass="font-sans font-normal text-[14px] text-[#2D2D2D] max-w-[340px]"
-      }}
-    </div>
+{{!--
+  Section: Benefit / "Why Choose" (L2) - Figma why-choose-us 250:2815
+  Lokasi: src/views/partials/components/ui/sections/benefit/index.hbs
+  Satu pohon markup, base + lg. Data: benefits[] (jsonb title/description + icon). sizeClass, .page-shell.
+--}}
+<section class="w-full bg-[#F8F9FA] py-14 font-montserrat lg:py-24" data-node-id="250:2815">
+  <div class="page-shell flex flex-col gap-12 lg:gap-16">
 
-    <!-- Card container -->
-    <div 
-      x-data="{ shown: false }" 
-      x-init="
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
-        observer.observe($el);
-      "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
-      class="flex flex-col gap-[16px] transition-all duration-700 ease-out transform w-full"
-    >
-      {{#each benefits}}
-        {{> components/ui/card/card_benefit/index 
-            icon=this.icon
-            title=this.title
-            description=this.description
-            lang=../lang
-        }}
-      {{/each}}
-    </div>
-  </div>
-</section>
-
-<!-- DESKTOP BENEFIT SECTION (>= 640px) — Figma: why-choose-us (250:2815) -->
-<section class="hidden sm:flex w-full bg-[#F8F9FA] pt-[100px] pb-[120px] font-montserrat" data-node-id="250:2815">
-  <div class="page-shell flex flex-col gap-[64px]" data-node-id="250:2816">
-
-    <!-- section-header (250:2817) -->
+    {{!-- section header --}}
     <div
       x-data="{ shown: false }"
-      x-init="
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.35, rootMargin: '0px 0px -50px 0px' });
-        observer.observe($el);
-      "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
-      class="w-full flex flex-col items-center gap-[16px] transition-all duration-1000 ease-out transform"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'"
+      class="flex flex-col items-center gap-4 text-center transition-all duration-700 ease-out"
     >
-      <!-- animated-tag (250:2818) -->
-      <div class="flex items-center gap-[8px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-[100px] px-[16px] py-[6px]">
-        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5] shrink-0" aria-hidden="true"></i>
-        <span class="font-montserrat font-bold text-[12px] uppercase text-[#0B1F3B] whitespace-nowrap">
-          {{t 'test.home.imagine.whyChooseUs'}}
-        </span>
-      </div>
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 py-1.5 {{sizeClass 'eyebrow'}} font-montserrat font-bold text-[#0B1F3B]">
+        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5]" aria-hidden="true"></i>
+        {{t 'test.home.imagine.whyChooseUs'}}
+      </span>
 
-      <!-- Heading (250:2822) -->
-      <h2 class="font-montserrat font-bold text-[28px] lg:text-[36px] leading-tight text-[#111827] text-center [&_span]:text-[#6EB6E5]">
+      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#111827] [&_span]:text-[#6EB6E5]">
         {{{t 'test.home.imagine.title'}}}
       </h2>
 
-      <!-- Subheading (250:2826) -->
-      <p class="font-sans font-normal text-[16px] lg:text-[20px] leading-[1.6] text-[#4A5568] text-center max-w-[720px]">
+      <p class="{{sizeClass 'lead'}} max-w-[720px] font-open-sans text-[#4A5568]">
         {{t 'test.home.imagine.description'}}
       </p>
 
-      <!-- accent-line (250:2827) -->
-      <div class="w-[60px] h-[4px] rounded-[2px] bg-[#003060]"></div>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    <!-- features-grid (250:2828) -->
+    {{!-- features grid --}}
     <div
       x-data="{ shown: false }"
-      x-init="
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) { shown = true; observer.disconnect(); }
-        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
-        observer.observe($el);
-      "
-      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'"
-      class="w-full flex flex-wrap justify-center gap-[24px] transition-all duration-1000 ease-out transform"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+      class="grid grid-cols-1 gap-5 transition-all duration-700 ease-out sm:grid-cols-2 lg:grid-cols-3"
     >
       {{#each benefits}}
-        <div class="w-full md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] flex">
-          {{> components/ui/card/card_benefit/index
-              icon=this.icon
-              title=this.title
-              description=this.description
-              lang=../lang
-          }}
-        </div>
+        {{> components/ui/card/card_benefit/index icon=this.icon title=this.title description=this.description lang=../lang}}
       {{/each}}
     </div>
-
   </div>
 </section>
