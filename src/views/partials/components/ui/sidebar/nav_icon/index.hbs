@@ -1,0 +1,21 @@
+{{!--
+  Komponen: Sidebar Nav Icon
+  Lokasi: src/views/partials/components/ui/sidebar/nav_icon/index.hbs
+  Level: L1 Atomik
+
+  Merender ikon sidebar dari file SVG hasil export Figma
+  (src/common/public/image/sidebar/*.svg) memakai CSS mask,
+  sehingga warna ikon mengikuti `currentColor` (mendukung state
+  default / hover / active tanpa menduplikasi file ikon).
+
+  Props:
+  - name  : string (wajib) nama file tanpa ekstensi, contoh "icon_users"
+  - size  : string (opsional, default "20px") ukuran kotak ikon
+  - class : string (opsional) kelas tambahan untuk wrapper
+--}}
+
+<span
+  class="sidebar-icon shrink-0 {{class}}"
+  style="width: {{default size '20px'}}; height: {{default size '20px'}}; -webkit-mask-image: url('/public/image/sidebar/{{name}}.svg'); mask-image: url('/public/image/sidebar/{{name}}.svg');"
+  aria-hidden="true"
+></span>

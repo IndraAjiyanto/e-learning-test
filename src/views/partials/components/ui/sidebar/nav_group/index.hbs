@@ -1,0 +1,71 @@
+{{!--
+  Komponen: Sidebar Nav Group (item dropdown)
+  Lokasi: src/views/partials/components/ui/sidebar/nav_group/index.hbs
+  Level: L1 Atomik
+
+  Item navigasi sidebar yang membuka/menutup daftar submenu.
+  Dipakai sebagai block partial — isi submenu ditulis di dalam blok:
+
+    {{#> components/ui/sidebar/nav_group/index key="dashboard" label="Dashboard" icon="icon_dashboard"}}
+      {{> components/ui/sidebar/nav_link/index href="/faq" label="FAQ" level=2}}
+    {{/components/ui/sidebar/nav_group/index}}
+
+  State buka/tutup dibaca dari Alpine `activeDropdown` (level 1) atau
+  `activeSubDropdown` (level 2) pada root sidebar.
+
+  Props:
+  - key      : string (wajib) identitas dropdown, contoh "dashboard"
+  - label    : string (wajib) teks item
+  - icon     : string (opsional) nama file ikon di /public/image/sidebar
+  - level    : number (opsional, default 1) 1 = menu utama, 2 = submenu
+  - disabled : boolean (opsional) menonaktifkan toggle
+
+  CATATAN: partial di dalam blok mewarisi hash dari nav_group ini
+  (perilaku bawaan Handlebars block partial). Selalu tulis prop secara
+  eksplisit pada item submenu — mis. `icon=''` — agar tidak ikut mewarisi
+  `icon` milik grup induk.
+--}}
+
+<div class="w-full {{#if (eq level 2)}}space-y-[2px]{{else}}space-y-[4px]{{/if}}">
+  <button
+    type="button"
+    {{#if disabled}}disabled{{/if}}
+    @click="{{#if (eq level 2)}}setActiveSubDropdown{{else}}setActiveDropdown{{/if}}('{{key}}')"
+    :aria-expanded="{{#if (eq level 2)}}activeSubDropdown{{else}}activeDropdown{{/if}} === '{{key}}'"
+    :class="{{#if (eq level 2)}}activeSubDropdown{{else}}activeDropdown{{/if}} === '{{key}}'
+      ? 'bg-[#E7F3FB] text-[#003060] font-semibold'
+      : 'text-[#4A5568] hover:bg-[#E7F3FB]/60 hover:text-[#003060] active:bg-[#E7F3FB]'"
+    class="flex items-center justify-between w-full rounded-[8px] font-montserrat transition-colors duration-150
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40
+      disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none
+      {{#if (eq level 2)}}h-[40px] px-[14px] text-[13px] font-medium
+      {{else}}h-[44px] px-[14px] text-[14px] leading-[21px] font-medium{{/if}}"
+  >
+    <span class="flex items-center gap-[12px] min-w-0">
+      {{#if icon}}
+        <span
+          :class="{{#if (eq level 2)}}activeSubDropdown{{else}}activeDropdown{{/if}} === '{{key}}' ? 'text-[#055C90]' : 'text-[#335980]'"
+          class="flex shrink-0"
+        >
+          {{> components/ui/sidebar/nav_icon/index name=icon size=(default iconSize '20px')}}
+        </span>
+      {{/if}}
+      <span class="truncate">{{label}}</span>
+    </span>
+
+    <span
+      :class="{{#if (eq level 2)}}activeSubDropdown{{else}}activeDropdown{{/if}} === '{{key}}' ? 'rotate-180 text-[#055C90]' : 'text-[#718096]'"
+      class="flex shrink-0 transition-transform duration-200"
+    >
+      {{> components/ui/sidebar/nav_icon/index name='icon_chevron_down' size='16px'}}
+    </span>
+  </button>
+
+  <div
+    x-show="{{#if (eq level 2)}}activeSubDropdown{{else}}activeDropdown{{/if}} === '{{key}}'"
+    x-collapse
+    class="ml-[26px] pl-[12px] border-l border-[#D9D9D9] {{#if (eq level 2)}}space-y-[2px]{{else}}space-y-[4px]{{/if}}"
+  >
+    {{> @partial-block}}
+  </div>
+</div>

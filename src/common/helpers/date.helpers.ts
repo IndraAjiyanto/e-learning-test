@@ -2,7 +2,12 @@ import { format } from 'date-fns';
 import { enUS, id, ja } from 'date-fns/locale';
 
 export const dateHelpers = {
-  formDate: (date: Date) => new Date(date).toISOString().split('T')[0],
+  formDate: (date: string | Date | null | undefined): string => {
+    if (!date) return '';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '';
+    return new Intl.DateTimeFormat('fr-CA').format(d);
+  },
   formatDate: (date: string | Date, lang?: string) => {
     if (!date) return lang ? 'Not set' : '';
     if (lang) {
