@@ -1,10 +1,10 @@
 <!-- INSTALLMENT PAYMENT DETAIL -->
 <div class="space-y-6 font-montserrat">
-  
+
   <!-- Back Button Row -->
   <div>
-    <button 
-      type="button" 
+    <button
+      type="button"
       @click="showDetail = false"
       class="w-10 h-10 rounded-full border border-[#003060] flex items-center justify-center text-[#003060] hover:bg-[#003060]/10 transition-all cursor-pointer shadow-[0_0_4px_rgba(0,0,0,0.25)]"
     >
@@ -14,7 +14,7 @@
 
   <!-- Top Row: Payment Overview (Left 2 cols) + Next Payment (Right 1 col) -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
+
     <!-- LEFT CARD: Payment Overview -->
     <div class="lg:col-span-2 bg-white backdrop-blur-[3.3px] rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col">
       <div>
@@ -23,7 +23,8 @@
           <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D]">
             Payment Overview
           </h3>
-          <span class="px-3 py-1 text-[#003060] border-[0.1px] border-[#003060] rounded-[3px] font-sans font-normal text-[10px] leading-none text-center" x-text="selectedTx?.planType || '3 Months Plan'">
+          <span class="px-3 py-1 text-[#003060] border-[0.1px] border-[#003060] rounded-[3px] font-sans font-normal text-[10px] leading-none text-center"
+            x-text="(selectedTx?.full?.planMonth || 3) + ' Months Plan'">
             3 Months Plan
           </span>
         </div>
@@ -34,10 +35,12 @@
             <i class="fa-solid fa-couch text-base text-[#003060]"></i>
           </div>
           <div>
-            <h4 class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-[#2D2D2D] mb-1" x-text="selectedTx?.program || 'UI/UX Designer'">
-              UI/UX Designer
+            <h4 class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-[#2D2D2D] mb-1"
+              x-text="selectedTx?.full?.course?.name || selectedTx?.program || 'Program'">
+              Program
             </h4>
-            <p class="font-sans font-normal text-xs 2xl:text-xs leading-[15px] text-[#2D2D2D]" x-text="selectedTx?.type || 'Bootcamp'">
+            <p class="font-sans font-normal text-xs 2xl:text-xs leading-[15px] text-[#2D2D2D]"
+              x-text="selectedTx?.full?.course?.category || selectedTx?.type || ''">
               Bootcamp
             </p>
           </div>
@@ -47,22 +50,23 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-7">
           <div>
             <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Total Program Fee</span>
-            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.totalProgramFee || 'Rp 6.550.000'">Rp 6.550.000</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="formatRupiah(selectedTx?.full?.totalProgramFee)">Rp 0</span>
           </div>
 
           <div>
             <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Down Payment (Paid)</span>
-            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.dpPaid || 'Rp 550.000'">Rp 550.000</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="formatRupiah(selectedTx?.full?.downPayment)">Rp 0</span>
           </div>
 
           <div>
-            <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Amount to be Paid (3x)</span>
-            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.amountToBePaid3x || 'Rp 6.000.000'">Rp 6.000.000</span>
+            <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Total Installment</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black"
+              x-text="formatRupiah((selectedTx?.full?.totalProgramFee || 0) - (selectedTx?.full?.downPayment || 0))">Rp 0</span>
           </div>
 
           <div>
             <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Remaining Balance</span>
-            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.remainingBalance || 'Rp 6.000.000'">Rp 6.000.000</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="formatRupiah(selectedTx?.full?.remainingBalance)">Rp 0</span>
           </div>
         </div>
       </div>
@@ -71,17 +75,31 @@
       <div class="pt-4">
         <div class="flex items-center justify-between mb-3">
           <span class="font-sans font-bold text-xs 2xl:text-[12px] leading-[15px] text-[#2D2D2D]">Payment Progress</span>
-          <span class="font-montserrat font-semibold text-xs text-black" x-text="selectedTx?.progressPercentage || '8.4%'">8.4%</span>
+          <span class="font-montserrat font-semibold text-xs text-black" x-text="(selectedTx?.full?.progressPercentage || 0) + '%'">0%</span>
         </div>
 
         <!-- Bar Track -->
         <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3">
-          <div class="h-full bg-[#003060] rounded-full transition-all duration-500" style="width: 8.4%;"></div>
+          <div class="h-full bg-[#003060] rounded-full transition-all duration-500"
+            :style="'width: ' + (selectedTx?.full?.progressPercentage || 0) + '%'"></div>
         </div>
 
         <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block">
-          You have paid <span class="font-medium text-black" x-text="selectedTx?.paidSoFar || 'Rp 550.000'">Rp 550.000</span> of <span class="font-medium text-black" x-text="selectedTx?.totalProgramFee || 'Rp 6.550.000'">Rp 6.550.000</span>
+          You have paid <span class="font-medium text-black" x-text="formatRupiah(selectedTx?.full?.paidSoFar)">Rp 0</span> of <span class="font-medium text-black" x-text="formatRupiah(selectedTx?.full?.totalProgramFee)">Rp 0</span>
         </span>
+      </div>
+
+      <!-- Due Dates (from installment.dueDates column) -->
+      <div x-show="(selectedTx?.full?.installment?.dueDates || []).length > 0" class="pt-4 mt-4 border-t border-slate-100">
+        <span class="font-sans font-bold text-xs 2xl:text-[12px] leading-[15px] text-[#2D2D2D] block mb-3">Due Dates</span>
+        <div class="space-y-1.5">
+          <template x-for="(d, i) in (selectedTx?.full?.installment?.dueDates || [])" :key="i">
+            <div class="flex items-center justify-between">
+              <span class="font-sans font-normal text-xs text-[#666666]">Payslip <span x-text="i + 1"></span></span>
+              <span class="font-montserrat font-semibold text-xs text-[#2D2D2D]" x-text="formatDate(d)"></span>
+            </div>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -89,161 +107,131 @@
     <div class="lg:col-span-1 bg-white backdrop-blur-[3.3px] rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
       <div>
         <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D] mb-5">
-          Next Payment
+          Installments
         </h3>
 
-        <!-- Installment 1 Block -->
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-[#FFF4E2] flex items-center justify-center text-[#F9AB1C] text-base flex-shrink-0">
-              <i class="fa-solid fa-couch text-base text-[#F9AB1C]"></i>
+        <div class="space-y-4" x-show="(selectedTx?.full?.monthly || []).some(m => m.status !== 'paid')">
+          <template x-for="m in (selectedTx?.full?.monthly || [])" :key="m.month">
+            <div
+              x-show="m.status !== 'paid'"
+              class="border border-slate-200 rounded-lg p-4"
+            >
+              <!-- Installment Header -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-[#FFF4E2] flex items-center justify-center text-[#F9AB1C] text-base flex-shrink-0">
+                    <i class="fa-solid fa-money-bill-wave text-base text-[#F9AB1C]"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-montserrat font-semibold text-[15px] text-[#2D2D2D]">
+                      Payslip <span x-text="m.month"></span>
+                    </h4>
+                    <span class="block text-xs text-[#666666]" x-text="formatDate(m.dueDate)"></span>
+                  </div>
+                </div>
+                <span
+                  class="px-3 py-1 rounded-[3px] font-sans font-normal text-[10px] leading-none text-center capitalize"
+                  :class="m.status === 'process' ? 'bg-[#FEEFD6] border-[#FDA40B] text-[#FDA40B] border-[0.1px]' : (m.status === 'due' ? 'bg-[#FFF4E2] border-[0.1px] border-[#F9AB1C] text-[#F9AB1C]' : 'bg-slate-100 text-slate-500 border-[0.1px] border-slate-300')"
+                  x-text="m.status">
+                </span>
+              </div>
+
+              <!-- Amount + Pay Now -->
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <span class="font-sans font-normal text-xs text-[#666666] block">Amount</span>
+                  <span class="font-montserrat font-semibold text-base text-[#2D2D2D] block mt-1" x-text="formatRupiah(m.amount)">Rp 0</span>
+                </div>
+
+                <!-- Pay Now Button -->
+                <div class="flex flex-col items-end gap-1">
+                  <template x-if="m.status !== 'paid' && m.status !== 'process' && !canPayMonth(m.month)">
+                    <span class="text-[10px] text-red-500 font-medium text-right" x-text="lockedReason(m.month)"></span>
+                  </template>
+                  <button
+                    type="button"
+                    :disabled="payingMonth === m.month || !canPayMonth(m.month)"
+                    @click="payMonth(selectedTx.full, m.month)"
+                    :class="payingMonth === m.month || !canPayMonth(m.month) ? 'opacity-50 cursor-not-allowed bg-[#8aa0b8]' : 'hover:bg-[#002347]'"
+                    class="min-w-[140px] py-3 px-5 bg-[#003060] text-white font-montserrat font-semibold text-sm sm:text-base rounded-full shadow-md transition-all cursor-pointer text-center"
+                  >
+                    <span x-show="payingMonth === m.month">Processing...</span>
+                    <span x-show="!(payingMonth === m.month)" x-text="canPayMonth(m.month) ? 'Pay Now' : 'Locked'">Pay Now</span>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <h4 class="font-montserrat font-semibold text-[15px] text-[#2D2D2D]">
-                Installment 1
-              </h4>
-            </div>
-          </div>
-          <span class="px-3 py-1 bg-[#FFF4E2] border-[0.1px] border-[#F9AB1C] text-[#F9AB1C] rounded-[3px] font-sans font-normal text-[10px] leading-none text-center">
-            Due Soon
-          </span>
+          </template>
         </div>
 
-        <!-- Key Values (2-Column Grid for Due Date & Remaining Time) -->
-        <div class="space-y-4 mb-6">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <span class="font-sans font-normal text-xs text-[#666666] block">Due Date</span>
-              <span class="font-montserrat font-semibold text-sm sm:text-base text-[#2D2D2D] block mt-1" x-text="selectedTx?.nextDueDate || 'Apr 30, 2026'">Apr 30, 2026</span>
-            </div>
-
-            <div>
-              <span class="font-sans font-normal text-xs text-[#666666] block">Remaining Time</span>
-              <span class="font-montserrat font-semibold text-sm sm:text-base text-[#F9AB1C] block mt-1" x-text="selectedTx?.remainingDays || '8 Days'">8 Days</span>
-            </div>
+        <div x-show="(selectedTx?.full?.monthly || []).length > 0 && !(selectedTx?.full?.monthly || []).some(m => m.status !== 'paid')">
+          <div class="flex flex-col items-center justify-center text-center py-6">
+            <i class="fa-solid fa-circle-check text-4xl text-[#04B165] mb-3"></i>
+            <p class="text-sm font-semibold text-[#04B165]">All installments paid 🎉</p>
           </div>
+        </div>
 
-          <div>
-            <span class="font-sans font-normal text-xs text-[#666666] block">Amount</span>
-            <span class="font-montserrat font-semibold text-base sm:text-lg text-[#2D2D2D] block mt-1" x-text="selectedTx?.nextAmount || 'Rp 2.000.000'">Rp 2.000.000</span>
-          </div>
+        <div x-show="!(selectedTx?.full?.monthly || []).length">
+          <p class="text-sm text-slate-500">No installment schedule available.</p>
         </div>
       </div>
-
-      <!-- Pay Now Button -->
-      <button 
-        type="button" 
-        class="w-full py-3 bg-[#003060] hover:bg-[#002347] text-white font-montserrat font-semibold text-base sm:text-lg rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer text-center"
-      >
-        Pay Now
-      </button>
     </div>
 
   </div>
 
   <!-- Bottom Row: Installment Progress (Left 2 cols) + Payment Summary (Right 1 col) -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
-    <!-- BOTTOM LEFT CARD: Installment Progress (3 Months) Stepper -->
+
+    <!-- BOTTOM LEFT CARD: Installment Progress Stepper -->
     <div class="lg:col-span-2 bg-white backdrop-blur-[3.3px] rounded-xl p-5 2xl:p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80">
       <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D] mb-6">
-        Installment Progress (3 Months)
+        Installment Progress (<span x-text="selectedTx?.full?.planMonth || 3"></span> Months)
       </h3>
 
-      <!-- Horizontal Stepper (4 Nodes) -->
-      <div class="w-full max-w-[540px] mx-auto pb-2 pt-2">
-        
-        <!-- Top Circles + Connected Lines Row -->
-        <div class="flex items-center w-full px-8 mb-3">
-          
-          <!-- Node 1 Circle -->
+      <div class="w-full max-w-[640px] mx-auto pb-2 pt-2">
+        <!-- Nodes Row -->
+        <div class="flex items-center w-full mb-3">
+          <!-- DP Node -->
           <div class="w-[28px] h-[28px] rounded-full bg-[#04B165] text-white flex items-center justify-center text-[11px] font-bold shadow-xs flex-shrink-0">
             <i class="fa-solid fa-check"></i>
           </div>
 
-          <!-- Solid Green Line (Node 1 -> Node 2) -->
-          <div class="flex-1 h-[2px] bg-[#04B165]"></div>
-
-          <!-- Node 2 Circle -->
-          <div class="w-[28px] h-[28px] rounded-full border-[1.5px] border-[#F9AB1C] bg-white text-[#F9AB1C] flex items-center justify-center text-[11px] font-semibold shadow-xs flex-shrink-0">
-            2
-          </div>
-
-          <!-- Solid Yellow/Orange Line (Node 2 -> Node 3) -->
-          <div class="flex-1 h-[2px] bg-[#F9AB1C]"></div>
-
-          <!-- Node 3 Circle -->
-          <div class="w-[28px] h-[28px] rounded-full border-[1.5px] border-[#D1D5DB] bg-white text-[#D1D5DB] flex items-center justify-center text-[11px] font-normal shadow-xs flex-shrink-0">
-            3
-          </div>
-
-          <!-- Dashed Gray Line (Node 3 -> Node 4) -->
-          <div class="flex-1 h-0 border-b border-dashed border-[#D1D5DB]"></div>
-
-          <!-- Node 4 Circle -->
-          <div class="w-[28px] h-[28px] rounded-full border-[1.5px] border-[#D1D5DB] bg-white text-[#D1D5DB] flex items-center justify-center text-[11px] font-normal shadow-xs flex-shrink-0">
-            4
-          </div>
-
+          <template x-for="(m, i) in (selectedTx?.full?.monthly || [])" :key="m.month">
+            <div class="flex items-center flex-1 min-w-0">
+              <!-- Connector line -->
+              <div class="flex-1 h-[2px]"
+                :class="m.status === 'paid' ? 'bg-[#04B165]' : (m.status === 'due' && i === 0 ? 'bg-[#F9AB1C]' : 'bg-slate-200')"></div>
+              <!-- Node -->
+              <div class="w-[28px] h-[28px] rounded-full flex items-center justify-center text-[11px] font-semibold shadow-xs flex-shrink-0"
+                :class="m.status === 'paid' ? 'bg-[#04B165] text-white' : (m.status === 'process' ? 'bg-[#FEEFD6] border-[1.5px] border-[#FDA40B] text-[#FDA40B]' : (m.status === 'due' ? 'bg-white border-[1.5px] border-[#F9AB1C] text-[#F9AB1C]' : 'bg-white border-[1.5px] border-[#D1D5DB] text-[#D1D5DB]'))">
+                <span x-text="m.status === 'paid' ? '' : m.month"></span>
+                <i x-show="m.status === 'paid'" class="fa-solid fa-check text-[11px]"></i>
+              </div>
+            </div>
+          </template>
         </div>
 
-        <!-- Bottom Labels 4-Column Grid -->
-        <div class="grid grid-cols-4 w-full text-center">
-          
-          <!-- Node 1 Labels -->
-          <div class="flex flex-col items-center">
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
-              Down Payment
-            </span>
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#04B165] block">
-              (Paid)
-            </span>
-            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
-              Mar 30, 2026 10:00
-            </span>
+        <!-- Bottom Labels -->
+        <div class="grid text-center" :style="'grid-template-columns: repeat(' + ((selectedTx?.full?.monthly?.length || 3) + 1) + ', minmax(0,1fr));'">
+          <!-- DP Label -->
+          <div class="flex flex-col items-center px-1">
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block truncate">Down</span>
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#04B165] block">(Paid)</span>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5" x-text="formatDate(selectedTx?.full?.dpPaidAt || selectedTx?.full?.createdAt)"></span>
           </div>
 
-          <!-- Node 2 Labels -->
-          <div class="flex flex-col items-center">
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
-              Installment 1
-            </span>
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#F9AB1C] block">
-              (Due Soon)
-            </span>
-            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
-              Apr 30, 2026
-            </span>
-          </div>
-
-          <!-- Node 3 Labels -->
-          <div class="flex flex-col items-center">
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
-              Installment 2
-            </span>
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-slate-400 block">
-              (Up Coming)
-            </span>
-            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
-              May 30, 2026
-            </span>
-          </div>
-
-          <!-- Node 4 Labels -->
-          <div class="flex flex-col items-center">
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
-              Installment 3
-            </span>
-            <span class="font-sans font-normal text-[12px] leading-[18px] text-slate-400 block">
-              (Up Coming)
-            </span>
-            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
-              Jun 30, 2026
-            </span>
-          </div>
-
+          <!-- Monthly Labels -->
+          <template x-for="m in (selectedTx?.full?.monthly || [])" :key="m.month">
+            <div class="flex flex-col items-center px-1">
+              <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">Payslip <span x-text="m.month"></span></span>
+              <span class="font-sans font-normal text-[12px] leading-[18px] block"
+                :class="m.status === 'paid' ? 'text-[#04B165]' : (m.status === 'process' ? 'text-[#FDA40B]' : (m.status === 'due' ? 'text-[#F9AB1C]' : 'text-slate-400'))"
+                x-text="m.status === 'paid' ? '(Paid)' : (m.status === 'process' ? '(Processing)' : (m.status === 'due' ? '(Due)' : '(Upcoming)'))">
+              </span>
+              <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5" x-text="formatDate(m.dueDate)"></span>
+            </div>
+          </template>
         </div>
-
       </div>
     </div>
 
@@ -258,27 +246,30 @@
         <div class="space-y-3 font-sans text-xs sm:text-sm">
           <div class="flex items-center justify-between">
             <span class="font-sans text-xs text-[#2D2D2D] font-semibold">Total Program Fee</span>
-            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.totalProgramFee || 'Rp 6.550.000'">Rp 6.550.000</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="formatRupiah(selectedTx?.full?.totalProgramFee)">Rp 0</span>
           </div>
 
           <div class="flex items-center justify-between">
             <span class="font-sans text-xs text-[#2D2D2D] font-normal">Down Payment (Paid)</span>
-            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.dpPaid || 'Rp 550.000'">Rp 550.000</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="formatRupiah(selectedTx?.full?.downPayment)">Rp 0</span>
           </div>
 
-          <div class="flex items-center justify-between">
-            <span class="font-sans text-xs text-[#2D2D2D] font-normal">Amount to be paid (3x)</span>
-            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.amountToBePaid3x || 'Rp 6.000.000'">Rp 6.000.000</span>
-          </div>
+          <!-- Per-month installments -->
+          <template x-for="m in (selectedTx?.full?.monthly || [])" :key="m.month">
+            <div class="flex items-center justify-between">
+              <span class="font-sans text-xs text-[#2D2D2D] font-normal">Pay Slip <span x-text="m.month"></span></span>
+              <span class="font-normal text-[#2D2D2D]" x-text="formatRupiah(m.amount)"></span>
+            </div>
+          </template>
 
           <div class="flex items-center justify-between border-t border-slate-100 pt-3">
             <span class="font-sans text-xs text-[#2D2D2D] font-semibold">Total Paid</span>
-            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.totalPaid || 'Rp 550.000'">Rp 550.000</span>
+            <span class="font-normal text-[#04B165]" x-text="formatRupiah(selectedTx?.full?.paidSoFar)">Rp 0</span>
           </div>
 
           <div class="flex items-center justify-between">
             <span class="font-sans text-xs text-[#2D2D2D] font-semibold">Remaining Balance</span>
-            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.remainingBalance || 'Rp 6.000.000'">Rp 6.000.000</span>
+            <span class="font-normal text-[#F13639]" x-text="formatRupiah(selectedTx?.full?.remainingBalance)">Rp 0</span>
           </div>
         </div>
       </div>

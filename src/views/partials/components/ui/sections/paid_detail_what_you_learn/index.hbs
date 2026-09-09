@@ -1,0 +1,43 @@
+<!-- WHAT YOU'LL LEARN SECTION -->
+<section id="what-you-will-learn" class="bg-[#FAFAFA] py-20 font-montserrat overflow-x-hidden">
+  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
+    
+    {{> components/ui/text/section_header/index
+      badge=(default badgeTitle (t 'test.paidProgram.navbarMenu.whatYouLearn'))
+      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
+    }}
+
+    <div class="flex flex-col lg:flex-row items-center gap-4 w-full max-w-[1200px]">
+      <div class="flex-1 w-full" data-animate="slide-right">
+        <ul class="space-y-6 text-[#0F0F0F] text-[14px] md:text-[15px]">
+          {{#if (eq lang 'en')}}
+            {{#each course.learningTargetsEn}}
+              <li class="flex items-start gap-4">
+                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#0F0F0F] flex-shrink-0"></span>
+                <span class="leading-relaxed">{{this}}</span>
+              </li>
+            {{/each}}
+          {{else if (eq lang 'ja')}}
+            {{#each course.learningTargetsJa}}
+              <li class="flex items-start gap-4">
+                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#0F0F0F] flex-shrink-0"></span>
+                <span class="leading-relaxed">{{this}}</span>
+              </li>
+            {{/each}}
+          {{else}}
+            {{#each course.learningTargetsId}}
+              <li class="flex items-start gap-4">
+                <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#0F0F0F] flex-shrink-0"></span>
+                <span class="leading-relaxed">{{this}}</span>
+              </li>
+            {{/each}}
+          {{/if}}
+        </ul>
+      </div>
+
+      <div class="flex-1 w-full flex justify-center" data-animate="scale-up">
+        <img src="/public/image/image_learn.png" alt="What You'll Learn Illustration" class="w-full max-w-[500px] object-contain">
+      </div>
+    </div>
+  </div>
+</section>

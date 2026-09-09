@@ -1,0 +1,16 @@
+{{!--
+  Komponen: Nav Link / Menu Item (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/text/nav_link/index.hbs
+
+  Props:
+  - href      : string (wajib, target anchor/url, misal "#participants")
+  - text      : string (wajib, label teks menu)
+  - linkClass : string (opsional, class warna/hover tambahan)
+--}}
+
+<a
+  href="{{href}}"
+  class="font-medium text-[17px] whitespace-nowrap transition-colors {{default linkClass 'text-[#003060] hover:text-[#7AA3C4]'}}"
+>
+  {{text}}
+</a>
