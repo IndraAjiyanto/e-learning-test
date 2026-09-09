@@ -2,15 +2,15 @@
   Komponen: Nav Dropdown Row (Level 1) - satu "Feature Item" / "Menu Item" di dropdown navbar.
   Lokasi: src/views/partials/components/ui/nav/dropdown_row/index.hbs
   Figma: 439:396 (Class) / 439:336 (Informasi). Ikon lucide 20px (kontainer transparan 32px),
-  judul Inter Bold 15 #1E3E8F, desc Inter Regular 11 #555A64, chevron-right kanan.
+  judul Inter Bold 15 #003060, desc Inter Regular 11 #4A5568, chevron-right kanan.
   Props: href, icon (rocket|zap|building|globe|help|info|image|briefcase|cap|users|book), title, desc, last (bool)
 --}}
 <a
   href="{{href}}"
   @click="classOpen = false; infoOpen = false"
-  class="group flex items-center gap-4 {{#unless last}}border-b border-[#E2E8F0] pb-5{{/unless}}"
+  class="group flex items-center gap-4 {{#unless last}}border-b border-[#E5E7EB] pb-5{{/unless}}"
 >
-  <span class="grid size-8 shrink-0 place-items-center text-[#1E3E8F]">
+  <span class="grid size-8 shrink-0 place-items-center text-[#003060]">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5">
       {{#if (eq icon 'rocket')}}<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>{{/if}}
       {{#if (eq icon 'zap')}}<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>{{/if}}
@@ -26,8 +26,8 @@
     </svg>
   </span>
   <span class="flex min-w-0 flex-1 flex-col gap-1.5">
-    <span class="font-inter text-[15px] font-bold leading-tight text-[#1E3E8F]">{{title}}</span>
-    <span class="font-inter text-[11px] leading-[1.5] text-[#555A64]">{{desc}}</span>
+    <span class="font-inter text-[15px] font-bold leading-tight text-[#003060]">{{title}}</span>
+    <span class="font-inter text-[11px] leading-[1.5] text-[#4A5568]">{{desc}}</span>
   </span>
-  <svg viewBox="0 0 24 24" fill="none" stroke="#666673" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 transition group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
+  <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 transition group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
 </a>

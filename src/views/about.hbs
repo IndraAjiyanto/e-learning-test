@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-montserrat"
+  class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-inter"
   x-data="{
     activeSection: localStorage.getItem('activeSection') || 'story',
     shown: true,
@@ -15,22 +15,22 @@
     },
   }"
 >
-  <div class="flex flex-col pt-20 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
+  <div class="flex flex-col pt-8 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
 
     {{!-- Sidebar column (left) --}}
-    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-24 lg:pr-6">
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-12 lg:pr-6">
       {{> components/ui/sections/about_sidebar/index}}
     </div>
 
     {{!-- Content column (right) - bleeds to the viewport edge, full height --}}
     <div
-      class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-24 lg:pb-24 transition-opacity duration-200 ease-out"
+      class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-12 lg:pb-24 transition-opacity duration-200 ease-out"
       :class="shown ? 'opacity-100' : 'opacity-0'"
     >
-      <div x-show="activeSection === 'story'">{{> components/ui/sections/story/index}}</div>
-      <div x-show="activeSection === 'mission'">{{> components/ui/sections/mission/index}}</div>
-      <div x-show="activeSection === 'values'">{{> components/ui/sections/values/index}}</div>
-      <div x-show="activeSection === 'team'">{{> components/ui/sections/team/index}}</div>
+      <div x-cloak x-show="activeSection === 'story'">{{> components/ui/sections/story/index}}</div>
+      <div x-cloak x-show="activeSection === 'mission'">{{> components/ui/sections/mission/index}}</div>
+      <div x-cloak x-show="activeSection === 'values'">{{> components/ui/sections/values/index}}</div>
+      <div x-cloak x-show="activeSection === 'team'">{{> components/ui/sections/team/index}}</div>
     </div>
   </div>
 </div>

@@ -13,7 +13,7 @@
   - instagram   : URL (default "#")
 --}}
 
-<div class="flex flex-col overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)]">
+<div class="flex flex-col overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-[0px_4px_20px_0px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]">
   <img
     src="{{default profile '/public/image/about/orang.png'}}"
     alt="{{name}}"
@@ -26,7 +26,7 @@
       <p class="{{sizeClass 'body-sm'}} font-inter font-semibold text-[#0056B3]">{{#if position}}{{position}}{{else}}{{t 'test.about.team.defaultRole'}}{{/if}}</p>
     </div>
     {{#if description}}
-      <p class="{{sizeClass 'body-sm'}} font-inter text-[#475569]">{{description}}</p>
+      <p class="{{sizeClass 'body-sm'}} font-inter text-[#475569] line-clamp-3">{{description}}</p>
     {{/if}}
     <div class="mt-auto flex items-center gap-3 pt-2">
       <a href="{{default linkedin '#'}}" target="_blank" rel="noopener" class="grid size-10 place-items-center rounded-full bg-[#F3F4F6] transition hover:opacity-80">

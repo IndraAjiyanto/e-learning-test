@@ -1,8 +1,15 @@
 <header
-  class="fixed inset-x-0 top-0 z-50 border-b-[3px] border-[#F3F4F6] bg-white font-montserrat text-[#4A5568] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]"
+  {{#if isAuthPage}}
+  class="sticky inset-x-0 top-0 z-50 font-montserrat text-[#4A5568] transition-all duration-300"
+  :class="scrolled ? 'border-b border-white/40 bg-white/20 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.10)]' : 'border-b border-transparent bg-transparent shadow-none'"
+  {{else}}
+  class="sticky inset-x-0 top-0 z-50 bg-white font-montserrat text-[#4A5568] transition-shadow duration-200"
+  :class="scrolled ? 'border-b-[3px] border-[#F3F4F6] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]' : 'border-b border-transparent shadow-none'"
+  {{/if}}
   x-data="{
     open: false,
     isDesktop: window.innerWidth >= 1024,
+    scrolled: window.scrollY > 8,
     menu: null,
     classOpen: false,
     infoOpen: false,
@@ -51,6 +58,8 @@
     },
     async init() {
       this.active = window.location.pathname;
+      this.scrolled = window.scrollY > 8;
+      window.addEventListener('scroll', () => { this.scrolled = window.scrollY > 8; }, { passive: true });
       window.addEventListener('resize', () => {
         this.isDesktop = window.innerWidth >= 1024;
         if (this.isDesktop) { this.open = false; document.body.style.overflow = ''; }
@@ -71,7 +80,7 @@
     </a>
 
     {{!-- Desktop nav links --}}
-    <nav class="hidden items-center gap-8 lg:flex xl:gap-14" x-show="isDesktop">
+    <nav class="hidden items-center gap-8 lg:flex xl:gap-14">
       <a
         href="/dashboard"
         @click="setActive('/dashboard')"
@@ -94,13 +103,14 @@
           <i class="fas fa-chevron-down text-[10px] transition-transform" :class="menu === 'class' && 'rotate-180'"></i>
         </button>
         <div
+          x-cloak
           x-show="menu === 'class'"
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100"
-          x-transition:leave="transition ease-in duration-100"
-          x-transition:leave-start="opacity-100"
-          x-transition:leave-end="opacity-0"
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-3 scale-95"
+          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+          x-transition:leave-end="opacity-0 -translate-y-3 scale-95"
           class="fixed left-1/2 top-[68px] z-[100] w-[min(94vw,1080px)] -translate-x-1/2"
           style="display:none"
         >
@@ -113,38 +123,36 @@
               <p class="font-inter text-sm leading-relaxed text-[#1F2937]">{{t 'test.navbar.classMenuIntro'}}</p>
             </div>
             <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-              <div class="flex flex-col gap-5">
-                {{#each category}}
-                  {{#if (check @index 3)}}
-                    {{> components/ui/nav/dropdown_row/index
-                        href=(concat '/category/program/' name)
-                        icon=(lookup (array 'rocket' 'zap' 'building') @index)
-                        title=name
-                        desc=(getByLang text ../lang)
-                        last=@last }}
-                  {{/if}}
-                {{/each}}
-              </div>
-              <div class="flex flex-col gap-5">
-                {{#each category}}
-                  {{#unless (check @index 3)}}
-                    {{> components/ui/nav/dropdown_row/index
-                        href=(concat '/category/program/' name)
-                        icon="globe"
-                        title=name
-                        desc=(getByLang text ../lang)
-                        last=true }}
-                  {{/unless}}
-                {{/each}}
-                <div class="flex flex-col gap-4 rounded-xl bg-[#1E3E8F] p-5 pt-5">
+              <template x-for="(cols, ci) in [category.slice(0, 3), category.slice(3)]" :key="ci">
+                <div class="flex flex-col gap-5">
+                  <template x-for="kat in cols" :key="kat.id">
+                    <a
+                      :href="'/category/program/' + kat.name"
+                      @click="menu = null"
+                      class="group flex items-center gap-4 border-b border-[#E5E7EB] pb-5 last:border-0 last:pb-0"
+                    >
+                      <span class="grid size-8 shrink-0 place-items-center text-[#003060]">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                      </span>
+                      <span class="flex min-w-0 flex-1 flex-col gap-1.5">
+                        <span class="font-inter text-[15px] font-bold leading-tight text-[#003060]" x-text="kat.name"></span>
+                        <span class="font-inter text-[11px] leading-[1.5] text-[#4A5568]" x-text="truncate(getByLang(kat.text, lang), 90)"></span>
+                      </span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 transition group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </template>
+                  <template x-if="ci === 1">
+                    <div class="flex flex-col gap-4 rounded-xl bg-[#003060] p-5">
                   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-6"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                   <div class="flex flex-col gap-2">
                     <p class="font-inter text-base font-bold leading-snug text-white">{{t 'test.navbar.classCtaTitle'}}</p>
                     <p class="font-inter text-[11px] leading-relaxed text-white/70">{{t 'test.navbar.classCtaDesc'}}</p>
                   </div>
-                  <a href="{{#if social.length}}https://wa.me/{{social.[0].number}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="rounded-md bg-white py-2.5 text-center font-inter text-xs font-bold text-[#1E3E8F] transition hover:bg-white/90">{{t 'test.navbar.classCtaButton'}}</a>
+                      <a href="{{#if social.length}}{{waLink social.[0].number}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="rounded-md bg-white py-2.5 text-center font-inter text-xs font-bold text-[#003060] transition hover:bg-white/90">{{t 'test.navbar.classCtaButton'}}</a>
+                    </div>
+                  </template>
                 </div>
-              </div>
+              </template>
             </div>
           </div>
         </div>
@@ -168,13 +176,14 @@
           <i class="fas fa-chevron-down text-[10px] transition-transform" :class="menu === 'info' && 'rotate-180'"></i>
         </button>
         <div
+          x-cloak
           x-show="menu === 'info'"
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100"
-          x-transition:leave="transition ease-in duration-100"
-          x-transition:leave-start="opacity-100"
-          x-transition:leave-end="opacity-0"
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-3 scale-95"
+          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+          x-transition:leave-end="opacity-0 -translate-y-3 scale-95"
           class="fixed left-1/2 top-[68px] z-[100] w-[min(94vw,1080px)] -translate-x-1/2"
           style="display:none"
         >
@@ -195,13 +204,15 @@
               <div class="flex flex-col gap-5">
                 {{> components/ui/nav/dropdown_row/index href="/dashboard/alumni" icon="cap" title=(t 'test.navbar.alumni') desc=(t 'test.navbar.infoAlumniDesc') last=true }}
                 {{#unless isAuthenticated}}
-                  <div class="flex items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
-                    <div class="flex flex-col gap-1">
-                      <p class="font-inter text-sm font-bold text-[#003060]">{{t 'test.navbar.infoLoginCtaTitle'}}</p>
-                      <p class="font-inter text-xs leading-[1.5] text-[#555A64]">{{t 'test.navbar.infoLoginCtaDesc'}}</p>
+                  {{#unless isAuthPage}}
+                    <div class="flex items-center justify-between gap-4 rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
+                      <div class="flex flex-col gap-1">
+                        <p class="font-inter text-sm font-bold text-[#003060]">{{t 'test.navbar.infoLoginCtaTitle'}}</p>
+                        <p class="font-inter text-xs leading-[1.5] text-[#4A5568]">{{t 'test.navbar.infoLoginCtaDesc'}}</p>
+                      </div>
+                      <a href="/login" @click="setActive('/login')" class="shrink-0 rounded-xl bg-[#003060] px-5 py-2.5 font-inter text-[13px] font-bold text-white transition hover:bg-[#00244a]">{{t 'test.navbar.login'}}</a>
                     </div>
-                    <a href="/login" @click="setActive('/login')" class="shrink-0 rounded-xl bg-[#003060] px-5 py-2.5 font-inter text-[13px] font-bold text-white transition hover:bg-[#00244a]">{{t 'test.navbar.login'}}</a>
-                  </div>
+                  {{/unless}}
                 {{/unless}}
               </div>
             </div>
@@ -212,7 +223,7 @@
     </nav>
 
     {{!-- Desktop actions --}}
-    <div class="hidden items-center gap-4 lg:flex" x-show="isDesktop">
+    <div class="hidden items-center gap-4 lg:flex">
       {{> components/ui/nav/lang_switcher/index }}
 
       {{#if isAuthenticated}}
@@ -231,14 +242,16 @@
           </span>
         </a>
       {{else}}
-        <a
-          href="/login"
-          @click="setActive('/login')"
-          class="inline-flex items-center gap-2 rounded-lg bg-[#003060] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00244a]"
-        >
-          <i class="fas fa-user text-xs"></i>
-          {{t 'test.navbar.login'}}
-        </a>
+        {{#unless isAuthPage}}
+          <a
+            href="/login"
+            @click="setActive('/login')"
+            class="inline-flex items-center gap-2 rounded-lg bg-[#003060] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00244a]"
+          >
+            <i class="fas fa-user text-xs"></i>
+            {{t 'test.navbar.login'}}
+          </a>
+        {{/unless}}
       {{/if}}
     </div>
 
@@ -255,6 +268,7 @@
   {{!-- Mobile drawer --}}
   <div x-show="open" x-transition.opacity class="fixed inset-0 z-40 bg-black/50 lg:hidden" style="display:none" @click="toggleMenu()"></div>
   <nav
+    x-cloak
     x-show="open"
     x-transition:enter="transition ease-out duration-300 transform"
     x-transition:enter-start="translate-x-full"
@@ -305,7 +319,9 @@
           <span class="truncate">{{user.username}}</span>
         </a>
       {{else}}
-        <a href="/login" @click="setActive('/login')" class="mt-2 rounded-lg bg-white px-4 py-3 text-center font-semibold text-[#003060]">{{t 'test.navbar.login'}}</a>
+        {{#unless isAuthPage}}
+          <a href="/login" @click="setActive('/login')" class="mt-2 rounded-lg bg-white px-4 py-3 text-center font-semibold text-[#003060]">{{t 'test.navbar.login'}}</a>
+        {{/unless}}
       {{/if}}
 
       <div class="mt-4 border-t border-white/15 pt-4">

@@ -1,6 +1,6 @@
-<div class="pt-24 pb-16 min-h-screen bg-[#F9FAFB]" x-data="alumniApp()">
+<div class="min-h-screen bg-[#F9FAFB] font-inter" x-data="alumniApp()">
 
-  <div class="page-shell py-12 flex flex-col gap-9 items-center">
+  <div class="page-shell py-12 lg:py-16 flex flex-col gap-9 items-center">
 
     <!-- ALUMNI HEADER -->
     <header class="flex flex-col items-center gap-4 w-full">
@@ -9,16 +9,16 @@
         title=(t 'test.alumni.title')
         titleTag="h1"
         titleSize="display"
-        titleClass="font-bold text-[#111827] text-center font-montserrat"
+        titleClass="font-bold text-[#111827] text-center font-inter"
         showDivider=false
         description=(t 'test.alumni.description')
         descSize="lead"
-        descClass="max-w-[702px] text-center text-[#6B7280] font-sans font-normal"
+        descClass="max-w-[702px] text-center text-[#6B7280] font-inter font-normal"
       }}
     </header>
 
     <!-- ALUMNI STATS -->
-    <section class="w-full max-w-[964px] bg-white border-2 border-[#E5E7EB] rounded-2xl shadow-[0px_8px_24px_-8px_rgba(0,0,0,0.04)] p-8 flex flex-col md:flex-row justify-center items-center gap-6">
+    <section class="w-full max-w-[964px] bg-white border-2 border-[#E5E7EB] rounded-2xl shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06),0px_18px_44px_-12px_rgba(11,31,59,0.16)] p-8 flex flex-col md:flex-row justify-center items-center gap-6">
       <!-- Alumni Stat -->
       <div class="flex-1 flex flex-col items-center gap-2">
         <div class="flex items-center gap-3">
@@ -46,57 +46,26 @@
     </section>
 
     <!-- FILTER SECTION -->
-    <section class="w-full flex flex-col gap-8">
-      <h2 class="text-2xl font-semibold text-[#111827]">{{t 'test.alumni.programTittle'}}</h2>
-      <div class="flex flex-col gap-6">
-        <!-- Search & Clear -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div class="flex items-center w-full max-w-[420px] h-11 bg-white border border-[#E5E7EB] rounded-xl px-4 py-3 gap-3">
-            <i class="fas fa-search w-5 h-5 text-[#9CA3AF] shrink-0"></i>
-            <input
-              type="text"
-              x-model="searchQuery"
-              @input.debounce.500ms="currentPage = 1; fetchAlumni()"
-              placeholder="Search alumni"
-              class="w-full text-sm font-normal text-[#9CA3AF] placeholder-[#9CA3AF] bg-transparent outline-none border-none font-sans"
-            />
-          </div>
-          <button
-            type="button"
-            @click="resetFilters()"
-            class="flex items-center w-auto h-[42px] bg-white border border-[#E5E7EB] rounded-xl px-4 py-3 gap-2 whitespace-nowrap"
-          >
-            <i class="fas fa-trash w-[18px] h-[18px] text-[#6B7280]"></i>
-            <span class="text-sm font-medium font-sans text-[#374151] whitespace-nowrap">Clear Filter</span>
-          </button>
-        </div>
-        <!-- Pill Filters -->
-        <div class="flex flex-wrap gap-3" id="pills">
-          <button
-            type="button"
-            @click="selectKategori(null)"
-            :class="!selectedKategoriId ? 'bg-[#003060] text-white border-[#003060] font-semibold' : 'bg-white border-[#E5E7EB] text-[#374151]'"
-            class="px-5 py-2.5 rounded-full border text-sm font-medium transition-all"
-          >{{t 'test.alumni.allProgram'}}</button>
-          {{#if kategoriList}}
-            {{#each kategoriList}}
-              <button
-                type="button"
-                @click="selectKategori('{{this.id}}')"
-                :class="selectedKategoriId == '{{this.id}}' ? 'bg-[#003060] text-white border-[#003060] font-semibold' : 'bg-white border-[#E5E7EB] text-[#374151]'"
-                class="px-5 py-2.5 rounded-full border text-sm font-medium transition-all"
-              >{{this.name}}</button>
-            {{/each}}
-          {{/if}}
-        </div>
-      </div>
+    <section class="w-full">
+      {{> components/ui/filter/program_filter/index
+          label=(t 'test.alumni.programTittle')
+          searchModel="searchQuery"
+          searchEvent="currentPage = 1; fetchAlumni()"
+          searchPlaceholder=(t 'test.alumni.searchAlumniPlaceholder')
+          items="categories"
+          selected="selectedKategoriId"
+          onSelect="selectKategori"
+          allLabel=(t 'test.alumni.allProgram')
+          onClear="resetFilters()"
+          showClear="selectedKategoriId || searchQuery"
+          clearLabel=(t 'test.gallery.clearFilter') }}
     </section>
 
     <!-- ALUMNI GRID -->
     <section class="w-full flex flex-col items-center gap-8">
       <div x-show="alumniItems.length > 0" class="w-full grid md:grid-cols-2 xl:grid-cols-3 gap-6">
         <template x-for="alumni in alumniItems" :key="alumni.id">
-          <article class="relative rounded-[20px] border border-[#E2E8F0] shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.03)] p-8 flex flex-col gap-5 overflow-hidden" style="background: linear-gradient(90deg, #FFFFFF 0%, #F1F5F9 100%);">
+          <article class="relative rounded-[20px] border border-[#E2E8F0] shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.03)] p-8 flex flex-col gap-5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]" style="background: linear-gradient(90deg, #FFFFFF 0%, #F1F5F9 100%);">
             <!-- Decorative Quote -->
             <span class="font-montserrat absolute right-6 top-4 text-8xl font-extrabold text-[#0B1F3B] opacity-5 select-none pointer-events-none">&ldquo;</span>
 
@@ -154,6 +123,7 @@ function alumniApp() {
   return {
     selectedKategoriId: {{#if kategoriId}}{{kategoriId}}{{else}}null{{/if}},
 
+    categories: {{#if kategoriList}}{{{json kategoriList}}}{{else}}[]{{/if}},
     kelasList: {{#if course}}{{{json course}}}{{else}}[]{{/if}},
     filteredKelasList: [],
 

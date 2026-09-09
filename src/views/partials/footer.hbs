@@ -34,7 +34,7 @@
         <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-open-sans text-white/90">
           <li><a href="/dashboard" class="transition hover:text-white">{{t 'test.footer.home'}}</a></li>
           <li><a href="/dashboard/about" class="transition hover:text-white">{{t 'test.footer.aboutUs'}}</a></li>
-          <li><a href="/dashboard#programs-section" class="transition hover:text-white">{{t 'test.footer.program'}}</a></li>
+          <li><a href="/dashboard#courses-section" class="transition hover:text-white">{{t 'test.footer.program'}}</a></li>
           <li><a href="/dashboard/alumni" class="transition hover:text-white">{{t 'test.footer.alumni'}}</a></li>
           <li><a href="/dashboard/gallery" class="transition hover:text-white">{{t 'test.footer.gallery'}}</a></li>
         </ul>
@@ -46,7 +46,7 @@
         <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-open-sans text-white/90">
           {{#if footerCategories.length}}
             {{#each footerCategories}}
-              <li><a href="/category/program/{{this.name}}" class="transition hover:text-white">{{this.name}}</a></li>
+              <li><a href="{{#if (eq this.name 'In House Training')}}/dashboard/corporate-training{{else}}/category/program/{{this.name}}{{/if}}" class="transition hover:text-white">{{this.name}}</a></li>
             {{/each}}
           {{else}}
             <li><a href="/category/program/Bootcamp" class="transition hover:text-white">Bootcamp</a></li>

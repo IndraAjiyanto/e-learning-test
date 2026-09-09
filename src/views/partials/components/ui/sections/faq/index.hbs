@@ -1,14 +1,15 @@
 {{!--
-  Section: FAQ (L2) - Figma faq-section 250:3103 - reusable (home + program)
+  Section: FAQ (L2) - Figma faq-section header 250:3103 + accordion 250:3110
   Lokasi: src/views/partials/components/ui/sections/faq/index.hbs
-  Satu pohon markup, base + lg. Data: faq[] (landing) atau faqs[] (kategori), fallback statis.
+  Figma: header terpusat (judul 1 baris), lalu accordion 1 kolom terpusat (max ~1022).
+  Tiap baris: [nomor] | [pertanyaan] .... [chevron], garis rambut atas & bawah.
+  Data: faq[] (landing) atau faqs[] (kategori), fallback statis. sizeClass, .page-shell.
 --}}
 <section
   id="faq"
-  class="w-full overflow-hidden bg-[#F8F9FA] py-14 font-montserrat lg:py-20"
+  class="w-full bg-white py-14 font-montserrat lg:py-20"
   x-data="{
-    isVisible: false,
-    activeIndex: 0,
+    activeIndex: null,
     faqs: [
       {{#if faqs.length}}
         {{#each faqs}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
@@ -24,48 +25,34 @@
         { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections.' }
       {{/if}}
     ],
-    toggle(index) { this.activeIndex = this.activeIndex === index ? null : index; },
-    init() {
-      const io = new IntersectionObserver((e) => { e.forEach(x => { if (x.isIntersecting) this.isVisible = true; }); }, { threshold: 0.2, rootMargin: '0px 0px -100px 0px' });
-      io.observe(this.$el);
-    }
+    toggle(i) { this.activeIndex = this.activeIndex === i ? null : i; }
   }"
 >
-  <div class="page-shell flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+  <div class="page-shell flex flex-col items-center">
 
-    {{!-- Left: heading --}}
-    <div
-      class="flex w-full flex-col items-center text-center transition-all duration-700 ease-out lg:w-5/12 lg:items-start lg:text-left"
-      :class="isVisible ? 'translate-x-0 opacity-100' : 'lg:-translate-x-16 lg:opacity-0'"
-    >
-      {{#> components/ui/text/section_header/index
-          align="text-center lg:text-left"
-          badge=(t 'test.home.faq.question')
-          titleTag="h2"
-          titleSize="h2"
-          titleClass="font-montserrat font-bold"
-          showDivider=true
-          dividerClass="w-[70px] h-1.5 bg-[#0B1F3B] mt-3 mb-6 mx-auto lg:mx-0"
-          descSize="body"
-          description=(t 'test.home.faq.description')
-          descClass="font-open-sans text-[#545454] max-w-sm" }}
-        {{#*inline "titleBlock"}}
-          <span class="block text-[#0F0F0F]">{{t 'test.home.faq.title'}}</span>
-          <span class="block text-[#6EB6E5]">{{t 'test.home.faq.title2'}}</span>
-        {{/inline}}
-      {{/components/ui/text/section_header/index}}
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.faq.question') }}
+      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{t 'test.home.faq.title'}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[534px] font-open-sans text-[#4A5568]">{{t 'test.home.faq.description'}}</p>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    {{!-- Right: accordion --}}
-    <div
-      class="w-full transition-all delay-200 duration-700 ease-out lg:w-7/12"
-      :class="isVisible ? 'translate-y-0 opacity-100' : 'lg:translate-y-16 lg:opacity-0'"
-    >
-      <div class="flex flex-col border-t border-[#E0E0E0]">
-        <template x-for="(faq, index) in faqs" :key="index">
-          {{> components/ui/accordion/faq/index }}
-        </template>
-      </div>
+    <div class="mt-10 w-full max-w-[1022px] lg:mt-14">
+      <template x-for="(item, i) in faqs" :key="i">
+        <div class="border-t border-[#D9D9D9] last:border-b">
+          <button type="button" @click="toggle(i)" class="flex w-full items-center gap-4 py-6 text-left lg:gap-6">
+            <span class="flex shrink-0 items-center gap-4 font-inter text-lg font-semibold text-[#94A3B8]">
+              <span x-text="String(i + 1).padStart(2, '0')"></span>
+              <span class="h-5 w-px bg-[#D9D9D9]"></span>
+            </span>
+            <span class="{{sizeClass 'h3'}} min-w-0 flex-1 font-montserrat font-semibold text-black" x-text="item.question"></span>
+            <i class="fas fa-chevron-down shrink-0 text-sm text-[#94A3B8] transition-transform" :class="activeIndex === i && 'rotate-180'"></i>
+          </button>
+          <div x-show="activeIndex === i" x-collapse>
+            <p class="{{sizeClass 'body'}} pb-6 pl-[3.25rem] font-open-sans text-[#4A5568] lg:pl-[4.5rem]" x-html="item.answer"></p>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </section>

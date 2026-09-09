@@ -104,7 +104,7 @@ async function bootstrap() {
   ]);
 
   // --- Category (Programs, 4 cards) ---
-  await ds.getRepository(Category).save([
+  const seededCategories = await ds.getRepository(Category).save([
     {
       name: 'Bootcamp',
       icon: '/public/image/dashboard/bootcamp.png',
@@ -213,6 +213,12 @@ async function bootstrap() {
       'Lingkungan belajarnya kolaboratif. Simulasi kerja tim di kelas benar-benar mirip dinamika industri.',
       'The learning environment is collaborative. The teamwork simulations in class really mirror industry dynamics.',
     ],
+    [
+      'Bagus Santoso',
+      'Mobile Engineer at Grab',
+      'Kurikulum yang padat dengan proyek nyata membuat saya percaya diri menghadapi tantangan teknis di dunia kerja.',
+      'A dense curriculum full of real projects gave me the confidence to take on technical challenges at work.',
+    ],
   ];
   await ds.getRepository(Alumni).save(
     alumniMsgs.map(([name, pos, idMsg, enMsg]) => ({
@@ -241,21 +247,69 @@ async function bootstrap() {
     ]);
   }
 
-  // --- Gallery (no '1'..'6') ---
-  const galleryImgs = [
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&h=600&fit=crop',
+  // --- Gallery (no '1'..'6') - activity cards from Figma, tagged per program so the filter works ---
+  const catByName = (n: string) =>
+    seededCategories.find((c) => c.name === n) ?? null;
+  const galleryItems: {
+    filePath: string;
+    title: string;
+    description: string;
+    category: Category | null;
+  }[] = [
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=600&fit=crop',
+      title: 'Coding Bootcamp',
+      description: 'Sesi intensif pembelajaran teknis dengan proyek nyata.',
+      category: catByName('Bootcamp'),
+    },
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&h=600&fit=crop',
+      title: 'Graduation Ceremony',
+      description: 'Momentum penutupan program dan awal karier.',
+      category: catByName('Bootcamp'),
+    },
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&h=600&fit=crop',
+      title: 'Team Collaboration',
+      description: 'Workshop kolaborasi tim dan manajemen proyek.',
+      category: catByName('In House Training'),
+    },
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&h=600&fit=crop',
+      title: 'Mentoring Session',
+      description: 'Bimbingan intensif untuk mempercepat kemajuan.',
+      category: catByName('Short Class'),
+    },
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&h=600&fit=crop',
+      title: 'Hackathon Event',
+      description: 'Kompetisi ide dan pembuatan produk dalam waktu terbatas.',
+      category: catByName('Wiratek Internship Program'),
+    },
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&h=600&fit=crop',
+      title: 'Networking Event',
+      description: 'Pertemuan alumni dan industri untuk memperluas jaringan.',
+      category: catByName('Short Class'),
+    },
+    {
+      filePath:
+        'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&h=600&fit=crop',
+      title: 'Alumni Sharing Session',
+      description: 'Sesi berbagi pengalaman dan jejaring dari para alumni.',
+      category: catByName('Wiratek Internship Program'),
+    },
   ];
   await ds.getRepository(Gallery).save(
-    galleryImgs.map((filePath, i) => ({
-      filePath,
-      title: `Kesatria Academy Activity ${i + 1}`,
-      description: 'Learning activities, collaboration, and community at Kesatria Academy.',
-      no: String(i + 1) as '1' | '2' | '3' | '4' | '5' | '6',
+    galleryItems.map((it, i) => ({
+      ...it,
+      no: String(i + 1) as '1' | '2' | '3' | '4' | '5' | '6' | '7',
     })),
   );
 
@@ -361,12 +415,12 @@ async function bootstrap() {
   // --- About: Values ---
   await ds.getRepository(Value).save(
     [
-      ['fa-lightbulb', 'Inovasi', 'Innovation', 'Selalu mencari cara baru yang lebih baik dalam belajar dan mengajar.', 'Always seeking better new ways to learn and teach.'],
-      ['fa-handshake', 'Kolaborasi', 'Collaboration', 'Tumbuh bersama melalui kerja sama dan saling berbagi.', 'Growing together through cooperation and sharing.'],
-      ['fa-award', 'Keunggulan', 'Excellence', 'Menjaga standar mutu tinggi di setiap program.', 'Maintaining high quality standards in every program.'],
-      ['fa-heart', 'Integritas', 'Integrity', 'Jujur, transparan, dan bertanggung jawab.', 'Honest, transparent, and accountable.'],
-      ['fa-users', 'Inklusif', 'Inclusive', 'Kesempatan setara untuk semua pembelajar.', 'Equal opportunity for all learners.'],
-      ['fa-rocket', 'Berdampak', 'Impact', 'Fokus pada hasil nyata bagi peserta dan industri.', 'Focused on real outcomes for learners and industry.'],
+      ['curiosity.svg', 'Inovasi', 'Innovation', 'Selalu mencari cara baru yang lebih baik dalam belajar dan mengajar.', 'Always seeking better new ways to learn and teach.'],
+      ['resilience.svg', 'Kolaborasi', 'Collaboration', 'Tumbuh bersama melalui kerja sama dan saling berbagi.', 'Growing together through cooperation and sharing.'],
+      ['ability.svg', 'Keunggulan', 'Excellence', 'Menjaga standar mutu tinggi di setiap program.', 'Maintaining high quality standards in every program.'],
+      ['integrity.svg', 'Integritas', 'Integrity', 'Jujur, transparan, dan bertanggung jawab.', 'Honest, transparent, and accountable.'],
+      ['authenticity.svg', 'Inklusif', 'Inclusive', 'Kesempatan setara untuk semua pembelajar.', 'Equal opportunity for all learners.'],
+      ['impact.svg', 'Berdampak', 'Impact', 'Fokus pada hasil nyata bagi peserta dan industri.', 'Focused on real outcomes for learners and industry.'],
     ].map(([icon, tId, tEn, dId, dEn], idx) => ({
       icon,
       valueOrder: idx + 1,
@@ -378,12 +432,12 @@ async function bootstrap() {
   // --- About: Commitment (Story tab cards) ---
   await ds.getRepository(Commitment).save(
     [
-      ['fa-universal-access', 'Pendidikan Inklusif & Terjangkau', 'Inclusive & Accessible Education', 'Memberi kesempatan setara lewat pengalaman belajar yang fleksibel dan terjangkau.', 'Providing equal opportunities through flexible and accessible learning experiences.'],
-      ['fa-briefcase', 'Pertumbuhan Karier & Mentoring', 'Career Growth & Professional Mentoring', 'Mendampingi lewat mentoring, portofolio, sertifikasi, dan jalur penyaluran karier.', 'Supporting learners through mentoring, portfolio building, certifications, and career placement pathways.'],
-      ['fa-industry', 'Pengalaman Industri Nyata', 'Real-World Industry Experience', 'Proyek langsung, studi kasus, dan kolaborasi dengan praktisi untuk menjembatani teori dan praktik.', 'Hands-on projects, case studies, and collaboration with experts to bridge theory and practice.'],
-      ['fa-microchip', 'Adopsi Teknologi Inovatif', 'Innovative Technology Adoption', 'Terus berkembang dengan tools mutakhir dan metodologi modern.', 'Continuously evolving with cutting-edge tools and modern methodologies.'],
-      ['fa-people-group', 'Komunitas Digital yang Memberdayakan', 'Empowering Digital Community', 'Membangun jejaring belajar kolaboratif yang tumbuh bersama.', 'Fostering collaborative learning networks that grow together.'],
-      ['fa-star', 'Keunggulan dalam Pembelajaran Digital', 'Excellence in Digital Learning', 'Pendidikan berkualitas tinggi dan berorientasi industri.', 'High-quality, industry-driven education.'],
+      ['inclusive.svg', 'Pendidikan Inklusif & Terjangkau', 'Inclusive & Accessible Education', 'Memberi kesempatan setara lewat pengalaman belajar yang fleksibel dan terjangkau.', 'Providing equal opportunities through flexible and accessible learning experiences.'],
+      ['career.svg', 'Pertumbuhan Karier & Mentoring', 'Career Growth & Professional Mentoring', 'Mendampingi lewat mentoring, portofolio, sertifikasi, dan jalur penyaluran karier.', 'Supporting learners through mentoring, portfolio building, certifications, and career placement pathways.'],
+      ['real-world.svg', 'Pengalaman Industri Nyata', 'Real-World Industry Experience', 'Proyek langsung, studi kasus, dan kolaborasi dengan praktisi untuk menjembatani teori dan praktik.', 'Hands-on projects, case studies, and collaboration with experts to bridge theory and practice.'],
+      ['innovative.svg', 'Adopsi Teknologi Inovatif', 'Innovative Technology Adoption', 'Terus berkembang dengan tools mutakhir dan metodologi modern.', 'Continuously evolving with cutting-edge tools and modern methodologies.'],
+      ['empowering.svg', 'Komunitas Digital yang Memberdayakan', 'Empowering Digital Community', 'Membangun jejaring belajar kolaboratif yang tumbuh bersama.', 'Fostering collaborative learning networks that grow together.'],
+      ['excellence.svg', 'Keunggulan dalam Pembelajaran Digital', 'Excellence in Digital Learning', 'Pendidikan berkualitas tinggi dan berorientasi industri.', 'High-quality, industry-driven education.'],
     ].map(([icon, tId, tEn, dId, dEn], idx) => ({
       icon,
       commitmentOrder: idx + 1,

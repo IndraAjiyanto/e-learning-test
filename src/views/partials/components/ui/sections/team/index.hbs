@@ -11,7 +11,7 @@
   Satu pohon markup yang mengalir. L1: text/section_header, card/team_member.
 --}}
 
-<div class="w-full font-montserrat">
+<div class="w-full font-inter">
   {{!-- Hero --}}
   {{> components/ui/text/section_header/index
       align="text-left"
@@ -24,15 +24,12 @@
       descClass="font-inter font-medium text-[#4B5563] mt-3" }}
 
   {{!-- Featured member (CEO) --}}
-  <div
-    x-data="{ eduOpen: false, portOpen: false }"
-    class="mt-10 flex flex-col gap-8 rounded-3xl border border-[#E5E7EB] bg-white p-5 shadow-[0px_18px_40px_-16px_rgba(0,0,0,0.06)] lg:flex-row lg:gap-12 lg:p-10"
-  >
-    <div class="flex flex-col items-center gap-6 lg:w-[320px] lg:shrink-0">
+  <div class="mt-10 flex flex-col gap-8 rounded-3xl border border-[#E5E7EB] bg-white p-5 shadow-[0px_18px_40px_-16px_rgba(0,0,0,0.06)] lg:flex-row lg:gap-12 lg:p-10">
+    <div class="flex flex-col items-center gap-6 lg:w-[360px] lg:shrink-0">
       <img
         src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}"
         alt="{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}CEO{{/if}}"
-        class="aspect-[4/5] w-full max-w-[320px] rounded-2xl object-cover"
+        class="aspect-[4/5] w-full max-w-[360px] rounded-2xl object-cover"
         onerror="this.onerror=null;this.src='/public/image/about/orang.png';"
       />
       <div class="flex items-center gap-3">
@@ -47,53 +44,28 @@
 
     <div class="flex flex-1 flex-col gap-5">
       <div class="flex flex-col gap-1">
-        <h3 class="{{sizeClass 'h1'}} font-inter font-bold text-[#111827]">{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}</h3>
+        <h3 class="{{sizeClass 'h2'}} font-inter font-bold text-[#111827]">{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}</h3>
         <p class="{{sizeClass 'h3'}} font-inter font-semibold text-[#003060]">{{#if teamLead.[0]}}{{getByLang teamLead.[0].position lang}}{{else}}Chief Executive Officer{{/if}}</p>
       </div>
 
       <p class="{{sizeClass 'body'}} font-inter text-justify text-[#6B7280]">{{#if teamLead.[0]}}{{getByLang teamLead.[0].description lang}}{{else}}Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia. His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company.{{/if}}</p>
 
+      {{!-- Links to the CEO detail page tabs (not accordions) --}}
       <div class="flex flex-col gap-3">
-        {{!-- Educational Background --}}
-        <div class="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0px_2px_10px_-4px_rgba(0,0,0,0.04)]">
-          <button type="button" @click="eduOpen = !eduOpen" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left">
-            <span class="flex items-center gap-4">
-              <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3F4F6]"><img src="/public/image/about/team/educational.svg" alt="" class="size-5" /></span>
-              <span class="{{sizeClass 'h3'}} font-montserrat font-semibold text-[#111827]">{{t 'test.about.team.educationBackground'}}</span>
-            </span>
-            <i class="fas fa-chevron-down text-xs text-[#003060] transition-transform" :class="eduOpen ? 'rotate-180' : ''"></i>
-          </button>
-          <div x-show="eduOpen" x-transition class="border-t border-[#E5E7EB] px-6 py-4">
-            <ul class="list-disc space-y-2 pl-5 {{sizeClass 'body'}} font-inter text-[#475569]">
-              {{#if background.length}}
-                {{#each background}}<li><span class="font-semibold">{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}</li>{{/each}}
-              {{else}}
-                <li><span class="font-semibold">Bachelor of Science, Information Technology (S.Kom)</span> - Indonesia Islamic University (2005 - 2010)</li>
-                <li><span class="font-semibold">Master of Science, Advanced Computer Science (M.Sc)</span> - The University of Manchester (2014 - 2015)</li>
-              {{/if}}
-            </ul>
-          </div>
-        </div>
-        {{!-- Portfolio & Experience --}}
-        <div class="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0px_2px_10px_-4px_rgba(0,0,0,0.04)]">
-          <button type="button" @click="portOpen = !portOpen" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left">
-            <span class="flex items-center gap-4">
-              <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3F4F6]"><img src="/public/image/about/team/portofolio.svg" alt="" class="size-5" /></span>
-              <span class="{{sizeClass 'h3'}} font-montserrat font-semibold text-[#111827]">{{t 'test.about.team.portfolioExperience'}}</span>
-            </span>
-            <i class="fas fa-chevron-down text-xs text-[#003060] transition-transform" :class="portOpen ? 'rotate-180' : ''"></i>
-          </button>
-          <div x-show="portOpen" x-transition class="border-t border-[#E5E7EB] px-6 py-4">
-            <ul class="list-disc space-y-2 pl-5 {{sizeClass 'body'}} font-inter text-[#475569]">
-              {{#if experience.length}}
-                {{#each experience}}<li><span class="font-semibold">{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}</li>{{/each}}
-              {{else}}
-                <li><span class="font-semibold">CEO &amp; Founder</span> - PT Wiratek Solusi Asia (2015 - Present)</li>
-                <li><span class="font-semibold">Senior IT &amp; Data Consultant</span> - Enterprise solutions for BUMN &amp; private sectors</li>
-              {{/if}}
-            </ul>
-          </div>
-        </div>
+        <a href="/dashboard/about/team/lead" class="group flex items-center justify-between gap-4 rounded-2xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-[0px_2px_10px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]">
+          <span class="flex items-center gap-4">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3F4F6]"><img src="/public/image/about/team/educational.svg" alt="" class="size-5" /></span>
+            <span class="{{sizeClass 'h3'}} font-inter font-semibold text-[#111827]">{{t 'test.about.team.educationBackground'}}</span>
+          </span>
+          <i class="fas fa-chevron-right text-xs text-[#003060] transition-transform group-hover:translate-x-1"></i>
+        </a>
+        <a href="/dashboard/about/team/lead?tab=portfolio" class="group flex items-center justify-between gap-4 rounded-2xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-[0px_2px_10px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]">
+          <span class="flex items-center gap-4">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3F4F6]"><img src="/public/image/about/team/portofolio.svg" alt="" class="size-5" /></span>
+            <span class="{{sizeClass 'h3'}} font-inter font-semibold text-[#111827]">{{t 'test.about.team.portfolioExperience'}}</span>
+          </span>
+          <i class="fas fa-chevron-right text-xs text-[#003060] transition-transform group-hover:translate-x-1"></i>
+        </a>
       </div>
     </div>
   </div>
@@ -105,21 +77,24 @@
         <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#111827]">{{t 'test.about.team.meetTheTeam'}}</h2>
         <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{t 'test.about.team.meetTheTeamSub'}}</p>
       </div>
-      <a href="/about" class="inline-flex h-11 items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 {{sizeClass 'body'}} font-inter font-bold text-[#003060] transition hover:bg-[#F9FAFB]">
+      <a href="/dashboard/about/team" class="inline-flex h-11 items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 {{sizeClass 'body'}} font-inter font-bold text-[#003060] transition hover:bg-[#F9FAFB]">
         {{t 'test.about.team.viewAll'}} <span aria-hidden="true">&rarr;</span>
       </a>
     </div>
 
     <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {{#if team.length}}
+        {{!-- Tab shows up to 6 (Figma 250:1176 = 3 rows); "View all" leads to the full roster --}}
         {{#each team}}
-          {{> components/ui/card/team_member/index
-              profile=profile
-              name=name
-              position=(getByLang position ../lang)
-              description=(getByLang description ../lang)
-              linkedin=linkedin
-              instagram=instagram }}
+          {{#if (check @index 6)}}
+            {{> components/ui/card/team_member/index
+                profile=profile
+                name=name
+                position=(getByLang position ../lang)
+                description=(getByLang description ../lang)
+                linkedin=linkedin
+                instagram=instagram }}
+          {{/if}}
         {{/each}}
       {{else}}
         {{> components/ui/card/team_member/index profile="/public/image/about/orang.png" name="Rizal Rahadian Ramadhan, S.E" position="Chief Finance Officer" description="Oversees the company's financial planning, budgeting, and investment strategies. Maintains financial stability and supports data-driven decision-making." }}

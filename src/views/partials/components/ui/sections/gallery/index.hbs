@@ -1,49 +1,71 @@
 {{!--
   Section: Gallery (L2) - Figma gallery-section 250:3080 - reusable (home + paid program)
   Lokasi: src/views/partials/components/ui/sections/gallery/index.hbs
-  Satu pohon markup, base + lg. sizeClass untuk teks, .page-shell untuk kontainer.
+  Figma: header terpusat, 3 kartu sejajar (grid repeat(3,1fr), ~16:10), link "See All" + dots (carousel).
+  Satu pohon markup, base + lg. sizeClass, .page-shell.
 
   Props (opsional, default = home):
   - badgeKey, titleKey, descKey, linkKey : i18n keys
   - showBadge / showDivider / showBottomLink : bool (default true)
   - sectionClass / wrapperClass : override kelas (alias lama: desktopSectionClass / desktopWrapperClass)
-  - renderMobile / renderDesktop : diabaikan (satu pohon markup sekarang)
 --}}
-<section id="gallery" class="{{default sectionClass (default desktopSectionClass 'w-full bg-[#F8F9FA] py-14 font-montserrat lg:py-20')}}">
+<section
+  id="gallery"
+  class="{{default sectionClass (default desktopSectionClass 'w-full bg-[#F8F9FA] py-14 font-montserrat lg:py-20')}}"
+  x-data="galleryCarousel(window.__galleryItems || [])"
+>
   <div class="{{default wrapperClass (default desktopWrapperClass 'page-shell flex flex-col items-center')}}">
 
-    {{> components/ui/text/section_header/index
-        align="text-center"
-        badge=(ternary (eq showBadge false) '' (t (default badgeKey 'test.home.gallery.gallery')))
-        titleTag="h2"
-        titleSize="h2"
-        title=(t (default titleKey 'test.home.gallery.title'))
-        titleClass="font-montserrat font-bold text-[#0B1F3B]"
-        descSize="body"
-        description=(t (default descKey 'test.home.gallery.description'))
-        descClass="font-open-sans text-[#4B5563] max-w-[640px]"
-        showDivider=(ternary (eq showDivider undefined) true showDivider)
-        dividerClass="w-[68px] h-1 bg-[#0B1F3B] mt-5" }}
-
-    <div class="mt-10 grid w-full grid-cols-1 gap-4 lg:mt-12 lg:grid-cols-3 lg:gap-6">
-      <div class="flex flex-col gap-4 lg:gap-6">
-        {{> components/ui/card/gallery/index heightClass="aspect-[4/3]" image=(default gallery.[0].filePath "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=600&fit=crop")}}
-        {{> components/ui/card/gallery/index heightClass="aspect-[3/4]" image=(default gallery.[1].filePath "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&h=1000&fit=crop")}}
-      </div>
-      <div class="flex flex-col gap-4 lg:gap-6">
-        {{> components/ui/card/gallery/index heightClass="aspect-[3/4]" image=(default gallery.[2].filePath "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&h=1000&fit=crop")}}
-        {{> components/ui/card/gallery/index heightClass="aspect-[4/3]" image=(default gallery.[3].filePath "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&h=600&fit=crop")}}
-      </div>
-      <div class="flex flex-col gap-4 lg:gap-6">
-        {{> components/ui/card/gallery/index heightClass="aspect-[4/3]" image=(default gallery.[4].filePath "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&h=600&fit=crop")}}
-        {{> components/ui/card/gallery/index heightClass="aspect-[3/4]" image=(default gallery.[5].filePath "https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=800&h=1000&fit=crop")}}
-      </div>
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{#unless (eq showBadge false)}}
+        {{> components/ui/text/eyebrow/index text=(t (default badgeKey 'test.home.gallery.gallery')) }}
+      {{/unless}}
+      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{{t (default titleKey 'test.home.gallery.title')}}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[658px] font-open-sans text-[#4A5568]">{{t (default descKey 'test.home.gallery.description')}}</p>
+      {{#unless (eq showDivider false)}}
+        <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+      {{/unless}}
     </div>
 
-    {{#if (ternary (eq showBottomLink undefined) true showBottomLink)}}
-      <a href="/dashboard/gallery" class="mt-12 inline-flex items-center gap-2 border-b-[1.5px] border-[#0B1F3B] pb-1 {{sizeClass 'body'}} font-semibold text-[#0B1F3B] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
-        {{t (default linkKey 'test.home.gallery.chooseGallery')}} <i class="fa-solid fa-arrow-right-long text-xs"></i>
-      </a>
-    {{/if}}
+    {{!-- up to 3 per row; flex-wrap + justify-center keeps a short last row centered --}}
+    <div class="mt-10 flex w-full flex-wrap justify-center gap-6 lg:mt-14 [&>*]:w-full [&>*]:sm:w-[calc((100%-3rem)/3)]">
+      <template x-for="(item, i) in visible" :key="i">
+        <div class="aspect-[16/10] overflow-hidden rounded-2xl bg-gray-200">
+          <img :src="item" alt="Gallery" class="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+        </div>
+      </template>
+    </div>
+
+    <div class="mt-8 flex flex-col items-center gap-5 lg:mt-10">
+      {{#unless (eq showBottomLink false)}}
+        <a href="/dashboard/gallery" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
+          {{t (default linkKey 'test.home.gallery.chooseGallery')}} <i class="fa-solid fa-arrow-right text-sm"></i>
+        </a>
+      {{/unless}}
+      {{> components/ui/nav/carousel_nav/index count="pages" index="page" goTo="goTo" }}
+    </div>
   </div>
 </section>
+
+<script>
+  window.__galleryItems = [
+    {{#each gallery}}{{{json this.filePath}}}{{#unless @last}},{{/unless}}{{/each}}
+  ];
+  if (!window.__galleryItems.length) {
+    window.__galleryItems = [
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&h=500&fit=crop'
+    ];
+  }
+  function galleryCarousel(items) {
+    return {
+      items: items,
+      page: 0,
+      per: 3,
+      get pages() { return Math.max(1, Math.ceil(this.items.length / this.per)); },
+      get visible() { return this.items.slice(this.page * this.per, this.page * this.per + this.per); },
+      goTo(i) { this.page = Math.max(0, Math.min(i, this.pages - 1)); },
+    };
+  }
+</script>

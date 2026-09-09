@@ -2,39 +2,58 @@
   Komponen: About Feature Card (Level 1 - UI Dasar)
   Lokasi: src/views/partials/components/ui/card/about_feature/index.hbs
 
-  Kartu ikon + judul + deskripsi untuk tab Story ("Our Commitment", Figma 250:778)
-  dan tab Values (Figma 250:1069). Ikon dipakai lewat CSS mask supaya semua ikon
-  tampil seragam (ukuran + warna #003060) walau file SVG sumbernya berbeda-beda.
+  Dua varian dengan spesifikasi Figma BERBEDA:
+  - "commitment" (tab Story, Figma 250:778): kartu putih, radius 16, padding 40,
+    ikon di kotak 64 rounded-12 #D9E8F5, judul Inter SemiBold, teks Inter.
+  - "value" (tab Values, Figma 250:1069): kartu #F8F9FA, radius 12, padding 32,
+    ikon di lingkaran 48 #D9EBFF bergaris, judul Montserrat Bold, teks Open Sans.
+
+  Ikon (hybrid, lihat inline "_icon"):
+  - nilai berakhiran ".svg"      -> file SVG di-mask (warna #003060), seragam
+  - nilai lain (mis. "fa-heart") -> Font Awesome via computeIcon
+  - kosong                       -> tidak ada ikon (kontainer ikut tidak dirender)
 
   Props:
   - variant      : "commitment" (default) | "value"
-  - iconBase     : path folder ikon (mis. "/public/image/about/story/")
-  - iconName     : nama file ikon dari data
-  - icon         : path ikon langsung (dipakai kalau tak ada iconBase)
+  - iconBase     : path folder ikon SVG (mis. "/public/image/about/story/")
+  - iconName     : nilai ikon dari data (dipasangkan dengan iconBase untuk SVG)
+  - icon         : nilai ikon langsung (dipakai kalau tak ada iconName)
   - title        : judul (HTML / multibahasa)
   - description  : deskripsi (HTML / multibahasa)
   - wide         : true -> layout baris (ikon kiri, teks kanan) untuk kartu spotlight
   - class        : kelas tambahan wrapper
 --}}
 
+{{#*inline "_icon"}}
+  {{#if (or (endsWith iconName '.svg') (endsWith icon '.svg'))}}
+    <span class="block {{maskSize}} bg-[#003060]" style="-webkit-mask:url('{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}') center/contain no-repeat;mask:url('{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}') center/contain no-repeat;"></span>
+  {{else if (default iconName icon)}}
+    <i class="{{computeIcon (default iconName icon)}} {{faSize}} text-[#003060]" aria-hidden="true"></i>
+  {{/if}}
+{{/inline}}
+
 {{#if (eq variant 'value')}}
-<div class="flex {{#if wide}}flex-row items-center sm:col-span-full{{else}}flex-col{{/if}} gap-4 rounded-xl border border-[#E2E8F0] bg-white p-5 lg:p-6 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04),0px_8px_20px_-12px_rgba(0,0,0,0.08)] {{class}}">
-  <span class="grid size-12 shrink-0 place-items-center rounded-full bg-[#E0F2F9]">
-    <span class="block size-5 bg-[#003060]" style="-webkit-mask:url('{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}') center/contain no-repeat;mask:url('{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}') center/contain no-repeat;"></span>
-  </span>
-  <div class="flex flex-col gap-2 min-w-0">
+<div class="flex {{#if wide}}flex-row items-center sm:col-span-full{{else}}flex-col{{/if}} gap-5 rounded-xl border border-[#E5E7EB] bg-[#F8F9FA] p-6 lg:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)] {{class}}">
+  {{#if (default iconName icon)}}
+    <span class="grid size-12 shrink-0 place-items-center rounded-full border border-[#E5E7EB] bg-[#D9EBFF]">
+      {{> _icon maskSize="size-[22px]" faSize="text-xl"}}
+    </span>
+  {{/if}}
+  <div class="flex flex-col gap-3 min-w-0">
     <h3 class="{{sizeClass 'h3'}} font-montserrat font-bold text-[#0B1F3B]">{{{title}}}</h3>
-    <p class="{{sizeClass 'body'}} font-open-sans font-normal text-[#4B5563]">{{{description}}}</p>
+    <p class="{{sizeClass 'body'}} font-open-sans font-normal leading-relaxed text-[#4B5563]">{{{description}}}</p>
   </div>
 </div>
 {{else}}
-<div class="flex {{#if wide}}flex-row items-center{{else}}flex-col{{/if}} gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-5 lg:p-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04),0px_6px_16px_-6px_rgba(0,0,0,0.08)] {{class}}">
-  <span class="grid size-12 lg:size-14 shrink-0 place-items-center rounded-xl bg-[#D9E8F5]">
-    <span class="block size-6 bg-[#003060]" style="-webkit-mask:url('{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}') center/contain no-repeat;mask:url('{{#if iconBase}}{{iconBase}}{{iconName}}{{else}}{{icon}}{{/if}}') center/contain no-repeat;"></span>
-  </span>
-  <div class="flex flex-col gap-2 min-w-0">
+<div class="flex {{#if wide}}flex-row items-center{{else}}flex-col{{/if}} gap-6 rounded-2xl border border-[#E5E7EB] bg-white p-6 lg:p-10 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04),0px_4px_6px_-1px_rgba(0,0,0,0.06),0px_12px_24px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)] {{class}}">
+  {{#if (default iconName icon)}}
+    <span class="grid size-14 lg:size-16 shrink-0 place-items-center rounded-xl bg-[#D9E8F5]">
+      {{> _icon maskSize="size-7 lg:size-8" faSize="text-2xl lg:text-3xl"}}
+    </span>
+  {{/if}}
+  <div class="flex flex-col gap-3 min-w-0">
     <h3 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#111827]">{{{title}}}</h3>
-    <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{{description}}}</p>
+    <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{{description}}}</p>
   </div>
 </div>
 {{/if}}

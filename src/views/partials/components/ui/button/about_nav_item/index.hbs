@@ -2,34 +2,56 @@
   Komponen: About Nav Item (Level 1 - UI Dasar)
   Lokasi: src/views/partials/components/ui/button/about_nav_item/index.hbs
 
-  Satu item navigasi tab halaman About (Figma 250:744 sidebar item).
-  Base = pill (mobile scroll row). lg: = kartu sidebar Figma.
-  Butuh Alpine `activeSection` + `toggleActiveSection` dari about.hbs.
+  Satu item navigasi sidebar About (Figma 250:744). Base = pill (mobile scroll row),
+  lg: = kartu sidebar. SATU komponen, dua mode:
+  - default            : <button> toggle tab Alpine (butuh activeSection + toggleActiveSection dari about.hbs)
+  - `href` diisi        : <a href> untuk sub-halaman (View All Team, profil CEO); state pakai prop `active` (bool)
 
   Props:
-  - section : "story" | "mission" | "values" | "team" (juga memilih ikon lucide)
+  - section : "story" | "mission" | "values" | "team" (memilih ikon lucide)
   - text    : label
+  - href    : URL (opsional) -> render <a> alih-alih <button>
+  - active  : bool (opsional, hanya untuk mode href) -> state aktif
 --}}
 
-<button
-  type="button"
-  @click="toggleActiveSection('{{section}}')"
-  :class="activeSection === '{{section}}'
-    ? 'bg-[#003060] text-white lg:bg-[#E0F2F9] lg:text-[#003060] lg:font-semibold'
-    : 'bg-white text-[#0B1F3B] lg:text-[#374151] lg:font-medium'"
-  class="shrink-0 flex items-center gap-3 whitespace-nowrap text-left transition-colors
-    border border-[#E5E7EB] rounded-xl font-inter text-sm
-    px-4 py-2.5
-    lg:w-full lg:px-3 lg:py-3"
->
+{{#*inline "_navItemInner"}}
   <span aria-hidden="true"
-    :class="activeSection === '{{section}}' ? 'lg:opacity-100' : 'lg:opacity-0'"
-    class="hidden lg:block h-9 w-1 shrink-0 rounded-full bg-[#003060] transition-opacity duration-200"></span>
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5 lg:size-6 shrink-0">
+    {{#unless href}}:class="activeSection === '{{section}}' ? 'lg:opacity-100' : 'lg:opacity-0'"{{/unless}}
+    class="hidden lg:block h-7 w-1 shrink-0 rounded-full bg-[#003060] transition-opacity duration-200{{#if href}}{{#if active}} lg:opacity-100{{else}} lg:opacity-0{{/if}}{{/if}}"></span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5 shrink-0">
     {{#if (eq section 'story')}}<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>{{/if}}
     {{#if (eq section 'mission')}}<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>{{/if}}
     {{#if (eq section 'values')}}<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>{{/if}}
     {{#if (eq section 'team')}}<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>{{/if}}
   </svg>
   <span>{{text}}</span>
+{{/inline}}
+
+{{#if href}}
+<a
+  href="{{href}}"
+  class="shrink-0 flex items-center gap-3 whitespace-nowrap text-left transition-all duration-300
+    border border-[#E5E7EB] rounded-xl font-inter text-sm
+    px-4 py-2.5
+    lg:w-full lg:px-3 lg:py-2
+    lg:hover:-translate-y-1 lg:hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]
+    {{#if active}}bg-[#003060] text-white lg:bg-[#E0F2F9] lg:text-[#003060] lg:font-semibold{{else}}bg-white text-[#0B1F3B] lg:text-[#374151] lg:font-medium{{/if}}"
+>
+  {{> _navItemInner}}
+</a>
+{{else}}
+<button
+  type="button"
+  @click="toggleActiveSection('{{section}}')"
+  :class="activeSection === '{{section}}'
+    ? 'bg-[#003060] text-white lg:bg-[#E0F2F9] lg:text-[#003060] lg:font-semibold'
+    : 'bg-white text-[#0B1F3B] lg:text-[#374151] lg:font-medium'"
+  class="shrink-0 flex items-center gap-3 whitespace-nowrap text-left transition-all duration-300
+    border border-[#E5E7EB] rounded-xl font-inter text-sm
+    px-4 py-2.5
+    lg:w-full lg:px-3 lg:py-2
+    lg:hover:-translate-y-1 lg:hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]"
+>
+  {{> _navItemInner}}
 </button>
+{{/if}}

@@ -4,26 +4,23 @@
   Satu pohon markup, base + lg. Data: about.[0].{title,text,image} (jsonb), social.[0].number.
   sizeClass untuk teks, .page-shell untuk kontainer.
 --}}
-<section class="w-full bg-[#F8F9FA] pt-24 pb-12 font-montserrat lg:py-[120px]" data-node-id="250:2796">
-  <div class="page-shell flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-[80px]">
+<section class="w-full bg-[#F8F9FA] font-montserrat" data-node-id="250:2796">
+  <div class="page-shell flex flex-col justify-center gap-10 py-24 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-[80px]">
 
     {{!-- content --}}
     <div class="flex flex-1 flex-col items-start gap-8">
-      <span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 py-1.5 {{sizeClass 'eyebrow'}} font-montserrat font-bold text-[#0B1F3B]">
-        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5]" aria-hidden="true"></i>
-        {{t 'test.home.heroSection.badge'}}
-      </span>
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.heroSection.badge') }}
 
       <h1 class="{{sizeClass 'display'}} max-w-[619px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
-        {{#if about.[0].title}}
-          {{highlightLastWords (getByLang about.[0].title lang) 2 '#6EB6E5'}}
-        {{else}}
-          Shape your path in the <span class="text-[#6EB6E5]">digital frontier</span>
-        {{/if}}
+        <span
+          x-data="heroTypewriter()"
+          data-full="{{#if about.[0].title}}{{getByLang about.[0].title lang}}{{else}}{{t 'test.home.heroSection.title'}}{{/if}}"
+          x-init="start($el.dataset.full)"
+        ><span x-text="head"></span><span class="text-[#6EB6E5]" x-text="tail"></span><span class="ml-1 inline-block h-[0.8em] w-[3px] translate-y-[0.06em] rounded-sm bg-[#6EB6E5] transition-opacity" :class="showCursor ? 'opacity-100' : 'opacity-0'"></span></span>
       </h1>
 
       <p class="{{sizeClass 'lead'}} max-w-[719px] font-open-sans text-[#4A5568]">
-        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Kesatria Academy delivers interactive, industry-grade learning experiences to turn ambition into professional impact. Gain real project expertise from global tech mentors.{{/if}}
+        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}{{t 'test.home.heroSection.description'}}{{/if}}
       </p>
 
       <div class="flex w-full flex-col items-stretch gap-4 sm:w-auto sm:flex-row sm:items-center">
@@ -43,8 +40,8 @@
     </div>
 
     {{!-- visual --}}
-    <div class="w-full lg:w-[560px] lg:shrink-0">
-      <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl lg:aspect-[3/2]">
+    <div class="w-full lg:w-[620px] lg:shrink-0">
+      <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl lg:aspect-[73/50]">
         <img
           src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
           alt="Hero"
@@ -55,3 +52,29 @@
     </div>
   </div>
 </section>
+
+<script>
+  function heroTypewriter() {
+    return {
+      head: '', tail: '', showCursor: true, _target: '', _i: 0,
+      start(full) {
+        full = (full || 'Shape your path in the digital frontier').replace(/\s*\|\s*$/, '').trim();
+        const w = full.split(/\s+/);
+        const n = w.length > 2 ? 2 : 1;
+        this._target = w.slice(-n).join(' ');
+        this.head = w.slice(0, w.length - n).join(' ') + (w.length > n ? ' ' : '');
+        this._i = 0;
+        this._loop();
+        setInterval(() => { this.showCursor = !this.showCursor; }, 530);
+      },
+      _loop() {
+        if (this._i <= this._target.length) {
+          this.tail = this._target.slice(0, this._i++);
+          setTimeout(() => this._loop(), 85);
+        } else {
+          setTimeout(() => { this._i = 0; this._loop(); }, 2600);
+        }
+      }
+    };
+  }
+</script>

@@ -14,7 +14,7 @@
   x-transition:enter='transition ease-out duration-300'
   x-transition:enter-start='opacity-0 transform translate-y-4'
   x-transition:enter-end='opacity-100 transform translate-y-0'
-  class="w-full font-montserrat"
+  class="w-full font-inter"
 >
   <div class="grid grid-cols-1 gap-10 lg:grid-cols-[2fr_3fr] lg:gap-12">
 
@@ -25,12 +25,12 @@
           titleTag="h2"
           titleSize="display"
           title=(t 'test.about.visionsMisi.vision')
-          titleClass="font-montserrat font-bold tracking-[-0.02em] text-[#003060]"
+          titleClass="font-inter font-bold tracking-[-0.02em] text-[#003060]"
           showDivider=true
           dividerClass="w-full h-px bg-[#E2E8F0] mt-3 mb-5 lg:mt-4 lg:mb-6" }}
 
       <div class="rounded-2xl border border-[#E2E8F0] bg-white p-6 lg:p-8 shadow-[0px_8px_24px_0px_rgba(0,0,0,0.05)]">
-        <p class="{{sizeClass 'lead'}} font-montserrat font-medium tracking-[-0.01em] text-[#0B1F3B]">
+        <p class="{{sizeClass 'lead'}} font-inter font-medium tracking-[-0.01em] text-[#0B1F3B]">
           {{#if visions.length}}
             {{getByLang visions.[0].visions lang}}
           {{else}}
@@ -47,7 +47,7 @@
           titleTag="h2"
           titleSize="display"
           title=(t 'test.about.visionsMisi.mission')
-          titleClass="font-montserrat font-bold tracking-[-0.02em] text-[#003060]"
+          titleClass="font-inter font-bold tracking-[-0.02em] text-[#003060]"
           showDivider=true
           dividerClass="w-full h-px bg-[#E2E8F0] mt-3 mb-1 lg:mt-4 lg:mb-2" }}
 

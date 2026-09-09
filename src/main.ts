@@ -131,6 +131,13 @@ async function bootstrap() {
     const lang = req.cookies?.lang || 'id';
     res.locals.currentLang = lang;
     res.locals.lang = lang;
+    // Auth screens (login/register/forgot/reset/verify) render over a photo bg -
+    // navbar must be transparent there. Checked server-side so no Alpine flash.
+    res.locals.isAuthPage =
+      /^\/(login|register|session-expired|verify-email)(\/|$)/.test(req.path) ||
+      /^\/users\/(forgot-password|reset-password|send-verify-email|verify-email)(\/|$)/.test(
+        req.path,
+      );
     next();
   });
 

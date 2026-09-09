@@ -5,14 +5,14 @@
   Data: team (dashboard.service findTeam), lang
   Shell About (sidebar link + kolom konten putih). Standar: sizeClass, base + lg.
 --}}
-<div class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-montserrat">
-  <div class="flex flex-col pt-20 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
+<div class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-inter">
+  <div class="flex flex-col pt-8 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
 
-    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-24 lg:pr-6">
-      {{> components/ui/sections/about_sidebar/links active="team"}}
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-12 lg:pr-6">
+      {{> components/ui/sections/about_sidebar/index linkMode=true active="team"}}
     </div>
 
-    <div class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-24 lg:pb-24">
+    <div class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-12 lg:pb-24">
       <nav class="mb-8 flex items-center gap-2 {{sizeClass 'body-sm'}} font-inter text-[#6B7280]">
         <a href="/dashboard/about" class="hover:text-[#003060]">{{t 'test.about.team.title'}}</a>
         <i class="fas fa-chevron-right text-[10px]"></i>

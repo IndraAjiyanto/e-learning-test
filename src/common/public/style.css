@@ -225,3 +225,23 @@
 [x-cloak] {
   display: none !important;
 }
+
+/* GitHub-style top route-progress bar (MPA page transitions) */
+#route-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #003060 0%, #0284c7 55%, #6eb6e5 100%);
+  box-shadow: 0 0 12px 1px rgba(110, 182, 229, 0.65);
+  opacity: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease 0.4s;
+}
+#route-progress.is-active {
+  opacity: 1;
+}
