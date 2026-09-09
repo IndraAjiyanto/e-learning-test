@@ -126,7 +126,9 @@ async function bootstrap() {
   });
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const lang = req.cookies?.lang || 'en';
+    // Default to 'id' so this matches nestjs-i18n's fallbackLanguage: a cookie-less
+    // visitor gets one consistent language across both t() and getByLang().
+    const lang = req.cookies?.lang || 'id';
     res.locals.currentLang = lang;
     res.locals.lang = lang;
     next();
