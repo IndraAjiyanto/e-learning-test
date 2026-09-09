@@ -246,6 +246,29 @@ export class DashboardController {
     });
   }
 
+  @Get('about/team/lead')
+  async aboutTeamLead(@Req() req: Request, @Res() res: Response) {
+    const [teamLead, background, experience, award] = await Promise.all([
+      this.dashboardService.findTeamLead(),
+      this.dashboardService.findBackground(),
+      this.dashboardService.findExperience(),
+      this.dashboardService.findAward(),
+    ]);
+    return res.render('about_team_lead', {
+      user: req.user,
+      teamLead,
+      background,
+      experience,
+      award,
+    });
+  }
+
+  @Get('about/team')
+  async aboutTeamAll(@Req() req: Request, @Res() res: Response) {
+    const team = await this.dashboardService.findTeam();
+    return res.render('about_team_all', { user: req.user, team });
+  }
+
   @Get('api/category')
   async getCategory(@Res() res: Response) {
     const category = await this.dashboardService.findCategories();

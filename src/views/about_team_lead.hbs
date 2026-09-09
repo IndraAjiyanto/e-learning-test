@@ -1,0 +1,98 @@
+{{!--
+  Halaman: About - Team Lead Profile - Figma 250:1458 (Edu Background) / 250:1648 (Portfolio & Experience)
+  Lokasi: src/views/about_team_lead.hbs
+  Route: GET /dashboard/about/team/lead (dashboard.controller)
+  Data: teamLead.[0], background[], experience[], award[], lang
+  Satu halaman, dua tab (Alpine). Shell About. Standar: sizeClass, base + lg.
+--}}
+<div
+  class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-montserrat"
+  x-data="{ tab: (new URLSearchParams(location.search).get('tab') === 'portfolio' ? 'portfolio' : 'education') }"
+>
+  <div class="flex flex-col pt-20 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
+
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-24 lg:pr-6">
+      {{> components/ui/sections/about_sidebar/links active="team"}}
+    </div>
+
+    <div class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-24 lg:pb-24">
+
+      {{!-- Breadcrumb --}}
+      <nav class="mb-8 flex flex-wrap items-center gap-2 {{sizeClass 'body-sm'}} font-inter text-[#6B7280]">
+        <a href="/dashboard/about" class="hover:text-[#003060]">{{t 'test.about.team.title'}}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <a href="/dashboard/about/team" class="hover:text-[#003060]">{{t 'test.about.team.viewAll'}}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="font-semibold text-[#003060]" x-text="tab === 'portfolio' ? '{{t 'test.about.team.portfolioExperience'}}' : '{{t 'test.about.team.educationBackground'}}'"></span>
+      </nav>
+
+      {{!-- Profile header --}}
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+        <img
+          src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}"
+          alt="{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Team Lead{{/if}}"
+          onerror="this.onerror=null;this.src='/public/image/about/orang.png';"
+          class="size-24 shrink-0 rounded-full object-cover"
+        />
+        <div class="flex flex-1 flex-col gap-1">
+          <h1 class="{{sizeClass 'h1'}} font-inter font-bold text-[#111827]">{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}</h1>
+          <p class="{{sizeClass 'h3'}} font-inter font-semibold text-[#003060]">{{#if teamLead.[0]}}{{getByLang teamLead.[0].position lang}}{{else}}Chief Executive Officer{{/if}}</p>
+          <div class="mt-2 flex items-center gap-3">
+            <a href="{{#if teamLead.[0]}}{{default teamLead.[0].linkedin '#'}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="grid size-9 place-items-center rounded-full bg-[#F3F4F6] text-[#003060] transition hover:opacity-80"><i class="fab fa-linkedin-in text-sm"></i></a>
+            <a href="{{#if teamLead.[0]}}{{default teamLead.[0].instagram '#'}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="grid size-9 place-items-center rounded-full bg-[#F3F4F6] text-[#003060] transition hover:opacity-80"><i class="fab fa-instagram text-sm"></i></a>
+          </div>
+        </div>
+      </div>
+
+      {{#if teamLead.[0].description}}
+        <p class="mt-6 {{sizeClass 'body'}} font-inter text-justify text-[#6B7280]">{{getByLang teamLead.[0].description lang}}</p>
+      {{/if}}
+
+      {{!-- Tab bar --}}
+      <div class="mt-10 flex gap-8 border-b-2 border-[#E5E7EB]">
+        <button
+          @click="tab = 'education'"
+          :class="tab === 'education' ? 'border-[#003060] text-[#003060]' : 'border-transparent text-[#6B7280]'"
+          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-inter font-semibold transition-colors"
+        >{{t 'test.about.team.educationBackground'}}</button>
+        <button
+          @click="tab = 'portfolio'"
+          :class="tab === 'portfolio' ? 'border-[#003060] text-[#003060]' : 'border-transparent text-[#6B7280]'"
+          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-inter font-semibold transition-colors"
+        >{{t 'test.about.team.portfolioExperience'}}</button>
+      </div>
+
+      {{!-- Education timeline --}}
+      <ol x-show="tab === 'education'" class="mt-8 flex flex-col gap-6 border-l-2 border-[#E5E7EB] pl-6">
+        {{#if background.length}}
+          {{#each background}}
+            <li class="relative">
+              <span class="absolute -left-[1.9rem] top-1 size-3 rounded-full border-2 border-white bg-[#003060]"></span>
+              <p class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{getByLang content ../lang}}</p>
+              <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{getByLang details ../lang}}</p>
+            </li>
+          {{/each}}
+        {{else}}
+          <li class="relative"><span class="absolute -left-[1.9rem] top-1 size-3 rounded-full border-2 border-white bg-[#003060]"></span><p class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">Bachelor of Science, Information Technology (S.Kom)</p><p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">Indonesia Islamic University (2005 - 2010)</p></li>
+          <li class="relative"><span class="absolute -left-[1.9rem] top-1 size-3 rounded-full border-2 border-white bg-[#003060]"></span><p class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">Master of Science, Advanced Computer Science (M.Sc)</p><p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">The University of Manchester (2014 - 2015)</p></li>
+        {{/if}}
+      </ol>
+
+      {{!-- Portfolio & experience timeline --}}
+      <ol x-show="tab === 'portfolio'" class="mt-8 flex flex-col gap-6 border-l-2 border-[#E5E7EB] pl-6" style="display:none">
+        {{#if experience.length}}
+          {{#each experience}}
+            <li class="relative">
+              <span class="absolute -left-[1.9rem] top-1 size-3 rounded-full border-2 border-white bg-[#0284C7]"></span>
+              <p class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{getByLang content ../lang}}</p>
+              <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{getByLang details ../lang}}</p>
+            </li>
+          {{/each}}
+        {{else}}
+          <li class="relative"><span class="absolute -left-[1.9rem] top-1 size-3 rounded-full border-2 border-white bg-[#0284C7]"></span><p class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">CEO &amp; Founder</p><p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">PT Wiratek Solusi Asia (2015 - Present)</p></li>
+          <li class="relative"><span class="absolute -left-[1.9rem] top-1 size-3 rounded-full border-2 border-white bg-[#0284C7]"></span><p class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">Senior IT &amp; Data Consultant</p><p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">Enterprise solutions for BUMN &amp; private sectors</p></li>
+        {{/if}}
+      </ol>
+    </div>
+  </div>
+</div>

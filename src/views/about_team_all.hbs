@@ -1,0 +1,46 @@
+{{!--
+  Halaman: About - View All Team - Figma 250:1875
+  Lokasi: src/views/about_team_all.hbs
+  Route: GET /dashboard/about/team (dashboard.controller)
+  Data: team (dashboard.service findTeam), lang
+  Shell About (sidebar link + kolom konten putih). Standar: sizeClass, base + lg.
+--}}
+<div class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-montserrat">
+  <div class="flex flex-col pt-20 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
+
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-24 lg:pr-6">
+      {{> components/ui/sections/about_sidebar/links active="team"}}
+    </div>
+
+    <div class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-24 lg:pb-24">
+      <nav class="mb-8 flex items-center gap-2 {{sizeClass 'body-sm'}} font-inter text-[#6B7280]">
+        <a href="/dashboard/about" class="hover:text-[#003060]">{{t 'test.about.team.title'}}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="font-semibold text-[#003060]">{{t 'test.about.team.viewAll'}}</span>
+      </nav>
+
+      <div class="flex flex-col gap-3">
+        <h1 class="{{sizeClass 'display'}} font-inter font-bold text-[#003060]">{{t 'test.about.team.meetTheTeam'}}</h1>
+        <p class="{{sizeClass 'lead'}} max-w-[640px] font-inter font-medium text-[#4B5563]">{{t 'test.about.team.meetTheTeamSub'}}</p>
+      </div>
+
+      <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {{#if team.length}}
+          {{#each team}}
+            {{> components/ui/card/team_member/index
+                profile=profile
+                name=name
+                position=(getByLang position ../lang)
+                description=(getByLang description ../lang)
+                linkedin=linkedin
+                instagram=instagram }}
+          {{/each}}
+        {{else}}
+          {{> components/ui/card/team_member/index profile="/public/image/about/orang.png" name="Rizal Rahadian Ramadhan, S.E" position="Chief Finance Officer" description="Oversees the company's financial planning, budgeting, and investment strategies." }}
+          {{> components/ui/card/team_member/index profile="/public/image/about/orang.png" name="Adipura Arya Kangsadewa, S.Bns" position="Education & Culture Manager" description="Leads the development of training programs and strategic partnerships." }}
+          {{> components/ui/card/team_member/index profile="/public/image/about/orang.png" name="Zahra Andriani Mustika Fitri, S.M" position="Human Resource & Recruiter" description="Manages recruitment processes and talent development initiatives." }}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

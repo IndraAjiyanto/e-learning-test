@@ -1,0 +1,21 @@
+{{!--
+  Komponen: About Sidebar (varian LINK) - untuk sub-halaman About (View All Team, profil).
+  Lokasi: src/views/partials/components/ui/sections/about_sidebar/links.hbs
+  Item = <a href> ke /dashboard/about (bukan tab Alpine). Props: active ("story"|"mission"|"values"|"team")
+--}}
+{{#*inline "aboutLink"}}
+  <a
+    href="/dashboard/about"
+    class="shrink-0 flex items-center gap-3 whitespace-nowrap text-left transition-colors border border-[#E5E7EB] rounded-xl font-inter text-sm px-4 py-2.5 lg:w-full lg:px-3 lg:py-3 {{#if isActive}}bg-[#003060] text-white lg:bg-[#E0F2F9] lg:text-[#003060] lg:font-semibold{{else}}bg-white text-[#0B1F3B] lg:text-[#374151] lg:font-medium{{/if}}"
+  >
+    <span aria-hidden="true" class="hidden lg:block h-9 w-1 shrink-0 rounded-full bg-[#003060] {{#if isActive}}opacity-100{{else}}opacity-0{{/if}}"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5 lg:size-6 shrink-0">{{{icon}}}</svg>
+    <span>{{label}}</span>
+  </a>
+{{/inline}}
+<nav class="flex w-max gap-2.5 pb-1 lg:w-full lg:flex-col lg:gap-5 lg:pb-0">
+  {{> aboutLink isActive=(eq active 'story')   label=(t 'test.about.tabAbout.story')       icon='<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>'}}
+  {{> aboutLink isActive=(eq active 'mission') label=(t 'test.about.tabAbout.visionsMisi') icon='<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'}}
+  {{> aboutLink isActive=(eq active 'values')  label=(t 'test.about.tabAbout.value')       icon='<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>'}}
+  {{> aboutLink isActive=(eq active 'team')    label=(t 'test.about.tabAbout.team')        icon='<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'}}
+</nav>
