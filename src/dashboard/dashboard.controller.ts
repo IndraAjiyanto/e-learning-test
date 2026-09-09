@@ -158,7 +158,7 @@ export class DashboardController {
     const kategoriList = await this.dashboardService.findCategories();
     const courseTypeList = await this.dashboardService.findCourseTypes();
 
-    res.render('portofolios', {
+    res.render('portofolio', {
       user: req.user,
       // portfolio: portfolioList,
       category: kategoriList,
