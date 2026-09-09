@@ -2,7 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  /* Standard page content frame - one source of truth for every top-level page view.
+     Change the width/gutter here and every page moves together. Sections render
+     w-full with vertical spacing only; full-bleed backgrounds break out at the
+     section level, never by widening the shell. */
+  .page-shell {
+    @apply mx-auto w-full max-w-[1728px] px-4 sm:px-6 lg:px-10;
+  }
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   /* Custom Scrollbar untuk seluruh halaman */
   * {
     scrollbar-width: thin;

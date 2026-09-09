@@ -1,102 +1,36 @@
-<style>
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-</style>
-
-<div 
-  class='relative min-h-screen bg-slate-50' 
+<div
+  class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-montserrat"
   x-data="{
     activeSection: localStorage.getItem('activeSection') || 'story',
-    get bgImage() {
-      switch(this.activeSection) {
-        case 'story': return '/public/image/about/bgStory.png';
-        case 'mission': return '/public/image/about/bgVisionMission.png';
-        case 'values': return '/public/image/about/bgValues.png';
-        case 'team': return '/public/image/about/bgTeam.png';
-        default: return '/public/image/about/bgStory.png';
-      }
-    },
-    async toggleActiveSection(sectionName) {
-      this.activeSection = sectionName;
-      localStorage.setItem('activeSection', sectionName);
+    shown: true,
+    toggleActiveSection(sectionName) {
+      if (sectionName === this.activeSection) return;
+      this.shown = false;
+      setTimeout(() => {
+        this.activeSection = sectionName;
+        localStorage.setItem('activeSection', sectionName);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.$nextTick(() => { this.shown = true; });
+      }, 200);
     },
   }"
 >
-  <!-- Fixed Dynamic Background Image per Tab (Contained to About Section) -->
-  <div 
-    class="absolute inset-0 w-full h-full pointer-events-none z-0 bg-fixed bg-cover bg-top bg-no-repeat transition-all duration-500 opacity-90"
-    :style="`background-image: url('${bgImage}');`"
-  ></div>
+  <div class="flex flex-col pt-20 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
 
-  <!-- MOBILE ABOUT SECTION (< 640px) -->
-  <div class="block sm:hidden w-full px-5 pt-20 pb-14 relative font-montserrat overflow-hidden">
-    <!-- Mobile Top Navigation Bar (Pill Buttons matching Figma) -->
-    <div class="mb-6">
-      <div class="overflow-x-auto scrollbar-hide">
-        <nav class="flex items-center justify-start gap-2.5 min-w-max pb-2">
-          {{> components/ui/button/tab_btn/index section="story" icon="fas fa-book-open" text=(t "test.about.tabAbout.story") }}
-          {{> components/ui/button/tab_btn/index section="mission" icon="fas fa-bullseye" text=(t "test.about.tabAbout.visionsMisi") }}
-          {{> components/ui/button/tab_btn/index section="values" icon="fas fa-heart" text=(t "test.about.tabAbout.value") }}
-          {{> components/ui/button/tab_btn/index section="team" icon="fas fa-users" text=(t "test.about.tabAbout.team") }}
-        </nav>
-      </div>
+    {{!-- Sidebar column (left) --}}
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-24 lg:pr-6">
+      {{> components/ui/sections/about_sidebar/index}}
     </div>
 
-    <!-- Mobile Tab Content Container -->
-    <div class="w-full">
-      <div x-show="activeSection === 'story'">
-        {{> components/ui/sections/story/index}}
-      </div>
-      <div x-show="activeSection === 'mission'">
-        {{> components/ui/sections/mission/index}}
-      </div>
-      <div x-show="activeSection === 'team'">
-        {{> components/ui/sections/team/index}}
-      </div>
-      <div x-show="activeSection === 'values'">
-        {{> components/ui/sections/values/index}}
-      </div>
-    </div>
-  </div>
-
-  <!-- DESKTOP ABOUT SECTION (>= 640px / Preserving Original Baseline) -->
-  <div class='hidden sm:block relative z-10 max-w-full mx-8 mt-4 p-4 sm:p-8 py-8 md:py-20 lg:py-24'>
-
-    <div class='grid grid-cols-1 lg:grid-cols-12 gap-8'>
-      <!-- Desktop Sidebar Navigation -->
-      <div class='hidden lg:block lg:col-span-4 w-full max-w-[488px] sticky top-24 self-start'>
-        <div class='space-y-4'>
-          <nav class='space-y-4'>
-            {{> components/ui/button/tab_btn/index section="story" icon="fas fa-book-open" text=(t "test.about.tabAbout.story") }}
-            {{> components/ui/button/tab_btn/index section="mission" icon="fas fa-bullseye" text=(t "test.about.tabAbout.visionsMisi") }}
-            {{> components/ui/button/tab_btn/index section="values" icon="fas fa-heart" text=(t "test.about.tabAbout.value") }}
-            {{> components/ui/button/tab_btn/index section="team" icon="fas fa-users" text=(t "test.about.tabAbout.team") }}
-          </nav>
-        </div>
-      </div>
-
-      <div class='lg:col-span-8'>
-        <div x-show="activeSection === 'story'">
-          {{> components/ui/sections/story/index}}
-        </div>
-
-        <div x-show="activeSection === 'mission'">
-          {{> components/ui/sections/mission/index}}
-        </div>
-
-        <div x-show="activeSection === 'team'">
-          {{> components/ui/sections/team/index}}
-        </div>
-
-        <div x-show="activeSection === 'values'">
-          {{> components/ui/sections/values/index}}
-        </div>
-      </div>
+    {{!-- Content column (right) - bleeds to the viewport edge, full height --}}
+    <div
+      class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-24 lg:pb-24 transition-opacity duration-200 ease-out"
+      :class="shown ? 'opacity-100' : 'opacity-0'"
+    >
+      <div x-show="activeSection === 'story'">{{> components/ui/sections/story/index}}</div>
+      <div x-show="activeSection === 'mission'">{{> components/ui/sections/mission/index}}</div>
+      <div x-show="activeSection === 'values'">{{> components/ui/sections/values/index}}</div>
+      <div x-show="activeSection === 'team'">{{> components/ui/sections/team/index}}</div>
     </div>
   </div>
 </div>

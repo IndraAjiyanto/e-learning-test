@@ -1,0 +1,17 @@
+{{!--
+  Komponen: About Sidebar (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/about_sidebar/index.hbs
+
+  Navigasi 4 tab halaman About (Story / Vision & Mission / Values / Team).
+  Dipakai oleh keempat tab. Kolom sidebar (lebar + padding + sticky/scroll) diatur
+  oleh about.hbs; komponen ini hanya me-render <nav>-nya.
+  Butuh Alpine `activeSection` + `toggleActiveSection` (di about.hbs).
+  L1: button/about_nav_item
+--}}
+
+<nav class="flex w-max gap-2.5 pb-1 lg:w-full lg:flex-col lg:gap-5 lg:pb-0">
+  {{> components/ui/button/about_nav_item/index section="story"   text=(t "test.about.tabAbout.story") }}
+  {{> components/ui/button/about_nav_item/index section="mission"  text=(t "test.about.tabAbout.visionsMisi") }}
+  {{> components/ui/button/about_nav_item/index section="values"   text=(t "test.about.tabAbout.value") }}
+  {{> components/ui/button/about_nav_item/index section="team"     text=(t "test.about.tabAbout.team") }}
+</nav>

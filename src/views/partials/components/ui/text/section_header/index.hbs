@@ -1,6 +1,11 @@
-{{!-- 
+{{!--
   Komponen: Section Header (Level 1 - UI Dasar)
   Lokasi: src/views/partials/components/ui/text/section_header/index.hbs
+
+  Optional: titleSize / descSize -> semantic responsive size key
+  (display | h1 | h2 | h3 | eyebrow | lead | body | body-sm, see ui.helpers.ts).
+  When passed, the size class comes from the scale and titleClass/descClass
+  should carry only font/color/spacing. When omitted, output is unchanged.
 --}}
 
 <div class="w-full flex flex-col {{#if (eq align 'text-left')}}items-start{{else if (eq align 'text-right')}}items-end{{else}}items-center{{/if}} {{default align 'text-center'}} {{wrapperClass}}">
@@ -11,11 +16,11 @@
   {{/if}}
 
   {{#if (eq titleTag 'h1')}}
-    <h1 class="leading-tight {{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}">
+    <h1 class="leading-tight {{#if titleSize}}{{sizeClass titleSize}} {{default titleClass 'font-montserrat font-bold text-[#0B1F3B] mb-3'}}{{else}}{{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}{{/if}}">
       {{#> titleBlock}}{{{title}}}{{/titleBlock}}
     </h1>
   {{else}}
-    <h2 class="leading-tight {{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}">
+    <h2 class="leading-tight {{#if titleSize}}{{sizeClass titleSize}} {{default titleClass 'font-montserrat font-bold text-[#0B1F3B] mb-3'}}{{else}}{{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}{{/if}}">
       {{#> titleBlock}}{{{title}}}{{/titleBlock}}
     </h2>
   {{/if}}
@@ -25,7 +30,7 @@
   {{/if}}
 
   {{#if description}}
-    <p class="leading-relaxed {{default descClass 'font-sans font-normal text-sm text-[#2D2D2D]'}}">
+    <p class="leading-relaxed {{#if descSize}}{{sizeClass descSize}} {{default descClass 'font-sans font-normal text-[#2D2D2D]'}}{{else}}{{default descClass 'font-sans font-normal text-sm text-[#2D2D2D]'}}{{/if}}">
       {{{description}}}
     </p>
   {{/if}}

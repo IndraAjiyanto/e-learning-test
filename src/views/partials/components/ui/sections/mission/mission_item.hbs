@@ -1,0 +1,18 @@
+{{!--
+  Komponen: Mission Item (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/sections/mission/mission_item.hbs
+
+  Satu baris misi bernomor untuk section Vision & Mission (Figma 250:883).
+
+  Props:
+  - number : angka 1..N (ditampilkan dua digit: "01".."05")
+  - lead   : teks tebal pembuka (mis. "To Become a Leading Provider:")
+  - body   : sisa kalimat
+--}}
+
+<div class="flex items-start gap-4 py-4 lg:gap-5 lg:py-5">
+  <span class="shrink-0 w-9 lg:w-11 font-montserrat font-bold text-xl lg:text-3xl leading-none text-[#0284C7]">{{#if (check number 10)}}0{{/if}}{{number}}</span>
+  <p class="{{sizeClass 'body'}} min-w-0 break-words font-inter tracking-[-0.01em] text-[#475569]">
+    <strong class="font-bold text-[#0B1F3B]">{{lead}}</strong> {{body}}
+  </p>
+</div>
