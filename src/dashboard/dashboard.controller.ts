@@ -277,4 +277,45 @@ export class DashboardController {
   mpp(@Res() res: Response) {
     return res.render('mpp');
   }
+
+  @Get('corporate-training')
+  async corporateTraining(@Req() req: Request, @Res() res: Response) {
+    const [
+      benefits,
+      alumni,
+      gallery,
+      faq,
+      social,
+      category,
+      programs,
+      courseType,
+      categoryPartner,
+      partners,
+    ] = await Promise.all([
+      this.dashboardService.findAllBenefits(),
+      this.dashboardService.findAllAlumni(),
+      this.galleryService.findAll(),
+      this.dashboardService.findFAQ(),
+      this.dashboardService.findSocial(),
+      this.dashboardService.findCategories(),
+      this.dashboardService.findAllCategories(),
+      this.dashboardService.findCourseTypes(),
+      this.dashboardService.findCategoryPartners(),
+      this.dashboardService.findAllPartners(),
+    ]);
+
+    return res.render('corporate_training', {
+      user: req.user,
+      benefits,
+      alumni,
+      gallery,
+      faq,
+      social,
+      category,
+      programs,
+      courseType,
+      categoryPartner,
+      partners,
+    });
+  }
 }

@@ -1,0 +1,93 @@
+{{!--
+  Halaman: Corporate Training (In House Training) - Figma 559:211
+  Lokasi: src/views/corporate_training.hbs
+  Route: GET /dashboard/corporate-training (dashboard.controller)
+  Data: benefits, alumni, gallery, faq, social, category (dashboard.service)
+  Hero + coming-soon dibuat khusus; why-choose / testimonials / gallery / faq / final-cta
+  memakai ulang section partial landing. Standar: sizeClass, .page-shell, base + lg.
+--}}
+<div class="min-h-screen bg-white pt-16 font-montserrat lg:pt-[76px]">
+
+  {{!-- Hero (559:229) --}}
+  <section class="w-full bg-[#F8F9FA] py-16 lg:py-20">
+    <div class="page-shell flex flex-col gap-10">
+      <div class="flex flex-col gap-5">
+        <span class="inline-flex w-fit items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 py-1.5 {{sizeClass 'body-sm'}} font-semibold text-[#0B1F3B]">
+          <i class="fas fa-briefcase text-[#0284C7]"></i>{{t 'test.corporateTraining.hero.tag'}}
+        </span>
+        <h1 class="{{sizeClass 'display'}} max-w-[900px] font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+          {{t 'test.corporateTraining.hero.title'}}
+        </h1>
+        <p class="{{sizeClass 'lead'}} max-w-[720px] font-open-sans text-[#4A5568]">
+          {{t 'test.corporateTraining.hero.description'}}
+        </p>
+      </div>
+
+      <div class="relative">
+        <div class="relative overflow-hidden rounded-3xl">
+          <img
+            src="/public/image/dashboard/bgHeroSection.png"
+            alt="{{t 'test.corporateTraining.hero.title'}}"
+            class="h-[280px] w-full object-cover lg:h-[520px]"
+            onerror="this.style.display='none'"
+          />
+          <div class="absolute inset-0 bg-[#0B1F3B]/35"></div>
+        </div>
+        <div class="mx-auto -mt-10 grid max-w-[880px] grid-cols-1 gap-6 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] sm:grid-cols-3 lg:-mt-16 lg:p-8">
+          <div class="flex flex-col items-center gap-1 text-center">
+            <span class="{{sizeClass 'h1'}} font-extrabold text-[#003060]">{{t 'test.corporateTraining.hero.stat1Value'}}</span>
+            <span class="{{sizeClass 'body-sm'}} font-inter font-medium uppercase tracking-wide text-[#6B7280]">{{t 'test.corporateTraining.hero.stat1Label'}}</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 border-y border-[#E5E7EB] py-4 text-center sm:border-x sm:border-y-0 sm:px-4 sm:py-0">
+            <span class="{{sizeClass 'h1'}} font-extrabold text-[#003060]">{{t 'test.corporateTraining.hero.stat2Value'}}</span>
+            <span class="{{sizeClass 'body-sm'}} font-inter font-medium uppercase tracking-wide text-[#6B7280]">{{t 'test.corporateTraining.hero.stat2Label'}}</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 text-center">
+            <span class="{{sizeClass 'h1'}} font-extrabold text-[#003060]">{{t 'test.corporateTraining.hero.stat3Value'}}</span>
+            <span class="{{sizeClass 'body-sm'}} font-inter font-medium uppercase tracking-wide text-[#6B7280]">{{t 'test.corporateTraining.hero.stat3Label'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{!-- Choose Your Program - coming soon (559:277) --}}
+  <section class="w-full bg-white py-16 lg:py-20">
+    <div class="page-shell flex flex-col items-center gap-10 text-center">
+      <div class="flex max-w-[640px] flex-col items-center gap-3">
+        <h2 class="{{sizeClass 'h1'}} font-inter font-bold text-[#111827]">
+          {{t 'test.corporateTraining.program.title'}}
+        </h2>
+        <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{t 'test.corporateTraining.program.description'}}</p>
+      </div>
+      <div class="flex w-full max-w-[720px] flex-col items-center gap-5 rounded-3xl border border-[#E5E7EB] bg-white p-10 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.08)] lg:p-16">
+        <span class="grid size-16 place-items-center rounded-full bg-[#0B1F3B] text-white">
+          <i class="fas fa-clock text-xl"></i>
+        </span>
+        <div class="flex flex-col items-center gap-2">
+          <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.corporateTraining.program.comingSoonTitle'}}</h3>
+          <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{t 'test.corporateTraining.program.comingSoonText'}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{!-- Why choose (reuse landing benefit section) --}}
+  {{> components/ui/sections/benefit/index}}
+
+  {{!-- Testimonials (reuse landing alumni section) --}}
+  {{> components/ui/sections/alumni/index}}
+
+  {{!-- Gallery (reuse landing gallery section) --}}
+  {{> components/ui/sections/gallery/index}}
+
+  {{!-- FAQ (reuse landing faq section) --}}
+  {{> components/ui/sections/faq/index}}
+
+  {{!-- Final CTA - corporate copy --}}
+  {{> components/ui/sections/final_cta/index
+      title=(t 'test.corporateTraining.cta.title')
+      description=(t 'test.corporateTraining.cta.description')
+      button=(t 'test.corporateTraining.cta.button')
+      href="/dashboard/about" }}
+</div>
