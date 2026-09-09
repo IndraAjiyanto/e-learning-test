@@ -70,6 +70,8 @@ import { PartnerModule } from './partner/partner.module';
 import { VoucherModule } from './voucher/voucher.module';
 import { FooterModule } from './footer/footer.module';
 import { FooterMiddleware } from './footer/footer.middleware';
+import { InstallmentReminderModule } from './installment_reminder/installment-reminder.module';
+import { InstallmentPaymentModule } from './installment_payment/installment-payment.module';
 import path from 'path';
 
 @Module({
@@ -147,6 +149,8 @@ import path from 'path';
     PartnerModule,
     VoucherModule,
     FooterModule,
+    InstallmentReminderModule,
+    InstallmentPaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

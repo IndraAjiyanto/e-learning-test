@@ -37,6 +37,18 @@ export class PaymentsController {
     @Req() req: Request & { user?: any },
   ) {
     try {
+      // Pembayaran cicilan bulanan (table installment_payments)
+      const installment =
+        await this.paymentsService.getInstallmentPaymentByNo(orderId);
+      if (installment) {
+        if (installment.status !== 'approved') {
+          installment.status = 'approved';
+          installment.paidAt = new Date();
+          await this.paymentsService.updateInstallmentPayment(installment);
+        }
+        return res.redirect('/users/profile?tab=history-payment#installment');
+      }
+
       const order = await this.paymentsService.getPaymentByNo(orderId);
       if (!order) {
         req.flash('error', 'Order tidak ditemukan.');
@@ -50,6 +62,9 @@ export class PaymentsController {
       try {
         if (req.user && course && order.process !== 'approved') {
           order.process = 'approved';
+          if (order.installment && !order.dpPaidAt) {
+            order.dpPaidAt = new Date();
+          }
           await this.paymentsService['paymentRepository'].save(order);
           await this.paymentsService.addUserToCourse(req.user.id, course.id);
         }
@@ -182,6 +197,8 @@ export class PaymentsController {
     @Param('userId') userId: string,
     @Res() res: Response,
   ) {
+    // Cek & perbarui status pembayaran full / DP yang masih menggantung ke Xendit
+    await this.paymentsService.reconcileUserPayments(userId).catch(() => undefined);
     const payment = await this.paymentsService.findPayment(userId);
     return res.json({ data: payment });
   }
@@ -204,6 +221,16 @@ export class PaymentsController {
   ) {
     const installments = await this.paymentsService.findInstallments(userId);
     return res.json({ data: installments });
+  }
+
+  @Roles('user')
+  @Get('api/installment-detail/:userId')
+  async getInstallmentDetail(
+    @Param('userId') userId: string,
+    @Res() res: Response,
+  ) {
+    const detail = await this.paymentsService.getUserInstallmentDetail(userId);
+    return res.json({ data: detail });
   }
 
   @Roles('user')

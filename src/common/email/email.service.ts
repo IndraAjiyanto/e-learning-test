@@ -229,4 +229,131 @@ export class EmailService {
       throw error;
     }
   }
+
+  async sendInstallmentReminderEmail(params: {
+    to: string;
+    username: string;
+    courseName: string;
+    month: number;
+    dueAmount: number;
+    dueDate: Date;
+    remainingInstallments: number;
+  }) {
+    const { to, username, courseName, month, dueAmount, dueDate } = params;
+    const formattedAmount = 'Rp ' + Number(dueAmount).toLocaleString('id-ID');
+    const formattedDate = dueDate.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    const paymentUrl = `${process.env.APP_URL_LMS || 'http://localhost:3000'}/payment/history`;
+
+    const mailOptions = {
+      from: `"${process.env.MAIL_FROM_NAME || 'Kesatria Academy'}" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+      to,
+      subject: `Pengingat Cicilan - ${courseName} (Bulan ${month})`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reminder Pembayaran Cicilan</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 0;">
+        <table role="presentation" style="width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 8px 8px 0 0;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Kesatria Academy</h1>
+              <p style="margin: 10px 0 0; color: #e2e8f0; font-size: 14px;">Reminder Pembayaran Cicilan</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h2 style="margin: 0 0 20px; color: #1e293b; font-size: 24px; font-weight: 600;">
+                Halo, ${username} 👋
+              </h2>
+
+              <p style="margin: 0 0 16px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Ini adalah pengingat untuk pembayaran cicilan program <strong>${courseName}</strong> Anda.
+                Berikut detail pembayaran bulan ini:
+              </p>
+
+              <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 24px 0; background-color: #f8fafc; border-radius: 8px;">
+                <tr>
+                  <td style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 14px;">Program</td>
+                  <td style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${courseName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 14px;">Cicilan Bulan Ke</td>
+                  <td style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 14px; font-weight: 600; text-align: right;">${month}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 14px;">Nominal Pembayaran</td>
+                  <td style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 16px; font-weight: 700; text-align: right;">${formattedAmount}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px 24px; color: #475569; font-size: 14px;">Jatuh Tempo</td>
+                  <td style="padding: 16px 24px; color: #dc2626; font-size: 14px; font-weight: 600; text-align: right;">${formattedDate}</td>
+                </tr>
+              </table>
+
+              <table role="presentation" style="margin: 30px 0;">
+                <tr>
+                  <td style="border-radius: 8px; background: linear-gradient(135deg, #334155 0%, #1e293b 100%);">
+                    <a href="${paymentUrl}" target="_blank"
+                      style="display: inline-block; padding: 16px 40px; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px;">
+                      Lakukan Pembayaran
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="padding: 20px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin: 24px 0;">
+                <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
+                  <strong>⚠️ Penting:</strong> Mohon selesaikan pembayaran cicilan Anda sebelum tanggal jatuh tempo
+                  agar akses ke program tetap aktif. Jika sudah membayar, abaikan email ini.
+                </p>
+              </div>
+
+              <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">
+                Jika Anda memiliki pertanyaan, silakan hubungi tim kami.
+                <br><br>
+                Best regards,<br>
+                <strong>Kesatria Academy Team</strong>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f8fafc; border-radius: 0 0 8px 8px; text-align: center;">
+              <p style="margin: 0 0 8px; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} Kesatria Academy. All rights reserved.
+              </p>
+              <p style="margin: 0; color: #cbd5e1; font-size: 12px;">
+                Student Service Center - Your Learning Partner
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`,
+    };
+
+    await this.transporter.sendMail(mailOptions);
+    return { success: true };
+  }
 }

@@ -49,6 +49,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.27",
+    "@nestjs/schedule": "^12.0.1",
     "@nestjs/serve-static": "^5.0.3",
     "@nestjs/swagger": "^11.4.6",
     "@nestjs/typeorm": "^11.0.0",
@@ -172,6 +173,9 @@
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

@@ -5,6 +5,7 @@ import { CreateInstallmentsDto } from './dto/create-installments.dto';
 import { UpdateInstallmentsDto } from './dto/update-installments.dto';
 import { Installment } from '../entities/installment.entity';
 import { Course } from '../entities/course.entity';
+import { dateHelpers } from '../common/helpers/date.helpers';
 
 @Injectable()
 export class InstallmentsService {
@@ -33,10 +34,15 @@ export class InstallmentsService {
   }
 
   async findAll() {
-    return await this.installmentsRepository.find({
+    const installments = await this.installmentsRepository.find({
       relations: ['course'],
       order: { month: 'ASC' },
     });
+
+    return installments.map((i) => ({
+      ...i,
+      dueDates: dateHelpers.toDateOnlyArray(i.dueDates),
+    }));
   }
 
   async findOne(id: string) {
@@ -49,7 +55,10 @@ export class InstallmentsService {
       throw new NotFoundException(`Installment not found`);
     }
 
-    return installments;
+    return {
+      ...installments,
+      dueDates: dateHelpers.toDateOnlyArray(installments.dueDates),
+    };
   }
 
   async findByKelas(courseId: string) {
@@ -93,6 +102,10 @@ export class InstallmentsService {
 
     if (updateCicilanDto.downPayment) {
       installments.downPayment = updateCicilanDto.downPayment;
+    }
+
+    if (updateCicilanDto.dueDates) {
+      installments.dueDates = updateCicilanDto.dueDates;
     }
 
     return await this.installmentsRepository.save(installments);

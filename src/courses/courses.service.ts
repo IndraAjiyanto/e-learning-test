@@ -33,6 +33,7 @@ import { Installment } from 'src/entities/installment.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { dateHelpers } from 'src/common/helpers/date.helpers';
 
 @Injectable()
 export class CoursesService {
@@ -1029,10 +1030,15 @@ export class CoursesService {
   }
 
   async findCourseInstallments(courseId: string) {
-    return await this.installmentsRepository.find({
+    const installments = await this.installmentsRepository.find({
       where: { course: { id: courseId } },
       order: { month: 'ASC' },
     });
+
+    return installments.map((i) => ({
+      ...i,
+      dueDates: dateHelpers.toDateOnlyArray(i.dueDates),
+    }));
   }
 
   async findCourseAlumni(courseId: string) {
@@ -1146,6 +1152,25 @@ export class CoursesService {
     if (!userCourses) {
       throw new NotFoundException('User not found');
     }
+
+    const hasPayment = await this.paymentRepository.findOne({
+      where: { user: { id: userId }, course: { id: courseId } },
+    });
+    if (hasPayment) {
+      throw new BadRequestException(
+        'User tidak dapat dihapus dari program karena sudah memiliki riwayat pembayaran.',
+      );
+    }
+
+    const hasRegistration = await this.registrationRepository.findOne({
+      where: { user: { id: userId }, course: { id: courseId } },
+    });
+    if (hasRegistration) {
+      throw new BadRequestException(
+        'User tidak dapat dihapus dari program karena sudah memiliki riwayat registration.',
+      );
+    }
+
     return await this.userCourseRepository.remove(userCourses);
   }
 
