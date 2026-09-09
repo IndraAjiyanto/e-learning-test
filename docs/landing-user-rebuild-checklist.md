@@ -71,9 +71,14 @@ shell, and verified the whole surface. `npm run build` green; every route return
 - [x] dual-block -> single-tree + `sizeClass` conversion of all 7 landing sections
 - [x] alumni.hbs + public/gallery/index.hbs full-page views -> `.page-shell` + `sizeClass`
       (dropped `max-w-[1600/1440]`, `text-[NNpx]` on headings/leads, stat numbers to named sizes)
-- [x] L1 card partials `card_benefit` / `card_program` / `accordion/faq` and `card_alumni`
-      (profile variant) -> `sizeClass` keys instead of `text-[NNpx]`
-- [ ] `card_alumni` `stacked` variant (legacy, not on the redesign path) still has `text-[NNpx]` - left as-is
+- [x] L1 card partials `card_benefit` / `card_program` / `accordion/faq` / `card_alumni`
+      (both `profile` and `stacked` variants) -> `sizeClass` keys instead of `text-[NNpx]`
+
+**Dead code found while tracing (delete-decision for Indra, not blocking):**
+`src/views/partials/freeProgramNew/` (6 partials, included by nothing) and
+`src/views/short_class.hbs` + `src/views/partials/short_class/` (no controller renders
+`short_class` - the category enum is Special/Paid/Free only). The `card_alumni` `stacked`
+variant is only reachable through these. Left in place, just standard-compliant now.
 
 ## Commits on dev-miko (this pass)
 - feat(shell): rebuild navbar + footer to the Figma redesign
