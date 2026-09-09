@@ -16,6 +16,7 @@ import { Session } from 'src/entities/session.entity';
 import { VoucherModule } from 'src/voucher/voucher.module';
 import { ApiPaymentController } from './api-payment.controller';
 import { InvoiceModule } from 'src/invoice/invoice.module';
+import { InstallmentPaymentModule } from 'src/installment_payment/installment-payment.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { InvoiceModule } from 'src/invoice/invoice.module';
     CommonModule,
     VoucherModule,
     forwardRef(() => InvoiceModule),
+    InstallmentPaymentModule,
   ],
   controllers: [PaymentsController, ApiPaymentController],
   providers: [PaymentsService],

@@ -87,6 +87,12 @@ export class Payment {
   @Column({ nullable: true })
   attend_program: boolean;
 
+  @Column({ type: 'timestamp', nullable: true })
+  dpPaidAt: Date;
+
+  @Column({ type: 'jsonb', nullable: true, default: () => "'[]'" })
+  reminderSentMonths: number[];
+
   @OneToOne(() => Invoice, (invoice) => invoice.payment)
   invoice: Invoice;
 
@@ -105,8 +111,9 @@ export class Payment {
   @Exclude()
   course: Course;
 
-  @OneToOne(() => Installment, (installment) => installment.payment)
-  @JoinColumn()
+  @ManyToOne(() => Installment, (installment) => installment.payment, {
+    onDelete: 'SET NULL',
+  })
   @Exclude()
   installment: Installment;
 }

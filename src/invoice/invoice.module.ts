@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { VoucherModule } from 'src/voucher/voucher.module';
 import { Course } from 'src/entities/course.entity';
 import { PaymentsModule } from 'src/payments/payments.module';
+import { InstallmentPaymentModule } from 'src/installment_payment/installment-payment.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PaymentsModule } from 'src/payments/payments.module';
     ConfigModule,
     VoucherModule,
     forwardRef(() => PaymentsModule),
+    InstallmentPaymentModule,
   ],
   controllers: [InvoiceController],
   providers: [InvoiceService],
