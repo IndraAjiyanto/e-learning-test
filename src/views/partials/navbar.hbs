@@ -90,22 +90,50 @@
         <div
           x-show="classOpen"
           x-transition.origin.top
-          class="absolute left-1/2 z-[100] mt-5 w-[min(92vw,1050px)] -translate-x-1/2"
+          class="fixed left-1/2 top-[68px] z-[100] w-[min(94vw,1080px)] -translate-x-1/2"
           style="display:none"
         >
-          <div class="grid gap-10 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] lg:grid-cols-[310px_1fr] lg:p-12">
+          <div class="grid gap-10 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] lg:grid-cols-[300px_1fr] lg:gap-12 lg:p-12">
             <div class="flex flex-col gap-4">
               <div class="flex items-center gap-3">
-                <span class="grid size-8 place-items-center rounded-2xl bg-[#003060] text-white"><i class="fas fa-graduation-cap text-sm"></i></span>
-                <span class="font-inter text-2xl font-extrabold text-[#003060]">{{t 'test.navbar.class'}}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-8 shrink-0"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <span class="font-inter text-[28px] font-extrabold leading-tight text-[#003060]">{{t 'test.navbar.class'}}</span>
               </div>
               <p class="font-inter text-sm leading-relaxed text-[#1F2937]">{{t 'test.navbar.classMenuIntro'}}</p>
             </div>
-            <div class="grid gap-3 sm:grid-cols-2">
-              {{> components/ui/card/category/mpp/index isMobile=false}}
-              <template x-for="kat in category" :key="kat.id">
-                {{> components/ui/card/category/dynamic/index isMobile=false}}
-              </template>
+            <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+              <div class="flex flex-col gap-5">
+                {{#each category}}
+                  {{#if (check @index 3)}}
+                    {{> components/ui/nav/dropdown_row/index
+                        href=(concat '/category/program/' name)
+                        icon=(lookup (array 'rocket' 'zap' 'building') @index)
+                        title=name
+                        desc=(getByLang text ../lang)
+                        last=@last }}
+                  {{/if}}
+                {{/each}}
+              </div>
+              <div class="flex flex-col gap-5">
+                {{#each category}}
+                  {{#unless (check @index 3)}}
+                    {{> components/ui/nav/dropdown_row/index
+                        href=(concat '/category/program/' name)
+                        icon="globe"
+                        title=name
+                        desc=(getByLang text ../lang)
+                        last=true }}
+                  {{/unless}}
+                {{/each}}
+                <div class="flex flex-col gap-4 rounded-xl bg-[#1E3E8F] p-5 pt-5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-6"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                  <div class="flex flex-col gap-2">
+                    <p class="font-inter text-base font-bold leading-snug text-white">{{t 'test.navbar.classCtaTitle'}}</p>
+                    <p class="font-inter text-[11px] leading-relaxed text-white/70">{{t 'test.navbar.classCtaDesc'}}</p>
+                  </div>
+                  <a href="{{#if social.length}}https://wa.me/{{social.[0].number}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="rounded-md bg-white py-2.5 text-center font-inter text-xs font-bold text-[#1E3E8F] transition hover:bg-white/90">{{t 'test.navbar.classCtaButton'}}</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -131,29 +159,35 @@
         <div
           x-show="infoOpen"
           x-transition.origin.top
-          class="absolute right-0 z-[100] mt-5 w-[min(92vw,1050px)]"
+          class="fixed left-1/2 top-[68px] z-[100] w-[min(94vw,1080px)] -translate-x-1/2"
           style="display:none"
         >
-          <div class="grid gap-10 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] lg:grid-cols-[310px_1fr] lg:p-12">
+          <div class="grid gap-10 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0_0_4px_0_rgba(0,0,0,0.25)] lg:grid-cols-[300px_1fr] lg:gap-12 lg:p-12">
             <div class="flex flex-col gap-4">
               <div class="flex items-center gap-3">
-                <span class="grid size-8 place-items-center rounded-2xl border-2 border-[#003060] font-inter text-base font-bold text-[#003060]">i</span>
-                <span class="font-inter text-2xl font-extrabold text-[#003060]">{{t 'test.navbar.information'}}</span>
+                <span class="grid size-8 shrink-0 place-items-center rounded-2xl border-2 border-[#003060] font-inter text-base font-bold text-[#003060]">i</span>
+                <span class="font-inter text-[28px] font-extrabold leading-tight text-[#003060]">{{t 'test.navbar.information'}}</span>
               </div>
               <p class="font-inter text-sm leading-relaxed text-[#1F2937]">{{t 'test.navbar.infoMenuIntro'}}</p>
             </div>
-            <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-              {{> components/ui/nav/info_item/index href="/dashboard/about"       icon="fa-circle-info"   title=(t 'test.navbar.about')     desc=(t 'test.navbar.infoAboutDesc') }}
-              {{> components/ui/nav/info_item/index href="/dashboard/gallery"     icon="fa-image"         title=(t 'test.navbar.gallery')   desc=(t 'test.navbar.infoGalleryDesc') }}
-              {{> components/ui/nav/info_item/index href="/dashboard/portofolios" icon="fa-briefcase"     title=(t 'test.navbar.portfolio') desc=(t 'test.navbar.infoPortfolioDesc') }}
-              {{> components/ui/nav/info_item/index href="/dashboard/alumni"      icon="fa-users"         title=(t 'test.navbar.alumni')    desc=(t 'test.navbar.infoAlumniDesc') }}
-              {{#unless isAuthenticated}}
-                <div class="flex flex-col gap-3 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:col-span-2">
-                  <p class="font-inter text-sm font-bold text-[#003060]">{{t 'test.navbar.infoLoginCtaTitle'}}</p>
-                  <p class="font-inter text-xs leading-relaxed text-[#555A64]">{{t 'test.navbar.infoLoginCtaDesc'}}</p>
-                  <a href="/login" @click="setActive('/login')" class="inline-flex w-fit items-center rounded-xl bg-[#003060] px-4 py-2 font-inter text-xs font-bold text-white transition hover:bg-[#00244a]">{{t 'test.navbar.login'}}</a>
-                </div>
-              {{/unless}}
+            <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+              <div class="flex flex-col gap-5">
+                {{> components/ui/nav/dropdown_row/index href="/dashboard/about"       icon="info"      title=(t 'test.navbar.about')     desc=(t 'test.navbar.infoAboutDesc') }}
+                {{> components/ui/nav/dropdown_row/index href="/dashboard/gallery"     icon="image"     title=(t 'test.navbar.gallery')   desc=(t 'test.navbar.infoGalleryDesc') }}
+                {{> components/ui/nav/dropdown_row/index href="/dashboard/portofolios" icon="briefcase" title=(t 'test.navbar.portfolio') desc=(t 'test.navbar.infoPortfolioDesc') last=true }}
+              </div>
+              <div class="flex flex-col gap-5">
+                {{> components/ui/nav/dropdown_row/index href="/dashboard/alumni" icon="cap" title=(t 'test.navbar.alumni') desc=(t 'test.navbar.infoAlumniDesc') last=true }}
+                {{#unless isAuthenticated}}
+                  <div class="flex items-center justify-between gap-4 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+                    <div class="flex flex-col gap-1">
+                      <p class="font-inter text-sm font-bold text-[#003060]">{{t 'test.navbar.infoLoginCtaTitle'}}</p>
+                      <p class="font-inter text-xs leading-[1.5] text-[#555A64]">{{t 'test.navbar.infoLoginCtaDesc'}}</p>
+                    </div>
+                    <a href="/login" @click="setActive('/login')" class="shrink-0 rounded-xl bg-[#003060] px-5 py-2.5 font-inter text-[13px] font-bold text-white transition hover:bg-[#00244a]">{{t 'test.navbar.login'}}</a>
+                  </div>
+                {{/unless}}
+              </div>
             </div>
           </div>
         </div>
