@@ -8,13 +8,16 @@
   - trash-2 stroke #dc2626, edit-2 stroke #525252 (urutan: delete lalu edit)
 
   Alpine: `user.id` dari scope x-for.
+
+  Tombol delete tidak langsung menghapus: `confirmDeleteUser()` membuka
+  ui/super_admin/modal/delete_user sambil membawa <form> di atasnya.
 --}}
 <div class='flex items-center gap-1'>
   {{!-- Delete --}}
   <form :action='"/users/" + user.id + "?_method=DELETE"' method='post'>
     <button
       type='button'
-      onclick='confirmDelete(this)'
+      onclick='confirmDeleteUser(this)'
       title='Delete user'
       aria-label='Delete user'
       class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'

@@ -152,7 +152,7 @@
         {{> components/ui/super_admin/form/button
           label='Delete User'
           variant='danger'
-          onclick='confirmDelete(this)'
+          onclick='confirmDeleteUser(this)'
           class='w-full sm:w-auto'
         }}
       </form>
@@ -160,25 +160,12 @@
   </div>
 </div>
 
-<script>
-  // Konfirmasi hapus — pola yang sama dengan halaman User List.
-  function confirmDelete(button) {
-    const form = button.closest('form');
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#003060',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        form.submit();
-      }
-    });
-  }
+{{!-- Konfirmasi delete — komponen yang sama dengan halaman User List
+     (Figma node 768:46118). Tombol Danger Zone di atas memakai
+     onclick='confirmDeleteUser(this)'; fungsi itu didefinisikan oleh komponen modal. --}}
+{{> components/ui/super_admin/modal/delete_user/index }}
 
+<script>
   function editUserForm() {
     // Foto lama dari server; dipakai sebagai preview awal & saat user membatalkan
     // pilihan file baru. String kosong bila user belum punya foto.

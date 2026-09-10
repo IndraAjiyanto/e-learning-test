@@ -34,6 +34,12 @@
   </div>
 </div>
 
+{{!-- Konfirmasi delete — Figma node 768:46118 (frame Modal 768:46985).
+     Dipanggil di luar x-data='userTable()' agar overlay menutup seluruh viewport.
+     Tombol trash di row_actions memakai onclick='confirmDeleteUser(this)'; fungsi itu
+     didefinisikan oleh komponen modal, bukan halaman ini. --}}
+{{> components/ui/super_admin/modal/delete_user/index }}
+
 <script>
   function roleLabel(role) {
     switch (role) {
@@ -46,23 +52,6 @@
       default:
         return role;
     }
-  }
-
-  function confirmDelete(button) {
-    const form = button.closest('form');
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        form.submit();
-      }
-    });
   }
 
   function userTable() {
