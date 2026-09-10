@@ -1,210 +1,364 @@
-<div class="py-10">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg"
-    x-data="{
-        previewUrl: null,
-        errorMessage: '',
-        isValid: true,
-        fileName: '',
-        fileSize: 0,
-        imageWidth: 0,
-        imageHeight: 0,
-        hasFile: false,
-        oldPhoto: `{{#if users.profile}}{{users.profile}}{{else}}/images/default-avatar.png{{/if}}`,
+{{!--
+  Halaman: Edit User — Super Admin
+  Lokasi: src/views/super_admin/user/edit.hbs
+  Level: L4 Page
 
-        // Form validation states
-        formData: {
-          username: `{{users.username}}`,
-          email: `{{users.email}}`,
-          role: `{{users.role}}`
-        },
-        formErrors: {
-          username: '',
-          email: '',
-          role: ''
-        },
-        formValid: {
-          username: true,
-          email: true,
-          role: true
-        },
+  Figma: LMS Kesatria — Edit User (node 768:41676 "Content")
+  - page bg #f3f3f3, padding 43px 33px, gap antar-blok 16px
+  - Sidebar disediakan layouts/main.hbs (offset lg:ml-[319px])
 
-        validateImage(file) {
-          if (!file) {
-            this.hasFile = false;
-            return;
-          }
+  Route: GET /users/formEdit/:userId
+         → POST /users/super_admin/:userId?_method=PATCH (multipart)
+         → POST /users/:userId?_method=DELETE (Danger Zone)
 
-          this.hasFile = true;
-          this.fileName = file.name;
-          this.fileSize = file.size;
-          this.errorMessage = '';
-          this.isValid = true;
+  Catatan Figma: instance tombol submit di node 768:41907 masih memakai teks
+  "Create User" (sisa dari halaman Create). Di sini dipakai "Save Changes"
+  agar label sesuai aksi halaman Edit — satu-satunya penyimpangan dari teks Figma.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[33px] sm:py-[43px]'>
+  <div class='flex flex-col gap-4'>
+    {{!-- Title — Figma node 768:41678 (gap 4px) --}}
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Edit User'
+      }}
 
-          // Validasi tipe file
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
+      {{> components/ui/super_admin/description/index
+        text="Update the user's profile, role, and account status."
+      }}
+    </div>
 
-          // Validasi ukuran file (5MB = 5242880 bytes)
-          const maxSize = 5 * 1024 * 1024; // 5MB
-          if (file.size > maxSize) {
-            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
+    {{!-- Section - MAIN FORM CARD — Figma node 768:41874
+         card bg #ffffff, border 1px #d9d9d9, radius 12, padding 32,
+         shadow 0 1px 2px rgba(0,0,0,0.05), gap antar-section 24;
+         grid field 2 kolom, gap kolom 12, gap baris 10 (node 768:41886).
 
-          // Validasi dimensi gambar
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
+         Beda dengan Create User (node 740:7048): tanpa field password,
+         ada field Status, submit 'Save Changes'.
 
-          img.onload = () => {
-            this.imageWidth = img.width;
-            this.imageHeight = img.height;
-
-            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
-              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
-              this.isValid = false;
-              this.previewUrl = null;
-              URL.revokeObjectURL(objectUrl);
-            } else {
-              this.previewUrl = objectUrl;
-              this.isValid = true;
-              this.errorMessage = '';
-            }
-          };
-
-          img.onerror = () => {
-            this.errorMessage = 'Failed to load image';
-            this.isValid = false;
-            this.previewUrl = null;
-            URL.revokeObjectURL(objectUrl);
-          };
-
-          img.src = objectUrl;
-        },
-
-        validateField(field, value) {
-          this.formData[field] = value;
-
-          switch(field) {
-            case 'username':
-              if (!value.trim()) {
-                this.formErrors.username = 'Username is required';
-                this.formValid.username = false;
-              } else if (value.trim().length < 3) {
-                this.formErrors.username = 'Username must be at least 3 characters';
-                this.formValid.username = false;
-              } else {
-                this.formErrors.username = '';
-                this.formValid.username = true;
-              }
-              break;
-
-            case 'email':
-              if (!value.trim()) {
-                this.formErrors.email = 'Email is required';
-                this.formValid.email = false;
-              } else {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) {
-                  this.formErrors.email = 'Please enter a valid email address';
-                  this.formValid.email = false;
-                } else {
-                  this.formErrors.email = '';
-                  this.formValid.email = true;
-                }
-              }
-              break;
-
-            case 'role':
-              if (!value) {
-                this.formErrors.role = 'Please select a role';
-                this.formValid.role = false;
-              } else {
-                this.formErrors.role = '';
-                this.formValid.role = true;
-              }
-              break;
-          }
-        },
-
-        clearFile() {
-          this.previewUrl = null;
-          this.errorMessage = '';
-          this.isValid = true;
-          this.fileName = '';
-          this.fileSize = 0;
-          this.imageWidth = 0;
-          this.imageHeight = 0;
-          this.hasFile = false;
-          this.$refs.fileInput.value = null;
-        },
-
-        canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
-          const formValid = this.formValid.username && this.formValid.email && this.formValid.role;
-          return imageValid && formValid;
-        },
-
-        hasFormErrors() {
-          return Object.values(this.formErrors).some(error => error !== '');
-        }
-      }"
-  >
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit User</h2>
-
-    <form action="/users/super_admin/{{users.id}}?_method=PATCH" method="POST" x-data="{ loading: false }" enctype="multipart/form-data" class="space-y-6"
-      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+         Kontrak backend (tidak diubah):
+         POST /users/super_admin/:userId?_method=PATCH, multipart/form-data,
+         field username, email, role, isVerified, profile. --}}
+    <form
+      action='/users/super_admin/{{users.id}}?_method=PATCH'
+      method='post'
+      enctype='multipart/form-data'
+      novalidate
+      x-data='editUserForm()'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-8'
     >
+      <div class='flex flex-col gap-6'>
+        {{> components/ui/super_admin/form/photo_upload }}
 
-{{> super_admin/user/edit/profile_input}}
+        <div class='grid grid-cols-1 gap-x-3 gap-y-2.5 md:grid-cols-2'>
+          {{> components/ui/super_admin/form/text_field
+            id='username'
+            name='username'
+            field='username'
+            label='Username'
+            type='text'
+            placeholder='Username'
+            autocomplete='off'
+            required=true
+          }}
 
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {{> components/ui/super_admin/form/text_field
+            id='email'
+            name='email'
+            field='email'
+            label='Email Address'
+            type='email'
+            placeholder='email@untitledui.com'
+            autocomplete='off'
+            required=true
+          }}
 
-        {{> super_admin/user/edit/username_input }}
-        {{> super_admin/user/edit/email_input }}
-        {{> super_admin/user/edit/role_input }}
+          {{> components/ui/super_admin/form/select_field
+            id='role'
+            name='role'
+            field='role'
+            label='Role'
+            placeholder='Select a role'
+            options='roleOptions'
+            required=true
+          }}
 
-
-      </div>
-
-      <!-- Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show='loading'class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a
-          href='/users'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
-
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
+          {{!-- Status memakai select_field varian 'dropdown' (Figma node 768:41913);
+               titik status datang dari `dot` di statusOptions. --}}
+          {{> components/ui/super_admin/form/select_field
+            id='isVerified'
+            name='isVerified'
+            field='isVerified'
+            label='Status'
+            variant='dropdown'
+            placeholder='Select a status'
+            options='statusOptions'
+            required=true
+          }}
         </div>
-      </template>
+
+        {{> components/ui/super_admin/form/button
+          row=true
+          cancelHref='/users'
+          submitLabel='Save Changes'
+        }}
+      </div>
     </form>
+
+    {{!-- 4. DANGER ZONE CARD (Account Deletion) — Figma node 768:41716
+         card bg #ffffff, border 1px #d9d9d9, radius 16, padding 19/31,
+         shadow 0 1px 2px rgba(0,0,0,0.05), baris space-between gap 44;
+         featured icon 48px bulat, bg #fee2e2, ring 8px #fef2f2,
+         alert-circle 24px stroke #dc2626 (node 768:41718);
+         judul Montserrat SemiBold 16/20 #003060,
+         deskripsi Montserrat Medium 14/20 #718096 (gap 4);
+         tombol h 44, px 18, py 10, radius 8, bg #dc2626, Inter SemiBold 16/24 #ffffff.
+
+         Kontrak backend (tidak diubah): DELETE /users/:id (lewat method-override). --}}
+    <div
+      class='flex flex-col gap-6 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-[19px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-center sm:justify-between sm:gap-11 sm:px-[31px]'
+    >
+      <div class='flex items-start gap-4'>
+        {{!-- Featured icon — 32px inti + ring 8px, total 48px --}}
+        <span
+          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2] text-[#dc2626]'
+        >
+          {{!-- lucide: alert-circle --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6'>
+            <circle cx='12' cy='12' r='10' />
+            <path d='M12 8v4' />
+            <path d='M12 16h.01' />
+          </svg>
+        </span>
+
+        {{!-- Judul & deskripsi sama-sama memakai ui/super_admin/description dengan
+             override `class`, karena default komponen (Montserrat Medium 16/20
+             #718096) berbeda dari dua gaya teks di Figma node 768:41720 / 768:41721. --}}
+        <div class='flex flex-col gap-1'>
+          {{> components/ui/super_admin/description/index
+            text='Delete User Account'
+            class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+          }}
+
+          {{> components/ui/super_admin/description/index
+            text='Permanently remove this user and revoke access to Kesatria Academy. This action cannot be undone.'
+            class='font-montserrat font-medium text-sm leading-5 text-[#718096]'
+          }}
+        </div>
+      </div>
+
+      <form action='/users/{{users.id}}?_method=DELETE' method='post' class='shrink-0'>
+        {{> components/ui/super_admin/form/button
+          label='Delete User'
+          variant='danger'
+          onclick='confirmDeleteUser(this)'
+          class='w-full sm:w-auto'
+        }}
+      </form>
+    </div>
   </div>
 </div>
+
+{{!-- Konfirmasi delete — komponen yang sama dengan halaman User List
+     (Figma node 768:46118). Tombol Danger Zone di atas memakai
+     onclick='confirmDeleteUser(this)'; fungsi itu didefinisikan oleh komponen modal. --}}
+{{> components/ui/super_admin/modal/delete_user/index }}
+
+<script>
+  function editUserForm() {
+    // Foto lama dari server; dipakai sebagai preview awal & saat user membatalkan
+    // pilihan file baru. String kosong bila user belum punya foto.
+    const originalPhoto = {{{json users.profile}}} || '';
+
+    return {
+      loading: false,
+
+      // Role — urutan & label mengikuti Figma node 768:41908 (Admin, Mentor, User)
+      roleOptions: [
+        { value: 'super_admin', label: 'Admin' },
+        { value: 'admin', label: 'Mentor' },
+        { value: 'user', label: 'User' },
+      ],
+
+      // Status — Figma node 768:41913; sumber data tunggal: field `isVerified`
+      statusOptions: [
+        { value: 'true', label: 'Verified', dot: 'bg-[#22c55e]' },
+        { value: 'false', label: 'Unverified', dot: 'bg-[#718096]' },
+      ],
+
+      // Profile photo — di halaman Edit preview terisi foto user yang ada
+      previewUrl: originalPhoto || null,
+      errorMessage: '',
+      isValid: true,
+      fileName: '',
+      hasFile: false,
+
+      // Nilai awal form = data user dari controller (populated state)
+      formData: {
+        username: {{{json users.username}}} || '',
+        email: {{{json users.email}}} || '',
+        role: {{{json users.role}}} || '',
+        isVerified: {{#if users.isVerified}}'true'{{else}}'false'{{/if}},
+      },
+      formErrors: { username: '', email: '', role: '', isVerified: '' },
+      // Error hanya ditampilkan setelah field disentuh atau setelah submit ditekan
+      touched: { username: false, email: false, role: false, isVerified: false },
+
+      validateImage(file) {
+        this.clearPreview();
+
+        if (!file) return;
+
+        this.hasFile = true;
+        this.fileName = file.name;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.setImageError('Only JPG and PNG formats are allowed');
+          return;
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          this.setImageError(
+            `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+          );
+          return;
+        }
+
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+          if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError(
+              `Image is ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`,
+            );
+            return;
+          }
+
+          this.objectUrl = objectUrl;
+          this.previewUrl = objectUrl;
+          this.isValid = true;
+          this.errorMessage = '';
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          this.setImageError('Failed to load image');
+        };
+
+        img.src = objectUrl;
+      },
+
+      objectUrl: null,
+
+      setImageError(message) {
+        this.errorMessage = message;
+        this.isValid = false;
+        // Tetap tampilkan foto lama agar kartu tidak terlihat kosong saat error
+        this.previewUrl = originalPhoto || null;
+      },
+
+      // Reset ke kondisi awal halaman Edit: foto lama, bukan kosong.
+      clearPreview() {
+        if (this.objectUrl) {
+          URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = null;
+        }
+        this.previewUrl = originalPhoto || null;
+        this.errorMessage = '';
+        this.isValid = true;
+        this.fileName = '';
+        this.hasFile = false;
+      },
+
+      clearFile() {
+        this.clearPreview();
+        this.$refs.fileInput.value = null;
+      },
+
+      validateField(field, value) {
+        const val = (value ?? '').toString();
+        this.formData[field] = val;
+        this.formErrors[field] = this.touched[field] ? this.errorFor(field, val) : '';
+      },
+
+      errorFor(field, val) {
+        switch (field) {
+          case 'username':
+            if (!val.trim()) return 'Username is required.';
+            if (val.trim().length < 3) return 'Username must be at least 3 characters.';
+            return '';
+
+          case 'email': {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(val.trim()) ? '' : 'Please enter a valid work email.';
+          }
+
+          case 'role':
+            return val ? '' : 'Please select a role.';
+
+          case 'isVerified':
+            return val ? '' : 'Please select a status.';
+
+          default:
+            return '';
+        }
+      },
+
+      touch(field) {
+        this.touched[field] = true;
+        this.validateField(field, this.formData[field]);
+      },
+
+      validateAll() {
+        Object.keys(this.formData).forEach((field) => {
+          this.touched[field] = true;
+          this.formErrors[field] = this.errorFor(field, this.formData[field]);
+        });
+      },
+
+      hasFormErrors() {
+        return Object.values(this.formErrors).some((error) => error !== '');
+      },
+
+      canSubmit() {
+        const imageValid = !this.hasFile || this.isValid;
+        return imageValid && !this.hasFormErrors();
+      },
+
+      // Arahkan user ke masalah pertama: foto profil dulu (pesannya di luar grid field),
+      // baru field form sesuai urutan.
+      focusFirstInvalid() {
+        if (this.hasFile && !this.isValid) {
+          this.$refs.fileInput.parentElement.querySelector('button')?.focus();
+          return;
+        }
+
+        const firstInvalid = Object.keys(this.formErrors).find((f) => this.formErrors[f]);
+        if (!firstInvalid) return;
+
+        const target =
+          document.getElementById(`${firstInvalid}-trigger`) ||
+          document.getElementById(firstInvalid);
+        target?.focus();
+      },
+
+      // Tombol Save Changes selalu aktif; validasi dijalankan di sini.
+      // Bila ada field kosong/tidak valid, form tidak dikirim dan pesan merah muncul.
+      submitForm(event) {
+        this.validateAll();
+        if (!this.canSubmit()) {
+          this.focusFirstInvalid();
+          return;
+        }
+
+        this.loading = true;
+        event.target.submit();
+      },
+    };
+  }
+</script>

@@ -1,0 +1,25 @@
+{{!--
+  Komponen: Description (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/description/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Paragraf deskripsi/sub heading untuk halaman-halaman Super Admin.
+  Styling default mengikuti Figma LMS Kesatria node 768:42366 (Sub heading):
+  Montserrat Medium 16/20, #718096.
+
+  Props:
+  - text  : string (wajib) — isi paragraf
+  - tag   : 'p' | 'span' | 'div' (default 'p')
+  - class : string (opsional) — override penuh styling default
+
+  Contoh:
+    {{> components/ui/super_admin/description/index
+      text='Manage program and their access to Kesatria Academy.' }}
+--}}
+{{#if (eq tag 'span')}}
+  <span class='{{default class "font-montserrat font-medium text-base leading-5 text-[#718096]"}}'>{{text}}</span>
+{{else if (eq tag 'div')}}
+  <div class='{{default class "font-montserrat font-medium text-base leading-5 text-[#718096]"}}'>{{text}}</div>
+{{else}}
+  <p class='{{default class "font-montserrat font-medium text-base leading-5 text-[#718096]"}}'>{{text}}</p>
+{{/if}}

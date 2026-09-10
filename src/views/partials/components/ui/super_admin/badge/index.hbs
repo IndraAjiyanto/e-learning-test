@@ -1,0 +1,47 @@
+{{!--
+  Komponen: Badge (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/badge/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Pill badge untuk tabel/halaman Super Admin. Menggabungkan dua varian Figma
+  yang memakai `_Badge base` yang sama:
+  - tanpa dot : node 1046:3816 — px8 py2, radius 16, text 12/18   (mis. Role)
+  - dengan dot: node 1046:4846 — pl6 pr8 py2, gap 6, dot 6px      (mis. Status)
+
+  Props:
+  - text         : ekspresi Alpine untuk x-text (wajib), mis. 'roleLabel(user.role)'
+  - class        : kelas warna statis, mis. 'bg-[#f9f5ff] text-[#6941c6]'
+  - classExpr    : ekspresi Alpine untuk :class warna (dipakai bila warnanya kondisional)
+  - dot          : boolean (default false) — tampilkan dot di kiri teks
+  - dotClass     : kelas warna dot statis, mis. 'bg-[#22c55e]'
+  - dotClassExpr : ekspresi Alpine untuk :class warna dot
+
+  Aturan kutip (penting, karena props berisi ekspresi Alpine mentah):
+  - `text`      dirender ke x-text='…'  → di dalamnya pakai kutip GANDA
+  - `*ClassExpr` dirender ke :class="…" → di dalamnya pakai kutip TUNGGAL
+
+  Contoh:
+    {{> components/ui/super_admin/badge/index
+      text='roleLabel(user.role)'
+      class='bg-[#f9f5ff] text-[#6941c6]' }}
+
+    {{> components/ui/super_admin/badge/index
+      dot=true
+      text='user.isVerified ? "Verified" : "Unverified"'
+      classExpr="user.isVerified ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#d9d9d9] text-[#718096]'"
+      dotClassExpr="user.isVerified ? 'bg-[#22c55e]' : 'bg-[#718096]'" }}
+--}}
+<span
+  class='inline-flex items-center rounded-2xl py-0.5 font-inter text-xs font-medium leading-[18px] {{#if dot}}gap-1.5 pl-1.5 pr-2{{else}}px-2{{/if}} {{class}}'
+  {{#if classExpr}}:class="{{{classExpr}}}"{{/if}}
+>
+  {{#if dot}}
+    <span class='flex h-2 w-2 items-center justify-center'>
+      <span
+        class='h-1.5 w-1.5 rounded-full {{dotClass}}'
+        {{#if dotClassExpr}}:class="{{{dotClassExpr}}}"{{/if}}
+      ></span>
+    </span>
+  {{/if}}
+  <span x-text='{{{text}}}'></span>
+</span>

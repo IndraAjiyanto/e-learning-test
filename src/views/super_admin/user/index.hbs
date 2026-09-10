@@ -1,180 +1,110 @@
+{{!--
+  Halaman: Pengelolaan User — Super Admin
+  Lokasi: src/views/super_admin/user/index.hbs
+  Level: L4 Page
+
+  Figma: LMS Kesatria — List User (node 768:42362 "Content")
+  - page bg #f3f3f3, padding 42px 34px, container gap 28, blok tabel gap 14
+  - Sidebar sudah disediakan oleh layouts/main.hbs (offset lg:ml-[319px])
+
+  Data: GET /users/filter → { data, totalItems, totalPages, currentPage }
+  Status memakai field `isVerified`; kolom avatar memakai field `profile`.
+--}}
 <div
-  class='w-full mx-auto px-6 py-10'
+  class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'
   x-data='userTable()'
   x-init='fetchUsers()'
 >
-  <div class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'>
-    <h2 class='text-3xl font-bold text-gray-900 text-center md:text-left'>Users</h2>
+  <div class='flex flex-col gap-7'>
+    {{!-- Title — Figma node 768:42364 (gap 4px) --}}
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Users'
+      }}
 
-    <div class='flex items-center gap-3'>
-      <div class='relative w-full md:w-64'>
-        <input
-          type='text'
-          placeholder='Search user...'
-          x-model='searchInput'
-          @input='handleSearch()'
-          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
-        />
-        <button
-          @click='handleSearch()'
-          class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
-        >
-          <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z' />
-          </svg>
-        </button>
-      </div>
-
-      <a href='/users/formCreate' class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'>
-        Create User
-      </a>
-    </div>
-  </div>
-
-  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
-    <!-- Loading -->
-    <div x-show='loading' class='py-12 text-center text-gray-500'>
-      <i class='fas fa-spinner fa-spin text-2xl'></i>
+      {{> components/ui/super_admin/description/index
+        text='Manage program and their access to Kesatria Academy.'
+      }}
     </div>
 
-    <table x-show='!loading' class='min-w-full divide-y divide-gray-200'>
-      <thead class='bg-gray-100'>
-        <tr>
-          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>No</th>
-          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Profile</th>
-          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Name</th>
-          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Email</th>
-          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Role</th>
-          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Action</th>
-        </tr>
-      </thead>
-      <tbody class='divide-y divide-gray-200'>
-        <template x-for='(user, index) in users' :key='user.id'>
-          <tr class='hover:bg-gray-50 transition'>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text='(currentPage - 1) * size + index + 1'></td>
-            <td class='px-6 py-4 text-sm text-gray-800'>
-              <template x-if='user.profile'>
-                <img :src='user.profile' :alt='user.username' class='w-12 h-12 rounded-full object-cover border' />
-              </template>
-              <template x-if='!user.profile'>
-                <div class='w-12 h-12 bg-gray-600 rounded-full border border-gray-300 flex items-center justify-center'>
-                  <span class='text-white font-bold text-lg' x-text='user.username?.charAt(0).toUpperCase()'></span>
-                </div>
-              </template>
-            </td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text='user.username'></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text='user.email'></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text='roleLabel(user.role)'></td>
-            <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
-
-
-              <!-- Edit -->
-              <a :href='"/users/formEdit/" + user.id'
-                class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition' title='Edit'>
-                <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                  <path stroke-linecap='round' stroke-linejoin='round' d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13l-2.685.805.805-2.685a4.5 4.5 0 011.13-1.897l10.927-10.936z' />
-                  <path stroke-linecap='round' stroke-linejoin='round' d='M19.5 7.125L16.875 4.5' />
-                </svg>
-              </a>
-
-              <!-- Delete -->
-              <form :action='"/users/" + user.id + "?_method=DELETE"' method='post'>
-                <button type='button' onclick='confirmDelete(this)'
-                  class='p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition' title='Delete'>
-                  <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                    <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0' />
-                  </svg>
-                </button>
-              </form>
-            </td>
-          </tr>
-        </template>
-
-        <!-- Empty State -->
-        <tr x-show='!loading && users.length === 0'>
-          <td colspan='6' class='px-6 py-12 text-center text-gray-400'>No users found.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Pagination -->
-  <div class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center' x-show='totalPages > 1'>
-    <button @click='changePage(currentPage - 1)' :disabled='currentPage === 1'
-      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }">Prev</button>
-
-    <template x-for='page in totalPages' :key='page'>
-      <button @click='changePage(page)' class='px-3 py-1 rounded'
-        :class="{ 'bg-gray-900 text-white font-bold': page === currentPage }"
-        x-text='page'>
-      </button>
-    </template>
-
-    <button @click='changePage(currentPage + 1)' :disabled='currentPage === totalPages'
-      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }">Next</button>
+    <div class='flex flex-col gap-3.5'>
+      {{> components/ui/super_admin/index/toolbar }}
+      {{> components/ui/super_admin/index/table }}
+    </div>
   </div>
 </div>
 
+{{!-- Konfirmasi delete — Figma node 768:46118 (frame Modal 768:46985).
+     Dipanggil di luar x-data='userTable()' agar overlay menutup seluruh viewport.
+     Tombol trash di row_actions memakai onclick='confirmDeleteUser(this)'; fungsi itu
+     didefinisikan oleh komponen modal, bukan halaman ini. --}}
+{{> components/ui/super_admin/modal/delete_user/index }}
+
+{{!-- Notifikasi sukses delete — Figma node 846:26691 (frame Modal 768:40586).
+     `userDeleted` adalah flash khusus dari DELETE /users/:id (lihat main.ts);
+     flash 'success' biasa tetap dipegang partial sweetalert agar tidak dobel toast. --}}
+{{> components/ui/super_admin/toast/success/index message=userDeleted }}
+
 <script>
-function roleLabel(role) {
-  switch (role) {
-    case 'super_admin':
-      return 'admin';
-    case 'admin':
-      return 'mentor';
-    default:
-      return role;
+  function roleLabel(role) {
+    switch (role) {
+      case 'super_admin':
+        return 'Admin';
+      case 'admin':
+        return 'Mentor';
+      case 'user':
+        return 'User';
+      default:
+        return role;
+    }
   }
-}
 
-function userTable() {
-  return {
-    users: [],
-    searchInput: '',
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    size: 10,
-    loading: false,
-    searchTimeout: null,
+  function userTable() {
+    return {
+      users: [],
+      searchInput: '',
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 0,
+      size: 10,
+      loading: false,
+      searchTimeout: null,
 
-    async fetchUsers() {
-      this.loading = true;
-      try {
-        const params = new URLSearchParams();
-        if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
-        params.set('page', this.currentPage);
-        params.set('limit', this.size);
+      async fetchUsers() {
+        this.loading = true;
+        try {
+          const params = new URLSearchParams();
+          if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
+          params.set('page', this.currentPage);
+          params.set('limit', this.size);
 
-        const res = await fetch(`/users/filter?${params.toString()}`);
-        const json = await res.json();
+          const res = await fetch(`/users/filter?${params.toString()}`);
+          const json = await res.json();
 
-        this.users = json.data;
-        this.totalItems = json.totalItems;
-        this.totalPages = json.totalPages;
-        this.currentPage = json.currentPage;
-      } catch (err) {
-        console.error('Fetch users error:', err);
-      } finally {
-        this.loading = false;
-      }
-    },
+          this.users = json.data;
+          this.totalItems = json.totalItems;
+          this.totalPages = json.totalPages;
+          this.currentPage = json.currentPage;
+        } catch (err) {
+          console.error('Fetch users error:', err);
+        } finally {
+          this.loading = false;
+        }
+      },
 
-    handleSearch() {
-      clearTimeout(this.searchTimeout);
-      this.searchTimeout = setTimeout(() => {
-        this.currentPage = 1;
-        this.fetchUsers();
-      }, 300);
-    },
+      handleSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.currentPage = 1;
+          this.fetchUsers();
+        }, 300);
+      },
 
-    async changePage(page) {
-      if (page < 1 || page > this.totalPages) return;
-      this.currentPage = page;
-      await this.fetchUsers();
-    },
+      async changePage(page) {
+        if (page < 1 || page > this.totalPages) return;
+        this.currentPage = page;
+        await this.fetchUsers();
+      },
+    }
   }
-}
 </script>

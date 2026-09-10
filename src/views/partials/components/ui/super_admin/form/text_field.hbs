@@ -1,0 +1,109 @@
+{{!--
+  Komponen: Form Text Field (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/text_field.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Figma: LMS Kesatria — Create User node 740:7062 / 740:7074 ("_Input field base")
+  - stack vertikal gap 6 (label → input → hint)
+  - label Inter Medium 14/20 #404040, tanda wajib #dc2626
+  - input h 44, px 14, py 10, radius 8, border #d4d4d4, bg #ffffff,
+    shadow 0 1px 2px rgba(0,0,0,0.05), teks Inter Regular 16/24, placeholder #737373
+  - hint Inter Regular 14/20 #525252
+  - toggle password: ikon mata 16px #545454 di sisi kanan (node 740:7082)
+
+  Props:
+  - id          : string (wajib) — id input sekaligus target label
+  - name        : string (wajib) — name yang dikirim ke backend
+  - label       : string (wajib)
+  - field       : string (wajib) — key state Alpine (formData/formErrors)
+  - type        : 'text' | 'email' | 'password' (default 'text')
+  - placeholder : string (opsional)
+  - hint        : string (opsional) — hint statis, disembunyikan saat ada error
+  - required    : boolean (opsional) — menampilkan asterisk merah + attribute required
+  - toggle      : boolean (opsional) — tombol show/hide password.
+                  Ikon mata tetap tampil selama field terisi (termasuk saat error)
+                  agar user bisa memeriksa password yang sedang diketik; ikon
+                  alert-circle hanya mengisi slot kanan saat error & field kosong.
+  - autocomplete: string (opsional)
+--}}
+<div class='flex flex-col gap-1.5'{{#if toggle}} x-data='{ showValue: false }'{{/if}}>
+  <label
+    for='{{id}}'
+    class='font-inter text-sm font-medium leading-5 text-[#404040]'
+  >{{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</label>
+
+  <div class='relative'>
+    <input
+      id='{{id}}'
+      name='{{name}}'
+      type='{{default type "text"}}'
+      {{#if toggle}}:type="showValue ? 'text' : 'password'"{{/if}}
+      {{#if required}}required{{/if}}
+      {{#if autocomplete}}autocomplete='{{autocomplete}}'{{/if}}
+      placeholder='{{placeholder}}'
+      x-model='formData.{{field}}'
+      @input='validateField("{{field}}", $event.target.value)'
+      @blur='touch("{{field}}")'
+      :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
+      :class="formErrors.{{field}}
+        ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
+        : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+      {{#unless toggle}}
+        {{!-- slot ikon error: pakai inline style agar tidak kalah urutan dari utility pr-3.5 --}}
+        :style="formErrors.{{field}} && 'padding-right: 44px'"
+      {{/unless}}
+      class='h-11 w-full rounded-lg border bg-white py-2.5 pl-3.5 {{#if toggle}}pr-11{{else}}pr-3.5{{/if}} font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
+    />
+
+    {{#if toggle}}
+      <button
+        type='button'
+        x-show='formData.{{field}} || !formErrors.{{field}}'
+        @click='showValue = !showValue'
+        :aria-label="showValue ? 'Hide password' : 'Show password'"
+        :class="formErrors.{{field}} ? 'text-[#ef4444]' : 'text-[#545454]'"
+        class='absolute right-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-sm transition-colors hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:text-[#001c39]'
+      >
+        {{!-- lucide: eye --}}
+        <svg x-show='!showValue' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+          <path d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z' />
+          <circle cx='12' cy='12' r='3' />
+        </svg>
+        {{!-- lucide: eye-off --}}
+        <svg x-show='showValue' x-cloak xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+          <path d='M10.7 5.1A9.9 9.9 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.6 17.6 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.4-1' />
+          <path d='m2 2 20 20' />
+          <path d='M9.9 9.9a3 3 0 0 0 4.2 4.2' />
+        </svg>
+      </button>
+    {{/if}}
+
+    {{!-- Error indicator — Figma node 768:42045 (alert-circle 16px #ef4444) --}}
+    <span
+      x-show='formErrors.{{field}}{{#if toggle}} && !formData.{{field}}{{/if}}'
+      x-cloak
+      class='pointer-events-none absolute right-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-[#ef4444]'
+    >
+      {{!-- lucide: alert-circle --}}
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+        <circle cx='12' cy='12' r='10' />
+        <path d='M12 8v4' />
+        <path d='M12 16h.01' />
+      </svg>
+    </span>
+  </div>
+
+  <p
+    x-show='formErrors.{{field}}'
+    x-cloak
+    x-text='formErrors.{{field}}'
+    class='font-inter text-sm leading-5 text-[#ef4444]'
+  ></p>
+
+  {{#if hint}}
+    <p
+      x-show='!formErrors.{{field}}'
+      class='font-inter text-sm leading-5 text-[#525252]'
+    >{{hint}}</p>
+  {{/if}}
+</div>
