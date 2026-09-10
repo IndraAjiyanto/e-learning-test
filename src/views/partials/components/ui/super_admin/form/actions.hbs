@@ -1,0 +1,42 @@
+{{!--
+  Komponen: Form Primary Actions (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/actions.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Figma: LMS Kesatria — Create User node 740:7088 / 740:7089 ("Section D: Primary Actions")
+  - wrapper padding-top 8, baris padding-top 24 + border-top 1px #d9d9d9
+  - rata kanan, gap 16
+  - tombol h 44, px 18, py 10, radius 8, shadow 0 1px 2px rgba(0,0,0,0.05), Inter SemiBold 16/24
+  - Cancel: bg #ffffff, border #d4d4d4, teks #003060
+  - Submit: bg + border #003060, teks #ffffff
+
+  Submit SELALU aktif (Figma node 768:42045 — state error tetap menampilkan tombol
+  navy penuh). Validasi dijalankan saat submit; bila gagal, form tidak terkirim dan
+  pesan error merah muncul di tiap field. Tombol hanya non-aktif selama proses kirim.
+
+  Props:
+  - cancelHref  : string (wajib) — tujuan tombol Cancel
+  - submitLabel : string (default 'Save')
+  - cancelLabel : string (default 'Cancel')
+
+  Submit memakai state Alpine dari form pemanggil: loading.
+--}}
+<div class='pt-2'>
+  <div class='flex flex-col-reverse gap-4 border-t border-[#d9d9d9] pt-6 sm:flex-row sm:justify-end'>
+    <a
+      href='{{cancelHref}}'
+      :class="loading && 'pointer-events-none opacity-60'"
+      class='inline-flex h-11 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#003060] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#ededed]'
+    >{{default cancelLabel 'Cancel'}}</a>
+
+    <button
+      type='submit'
+      :disabled='loading'
+      :class="loading && 'cursor-wait opacity-80'"
+      class='inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 hover:border-[#00254a] hover:bg-[#00254a] active:bg-[#001c39] font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2'
+    >
+      <span x-show='loading' x-cloak class='loading loading-spinner loading-sm'></span>
+      <span x-text="loading ? 'Saving...' : '{{default submitLabel 'Save'}}'"></span>
+    </button>
+  </div>
+</div>

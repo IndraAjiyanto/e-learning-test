@@ -1,0 +1,118 @@
+{{!--
+  Komponen: Form Select Field (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/select_field.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Figma: LMS Kesatria — Create User node 740:7085 (Role) + 740:3637 ("_Select menu")
+  - trigger sama persis dengan text_field: h 44, radius 8, border #d4d4d4, shadow 0 1px 2px rgba(0,0,0,0.05)
+  - placeholder Inter Regular 16/24 #737373, chevron-down 20px #737373 (padding kanan 14)
+  - menu: bg #ffffff, border #e5e5e5, radius 8, padding-y 4,
+    shadow 0 4px 6px -2px rgba(0,0,0,0.03) + 0 12px 16px -4px rgba(0,0,0,0.08)
+  - item h 44, px 14, py 10, Montserrat 16/24 #4a5568;
+    item terpilih bg #e4f1f7, teks Montserrat Medium #055c90 + ikon check 20px #055c90
+
+  Menggunakan listbox Alpine (bukan <select> native) agar menu bisa mengikuti Figma.
+  Nilai terpilih dikirim ke backend lewat <input type='hidden'>.
+
+  Props:
+  - id          : string (wajib)
+  - name        : string (wajib) — name hidden input
+  - label       : string (wajib)
+  - field       : string (wajib) — key state Alpine (formData/formErrors)
+  - options     : string (wajib) — nama variabel Alpine berisi [{ value, label }]
+  - placeholder : string (opsional)
+  - hint        : string (opsional)
+  - required    : boolean (opsional)
+--}}
+<div
+  class='flex flex-col gap-1.5'
+  x-data='{ open: false }'
+  @keydown.escape.stop='open = false'
+  @click.outside='open = false'
+>
+  <label
+    id='{{id}}-label'
+    class='font-inter text-sm font-medium leading-5 text-[#404040]'
+  >{{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</label>
+
+  <div class='relative'>
+    <input type='hidden' id='{{id}}' name='{{name}}' x-model='formData.{{field}}' />
+
+    <button
+      type='button'
+      id='{{id}}-trigger'
+      @click='open = !open'
+      :aria-expanded='open'
+      :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
+      aria-haspopup='listbox'
+      aria-labelledby='{{id}}-label'
+      :class="formErrors.{{field}}
+        ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
+        : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+      class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border bg-white py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2'
+    >
+      <span
+        :class="formData.{{field}} ? 'text-[#171717]' : 'text-[#737373]'"
+        x-text="({{options}}.find(o => o.value === formData.{{field}}) || {}).label || '{{default placeholder "Select an option"}}'"
+      ></span>
+      <span
+        class='flex h-5 w-5 shrink-0 items-center justify-center transition-transform'
+        :class="[open ? 'rotate-180' : '', formErrors.{{field}} ? 'text-[#dc2626]' : 'text-[#737373]']"
+      >
+        {{!-- lucide: chevron-down --}}
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+          <path d='m6 9 6 6 6-6' />
+        </svg>
+      </span>
+    </button>
+
+    <ul
+      x-show='open'
+      x-cloak
+      x-transition.opacity.duration.150ms
+      role='listbox'
+      aria-labelledby='{{id}}-label'
+      class='absolute left-0 top-[calc(100%+6px)] z-20 w-full max-w-full overflow-hidden sm:min-w-[320px] rounded-lg border border-[#e5e5e5] bg-white py-1 shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
+    >
+      <template x-for='option in {{options}}' :key='option.value'>
+        <li>
+          <button
+            type='button'
+            role='option'
+            :aria-selected='formData.{{field}} === option.value'
+            @click='formData.{{field}} = option.value; touch("{{field}}"); open = false'
+            :class="formData.{{field}} === option.value
+              ? 'bg-[#e4f1f7] font-medium text-[#055c90]'
+              : 'text-[#4a5568] hover:bg-[#f5f5f5] active:bg-[#ededed]'"
+            class='flex h-11 w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left font-montserrat text-base leading-6 transition-colors focus:outline-none focus-visible:bg-[#f5f5f5] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003060]/40'
+          >
+            <span x-text='option.label'></span>
+            <span
+              x-show='formData.{{field}} === option.value'
+              class='flex h-5 w-5 shrink-0 items-center justify-center text-[#055c90]'
+            >
+              {{!-- lucide: check --}}
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                <path d='M20 6 9 17l-5-5' />
+              </svg>
+            </span>
+          </button>
+        </li>
+      </template>
+    </ul>
+  </div>
+
+  <p
+    x-show='formErrors.{{field}}'
+    x-cloak
+    x-text='formErrors.{{field}}'
+    class='font-inter text-sm leading-5 text-[#ef4444]'
+  ></p>
+
+  {{#if hint}}
+    <p
+      x-show='!formErrors.{{field}}'
+      class='font-inter text-sm leading-5 text-[#525252]'
+    >{{hint}}</p>
+  {{/if}}
+</div>

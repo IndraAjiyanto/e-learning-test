@@ -1,0 +1,89 @@
+{{!--
+  Komponen: Profile Photo Upload (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/photo_upload.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Figma: LMS Kesatria — Create User node 740:7049 ("Section A: Profile Photo")
+  - baris horizontal gap 24, align center, padding-bottom 24, border-bottom 1px #d9d9d9
+  - avatar 96px bulat, bg #f9f5ff, ring 4px #ffffff,
+    shadow 0 4px 6px -2px rgba(0,0,0,0.03) + 0 12px 16px -4px rgba(0,0,0,0.08),
+    ikon user 48px stroke #7f56d9
+  - judul Montserrat SemiBold 14/20 #003060 + meta Montserrat Regular 12/16 #718096 (gap 8)
+  - tombol h 38, px 16, py 8, radius 8, border #d9d9d9, Montserrat SemiBold 14/20 #003060
+
+  State Alpine dipegang oleh pemanggil (create_form): previewUrl, errorMessage,
+  isValid, hasFile, fileName, validateImage(), clearFile().
+
+  Props:
+  - id      : string (default 'profile')
+  - name    : string (default 'profile')
+  - label   : string (default 'Profile Photo')
+  - meta    : string (default 'JPG or PNG • Max 5 MB')
+  - action  : string (default 'Update Photo')
+--}}
+<div class='flex flex-col items-start gap-6 border-b border-[#d9d9d9] pb-6 sm:flex-row sm:items-center'>
+  <div class='relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f9f5ff] ring-4 ring-white shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'>
+    <img
+      x-show='previewUrl'
+      x-cloak
+      :src='previewUrl'
+      alt='Profile photo preview'
+      class='h-full w-full object-cover'
+    />
+    <span x-show='!previewUrl' class='text-[#7f56d9]'>
+      {{!-- lucide: user --}}
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-12 w-12'>
+        <path d='M19 21v-2a7 7 0 0 0-14 0v2' />
+        <circle cx='12' cy='7' r='4' />
+      </svg>
+    </span>
+  </div>
+
+  <div class='flex flex-col gap-1.5'>
+    <div class='flex flex-wrap items-center gap-2'>
+      <span class='font-montserrat text-sm font-semibold leading-5 text-[#003060]'>{{default label 'Profile Photo'}}</span>
+      <span
+        x-show='!hasFile || !isValid'
+        class='font-montserrat text-xs leading-4 text-[#718096]'
+      >{{default meta 'JPG or PNG • Max 5 MB'}}</span>
+      <span
+        x-show='hasFile && isValid'
+        x-cloak
+        x-text='fileName'
+        class='max-w-[260px] truncate font-montserrat text-xs leading-4 text-[#718096]'
+      ></span>
+    </div>
+
+    <div class='flex flex-wrap items-center gap-2 pt-1'>
+      <input
+        type='file'
+        id='{{default id "profile"}}'
+        name='{{default name "profile"}}'
+        accept='image/jpeg,image/jpg,image/png'
+        x-ref='fileInput'
+        class='sr-only'
+        @change='validateImage($event.target.files[0])'
+      />
+      <button
+        type='button'
+        @click='$refs.fileInput.click()'
+        class='inline-flex h-[38px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-4 py-2 font-montserrat text-sm font-semibold leading-5 text-[#003060] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#ededed]'
+      >{{default action 'Update Photo'}}</button>
+
+      <button
+        type='button'
+        x-show='hasFile'
+        x-cloak
+        @click='clearFile()'
+        class='inline-flex h-[38px] items-center justify-center rounded-lg px-2 font-montserrat text-sm font-semibold leading-5 text-[#718096] transition-colors hover:text-[#dc2626] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2'
+      >Remove</button>
+    </div>
+
+    <p
+      x-show='errorMessage'
+      x-cloak
+      x-text='errorMessage'
+      class='font-inter text-sm leading-5 text-[#dc2626]'
+    ></p>
+  </div>
+</div>
