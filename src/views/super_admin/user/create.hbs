@@ -22,7 +22,80 @@
       }}
     </div>
 
-    {{> components/ui/super_admin/user/create_form }}
+    {{!-- Section - MAIN FORM CARD (Details, Role, Status) — Figma node 740:7048
+         card bg #ffffff, border 1px #d9d9d9, radius 12, padding 32,
+         shadow 0 1px 2px rgba(0,0,0,0.05), gap antar-section 24;
+         grid field 2 kolom, gap kolom 12, gap baris 10 (node 740:7060).
+
+         Kontrak backend (tidak diubah): POST /users multipart/form-data
+         dengan field username, email, password, role, profile. --}}
+    <form
+      action='/users'
+      method='post'
+      enctype='multipart/form-data'
+      novalidate
+      x-data='createUserForm()'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-8'
+    >
+      <div class='flex flex-col gap-6'>
+        {{> components/ui/super_admin/form/photo_upload }}
+
+        <div class='grid grid-cols-1 gap-x-3 gap-y-2.5 md:grid-cols-2'>
+          {{> components/ui/super_admin/form/text_field
+            id='username'
+            name='username'
+            field='username'
+            label='Username'
+            type='text'
+            placeholder='Username'
+            autocomplete='off'
+            required=true
+          }}
+
+          {{> components/ui/super_admin/form/text_field
+            id='email'
+            name='email'
+            field='email'
+            label='Email Address'
+            type='email'
+            placeholder='email@untitledui.com'
+            autocomplete='off'
+            required=true
+          }}
+
+          {{> components/ui/super_admin/form/text_field
+            id='password'
+            name='password'
+            field='password'
+            label='Create Password'
+            type='password'
+            placeholder='Create your password'
+            hint='Min. 8 characters • 1 uppercase • 1 special character'
+            autocomplete='new-password'
+            required=true
+            toggle=true
+          }}
+
+          {{> components/ui/super_admin/form/select_field
+            id='role'
+            name='role'
+            field='role'
+            label='Role'
+            placeholder='Select a role'
+            hint='Assign a role and access level for this account'
+            options='roleOptions'
+            required=true
+          }}
+        </div>
+
+        {{> components/ui/super_admin/form/button
+          row=true
+          cancelHref='/users'
+          submitLabel='Create User'
+        }}
+      </div>
+    </form>
   </div>
 </div>
 

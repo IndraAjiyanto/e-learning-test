@@ -323,6 +323,9 @@ export class UsersController {
   ) {
     try {
       if (req.user!.id == id) {
+        // Status verifikasi hanya boleh diubah Super Admin lewat
+        // PATCH /users/super_admin/:userId — bukan dari update profil sendiri.
+        delete updateUserDto.isVerified;
         await this.usersService.update(id, updateUserDto);
         req.flash('success', 'User successfully updated');
         res.redirect('/users/profile');
@@ -365,6 +368,12 @@ export class UsersController {
           await this.usersService.deleteFile(user.profile);
         }
         updateUserDto.profile = req.body.uploadedImageUrls?.[0];
+      }
+      // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
+      // Belum ada global ValidationPipe, jadi coerce manual sebelum disimpan
+      // (string 'false' bersifat truthy di JS).
+      if (updateUserDto.isVerified !== undefined) {
+        updateUserDto.isVerified = `${updateUserDto.isVerified}` === 'true';
       }
       await this.usersService.update(userId, updateUserDto);
       req.flash('success', 'User successfully updated');

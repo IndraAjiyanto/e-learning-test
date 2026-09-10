@@ -1,0 +1,98 @@
+{{!--
+  Komponen: Button (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/button.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Punya DUA mode:
+
+  A. Mode tunggal (default) — satu tombol.
+     Figma: _Button base (Edit User node 768:41906 Cancel / 768:41907 Submit,
+     Danger Zone node 768:41722)
+     - h 44, px 18, py 10, radius 8, shadow 0 1px 2px rgba(0,0,0,0.05)
+     - Inter SemiBold 16/24
+     - primary   : bg + border #003060, teks #ffffff   (hover #00254a, active #001c39)
+     - secondary : bg #ffffff, border #d4d4d4, teks #003060 (hover bg #f5f5f5, active #ededed)
+     - danger    : bg #dc2626, teks #ffffff             (hover #b91c1c, active #991b1b)
+
+  B. Mode baris (row=true) — baris aksi footer form, merender Cancel + Submit.
+     Figma: "Section D: Primary Actions" (Create User node 740:7088/740:7089,
+     Edit User node 768:41904/768:41905)
+     - wrapper padding-top 8, baris padding-top 24 + border-top 1px #d9d9d9
+     - rata kanan, gap 16; di mobile kolom terbalik (submit di atas Cancel)
+     Mode ini memanggil komponen ini sendiri untuk kedua tombolnya.
+
+  PROP DUA MODE INI SALING EKSKLUSIF:
+  - row kosong  -> pakai label/variant/as/href/type/onclick/class/loading/loadingLabel
+  - row=true    -> pakai cancelHref/cancelLabel/submitLabel; prop mode tunggal diabaikan
+
+  CATATAN: sengaja TIDAK memakai ui/button/submit atau ui/button/consultation —
+  keduanya memakai bahasa desain lama (rounded-[12px], font-montserrat font-bold)
+  yang berbeda dari Untitled UI di Figma Super Admin.
+
+  Props mode tunggal:
+  - label        : string (wajib) — teks tombol
+  - variant      : 'primary' (default) | 'secondary' | 'danger'
+  - as           : 'button' (default) | 'link'
+  - href         : string — wajib bila as='link'
+  - type         : 'button' (default) | 'submit' — hanya untuk as='button'
+  - onclick      : string (opsional) — handler inline, mis. 'confirmDelete(this)'
+  - class        : string (opsional) — class tambahan untuk layout/sizing
+  - loading      : boolean (opsional) — pasang binding Alpine `loading`
+                   (disabled + spinner + label diganti). HANYA pakai bila tombol
+                   berada di dalam x-data yang menyediakan `loading`; di luar itu
+                   Alpine mengabaikan directive-nya dan label akan kosong.
+  - loadingLabel : string (default 'Saving...') — label saat loading
+
+  Props mode baris:
+  - row         : true — mengaktifkan mode baris
+  - cancelHref  : string (wajib) — tujuan tombol Cancel
+  - cancelLabel : string (default 'Cancel')
+  - submitLabel : string (default 'Save')
+  Submit memakai state Alpine `loading` dari form pemanggil.
+--}}
+{{#if row}}
+  <div class='pt-2'>
+    <div class='flex flex-col-reverse gap-4 border-t border-[#d9d9d9] pt-6 sm:flex-row sm:justify-end'>
+      {{!-- row=false WAJIB: partial mewarisi konteks induk, jadi tanpa override
+           eksplisit panggilan di bawah masih melihat row=true dari induk dan
+           memicu rekursi tak terbatas (RangeError: Maximum call stack size). --}}
+      {{> components/ui/super_admin/form/button
+        row=false
+        as='link'
+        variant='secondary'
+        href=cancelHref
+        label=(default cancelLabel 'Cancel')
+        loading=true
+      }}
+
+      {{> components/ui/super_admin/form/button
+        row=false
+        type='submit'
+        variant='primary'
+        label=(default submitLabel 'Save')
+        loading=true
+      }}
+    </div>
+  </div>
+{{else if (eq as 'link')}}
+  <a
+    href='{{href}}'
+    {{#if onclick}}onclick='{{{onclick}}}'{{/if}}
+    {{#if loading}}:class="loading && 'pointer-events-none opacity-60'"{{/if}}
+    class='inline-flex h-11 items-center justify-center rounded-lg px-[18px] py-2.5 font-inter text-base font-semibold leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 {{#if (eq variant 'danger')}}bg-[#dc2626] text-white hover:bg-[#b91c1c] active:bg-[#991b1b] focus-visible:ring-[#dc2626]/40{{else if (eq variant 'secondary')}}border border-[#d4d4d4] bg-white text-[#003060] hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:ring-[#003060]/40{{else}}gap-2 border border-[#003060] bg-[#003060] text-white hover:border-[#00254a] hover:bg-[#00254a] active:bg-[#001c39] focus-visible:ring-[#003060]/40{{/if}}{{#if class}} {{class}}{{/if}}'
+  >{{label}}</a>
+{{else}}
+  <button
+    type='{{default type "button"}}'
+    {{#if onclick}}onclick='{{{onclick}}}'{{/if}}
+    {{#if loading}}:disabled='loading' :class="loading && 'cursor-wait opacity-80'"{{/if}}
+    class='inline-flex h-11 items-center justify-center rounded-lg px-[18px] py-2.5 font-inter text-base font-semibold leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 {{#if (eq variant 'danger')}}bg-[#dc2626] text-white hover:bg-[#b91c1c] active:bg-[#991b1b] focus-visible:ring-[#dc2626]/40{{else if (eq variant 'secondary')}}border border-[#d4d4d4] bg-white text-[#003060] hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:ring-[#003060]/40{{else}}gap-2 border border-[#003060] bg-[#003060] text-white hover:border-[#00254a] hover:bg-[#00254a] active:bg-[#001c39] focus-visible:ring-[#003060]/40{{/if}}{{#if class}} {{class}}{{/if}}'
+  >
+    {{#if loading}}
+      <span x-show='loading' x-cloak class='loading loading-spinner loading-sm'></span>
+      <span x-text="loading ? '{{default loadingLabel 'Saving...'}}' : '{{label}}'"></span>
+    {{else}}
+      {{label}}
+    {{/if}}
+  </button>
+{{/if}}
