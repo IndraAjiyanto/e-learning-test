@@ -471,7 +471,10 @@ export class UsersController {
 
       await this.usersService.remove(id);
 
-      req.flash('success', 'User successfully deleted');
+      // Sengaja bukan flash 'success': halaman /users menampilkan hasil delete lewat
+      // komponen toast sendiri (ui/super_admin/toast/success), sedangkan 'success'
+      // akan dirender partial sweetalert sebagai toast kedua.
+      req.flash('userDeleted', 'The user account has been permanently removed');
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete user');

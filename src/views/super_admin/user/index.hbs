@@ -40,6 +40,11 @@
      didefinisikan oleh komponen modal, bukan halaman ini. --}}
 {{> components/ui/super_admin/modal/delete_user/index }}
 
+{{!-- Notifikasi sukses delete — Figma node 846:26691 (frame Modal 768:40586).
+     `userDeleted` adalah flash khusus dari DELETE /users/:id (lihat main.ts);
+     flash 'success' biasa tetap dipegang partial sweetalert agar tidak dobel toast. --}}
+{{> components/ui/super_admin/toast/success/index message=userDeleted }}
+
 <script>
   function roleLabel(role) {
     switch (role) {
