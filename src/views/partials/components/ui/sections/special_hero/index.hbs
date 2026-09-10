@@ -1,202 +1,94 @@
 {{!--
-  Komponen: Special Hero Section (L2 Section)
+  Section: Special/Free/In-House Program Hero (L2) - reskin ke standar internal (no Figma).
   Lokasi: src/views/partials/components/ui/sections/special_hero/index.hbs
-  
-  Props:
-  - category : Object dengan category.name, category.hero_section_image, category.description
-  - lang     : Bahasa aktif
+  Satu pohon markup, base + lg. .page-shell, sizeClass, font-montserrat heading + open-sans body.
+  Props: category (.name, .description, .hero_section_image, .type), lang.
 --}}
+<section class="w-full bg-[#F8F9FA] font-montserrat" data-node-id="special-hero">
+  <div class="page-shell flex flex-col justify-center gap-10 py-16 lg:min-h-[560px] lg:flex-row lg:items-center lg:gap-[72px] lg:py-20">
 
-<!-- HERO SECTION (SPECIAL PROGRAM / IN HOUSE TRAINING) -->
-<section class="relative z-20 w-full min-h-[600px] lg:min-h-[750px] flex items-center font-montserrat py-16 lg:py-24">
-  <!-- Background Image with 80% Opacity -->
-  <div 
-    class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
-    style="background-image: url('{{category.hero_section_image}}');"
-  ></div>
+    {{!-- content --}}
+    <div class="flex flex-1 flex-col items-start gap-6">
+      {{> components/ui/text/eyebrow/index text=(default (getByLang category.type lang) (default category.type (t 'test.special_program.heroSection.eyebrow'))) }}
 
-  <!-- Content Container -->
-  <div class="relative z-10 container mx-20 max-w-[1400px]">
-    <div class="flex flex-col items-start justify-center mb-24">
-      
-      <!-- Left Hero Content -->
-      <div class="w-full flex flex-col items-start text-left">
-        
-        <!-- Typewriter Title -->
-        <h1 
-          class="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[70px] text-[#003060] leading-tight mb-6"
-          x-data="{
-            words: ['{{#if category.name}}{{category.name}}{{else}}In House Training{{/if}}'],
-            wordIndex: 0,
-            charIndex: 0,
-            currentText: '',
-                speed: 500,
-            init() {
-              this.type();
-            },
-            type() {
-              const target = this.words[this.wordIndex];
-              if (this.charIndex < target.length) {
-                this.charIndex = Math.min(this.charIndex + 2, target.length);
-                this.currentText = target.substring(0, this.charIndex);
-                setTimeout(() => this.type(), this.speed);
-              } else {
-                setTimeout(() => {
-                  this.currentText = '';
-                  this.charIndex = 0;
-                  setTimeout(() => this.type(), 300);
-                }, 2500);
-              }
-            }
-          }"
-        >
-          <span x-text="currentText">In House Training</span><span class="animate-pulse text-[#6EB6E5] font-light">|</span>
-        </h1>
+      <h1 class="{{sizeClass 'display'}} max-w-[620px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+        <span
+          x-data="heroTypewriter()"
+          data-full="{{#if category.name}}{{category.name}}{{else}}In House Training{{/if}}"
+          x-init="start($el.dataset.full)"
+        ><span x-text="head"></span><span class="text-[#6EB6E5]" x-text="tail"></span><span class="ml-1 inline-block h-[0.8em] w-[3px] translate-y-[0.06em] rounded-sm bg-[#6EB6E5] transition-opacity" :class="showCursor ? 'opacity-100' : 'opacity-0'"></span></span>
+      </h1>
 
-        <!-- Description Paragraph -->
-        {{> components/ui/text/description/index
-            text=(default (getByLang category.description lang) 'Standardize competencies and boost your team\'s productivity through corporate training tailored to your company\'s business objectives.')
-            size="lg"
-            color="primary"
-            font="opensans"
-            align="left"
-            class="w-full max-w-[562px] mb-8 lg:mb-12"
-        }}
+      <p class="{{sizeClass 'lead'}} max-w-[560px] font-open-sans text-[#4A5568]">
+        {{default (getByLang category.description lang) (t 'test.special_program.heroSection.description')}}
+      </p>
 
-        <!-- View Program Button -->
-        {{> components/ui/button/btn_action/index
-            onClick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
-            text=(t 'test.special_program.heroSection.buttonViewProgram')
-            variant="primary"
-            class="w-full sm:w-auto md:w-[300px] lg:w-[370px] h-[60px] md:h-[68px] lg:h-[85px] font-semibold text-lg sm:text-xl lg:text-[22px]"
-        }}
+      {{> components/ui/button/btn_action/index
+          onClick="document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+          text=(t 'test.special_program.heroSection.buttonViewProgram')
+          icon="fas fa-arrow-right text-sm shrink-0"
+          iconPosition="right"
+          variant="primary"
+          class="gap-2.5 px-8 py-4 text-sm shadow-none hover:-translate-y-0.5 hover:shadow-lg" }}
+    </div>
 
+    {{!-- visual --}}
+    <div class="w-full lg:w-[520px] lg:shrink-0">
+      <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#E0F2F9] lg:aspect-[73/50]">
+        <img
+          src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+          alt="{{category.name}}"
+          onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+          class="size-full object-cover"
+        />
       </div>
-
     </div>
   </div>
 
-  <!-- Bottom Floating Stats Bar (Overlapping bottom boundary) -->
-  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-full max-w-[95%] md:max-w-[90%] lg:w-[1224px] lg:max-w-[1224px] px-4 sm:px-6 z-20 hidden md:block">
-    <div class="bg-white/90 backdrop-blur-[6.6px] rounded-[24px] shadow-[0_0_6px_rgba(0,0,0,0.25)] p-4 md:p-6 lg:h-[147px] grid grid-cols-3 gap-4 md:gap-6 items-center">
-      
-      <!-- Stat 1: Alumni (Slot Machine Reel) -->
-      <div 
-        class="flex items-center gap-3 lg:gap-5 justify-center border-r border-slate-200/80 pr-3 lg:pr-6"
-        x-data="{ isSpun: false }"
-        x-init="
-          const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-              setTimeout(() => { isSpun = true; }, 100);
-              observer.disconnect();
-            }
-          }, { threshold: 0.2 });
-          observer.observe($el);
-        "
-      >
-        <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-[#E0F1F9] flex items-center justify-center text-[#003060] shrink-0">
-          <i class="fas fa-users text-lg lg:text-2xl"></i>
+  {{!-- stats strip --}}
+  <div class="page-shell -mt-8 pb-14 lg:-mt-10">
+    <div class="mx-auto grid max-w-[880px] grid-cols-1 gap-6 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06),0px_18px_44px_-12px_rgba(11,31,59,0.14)] sm:grid-cols-3 lg:p-8">
+      {{#each (array
+        (array "fa-users" "500+" (t 'test.special_program.heroSection.alumni'))
+        (array "fa-briefcase" "200+" (t 'test.special_program.heroSection.hiringPartners'))
+        (array "fa-arrow-trend-up" "98%" (t 'test.special_program.heroSection.placement'))
+      )}}
+        <div class="flex items-center gap-4 {{#unless @first}}border-t border-[#E5E7EB] pt-6 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0{{/unless}}">
+          <span class="grid size-14 shrink-0 place-items-center rounded-full bg-[#E8EDF5] text-[#334155] lg:size-16">
+            <i class="fas {{lookup this 0}} text-lg"></i>
+          </span>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-2xl font-inter font-bold text-[#111827] lg:text-[28px]">{{lookup this 1}}</span>
+            <span class="{{sizeClass 'body-sm'}} font-inter text-[#6B7280]">{{lookup this 2}}</span>
+          </div>
         </div>
-        <div>
-          <h4 class="font-sans font-semibold text-sm sm:text-base lg:text-lg text-[#2D2D2D] flex items-center gap-0.5">
-            <!-- Slot Machine Viewport Window -->
-            <span class="h-[1.25em] overflow-hidden inline-block relative align-top">
-              <span 
-                class="flex flex-col transition-transform duration-[2000ms] ease-[cubic-bezier(0.15,0.85,0.2,1)] transform-gpu"
-                :style="isSpun ? 'transform: translateY(-83.333%);' : 'transform: translateY(0%);'"
-              >
-                <span class="h-[1.25em] flex items-center justify-center">0</span>
-                <span class="h-[1.25em] flex items-center justify-center">100</span>
-                <span class="h-[1.25em] flex items-center justify-center">200</span>
-                <span class="h-[1.25em] flex items-center justify-center">300</span>
-                <span class="h-[1.25em] flex items-center justify-center">400</span>
-                <span class="h-[1.25em] flex items-center justify-center">500</span>
-              </span>
-            </span>
-            <span>+</span>
-          </h4>
-          <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-[#2D2D2D]">{{t 'test.special_program.heroSection.alumni'}}</p>
-        </div>
-      </div>
-
-      <!-- Stat 2: Hiring Partners (Slot Machine Reel) -->
-      <div 
-        class="flex items-center gap-3 lg:gap-5 justify-center border-r border-slate-200/80 pr-3 lg:pr-6"
-        x-data="{ isSpun: false }"
-        x-init="
-          const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-              setTimeout(() => { isSpun = true; }, 300);
-              observer.disconnect();
-            }
-          }, { threshold: 0.2 });
-          observer.observe($el);
-        "
-      >
-        <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-[#E0F1F9] flex items-center justify-center text-[#003060] shrink-0">
-          <i class="fas fa-briefcase text-lg lg:text-2xl"></i>
-        </div>
-        <div>
-          <h4 class="font-sans font-semibold text-sm sm:text-base lg:text-lg text-[#2D2D2D] flex items-center gap-0.5">
-            <!-- Slot Machine Viewport Window -->
-            <span class="h-[1.25em] overflow-hidden inline-block relative align-top">
-              <span 
-                class="flex flex-col transition-transform duration-[2000ms] ease-[cubic-bezier(0.15,0.85,0.2,1)] transform-gpu"
-                :style="isSpun ? 'transform: translateY(-83.333%);' : 'transform: translateY(0%);'"
-              >
-                <span class="h-[1.25em] flex items-center justify-center">0</span>
-                <span class="h-[1.25em] flex items-center justify-center">2</span>
-                <span class="h-[1.25em] flex items-center justify-center">4</span>
-                <span class="h-[1.25em] flex items-center justify-center">6</span>
-                <span class="h-[1.25em] flex items-center justify-center">8</span>
-                <span class="h-[1.25em] flex items-center justify-center">10</span>
-              </span>
-            </span>
-            <span>+</span>
-          </h4>
-          <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-[#2D2D2D]">{{t 'test.special_program.heroSection.hiringPartners'}}</p>
-        </div>
-      </div>
-
-      <!-- Stat 3: Placement Rate (Slot Machine Reel) -->
-      <div 
-        class="flex items-center gap-3 lg:gap-5 justify-center"
-        x-data="{ isSpun: false }"
-        x-init="
-          const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-              setTimeout(() => { isSpun = true; }, 500);
-              observer.disconnect();
-            }
-          }, { threshold: 0.2 });
-          observer.observe($el);
-        "
-      >
-        <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-[#E0F1F9] flex items-center justify-center text-[#003060] shrink-0">
-          <i class="fas fa-chart-line text-lg lg:text-2xl"></i>
-        </div>
-        <div>
-          <h4 class="font-sans font-semibold text-sm sm:text-base lg:text-lg text-[#2D2D2D] flex items-center gap-0.5">
-            <!-- Slot Machine Viewport Window -->
-            <span class="h-[1.25em] overflow-hidden inline-block relative align-top">
-              <span 
-                class="flex flex-col transition-transform duration-[2000ms] ease-[cubic-bezier(0.15,0.85,0.2,1)] transform-gpu"
-                :style="isSpun ? 'transform: translateY(-83.333%);' : 'transform: translateY(0%);'"
-              >
-                <span class="h-[1.25em] flex items-center justify-center">0</span>
-                <span class="h-[1.25em] flex items-center justify-center">10</span>
-                <span class="h-[1.25em] flex items-center justify-center">20</span>
-                <span class="h-[1.25em] flex items-center justify-center">30</span>
-                <span class="h-[1.25em] flex items-center justify-center">40</span>
-                <span class="h-[1.25em] flex items-center justify-center">50</span>
-              </span>
-            </span>
-            <span>%</span>
-          </h4>
-          <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-[#2D2D2D]">{{t 'test.special_program.heroSection.placement'}}</p>
-        </div>
-      </div>
-
+      {{/each}}
     </div>
   </div>
+
+  <script>
+    function heroTypewriter() {
+      return {
+        head: '', tail: '', showCursor: true, _target: '', _i: 0,
+        start(full) {
+          full = (full || 'In House Training').replace(/\s*\|\s*$/, '').trim();
+          const w = full.split(/\s+/);
+          const n = w.length > 2 ? 2 : 1;
+          this._target = w.slice(-n).join(' ');
+          this.head = w.slice(0, w.length - n).join(' ') + (w.length > n ? ' ' : '');
+          this._i = 0;
+          this._loop();
+          setInterval(() => { this.showCursor = !this.showCursor; }, 530);
+        },
+        _loop() {
+          if (this._i <= this._target.length) {
+            this.tail = this._target.slice(0, this._i++);
+            setTimeout(() => this._loop(), 85);
+          } else {
+            setTimeout(() => { this._i = 0; this._loop(); }, 2600);
+          }
+        }
+      };
+    }
+  </script>
 </section>

@@ -223,6 +223,9 @@ Helper yang tersedia: `t 'key'` (i18n), `getByLang obj lang`, `computeIcon icon`
 | Aspek | Aturan |
 |---|---|
 | Breakpoint | Tunggal, `sm` (640px). Mobile = `block sm:hidden`, Desktop = `hidden sm:block`. Jangan pakai `md:` untuk show/hide utama. |
+| Ukuran teks | **Wajib** pakai size key (`display`, `h1`, `h2`, `h3`, `eyebrow`, `lead`, `body`, `body-sm`) via `size=` / `titleSize=` — jangan tulis `text-[NNpx]` atau `text-Nxl` langsung di heading/paragraf. Skala ada di `src/common/helpers/ui.helpers.ts` (`sizeClass`) dan sudah responsif. px Figma = plafon desktop, bukan nilai literal. |
+| Bingkai halaman | Setiap **halaman** (view di `src/views/`, bukan section) bungkus konten dengan class `.page-shell` (`src/common/public/style.css` → `@layer components`) = `mx-auto w-full max-w-[1728px] px-4 sm:px-6 lg:px-10` (lebar frame Figma). Jangan tulis `max-w-[...] mx-auto px-...` sendiri di halaman. Padding vertikal (`pt-*`/`pb-*`) tetap inline. Section di dalamnya `w-full` + jarak vertikal saja. Landing (`dashboard.hbs`) pengecualian: tumpukan section full-bleed, container dalam tiap section pakai nilai `.page-shell`. |
+| Split layout | Pakai `grid grid-cols-1 lg:grid-cols-2` (atau `lg:grid-cols-[minmax(0,Npx)_1fr]`). Jangan `flex` + anak `w-[Npx]` tetap. |
 | Warna token | `bg-[#003060]` navy, `bg-[#6EB6E5]` blue, `bg-[#E0F1F9]/65 backdrop-blur-[6.6px]` card, `text-[#0B1F3B]` heading. |
 | Font | `font-montserrat` (heading), `font-sans` (body), `font-inter` (tab desktop). |
 | Radius & shadow | `rounded-[12px]` (desktop), `rounded-[16px]`/`[20px]` (mobile), `shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]`. |
