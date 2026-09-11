@@ -1,0 +1,128 @@
+{{!--
+  Komponen: FAQ Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/faq_form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `faqForm()` untuk super_admin/faq/{create,edit}.hbs — keduanya
+  memakai field, validasi, dan aturan submit yang sama.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
+  loading (form/button); lang (tabs/language).
+
+  `lang` sengaja ikut di factory ini, bukan x-data terpisah seperti di index.hbs:
+  submit yang gagal harus bisa memindahkan tab ke bahasa yang error, kalau tidak
+  pesan errornya tersembunyi di balik tab lain dan form terlihat macet.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const FIELDS = ['question', 'answer'];
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const MIN = { question: 10, answer: 20 };
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    // `path` berbentuk 'question.id' — bentuk yang dikirim form/text_field.
+    const splitPath = (path) => {
+      const [field, lang] = path.split('.');
+      return { field, lang };
+    };
+
+    // Ketiga bahasa wajib, di Create maupun Edit: FAQ tampil di situs publik
+    // dalam tiga bahasa. Kolomnya nullable dan halaman edit lama membolehkan
+    // record tak lengkap, jadi record warisan yang bahasanya kosong harus
+    // dilengkapi dulu sebelum bisa disimpan di sini. Untuk melonggarkan,
+    // ubah errorFor — jangan validateAll, karena itu ikut melonggarkan Create.
+    const errorFor = (field, lang, value) => {
+      const val = (value ?? '').toString().trim();
+      const label = field === 'question' ? 'Question' : 'Answer';
+
+      if (!val) return `${label} (${LANG_LABEL[lang]}) is required.`;
+      if (val.length < MIN[field]) {
+        return `${label} (${LANG_LABEL[lang]}) must be at least ${MIN[field]} characters.`;
+      }
+
+      return '';
+    };
+
+    window.faqForm = function faqForm({ question, answer } = {}) {
+      // Nilai awal dinormalkan: data lama bisa belum punya salah satu bahasa.
+      const initial = (src) => byLang((l) => (src && src[l]) || '');
+
+      return {
+        loading: false,
+        lang: 'id',
+
+        formData: { question: initial(question), answer: initial(answer) },
+        formErrors: { question: byLang(() => ''), answer: byLang(() => '') },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: { question: byLang(() => false), answer: byLang(() => false) },
+
+        validateField(path, value) {
+          const { field, lang } = splitPath(path);
+          this.formData[field][lang] = value ?? '';
+          this.formErrors[field][lang] = this.touched[field][lang]
+            ? errorFor(field, lang, this.formData[field][lang])
+            : '';
+        },
+
+        touch(path) {
+          const { field, lang } = splitPath(path);
+          this.touched[field][lang] = true;
+          this.validateField(path, this.formData[field][lang]);
+        },
+
+        validateAll() {
+          FIELDS.forEach((field) =>
+            LANGS.forEach((lang) => {
+              this.touched[field][lang] = true;
+              this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
+            }),
+          );
+        },
+
+        hasFormErrors() {
+          return FIELDS.some((field) => LANGS.some((lang) => this.formErrors[field][lang] !== ''));
+        },
+
+        // Field yang error bisa berada di tab bahasa lain — pindahkan tab dulu,
+        // baru fokuskan, supaya pesan errornya benar-benar terlihat.
+        //
+        // Id `${field}-${lang}` harus sama dengan yang dibentuk form/faq_fields.
+        // Ketidakcocokan dilaporkan ke console, bukan ditelan `?.`.
+        revealFirstInvalid() {
+          for (const lang of LANGS) {
+            for (const field of FIELDS) {
+              if (!this.formErrors[field][lang]) continue;
+
+              this.lang = lang;
+              this.$nextTick(() => {
+                const el = document.getElementById(`${field}-${lang}`);
+                if (!el) {
+                  console.warn(`faqForm: field "${field}-${lang}" tidak ditemukan — id di form/faq_fields berubah?`);
+                  return;
+                }
+                el.focus();
+              });
+              return;
+            }
+          }
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>
