@@ -1,120 +1,46 @@
-{{!-- 
-  Section: Partner (L2 Section)
+{{!--
+  Section: Partner / "Trusted by Leading Partners" (L2) - Figma 250:3027 (block B of testimonials-section)
   Lokasi: src/views/partials/components/ui/sections/partner/index.hbs
-  Level: L2 Section
-  Desain: Figma "section-header" partner (node 250:3027)
-
-  Struktur: blok MOBILE (block sm:hidden) + blok DESKTOP (hidden sm:block)
-  dalam 1 file, sesuai pedoman §7 & §9.6. Markup bersama diangkat jadi
-  inline partial (_partner_header, _partner_body) yang dipanggil dua kali
-  dengan prop ukuran berbeda.
-
-  Props (opsional):
-  - showMobile         : boolean (default: true) — render blok mobile
-  - showDesktop        : boolean (default: true) — render blok desktop
-  - sectionClass       : override kelas section desktop
-  - mobileSectionClass : override kelas section mobile
-  - categoryPartner, partners, lang : data dari controller
+  Satu pohon markup, base + lg. Data: categoryPartner[] (filter), partners[] ({ image, categoryPartner.category }).
+  Hanya dipakai dashboard.hbs.
 --}}
+<section class="relative w-full overflow-hidden bg-white py-16 font-montserrat lg:py-24">
+  <div class="page-shell flex flex-col items-center">
 
-{{!-- ============ HEADER (badge + judul + deskripsi + accent line) ============ --}}
-{{!--
-  Params: titleClass, descClass, dividerClass
---}}
-{{#*inline "_partner_header"}}
-  <div class="relative z-10 flex justify-center">
-    {{> components/ui/text/badge/index
-        text=(t 'test.home.partnerSection.ourPartners')
-        variant='section'
-        class="mb-4"
-    }}
-  </div>
-
-  {{> components/ui/text/section_header/index
-      wrapperClass="relative z-10"
-      title=(t 'test.home.partnerSection.title')
-      titleClass=titleClass
-      description=(t 'test.home.partnerSection.description')
-      descClass=descClass
-      showDivider=true
-      dividerAfterDesc=true
-      dividerClass=dividerClass
-  }}
-{{/inline}}
-
-{{!-- ============ FILTER KATEGORI + LOGO PARTNER ============ --}}
-{{!--
-  Params: wrapperClass, filterWrapperClass, tabButtonClass, logoWrapperClass, logoCardClass, logoImgClass
---}}
-{{#*inline "_partner_body"}}
-  <div class="relative z-10 mx-auto w-full {{wrapperClass}}" x-data="{ activeTab: '{{default categoryPartner.[0].category 'Institutions'}}' }">
-    <!-- Category Filter Pills -->
-    <div class="flex flex-wrap items-center justify-center {{filterWrapperClass}}">
-      {{#each categoryPartner}}
-        {{> components/ui/button/tab_filter/index
-            text=this.category
-            targetValue=this.category
-            activeClass="bg-[#003060] text-white"
-            inactiveClass="bg-transparent text-[#003060] hover:bg-[#003060]/5"
-            buttonClass=../tabButtonClass
-        }}
-      {{/each}}
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.partnerSection.ourPartners') }}
+      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{t 'test.home.partnerSection.title'}}</h2>
+      <p class="{{sizeClass 'body'}} mx-auto max-w-[720px] font-open-sans text-[#000000]/80">{{t 'test.home.partnerSection.description'}}</p>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    <!-- Partner Logos -->
-    <div class="flex flex-wrap items-center justify-center {{logoWrapperClass}}">
-      {{#each partners}}
-        <div
-          x-show="activeTab === '{{this.categoryPartner.category}}'"
-          class="flex shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-white/50 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] backdrop-blur-[3.3px] transition-transform hover:scale-[1.03] {{../logoCardClass}}"
-        >
-          <img src="{{this.image}}" alt="Partner Logo" class="rounded-[12px] object-contain {{../logoImgClass}}" />
-        </div>
-      {{else}}
-        <div class="flex items-center justify-center rounded-[12px] bg-white/50 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] backdrop-blur-[3.3px] {{../logoCardClass}}">
-          <img src="/public/image/logo.png" alt="Partner Logo" class="object-contain {{../logoImgClass}}" />
-        </div>
-      {{/each}}
+    <div class="mt-10 w-full lg:mt-14" x-data="{ activeTab: '{{default categoryPartner.[0].category 'Institutions'}}' }">
+      <div class="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
+        {{#each categoryPartner}}
+          {{> components/ui/button/tab_filter/index
+              text=this.category
+              targetValue=this.category
+              activeClass="bg-[#003060] text-white"
+              inactiveClass="bg-transparent text-[#003060] hover:bg-[#003060]/5"
+              buttonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-sm lg:text-base px-5 py-2.5 lg:px-7 lg:py-3" }}
+        {{/each}}
+      </div>
+
+      {{!-- flex-wrap + justify-center: a short tab (or last row) stays centered, no left-hugging gap --}}
+      <div class="mt-10 flex flex-wrap justify-center gap-4 lg:mt-14 lg:gap-6 [&>*]:w-[calc((100%-1rem)/2)] [&>*]:sm:w-[calc((100%-2rem)/3)] [&>*]:lg:w-[calc((100%-4.5rem)/4)]">
+        {{#each partners}}
+          <div
+            x-show="activeTab === '{{this.categoryPartner.category}}'"
+            class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
+          >
+            <img src="{{this.image}}" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
+          </div>
+        {{else}}
+          <div class="flex aspect-[3/2] items-center justify-center rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
+            <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
+          </div>
+        {{/each}}
+      </div>
     </div>
   </div>
-{{/inline}}
-
-{{#if (ternary (eq showMobile undefined) true showMobile)}}
-<!-- ================= MOBILE PARTNER SECTION (< 640px) ================= -->
-<section class="{{default mobileSectionClass 'block sm:hidden py-12 px-5 relative overflow-hidden bg-[#FAFAFA] w-full'}}">
-  {{> _partner_header
-      titleClass="font-montserrat font-bold text-[24px] text-[#0B1F3B] mb-4 text-center"
-      descClass="font-sans font-normal text-sm text-[#000000]/80 !leading-[1.6] mx-auto text-center"
-      dividerClass="!h-[4px] !w-[60px] bg-[#003060] mt-5 mb-10"
-  }}
-
-  {{> _partner_body
-      wrapperClass="max-w-[420px]"
-      filterWrapperClass="mb-10 gap-3"
-      tabButtonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-[13px] px-4 py-2"
-      logoWrapperClass="gap-4"
-      logoCardClass="h-[110px] w-[calc(50%-0.5rem)]"
-      logoImgClass="h-[84px] w-[84px]"
-  }}
 </section>
-{{/if}}
-
-{{#if (ternary (eq showDesktop undefined) true showDesktop)}}
-<!-- ================= DESKTOP PARTNER SECTION (>= 640px) ================= -->
-<section class="{{default sectionClass 'hidden sm:block py-24 px-6 lg:px-20 relative overflow-hidden bg-[#FAFAFA] w-full'}}">
-  {{> _partner_header
-      titleClass="font-montserrat font-bold text-[32px] lg:text-[36px] text-[#0B1F3B] mb-4 text-center"
-      descClass="font-sans font-normal text-lg lg:text-[20px] text-[#000000]/80 !leading-[1.6] lg:!leading-[45px] max-w-[1052px] mx-auto text-center"
-      dividerClass="!h-[4px] !w-[60px] bg-[#003060] mt-5 mb-12"
-  }}
-
-  {{> _partner_body
-      wrapperClass="max-w-[1375px]"
-      filterWrapperClass="mb-14 gap-6 lg:gap-[50px]"
-      tabButtonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-lg lg:text-[24px] px-6 py-3 lg:px-8 lg:py-[18px]"
-      logoWrapperClass="gap-6 lg:gap-[33px]"
-      logoCardClass="h-[132px] w-[201px]"
-      logoImgClass="h-[100px] w-[100px]"
-  }}
-</section>
-{{/if}}

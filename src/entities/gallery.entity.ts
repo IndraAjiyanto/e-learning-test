@@ -23,7 +23,7 @@ export class Gallery {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'enum', enum: ['1', '2', '3', '4', '5', '6'] })
+  @Column({ type: 'enum', enum: ['1', '2', '3', '4', '5', '6', '7'] })
   no: noGallery;
 
   @ManyToOne(() => Category, (category) => category.gallery, {

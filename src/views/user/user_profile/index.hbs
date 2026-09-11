@@ -1,10 +1,17 @@
+{{#if (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
+  {{> components/ui/profile/index 
+    user=user 
+  }}
+{{else}}
+
+
 {{!-- USER PROFILE INDEX VIEW --}}
 <script>
   window.userLogbooks = {{{json logbooks}}};
   window.userCourses = {{{json userWithCourses.userCourses}}};
 </script>
 <div 
-  class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#FAFAFA] font-montserrat overflow-x-hidden"
+  class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#F2F2F3] font-montserrat overflow-x-hidden"
   x-data="{
     sidebarOpen: true,
     activeSection: new URLSearchParams(window.location.search).get('tab') || '{{activeSection}}' || 'profile',
@@ -19,7 +26,7 @@
     logbookItemsPerPage: 10,
     logbookImageErrors: {},
     handledSections: [
-      'profile', 'learning', 'uiux', 'portfolio', 'history-payment',
+      'profile', 'password', 'learning', 'uiux', 'portfolio', 'history-payment',
       'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
       'group-class', 'presentation'
     ],
@@ -101,10 +108,10 @@
           <!-- Profile Button -->
           <button
             @click="toggleActiveSection('profile');"
-            :class="activeSection === 'profile' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
+            :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
             class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
           >
-            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'profile' ? 'brightness-0 invert' : 'brightness-0'">
+            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain transition-all" :class="(activeSection === 'profile' || activeSection === 'password') ? 'brightness-0 invert' : 'brightness-0'">
             <span>Profile</span>
           </button>
 
@@ -250,7 +257,7 @@
           <button
             @click="toggleActiveSection('profile');"
             :class="[
-              activeSection === 'profile' 
+              (activeSection === 'profile' || activeSection === 'password')
                 ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
                 : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] hover:border-[#003060]',
               !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-[10px]' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px]'
@@ -258,7 +265,7 @@
             class="text-left transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer group"
           >
             <div class="w-7 flex justify-center items-center flex-shrink-0">
-              <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'profile' ? 'brightness-0 invert' : 'brightness-0'">
+              <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-6 h-6 object-contain transition-all" :class="(activeSection === 'profile' || activeSection === 'password') ? 'brightness-0 invert' : 'brightness-0'">
             </div>
             <span x-show="sidebarOpen" class="whitespace-nowrap">Profile</span>
           </button>
@@ -447,6 +454,11 @@
           {{> user/sidebar_user_profile/profile/index }}
         </div>
 
+        <!-- Change Password Tab Content -->
+        <div x-show="activeSection === 'password'">
+          {{> components/ui/profile/change_password/index user=user isTab=true }}
+        </div>
+
         <!-- My Learning Tab Content -->
         <div x-show="activeSection === 'learning'">
           {{> user/sidebar_user_profile/my_learning/index }}
@@ -526,3 +538,4 @@
 
   </div>
 </div>
+{{/if}}

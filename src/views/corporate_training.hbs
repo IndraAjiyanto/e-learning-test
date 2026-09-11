@@ -1,0 +1,143 @@
+{{!--
+  Halaman: Corporate Training (In House Training) - Figma 559:211
+  Lokasi: src/views/corporate_training.hbs
+  Route: GET /dashboard/corporate-training (dashboard.controller)
+
+  Hero + hero-image-card + hero-stats + coming-soon + why-choose (navy) dibuat khusus
+  sesuai Figma. Testimonials / gallery / faq memakai ulang section partial landing.
+  Catatan font: Figma memakai "Outfit" untuk kartu (tak tersedia di proyek) -> dipetakan ke Inter.
+  Standar: sizeClass, .page-shell, base + lg.
+--}}
+<div class="min-h-screen bg-white font-montserrat">
+
+  {{!-- ================= HERO (559:229) ================= --}}
+  <section class="w-full bg-[#F8F9FA] py-14 lg:py-20">
+    <div class="page-shell flex flex-col gap-10">
+
+      {{!-- headline block --}}
+      <div class="flex flex-col items-start gap-5">
+        {{> components/ui/text/eyebrow/index text=(t 'test.corporateTraining.hero.badge') }}
+        <h1 class="{{sizeClass 'display'}} max-w-[900px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+          {{{t 'test.corporateTraining.hero.title'}}}
+        </h1>
+        <p class="{{sizeClass 'lead'}} max-w-[760px] font-open-sans text-[#4A5568]">
+          {{t 'test.corporateTraining.hero.description'}}
+        </p>
+      </div>
+
+      {{!-- hero image card + overlapping stats (559:238 / 559:253) --}}
+      <div class="relative pb-16 lg:pb-24">
+        <div
+          class="relative flex min-h-[420px] flex-col justify-center overflow-hidden rounded-[24px] bg-[#0B1F3B] p-8 lg:min-h-[560px] lg:p-16"
+          style="background-image: linear-gradient(rgba(11,31,59,0.35), rgba(11,31,59,0.35)), url('/public/image/dashboard/bgHeroSection.png'); background-size: cover; background-position: center;"
+        >
+          <div class="flex max-w-[620px] flex-col gap-5">
+            <span class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 font-inter text-xs font-bold uppercase tracking-wide text-white">
+              <i class="fas fa-briefcase text-[11px]"></i>{{t 'test.corporateTraining.hero.cardBadge'}}
+            </span>
+            <h2 class="text-2xl font-inter font-bold leading-tight text-white lg:text-[44px] lg:leading-[1.15]">
+              {{t 'test.corporateTraining.hero.cardTitle'}}
+            </h2>
+            <p class="{{sizeClass 'body'}} max-w-[520px] font-inter leading-relaxed text-white/90">
+              {{t 'test.corporateTraining.hero.cardDescription'}}
+            </p>
+            <div class="mt-1 flex flex-col gap-3 sm:flex-row">
+              <a href="#courses-section" class="inline-flex h-[52px] items-center justify-center rounded-full bg-white px-6 font-inter text-sm font-bold text-[#0B1F3B] shadow-[0px_10px_24px_-8px_rgba(0,0,0,0.1)] transition hover:-translate-y-0.5">
+                {{t 'test.corporateTraining.hero.cardCtaPrimary'}}
+              </a>
+              <a href="#" class="inline-flex h-[52px] items-center justify-center gap-2 rounded-full border border-white/40 px-6 font-inter text-sm font-semibold text-white transition hover:bg-white/10">
+                <i class="fas fa-download text-xs"></i>{{t 'test.corporateTraining.hero.cardCtaSecondary'}}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- stats card - overlaps the image bottom --}}
+        <div class="absolute inset-x-4 bottom-0 mx-auto grid max-w-[880px] grid-cols-1 gap-6 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06),0px_18px_44px_-12px_rgba(11,31,59,0.16)] sm:grid-cols-3 lg:inset-x-0 lg:p-8">
+          {{#each (array
+            (array "fa-users" (t 'test.corporateTraining.hero.stat1Value') (t 'test.corporateTraining.hero.stat1Label'))
+            (array "fa-briefcase" (t 'test.corporateTraining.hero.stat2Value') (t 'test.corporateTraining.hero.stat2Label'))
+            (array "fa-arrow-trend-up" (t 'test.corporateTraining.hero.stat3Value') (t 'test.corporateTraining.hero.stat3Label'))
+          )}}
+            <div class="flex items-center gap-4 {{#unless @first}}border-t border-[#E5E7EB] pt-6 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0{{/unless}}">
+              <span class="grid size-14 shrink-0 place-items-center rounded-full bg-[#E8EDF5] text-[#334155] lg:size-16">
+                <i class="fas {{lookup this 0}} text-lg"></i>
+              </span>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-2xl font-inter font-bold text-[#111827] lg:text-[28px]">{{lookup this 1}}</span>
+                <span class="{{sizeClass 'body-sm'}} font-inter text-[#6B7280]">{{lookup this 2}}</span>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{!-- ============ CHOOSE YOUR PROGRAM - COMING SOON (559:277) ============ --}}
+  <section id="courses-section" class="w-full bg-white py-14 lg:py-20">
+    <div class="page-shell flex flex-col items-center gap-12 text-center">
+      <div class="flex max-w-[680px] flex-col items-center gap-3">
+        <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#111827]">{{{t 'test.corporateTraining.program.title'}}}</h2>
+        <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{t 'test.corporateTraining.program.description'}}</p>
+      </div>
+      <div class="flex w-full max-w-[722px] flex-col items-center gap-5 rounded-[20px] border border-[#E5E7EB] bg-white p-10 shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-16">
+        <span class="grid size-16 place-items-center rounded-full bg-[#0B1F3B] text-white">
+          <i class="fas fa-clock text-xl"></i>
+        </span>
+        <div class="flex flex-col items-center gap-2.5">
+          <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.corporateTraining.program.comingSoonTitle'}}</h3>
+          <p class="{{sizeClass 'body'}} max-w-[440px] font-inter leading-relaxed text-[#6B7280]">{{t 'test.corporateTraining.program.comingSoonText'}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{!-- ============ WHY CHOOSE (navy, 559:288) ============ --}}
+  <section class="relative w-full overflow-hidden py-16 lg:py-20" style="background: linear-gradient(90deg, #264673 0%, #2C5C9C 50%, #264673 100%);">
+    <span aria-hidden="true" class="pointer-events-none absolute -left-20 -top-20 size-[340px] rounded-full border border-white/5 bg-white/[0.02]"></span>
+    <span aria-hidden="true" class="pointer-events-none absolute -bottom-24 -right-24 size-[400px] rounded-full border border-white/5 bg-white/[0.02]"></span>
+
+    <div class="page-shell relative flex flex-col items-center gap-12 lg:gap-14">
+      <div class="flex max-w-[900px] flex-col items-center gap-3 text-center">
+        <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-white">{{t 'test.corporateTraining.whyChoose.title'}}</h2>
+        <p class="{{sizeClass 'body'}} font-open-sans text-[#93C5FD]">{{t 'test.corporateTraining.whyChoose.description'}}</p>
+      </div>
+
+      <div class="grid w-full grid-cols-1 gap-[30px] sm:grid-cols-2 lg:grid-cols-3">
+        {{#each (array
+          (array "fa-bullseye" (t 'test.corporateTraining.whyChoose.card1Title') (t 'test.corporateTraining.whyChoose.card1Text'))
+          (array "fa-users" (t 'test.corporateTraining.whyChoose.card2Title') (t 'test.corporateTraining.whyChoose.card2Text'))
+          (array "fa-code" (t 'test.corporateTraining.whyChoose.card3Title') (t 'test.corporateTraining.whyChoose.card3Text'))
+          (array "fa-building" (t 'test.corporateTraining.whyChoose.card4Title') (t 'test.corporateTraining.whyChoose.card4Text'))
+          (array "fa-people-group" (t 'test.corporateTraining.whyChoose.card5Title') (t 'test.corporateTraining.whyChoose.card5Text'))
+          (array "fa-star" (t 'test.corporateTraining.whyChoose.card6Title') (t 'test.corporateTraining.whyChoose.card6Text'))
+        )}}
+          <div class="flex flex-col gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.14)] lg:p-8">
+            <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-[#EEF2FF] text-[#264673]">
+              <i class="fas {{lookup this 0}} text-lg"></i>
+            </span>
+            <h3 class="text-lg font-inter font-bold text-[#1A1A26]">{{lookup this 1}}</h3>
+            <p class="{{sizeClass 'body-sm'}} font-inter leading-relaxed text-[#596173]">{{lookup this 2}}</p>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </section>
+
+  {{!-- Testimonials (reuse landing alumni section) --}}
+  {{> components/ui/sections/alumni/index}}
+
+  {{!-- Gallery (reuse landing gallery section) --}}
+  {{> components/ui/sections/gallery/index}}
+
+  {{!-- FAQ (reuse landing faq section) --}}
+  {{> components/ui/sections/faq/index}}
+
+  {{!-- Final CTA - corporate copy (559:443) --}}
+  {{> components/ui/sections/final_cta/index
+      title=(t 'test.corporateTraining.cta.title')
+      description=(t 'test.corporateTraining.cta.description')
+      button=(t 'test.corporateTraining.cta.button')
+      href="#" }}
+</div>

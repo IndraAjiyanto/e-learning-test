@@ -1,0 +1,28 @@
+{{!--
+  Komponen: About Sidebar (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/about_sidebar/index.hbs
+
+  Navigasi 4 tab halaman About (Story / Vision & Mission / Values / Team).
+  SATU komponen untuk semua halaman About. Kolom sidebar (lebar/padding/scroll)
+  diatur oleh halaman pemanggil; komponen ini me-render <nav>-nya.
+
+  Mode:
+  - default        : tombol tab Alpine (butuh activeSection + toggleActiveSection di halaman)
+  - linkMode=true  : item jadi <a href="/dashboard/about"> untuk sub-halaman (profil CEO,
+                     View All Team); `active` ("story"|"mission"|"values"|"team") menandai item aktif
+  L1: button/about_nav_item
+--}}
+
+<nav class="flex w-max gap-2.5 pb-1 lg:w-full lg:flex-col lg:gap-3 lg:pb-0">
+  {{#if linkMode}}
+    {{> components/ui/button/about_nav_item/index section="story"   text=(t "test.about.tabAbout.story")       href="/dashboard/about" active=(eq active 'story') }}
+    {{> components/ui/button/about_nav_item/index section="mission"  text=(t "test.about.tabAbout.visionsMisi") href="/dashboard/about" active=(eq active 'mission') }}
+    {{> components/ui/button/about_nav_item/index section="values"   text=(t "test.about.tabAbout.value")       href="/dashboard/about" active=(eq active 'values') }}
+    {{> components/ui/button/about_nav_item/index section="team"     text=(t "test.about.tabAbout.team")        href="/dashboard/about" active=(eq active 'team') }}
+  {{else}}
+    {{> components/ui/button/about_nav_item/index section="story"   text=(t "test.about.tabAbout.story") }}
+    {{> components/ui/button/about_nav_item/index section="mission"  text=(t "test.about.tabAbout.visionsMisi") }}
+    {{> components/ui/button/about_nav_item/index section="values"   text=(t "test.about.tabAbout.value") }}
+    {{> components/ui/button/about_nav_item/index section="team"     text=(t "test.about.tabAbout.team") }}
+  {{/if}}
+</nav>

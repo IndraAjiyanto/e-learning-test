@@ -255,13 +255,13 @@ export class UsersController {
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/password')
   async editPassword(@Res() res: Response, @Req() req: Request) {
-    return res.render('profile/editPassword', { user: req.user });
+    return res.render('user/user_profile/password', { user: req.user });
   }
 
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/info_account')
-  async editInfoAkun(@Res() res: Response, @Req() req: Request) {
-    return res.render('profile/editInfo', { user: req.user });
+  async editInfoAkun(@Res() res: Response) {
+    return res.redirect('/users/profile');
   }
 
   @Roles('super_admin')

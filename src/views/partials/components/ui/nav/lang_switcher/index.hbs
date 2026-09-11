@@ -1,0 +1,58 @@
+{{!--
+  Komponen: Language Switcher (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/nav/lang_switcher/index.hbs
+  POST ke /translation dengan hidden input `lang` (en | id | ja). Butuh `lang` context var.
+  Props: mobile (boolean) - varian daftar untuk drawer mobile.
+--}}
+{{#if mobile}}
+  <div x-data="{ langOpen: false }" class="flex flex-col">
+    <button
+      @click="langOpen = !langOpen"
+      class="flex items-center justify-between rounded-lg px-4 py-3 text-sm font-semibold text-white/85 hover:bg-white/10"
+    >
+      <span class="flex items-center gap-2">
+        <span class="text-lg" :class="lang === 'id' ? 'fi fi-id' : lang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"></span>
+        <span x-text="lang === 'id' ? 'Bahasa Indonesia' : lang === 'en' ? 'English' : '日本語'"></span>
+      </span>
+      <i class="fas fa-chevron-down text-xs transition-transform" :class="langOpen && 'rotate-180'"></i>
+    </button>
+    <div x-show="langOpen" x-collapse class="flex flex-col py-1 pl-3" style="display:none">
+      <form action="/translation" method="post"><input type="hidden" name="lang" value="en" />
+        <button type="submit" class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-white/85 hover:bg-white/10"><span class="fi fi-gb"></span>English (EN)</button>
+      </form>
+      <form action="/translation" method="post"><input type="hidden" name="lang" value="id" />
+        <button type="submit" class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-white/85 hover:bg-white/10"><span class="fi fi-id"></span>Bahasa Indonesia (ID)</button>
+      </form>
+      <form action="/translation" method="post"><input type="hidden" name="lang" value="ja" />
+        <button type="submit" class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-white/85 hover:bg-white/10"><span class="fi fi-jp"></span>日本語 (JP)</button>
+      </form>
+    </div>
+  </div>
+{{else}}
+  <div x-data="{ langOpen: false }" class="relative" @click.away="langOpen = false">
+    <button
+      @click="langOpen = !langOpen"
+      class="flex items-center gap-2 rounded-md bg-[#F5F5F5] px-2.5 py-2 text-sm font-medium text-[#1F2937] shadow-[0_0_4px_0_rgba(0,0,0,0.25)]"
+    >
+      <span class="text-base" :class="lang === 'id' ? 'fi fi-id' : lang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"></span>
+      <span x-text="lang === 'id' ? 'ID' : lang === 'en' ? 'ENG' : 'JP'"></span>
+      <i class="fas fa-chevron-down text-[10px] transition-transform" :class="langOpen && 'rotate-180'"></i>
+    </button>
+    <div
+      x-show="langOpen"
+      x-transition.origin.top.right
+      class="absolute right-0 z-[100] mt-2 w-32 overflow-hidden rounded-lg bg-white shadow-lg"
+      style="display:none"
+    >
+      <form action="/translation" method="post"><input type="hidden" name="lang" value="en" />
+        <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#1F2937] hover:bg-gray-100"><span class="fi fi-gb"></span>EN</button>
+      </form>
+      <form action="/translation" method="post"><input type="hidden" name="lang" value="id" />
+        <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#1F2937] hover:bg-gray-100"><span class="fi fi-id"></span>ID</button>
+      </form>
+      <form action="/translation" method="post"><input type="hidden" name="lang" value="ja" />
+        <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#1F2937] hover:bg-gray-100"><span class="fi fi-jp"></span>JP</button>
+      </form>
+    </div>
+  </div>
+{{/if}}

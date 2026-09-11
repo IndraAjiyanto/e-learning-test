@@ -1,0 +1,86 @@
+{{!--
+  Komponen: Program Filter (L1) - dipakai halaman Alumni & Gallery
+  Lokasi: src/views/partials/components/ui/filter/program_filter/index.hbs
+
+  Label + baris: [search] [dropdown pill navy "All Programs"] [Clear Filter].
+  Semua prop di bawah adalah EKSPRESI ALPINE (string) kecuali yang ditandai teks.
+
+  Props:
+  - label            : judul (teks, mis. (t 'test.gallery.filterByProgram'))
+  - searchModel       : target x-model (mis. "search" / "searchQuery")
+  - searchEvent       : ekspresi @input.debounce (opsional, mis. "currentPage = 1; fetchAlumni()")
+  - searchPlaceholder : teks placeholder
+  - items             : array Alpine [{id,name}] (mis. "programs" / "categories")
+  - selected          : ekspresi id terpilih (mis. "selectedProgram" / "selectedKategoriId")
+  - onSelect          : nama method(id|null) (mis. "selectProgram" / "selectKategori")
+  - allLabel          : teks opsi "semua" (mis. (t 'test.gallery.allPrograms'))
+  - onClear           : ekspresi aksi reset (mis. "resetFilters()")
+  - showClear         : ekspresi x-show tombol clear (mis. "hasFilter")
+  - clearLabel        : teks tombol clear
+--}}
+<div class="flex w-full flex-col gap-6">
+  <h2 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#111827]">{{label}}</h2>
+
+  <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+    {{!-- search --}}
+    <div class="relative w-full sm:w-[420px]">
+      <i class="fas fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF]"></i>
+      <input
+        type="text"
+        x-model="{{searchModel}}"
+        {{#if searchEvent}}@input.debounce.400ms="{{searchEvent}}"{{/if}}
+        placeholder="{{searchPlaceholder}}"
+        class="w-full rounded-xl border border-[#E5E7EB] bg-white py-3 pl-11 pr-4 font-inter text-sm text-[#0B1F3B] placeholder-[#9CA3AF] transition focus:border-[#003060] focus:outline-none"
+      />
+    </div>
+
+    {{!-- program dropdown (navy pill) --}}
+    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+      <button
+        type="button"
+        @click="open = !open"
+        class="flex items-center gap-2 rounded-full bg-[#003060] px-5 py-3 font-inter text-sm font-semibold text-white transition hover:bg-[#00244a]"
+      >
+        <span x-text="{{selected}} ? ({{items}}.find(o => String(o.id) === String({{selected}}))?.name || '{{allLabel}}') : '{{allLabel}}'"></span>
+        <i class="fas fa-chevron-down text-xs transition-transform" :class="open && 'rotate-180'"></i>
+      </button>
+      <div
+        x-show="open"
+        x-transition.opacity
+        class="absolute left-0 z-50 mt-2 max-h-64 w-[260px] overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg"
+      >
+        <button
+          type="button"
+          @click="{{onSelect}}(null); open = false"
+          class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-sm transition"
+          :class="!{{selected}} ? 'bg-[#0B1F3B] text-white' : 'text-[#374151] hover:bg-slate-50'"
+        >
+          <span>{{allLabel}}</span>
+          <i class="fas fa-check" x-show="!{{selected}}"></i>
+        </button>
+        <template x-for="o in {{items}}" :key="o.id">
+          <button
+            type="button"
+            @click="{{onSelect}}(o.id); open = false"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-sm transition"
+            :class="String({{selected}}) === String(o.id) ? 'bg-[#0B1F3B] text-white' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span class="truncate" x-text="o.name"></span>
+            <i class="fas fa-check" x-show="String({{selected}}) === String(o.id)"></i>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    {{!-- clear filter --}}
+    <button
+      type="button"
+      @click="{{onClear}}"
+      {{#if showClear}}x-cloak x-show="{{showClear}}"{{/if}}
+      class="flex items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 font-inter text-sm font-medium text-[#374151] transition hover:bg-slate-50"
+    >
+      <i class="fas fa-trash-can text-xs"></i>
+      {{clearLabel}}
+    </button>
+  </div>
+</div>
