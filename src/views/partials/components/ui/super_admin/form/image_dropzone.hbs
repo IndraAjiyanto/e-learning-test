@@ -3,20 +3,16 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/image_dropzone.hbs
   Level: L1 Atomik (scoped super_admin)
 
-  Spesifikasi visual:
-  - stack vertikal gap 8 (label -> dropzone)
-  - label Inter Medium 14/20 #404040, tanda wajib #dc2626
-  - area drop h 303, radius 8, border 1px #d9d9d9, bg #f8f9fa, isi rata tengah
-  - ikon image 40px #718096 menempel pada teks (tanpa jarak)
-  - teks Montserrat Medium 12/16 #718096; potongan "click to browse" #0080ff
-  - meta Montserrat Medium 10/12 #adb7c5, jarak 10 dari blok teks
-
-  Berbeda dari form/photo_upload (avatar bulat 96px untuk foto profil):
-  komponen ini area unggah lebar untuk gambar cover/logo.
+  Area unggah lebar untuk gambar cover/logo. Untuk avatar bulat foto profil
+  pakai form/photo_upload.
 
   State Alpine dipegang oleh form pemanggil (mis. createPartnerForm):
   previewUrl, errorMessage, isValid, hasFile, fileName, validateImage(), clearFile().
   `dragging` bersifat lokal di komponen ini.
+
+  Dengan prop `crop`, file yang dipilih masuk ke form/crop_modal dulu dan yang
+  dikirim ke backend adalah hasil cropnya. Form pemanggil tidak perlu tahu soal
+  crop — ia tetap hanya menerima File lewat validateImage().
 
   Props:
   - id       : string (default 'image')
@@ -25,6 +21,11 @@
   - required : boolean (opsional) — menampilkan asterisk merah
   - meta     : string (opsional) — baris ketentuan file di bawah teks utama
   - accept   : string (default 'image/jpeg,image/jpg,image/png')
+  - crop     : boolean (opsional) — aktifkan modal crop sebelum validasi
+  - cropAspect : number rasio lebar/tinggi area crop (default 1, persegi)
+  - cropSize : number lebar piksel hasil crop (default 1000; tinggi mengikuti
+               cropAspect). Nilai tetap dipakai supaya hasilnya selalu lolos
+               batas dimensi backend berapa pun ukuran aslinya.
 --}}
 <div class='flex flex-col gap-2'>
   <label
@@ -39,7 +40,12 @@
     accept='{{default accept "image/jpeg,image/jpg,image/png"}}'
     x-ref='dropInput'
     class='sr-only'
+    {{#if crop}}
+    @change="$dispatch('crop-open-{{default id "image"}}', { file: $event.target.files[0] })"
+    @crop-done-{{default id "image"}}.window='validateImage($event.detail.file)'
+    {{else}}
     @change='validateImage($event.target.files[0])'
+    {{/if}}
   />
 
   <div
@@ -47,7 +53,7 @@
     @dragover.prevent='dragging = true'
     @dragenter.prevent='dragging = true'
     @dragleave.prevent='dragging = false'
-    @drop.prevent='dragging = false; $refs.dropInput.files = $event.dataTransfer.files; validateImage($event.dataTransfer.files[0])'
+    @drop.prevent="dragging = false; $refs.dropInput.files = $event.dataTransfer.files; $refs.dropInput.dispatchEvent(new Event('change', { bubbles: true }))"
     :class="dragging
       ? 'border-[#0080ff] bg-[#eef7ff]'
       : (errorMessage ? 'border-[#fca5a5] bg-[#fef7f7]' : 'border-[#d9d9d9] bg-[#f8f9fa] hover:border-[#0080ff]')"
@@ -117,3 +123,11 @@
     class='font-inter text-sm leading-5 text-[#ef4444]'
   ></p>
 </div>
+
+{{#if crop}}
+  {{> components/ui/super_admin/form/crop_modal
+    inputId=(default id 'image')
+    aspect=(default cropAspect 1)
+    size=(default cropSize 1000)
+  }}
+{{/if}}

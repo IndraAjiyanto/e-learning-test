@@ -72,14 +72,15 @@
                 accept='image/jpeg,image/jpg,image/png'
                 x-ref='fileInput'
                 class='sr-only'
-                @change='validateImage($event.target.files[0])'
+                @change="$dispatch('crop-open-image', { file: $event.target.files[0] })"
+                @crop-done-image.window='validateImage($event.detail.file)'
               />
 
               <div
                 @dragover.prevent='dragging = true'
                 @dragenter.prevent='dragging = true'
                 @dragleave.prevent='dragging = false'
-                @drop.prevent='dragging = false; $refs.fileInput.files = $event.dataTransfer.files; validateImage($event.dataTransfer.files[0])'
+                @drop.prevent="dragging = false; $refs.fileInput.files = $event.dataTransfer.files; $refs.fileInput.dispatchEvent(new Event('change', { bubbles: true }))"
                 :class="dragging
                   ? 'border-[#0080ff] bg-[#eef7ff]'
                   : (errorMessage ? 'border-[#fca5a5] bg-[#fef7f7]' : 'border-[#d9d9d9] bg-[#f8fafc]')"
@@ -143,6 +144,9 @@
                 class='font-inter text-sm leading-5 text-[#ef4444]'
               ></p>
             </div>
+
+            {{!-- Crop 1:1 mengikuti tampilan publik: logo dirender di kotak persegi. --}}
+            {{> components/ui/super_admin/form/crop_modal inputId='image' }}
 
             {{!-- Sengaja tanpa border-t, berbeda dari Create Partnership. --}}
             <div class='flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end'>

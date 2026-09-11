@@ -56,12 +56,14 @@
             required=true
           }}
 
+          {{!-- Crop 1:1 mengikuti tampilan publik: logo dirender di kotak persegi. --}}
           {{> components/ui/super_admin/form/image_dropzone
             id='image'
             name='image'
             label='Cover Program'
-            meta='JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB'
+            meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
             required=true
+            crop=true
           }}
 
           {{!-- Primary actions. Dirangkai di sini (bukan form/button row=true)
