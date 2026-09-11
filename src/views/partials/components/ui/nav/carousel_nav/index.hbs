@@ -1,0 +1,38 @@
+{{!--
+  Komponen: Carousel Nav (L1) - kontrol geser untuk carousel in-viewport
+  Lokasi: src/views/partials/components/ui/nav/carousel_nav/index.hbs
+
+  Panah bulat (opsional) + titik yang bisa diklik. Untuk pagination halaman
+  dengan nomor, pakai components/ui/pagination/index sebagai gantinya.
+
+  Props (semua ekspresi Alpine, string):
+  - count   : jumlah titik/slide            (mis. "dots" / "pages")
+  - index   : index aktif berbasis-0        (mis. "active" / "page")
+  - goTo    : nama method(index) untuk lompat (mis. "goTo") -> @click="goTo(d - 1)"
+  - goPrev  : ekspresi aksi mundur (opsional) -> render panah kiri (mis. "prev()")
+  - goNext  : ekspresi aksi maju   (opsional) -> render panah kanan (mis. "next()")
+  - wrapperClass : kelas tambahan pembungkus
+--}}
+<div x-cloak class="flex items-center justify-center gap-5 lg:gap-6 {{wrapperClass}}" x-show="{{count}} > 1">
+  {{#if goPrev}}
+    <button type="button" @click="{{goPrev}}" aria-label="Previous"
+      class="flex size-10 items-center justify-center rounded-full border border-[#E5E7EB] bg-white text-[#0B1F3B] shadow-sm transition hover:border-[#003060] hover:text-[#003060] lg:size-12">
+      <i class="fas fa-chevron-left text-xs lg:text-sm"></i>
+    </button>
+  {{/if}}
+
+  <div class="flex items-center gap-2.5">
+    <template x-for="d in {{count}}" :key="d">
+      <button type="button" @click="{{goTo}}(d - 1)" aria-label="Go to slide"
+        class="size-2 rounded-full transition-all duration-300"
+        :class="{{index}} === d - 1 ? 'bg-[#003060] scale-125' : 'bg-[#D9D9D9] hover:bg-[#B8B8B8]'"></button>
+    </template>
+  </div>
+
+  {{#if goNext}}
+    <button type="button" @click="{{goNext}}" aria-label="Next"
+      class="flex size-10 items-center justify-center rounded-full border border-[#E5E7EB] bg-white text-[#0B1F3B] shadow-sm transition hover:border-[#003060] hover:text-[#003060] lg:size-12">
+      <i class="fas fa-chevron-right text-xs lg:text-sm"></i>
+    </button>
+  {{/if}}
+</div>

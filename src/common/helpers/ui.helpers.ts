@@ -15,12 +15,29 @@
 
 export const uiHelpers = {
   /**
-   * Return Tailwind text-size class
-   * Shorthand: xs, sm, md, base, lg, xl, 2xl, 3xl, 4xl
+   * Return Tailwind text-size class.
+   *
+   * Semantic keys (responsive, mobile -> desktop) — use these for new work:
+   *   display, h1, h2, h3, eyebrow, lead, body, body-sm
+   * A Figma px value maps to a key, never to a literal `text-[NNpx]`:
+   *   56/48 -> display | 32-40 -> h1/h2 | 20-24 -> h3 | 22 -> lead | 16 -> body | <=14 -> body-sm
+   *
+   * Legacy shorthand (single breakpoint, kept for back-compat): xs, sm, md, base, lg, xl, 2xl, 3xl, 4xl
    * Raw fallback: "text-[20px]", "text-[1rem]", dll
    */
   sizeClass: (size: string) => {
     const map: Record<string, string> = {
+      // semantic responsive scale — base + lg only, named Tailwind sizes.
+      // Tuned for a 16in laptop, not the 1728px Figma frame.
+      display: 'text-2xl leading-tight lg:text-4xl lg:leading-[1.15]',
+      h1: 'text-xl leading-tight lg:text-3xl',
+      h2: 'text-lg leading-snug lg:text-2xl',
+      h3: 'text-base leading-snug lg:text-lg',
+      eyebrow: 'text-xs tracking-[0.15em] uppercase',
+      lead: 'text-sm leading-relaxed lg:text-base',
+      body: 'text-sm leading-relaxed',
+      'body-sm': 'text-xs leading-relaxed',
+      // legacy shorthand
       xs: 'text-xs',
       sm: 'text-xs sm:text-sm',
       md: 'text-base',

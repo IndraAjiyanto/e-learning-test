@@ -24,11 +24,11 @@
 <div class="{{default wrapperClass ''}}">
   <label
     for="{{default id (default name 'confirm_password')}}"
-    class="block mb-5 text-[15px] font-medium text-[#2D2D2D] leading-none font-inter lg:text-[20px] {{default labelClass ''}}"
+    class="mb-2 block font-inter text-sm font-medium text-[#2D2D2D] {{default labelClass ''}}"
   >{{label}}</label>
 
   <div class="relative">
-    <div class="flex absolute inset-y-0 left-[25px] items-center pointer-events-none text-[#003060]">
+    <div class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-[#003060]">
       {{#if leftIcon}}
         <i class="{{leftIcon}} text-lg lg:text-xl"></i>
       {{else}}
@@ -49,13 +49,13 @@
       placeholder="{{default placeholder (t 'test.signUp.placeholderPassword')}}"
       autocomplete="{{default autocomplete 'new-password'}}"
       {{#if required}}required{{/if}}
-      class="w-full h-[48px] pl-[74px] pr-[74px] py-2.5 text-[15px] font-normal text-[#2D2D2D] leading-none font-inter bg-white border rounded-[6px] shadow-[0px_0px_4px_0px_#00000040] placeholder:text-[15px] placeholder:font-normal placeholder:text-[#2D2D2DCC] focus:outline-none focus:ring-2 focus:ring-[#003060] transition-colors lg:h-[59px] lg:pl-[74px] lg:pr-[74px] lg:py-3 {{default inputClass ''}}"
+      class="h-12 w-full rounded-[8px] border bg-white pl-11 pr-11 font-inter text-sm font-normal text-[#2D2D2D] shadow-[0px_0px_4px_0px_#00000030] transition-colors placeholder:text-sm placeholder:text-[#2D2D2DCC] focus:outline-none focus:ring-2 focus:ring-[#003060] {{default inputClass ''}}"
       :class="{{default xModel 'confirmPassword'}}.length === 0 ? 'border-[#D9D9D9]' : (isConfirmValid ? 'border-green-500' : 'border-red-400')"
     />
     <button
       type="button"
       @click="show{{default xModel 'confirmPassword'}} = !show{{default xModel 'confirmPassword'}}"
-      class="flex absolute inset-y-0 right-[25px] items-center text-[#003060] hover:text-gray-700"
+      class="absolute inset-y-0 right-4 flex items-center text-[#003060] hover:text-gray-700"
       aria-label="Toggle password visibility"
     >
       <i class="fas text-base lg:text-lg" :class="show{{default xModel 'confirmPassword'}} ? 'fa-eye-slash' : 'fa-eye'"></i>

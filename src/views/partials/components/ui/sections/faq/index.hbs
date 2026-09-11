@@ -1,138 +1,58 @@
-<!-- MOBILE FAQ SECTION (< 640px) -->
-<section id="faq-mobile" class="block sm:hidden w-full py-12 px-5 bg-[#FAFAFA] font-montserrat"
+{{!--
+  Section: FAQ (L2) - Figma faq-section header 250:3103 + accordion 250:3110
+  Lokasi: src/views/partials/components/ui/sections/faq/index.hbs
+  Figma: header terpusat (judul 1 baris), lalu accordion 1 kolom terpusat (max ~1022).
+  Tiap baris: [nomor] | [pertanyaan] .... [chevron], garis rambut atas & bawah.
+  Data: faq[] (landing) atau faqs[] (kategori), fallback statis. sizeClass, .page-shell.
+--}}
+<section
+  id="faq"
+  class="w-full bg-white py-14 font-montserrat lg:py-20"
   x-data="{
-    activeIndex: 0,
+    activeIndex: null,
     faqs: [
       {{#if faqs.length}}
-        {{#each faqs}}
-          { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
-        {{/each}}
+        {{#each faqs}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
       {{else if faq.length}}
-        {{#each faq}}
-          { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
-        {{/each}}
+        {{#each faq}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
       {{else}}
-        { question: 'What will I learn in this bootcamp?', answer: 'You will learn hands-on industry skills, tools, and methodologies tailored to help you build real-world projects and accelerate your career.' },
-        { question: 'Is the bootcamp online or offline?', answer: 'We offer flexible learning options including interactive live online classes and hybrid offline sessions depending on your program.' },
-        { question: 'Do I need prior programming experience?', answer: 'No prior experience is required! We welcome beginners and guide you step-by-step from the basics to advanced concepts.' },
-        { question: 'Will I receive a certificate after completing the bootcamp?', answer: 'Yes! Upon successful completion of the coursework and capstone project, you will receive an official certificate of completion.' },
-        { question: 'What if I miss a class?', answer: 'All live sessions are recorded and made available on our learning platform so you can catch up anytime.' },
-        { question: 'How can I register?', answer: 'You can register directly through our website by choosing your desired program and completing the enrollment form.' },
-        { question: 'Is there career support after graduation?', answer: 'Yes, we provide dedicated career support including resume reviews, portfolio building, mock interviews, and hiring partner connections.' }
+        { question: 'What will I learn in this bootcamp?', answer: 'You will learn hands-on industry skills, tools, and methodologies to build real-world projects and accelerate your career.' },
+        { question: 'Is the bootcamp online or offline?', answer: 'We offer flexible options: interactive live online classes and hybrid offline sessions depending on your program.' },
+        { question: 'Do I need prior programming experience?', answer: 'No prior experience required. We welcome beginners and guide you step by step from the basics.' },
+        { question: 'Will I receive a certificate after completing the bootcamp?', answer: 'Yes. On completing the coursework and capstone project you receive an official certificate of completion.' },
+        { question: 'What if I miss a class?', answer: 'All live sessions are recorded and available on the learning platform so you can catch up anytime.' },
+        { question: 'How can I register?', answer: 'Register through our website by choosing your program and completing the enrollment form.' },
+        { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections.' }
       {{/if}}
     ],
-    toggle(index) {
-      this.activeIndex = this.activeIndex === index ? null : index;
-    }
+    toggle(i) { this.activeIndex = this.activeIndex === i ? null : i; }
   }"
 >
-  <div class="w-full flex flex-col items-center">
-    
-    {{#> components/ui/text/section_header/index
-        wrapperClass="mb-7 relative z-10"
-        badge=(t 'test.home.faq.question')
-        badgeClass="px-5 py-2 text-[14px] mb-4"
-        titleClass="mb-3"
-        showDivider=true
-        dividerClass="w-[68px] bg-[#0B1F3B] mb-4"
-        description=(t 'test.home.faq.description')
-        descClass="font-sans font-normal text-[14px] text-[#2D2D2D] max-w-[340px]"
-    }}
-      {{#*inline "titleBlock"}}
-        <div class="font-montserrat font-bold text-2xl text-[#0B1F3B] leading-tight text-center">{{t 'test.home.faq.title'}}</div>
-        <div class="font-montserrat font-bold text-2xl text-[#6EB6E5] leading-tight text-center">{{t 'test.home.faq.title2'}}</div>
-      {{/inline}}
-    {{/components/ui/text/section_header/index}}
+  <div class="page-shell flex flex-col items-center">
 
-    <!-- Mobile Accordion Cards -->
-    <div class="flex flex-col gap-3 w-full">
-      <template x-for="(faq, index) in faqs" :key="index">
-        {{> components/ui/accordion/faq/index }}
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.faq.question') }}
+      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{t 'test.home.faq.title'}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[534px] font-open-sans text-[#4A5568]">{{t 'test.home.faq.description'}}</p>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+    </div>
+
+    <div class="mt-10 w-full max-w-[1022px] lg:mt-14">
+      <template x-for="(item, i) in faqs" :key="i">
+        <div class="border-t border-[#D9D9D9] last:border-b">
+          <button type="button" @click="toggle(i)" class="flex w-full items-center gap-4 py-6 text-left lg:gap-6">
+            <span class="flex shrink-0 items-center gap-4 font-inter text-lg font-semibold text-[#94A3B8]">
+              <span x-text="String(i + 1).padStart(2, '0')"></span>
+              <span class="h-5 w-px bg-[#D9D9D9]"></span>
+            </span>
+            <span class="{{sizeClass 'h3'}} min-w-0 flex-1 font-montserrat font-semibold text-black" x-text="item.question"></span>
+            <i class="fas fa-chevron-down shrink-0 text-sm text-[#94A3B8] transition-transform" :class="activeIndex === i && 'rotate-180'"></i>
+          </button>
+          <div x-show="activeIndex === i" x-collapse>
+            <p class="{{sizeClass 'body'}} pb-6 pl-[3.25rem] font-open-sans text-[#4A5568] lg:pl-[4.5rem]" x-html="item.answer"></p>
+          </div>
+        </div>
       </template>
-    </div>
-
-  </div>
-</section>
-
-<!-- DESKTOP FAQ SECTION (>= 640px / Figma Baseline W1728) -->
-<section id="faq" class="hidden sm:block bg-[#FAFAFA] py-12 sm:py-20 px-5 sm:px-4 lg:px-12 font-montserrat overflow-hidden"
-  x-data="{
-    isVisible: false,
-    init() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            this.isVisible = true;
-          }
-        });
-      }, { threshold: 0.2, rootMargin: '0px 0px -100px 0px' });
-      observer.observe(this.$el);
-    }
-  }"
->
-  <div class="container mx-auto max-w-[1400px] flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8 sm:gap-12 lg:gap-16">
-    
-    <!-- LEFT COLUMN: Badge, Title, Description (Slides in from Left to Right) -->
-    <div 
-      class="w-full lg:w-5/12 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-1000 ease-out transform"
-      :class="isVisible ? 'translate-x-0 opacity-100' : '-translate-x-32 opacity-0'"
-    >
-      {{#> components/ui/text/section_header/index
-          align="text-center lg:text-left"
-          wrapperClass="mb-10 lg:mb-0"
-          badge=(t 'test.home.faq.question')
-          badgeClass="w-[200px] h-[45px] text-lg mb-8 mx-auto lg:mx-0"
-          titleClass="mb-0"
-          showDivider=true
-          dividerClass="w-[70px] h-[6px] bg-[#0B1F3B] mt-3 mb-6 mx-auto lg:mx-0"
-          description=(t 'test.home.faq.description')
-          descClass="text-[#545454] text-base leading-relaxed max-w-sm font-sans font-normal"
-      }}
-        {{#*inline "titleBlock"}}
-          <div class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#0F0F0F]">{{t 'test.home.faq.title'}}</div>
-          <div class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#6EB6E5] mt-1">{{t 'test.home.faq.title2'}}</div>
-        {{/inline}}
-      {{/components/ui/text/section_header/index}}
-    </div>
-
-    <!-- RIGHT COLUMN: Accordion FAQ Container (Slides Up from Bottom to Top) -->
-    <div 
-      class="w-full lg:w-7/12 transition-all duration-1000 ease-out delay-300 transform"
-      :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-32 opacity-0'"
-      x-data="{
-        activeIndex: 0,
-        faqs: [
-          {{#if faqs.length}}
-            {{#each faqs}}
-              { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
-            {{/each}}
-          {{else if faq.length}}
-            {{#each faq}}
-              { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
-            {{/each}}
-          {{else}}
-            { question: 'What will I learn in this bootcamp?', answer: 'You will learn hands-on industry skills, tools, and methodologies tailored to help you build real-world projects and accelerate your career.' },
-            { question: 'Is the bootcamp online or offline?', answer: 'We offer flexible learning options including interactive live online classes and hybrid offline sessions depending on your program.' },
-            { question: 'Do I need prior programming experience?', answer: 'No prior experience is required! We welcome beginners and guide you step-by-step from the basics to advanced concepts.' },
-            { question: 'Will I receive a certificate after completing the bootcamp?', answer: 'Yes! Upon successful completion of the coursework and capstone project, you will receive an official certificate of completion.' },
-            { question: 'What if I miss a class?', answer: 'All live sessions are recorded and made available on our learning platform so you can catch up anytime.' },
-            { question: 'How can I register?', answer: 'You can register directly through our website by choosing your desired program and completing the enrollment form.' },
-            { question: 'Is there career support after graduation?', answer: 'Yes, we provide dedicated career support including resume reviews, portfolio building, mock interviews, and hiring partner connections.' }
-          {{/if}}
-        ],
-        toggle(index) {
-          this.activeIndex = this.activeIndex === index ? null : index;
-        }
-      }"
-    >
-      
-      <!-- Wrapper Daftar FAQ -->
-      <div class="flex flex-col border-t border-[#E0E0E0]">
-        <template x-for="(faq, index) in faqs" :key="index">
-          {{> components/ui/accordion/faq/index }}
-        </template>
-      </div>
-      
     </div>
   </div>
 </section>

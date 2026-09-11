@@ -20,7 +20,7 @@
 {{#if (eq variant 'profile')}}
 {{!-- ============ VARIANT: PROFILE (Figma "alumni-card") ============ --}}
 <div class="group relative flex h-full w-full flex-col gap-5 overflow-hidden rounded-[20px] border border-[#E2E8F0] bg-gradient-to-r from-white to-[#F1F5F9] p-6 sm:p-8 shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.03)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#003060]/30 hover:shadow-[0px_16px_40px_-4px_rgba(11,31,59,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-  <span aria-hidden="true" class="pointer-events-none absolute right-5 top-1 select-none font-montserrat text-[90px] sm:text-[120px] font-extrabold leading-none text-[#0B1F3B] opacity-5 transition-opacity duration-300 group-hover:opacity-10">&ldquo;</span>
+  <span aria-hidden="true" class="pointer-events-none absolute right-5 top-1 select-none font-montserrat text-7xl lg:text-8xl font-extrabold leading-none text-[#0B1F3B] opacity-5 transition-opacity duration-300 group-hover:opacity-10">&ldquo;</span>
 
   <div class="relative flex w-full items-center gap-4">
     <div class="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full border-2 border-[#003060] p-[3px]">
@@ -29,18 +29,18 @@
            onerror="this.onerror=null; this.src='/public/image/orang.png';" />
     </div>
     <div class="flex min-w-0 flex-1 flex-col gap-1 text-left">
-      <h4 class="font-inter text-[16px] sm:text-[18px] font-bold leading-normal text-[#0F172A]"
+      <h4 class="{{sizeClass 'h3'}} font-inter font-bold leading-normal text-[#0F172A]"
           {{#if isDesktop}}x-text="item.name"{{/if}}>
         {{#unless isDesktop}}{{getByLang name lang}}{{/unless}}
       </h4>
-      <p class="truncate font-inter text-[14px] font-medium leading-normal text-[#475569]"
+      <p class="truncate {{sizeClass 'body-sm'}} font-inter font-medium leading-normal text-[#475569]"
          {{#if isDesktop}}x-text="item.position"{{/if}}>
         {{#unless isDesktop}}{{getByLang currentPosition lang}}{{/unless}}
       </p>
     </div>
   </div>
 
-  <p class="relative flex-1 text-left font-inter text-[15px] font-normal leading-[1.6] text-[#0F172A]"
+  <p class="relative flex-1 text-left {{sizeClass 'body'}} font-inter font-normal text-[#0F172A]"
      {{#if isDesktop}}x-text="'“' + item.testimonial + '”'"{{/if}}>
     {{#unless isDesktop}}&ldquo;{{getByLang message lang}}&rdquo;{{/unless}}
   </p>
@@ -48,14 +48,14 @@
   {{#if isDesktop}}
     <template x-if="item.company">
       <div class="relative flex w-full items-start">
-        <span class="rounded-full bg-[#E0F2FE] px-3.5 py-1.5 font-inter text-[12px] font-semibold leading-normal text-[#0369A1]">
+        <span class="rounded-full bg-[#E0F2FE] px-3.5 py-1.5 font-inter text-xs font-semibold leading-normal text-[#0369A1]">
           {{default badgeLabel (t 'test.home.alumniSection.bootcampLabel')}}: <span x-text="item.company"></span>
         </span>
       </div>
     </template>
   {{else if courseName}}
     <div class="relative flex w-full items-start">
-      <span class="rounded-full bg-[#E0F2FE] px-3.5 py-1.5 font-inter text-[12px] font-semibold leading-normal text-[#0369A1]">
+      <span class="rounded-full bg-[#E0F2FE] px-3.5 py-1.5 font-inter text-xs font-semibold leading-normal text-[#0369A1]">
         {{default badgeLabel (t 'test.home.alumniSection.bootcampLabel')}}: {{courseName}}
       </span>
     </div>
@@ -64,29 +64,26 @@
 
 {{else}}
 {{!-- ============ VARIANT: STACKED (layout lama) ============ --}}
-<div class="w-full {{#if isDesktop}}h-[460px] sm:h-[500px] md:h-[559.45px] p-5 sm:p-6 md:p-8 bg-gradient-to-b from-[#FFFFFF] to-[#E0F2F9] border-white/60{{else}}bg-white rounded-[16px] p-6 shadow-[0px_4px_12px_0px_#00000010] border-white/80{{/if}} flex flex-col transition-all duration-500 border"
-     {{#if isDesktop}}
-       :class="isCenter(index) ? 'rounded-xl sm:rounded-[13.24px]' : 'rounded-xl sm:rounded-[12px]'"
-     {{/if}}>
-  <span class="text-[#0B1F3B] font-serif leading-none select-none {{#if isDesktop}}text-[40px] sm:text-[50px] md:text-[60px] mb-2{{else}}text-4xl mb-3{{/if}}">&#10077;</span>
-  
-  <p class="font-sans font-normal text-left flex-1 {{#if isDesktop}}text-[#2D2D2D] sm:text-[#333333] sm:font-[400] text-[14px] sm:text-[16px] md:text-[19.86px] leading-[22px] sm:leading-[28px] md:leading-[33.1px] mb-4 sm:mb-6 overflow-y-auto{{else}}text-[14px] leading-[22px] text-[#2D2D2D] mb-4 line-clamp-4{{/if}}"
+<div class="w-full {{#if isDesktop}}min-h-[460px] p-5 lg:p-8 bg-gradient-to-b from-[#FFFFFF] to-[#E0F2F9] border-white/60{{else}}bg-white rounded-2xl p-6 shadow-[0px_4px_12px_0px_#00000010] border-white/80{{/if}} flex flex-col transition-all duration-500 border rounded-xl">
+  <span class="text-[#0B1F3B] font-serif leading-none select-none {{#if isDesktop}}text-4xl lg:text-6xl mb-2{{else}}text-4xl mb-3{{/if}}">&#10077;</span>
+
+  <p class="{{sizeClass 'body'}} font-sans font-normal text-left flex-1 {{#if isDesktop}}text-[#2D2D2D] mb-4 lg:mb-6 overflow-y-auto{{else}}text-[#2D2D2D] mb-4 line-clamp-4{{/if}}"
      {{#if isDesktop}}x-text="item.testimonial"{{/if}}>
     {{#unless isDesktop}}"{{getByLang message lang}}"{{/unless}}
   </p>
-  
-  <div class="w-full h-px {{#if isDesktop}}bg-gray-300/60 mb-4 sm:mb-6{{else}}bg-slate-200/80 mb-4{{/if}}"></div>
-  
-  <div class="flex items-center gap-3 {{#if isDesktop}}sm:gap-4{{else}}gap-3.5{{/if}}">
-    <img {{#if isDesktop}}:src="item.photo || '/public/image/orang.png'" :alt="item.name"{{else}}src="{{default profile '/public/image/orang.png'}}" alt="{{getByLang name lang}}"{{/if}} 
-         class="rounded-full object-cover shadow-sm shrink-0 {{#if isDesktop}}w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14{{else}}w-11 h-11{{/if}}" 
+
+  <div class="w-full h-px {{#if isDesktop}}bg-gray-300/60 mb-4 lg:mb-6{{else}}bg-slate-200/80 mb-4{{/if}}"></div>
+
+  <div class="flex items-center gap-3 {{#if isDesktop}}lg:gap-4{{else}}gap-3.5{{/if}}">
+    <img {{#if isDesktop}}:src="item.photo || '/public/image/orang.png'" :alt="item.name"{{else}}src="{{default profile '/public/image/orang.png'}}" alt="{{getByLang name lang}}"{{/if}}
+         class="rounded-full object-cover shadow-sm shrink-0 {{#if isDesktop}}size-11 lg:size-14{{else}}size-11{{/if}}"
          onerror="this.onerror=null; this.src='/public/image/orang.png';"/>
     <div class="text-left flex-1">
-      <h4 class="font-montserrat font-semibold leading-none text-[#0B1F3B] {{#if isDesktop}}sm:font-[600] sm:text-[#000000] text-[16px] sm:text-[18px] md:text-[22.07px] mb-1{{else}}text-[14px]{{/if}}"
+      <h4 class="{{sizeClass 'h3'}} font-montserrat font-semibold leading-tight text-[#0B1F3B] {{#if isDesktop}}mb-1{{/if}}"
           {{#if isDesktop}}x-text="item.name"{{/if}}>
         {{#unless isDesktop}}{{getByLang name lang}}{{/unless}}
       </h4>
-      <p class="font-sans font-normal leading-snug text-[#2D2D2D] {{#if isDesktop}}sm:font-[400] sm:text-[#000000]/80 text-[12px] sm:text-[14px] md:text-[18px]{{else}}text-[12px] leading-[16px] mt-1{{/if}}">
+      <p class="{{sizeClass 'body-sm'}} font-sans font-normal leading-snug text-[#2D2D2D] {{#unless isDesktop}}mt-1{{/unless}}">
         {{#if isDesktop}}
           <span x-text="item.company"></span>
           <template x-if="item.company">

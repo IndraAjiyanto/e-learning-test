@@ -1,108 +1,133 @@
+{{!--
+  Halaman: Gallery (user) - Figma "Gallery" 250:2333
+  Lokasi: src/views/public/gallery/index.hbs
+  Satu pohon markup, base + lg. .page-shell, sizeClass.
+  Header polos (tanpa eyebrow/divider) -> filter (label + search + pill "All Programs" + Clear)
+  -> sub-header "Our Activities" -> masonry 3 kolom (gambar + gradient + caption) -> pagination.
+--}}
+{{!-- data goes through a <script> var, not the x-data attribute: {{{json}}} emits raw quotes that would terminate the attribute --}}
 <div
-  class="pt-24 pb-16 lg:px-5 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed bg-[url('/public/image/dashboard/bgGallery.png')]"
-  x-data="galleryTable({
-    gallery: {{{json gallery}}},
-    programs: {{{json programs}}}
-  })"
+  class="w-full min-h-screen bg-[#F9FAFB] py-12 font-inter lg:py-16"
+  x-data="galleryTable(window.__galleryPage || {})"
 >
-  <div class="container mx-auto px-5 max-w-[1440px]">
+  <div class="page-shell flex flex-col items-center gap-12 lg:gap-[50px]">
 
-    <!-- UNIFIED GALLERY HEADER (Mobile & Desktop) -->
-    <div class="flex flex-col items-center pt-4 mb-6 lg:pt-0 lg:mb-[50px]">
-        {{> components/ui/text/section_header/index
-        wrapperClass="mb-4 relative z-10 px-5 sm:px-6 lg:px-20"
-        badge=(t 'test.gallery.gallery')
-        badgeClass="w-[305px] h-[49px] text-[20px] font-[500] mb-0"
-        title=(t 'test.gallery.title')
-        titleClass="text-3xl md:text-4xl lg:text-4xl font-semibold text-[#000000] mt-8 mb-4 font-montserrat tracking-tight text-center"
-        showDivider=true
-        dividerClass="w-[68px] bg-[#0B1F3B] mb-8"
-        description=(t 'test.gallery.description')
-        descClass="text-base md:text-xl leading-relaxed text-[#000000]/80 max-w-auto mx-auto font-sans font-normal text-center"
-      }}
+    {{!-- ============ PAGE HEADER ============ --}}
+    <div class="flex max-w-[760px] flex-col items-center gap-4 text-center">
+      <h1 class="{{sizeClass 'display'}} font-inter font-bold tracking-tight text-[#111827]">
+        {{t 'test.gallery.title'}}
+      </h1>
+      <p class="{{sizeClass 'lead'}} font-open-sans text-[#4A5568]">
+        {{t 'test.gallery.description'}}
+      </p>
     </div>
 
-    <!-- UNIFIED FILTERS (Mobile & Desktop) -->
-    <div class="flex flex-col items-center justify-end w-full gap-3 mb-6 lg:flex-row lg:gap-[30px] lg:mb-[50px]">
-      
-      <!-- Dropdown Program -->
-      {{> components/ui/dropdown/filter_dropdown/index
-            items="programs"
-            selectedValue="selectedProgram"
-            placeholder=(t 'test.gallery.allPrograms')
-            valueKey="id"
-            labelKey="name"
-            onSelect="selectProgram"
+    {{!-- ============ FILTER ============ --}}
+    {{> components/ui/filter/program_filter/index
+        label=(t 'test.gallery.filterByProgram')
+        searchModel="search"
+        searchEvent="currentPage = 1"
+        searchPlaceholder=(t 'test.gallery.searchPlaceholder')
+        items="programs"
+        selected="selectedProgram"
+        onSelect="selectProgram"
+        allLabel=(t 'test.gallery.allPrograms')
+        onClear="resetFilters()"
+        showClear="hasFilter"
+        clearLabel=(t 'test.gallery.clearFilter') }}
+
+    {{!-- ============ ACTIVITIES ============ --}}
+    <div class="flex w-full flex-col items-center gap-8 lg:gap-10">
+      <div class="flex flex-col items-center gap-2 text-center">
+        <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0F172A]">{{t 'test.gallery.activitiesTitle'}}</h2>
+        <p class="{{sizeClass 'body'}} max-w-[560px] font-open-sans text-[#475569]">{{t 'test.gallery.activitiesSubtitle'}}</p>
+      </div>
+
+      <div class="flex w-full flex-col">
+
+        {{!-- masonry: explicit columns (round-robin distribution) + checkerboard tall/short per Figma masonry-grid 596:379 --}}
+        <div x-show="amount > 0" class="flex flex-col gap-6 sm:flex-row sm:items-start">
+          <template x-for="(col, ci) in masonryColumns" :key="ci">
+            <div class="flex flex-1 flex-col gap-6">
+              <template x-for="(item, ri) in col" :key="item.id">
+                <a
+                  :href="item.filePath"
+                  target="_blank"
+                  rel="noopener"
+                  class="group block overflow-hidden rounded-[20px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]"
+                >
+                  <div class="relative w-full" :class="((ci + ri) % 2 === 0) ? 'aspect-[11/10]' : 'aspect-[16/10]'">
+                    <img
+                      :src="item.filePath"
+                      :alt="getByLang(item.title, lang)"
+                      onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {{!-- Figma: flat 40% black wash + caption top-left --}}
+                    <div class="absolute inset-0 bg-black/40 transition group-hover:bg-black/50"></div>
+                    <div class="absolute inset-x-0 top-0 flex flex-col gap-1.5 p-4">
+                      <h3 class="font-montserrat text-base font-bold leading-snug text-white" x-text="getByLang(item.title, lang)"></h3>
+                      <p x-show="item.description" class="font-inter text-[13px] leading-relaxed text-white/90" x-text="item.description"></p>
+                    </div>
+                  </div>
+                </a>
+              </template>
+            </div>
+          </template>
+        </div>
+
+        {{!-- Figma has a "View All Activities" link here; no dedicated activities page exists yet, so it points to the landing page for now --}}
+        <a
+          x-show="amount > 0"
+          href="/dashboard"
+          class="mt-8 self-center font-inter text-base font-semibold text-[#003060] underline decoration-1 underline-offset-4 transition hover:text-[#00244a]"
+        >
+          {{t 'test.gallery.viewAllActivities'}}
+        </a>
+
+        {{> components/ui/empty_state/index
+          show="amount === 0"
+          icon="fas fa-image text-3xl lg:text-4xl"
+          title=(t 'test.gallery.noResults')
         }}
 
-      <!-- Search Box -->
-      <div class="relative w-full lg:w-[423px] lg:shrink-0"
-        @input.debounce.500ms="search = searchInput; currentPage = 1">
-          {{> components/ui/input/search/index
-            value="searchInput"
-            placeholder=(t 'test.gallery.searchPlaceholder')
-          }}
+        {{> components/ui/pagination/index
+          currentPage="currentPage"
+          totalPages="totalPages"
+          onPageChange="changePage"
+        }}
       </div>
-    </div>
-
-    <!-- GALLERY CONTENT CONTAINER (Flex Col + Justify Between like Alumni) -->
-    <div class="flex flex-col justify-between w-full min-h-[550px] lg:min-h-[650px]">
-      
-      <!-- UNIFIED GALLERY CARDS GRID (Mobile & Desktop) -->
-      <div x-show="amount > 0" class="grid min-h-[400px] grid-cols-2 gap-3.5 mb-8 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[460px] lg:content-start lg:gap-[30px] lg:mb-12 lg:min-h-[1440px]">
-        <template x-for="item in paginatedGallery" :key="item.id">
-          <div
-            class="flex flex-col relative w-full overflow-hidden bg-white border border-[#E0F1F9] rounded-[16px] shadow-xs backdrop-blur-[3.3px] transition-all duration-300 hover:-translate-y-2 lg:min-h-[460px] lg:bg-[rgba(245,245,245,0.5)] lg:border-2 lg:border-white/10 lg:rounded-[12px] lg:shadow-[0px_0px_4px_rgba(0,0,0,0.25)]"
-          >
-            <!-- Image -->
-            <div class="w-full aspect-[4/3] bg-gray-100 overflow-hidden lg:h-[374px] lg:aspect-none lg:bg-[#FAFAFA]">
-              <img
-                :src="item.filePath"
-                :alt="getByLang(item.title, lang)"
-                class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
-            </div>
-            <!-- Title -->
-            <div class="flex flex-col items-center justify-center flex-1 p-3 bg-white text-center min-h-[44px] lg:p-[14px] lg:bg-transparent">
-              <h3 class="w-full font-montserrat font-bold text-[12px] leading-tight text-[#111111] line-clamp-2 text-center lg:font-medium lg:text-[23px] lg:leading-[28px] lg:text-[#0B1F3B] lg:truncate lg:line-clamp-none" x-text="getByLang(item.title, lang)">
-              </h3>
-            </div>
-          </div>
-        </template>
-      </div>
-
-      <!-- Empty state -->
-      {{> components/ui/empty_state/index
-        show="amount === 0"
-        icon="fas fa-image text-3xl lg:text-4xl"
-        title=(t 'test.gallery.noResults')
-      }}
-
-      <!-- Pagination -->
-      {{> components/ui/pagination/index
-        currentPage="currentPage"
-        totalPages="totalPages"
-        onPageChange="changePage"
-      }}
     </div>
   </div>
 </div>
 
 <script>
-function galleryTable({ gallery, programs }) {
+  window.__galleryPage = {
+    gallery: {{{json gallery}}},
+    programs: {{{json programs}}}
+  };
+
+function galleryTable(data) {
+  const { gallery, programs } = data || {};
   return {
     gallery: gallery || [],
     programs: programs || [],
 
     search: "",
-    searchInput: "",
-
     currentPage: 1,
-    size: 9,
-
+    size: 6,
     selectedProgram: null,
+    colCount: 3,
 
     lang: '{{lang}}' || 'id',
+
+    init() {
+      const sync = () => {
+        this.colCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+      };
+      sync();
+      window.addEventListener('resize', sync);
+    },
 
     getByLang(obj, lang) {
       if (!obj) return '';
@@ -129,17 +154,23 @@ function galleryTable({ gallery, programs }) {
       return this.filteredGalleryFull.length;
     },
 
+    get hasFilter() {
+      return !!this.search || this.selectedProgram !== null;
+    },
+
     get paginatedGallery() {
       const start = (this.currentPage - 1) * this.size;
-      const end = start + this.size;
-      return this.filteredGalleryFull.slice(start, end);
+      return this.filteredGalleryFull.slice(start, start + this.size);
+    },
+
+    get masonryColumns() {
+      const cols = Array.from({ length: this.colCount }, () => []);
+      this.paginatedGallery.forEach((item, i) => cols[i % this.colCount].push(item));
+      return cols;
     },
 
     get totalPages() {
-      return Math.max(
-        1,
-        Math.ceil(this.amount / this.size)
-      );
+      return Math.max(1, Math.ceil(this.amount / this.size));
     },
 
     changePage(page) {
@@ -149,7 +180,6 @@ function galleryTable({ gallery, programs }) {
 
     resetFilters() {
       this.search = "";
-      this.searchInput = "";
       this.selectedProgram = null;
       this.currentPage = 1;
     },
