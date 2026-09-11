@@ -3,50 +3,33 @@
   Lokasi: src/views/partials/components/ui/super_admin/toast/success/index.hbs
   Level: L1 Atomik (scoped super_admin)
 
-  Figma: LMS Kesatria — "List User (after delete)" node 846:26691,
-  frame Modal node 768:40586.
-
-  Spesifikasi Figma (diukur lewat figma-cli, bukan perkiraan):
-  - kartu          : 544 x HUG (104 saat 2 baris teks), radius 12, bg #ffffff,
-                     padding 24, layout HORIZONTAL gap 24
-                     shadow 0 8px 8px -4px rgba(0,0,0,0.03)
-                          + 0 20px 24px -4px rgba(0,0,0,0.08)
-                     posisi: rata kanan area konten (x 508 + w 544 = lebar container 1052),
-                     jarak atas 115 = container y 42 + modal y 73
-  - Featured icon  : 48x48 bulat, fill #dcfce7, stroke 8px #f0fdf4 (node 768:40587)
-  - Ikon check     : lucide check-circle 24x24, stroke 2px #16a34a (node I768:40587;1102:5691)
-  - Text           : Inter SemiBold 18/28 #003060 (node 768:40590)
-  - Supporting     : Inter Regular 14/20 #718096 (node 768:40591)
-  - Ikon close     : 14x14 di kotak 24x24, warna #4a5568 (node 768:40601)
-  - _Modal actions (node 768:40592) `visible: false` di Figma — sengaja tidak dibuat.
-
-  CATATAN: teks judul di Figma tertulis "User Deteled" (typo); dipakai "User Deleted".
-
   KONTRAK PEMAKAIAN
   Panggil sekali di page, di luar x-data lain. Dua cara memunculkannya:
-  1. Server-side — kirim prop `message` (mis. flash `userDeleted`); toast langsung
-     tampil saat load dengan `message` sebagai description.
+  1. Server-side — kirim prop `toast` dari res.locals.toast; controller
+     mengisinya lewat `flashToast(req, title, description)`
+     (src/common/utils/toast.util.ts).
   2. Client-side — `window.dispatchEvent(new CustomEvent('toast:success', {
        detail: { title, description } }))`.
 
-  Partial global `sweetalert` menampilkan flash `success` sebagai toast SweetAlert,
-  jadi jangan memberi `message` dari flash `success` — nanti muncul dua notifikasi.
-  Delete user memakai flash terpisah `userDeleted` (lihat main.ts & users.controller.ts).
+  Partial global `sweetalert` merender flash `success` sebagai toast SweetAlert,
+  jadi komponen ini memakai key flash terpisah (`toast`) agar tidak muncul dua
+  notifikasi sekaligus untuk satu aksi.
 
   Props:
-  - message     : string/array flash. Bila terisi, toast tampil otomatis saat load
-                  dan isinya dipakai sebagai `description`.
-  - title       : string (default 'User Deleted')
-  - description : string (default teks Figma node 768:40591)
-  - duration    : number ms auto-dismiss (default 4000; helper `default` menganggap 0
-                  sebagai kosong, jadi pakai angka > 0)
+  - toast       : objek {title, description} dari flash. Bila ada, toast tampil
+                  otomatis saat load dan isinya menang atas props di bawah.
+  - title       : string fallback judul (default 'Success')
+  - description : string fallback deskripsi
+  - duration    : number ms auto-dismiss (default 3000; helper `default`
+                  menganggap 0 sebagai kosong, jadi pakai angka > 0. Bar timer
+                  ikut sembunyi bila duration <= 0)
 --}}
 <div
   x-data="successToast({
-    autoShow: {{#if message}}true{{else}}false{{/if}},
-    title: {{json (default title 'User Deleted')}},
-    description: {{json (default message (default description 'The user account has been permanently removed'))}},
-    duration: {{default duration 4000}}
+    autoShow: {{#if toast}}true{{else}}false{{/if}},
+    title: {{json (default toast.title (default title 'Success'))}},
+    description: {{json (default toast.description (default description ''))}},
+    duration: {{default duration 3000}}
   })"
   x-show='open'
   x-cloak
@@ -60,25 +43,24 @@
   @keydown.escape.window='close()'
   role='status'
   aria-live='polite'
-  class='fixed right-4 top-20 z-50 flex w-[calc(100%-2rem)] max-w-[544px] items-start gap-6 rounded-xl bg-white p-6 shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)] sm:right-[34px] sm:top-[115px]'
+  :style="`--toast-duration: ${duration}ms`"
+  class='fixed right-4 top-20 z-50 flex w-[calc(100%-2rem)] max-w-[544px] items-start gap-6 overflow-hidden rounded-xl bg-white p-6 shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)] sm:right-[34px] sm:top-[115px]'
 >
-  {{!-- Featured icon — Figma node 768:40587 (inti 32px + ring 8px = 48px) --}}
   <span
     class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#f0fdf4] bg-[#dcfce7]'
   >
-    {{!-- lucide: check-circle — Figma node I768:40587;1102:5691, stroke #16a34a --}}
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#16a34a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-6 w-6'>
-      <path d='M22 11.08V12a10 10 0 1 1-5.93-9.14' />
-      <polyline points='22 4 12 14.01 9 11.01' />
+      <path class='sa-toast-ring' d='M22 11.08V12a10 10 0 1 1-5.93-9.14' />
+      {{!-- Urutan titik dibalik dari lucide (9,11 → 22,4) supaya centang
+           digambar mulai dari ujung pendek. --}}
+      <polyline class='sa-toast-tick' points='9 11.01 12 14.01 22 4' />
     </svg>
   </span>
 
-  {{!-- Content — Figma node 768:40588 (gap 8 antara title & supporting) --}}
   <div class='flex min-w-0 flex-1 flex-col gap-2'>
     <div class='flex items-start justify-between gap-3'>
       <p class='font-inter text-lg font-semibold leading-7 text-[#003060]' x-text='title'></p>
 
-      {{!-- Close — Figma node 768:40600/768:40601 --}}
       <button
         type='button'
         @click='close()'
@@ -93,20 +75,65 @@
 
     <p class='font-inter text-sm font-normal leading-5 text-[#718096]' x-text='description'></p>
   </div>
+
+  <span
+    x-show='duration > 0'
+    aria-hidden='true'
+    class='sa-toast-bar absolute inset-x-0 bottom-0 h-1 origin-left bg-[#16a34a]'
+  ></span>
 </div>
 
-<script>
-  // Flash connect-flash berupa array (mis. ['The user account has been permanently removed']);
-  // dirapikan jadi string agar x-text tidak menampilkan tanda kurung.
-  function toastText(value) {
-    return Array.isArray(value) ? value.join(' ') : value;
+<style>
+  /* stroke-dasharray = panjang garis masing-masing path pada viewBox 24x24. */
+  .sa-toast-ring {
+    --sa-toast-len: 63;
+    stroke-dasharray: 63;
+    /* Kondisi awal wajib disetel di sini juga, bukan hanya di keyframe: tanpa
+       ini garis tampil penuh selama animation-delay. */
+    stroke-dashoffset: 63;
+    animation: sa-toast-draw 0.45s ease-out forwards;
   }
 
+  .sa-toast-tick {
+    --sa-toast-len: 18;
+    stroke-dasharray: 18;
+    stroke-dashoffset: 18;
+    animation: sa-toast-draw 0.3s 0.3s ease-out forwards;
+  }
+
+  .sa-toast-bar {
+    animation: sa-toast-countdown var(--toast-duration, 3000ms) linear forwards;
+  }
+
+  @keyframes sa-toast-draw {
+    from { stroke-dashoffset: var(--sa-toast-len); }
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes sa-toast-countdown {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-toast-ring,
+    .sa-toast-tick,
+    .sa-toast-bar {
+      animation: none;
+    }
+    .sa-toast-ring,
+    .sa-toast-tick {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
+
+<script>
   function successToast(config) {
     return {
       open: false,
-      title: toastText(config.title),
-      description: toastText(config.description),
+      title: config.title,
+      description: config.description,
       duration: config.duration,
       // Timer auto-dismiss; disimpan agar bisa dibatalkan saat toast dipanggil ulang
       // atau ditutup manual — tanpa ini timer lama bisa menutup toast yang baru.
@@ -117,11 +144,12 @@
       },
 
       show(detail) {
-        if (detail && detail.title) this.title = toastText(detail.title);
-        if (detail && detail.description) this.description = toastText(detail.description);
+        if (detail && detail.title) this.title = detail.title;
+        if (detail && detail.description) this.description = detail.description;
 
         clearTimeout(this.timer);
         this.open = true;
+        this.$nextTick(() => this.restartAnimations());
 
         if (this.duration > 0) {
           this.timer = setTimeout(() => (this.open = false), this.duration);
@@ -133,6 +161,20 @@
 
         clearTimeout(this.timer);
         this.open = false;
+      },
+
+      // Bila toast dipanggil lagi sementara masih terbuka, elemennya tidak pernah
+      // display:none sehingga centang & bar tidak restart sendiri — bar akan
+      // lanjut dari posisi lama padahal timer sudah direset. Hanya CSS animation
+      // yang di-restart (punya animationName); transisi x-show dilewati.
+      restartAnimations() {
+        this.$el
+          .querySelectorAll('.sa-toast-ring, .sa-toast-tick, .sa-toast-bar')
+          .forEach((node) => {
+            node.style.animation = 'none';
+            void node.offsetWidth; // paksa reflow agar animasi benar-benar diulang
+            node.style.animation = '';
+          });
       },
     };
   }

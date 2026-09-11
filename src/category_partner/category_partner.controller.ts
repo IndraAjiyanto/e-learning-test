@@ -16,6 +16,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { CategoryPartnerService } from './category_partner.service';
 import { CreateCategoryPartnerDto } from './dto/create-category_partner.dto';
 import { UpdateCategoryPartnerDto } from './dto/update-category_partner.dto';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('category-partner')
@@ -53,7 +54,11 @@ export class CategoryPartnerController {
     try {
       await this.categoryPartnerService.create(createCategoryPartnerDto);
 
-      req.flash('categoryCreated', 'The category has been added successfully');
+      flashToast(
+        req,
+        'Category Created',
+        'The category has been added successfully',
+      );
 
       return res.redirect('/category-partner');
     } catch (error: any) {
@@ -89,10 +94,9 @@ export class CategoryPartnerController {
     try {
       await this.categoryPartnerService.update(id, updateCategoryPartnerDto);
 
-      // Flash tersendiri, bukan 'success': partial sweetalert global merender
-      // 'success' sebagai toast SweetAlert sendiri, nanti jadi dua notifikasi.
-      req.flash(
-        'categoryUpdated',
+      flashToast(
+        req,
+        'Changes Saved',
         'The partner category has been updated successfully.',
       );
 
@@ -128,8 +132,9 @@ export class CategoryPartnerController {
   ) {
     try {
       await this.categoryPartnerService.remove(id);
-      req.flash(
-        'categoryDeleted',
+      flashToast(
+        req,
+        'Category Deleted',
         'The partner category has been permanently removed.',
       );
 

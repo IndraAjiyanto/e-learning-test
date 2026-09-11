@@ -26,6 +26,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { CategoryPartnerService } from 'src/category_partner/category_partner.service';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -60,7 +61,11 @@ export class PartnerController {
     try {
       createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
-      req.flash('partnerCreated', 'The partnership has been added successfully');
+      flashToast(
+        req,
+        'Partnership Created',
+        'The partnership has been added successfully',
+      );
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to create');
@@ -141,10 +146,9 @@ export class PartnerController {
         updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.PartnerService.update(partnerId, updatePartnerDto);
-      // Flash tersendiri, bukan 'success': partial sweetalert global merender
-      // 'success' sebagai toast SweetAlert sendiri, nanti jadi dua notifikasi.
-      req.flash(
-        'partnerUpdated',
+      flashToast(
+        req,
+        'Changes Saved',
         'The partnership has been updated successfully.',
       );
       res.redirect('/partnership');
@@ -170,7 +174,11 @@ export class PartnerController {
       }
       await this.PartnerService.deleteFile(partner.image);
       await this.PartnerService.remove(partnerId);
-      req.flash('partnerDeleted', 'The partner has been permanently removed.');
+      flashToast(
+        req,
+        'Partner Deleted',
+        'The partner has been permanently removed.',
+      );
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to remove');

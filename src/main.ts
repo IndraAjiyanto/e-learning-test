@@ -17,6 +17,7 @@ import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
 import { hbsHelpers } from './common/helpers';
+import { readFlashToast } from './common/utils/toast.util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -96,15 +97,9 @@ async function bootstrap() {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
-    // Sengaja dipisah dari flash 'success': partial `sweetalert` menampilkan
-    // 'success' sebagai toast sendiri, jadi key ini mencegah notifikasi dobel.
-    res.locals.userDeleted = req.flash('userDeleted');
-    res.locals.partnerDeleted = req.flash('partnerDeleted');
-    res.locals.partnerCreated = req.flash('partnerCreated');
-    res.locals.partnerUpdated = req.flash('partnerUpdated');
-    res.locals.categoryDeleted = req.flash('categoryDeleted');
-    res.locals.categoryCreated = req.flash('categoryCreated');
-    res.locals.categoryUpdated = req.flash('categoryUpdated');
+    // Key terpisah dari 'success': partial `sweetalert` merender 'success'
+    // sebagai toast sendiri, jadi ini mencegah dua notifikasi untuk satu aksi.
+    res.locals.toast = readFlashToast(req);
     next();
   });
 
