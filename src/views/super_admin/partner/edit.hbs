@@ -1,287 +1,368 @@
-<div class='py-10'>
-  <div
-    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data="{ 
-    previewUrl: null,
-    oldImage: `{{partner.image}}`,
-    errorMessage: '',
-    isValid: true,
-    fileName: '',
-    fileSize: 0,
-    imageWidth: 0,
-    imageHeight: 0,
-    hasFile: false,
-    hasNewImage: false,
-    cropper: null,
-    showCropModal: false,
-    tempImageUrl: null,
-    croppedBlob: null,
-    categoryPartnerId: '{{partner.categoryPartner.id}}',
-    validateImage(file) {
-      if (!file) {
-        this.hasFile = false;
-        this.hasNewImage = false;
-        return;
-      }
-      
-      this.fileName = file.name;
-      this.fileSize = file.size;
-      this.errorMessage = '';
-      this.isValid = true;
+{{!--
+  Halaman: Edit Partnership — Super Admin
+  Lokasi: src/views/super_admin/partner/edit.hbs
+  Level: L4 Page
 
-      // Validasi tipe file
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(file.type)) {
-        this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-        this.isValid = false;
-        this.previewUrl = null;
-        return;
-      }
+  Beda dari create.hbs: kategori terisi, Cover Program tampil sebagai berkas
+  existing + tombol Replace, submit "Save Changes", dan ada kartu Danger Zone.
 
-      // Validasi ukuran file (5MB)
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSize) {
-        this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-        this.isValid = false;
-        this.previewUrl = null;
-        return;
-      }
+  Route: GET /partnership/formEdit/:partnerId
+         -> PATCH /partnership/:partnerId (multipart, image opsional)
+         -> DELETE /partnership/:partnerId
+  Data: { partner, categories }. Sidebar disediakan layouts/main.hbs.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-2.5'>
+    <div class='flex flex-col gap-7'>
+      <div class='flex flex-col gap-1'>
+        {{> components/ui/super_admin/page_header/index
+          title='Edit Partnership'
+        }}
 
-      // Validasi dimensi gambar
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-      
-      img.onload = () => {
-        this.imageWidth = img.width;
-        this.imageHeight = img.height;
-        
-        if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
-          this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
-          this.isValid = false;
-          this.previewUrl = null;
-          URL.revokeObjectURL(objectUrl);
-        } else {
-          // Buka crop modal
-          this.tempImageUrl = objectUrl;
-          this.showCropModal = true;
-
-          this.$nextTick(() => {
-            this.initCropper();
-          });
-        }
-      };
-      
-      img.onerror = () => {
-        this.errorMessage = 'Failed to load image';
-        this.isValid = false;
-        this.previewUrl = null;
-        URL.revokeObjectURL(objectUrl);
-      };
-      
-      img.src = objectUrl;
-    },
-
-    initCropper() {
-      const image = document.getElementById('cropImage');
-      if (this.cropper) {
-        this.cropper.destroy();
-      }
-
-      this.cropper = new Cropper(image, {
-        aspectRatio: 1,
-        viewMode: 1,
-        dragMode: 'move',
-        autoCropArea: 0.8,
-        restore: false,
-        guides: false,
-        center: true,
-        highlight: false,
-        cropBoxMovable: true,
-        cropBoxResizable: true,
-        toggleDragModeOnDblclick: false,
-        ready() {
-          const cropper = this.cropper;
-          const containerData = cropper.getContainerData();
-          const cropBoxData = cropper.getCropBoxData();
-
-          // Make crop box circular
-          const cropBox = cropper.cropBox;
-          cropBox.querySelector('.cropper-view-box').style.borderRadius = '50%';
-          cropBox.querySelector('.cropper-face').style.borderRadius = '50%';
-        }
-      });
-    },
-
-    async applyCrop() {
-      if (!this.cropper) return;
-
-      const canvas = this.cropper.getCropBoxData();
-      this.cropper.getCroppedCanvas({
-        width: 400,
-        height: 400,
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high',
-      }).toBlob((blob) => {
-        this.croppedBlob = blob;
-        this.previewUrl = URL.createObjectURL(blob);
-        this.hasFile = true;
-        this.hasNewImage = true;
-        this.isValid = true;
-        this.errorMessage = '';
-        this.closeCropModal();
-      }, 'image/jpeg', 0.9);
-    },
-
-    closeCropModal() {
-      this.showCropModal = false;
-      if (this.cropper) {
-        this.cropper.destroy();
-        this.cropper = null;
-      }
-      if (this.tempImageUrl) {
-        URL.revokeObjectURL(this.tempImageUrl);
-        this.tempImageUrl = null;
-      }
-      this.$refs.fileInput.value = null;
-    },
-
-    cancelCrop() {
-      // Kembali ke kondisi gambar lama saat modal dibatalkan
-      this.previewUrl = null;
-      this.hasFile = false;
-      this.hasNewImage = false;
-      this.croppedBlob = null;
-      this.isValid = true;
-      this.errorMessage = '';
-      this.fileName = '';
-      this.fileSize = 0;
-      this.closeCropModal();
-    },
-
-    async handleSubmit(e) {
-      if (!this.canSubmit()) {
-        e.preventDefault();
-        alert('Please fix the image validation errors before submitting.');
-        return;
-      }
-
-      // If there's a cropped image, convert blob to file and update input
-      if (this.croppedBlob) {
-        e.preventDefault();
-
-        // Create a new File from the cropped blob
-        const file = new File([this.croppedBlob], this.fileName, { 
-          type: this.croppedBlob.type 
-        });
-
-        // Create a new DataTransfer to set the file input
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-        this.$refs.fileInput.files = dataTransfer.files;
-
-        // Now submit the form normally
-        e.target.submit();
-      }
-      // If no cropped image, form will submit normally (we don't prevent default)
-    },
-    clearFile() {
-      this.previewUrl = null;
-      this.errorMessage = '';
-      this.isValid = true;
-      this.fileName = '';
-      this.fileSize = 0;
-      this.imageWidth = 0;
-      this.imageHeight = 0;
-      this.hasFile = false;
-      this.hasNewImage = false;
-      this.croppedBlob = null;
-      $refs.fileInput.value = null;
-    },
-    canSubmit() {
-      // Kategori wajib dipilih
-      if (this.categoryPartnerId === '') {
-        return false;
-      }
-      // Jika ada file baru yang diupload, harus valid
-      if (this.hasNewImage) {
-        return this.isValid;
-      }
-      // Jika tidak ada file baru, tetap bisa submit (gunakan gambar lama)
-      return true;
-    }
-  }"
-  >
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Cooperation</h2>
-
-    <form
-      action='/partnership/{{partner.id}}?_method=PATCH'
-      method='post'
-      enctype='multipart/form-data'
-      class='space-y-6'
-      x-data='{ loading: false }'
-      @submit='handleSubmit; if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
-    >
-
-      <!-- Pilih Kategori Partner -->
-      <div>
-        <label class='block text-sm font-semibold text-gray-700 mb-2'>
-          Partner Category
-        </label>
-        <select
-          name='categoryPartnerId'
-          x-model='categoryPartnerId'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-        >
-          <option value='' disabled>-- Select category --</option>
-          {{#each categories}}
-            <option value='{{id}}'>{{category}}</option>
-          {{/each}}
-        </select>
-        <p
-          x-show="categoryPartnerId === ''"
-          class='mt-1 text-sm text-red-600'
-        >Category is required</p>
+        {{> components/ui/super_admin/description/index
+          text='Update the partner category or replace the official partner logo.'
+        }}
       </div>
 
-    {{> super_admin/partnership/edit/image_input}}
+      <form
+        action='/partnership/{{partner.id}}?_method=PATCH'
+        method='post'
+        enctype='multipart/form-data'
+        novalidate
+        x-data='editPartnerForm({
+          categories: {{json categories}},
+          categoryPartnerId: {{json (default partner.categoryPartner.id "")}},
+          image: {{json (default partner.image "")}},
+          imageName: {{json (default partner.categoryPartner.category "Partner logo")}}
+        })'
+        @submit.prevent='submitForm($event)'
+        class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
+      >
+        <div class='flex flex-col gap-6'>
+          {{> components/ui/super_admin/description/index
+            text='Partnership Detail'
+            class='font-montserrat text-xl font-semibold leading-6 text-[#003060]'
+          }}
 
-      <!-- Tombol aksi -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a
-          href='/partnership'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
+          <div class='flex flex-col gap-5'>
+            {{> components/ui/super_admin/form/select_field
+              id='categoryPartnerId'
+              name='categoryPartnerId'
+              field='categoryPartnerId'
+              label='Partner Category'
+              placeholder='Select a category'
+              hint='Select the category that best matches this partner.'
+              options='categoryOptions'
+              required=true
+            }}
 
-      <!-- Submit Warning -->
-      <template x-if='hasNewImage && !isValid'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix the image validation errors above.
-          </p>
+            <div class='flex flex-col gap-2.5'>
+              <label
+                for='image'
+                class='font-inter text-sm font-medium leading-5 text-[#404040]'
+              >Cover Program<span class='text-[#dc2626]'>*</span></label>
+
+              <input
+                type='file'
+                id='image'
+                name='image'
+                accept='image/jpeg,image/jpg,image/png'
+                x-ref='fileInput'
+                class='sr-only'
+                @change='validateImage($event.target.files[0])'
+              />
+
+              <div
+                @dragover.prevent='dragging = true'
+                @dragenter.prevent='dragging = true'
+                @dragleave.prevent='dragging = false'
+                @drop.prevent='dragging = false; $refs.fileInput.files = $event.dataTransfer.files; validateImage($event.dataTransfer.files[0])'
+                :class="dragging
+                  ? 'border-[#0080ff] bg-[#eef7ff]'
+                  : (errorMessage ? 'border-[#fca5a5] bg-[#fef7f7]' : 'border-[#d9d9d9] bg-[#f8fafc]')"
+                class='flex flex-col gap-4 rounded-lg border px-4 py-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:px-5'
+              >
+                <div class='flex items-center gap-5'>
+                  <template x-if='previewUrl'>
+                    <img
+                      :src='previewUrl'
+                      :alt='fileName'
+                      @load='readDimensions($event.target)'
+                      @error='previewUrl = ""'
+                      class='h-20 w-20 shrink-0 rounded-lg object-cover'
+                    />
+                  </template>
+
+                  <template x-if='!previewUrl'>
+                    <div
+                      class='flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-[#c7b9da]'
+                    >
+                      <span
+                        class='font-inter text-xl font-semibold leading-6 text-white'
+                        x-text='(fileName || "?").charAt(0).toUpperCase()'
+                      ></span>
+                    </div>
+                  </template>
+
+                  <div class='flex min-w-0 flex-col'>
+                    <span
+                      x-text='fileName'
+                      class='truncate font-inter text-sm font-medium leading-5 text-[#525252]'
+                    ></span>
+                    <span
+                      x-text='fileMeta'
+                      class='truncate font-inter text-sm leading-5 text-[#525252]'
+                    ></span>
+                  </div>
+                </div>
+
+                {{!-- Class disalin dari form/button variant='secondary'; jaga tetap sinkron. --}}
+                <button
+                  type='button'
+                  @click='$refs.fileInput.click()'
+                  :disabled='loading'
+                  class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#003060] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60'
+                >
+                  {{!-- lucide: upload --}}
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+                    <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+                    <path d='M17 8l-5-5-5 5' />
+                    <path d='M12 3v12' />
+                  </svg>
+                  Replace
+                </button>
+              </div>
+
+              <p
+                x-show='errorMessage'
+                x-cloak
+                x-text='errorMessage'
+                class='font-inter text-sm leading-5 text-[#ef4444]'
+              ></p>
+            </div>
+
+            {{!-- Sengaja tanpa border-t, berbeda dari Create Partnership. --}}
+            <div class='flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end'>
+              {{> components/ui/super_admin/form/button
+                as='link'
+                variant='secondary'
+                href='/partnership'
+                label='Cancel'
+                loading=true
+              }}
+
+              {{> components/ui/super_admin/form/button
+                type='submit'
+                variant='primary'
+                label='Save Changes'
+                loading=true
+              }}
+            </div>
+          </div>
         </div>
-      </template>
-    </form>
+      </form>
+    </div>
 
-{{> super_admin/partnership/edit/crop_modal}}
+    {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
+         confirmDelete milik partial sweetalert global yang menimpa fungsi senama. --}}
+    <div
+      class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
+    >
+      <div class='flex items-start gap-4 sm:min-h-[72px]'>
+        <span
+          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
+        >
+          {{!-- lucide: alert-circle --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+            <circle cx='12' cy='12' r='10' />
+            <path d='M12 8v4' />
+            <path d='M12 16h.01' />
+          </svg>
+        </span>
+
+        <div class='flex flex-col gap-1'>
+          {{> components/ui/super_admin/description/index
+            text='Delete Partnership'
+            class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+          }}
+
+          {{> components/ui/super_admin/description/index
+            text='Permanently remove this partnership from Kesatria Academy. This action cannot be undone.'
+            class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
+          }}
+        </div>
+      </div>
+
+      <form
+        action='/partnership/{{partner.id}}?_method=DELETE'
+        method='post'
+        class='shrink-0'
+      >
+        {{> components/ui/super_admin/form/button
+          variant='danger'
+          label='Delete Partnership'
+          onclick='openDeleteModal(this)'
+          class='w-full sm:w-auto'
+        }}
+      </form>
+    </div>
   </div>
 </div>
+
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Partnership?'
+  description='Are you sure you want to delete this partnership? This action will permanently remove the partnership and cannot be undone.'
+}}
+
+<script>
+  // Tanpa guard, pop() pada URL tanpa ekstensi mengembalikan seluruh path.
+  function extensionOf(url) {
+    const ext = (url || '').split('?')[0].split('#')[0].split('.').pop();
+    return /^[a-z0-9]{2,4}$/i.test(ext) ? ext.toUpperCase() : '';
+  }
+
+  function editPartnerForm({ categories, categoryPartnerId, image, imageName }) {
+    return {
+      loading: false,
+      dragging: false,
+
+      categoryOptions: (categories || []).map((c) => ({ value: c.id, label: c.category })),
+
+      previewUrl: image || '',
+      objectUrl: null,
+      fileName: imageName || 'Partner logo',
+      // Backend tidak menyimpan tipe & dimensi, jadi keduanya diturunkan di client:
+      // tipe dari ekstensi URL, dimensi dari readDimensions() saat pratinjau dimuat.
+      fileType: extensionOf(image),
+      fileDimensions: '',
+      errorMessage: '',
+      isValid: true,
+
+      formData: { categoryPartnerId: categoryPartnerId || '' },
+      formErrors: { categoryPartnerId: '' },
+
+      get fileMeta() {
+        const parts = [this.fileType, this.fileDimensions].filter(Boolean);
+        return parts.length ? parts.join(' • ') : 'No image uploaded';
+      },
+
+      readDimensions(img) {
+        if (!img.naturalWidth) return;
+        this.fileDimensions = `${img.naturalWidth} × ${img.naturalHeight} px`;
+      },
+
+      // Batas mengikuti kontrak backend (@ValidateImage pada PartnerController):
+      // JPG/PNG, 300–2000 px, maks 5 MB.
+      validateImage(file) {
+        if (!file) return;
+
+        this.errorMessage = '';
+        this.isValid = true;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.setImageError('Only JPG and PNG formats are allowed');
+          return;
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          this.setImageError(
+            `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+          );
+          return;
+        }
+
+        const img = new Image();
+        const nextUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+          if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+            URL.revokeObjectURL(nextUrl);
+            this.setImageError(
+              `Image is ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`,
+            );
+            return;
+          }
+
+          this.applyFile(file, nextUrl, img);
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(nextUrl);
+          this.setImageError('Failed to load image');
+        };
+
+        img.src = nextUrl;
+      },
+
+      applyFile(file, nextUrl, img) {
+        if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+
+        this.objectUrl = nextUrl;
+        this.previewUrl = nextUrl;
+        this.fileName = file.name;
+        this.fileType = (file.type.split('/')[1] || 'image').toUpperCase();
+        this.fileDimensions = `${img.width} × ${img.height} px`;
+        this.isValid = true;
+        this.errorMessage = '';
+      },
+
+      // Berkas ditolak: gambar lama tetap di layar dan input dikosongkan agar
+      // berkas itu tidak ikut terkirim.
+      setImageError(message) {
+        this.errorMessage = message;
+        this.isValid = false;
+        this.$refs.fileInput.value = null;
+      },
+
+      errorFor(field, val) {
+        if (field === 'categoryPartnerId') return val ? '' : 'Please select a partner category.';
+        return '';
+      },
+
+      // Dipanggil select_field setiap kali sebuah option dipilih
+      touch(field) {
+        this.formErrors[field] = this.errorFor(field, this.formData[field]);
+      },
+
+      validateAll() {
+        Object.keys(this.formData).forEach((field) => {
+          this.formErrors[field] = this.errorFor(field, this.formData[field]);
+        });
+      },
+
+      hasFormErrors() {
+        return Object.values(this.formErrors).some((error) => error !== '');
+      },
+
+      // Tanpa berkas baru, gambar lama dipakai — jadi tidak ada syarat "harus ada
+      // file" seperti di halaman Create.
+      canSubmit() {
+        return this.isValid && !this.hasFormErrors();
+      },
+
+      focusFirstInvalid() {
+        const firstInvalid = Object.keys(this.formErrors).find((f) => this.formErrors[f]);
+        if (firstInvalid) {
+          document.getElementById(`${firstInvalid}-trigger`)?.focus();
+          return;
+        }
+
+        if (!this.isValid) this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
+      },
+
+      // Tombol Save Changes selalu aktif; validasi dijalankan di sini.
+      submitForm(event) {
+        this.validateAll();
+        if (!this.canSubmit()) {
+          this.focusFirstInvalid();
+          return;
+        }
+
+        this.loading = true;
+        event.target.submit();
+      },
+    };
+  }
+</script>

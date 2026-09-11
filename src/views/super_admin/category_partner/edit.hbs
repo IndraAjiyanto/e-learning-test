@@ -1,57 +1,191 @@
-<div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>
-      Edit Partner Category
-    </h2>
+{{!--
+  Halaman: Edit Partner Category — Super Admin
+  Lokasi: src/views/super_admin/category_partner/edit.hbs
+  Level: L4 Page
 
-    <form
-      action='/category-partner/{{category.id}}?_method=PATCH'
-      method='post'
-      class='space-y-6'
-      x-data="{
-        category: '{{category.category}}',
-        loading: false,
-        get error() {
-          if (!this.category.trim()) return 'Category is required';
-          if (this.category.trim().length < 2) return 'Minimum 2 characters';
-          return '';
-        },
-        get valid() { return this.error === ''; }
-      }"
-      @submit='if (!valid) { $event.preventDefault(); return false; } loading = true;'
+  Sidebar disediakan layouts/main.hbs.
+  Route: GET /category-partner/formEdit/:id -> PATCH /category-partner/:id
+  (urlencoded + _method override, sesuai UpdateCategoryPartnerDto).
+
+  Beda dari create.hbs: field terisi nilai existing, tombol submit "Save Changes",
+  dan ada kartu Danger Zone berisi aksi hapus kategori.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-2.5'>
+    <div class='flex flex-col gap-7'>
+      <div class='flex flex-col gap-1'>
+        {{> components/ui/super_admin/page_header/index
+          title='Edit Partner Category'
+        }}
+
+        {{> components/ui/super_admin/description/index
+          text='Update the category name used across partner organizations.'
+        }}
+      </div>
+
+      <form
+        action='/category-partner/{{category.id}}?_method=PATCH'
+        method='post'
+        novalidate
+        x-data='editCategoryPartnerForm({{json (default category.category "")}})'
+        @submit.prevent='submitForm($event)'
+        class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
+      >
+        <div class='flex flex-col gap-6'>
+          {{> components/ui/super_admin/description/index
+            text='Partnership Detail'
+            class='font-montserrat text-xl font-semibold leading-6 text-[#003060]'
+          }}
+
+          <div class='flex flex-col gap-5'>
+            {{> components/ui/super_admin/form/text_field
+              id='category'
+              name='category'
+              field='category'
+              label='Category Name'
+              type='text'
+              placeholder='e.g. Technology, Media, University'
+              hint='Renaming this category will automatically update all linked partners.'
+              autocomplete='off'
+              required=true
+            }}
+
+            <div class='flex flex-col-reverse gap-3 border-t border-[#d9d9d9] pt-6 sm:flex-row sm:justify-end'>
+              {{> components/ui/super_admin/form/button
+                as='link'
+                variant='secondary'
+                href='/category-partner'
+                label='Cancel'
+                loading=true
+              }}
+
+              {{> components/ui/super_admin/form/button
+                type='submit'
+                variant='primary'
+                label='Save Changes'
+                loading=true
+              }}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
+         confirmDelete milik partial sweetalert global yang menimpa fungsi senama. --}}
+    <div
+      class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
     >
-      <div>
-        <label class='block text-sm font-semibold text-gray-700 mb-2'>
-          Category Name
-        </label>
-        <input
-          type='text'
-          name='category'
-          x-model='category'
-          placeholder='e.g. Technology, Media, University'
-          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-        />
-        <p x-show='error' x-text='error' class='mt-1 text-sm text-red-600'></p>
+      <div class='flex items-start gap-4 sm:min-h-[72px]'>
+        <span
+          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
+        >
+          {{!-- lucide: alert-circle --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+            <circle cx='12' cy='12' r='10' />
+            <path d='M12 8v4' />
+            <path d='M12 16h.01' />
+          </svg>
+        </span>
+
+        <div class='flex flex-col gap-1'>
+          {{> components/ui/super_admin/description/index
+            text='Delete Partner Category'
+            class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+          }}
+
+          {{> components/ui/super_admin/description/index
+            text='Permanently remove this category from Kesatria Academy. This action cannot be undone.'
+            class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
+          }}
+        </div>
       </div>
 
-      <div class='flex gap-2'>
-        <button
-          type='submit'
-          :disabled='!valid || loading'
-          :class="(!valid || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
-        >
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a
-          href='/category-partner'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
-    </form>
+      <form
+        action='/category-partner/{{category.id}}?_method=DELETE'
+        method='post'
+        class='shrink-0'
+      >
+        {{> components/ui/super_admin/form/button
+          variant='danger'
+          label='Delete Category'
+          onclick='openDeleteModal(this)'
+          class='w-full sm:w-auto'
+        }}
+      </form>
+    </div>
   </div>
 </div>
+
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Partner Category?'
+  description='Are you sure you want to delete this partner category? This action will permanently remove the category and cannot be undone.'
+}}
+
+<script>
+  function editCategoryPartnerForm(initialCategory) {
+    return {
+      loading: false,
+
+      formData: { category: initialCategory || '' },
+      formErrors: { category: '' },
+      // Error hanya ditampilkan setelah field disentuh atau setelah submit ditekan
+      touched: { category: false },
+
+      validateField(field, value) {
+        const val = (value ?? '').toString();
+        this.formData[field] = val;
+        this.formErrors[field] = this.touched[field] ? this.errorFor(field, val) : '';
+      },
+
+      errorFor(field, val) {
+        if (field === 'category') {
+          if (!val.trim()) return 'Category name is required.';
+          if (val.trim().length < 2) return 'Category name must be at least 2 characters.';
+          return '';
+        }
+
+        return '';
+      },
+
+      touch(field) {
+        this.touched[field] = true;
+        this.validateField(field, this.formData[field]);
+      },
+
+      validateAll() {
+        Object.keys(this.formData).forEach((field) => {
+          this.touched[field] = true;
+          this.formErrors[field] = this.errorFor(field, this.formData[field]);
+        });
+      },
+
+      hasFormErrors() {
+        return Object.values(this.formErrors).some((error) => error !== '');
+      },
+
+      canSubmit() {
+        return !this.hasFormErrors();
+      },
+
+      focusFirstInvalid() {
+        const firstInvalid = Object.keys(this.formErrors).find((f) => this.formErrors[f]);
+        if (!firstInvalid) return;
+
+        document.getElementById(firstInvalid)?.focus();
+      },
+
+      // Tombol Save Changes selalu aktif; validasi dijalankan di sini.
+      submitForm(event) {
+        this.validateAll();
+        if (!this.canSubmit()) {
+          this.focusFirstInvalid();
+          return;
+        }
+
+        this.loading = true;
+        event.target.submit();
+      },
+    };
+  }
+</script>
