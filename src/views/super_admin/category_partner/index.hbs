@@ -100,13 +100,19 @@
   description='Are you sure you want to delete this partner category? This action will permanently remove the category and cannot be undone.'
 }}
 
-{{!-- Create & delete sama-sama redirect ke halaman ini, jadi toast dipilih
+{{!-- Create, edit & delete sama-sama redirect ke halaman ini, jadi toast dipilih
      dari flash yang terisi — bukan dari state client yang hilang saat reload. --}}
 {{#if categoryCreated}}
   {{> components/ui/super_admin/toast/success/index
     message=categoryCreated
     title='Category Created'
     description='The category has been added successfully'
+  }}
+{{else if categoryUpdated}}
+  {{> components/ui/super_admin/toast/success/index
+    message=categoryUpdated
+    title='Changes Saved'
+    description='The partner category has been updated successfully.'
   }}
 {{else}}
   {{> components/ui/super_admin/toast/success/index

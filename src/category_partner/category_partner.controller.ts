@@ -89,7 +89,12 @@ export class CategoryPartnerController {
     try {
       await this.categoryPartnerService.update(id, updateCategoryPartnerDto);
 
-      req.flash('success', 'Category partner successfully updated');
+      // Flash tersendiri, bukan 'success': partial sweetalert global merender
+      // 'success' sebagai toast SweetAlert sendiri, nanti jadi dua notifikasi.
+      req.flash(
+        'categoryUpdated',
+        'The partner category has been updated successfully.',
+      );
 
       return res.redirect('/category-partner');
     } catch (error: any) {

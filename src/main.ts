@@ -101,8 +101,10 @@ async function bootstrap() {
     res.locals.userDeleted = req.flash('userDeleted');
     res.locals.partnerDeleted = req.flash('partnerDeleted');
     res.locals.partnerCreated = req.flash('partnerCreated');
+    res.locals.partnerUpdated = req.flash('partnerUpdated');
     res.locals.categoryDeleted = req.flash('categoryDeleted');
     res.locals.categoryCreated = req.flash('categoryCreated');
+    res.locals.categoryUpdated = req.flash('categoryUpdated');
     next();
   });
 

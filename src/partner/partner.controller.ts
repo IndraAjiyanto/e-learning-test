@@ -141,7 +141,12 @@ export class PartnerController {
         updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.PartnerService.update(partnerId, updatePartnerDto);
-      req.flash('success', 'partner successfully updated');
+      // Flash tersendiri, bukan 'success': partial sweetalert global merender
+      // 'success' sebagai toast SweetAlert sendiri, nanti jadi dua notifikasi.
+      req.flash(
+        'partnerUpdated',
+        'The partnership has been updated successfully.',
+      );
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to update');
