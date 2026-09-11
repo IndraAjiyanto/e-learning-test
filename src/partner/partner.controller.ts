@@ -165,7 +165,7 @@ export class PartnerController {
       }
       await this.PartnerService.deleteFile(partner.image);
       await this.PartnerService.remove(partnerId);
-      req.flash('success', 'partner successfully removed');
+      req.flash('partnerDeleted', 'The partner has been permanently removed.');
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to remove');

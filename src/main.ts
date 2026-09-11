@@ -96,9 +96,11 @@ async function bootstrap() {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
-    // Flash khusus: dipakai komponen ui/super_admin/toast/success (Figma node 846:26691)
-    // agar notifikasi hapus user memakai toast sendiri, bukan toast SweetAlert global.
+    // Sengaja dipisah dari flash 'success': partial `sweetalert` menampilkan
+    // 'success' sebagai toast sendiri, jadi key ini mencegah notifikasi dobel.
     res.locals.userDeleted = req.flash('userDeleted');
+    res.locals.partnerDeleted = req.flash('partnerDeleted');
+    res.locals.categoryDeleted = req.flash('categoryDeleted');
     next();
   });
 

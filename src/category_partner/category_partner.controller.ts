@@ -123,8 +123,10 @@ export class CategoryPartnerController {
   ) {
     try {
       await this.categoryPartnerService.remove(id);
-
-      req.flash('success', 'Category partner successfully removed');
+      req.flash(
+        'categoryDeleted',
+        'The partner category has been permanently removed.',
+      );
 
       return res.redirect('/category-partner');
     } catch (error: any) {
