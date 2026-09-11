@@ -53,7 +53,7 @@ export class CategoryPartnerController {
     try {
       await this.categoryPartnerService.create(createCategoryPartnerDto);
 
-      req.flash('success', 'Category partner successfully created');
+      req.flash('categoryCreated', 'The category has been added successfully');
 
       return res.redirect('/category-partner');
     } catch (error: any) {

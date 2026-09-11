@@ -60,7 +60,7 @@ export class PartnerController {
     try {
       createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
-      req.flash('success', 'partner successfully created');
+      req.flash('partnerCreated', 'The partnership has been added successfully');
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to create');

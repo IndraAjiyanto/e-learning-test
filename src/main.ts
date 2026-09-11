@@ -100,7 +100,9 @@ async function bootstrap() {
     // 'success' sebagai toast sendiri, jadi key ini mencegah notifikasi dobel.
     res.locals.userDeleted = req.flash('userDeleted');
     res.locals.partnerDeleted = req.flash('partnerDeleted');
+    res.locals.partnerCreated = req.flash('partnerCreated');
     res.locals.categoryDeleted = req.flash('categoryDeleted');
+    res.locals.categoryCreated = req.flash('categoryCreated');
     next();
   });
 
