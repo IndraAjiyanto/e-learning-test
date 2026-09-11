@@ -113,7 +113,7 @@
       timer: null,
 
       init() {
-        if (config.autoShow) this.show();
+        if (config.autoShow) this.$nextTick(() => this.show());
       },
 
       show(detail) {
