@@ -1,36 +1,40 @@
 {{!--
-  Komponen: Editable Field (Input teks/tel dengan mode klik-untuk-edit)
+  Komponen: Editable Field (Input teks/tel fleksibel, mendukung mode klik-untuk-edit atau standard input)
   Lokasi: src/views/partials/components/ui/input/editable_field/index.hbs
   Level: L1 Atomik
 
-  Butuh Alpine x-data induk yang menyediakan:
-  - editingField (string|null)
-  - startEditing(field)
-  - checkChanges()
+  Mode Klik-untuk-Edit (Opsional, jika editingKey diisi):
+  - Butuh Alpine x-data induk: editingField, startEditing(field), checkChanges()
 
   Props:
   - label       : string (wajib) — teks label di atas input
-  - model       : string (wajib) — target x-model, contoh "username" atau "currentValues.fullName"
-  - editingKey  : string (wajib) — key dibandingkan ke `editingField`, contoh "username"
-  - type        : string (opsional, default "text") — tipe input HTML, mis. "text" | "tel"
+  - model       : string (wajib) — target x-model, contoh "formData.username" atau "currentValues.fullName"
+  - editingKey  : string (opsional) — key dibandingkan ke `editingField` untuk mode click-to-edit
+  - type        : string (opsional, default "text") — tipe input HTML, mis. "text" | "email" | "tel"
   - placeholder : string (opsional)
   - required    : boolean (opsional, default false) — tampilkan tanda * & atribut required
+  - disabled    : boolean (opsional, default false)
   - wrapperClass: string (opsional) — class tambahan pembungkus
+  - labelClass  : string (opsional) — override styling label
+  - inputClass  : string (opsional) — override styling input
 --}}
 
 <div class="{{wrapperClass}}">
-  <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+  <label class="{{default labelClass 'block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]'}}">
     {{label}}{{#if required}}<span class="text-red-500">*</span>{{/if}}
   </label>
   <input
     type="{{default type 'text'}}"
     {{#if required}}required{{/if}}
+    {{#if disabled}}disabled{{/if}}
     x-model="{{model}}"
-    :readonly="editingField !== '{{editingKey}}'"
-    @click="startEditing('{{editingKey}}')"
-    @blur="checkChanges()"
-    :class="editingField === '{{editingKey}}' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-    class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
+    {{#if editingKey}}
+      :readonly="editingField !== '{{editingKey}}'"
+      @click="startEditing('{{editingKey}}')"
+      @blur="checkChanges()"
+      :class="editingField === '{{editingKey}}' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+    {{/if}}
+    class="{{default inputClass 'w-full h-[44px] px-[14px] py-[10px] font-inter font-normal text-[16px] leading-[24px] text-[#0B1F3B] bg-white border border-[#D4D4D4] rounded-[8px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all placeholder:text-[#737373] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]'}}"
     placeholder="{{default placeholder ''}}"
-  >
+  />
 </div>
