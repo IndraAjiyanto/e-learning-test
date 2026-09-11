@@ -1,0 +1,13 @@
+{{!--
+  Table Cell (Super Admin) — <td>, pasangan table/header_cell.
+
+  Props:
+  - text    : ekspresi Alpine; bila diisi, sel jadi sel teks dan partial-block diabaikan.
+              Dirender ke x-text='…', jadi di dalamnya pakai kutip GANDA.
+  - variant : 'default' | 'action' (padding rata, untuk sel tombol aksi)
+  - isi bebas lewat partial-block bila `text` tidak dipakai.
+--}}
+<td
+  class='h-[72px] border-b border-[#e5e5e5] align-middle {{#if (eq variant 'action')}}p-4{{else}}px-6 py-4{{/if}}{{#if text}} font-inter text-sm leading-5 text-[#525252]{{/if}}'
+  {{#if text}}x-text='{{{text}}}'{{/if}}
+>{{#unless text}}{{#if @partial-block}}{{> @partial-block}}{{/if}}{{/unless}}</td>

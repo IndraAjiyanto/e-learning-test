@@ -1,0 +1,93 @@
+{{!--
+  Komponen: Client Table State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/table/client_table.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Menyediakan factory Alpine `clientTable()`: search + pagination di sisi client,
+  untuk halaman yang datanya sudah dikirim penuh oleh controller (tanpa endpoint
+  filter seperti /users/filter).
+
+  Kontrak state yang dihasilkan — sesuai yang diharapkan komponen lain:
+  - searchInput, handleSearch()          → ui/super_admin/table/toolbar
+  - currentPage, totalPages, changePage() → ui/super_admin/table/pagination
+  - rows                                  → dipakai <template x-for> di halaman
+  - size                                  → dipakai halaman untuk menomori baris
+  - loading                               → selalu false; datanya sudah ada saat render
+
+  Filter hanya dijalankan sekali per pencarian (lihat applySearch), bukan tiap
+  render — `filtered` sengaja properti biasa, bukan getter.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+
+  Contoh:
+    {{> components/ui/super_admin/table/client_table }}
+    <div x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'>
+--}}
+<script>
+  function clientTable({ items, size, searchKeys }) {
+    const allItems = items || [];
+
+    return {
+      items: allItems,
+      searchKeys: searchKeys || [],
+      searchInput: '',
+      // Hasil filter yang sedang aktif. Sengaja properti biasa, BUKAN getter:
+      // getter Alpine tidak di-memoize, sehingga satu render (pagination membaca
+      // totalPages, tbody membaca rows) akan menjalankan filter berkali-kali.
+      // Di sini filter hanya jalan sekali per pencarian, lewat applySearch().
+      // Nilai awal = seluruh item karena kotak search masih kosong.
+      filtered: allItems,
+      currentPage: 1,
+      size: size || 10,
+      loading: false,
+      searchTimeout: null,
+
+      // Membaca path bertitik ("categoryPartner.category") dengan aman —
+      // relasi bisa null, mis. partner tanpa kategori.
+      valueAt(row, path) {
+        const value = path.split('.').reduce((acc, key) => (acc == null ? acc : acc[key]), row);
+        return value == null ? '' : String(value);
+      },
+
+      // Satu-satunya tempat filter dijalankan.
+      applySearch(keyword) {
+        const needle = String(keyword || '').trim().toLowerCase();
+
+        this.filtered = needle
+          ? this.items.filter((row) =>
+              this.searchKeys.some((path) => this.valueAt(row, path).toLowerCase().includes(needle)),
+            )
+          : this.items;
+
+        // Halaman aktif dijepit DI SINI, bukan di getter rows: kalau hanya rows
+        // yang dijepit, pagination tetap mencetak currentPage mentah dan labelnya
+        // bisa berbunyi "Page 3 of 2" sementara isi tabel menampilkan halaman 2.
+        if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+      },
+
+      // O(1) — hanya membaca panjang array yang sudah difilter.
+      get totalPages() {
+        return Math.max(1, Math.ceil(this.filtered.length / this.size));
+      },
+
+      // O(size) — tidak memfilter ulang.
+      get rows() {
+        const start = (this.currentPage - 1) * this.size;
+        return this.filtered.slice(start, start + this.size);
+      },
+
+      handleSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.currentPage = 1;
+          this.applySearch(this.searchInput);
+        }, 300);
+      },
+
+      changePage(page) {
+        if (page < 1 || page > this.totalPages) return;
+        this.currentPage = page;
+      },
+    };
+  }
+</script>

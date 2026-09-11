@@ -14,6 +14,7 @@ import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @Controller('faq')
 export class FaqController {
@@ -28,7 +29,7 @@ export class FaqController {
   ) {
     try {
       await this.faqService.create(createFaqDto);
-      req.flash('success', 'FAQ successfully created');
+      flashToast(req, 'FAQ Created', 'The FAQ has been added successfully');
       res.redirect('/faq');
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to created');
@@ -78,7 +79,7 @@ export class FaqController {
   ) {
     try {
       await this.faqService.update(faqId, updateFaqDto);
-      req.flash('success', 'FAQ successfully updated');
+      flashToast(req, 'Changes Saved', 'The FAQ has been updated successfully.');
       res.redirect('/faq');
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to update');
@@ -95,7 +96,7 @@ export class FaqController {
   ) {
     try {
       await this.faqService.remove(faqId);
-      req.flash('success', 'FAQ successfully deleted');
+      flashToast(req, 'FAQ Deleted', 'The FAQ has been removed successfully.');
       res.redirect('/faq');
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to delete');

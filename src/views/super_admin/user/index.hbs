@@ -3,8 +3,6 @@
   Lokasi: src/views/super_admin/user/index.hbs
   Level: L4 Page
 
-  Figma: LMS Kesatria — List User (node 768:42362 "Content")
-  - page bg #f3f3f3, padding 42px 34px, container gap 28, blok tabel gap 14
   - Sidebar sudah disediakan oleh layouts/main.hbs (offset lg:ml-[319px])
 
   Data: GET /users/filter → { data, totalItems, totalPages, currentPage }
@@ -16,7 +14,7 @@
   x-init='fetchUsers()'
 >
   <div class='flex flex-col gap-7'>
-    {{!-- Title — Figma node 768:42364 (gap 4px) --}}
+    
     <div class='flex flex-col gap-1'>
       {{> components/ui/super_admin/page_header/index
         title='Users'
@@ -28,22 +26,15 @@
     </div>
 
     <div class='flex flex-col gap-3.5'>
-      {{> components/ui/super_admin/index/toolbar }}
-      {{> components/ui/super_admin/index/table }}
+      {{> components/ui/super_admin/table/toolbar }}
+      {{> components/ui/super_admin/table/user_table }}
     </div>
   </div>
 </div>
 
-{{!-- Konfirmasi delete — Figma node 768:46118 (frame Modal 768:46985).
-     Dipanggil di luar x-data='userTable()' agar overlay menutup seluruh viewport.
-     Tombol trash di row_actions memakai onclick='confirmDeleteUser(this)'; fungsi itu
-     didefinisikan oleh komponen modal, bukan halaman ini. --}}
-{{> components/ui/super_admin/modal/delete_user/index }}
+{{> components/ui/super_admin/modal/delete_confirm/index }}
 
-{{!-- Notifikasi sukses delete — Figma node 846:26691 (frame Modal 768:40586).
-     `userDeleted` adalah flash khusus dari DELETE /users/:id (lihat main.ts);
-     flash 'success' biasa tetap dipegang partial sweetalert agar tidak dobel toast. --}}
-{{> components/ui/super_admin/toast/success/index message=userDeleted }}
+{{> components/ui/super_admin/toast/success/index toast=toast }}
 
 <script>
   function roleLabel(role) {

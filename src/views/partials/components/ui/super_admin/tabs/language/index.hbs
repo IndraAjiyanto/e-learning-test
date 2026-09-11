@@ -1,0 +1,27 @@
+{{!--
+  Komponen: Language Tabs (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/tabs/language/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Tab Indonesia / English / Japanese untuk konten multibahasa (kolom jsonb
+  { id, en, ja }). Berbeda dari tabs/partner yang berisi <a> antar rute:
+  komponen ini menukar state Alpine, tanpa pindah halaman.
+
+  Daftar bahasanya tetap, bukan loop data BE, karena mengikuti kolom jsonb
+  entity dan bukan tabel referensi.
+
+  Pemanggil WAJIB menyediakan state Alpine `lang` ('id' | 'en' | 'ja') pada
+  scope yang membungkus komponen ini, mis. x-data="{ lang: 'id' }".
+
+  Props:
+  - ariaLabel : string (default 'Content language') — label a11y untuk tablist
+--}}
+<nav
+  role='tablist'
+  aria-label='{{default ariaLabel "Content language"}}'
+  class='flex items-end border-b border-[#d9d9d9]'
+>
+  {{> components/ui/super_admin/tabs/language/tab code='id' flag='id' label='Indonesia' }}
+  {{> components/ui/super_admin/tabs/language/tab code='en' flag='gb' label='English' }}
+  {{> components/ui/super_admin/tabs/language/tab code='ja' flag='jp' label='Japanese' }}
+</nav>

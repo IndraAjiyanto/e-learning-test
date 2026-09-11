@@ -17,6 +17,7 @@ import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
 import { hbsHelpers } from './common/helpers';
+import { readFlashToast } from './common/utils/toast.util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -96,9 +97,9 @@ async function bootstrap() {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
-    // Flash khusus: dipakai komponen ui/super_admin/toast/success (Figma node 846:26691)
-    // agar notifikasi hapus user memakai toast sendiri, bukan toast SweetAlert global.
-    res.locals.userDeleted = req.flash('userDeleted');
+    // Key terpisah dari 'success': partial `sweetalert` merender 'success'
+    // sebagai toast sendiri, jadi ini mencegah dua notifikasi untuk satu aksi.
+    res.locals.toast = readFlashToast(req);
     next();
   });
 

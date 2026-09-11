@@ -3,21 +3,15 @@
   Lokasi: src/views/super_admin/user/edit.hbs
   Level: L4 Page
 
-  Figma: LMS Kesatria — Edit User (node 768:41676 "Content")
-  - page bg #f3f3f3, padding 43px 33px, gap antar-blok 16px
-  - Sidebar disediakan layouts/main.hbs (offset lg:ml-[319px])
+  Sidebar disediakan layouts/main.hbs (offset lg:ml-[319px])
 
   Route: GET /users/formEdit/:userId
          → POST /users/super_admin/:userId?_method=PATCH (multipart)
          → POST /users/:userId?_method=DELETE (Danger Zone)
 
-  Catatan Figma: instance tombol submit di node 768:41907 masih memakai teks
-  "Create User" (sisa dari halaman Create). Di sini dipakai "Save Changes"
-  agar label sesuai aksi halaman Edit — satu-satunya penyimpangan dari teks Figma.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[33px] sm:py-[43px]'>
   <div class='flex flex-col gap-4'>
-    {{!-- Title — Figma node 768:41678 (gap 4px) --}}
     <div class='flex flex-col gap-1'>
       {{> components/ui/super_admin/page_header/index
         title='Edit User'
@@ -28,13 +22,9 @@
       }}
     </div>
 
-    {{!-- Section - MAIN FORM CARD — Figma node 768:41874
-         card bg #ffffff, border 1px #d9d9d9, radius 12, padding 32,
-         shadow 0 1px 2px rgba(0,0,0,0.05), gap antar-section 24;
-         grid field 2 kolom, gap kolom 12, gap baris 10 (node 768:41886).
-
-         Beda dengan Create User (node 740:7048): tanpa field password,
-         ada field Status, submit 'Save Changes'.
+    {{!-- Section - MAIN FORM CARD
+         Beda dengan Create User: tanpa field password, ada field Status,
+         submit 'Save Changes'.
 
          Kontrak backend (tidak diubah):
          POST /users/super_admin/:userId?_method=PATCH, multipart/form-data,
@@ -84,8 +74,8 @@
             required=true
           }}
 
-          {{!-- Status memakai select_field varian 'dropdown' (Figma node 768:41913);
-               titik status datang dari `dot` di statusOptions. --}}
+          {{!-- Status memakai select_field varian 'dropdown'; titik status
+               datang dari `dot` di statusOptions. --}}
           {{> components/ui/super_admin/form/select_field
             id='isVerified'
             name='isVerified'
@@ -106,21 +96,12 @@
       </div>
     </form>
 
-    {{!-- 4. DANGER ZONE CARD (Account Deletion) — Figma node 768:41716
-         card bg #ffffff, border 1px #d9d9d9, radius 16, padding 19/31,
-         shadow 0 1px 2px rgba(0,0,0,0.05), baris space-between gap 44;
-         featured icon 48px bulat, bg #fee2e2, ring 8px #fef2f2,
-         alert-circle 24px stroke #dc2626 (node 768:41718);
-         judul Montserrat SemiBold 16/20 #003060,
-         deskripsi Montserrat Medium 14/20 #718096 (gap 4);
-         tombol h 44, px 18, py 10, radius 8, bg #dc2626, Inter SemiBold 16/24 #ffffff.
-
+    {{!-- 4. DANGER ZONE CARD (Account Deletion)
          Kontrak backend (tidak diubah): DELETE /users/:id (lewat method-override). --}}
     <div
       class='flex flex-col gap-6 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-[19px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-center sm:justify-between sm:gap-11 sm:px-[31px]'
     >
       <div class='flex items-start gap-4'>
-        {{!-- Featured icon — 32px inti + ring 8px, total 48px --}}
         <span
           class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2] text-[#dc2626]'
         >
@@ -132,9 +113,8 @@
           </svg>
         </span>
 
-        {{!-- Judul & deskripsi sama-sama memakai ui/super_admin/description dengan
-             override `class`, karena default komponen (Montserrat Medium 16/20
-             #718096) berbeda dari dua gaya teks di Figma node 768:41720 / 768:41721. --}}
+        {{!-- Judul & deskripsi memakai ui/super_admin/description dengan override
+             `class`, karena gaya default komponen berbeda dari yang dibutuhkan di sini. --}}
         <div class='flex flex-col gap-1'>
           {{> components/ui/super_admin/description/index
             text='Delete User Account'
@@ -152,7 +132,7 @@
         {{> components/ui/super_admin/form/button
           label='Delete User'
           variant='danger'
-          onclick='confirmDeleteUser(this)'
+          onclick='openDeleteModal(this)'
           class='w-full sm:w-auto'
         }}
       </form>
@@ -160,10 +140,10 @@
   </div>
 </div>
 
-{{!-- Konfirmasi delete — komponen yang sama dengan halaman User List
-     (Figma node 768:46118). Tombol Danger Zone di atas memakai
-     onclick='confirmDeleteUser(this)'; fungsi itu didefinisikan oleh komponen modal. --}}
-{{> components/ui/super_admin/modal/delete_user/index }}
+{{!-- Konfirmasi delete — komponen yang sama dengan halaman User List. Tombol Danger
+     Zone di atas memakai onclick='openDeleteModal(this)'; fungsi itu didefinisikan
+     oleh komponen modal. --}}
+{{> components/ui/super_admin/modal/delete_confirm/index }}
 
 <script>
   function editUserForm() {
@@ -174,14 +154,14 @@
     return {
       loading: false,
 
-      // Role — urutan & label mengikuti Figma node 768:41908 (Admin, Mentor, User)
+      // Role — urutan & label: Admin, Mentor, User
       roleOptions: [
         { value: 'super_admin', label: 'Admin' },
         { value: 'admin', label: 'Mentor' },
         { value: 'user', label: 'User' },
       ],
 
-      // Status — Figma node 768:41913; sumber data tunggal: field `isVerified`
+      // Status — sumber data tunggal: field `isVerified`
       statusOptions: [
         { value: 'true', label: 'Verified', dot: 'bg-[#22c55e]' },
         { value: 'false', label: 'Unverified', dot: 'bg-[#718096]' },
