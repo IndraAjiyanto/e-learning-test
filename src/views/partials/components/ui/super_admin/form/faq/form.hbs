@@ -1,6 +1,6 @@
 {{!--
   Komponen: FAQ Form State (Super Admin)
-  Lokasi: src/views/partials/components/ui/super_admin/form/faq_form.hbs
+  Lokasi: src/views/partials/components/ui/super_admin/form/faq/form.hbs
   Level: L0 Skrip pendamping (scoped super_admin)
 
   Factory Alpine `faqForm()` untuk super_admin/faq/{create,edit}.hbs — keduanya
@@ -90,7 +90,7 @@
         // Field yang error bisa berada di tab bahasa lain — pindahkan tab dulu,
         // baru fokuskan, supaya pesan errornya benar-benar terlihat.
         //
-        // Id `${field}-${lang}` harus sama dengan yang dibentuk form/faq_fields.
+        // Id `${field}-${lang}` harus sama dengan yang dibentuk form/faq/fields.
         // Ketidakcocokan dilaporkan ke console, bukan ditelan `?.`.
         revealFirstInvalid() {
           for (const lang of LANGS) {
@@ -101,7 +101,7 @@
               this.$nextTick(() => {
                 const el = document.getElementById(`${field}-${lang}`);
                 if (!el) {
-                  console.warn(`faqForm: field "${field}-${lang}" tidak ditemukan — id di form/faq_fields berubah?`);
+                  console.warn(`faqForm: field "${field}-${lang}" tidak ditemukan — id di form/faq/fields berubah?`);
                   return;
                 }
                 el.focus();

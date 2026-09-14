@@ -33,7 +33,7 @@
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-3.5'
     >
-      {{> components/ui/super_admin/form/benefit_fields }}
+      {{> components/ui/super_admin/form/benefit/fields }}
 
       <div class='flex flex-col-reverse gap-3 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:flex-row sm:justify-end sm:p-5'>
         {{> components/ui/super_admin/form/button
@@ -55,4 +55,4 @@
   </div>
 </div>
 
-{{> components/ui/super_admin/form/benefit_form }}
+{{> components/ui/super_admin/form/benefit/form }}

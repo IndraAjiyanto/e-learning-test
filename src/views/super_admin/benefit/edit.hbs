@@ -33,7 +33,7 @@
         x-data='benefitForm({ icon: {{json benefit.icon}}, title: {{json benefit.title}}, description: {{json benefit.description}}, no: {{json benefit.no}}, numbers: {{json availableNumbers}} })'
         @submit.prevent='submitForm($event)'
       >
-        {{#> components/ui/super_admin/form/benefit_fields }}
+        {{#> components/ui/super_admin/form/benefit/fields }}
           <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
             {{> components/ui/super_admin/form/button
               as='link'
@@ -50,7 +50,7 @@
               loading=true
             }}
           </div>
-        {{/components/ui/super_admin/form/benefit_fields}}
+        {{/components/ui/super_admin/form/benefit/fields}}
       </form>
 
       {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
@@ -105,4 +105,4 @@
   description='Are you sure you want to delete this benefit? This action will permanently remove its title and description in all languages and cannot be undone.'
 }}
 
-{{> components/ui/super_admin/form/benefit_form }}
+{{> components/ui/super_admin/form/benefit/form }}
