@@ -16,6 +16,7 @@ import { UpdateBenefitDto } from './dto/update-benefit.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('benefit')
@@ -31,10 +32,14 @@ export class BenefitController {
   ) {
     try {
       await this.benefitService.create(createBenefitDto);
-      req.flash('success', 'benefit successfully created');
+      flashToast(
+        req,
+        'Benefit Created',
+        'The benefit has been added successfully.',
+      );
       res.redirect('/benefit');
     } catch (error: any) {
-      req.flash('error', error.message || 'benefit failed to create');
+      req.flash('error', error.message || 'Benefit failed to create');
       res.redirect('/benefit');
     }
   }
@@ -83,10 +88,14 @@ export class BenefitController {
   ) {
     try {
       await this.benefitService.update(benefitId, updateBenefitDto);
-      req.flash('success', 'benefit successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The benefit has been updated successfully.',
+      );
       res.redirect('/benefit');
     } catch (error: any) {
-      req.flash('error', error.message || 'benefit failed  to updat');
+      req.flash('error', error.message || 'Benefit failed to update');
       res.redirect('/benefit');
     }
   }
@@ -100,10 +109,14 @@ export class BenefitController {
   ) {
     try {
       await this.benefitService.remove(benefitId);
-      req.flash('success', 'benefit successfully deleted');
+      flashToast(
+        req,
+        'Benefit Deleted',
+        'The benefit has been removed successfully.',
+      );
       res.redirect('/benefit');
     } catch (error: any) {
-      req.flash('error', error.message || 'benefit failed  to delete');
+      req.flash('error', error.message || 'Benefit failed to delete');
       res.redirect('/benefit');
     }
   }

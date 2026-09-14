@@ -12,6 +12,7 @@
   - text         : ekspresi Alpine untuk x-text (wajib), mis. 'roleLabel(user.role)'
   - class        : kelas warna statis, mis. 'bg-[#f9f5ff] text-[#6941c6]'
   - classExpr    : ekspresi Alpine untuk :class warna (dipakai bila warnanya kondisional)
+  - size         : 'sm' (default, text 12/18) | 'md' (text 14/20, mis. kolom Number di Benefit)
   - dot          : boolean (default false) — tampilkan dot di kiri teks
   - dotClass     : kelas warna dot statis, mis. 'bg-[#22c55e]'
   - dotClassExpr : ekspresi Alpine untuk :class warna dot
@@ -32,7 +33,7 @@
       dotClassExpr="user.isVerified ? 'bg-[#22c55e]' : 'bg-[#718096]'" }}
 --}}
 <span
-  class='inline-flex items-center rounded-2xl py-0.5 font-inter text-xs font-medium leading-[18px] {{#if dot}}gap-1.5 pl-1.5 pr-2{{else}}px-2{{/if}} {{class}}'
+  class='inline-flex items-center rounded-2xl py-0.5 font-inter font-medium {{#if (eq size 'md')}}min-w-6 justify-center text-sm leading-5{{else}}text-xs leading-[18px]{{/if}} {{#if dot}}gap-1.5 pl-1.5 pr-2{{else}}px-2{{/if}} {{class}}'
   {{#if classExpr}}:class="{{{classExpr}}}"{{/if}}
 >
   {{#if dot}}

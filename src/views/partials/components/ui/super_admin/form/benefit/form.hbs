@@ -1,0 +1,148 @@
+{{!--
+  Komponen: Benefit Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/benefit/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `benefitForm()` untuk super_admin/benefit/{create,edit}.hbs —
+  keduanya memakai field, validasi, dan aturan submit yang sama.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
+  form/select_field); loading (form/button); titleLang & descriptionLang
+  (tabs/language dengan prop `state`); noOptions & iconClass (form/benefit/fields).
+
+  Title dan Description punya tab bahasa sendiri-sendiri, jadi state tabnya
+  terpisah. Submit yang gagal memindahkan tab field yang error agar pesannya
+  terlihat.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const LABEL = { icon: 'Icon', title: 'Title', description: 'Description' };
+    const MIN = { icon: 2, title: 3, description: 10 };
+
+    // Urutan ini juga urutan fokus saat submit gagal.
+    const PATHS = [
+      'icon',
+      ...LANGS.map((l) => `title.${l}`),
+      ...LANGS.map((l) => `description.${l}`),
+      'no',
+    ];
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    // `path` berbentuk 'icon' atau 'title.id' — bentuk yang dikirim form/text_field.
+    const read = (obj, path) => {
+      const [field, lang] = path.split('.');
+      return lang ? obj[field][lang] : obj[field];
+    };
+    const write = (obj, path, value) => {
+      const [field, lang] = path.split('.');
+      if (lang) obj[field][lang] = value;
+      else obj[field] = value;
+    };
+
+    const errorFor = (path, value) => {
+      const [field, lang] = path.split('.');
+      const val = (value ?? '').toString().trim();
+
+      if (field === 'no') return val ? '' : 'Please select a display order.';
+
+      const label = lang ? `${LABEL[field]} (${LANG_LABEL[lang]})` : LABEL[field];
+      if (!val) return `${label} is required.`;
+      if (val.length < MIN[field]) return `${label} must be at least ${MIN[field]} characters.`;
+
+      return '';
+    };
+
+    // Sama dengan helper computeIcon di server; helper itu tidak bisa dipanggil dari Alpine.
+    const toIconClass = (value) => {
+      const icon = String(value || '').trim();
+      if (!icon) return 'fa-solid fa-circle-question';
+      const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(icon)
+        || icon.split(/\s+/).some((part) => /^fa-/i.test(part));
+      if (hasFaPrefix) return /^fa-\w+/i.test(icon) && !/\s/.test(icon) ? 'fa-solid ' + icon : icon;
+      return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
+    };
+
+    window.benefitForm = function benefitForm({ icon, title, description, no, numbers } = {}) {
+      // Kolom jsonb nullable: data lama bisa belum punya salah satu bahasa.
+      const initial = (src) => byLang((l) => (src && src[l]) || '');
+
+      return {
+        loading: false,
+        titleLang: 'id',
+        descriptionLang: 'id',
+
+        // select_field membandingkan dengan ===, jadi semua nilai dijadikan string.
+        noOptions: (numbers || []).map((n) => ({ value: String(n), label: String(n) })),
+
+        formData: {
+          icon: icon || '',
+          title: initial(title),
+          description: initial(description),
+          no: no == null ? '' : String(no),
+        },
+        formErrors: { icon: '', title: byLang(() => ''), description: byLang(() => ''), no: '' },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: { icon: false, title: byLang(() => false), description: byLang(() => false), no: false },
+
+        get iconClass() {
+          return toIconClass(this.formData.icon);
+        },
+
+        validateField(path, value) {
+          write(this.formData, path, value ?? '');
+          write(this.formErrors, path, read(this.touched, path) ? errorFor(path, read(this.formData, path)) : '');
+        },
+
+        touch(path) {
+          write(this.touched, path, true);
+          this.validateField(path, read(this.formData, path));
+        },
+
+        validateAll() {
+          PATHS.forEach((path) => this.touch(path));
+        },
+
+        hasFormErrors() {
+          return PATHS.some((path) => read(this.formErrors, path) !== '');
+        },
+
+        // Id harus sama dengan yang dibentuk form/benefit/fields dan
+        // form/select_field (`icon`, `title-id`, `no-trigger`, ...).
+        revealFirstInvalid() {
+          const path = PATHS.find((p) => read(this.formErrors, p));
+          if (!path) return;
+
+          const [field, lang] = path.split('.');
+          if (lang) this[`${field}Lang`] = lang;
+
+          const id = field === 'no' ? 'no-trigger' : lang ? `${field}-${lang}` : field;
+          this.$nextTick(() => {
+            const el = document.getElementById(id);
+            if (!el) {
+              console.warn(`benefitForm: field "${id}" tidak ditemukan — id di form/benefit/fields berubah?`);
+              return;
+            }
+            el.focus();
+          });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

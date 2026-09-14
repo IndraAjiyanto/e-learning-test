@@ -1,6 +1,6 @@
 {{!--
   Komponen: FAQ Form Fields (Super Admin)
-  Lokasi: src/views/partials/components/ui/super_admin/form/faq_fields.hbs
+  Lokasi: src/views/partials/components/ui/super_admin/form/faq/fields.hbs
   Level: L2 Blok field (scoped super_admin)
 
   Question + Answer untuk ketiga bahasa. Dipanggil sekali oleh
@@ -15,10 +15,10 @@
   bahasa itu terhapus di backend.
 
   Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `question-id`) — pola yang
-  sama dipakai form/faq_form untuk memindahkan fokus ke field pertama yang
+  sama dipakai form/faq/form untuk memindahkan fokus ke field pertama yang
   error. Jangan diubah sepihak.
 
-  Pemanggil menyediakan state Alpine dari form/faq_form.
+  Pemanggil menyediakan state Alpine dari form/faq/form.
 --}}
 {{#*inline 'faqLangFields'}}
   {{!-- x-cloak: Alpine dimuat `defer`, jadi tanpa ini ketiga blok bahasa
