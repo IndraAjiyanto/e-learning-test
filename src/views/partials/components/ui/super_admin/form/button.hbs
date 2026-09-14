@@ -6,17 +6,10 @@
   Punya DUA mode:
 
   A. Mode tunggal (default) — satu tombol.
-     Figma: _Button base (Edit User node 768:41906 Cancel / 768:41907 Submit,
-     Danger Zone node 768:41722)
-     - h 44, px 18, py 10, radius 8, shadow 0 1px 2px rgba(0,0,0,0.05)
      - Inter SemiBold 16/24
      - primary   : bg + border #003060, teks #ffffff   (hover #00254a, active #001c39)
-     - secondary : bg #ffffff, border #d4d4d4, teks #003060 (hover bg #f5f5f5, active #ededed)
-     - danger    : bg #dc2626, teks #ffffff             (hover #b91c1c, active #991b1b)
 
   B. Mode baris (row=true) — baris aksi footer form, merender Cancel + Submit.
-     Figma: "Section D: Primary Actions" (Create User node 740:7088/740:7089,
-     Edit User node 768:41904/768:41905)
      - wrapper padding-top 8, baris padding-top 24 + border-top 1px #d9d9d9
      - rata kanan, gap 16; di mobile kolom terbalik (submit di atas Cancel)
      Mode ini memanggil komponen ini sendiri untuk kedua tombolnya.
@@ -27,7 +20,6 @@
 
   CATATAN: sengaja TIDAK memakai ui/button/submit atau ui/button/consultation —
   keduanya memakai bahasa desain lama (rounded-[12px], font-montserrat font-bold)
-  yang berbeda dari Untitled UI di Figma Super Admin.
 
   Props mode tunggal:
   - label        : string (wajib) — teks tombol
@@ -35,7 +27,7 @@
   - as           : 'button' (default) | 'link'
   - href         : string — wajib bila as='link'
   - type         : 'button' (default) | 'submit' — hanya untuk as='button'
-  - onclick      : string (opsional) — handler inline, mis. 'confirmDeleteUser(this)'
+  - onclick      : string (opsional) — handler inline, mis. 'openDeleteModal(this)'
   - class        : string (opsional) — class tambahan untuk layout/sizing
   - loading      : boolean (opsional) — pasang binding Alpine `loading`
                    (disabled + spinner + label diganti). HANYA pakai bila tombol

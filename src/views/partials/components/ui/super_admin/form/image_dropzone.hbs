@@ -1,0 +1,133 @@
+{{!--
+  Komponen: Image Dropzone (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/image_dropzone.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Area unggah lebar untuk gambar cover/logo. Untuk avatar bulat foto profil
+  pakai form/photo_upload.
+
+  State Alpine dipegang oleh form pemanggil (mis. createPartnerForm):
+  previewUrl, errorMessage, isValid, hasFile, fileName, validateImage(), clearFile().
+  `dragging` bersifat lokal di komponen ini.
+
+  Dengan prop `crop`, file yang dipilih masuk ke form/crop_modal dulu dan yang
+  dikirim ke backend adalah hasil cropnya. Form pemanggil tidak perlu tahu soal
+  crop — ia tetap hanya menerima File lewat validateImage().
+
+  Props:
+  - id       : string (default 'image')
+  - name     : string (default 'image') — name file yang dikirim ke backend
+  - label    : string (default 'Cover Program')
+  - required : boolean (opsional) — menampilkan asterisk merah
+  - meta     : string (opsional) — baris ketentuan file di bawah teks utama
+  - accept   : string (default 'image/jpeg,image/jpg,image/png')
+  - crop     : boolean (opsional) — aktifkan modal crop sebelum validasi
+  - cropAspect : number rasio lebar/tinggi area crop (default 1, persegi)
+  - cropSize : number lebar piksel hasil crop (default 1000; tinggi mengikuti
+               cropAspect). Nilai tetap dipakai supaya hasilnya selalu lolos
+               batas dimensi backend berapa pun ukuran aslinya.
+--}}
+<div class='flex flex-col gap-2'>
+  <label
+    for='{{default id "image"}}'
+    class='font-inter text-sm font-medium leading-5 text-[#404040]'
+  >{{default label 'Cover Program'}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</label>
+
+  <input
+    type='file'
+    id='{{default id "image"}}'
+    name='{{default name "image"}}'
+    accept='{{default accept "image/jpeg,image/jpg,image/png"}}'
+    x-ref='dropInput'
+    class='sr-only'
+    {{#if crop}}
+    @change="$dispatch('crop-open-{{default id "image"}}', { file: $event.target.files[0] })"
+    @crop-done-{{default id "image"}}.window='validateImage($event.detail.file)'
+    {{else}}
+    @change='validateImage($event.target.files[0])'
+    {{/if}}
+  />
+
+  <div
+    x-data='{ dragging: false }'
+    @dragover.prevent='dragging = true'
+    @dragenter.prevent='dragging = true'
+    @dragleave.prevent='dragging = false'
+    @drop.prevent="dragging = false; $refs.dropInput.files = $event.dataTransfer.files; $refs.dropInput.dispatchEvent(new Event('change', { bubbles: true }))"
+    :class="dragging
+      ? 'border-[#0080ff] bg-[#eef7ff]'
+      : (errorMessage ? 'border-[#fca5a5] bg-[#fef7f7]' : 'border-[#d9d9d9] bg-[#f8f9fa] hover:border-[#0080ff]')"
+    class='relative flex h-[220px] w-full items-center justify-center overflow-hidden rounded-lg border px-4 py-2 transition-colors sm:h-[303px]'
+  >
+    {{!-- State awal / error: ajakan unggah (klik di mana saja membuka file picker) --}}
+    <label
+      x-show='!previewUrl'
+      for='{{default id "image"}}'
+      class='flex cursor-pointer flex-col items-center justify-center gap-2.5 text-center'
+    >
+      {{!-- ikon + teks menempel tanpa jarak --}}
+      <span class='flex flex-col items-center'>
+        <span class='flex h-10 w-10 items-center justify-center text-[#718096]'>
+          {{!-- lucide: image --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='h-10 w-10'>
+            <rect width='18' height='18' x='3' y='3' rx='2' />
+            <circle cx='9' cy='9' r='2' />
+            <path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21' />
+          </svg>
+        </span>
+
+        <span class='font-montserrat text-xs font-medium leading-4 text-[#718096]'>
+          Drag &amp; Drop your Image here<br />
+          or <span class='text-[#0080ff] underline-offset-2 hover:underline'>click to browse</span>
+        </span>
+      </span>
+
+      {{#if meta}}
+        <span class='font-montserrat text-[10px] font-medium leading-3 text-[#adb7c5]'>{{meta}}</span>
+      {{/if}}
+    </label>
+
+    {{!-- State terunggah: pratinjau + aksi ganti/hapus --}}
+    <template x-if='previewUrl'>
+      <div class='absolute inset-0 flex items-center justify-center bg-[#f8f9fa]'>
+        <img :src='previewUrl' alt='Cover preview' class='h-full w-full object-contain' />
+
+        <div class='absolute bottom-3 right-3 flex items-center gap-2'>
+          <button
+            type='button'
+            @click='$refs.dropInput.click()'
+            class='inline-flex h-[34px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-3 font-montserrat text-xs font-semibold leading-4 text-[#003060] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#ededed]'
+          >Change</button>
+          <button
+            type='button'
+            @click='clearFile()'
+            class='inline-flex h-[34px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-3 font-montserrat text-xs font-semibold leading-4 text-[#718096] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#fca5a5] hover:text-[#dc2626] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+          >Remove</button>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  {{!-- Nama file terpilih --}}
+  <p
+    x-show='hasFile && isValid && fileName'
+    x-cloak
+    x-text='fileName'
+    class='truncate font-montserrat text-xs leading-4 text-[#718096]'
+  ></p>
+
+  <p
+    x-show='errorMessage'
+    x-cloak
+    x-text='errorMessage'
+    class='font-inter text-sm leading-5 text-[#ef4444]'
+  ></p>
+</div>
+
+{{#if crop}}
+  {{> components/ui/super_admin/form/crop_modal
+    inputId=(default id 'image')
+    aspect=(default cropAspect 1)
+    size=(default cropSize 1000)
+  }}
+{{/if}}

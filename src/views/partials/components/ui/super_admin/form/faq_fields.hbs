@@ -1,0 +1,65 @@
+{{!--
+  Komponen: FAQ Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/faq_fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Question + Answer untuk ketiga bahasa. Dipanggil sekali oleh
+  super_admin/faq/{create,edit}.hbs; tidak menerima props.
+
+  Ketiga bahasa ditulis di sini, bukan diulang di halaman: create & edit
+  memakai field dan placeholder yang sama persis, jadi memanggil per bahasa
+  dari masing-masing halaman hanya menunggu copy-nya drift.
+
+  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
+  meski tab-nya tidak aktif; dengan x-if field tersembunyi hilang dari form dan
+  bahasa itu terhapus di backend.
+
+  Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `question-id`) — pola yang
+  sama dipakai form/faq_form untuk memindahkan fokus ke field pertama yang
+  error. Jangan diubah sepihak.
+
+  Pemanggil menyediakan state Alpine dari form/faq_form.
+--}}
+{{#*inline 'faqLangFields'}}
+  {{!-- x-cloak: Alpine dimuat `defer`, jadi tanpa ini ketiga blok bahasa
+       (enam textarea) sempat tampil bertumpuk sebelum x-show bekerja. --}}
+  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'question-' code)
+      name=(concat 'question[' code ']')
+      field=(concat 'question.' code)
+      label='Question'
+      multiline=true
+      placeholder=questionHint
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'answer-' code)
+      name=(concat 'answer[' code ']')
+      field=(concat 'answer.' code)
+      label='Answer'
+      multiline=true
+      placeholder=answerHint
+      required=true
+    }}
+  </div>
+{{/inline}}
+
+{{> faqLangFields
+  code='id'
+  questionHint='Tulis pertanyaan dalam Bahasa Indonesia...'
+  answerHint='Tulis jawaban dalam Bahasa Indonesia...'
+}}
+
+{{> faqLangFields
+  code='en'
+  questionHint='Write the question in English...'
+  answerHint='Write the answer in English...'
+}}
+
+{{> faqLangFields
+  code='ja'
+  questionHint='質問を日本語で入力してください...'
+  answerHint='回答を日本語で入力してください...'
+}}

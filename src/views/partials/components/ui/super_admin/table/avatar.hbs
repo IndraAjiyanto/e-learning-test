@@ -1,0 +1,25 @@
+{{!--
+  Table Avatar (Super Admin) — gambar bulat 40px dengan fallback huruf awal.
+
+  Semua prop dirender ke atribut ber-kutip TUNGGAL, jadi di dalam ekspresi pakai kutip GANDA.
+
+  Props:
+  - src  : ekspresi Alpine sumber gambar (wajib)
+  - name : ekspresi Alpine dasar huruf inisial (wajib)
+  - alt  : ekspresi Alpine teks alt (opsional, default memakai `name`)
+--}}
+<template x-if='{{{src}}}'>
+  <img
+    :src='{{{src}}}'
+    :alt='{{#if alt}}{{{alt}}}{{else}}{{{name}}}{{/if}}'
+    class='h-10 w-10 rounded-full object-cover'
+  />
+</template>
+<template x-if='!({{{src}}})'>
+  <div class='flex h-10 w-10 items-center justify-center rounded-full bg-[#c7b9da]'>
+    <span
+      class='font-inter text-sm font-semibold leading-5 text-white'
+      x-text='(({{{name}}}) || "?").charAt(0).toUpperCase()'
+    ></span>
+  </div>
+</template>

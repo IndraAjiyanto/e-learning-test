@@ -1,0 +1,37 @@
+{{!--
+  User Table Row (Super Admin) — urutan kolom khusus User.
+  Dipakai di dalam <template x-for='(user, index) in users'> pada user_table.
+--}}
+<tr class='transition-colors hover:bg-[#fafafa]'>
+  {{#> components/ui/super_admin/table/cell}}
+    {{> components/ui/super_admin/table/avatar
+      src='user.profile'
+      name='user.username'
+    }}
+  {{/components/ui/super_admin/table/cell}}
+
+  {{> components/ui/super_admin/table/cell text='user.username' }}
+
+  {{> components/ui/super_admin/table/cell text='user.email' }}
+
+  {{#> components/ui/super_admin/table/cell}}
+    {{> components/ui/super_admin/badge/index
+      text='roleLabel(user.role)'
+      class='bg-[#f9f5ff] text-[#6941c6]'
+    }}
+  {{/components/ui/super_admin/table/cell}}
+
+  {{!-- Status — sumber data: `user.isVerified`, satu-satunya field penentu status. --}}
+  {{#> components/ui/super_admin/table/cell}}
+    {{> components/ui/super_admin/badge/index
+      dot=true
+      text='user.isVerified ? "Verified" : "Unverified"'
+      classExpr="user.isVerified ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#d9d9d9] text-[#718096]'"
+      dotClassExpr="user.isVerified ? 'bg-[#22c55e]' : 'bg-[#718096]'"
+    }}
+  {{/components/ui/super_admin/table/cell}}
+
+  {{#> components/ui/super_admin/table/cell variant='action'}}
+    {{> components/ui/super_admin/table/row_actions }}
+  {{/components/ui/super_admin/table/cell}}
+</tr>

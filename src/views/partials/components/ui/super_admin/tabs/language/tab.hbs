@@ -1,0 +1,32 @@
+{{!--
+  Komponen: Language Tab (Super Admin) — satu tombol di dalam tabs/language.
+  Level: L1 Atomik (scoped super_admin)
+
+  Dipisah dari index hanya untuk menghindari tiga salinan markup identik;
+  jangan dipanggil langsung dari halaman.
+
+  SENGAJA TANPA ROVING TABINDEX: tabindex=-1 pada tab non-aktif hanya boleh
+  dipakai bila disertai navigasi panah. Tanpa itu tab non-aktif hilang dari
+  urutan Tab dan tidak bisa dijangkau keyboard sama sekali.
+
+  Props:
+  - code  : 'id' | 'en' | 'ja' (wajib) — nilai yang disetel ke state `lang`
+  - flag  : nama file bendera di /public/flags/4x3 (wajib), mis. 'gb'
+  - label : teks tab (wajib)
+--}}
+<button
+  type='button'
+  role='tab'
+  @click="lang = '{{code}}'"
+  :aria-selected="lang === '{{code}}'"
+  :class="lang === '{{code}}' ? 'border-[#055c90]' : 'border-transparent hover:border-[#d9d9d9]'"
+  class='-mb-px inline-flex h-10 items-center justify-center gap-1 border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 text-[#003060] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+>
+  <img
+    src='/public/flags/4x3/{{flag}}.svg'
+    alt=''
+    aria-hidden='true'
+    class='h-5 w-5 rounded-full object-cover ring-1 ring-[#f1f1f1]'
+  />
+  {{label}}
+</button>

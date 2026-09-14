@@ -30,6 +30,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -471,10 +472,11 @@ export class UsersController {
 
       await this.usersService.remove(id);
 
-      // Sengaja bukan flash 'success': halaman /users menampilkan hasil delete lewat
-      // komponen toast sendiri (ui/super_admin/toast/success), sedangkan 'success'
-      // akan dirender partial sweetalert sebagai toast kedua.
-      req.flash('userDeleted', 'The user account has been permanently removed');
+      flashToast(
+        req,
+        'User Deleted',
+        'The user account has been permanently removed',
+      );
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete user');

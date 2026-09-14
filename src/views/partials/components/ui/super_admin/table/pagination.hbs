@@ -1,14 +1,7 @@
 {{!--
-  Komponen: User Pagination (Super Admin)
-  Lokasi: src/views/partials/components/ui/super_admin/index/pagination.hbs
-  Level: L1 Atomik (scoped super_admin)
+  Table Pagination (Super Admin) — label halaman + tombol Previous/Next.
 
-  Figma: node 768:42614 — Pagination
-  - pt12 pr24 pb16 pl24, space-between, items-center
-  - Details "Page 1 of 10" Inter 14/20 #404040
-  - Actions gap 12; tombol h36, px14 py8, radius 8, bg white, border #d4d4d4, text 14/20 #404040
-
-  Alpine: currentPage, totalPages, changePage()
+  Alpine yang disediakan pemanggil: currentPage, totalPages, changePage()
 --}}
 <div class='flex flex-col gap-3 pb-4 pl-6 pr-6 pt-3 sm:flex-row sm:items-center sm:justify-between'>
   <p class='font-inter text-sm leading-5 text-[#404040]'>
