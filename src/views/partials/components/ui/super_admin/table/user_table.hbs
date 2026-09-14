@@ -1,0 +1,39 @@
+{{!--
+  User Table Card (Super Admin) — susunan kolom & isi baris khusus halaman User.
+  Shell kartu + pagination dari table/card, tiap <th> dari table/header_cell.
+
+  Alpine (dari userTable()): loading, users, currentPage, totalPages, changePage()
+--}}
+{{#> components/ui/super_admin/table/card tableClass='min-w-[1052px]'}}
+  <colgroup>
+    <col class='w-[88px]' />
+    <col class='w-[297px]' />
+    <col class='w-[297px]' />
+    <col class='w-[120px]' />
+    <col class='w-[135px]' />
+    <col class='w-[116px]' />
+  </colgroup>
+  <thead>
+    <tr>
+      {{> components/ui/super_admin/table/header_cell label='Profile' }}
+      {{> components/ui/super_admin/table/header_cell label='Username' }}
+      {{> components/ui/super_admin/table/header_cell label='Email address' }}
+      {{> components/ui/super_admin/table/header_cell label='Role' }}
+      {{> components/ui/super_admin/table/header_cell label='Status' }}
+      {{> components/ui/super_admin/table/header_cell label='Action' }}
+    </tr>
+  </thead>
+  <tbody>
+    {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+      <i class='fas fa-spinner fa-spin text-xl'></i>
+    {{/components/ui/super_admin/table/message_row}}
+
+    <template x-for='(user, index) in (loading ? [] : users)' :key='user.id'>
+      {{> components/ui/super_admin/table/user_row }}
+    </template>
+
+    {{#> components/ui/super_admin/table/message_row show='!loading && users.length === 0' colspan='6'}}
+      No users found.
+    {{/components/ui/super_admin/table/message_row}}
+  </tbody>
+{{/components/ui/super_admin/table/card}}

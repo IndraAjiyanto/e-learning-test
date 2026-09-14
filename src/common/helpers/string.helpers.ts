@@ -116,4 +116,8 @@ export const stringHelpers = {
     const strings = args.slice(0, -1);
     return strings.join('');
   },
+  endsWith: (str: unknown, suffix: unknown) =>
+    typeof str === 'string' &&
+    typeof suffix === 'string' &&
+    str.toLowerCase().endsWith(suffix.toLowerCase()),
 };

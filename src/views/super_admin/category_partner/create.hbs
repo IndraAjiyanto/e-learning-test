@@ -1,57 +1,140 @@
-<div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>
-      Create Partner Category
-    </h2>
+{{!--
+  Halaman: Create Category Partnership — Super Admin
+  Lokasi: src/views/super_admin/category_partner/create.hbs
+  Level: L4 Page
+
+  Sidebar disediakan layouts/main.hbs.
+  Route: GET /category-partner/formCreate -> POST /category-partner
+  (urlencoded: category, sesuai CreateCategoryPartnerDto).
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Category Partnership'
+      }}
+
+      {{> components/ui/super_admin/description/index
+        text='Organize partner organizations and manage partnership categories.'
+      }}
+    </div>
 
     <form
       action='/category-partner'
       method='post'
-      class='space-y-6'
-      x-data="{
-        category: '',
-        loading: false,
-        get error() {
-          if (!this.category.trim()) return 'Category is required';
-          if (this.category.trim().length < 2) return 'Minimum 2 characters';
-          return '';
-        },
-        get valid() { return this.error === ''; }
-      }"
-      @submit='if (!valid) { $event.preventDefault(); return false; } loading = true;'
+      novalidate
+      x-data='createCategoryPartnerForm()'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
     >
-      <div>
-        <label class='block text-sm font-semibold text-gray-700 mb-2'>
-          Category Name
-        </label>
-        <input
-          type='text'
-          name='category'
-          x-model='category'
-          placeholder='e.g. Technology, Media, University'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-        />
-        <p x-show='error' x-text='error' class='mt-1 text-sm text-red-600'></p>
-      </div>
+      <div class='flex flex-col gap-6'>
+        {{> components/ui/super_admin/description/index
+          text='Partnership Detail'
+          class='font-montserrat text-base font-semibold leading-6 text-[#003060]'
+        }}
 
-      <div class='flex gap-2'>
-        <button
-          type='submit'
-          :disabled='!valid || loading'
-          :class="(!valid || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
-        >
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a
-          href='/category-partner'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
+        <div class='flex flex-col gap-5'>
+          {{> components/ui/super_admin/form/text_field
+            id='category'
+            name='category'
+            field='category'
+            label='Category Name'
+            type='text'
+            placeholder='e.g. Technology, Media, University'
+            hint='This name will appear as a category filter tag across partner modules.'
+            autocomplete='off'
+            required=true
+          }}
+
+          {{!-- Dirangkai manual (bukan form/button row=true) karena mode baris
+               menambah padding-top 8 di atas border, sedangkan baris aksi di sini
+               menempel langsung pada gap 20 stack field. --}}
+          <div class='flex flex-col-reverse gap-4 border-t border-[#d9d9d9] pt-6 sm:flex-row sm:justify-end'>
+            {{> components/ui/super_admin/form/button
+              as='link'
+              variant='secondary'
+              href='/category-partner'
+              label='Cancel'
+              loading=true
+            }}
+
+            {{> components/ui/super_admin/form/button
+              type='submit'
+              variant='primary'
+              label='Create Category'
+              loading=true
+            }}
+          </div>
+        </div>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+  function createCategoryPartnerForm() {
+    return {
+      loading: false,
+
+      formData: { category: '' },
+      formErrors: { category: '' },
+      // Error hanya ditampilkan setelah field disentuh atau setelah submit ditekan
+      touched: { category: false },
+
+      validateField(field, value) {
+        const val = (value ?? '').toString();
+        this.formData[field] = val;
+        this.formErrors[field] = this.touched[field] ? this.errorFor(field, val) : '';
+      },
+
+      errorFor(field, val) {
+        if (field === 'category') {
+          if (!val.trim()) return 'Category name is required.';
+          if (val.trim().length < 2) return 'Category name must be at least 2 characters.';
+          return '';
+        }
+
+        return '';
+      },
+
+      touch(field) {
+        this.touched[field] = true;
+        this.validateField(field, this.formData[field]);
+      },
+
+      validateAll() {
+        Object.keys(this.formData).forEach((field) => {
+          this.touched[field] = true;
+          this.formErrors[field] = this.errorFor(field, this.formData[field]);
+        });
+      },
+
+      hasFormErrors() {
+        return Object.values(this.formErrors).some((error) => error !== '');
+      },
+
+      canSubmit() {
+        return !this.hasFormErrors();
+      },
+
+      focusFirstInvalid() {
+        const firstInvalid = Object.keys(this.formErrors).find((f) => this.formErrors[f]);
+        if (!firstInvalid) return;
+
+        document.getElementById(firstInvalid)?.focus();
+      },
+
+      // Tombol Create Category selalu aktif; validasi dijalankan di sini.
+      submitForm(event) {
+        this.validateAll();
+        if (!this.canSubmit()) {
+          this.focusFirstInvalid();
+          return;
+        }
+
+        this.loading = true;
+        event.target.submit();
+      },
+    };
+  }
+</script>

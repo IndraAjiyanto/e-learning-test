@@ -1,0 +1,160 @@
+{{!--
+  Halaman: About - Team Lead Profile (Faisal) - Figma 250:1458 (Edu Background) / 250:1648 (Portfolio & Experience)
+  Lokasi: src/views/about_team_lead.hbs
+  Route: GET /dashboard/about/team/lead (dashboard.controller)
+
+  Identitas (nama/foto/jabatan) = dinamis dari teamLead.[0].
+  SEMUA isi timeline + Key Projects = HARDCODED, teks PERSIS dari Figma
+  (250:1520-1585 edu, 250:1720-1773 experience, 250:1777-1812 projects).
+  Hanya Faisal yang punya data ini; edit langsung di file ini.
+
+  Header Figma = foto + nama + jabatan saja (TANPA sosmed, TANPA paragraf bio).
+  Satu halaman, dua tab (Alpine). Shell About. Standar: sizeClass, base + lg, font-inter.
+--}}
+
+{{#*inline "_timelineCard"}}
+  <div class="flex flex-col gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0px_2px_10px_-4px_rgba(0,0,0,0.04)] lg:p-8">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex items-start gap-4">
+        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+          <i class="fas {{icon}} text-lg" aria-hidden="true"></i>
+        </span>
+        <div class="flex flex-col gap-1">
+          <h3 class="text-lg font-montserrat font-bold text-[#111827] lg:text-xl">{{title}}</h3>
+          <p class="{{sizeClass 'body'}} font-inter font-semibold text-[#003060]">{{subtitle}}</p>
+        </div>
+      </div>
+      <span class="inline-flex shrink-0 items-center gap-1.5 self-start rounded-full bg-[#F9FAFB] px-3 py-1.5 {{sizeClass 'body-sm'}} font-inter font-semibold text-[#6B7280]">
+        <i class="far fa-calendar text-[11px]" aria-hidden="true"></i>{{period}}
+      </span>
+    </div>
+    <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{desc}}</p>
+    {{#if metric}}
+      <div class="flex items-center gap-2">
+        <span class="{{sizeClass 'body-sm'}} font-inter font-semibold text-[#111827]">{{default metricLabel 'GPA:'}}</span>
+        <span class="rounded-md bg-[#E0F2FE] px-2.5 py-1 {{sizeClass 'body-sm'}} font-inter font-bold text-[#0369A1]">{{metric}}</span>
+      </div>
+    {{/if}}
+  </div>
+{{/inline}}
+
+<div
+  class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-inter"
+  x-data="{ tab: (new URLSearchParams(location.search).get('tab') === 'portfolio' ? 'portfolio' : 'education') }"
+>
+  <div class="flex flex-col pt-8 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
+
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-12 lg:pr-6">
+      {{> components/ui/sections/about_sidebar/index linkMode=true active="team"}}
+    </div>
+
+    <div class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-12 lg:pb-24">
+
+      {{!-- Breadcrumb --}}
+      <nav class="mb-8 flex flex-wrap items-center gap-2 {{sizeClass 'body-sm'}} font-inter text-[#6B7280]">
+        <a href="/dashboard/about" class="hover:text-[#003060]">{{t 'test.about.team.title'}}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="font-semibold text-[#003060]" x-text="tab === 'portfolio' ? '{{t 'test.about.team.portfolioExperience'}}' : '{{t 'test.about.team.educationBackground'}}'"></span>
+      </nav>
+
+      {{!-- Profile header: photo + name + role only (Figma 250:1512) --}}
+      <div class="flex items-center gap-6">
+        <img
+          src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}"
+          alt="{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}"
+          onerror="this.onerror=null;this.src='/public/image/about/orang.png';"
+          class="size-24 shrink-0 rounded-full object-cover"
+        />
+        <div class="flex flex-col gap-1">
+          <h1 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#111827]">{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}</h1>
+          <p class="{{sizeClass 'h3'}} font-inter font-semibold text-[#003060]">{{#if teamLead.[0]}}{{getByLang teamLead.[0].position lang}}{{else}}Chief Executive Officer{{/if}}</p>
+        </div>
+      </div>
+
+      {{!-- Tab bar --}}
+      <div class="mt-10 flex gap-8 border-b-2 border-[#E5E7EB]">
+        <button
+          @click="tab = 'education'"
+          :class="tab === 'education' ? 'border-[#003060] text-[#003060]' : 'border-transparent text-[#6B7280]'"
+          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-montserrat font-semibold transition-colors"
+        >{{t 'test.about.team.educationBackground'}}</button>
+        <button
+          @click="tab = 'portfolio'"
+          :class="tab === 'portfolio' ? 'border-[#003060] text-[#003060]' : 'border-transparent text-[#6B7280]'"
+          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-montserrat font-semibold transition-colors"
+        >{{t 'test.about.team.portfolioExperience'}}</button>
+      </div>
+
+      {{!-- ===== Educational Background (Figma 250:1458) ===== --}}
+      <div x-cloak x-show="tab === 'education'" class="mt-8 flex flex-col gap-6">
+        {{> _timelineCard icon="fa-graduation-cap"
+            title="Master of Science (M.Sc.) in Data Science & Analytics"
+            subtitle="National University of Singapore (NUS)"
+            period="2017 – 2019"
+            desc="Specialized in machine learning, statistical modeling, and big data analytics. Thesis focused on predictive modeling for enterprise resource planning systems."
+            metric="3.85 / 4.00" }}
+        {{> _timelineCard icon="fa-graduation-cap"
+            title="Sarjana Komputer (S.Kom.) — Computer Science"
+            subtitle="Institut Teknologi Bandung (ITB)"
+            period="2011 – 2015"
+            desc="Focused on software engineering, database systems, and web technologies. Active in competitive programming and led the university's tech community."
+            metric="3.72 / 4.00" }}
+        {{> _timelineCard icon="fa-award"
+            title="Professional Certification — AWS Solutions Architect"
+            subtitle="Amazon Web Services (AWS)"
+            period="2020"
+            desc="Certified in designing distributed systems, cost optimization, and cloud architecture best practices." }}
+      </div>
+
+      {{!-- ===== Portfolio & Experience (Figma 250:1648) ===== --}}
+      <div x-cloak x-show="tab === 'portfolio'" class="mt-8 flex flex-col gap-10" style="display:none">
+        <div class="flex flex-col gap-6">
+          {{> _timelineCard icon="fa-briefcase" metricLabel="Scope / KPI:"
+              title="Founder & CEO"
+              subtitle="PT Wiratek Solusi Asia"
+              period="2018 – Present"
+              desc="Founded and leads the company specializing in web application development, API creation, data science, and analytics solutions. Serving major clients including Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia. Built Kesatria Academy as the Edutech division to democratize technical upskilling across Asia."
+              metric="Enterprise Level Operations" }}
+          {{> _timelineCard icon="fa-briefcase" metricLabel="Scope / KPI:"
+              title="Lead Solutions Architect"
+              subtitle="PT Telkom Indonesia (Persero) Tbk"
+              period="2015 – 2018"
+              desc="Designed and implemented enterprise-grade web applications and data analytics platforms for government and BUMN clients. Led a team of 12 developers delivering mission-critical systems for national infrastructure projects."
+              metric="BUMN Infrastructure & Scaling" }}
+          {{> _timelineCard icon="fa-briefcase" metricLabel="Scope / KPI:"
+              title="Full Stack Developer"
+              subtitle="Tokopedia"
+              period="2013 – 2015"
+              desc="Developed and maintained core e-commerce platform features. Built RESTful APIs and microservices handling millions of daily transactions. Contributed to the company's rapid growth phase."
+              metric="RESTful API / Microservices" }}
+        </div>
+
+        {{!-- Key Projects Portfolio (Figma 250:1774) --}}
+        <div class="flex flex-col gap-6">
+          <h2 class="text-xl font-montserrat font-bold text-[#111827] lg:text-2xl">Key Projects Portfolio</h2>
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {{#each (array
+              (array "Pertamina Digital Dashboard" "Pertamina" "Enterprise analytics dashboard for real-time monitoring of operational KPIs across 30+ refineries.")
+              (array "Biofarma Supply Chain System" "Biofarma" "End-to-end supply chain management platform for vaccine distribution tracking and secure ledger validation.")
+              (array "Angkasa Pura II Airport Management" "Angkasa Pura II" "Integrated passenger flow analytics and airport resource optimization system deployed on major regional transit hubs.")
+              (array "Bank DBS Indonesia Risk Analytics" "Bank DBS Indonesia" "Predictive risk modeling platform for real-time customer credit scoring and business fraud detection.")
+            )}}
+              <div class="flex flex-col gap-3.5 rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-[0px_1px_6px_0px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]">
+                <div class="flex items-center gap-3.5">
+                  <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#F0FDF4] text-[#15803D]">
+                    <i class="fas fa-folder-open text-sm" aria-hidden="true"></i>
+                  </span>
+                  <div class="flex flex-col gap-0.5 min-w-0">
+                    <h3 class="text-[17px] font-montserrat font-bold leading-snug text-[#111827]">{{lookup this 0}}</h3>
+                    <p class="{{sizeClass 'body-sm'}} font-inter font-semibold text-[#003060]">{{lookup this 1}}</p>
+                  </div>
+                </div>
+                <p class="{{sizeClass 'body-sm'}} font-inter leading-relaxed text-[#6B7280]">{{lookup this 2}}</p>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -30,16 +30,16 @@
     rounded-full sm:rounded-[12px]
     bg-[#003060] sm:bg-[#E0F2F9]
   ">
-    <i class="{{computeIcon icon}} text-xl sm:text-[24px] text-white sm:text-[#0B1F3B]" aria-hidden="true"></i>
+    <i class="{{computeIcon icon}} text-xl lg:text-2xl text-white sm:text-[#0B1F3B]" aria-hidden="true"></i>
   </div>
 
   <!-- Card Title (250:2834) -->
-  <h3 class="font-montserrat font-semibold leading-tight text-[#0B1F3B] text-[18px] sm:text-[20px]">
+  <h3 class="{{sizeClass 'h3'}} font-montserrat font-semibold leading-tight text-[#0B1F3B]">
     {{getByLang title lang}}
   </h3>
 
   <!-- Card Description (250:2835) -->
-  <p class="font-sans font-normal text-[13px] sm:text-[18px] leading-[20px] sm:leading-[1.6] text-[#2D2D2D] sm:text-[#4A5568]">
+  <p class="{{sizeClass 'body'}} font-sans font-normal text-[#2D2D2D] sm:text-[#4A5568]">
     {{getByLang description lang}}
   </p>
 </div>

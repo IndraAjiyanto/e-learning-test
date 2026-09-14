@@ -1,25 +1,24 @@
 {{!--
-  Komponen: Row Actions (Super Admin — user list)
-  Lokasi: src/views/partials/components/ui/super_admin/index/row_actions.hbs
-  Level: L1 Atomik (scoped super_admin)
+  Table Row Actions (Super Admin) — tombol delete + edit di sel aksi.
 
-  Figma: node 768:42569 — Table cell (Action)
-  - cell p16, gap 4; tombol 40x40, p10, radius 8, icon 20px
-  - trash-2 stroke #dc2626, edit-2 stroke #525252 (urutan: delete lalu edit)
+  Tombol delete tidak langsung menghapus: openDeleteModal() menahan submit form
+  sampai user menekan Delete di modal/delete_confirm.
 
-  Alpine: `user.id` dari scope x-for.
+  Props berisi ekspresi Alpine mentah dan dirender ke :action="…" / :href="…",
+  jadi di dalamnya pakai kutip TUNGGAL. Semua opsional; default-nya rute user list.
 
-  Tombol delete tidak langsung menghapus: `confirmDeleteUser()` membuka
-  ui/super_admin/modal/delete_user sambil membawa <form> di atasnya.
+  Props:
+  - deleteAction : action form delete, default '/users/' + user.id + '?_method=DELETE'
+  - editHref     : href tombol edit, default '/users/formEdit/' + user.id
+  - entity       : dipakai di title/aria-label, default 'user'
 --}}
 <div class='flex items-center gap-1'>
-  {{!-- Delete --}}
-  <form :action='"/users/" + user.id + "?_method=DELETE"' method='post'>
+  <form :action="{{#if deleteAction}}{{{deleteAction}}}{{else}}'/users/' + user.id + '?_method=DELETE'{{/if}}" method='post'>
     <button
       type='button'
-      onclick='confirmDeleteUser(this)'
-      title='Delete user'
-      aria-label='Delete user'
+      onclick='openDeleteModal(this)'
+      title='Delete {{default entity "user"}}'
+      aria-label='Delete {{default entity "user"}}'
       class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
     >
       {{!-- lucide: trash-2 --}}
@@ -33,11 +32,10 @@
     </button>
   </form>
 
-  {{!-- Edit --}}
   <a
-    :href='"/users/formEdit/" + user.id'
-    title='Edit user'
-    aria-label='Edit user'
+    :href="{{#if editHref}}{{{editHref}}}{{else}}'/users/formEdit/' + user.id{{/if}}"
+    title='Edit {{default entity "user"}}'
+    aria-label='Edit {{default entity "user"}}'
     class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
   >
     {{!-- lucide: edit-2 --}}

@@ -1,0 +1,203 @@
+{{!--
+  Komponen: Change Password Form (Profile / Change PW)
+  Lokasi: src/views/partials/components/ui/profile/change_password/index.hbs
+  Level: L2 Section / Komponen UI
+
+  Props:
+  - user       : object user yang sedang login (wajib, butuh user.id)
+  - isTab      : boolean (opsional, default false) — jika true, tombol cancel memanggil Alpine toggleActiveSection('profile')
+  - cancelHref : string (opsional, default "/users/profile") — URL fallback jika bukan mode tab
+--}}
+
+<div class="{{#unless isTab}}min-h-screen bg-[#F3F3F3] py-8 px-4 sm:px-8 md:px-12 lg:py-[68px] lg:px-[120px] xl:px-[250px]{{else}}w-full py-2 sm:py-4{{/unless}} font-montserrat">
+  <div class="max-w-[620px] mx-auto w-full flex flex-col gap-8">
+    
+    <!-- Title (CENTER aligned) (#2561:2658) -->
+    <div class="flex flex-col gap-1 text-center">
+      <h1 class="font-montserrat font-bold text-[28px] sm:text-[34px] leading-[36px] tracking-[-0.0294em] text-[#003060]">
+        Change your password
+      </h1>
+      <p class="font-montserrat font-medium text-[16px] leading-[20px] text-[#718096]">
+        Enter your new password below
+      </p>
+    </div>
+
+    <!-- Main Form Card (#2561:2661) -->
+    <div class="bg-white rounded-[12px] p-6 sm:p-8 border border-[#D9D9D9] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col gap-6">
+      <form
+        action="/users/password/{{user.id}}?_method=PATCH"
+        method="POST"
+        x-data="{
+          loading: false,
+          showCurrent: false,
+          showNew: false,
+          showConfirm: false,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+          errorMsg: '',
+          get isConfirmValid() {
+            return this.confirmPassword.length > 0 && this.newPassword.length > 0 && this.newPassword === this.confirmPassword;
+          },
+          get isMismatch() {
+            return this.confirmPassword.length > 0 && this.newPassword !== this.confirmPassword;
+          },
+          handleSubmit(e) {
+            if (this.newPassword !== this.confirmPassword) {
+              e.preventDefault();
+              this.errorMsg = '{{default (t 'test.passwordChecklist.noMatch') 'Passwords do not match'}}';
+              return;
+            }
+            this.errorMsg = '';
+            this.loading = true;
+          }
+        }"
+        @submit="handleSubmit($event)"
+        class="flex flex-col gap-6"
+      >
+        <!-- Client-side Error Alert -->
+        <div x-show="errorMsg" x-cloak class="p-3 bg-red-50 border border-red-200 rounded-[8px] text-sm text-red-600 font-inter font-medium flex items-center gap-2">
+          <i class="fas fa-exclamation-circle text-red-500"></i>
+          <span x-text="errorMsg"></span>
+        </div>
+
+        <!-- Input Fields List (#2561:2662) -->
+        <div class="flex flex-col gap-3">
+          
+          <!-- Field 1: Current Password (#2561:2663) -->
+          <div class="flex flex-col gap-1.5">
+            <label for="current_password_{{#if isTab}}tab{{else}}standalone{{/if}}" class="font-montserrat font-medium text-[14px] text-[#344054]">
+              {{default (t 'test.profile.editPassword.currentPassword') 'Current Password'}}
+            </label>
+            <div class="relative flex items-center">
+              <input
+                :type="showCurrent ? 'text' : 'password'"
+                id="current_password_{{#if isTab}}tab{{else}}standalone{{/if}}"
+                name="currentPassword"
+                x-model="currentPassword"
+                required
+                placeholder="{{default (t 'test.profile.editPassword.placeholderCurrentPassword') 'Enter your current password'}}"
+                class="w-full h-[44px] px-[14px] py-[10px] pr-11 font-inter font-normal text-[16px] leading-[24px] text-[#0B1F3B] bg-white border border-[#D4D4D4] rounded-[8px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all placeholder:text-[#737373] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
+              />
+              <button
+                type="button"
+                @click="showCurrent = !showCurrent"
+                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#737373] hover:text-[#003060] transition-colors cursor-pointer"
+                aria-label="Toggle password visibility"
+              >
+                <i :class="showCurrent ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" class="text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Field 2: New Password (#2561:2675) -->
+          <div class="flex flex-col gap-1.5">
+            <label for="new_password_{{#if isTab}}tab{{else}}standalone{{/if}}" class="font-montserrat font-medium text-[14px] text-[#344054]">
+              {{default (t 'test.profile.editPassword.newPassword') 'New Password'}}
+            </label>
+            <div class="relative flex items-center">
+              <input
+                :type="showNew ? 'text' : 'password'"
+                id="new_password_{{#if isTab}}tab{{else}}standalone{{/if}}"
+                name="newPassword"
+                x-model="newPassword"
+                required
+                placeholder="{{default (t 'test.profile.editPassword.placeholderNewPassword') 'Enter your new password'}}"
+                class="w-full h-[44px] px-[14px] py-[10px] pr-11 font-inter font-normal text-[16px] leading-[24px] text-[#0B1F3B] bg-white border rounded-[8px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all placeholder:text-[#737373] focus:outline-none"
+                :class="isMismatch ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : (isConfirmValid ? 'border-green-500 focus:border-green-500 focus:ring-1 focus:ring-green-500' : 'border-[#D4D4D4] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]')"
+              />
+              <button
+                type="button"
+                @click="showNew = !showNew"
+                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#737373] hover:text-[#003060] transition-colors cursor-pointer"
+                aria-label="Toggle password visibility"
+              >
+                <i :class="showNew ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" class="text-sm"></i>
+              </button>
+            </div>
+            <!-- Dynamic validation warning on New Password -->
+            <p
+              x-show="isMismatch"
+              x-cloak
+              class="mt-1 text-xs font-inter text-red-500 flex items-center gap-1.5"
+            >
+              <i class="fas fa-circle-exclamation text-xs"></i>
+              <span>{{default (t 'test.passwordChecklist.noMatch') 'Passwords do not match'}}</span>
+            </p>
+          </div>
+
+          <!-- Field 3: Confirm Password (#2561:2687) -->
+          <div class="flex flex-col gap-1.5">
+            <label for="confirm_password_{{#if isTab}}tab{{else}}standalone{{/if}}" class="font-montserrat font-medium text-[14px] text-[#344054]">
+              {{default (t 'test.profile.editPassword.confirmNewPassword') 'Confirm Password'}}
+            </label>
+            <div class="relative flex items-center">
+              <input
+                :type="showConfirm ? 'text' : 'password'"
+                id="confirm_password_{{#if isTab}}tab{{else}}standalone{{/if}}"
+                name="confirmPassword"
+                x-model="confirmPassword"
+                required
+                placeholder="Confirm your new password"
+                class="w-full h-[44px] px-[14px] py-[10px] pr-11 font-inter font-normal text-[16px] leading-[24px] text-[#0B1F3B] bg-white border rounded-[8px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all placeholder:text-[#737373] focus:outline-none"
+                :class="isMismatch ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : (isConfirmValid ? 'border-green-500 focus:border-green-500 focus:ring-1 focus:ring-green-500' : 'border-[#D4D4D4] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]')"
+              />
+              <button
+                type="button"
+                @click="showConfirm = !showConfirm"
+                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#737373] hover:text-[#003060] transition-colors cursor-pointer"
+                aria-label="Toggle password visibility"
+              >
+                <i :class="showConfirm ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" class="text-sm"></i>
+              </button>
+            </div>
+            <!-- Dynamic validation status on Confirm Password -->
+            <p
+              x-show="confirmPassword.length > 0"
+              x-cloak
+              class="mt-1 text-xs font-inter flex items-center gap-1.5"
+              :class="isConfirmValid ? 'text-green-600' : 'text-red-500'"
+            >
+              <i :class="isConfirmValid ? 'fas fa-check-circle' : 'fas fa-circle-exclamation'" class="text-xs"></i>
+              <span x-text="isConfirmValid ? '{{default (t 'test.passwordChecklist.match') 'Passwords match'}}' : '{{default (t 'test.passwordChecklist.noMatch') 'Passwords do not match'}}'"></span>
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Section D: Primary Actions (#2561:2699 → #2561:2700) -->
+        <div class="pt-6 border-t border-[#D9D9D9] flex items-center justify-end gap-3">
+          {{#if isTab}}
+            <button
+              type="button"
+              @click="toggleActiveSection('profile')"
+              class="inline-flex items-center justify-center h-11 px-[18px] py-[10px] bg-white hover:bg-slate-50 border border-[#D4D4D4] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-[16px] leading-[24px] text-[#344054] cursor-pointer transition-all"
+            >
+              {{default (t 'test.profile.editPassword.cancel') 'Cancel'}}
+            </button>
+          {{else}}
+            <a
+              href="{{default cancelHref '/users/profile'}}"
+              class="inline-flex items-center justify-center h-11 px-[18px] py-[10px] bg-white hover:bg-slate-50 border border-[#D4D4D4] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-[16px] leading-[24px] text-[#344054] cursor-pointer transition-all"
+            >
+              {{default (t 'test.profile.editPassword.cancel') 'Cancel'}}
+            </a>
+          {{/if}}
+          <button
+            type="submit"
+            :disabled="loading || isMismatch"
+            class="inline-flex items-center justify-center h-11 px-[18px] py-[10px] bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-[16px] leading-[24px] text-white transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <span x-show="!loading">{{default (t 'test.profile.editPassword.saveChanges') 'Save Changes'}}</span>
+            <span x-show="loading" class="flex items-center gap-2">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Saving...</span>
+            </span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>

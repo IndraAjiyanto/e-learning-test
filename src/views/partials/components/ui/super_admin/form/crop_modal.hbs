@@ -1,0 +1,180 @@
+{{!--
+  Komponen: Crop Modal (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/crop_modal.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Modal Cropper.js untuk field file. Sengaja tidak menempel pada satu komponen
+  input tertentu — komunikasinya lewat event window ber-namespace id input —
+  supaya layout field pemanggil bebas (dropzone besar maupun baris ringkas).
+
+  Alur:
+  - field mengirim `crop-open-<inputId>` berisi { file } saat user memilih file
+  - modal membuka Cropper, lalu menaruh hasil crop ke <input type=file> terkait
+  - modal mengirim `crop-done-<inputId>` berisi { file } agar form memvalidasi
+
+  Form pemanggil tidak memegang state crop apa pun; ia cukup punya
+  validateImage(file). Cropper.js dimuat global di layouts/main.hbs.
+
+  Props:
+  - inputId : string (wajib) — id <input type=file> yang diisi hasil crop,
+              sekaligus namespace event
+  - aspect  : number rasio lebar/tinggi area crop (default 1, persegi)
+  - size    : number lebar piksel hasil crop (default 1000; tinggi mengikuti
+              aspect). Nilai tetap dipakai supaya hasilnya selalu lolos batas
+              dimensi backend berapa pun ukuran aslinya.
+--}}
+<div
+  x-data="imageCropper({
+    inputId: {{json inputId}},
+    aspect: {{default aspect 1}},
+    outputWidth: {{default size 1000}}
+  })"
+  @crop-open-{{inputId}}.window='open($event.detail.file)'
+  x-show='showModal'
+  x-cloak
+  @keydown.escape.window='cancel()'
+  class='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'
+  @click.self='cancel()'
+  role='dialog'
+  aria-modal='true'
+  aria-label='Crop image'
+>
+  <div class='flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl'>
+    <div class='border-b border-[#d9d9d9] p-6'>
+      <h3 class='font-inter text-lg font-semibold leading-7 text-[#003060]'>Crop Image</h3>
+      <p class='mt-1 font-montserrat text-xs leading-4 text-[#718096]'>
+        Geser dan ubah ukuran area untuk menentukan bagian gambar yang dipakai.
+      </p>
+    </div>
+
+    <div class='p-6'>
+      {{!-- Tinggi wadah dipatok: Cropper memakai ukuran elemen <img> saat
+           diinisialisasi, jadi tanpa batas ini container-nya ikut sebesar
+           resolusi asli gambar dan meluber keluar modal. --}}
+      <div class='h-[46vh] w-full'>
+        <img x-ref='cropTarget' alt='' class='block h-full w-full' />
+      </div>
+    </div>
+
+    <div class='flex justify-end gap-3 border-t border-[#d9d9d9] p-6'>
+      <button
+        type='button'
+        @click='cancel()'
+        class='inline-flex h-[38px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-5 font-montserrat text-xs font-semibold leading-4 text-[#718096] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+      >Cancel</button>
+      {{!-- Dikunci sampai Cropper siap: getCroppedCanvas() sebelum itu bisa
+           mengembalikan gambar yang belum termuat. --}}
+      <button
+        type='button'
+        @click='apply()'
+        :disabled='!ready'
+        class='inline-flex h-[38px] items-center justify-center rounded-lg bg-[#003060] px-5 font-montserrat text-xs font-semibold leading-4 text-white transition-colors hover:bg-[#00224a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 disabled:cursor-not-allowed disabled:opacity-50'
+      >Apply Crop</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function imageCropper(config) {
+    return {
+      showModal: false,
+      ready: false,
+      cropper: null,
+      objectUrl: null,
+      sourceFile: null,
+      // File hasil crop terakhir; dipakai memulihkan isi <input> bila user
+      // memilih file baru lalu membatalkan — tanpa ini gambar lama ikut hilang.
+      appliedFile: null,
+
+      get input() {
+        return document.getElementById(config.inputId);
+      },
+
+      open(file) {
+        if (!file) return;
+
+        this.sourceFile = file;
+        this.revokeObjectUrl();
+        this.objectUrl = URL.createObjectURL(file);
+        this.showModal = true;
+
+        this.$nextTick(() => {
+          const target = this.$refs.cropTarget;
+
+          if (this.cropper) this.cropper.destroy();
+          this.ready = false;
+
+          // Inisialisasi menunggu gambar termuat: sebelum itu ukuran elemen
+          // belum final dan Cropper akan salah menghitung container-nya.
+          target.onload = () => {
+            this.cropper = new Cropper(target, {
+              aspectRatio: config.aspect,
+              viewMode: 1,
+              autoCropArea: 1,
+              background: false,
+              ready: () => (this.ready = true),
+            });
+          };
+          target.src = this.objectUrl;
+        });
+      },
+
+      apply() {
+        if (!this.cropper || !this.ready) return;
+
+        // Jangan pernah memperbesar: bila area crop lebih kecil dari outputWidth,
+        // ikuti ukuran aslinya. Kalau tetap dipaksa besar, gambar di bawah batas
+        // minimum backend akan lolos validasi dimensi dalam keadaan buram.
+        const area = this.cropper.getData(true);
+        const width = Math.min(config.outputWidth, area.width);
+        const height = Math.round(width / config.aspect);
+        const canvas = this.cropper.getCroppedCanvas({
+          width: width,
+          height: height,
+          imageSmoothingQuality: 'high',
+        });
+
+        const type = this.sourceFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        canvas.toBlob(
+          (blob) => {
+            const file = new File([blob], this.sourceFile.name, { type: type });
+            this.setInputFile(file);
+            this.appliedFile = file;
+            this.$dispatch('crop-done-' + config.inputId, { file: file });
+            this.close();
+          },
+          type,
+          0.92,
+        );
+      },
+
+      cancel() {
+        // Kembalikan hasil crop sebelumnya supaya gambar yang sudah dipilih
+        // tidak hilang hanya karena user membatalkan pemilihan file baru.
+        this.setInputFile(this.appliedFile);
+        this.close();
+      },
+
+      setInputFile(file) {
+        const transfer = new DataTransfer();
+        if (file) transfer.items.add(file);
+        this.input.files = transfer.files;
+      },
+
+      close() {
+        if (this.cropper) {
+          this.cropper.destroy();
+          this.cropper = null;
+        }
+        this.revokeObjectUrl();
+        this.ready = false;
+        this.showModal = false;
+      },
+
+      revokeObjectUrl() {
+        if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+        this.objectUrl = null;
+      },
+    };
+  }
+</script>

@@ -201,3 +201,43 @@ function alumniGrid(customData = []) {
     }
   };
 }
+
+/**
+ * Alumni Deck - 1-step carousel with a raised centre card (Figma testimonials-section).
+ * Shows  cards (3 lg / 2 sm / 1 mobile); prev/next advance by ONE card.
+ */
+function alumniDeck(customData = []) {
+  return {
+    items: Array.isArray(customData) && customData.length > 0 ? customData : defaultTestimonials,
+    active: 0,
+    per: 3,
+    _t: null,
+    _onResize: null,
+    get maxActive() { return Math.max(0, this.items.length - this.per); },
+    get dots() { return this.maxActive + 1; },
+    get centerIndex() { return this.active + Math.floor(this.per / 2); },
+    init() {
+      this._sync();
+      this._onResize = () => this._sync();
+      window.addEventListener('resize', this._onResize);
+      this._auto();
+    },
+    destroy() {
+      window.removeEventListener('resize', this._onResize);
+      if (this._t) clearInterval(this._t);
+    },
+    _sync() {
+      const n = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+      if (n !== this.per) this.per = n;
+      if (this.active > this.maxActive) this.active = this.maxActive;
+    },
+    _auto() {
+      if (this._t) clearInterval(this._t);
+      if (this.dots <= 1) return;
+      this._t = setInterval(() => this.next(), 6000);
+    },
+    next() { this.active = this.active >= this.maxActive ? 0 : this.active + 1; this._auto(); },
+    prev() { this.active = this.active <= 0 ? this.maxActive : this.active - 1; this._auto(); },
+    goTo(i) { this.active = Math.max(0, Math.min(i, this.maxActive)); this._auto(); }
+  };
+}
