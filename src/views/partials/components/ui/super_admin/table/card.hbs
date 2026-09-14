@@ -8,6 +8,8 @@
   Props:
   - tableClass : class untuk <table>, mis. 'min-w-[1010px]'. WAJIB ditulis literal
                  di pemanggil supaya Tailwind ikut men-generate kelasnya saat build.
+  - hidePagination : boolean — tanpa pagination (mis. halaman Header yang barisnya
+                     sedikit); state Alpine pagination tidak dibutuhkan.
 --}}
 <div class='overflow-hidden rounded-xl border border-[#e5e5e5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
   <div class='overflow-x-auto'>
@@ -16,5 +18,7 @@
     </table>
   </div>
 
-  {{> components/ui/super_admin/table/pagination }}
+  {{#unless hidePagination}}
+    {{> components/ui/super_admin/table/pagination }}
+  {{/unless}}
 </div>
