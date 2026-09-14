@@ -137,7 +137,11 @@ export class CoursesService {
     const { endDate, ...restDto } = createCourseDto;
     const course = await this.courseRepository.create({
       ...restDto,
-      startEnd: endDate,
+      startDate: new Date(createCourseDto.startDate),
+      startEnd: new Date(endDate),
+      date_registration: createCourseDto.date_registration
+        ? new Date(createCourseDto.date_registration)
+        : undefined,
       category: category,
       courseType: courseType,
       technologies: technologies,
@@ -845,8 +849,7 @@ export class CoursesService {
 
     results.push(...sameJenis);
     usedIds.push(...sameJenis.map((k) => k.id));
-
-    // 🔥 fallback kalau kurang dari 3
+    // ðŸ”¥ fallback kalau kurang dari 3
     if (results.length < 3) {
       const remaining = 3 - results.length;
 
@@ -1085,6 +1088,15 @@ export class CoursesService {
     return await this.courseRepository.save(course);
   }
 
+  async toggleLaunch(courseId: string) {
+    const course = await this.findOne(courseId);
+    if (!course) {
+      throw new NotFoundException('Program not found');
+    }
+    course.launch = !course.launch;
+    return await this.courseRepository.save(course);
+  }
+
   async update(id: string, updateCourseDto: UpdateCoursesDto) {
     const course = await this.findOne(id);
     if (!course) {
@@ -1125,14 +1137,23 @@ export class CoursesService {
       }
     }
 
-    const {
-      courseTypeId,
-      categoryId,
-      technologiesIds,
-      endDate,
-      ...otherProperties
-    } = updateCourseDto;
-    Object.assign(course, otherProperties, { startEnd: endDate });
+    const { endDate, ...otherProperties } = updateCourseDto;
+    // Relation-key tidak boleh ikut menjadi kolom entity via Object.assign.
+    const persistable: Record<string, unknown> = { ...otherProperties };
+    delete persistable.courseTypeId;
+    delete persistable.categoryId;
+    delete persistable.technologiesIds;
+    delete persistable.mentoringsId;
+    Object.assign(course, persistable);
+    if (updateCourseDto.startDate) {
+      course.startDate = new Date(updateCourseDto.startDate);
+    }
+    if (endDate) {
+      course.startEnd = new Date(endDate);
+    }
+    if (updateCourseDto.date_registration) {
+      course.date_registration = new Date(updateCourseDto.date_registration);
+    }
 
     return await this.courseRepository.save(course);
   }

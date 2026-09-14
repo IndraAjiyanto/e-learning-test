@@ -226,7 +226,10 @@ export class InvoiceService {
     await this.paymentRepository.save(payment);
 
     try {
-      await this.paymentsService.addUserToCourse(payment.user.id, payment.course.id);
+      await this.paymentsService.addUserToCourse(
+        payment.user.id,
+        payment.course.id,
+      );
     } catch (err) {
       console.error('Error auto-enrolling user after simulated payment:', err);
     }
@@ -256,9 +259,8 @@ export class InvoiceService {
     if (!externalId) return;
 
     // Pembayaran cicilan bulanan (table terpisah installment_payments)
-    const installment = await this.installmentPaymentService.findByNo(
-      externalId,
-    );
+    const installment =
+      await this.installmentPaymentService.findByNo(externalId);
     if (installment) {
       if (status === 'PAID' || status === 'SETTLED') {
         installment.status = 'approved';
@@ -303,7 +305,10 @@ export class InvoiceService {
         },
       });
       if (!existing) {
-        await this.paymentsService.addUserToCourse(payment.user.id, payment.course.id);
+        await this.paymentsService.addUserToCourse(
+          payment.user.id,
+          payment.course.id,
+        );
       }
     } else if (status === 'EXPIRED') {
       payment.process = 'rejected';

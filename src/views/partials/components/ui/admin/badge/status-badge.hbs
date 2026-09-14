@@ -1,0 +1,14 @@
+{{!--
+  Component: Status Badge (Admin)
+  Path: components/ui/admin/badge/status-badge.hbs
+  Props: {{status}} (active|pending), {{label}}
+  For Alpine dynamic: use inline instead of this partial.
+  Design: gap 6, p2 8, radius 16, dot 6px, text 12/normal
+--}}
+<div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[2px_8px] justify-start items-center rounded-[16px]
+  {{#if (eq status "active")}}bg-[#F0FDF4]{{else}}bg-[#FEFCE8]{{/if}}'>
+  <div class='box-border w-[6px] shrink-0 h-[6px] rounded-full
+    {{#if (eq status "active")}}bg-[#22C55E]{{else}}bg-[#EAB308]{{/if}}'></div>
+  <div class='text-[12px]/[normal] font-inter font-medium whitespace-nowrap
+    {{#if (eq status "active")}}text-[#15803D]{{else}}text-[#A16207]{{/if}}'>{{label}}</div>
+</div>

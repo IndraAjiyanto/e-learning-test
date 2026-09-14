@@ -1,0 +1,13 @@
+{{!--
+  Component: Form Field (Admin) — atomic wrapper
+  Path: components/ui/admin/form/form-field.hbs
+  Props: {{label}}, {{for}} (optional), {{errorId}} (optional), {{class}} (optional)
+
+  Wraps a label + slot + error message in vertical layout.
+  Design: flex col, gap 6
+--}}
+<div class='flex flex-col gap-[6px] w-full {{class}}'>
+  {{> components/ui/admin/form/form-label text=label for=for}}
+  {{> @partial-block}}
+  {{#if errorId}}<div id='{{errorId}}' class='hidden text-red-500 text-xs mt-1'></div>{{/if}}
+</div>

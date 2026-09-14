@@ -1,0 +1,186 @@
+{{!--
+  Component: Program Table (Admin) — SINGLE table component
+  Path: components/ui/admin/program/table.hbs
+  Dipakai: {{> components/ui/admin/program/table}}
+
+  Pencil: card bg #FFFFFF, outline 1px #E5E5E5 offset -0.5px, radius 12, overflow hidden
+          header h43.5 bg #FAFAFA + border-bottom #E5E5E5
+          row h71.5 + border-bottom #E5E5E5
+          kolom 10: No(60) Cover(110) Program(210) Group(130) Category(140)
+                      Status(120) Quota(86) Student(86) Launch(86) Action(110)
+          anti-rusak: shrink-0 per kolom + truncate + min-w-0 di flex-1 + :title tooltip
+
+  Alpine (parent scope): kelasList, loading, currentPage, size, totalPages, changePage(), toggleLaunch()
+  Action: Edit (link) + View Detail (link) + Delete (form + confirm)
+  Pagination: menyatu di dalam card (border-top), tanpa gap
+--}}
+<style>
+  .table-scroll::-webkit-scrollbar { height: 6px; }
+  .table-scroll::-webkit-scrollbar-track { background: transparent; }
+  .table-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 999px; }
+  .table-scroll::-webkit-scrollbar-thumb:hover { background: #A3A3A3; }
+</style>
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] overflow-hidden'>
+
+  {{!-- Loading --}}
+  <div x-show='loading' class='w-full py-16 text-center font-inter text-sm text-[#A3A3A3]'>
+    <i class='fas fa-spinner fa-spin text-xl'></i>
+  </div>
+
+  <div x-show='!loading' class='table-scroll w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
+
+    {{!-- Header Row --}}
+    <div class='w-full min-w-[1168px] h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+      <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-center items-center'>
+        <div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>No</div>
+      </div>
+      <div class='box-border w-[9.5%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Cover</div>
+      </div>
+      <div class='box-border w-[14%] min-w-[180px] flex-1 max-w-[210px] h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Program Name</div>
+      </div>
+      <div class='box-border w-[11.5%] min-w-[130px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Group</div>
+      </div>
+      <div class='box-border w-[12%] min-w-[140px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Category</div>
+      </div>
+      <div class='box-border w-[10.5%] min-w-[120px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Status</div>
+      </div>
+      <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Quota</div>
+      </div>
+      <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Student</div>
+      </div>
+      <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Launch</div>
+      </div>
+      <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Action</div>
+      </div>
+    </div>
+
+    {{!-- Body Rows --}}
+    <template x-for='(course, index) in kelasList' :key='course.id'>
+      <div class='w-full min-w-[1168px] h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+
+        {{!-- No --}}
+        <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-center items-center'>
+          <div class='text-[14px]/[normal] text-[#525252] font-inter font-normal text-center whitespace-nowrap' x-text='(currentPage - 1) * size + index + 1'></div>
+        </div>
+
+        {{!-- Cover: 90x52 thumbnail, fallback initials --}}
+        <div class='box-border w-[9.5%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[10px] justify-start items-center'>
+          <div class='box-border w-[90px] shrink-0 h-[52px] flex flex-row gap-0 justify-center items-center bg-[#F9F5FF] [outline:1px_solid_#E9D7FE] [outline-offset:-0.5px] rounded-[12px] overflow-hidden'>
+            <template x-if='course.image'>
+              <img :src='course.image' :alt='course.name' class='h-full w-full object-cover' />
+            </template>
+            <template x-if='!course.image'>
+              <span class='text-[14px]/[normal] text-[#6941C6] font-inter font-semibold whitespace-nowrap' x-text='course.name?.substring(0,2).toUpperCase()'></span>
+            </template>
+          </div>
+        </div>
+
+        {{!-- Program Name (flex-1, truncate + tooltip) --}}
+        <div class='box-border w-[14%] min-w-[180px] flex-1 max-w-[210px] h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text='course.name' :title='course.name'></div>
+        </div>
+
+        {{!-- Group (blue, truncate + tooltip) --}}
+        <div class='box-border w-[11.5%] min-w-[130px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[13px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#3B82F6] font-inter font-normal text-left' x-text='course.group' :title='course.group'></div>
+        </div>
+
+        {{!-- Category (truncate + tooltip) --}}
+        <div class='box-border w-[12%] min-w-[140px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[13px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text='course.category?.name' :title='course.category?.name'></div>
+        </div>
+
+        {{!-- Status Badge (Approved/Pending dari course.process) --}}
+        <div class='box-border w-[10.5%] min-w-[120px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[2px_8px] justify-start items-center rounded-[16px]'
+            :class="course.process === 'approved' ? 'bg-[#F0FDF4]' : 'bg-[#FEFCE8]'">
+            <div class='box-border w-[6px] shrink-0 h-[6px] rounded-full'
+              :class="course.process === 'approved' ? 'bg-[#22C55E]' : 'bg-[#EAB308]'"></div>
+            <div class='text-[12px]/[normal] font-inter font-medium whitespace-nowrap'
+              :class="course.process === 'approved' ? 'text-[#15803D]' : 'text-[#A16207]'"
+              x-text='course.process === "approved" ? "Approved" : "Pending"'></div>
+          </div>
+        </div>
+
+        {{!-- Quota pill --}}
+        <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[16px_8px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center bg-[#F9F5FF] rounded-[16px]'>
+            <div class='text-[12px]/[normal] text-[#6941C6] font-inter font-medium text-center whitespace-nowrap' x-text='course.quota ?? "-"'></div>
+          </div>
+        </div>
+
+        {{!-- Student pill --}}
+        <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[16px_8px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center bg-[#F9F5FF] rounded-[16px]'>
+            <div class='text-[12px]/[normal] text-[#6941C6] font-inter font-medium text-center whitespace-nowrap' x-text='course.userCourses?.length ?? 0'></div>
+          </div>
+        </div>
+
+        {{!-- Launch Toggle Switch --}}
+        <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <label class='relative inline-flex h-6 w-11 cursor-pointer items-center'>
+            <input
+              type='checkbox'
+              class='peer sr-only'
+              :checked='course.launch'
+              @change='toggleLaunch(course.id, index)'
+            />
+            <span class='block h-6 w-11 rounded-full bg-[#E5E5E5] transition-colors peer-checked:bg-[#22C55E]'></span>
+            <span class='absolute left-0.5 top-0.5 block h-5 w-5 rounded-full bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-transform peer-checked:translate-x-5'></span>
+          </label>
+        </div>
+
+        {{!-- Action: Edit + View Detail + Delete --}}
+        <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-[4px] p-[16px_8px] justify-start items-center'>
+          {{!-- Edit Button --}}
+          <a :href="'/program/edit/' + course.id"
+             class='box-border w-[40px] shrink-0 h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#f5f5f5] transition-colors'
+             title='Edit' aria-label='Edit'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13.99993896484375 14' preserveAspectRatio='xMidYMid meet' class='box-border w-[20px] shrink-0 h-[20px]'>
+              <path d="M11.00244 0.60156q-0.61523 0.04102-1.14502 0.43408-0.15381 0.09912-4.13232 4.0879-3.9751 3.98877-4.08789 4.1289-0.14014 0.19824-0.23242 0.45801-0.08887 0.25635-0.44776 1.46289-0.35547 1.20313-0.36914 1.28516-0.01367 0.12646 0.02051 0.27343 0.03418 0.14697 0.08887 0.2461 0.05811 0.09912 0.17089 0.20507 0.11279 0.10254 0.2085 0.14698 0.09912 0.04102 0.22559 0.06836 0.12646 0.02734 0.229 0.01367 0.10596-0.01367 1.38086-0.39307l1.24756-0.38964q0.26318-0.08545 0.3623-0.12647l0.01367-0.01367q0.14014-0.07178 0.32129-0.22559 0.25293-0.23926 1.08008-1.04932l2.92578-2.92578q3.98877-3.99219 4.10156-4.14599 0.18115-0.24951 0.29395-0.51612 0.23926-0.60156 0.11963-1.23046-0.11963-0.63232-0.56738-1.10743-0.35205-0.36572-0.81348-0.54687-0.46143-0.18115-0.99463-0.14014z m0.42041 1.17578q0.28027 0.05811 0.50928 0.29053 0.23242 0.229 0.29053 0.50928 0.08203 0.37598-0.08545 0.71435-0.04102 0.08203-0.1333 0.18116-0.08887 0.0957-0.42725 0.44775l-0.50244 0.50244-1.49707-1.49707 0.50244-0.50244q0.35205-0.33838 0.44775-0.42725 0.09912-0.09229 0.18116-0.1333 0.33838-0.16748 0.71435-0.08545z m-4.2417 6.53858q-3.07959 3.07959-3.14453 3.11719-0.06152 0.03418-1.0835 0.34863-1.02197 0.31445-1.03564 0.30762-0.01367-0.00683 0.29395-1.02881 0.30762-1.02197 0.33496-1.06983 0.03076-0.05127 3.12402-3.1582l3.09326-3.09326 1.4834 1.49707-3.06592 3.07959z" fill="#525252"/>
+            </svg>
+          </a>
+          {{!-- View Detail Button --}}
+          <a :href="'/program/detail/program/admin/' + course.id"
+             class='box-border w-[40px] shrink-0 h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#f5f5f5] transition-colors'
+             title='View Detail' aria-label='View Detail'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 15' preserveAspectRatio='none' class='box-border w-[20px] h-[13px] overflow-visible'>
+              <path d="M10.97833 10.3c1.01813-0.6636 1.79468-1.63832 2.214-2.779 0.41495-1.13408 0.44726-2.37282 0.092-3.527-0.3591-1.16005-1.08429-2.17258-2.067-2.886-0.99139-0.72042-2.1855-1.1083-3.411-1.108-1.2255-0.0003-2.41961 0.38758-3.411 1.108-0.98271 0.71342-1.7079 1.72595-2.067 2.886-0.35504 1.15387-0.32272 2.39222 0.092 3.526 0.41913 1.14104 1.1957 2.11614 2.214 2.78-1.84215 0.66224-3.42164 1.90087-4.504 3.532-0.11426 0.1661-0.15581 0.37162-0.11504 0.56906 0.04077 0.19744 0.16033 0.36969 0.33104 0.47694 0.35649 0.22762 0.82972 0.12647 1.062-0.227 0.69763-1.0498 1.64541-1.90961 2.758-2.502 1.1206-0.59624 2.37065-0.90772 3.64-0.907 1.2693-0.00031 2.51925 0.31115 3.64 0.907 1.11259 0.59239 2.06037 1.4522 2.758 2.502 0.2376 0.33941 0.70013 0.43192 1.05 0.21 0.16753-0.10525 0.28593-0.27321 0.32877-0.46637 0.04284-0.19315 0.00655-0.39542-0.10077-0.56163-1.0822-1.63151-2.66171-2.8705-4.504-3.533m-7.37-4.677c0-0.815 0.247-1.612 0.708-2.29 0.46551-0.67985 1.1207-1.20775 1.884-1.518 0.76836-0.31217 1.611-0.39383 2.425-0.235 0.81173 0.15632 1.55928 0.54871 2.149 1.128 0.58474 0.57295 0.98457 1.30783 1.148 2.11 0.162 0.8 0.08 1.63-0.239 2.382-0.32012 0.75625-0.85791 1.40022-1.545 1.85-1.66791 1.09272-3.87124 0.87896-5.298-0.514-0.78337-0.76731-1.22672-1.81645-1.231-2.913m20.046 9.246c-0.35304 0.2248-0.82084 0.12823-1.056-0.218-0.69622-1.05128-1.64432-1.91172-2.758-2.503-1.12028-0.59674-2.3707-0.90729-3.64-0.904-0.20188 0.00029-0.3958-0.07871-0.54-0.22-0.14219-0.1397-0.22228-0.33067-0.22228-0.53 0-0.19933 0.08009-0.3903 0.22228-0.53 0.14436-0.14092 0.33826-0.21956 0.54-0.219 0.618 0 1.229-0.135 1.788-0.394 0.55697-0.25823 1.05055-0.63541 1.446-1.105 0.39209-0.46642 0.67529-1.01437 0.829-1.604 0.15288-0.58763 0.17168-1.20212 0.055-1.798-0.1181-0.59747-0.36781-1.16112-0.731-1.65-0.36655-0.49134-0.8362-0.89649-1.376-1.187-1.10113-0.59126-2.40637-0.66914-3.57-0.213-0.28814 0.12218-0.62148 0.05906-0.845-0.16-0.14367-0.14344-0.22305-0.339-0.22-0.542 0.00372-0.20322 0.09088-0.39597 0.241-0.533 0.07533-0.06788 0.16289-0.12082 0.258-0.156 1.3157-0.51463 2.77368-0.53311 4.102-0.052 1.32016 0.47613 2.41827 1.42256 3.084 2.658 0.65752 1.22583 0.82891 2.65443 0.48 4.001-0.35308 1.35337-1.19813 2.52646-2.37 3.29 1.84252 0.66205 3.42239 1.9007 4.505 3.532 0.11077 0.16618 0.14967 0.37007 0.10787 0.56535-0.04181 0.19529-0.16077 0.36538-0.32987 0.47165" fill="#525252"/>
+            </svg>
+          </a>
+          {{!-- Delete Button --}}
+          <form :action="'/program/' + course.id + '?_method=DELETE'" method='POST' class='box-border w-[40px] shrink-0 h-[40px]'>
+            <button type='button'
+              @click='confirmDelete($el, course.name)'
+              class='box-border w-[40px] h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+              title='Delete' aria-label='Delete'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13.99993896484375 14' preserveAspectRatio='xMidYMid meet' class='box-border w-[20px] shrink-0 h-[20px]'>
+                <path d="M5.65674 0.60156q-0.44775 0.04102-0.84766 0.32129-0.3999 0.28027-0.58105 0.70069-0.08545 0.21191-0.1128 0.37939-0.02734 0.16748-0.02734 0.50244l-0.01367 0.42041-2.4917 0-0.08545 0.05469q-0.18115 0.09912-0.28027 0.2666-0.04102 0.08545-0.04102 0.25293 0 0.16748 0.04102 0.24609 0.04443 0.0752 0.12646 0.16065 0.08545 0.08203 0.14697 0.11963 0.06494 0.03418 0.13331 0.04101 0.07178 0.00684 0.33496 0.00684l0.36572 0 0.01367 7.84082 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0.01367-7.84082 0.36572 0q0.26318 0 0.33155-0.00684 0.07178-0.00684 0.1333-0.04101 0.06494-0.0376 0.14697-0.11963 0.08545-0.08545 0.12647-0.16065 0.04443-0.07861 0.04443-0.24609 0-0.16748-0.04102-0.25293-0.09912-0.16748-0.28027-0.2666l-0.08545-0.05469-2.4917 0-0.01367-0.42041q0-0.28027-0.00684-0.37598-0.00684-0.09912-0.03418-0.21191-0.15381-0.56055-0.57422-0.91602-0.42041-0.35889-0.99462-0.41357-0.16748-0.01367-1.31592-0.00684-1.14844 0.00684-1.32959 0.02051z m2.74463 1.20313q0.19482 0.09912 0.29394 0.29394 0.02734 0.07178 0.03418 0.13672 0.00684 0.06152 0.02051 0.32813l0 0.3623-3.5 0 0-0.3623q0.01367-0.2666 0.02051-0.32813 0.00684-0.06494 0.03418-0.13672 0.08545-0.18115 0.22558-0.24951l0-0.01367q0.08203-0.04443 0.16748-0.05811 0.08545-0.01367 0.36573-0.02734l2.23877 0.01367 0.09912 0.04102z m2.09863 6.13183l-0.01367 3.86573-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545-0.01367-7.72803 7 0 0 3.8623z m-4.7749-2.08496q-0.12646 0.01367-0.2461 0.10596-0.11621 0.08887-0.17431 0.21533l-0.04102 0.09912-0.01367 3.33252q0.01367 0.3623 0.02734 0.4751 0.01367 0.08545 0.07178 0.15381l0.01367 0.02734q0.15381 0.21191 0.24951 0.3794 0.09912 0.16748 0.13672 0.35205 0.04102 0.18115 0.04102 0.36914 0 0.18799-0.04102 0.36914-0.0376 0.18457-0.13672 0.35547-0.0957 0.16748-0.24951 0.36572l-3.5 3.5q-0.19824 0.15381-0.36572 0.25293-0.16748 0.09912-0.35547 0.13672-0.18115 0.04102-0.36914 0.04102-0.18799 0-0.36914-0.04102-0.18457-0.0376-0.35205-0.13672-0.16748-0.09912-0.36572-0.25293l-3.5-3.5q-0.19824-0.19824-0.29736-0.36572-0.0957-0.16748-0.1333-0.35205-0.04102-0.18115-0.04102-0.36914 0-0.18799 0.04102-0.36914 0.0376-0.18457 0.1333-0.35547 0.09912-0.16748 0.29736-0.36572z" fill="#DC2626"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </template>
+
+    {{!-- Empty State --}}
+    <div x-show='!loading && kelasList.length === 0' class='w-full h-[72px] flex items-center justify-center'>
+      <span class='font-inter text-sm text-[#A3A3A3]'>No program found.</span>
+    </div>
+  </div>
+
+  {{!-- Pagination menyatu dengan card: border atas, radius bawah ikut parent overflow-hidden --}}
+  <div x-show='!loading && totalPages > 1' class='w-full [border-width:1px_0px_0px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+    {{> components/ui/admin/table/pagination}}
+  </div>
+
+</div>

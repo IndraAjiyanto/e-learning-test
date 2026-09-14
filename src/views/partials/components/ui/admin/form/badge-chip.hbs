@@ -1,0 +1,33 @@
+{{!--
+  Component: Badge Chip (Admin) — atomic
+  Path: components/ui/admin/form/badge-chip.hbs
+  Props: {{label}} (static text; ignored when {{xLabel}} is set),
+         {{xLabel}} (optional, Alpine x-text expression, e.g. "tool.name"),
+         {{removeClick}} (optional, Alpine @click expression; wraps the icon in a remove button),
+         {{inputName}} + {{inputValueBind}} (optional, hidden input with Alpine :value binding),
+         {{iconSvg}} + {{iconImg}} + {{iconAlt}} (optional, Alpine expressions forwarded to
+           components/ui/admin/form/tool-icon, rendered 16px before the label),
+         {{class}} (optional)
+
+  Design: w fit, h fit, p4 12, gap 4, bg #F5F5F5, radius 8
+  Text: Inter 14/normal, #404040
+  Close icon: 12x12, #737373
+--}}
+<div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[4px] p-[4px_12px] justify-center items-center bg-[#F5F5F5] rounded-[8px] {{class}}'>
+  {{#if iconSvg}}{{> components/ui/admin/form/tool-icon svg=iconSvg img=iconImg alt=iconAlt boxClass="w-[16px] h-[16px]"}}{{/if}}
+  <span class='text-[14px]/[normal] text-[#404040] font-inter font-normal whitespace-nowrap'{{#if xLabel}} x-text='{{{xLabel}}}'{{/if}}>{{#unless xLabel}}{{label}}{{/unless}}</span>
+  {{#if removeClick}}
+  <button type='button' @click='{{{removeClick}}}' aria-label='Remove'>
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[12px] h-[12px]'>
+      <path d='M18 6 6 18'/>
+      <path d='m6 6 12 12'/>
+    </svg>
+  </button>
+  {{else}}
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[12px] h-[12px]'>
+    <path d='M18 6 6 18'/>
+    <path d='m6 6 12 12'/>
+  </svg>
+  {{/if}}
+  {{#if inputName}}<input type='hidden' name='{{inputName}}'{{#if inputValueBind}} :value='{{{inputValueBind}}}'{{/if}} />{{/if}}
+</div>

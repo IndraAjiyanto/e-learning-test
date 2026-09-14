@@ -1,0 +1,35 @@
+{{!--
+  Component: Detail Form & Information (Admin)
+  Path: components/ui/admin/detail/form_info/index.hbs
+  Props: {{course}}
+
+  Pencil: Card Form & Information (P765dy): gap24 padding20, header link icon 36x36 #003060
+  Body: Form link (truncate) + Type row (Type: Free/Paid)
+--}}
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-[24px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+
+  <div class='w-full flex flex-row gap-[8px] justify-start items-center'>
+    <div class='box-border w-[36px] h-[36px] shrink-0 flex flex-row gap-0 justify-center items-center bg-[#003060] rounded-full'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>
+    </div>
+    <span class='text-[16px]/[normal] text-[#003060] font-montserrat font-semibold'>Form & Information</span>
+  </div>
+
+  <div class='w-full flex flex-col gap-[20px]'>
+    <div class='w-full flex flex-col gap-[8px]'>
+      <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Form link</span>
+      {{#if course.form}}
+      <a href='{{course.form}}' target='_blank' class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium break-all underline hover:text-[#003060]'>{{course.form}}</a>
+      {{else if course.locationLink}}
+      <a href='{{course.locationLink}}' target='_blank' class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium break-all underline hover:text-[#003060]'>{{course.locationLink}}</a>
+      {{else}}
+      <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>-</span>
+      {{/if}}
+    </div>
+    <div class='flex flex-row gap-[12px] justify-start items-center'>
+      <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Type:</span>
+      <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.checkPaid}}Paid{{else}}Free{{/if}}</span>
+    </div>
+  </div>
+
+</div>

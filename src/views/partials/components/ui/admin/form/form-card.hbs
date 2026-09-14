@@ -1,0 +1,19 @@
+{{!--
+  Component: Form Card (Admin) — atomic
+  Path: components/ui/admin/form/form-card.hbs
+  Props: {{num}}, {{title}}, {{class}} (optional), {{id}} (optional)
+
+  Design (slicing.pen Feature Card): bg white, stroke 1px #D9D9D9, radius 12, padding 20, gap 24
+  Header: flex row, gap 8, items center
+  Num badge: 32x32 circle, bg #003060, text Montserrat 16 white center
+  Title: Montserrat 16, #003060, semibold
+--}}
+<div {{#if id}}id='{{id}}'{{/if}} class='box-border w-full h-fit shrink-0 flex flex-col gap-[24px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] {{class}}'>
+  <div class='flex flex-row gap-[8px] justify-start items-center'>
+    <div class='box-border w-[32px] shrink-0 h-[32px] flex flex-row gap-0 justify-center items-center bg-[#003060] rounded-full'>
+      <span class='text-[16px]/[normal] text-[#FFFFFF] font-montserrat font-semibold'>{{num}}</span>
+    </div>
+    <span class='text-[16px]/[normal] text-[#003060] font-montserrat font-semibold'>{{title}}</span>
+  </div>
+  {{> @partial-block}}
+</div>

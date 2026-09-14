@@ -111,13 +111,21 @@ async function bootstrap() {
   const courses = await coursesRepository.save([
     {
       name: 'Full Stack Developer',
-      description: ['belajar menjadi full stack developer'],
+      description: {
+        id: 'belajar menjadi full stack developer',
+        en: 'belajar menjadi full stack developer',
+        ja: 'belajar menjadi full stack developer',
+      },
       image: 'logo.png',
       quota: 10,
       price: 1000000,
       promo: 5000000,
       group: 'grup whatsapp',
-      locations: ['kantor wiratek'],
+      locations: {
+        id: 'kantor wiratek',
+        en: 'kantor wiratek',
+        ja: 'kantor wiratek',
+      },
       locationLink: 'disini',
       method: 'offline',
       process: 'approved',

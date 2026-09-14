@@ -12,11 +12,16 @@ import {
   UploadedFile,
   UseFilters,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
+import {
+  mapCreateProgram,
+  mapUpdateProgram,
+} from './mappers/create-course.mapper';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -35,6 +40,22 @@ export class CoursesController {
     private readonly usersService: UsersService,
   ) {}
 
+  private readonly createValidationPipe = new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  });
+
+  private async buildCreateDto(body: any, user: any) {
+    const dto = mapCreateProgram(body, user);
+    // Validasi kontrak domain (field asing dibuang via whitelist).
+    await this.createValidationPipe.transform(dto, {
+      type: 'body',
+      metatype: CreateCoursesDto,
+      data: '',
+    });
+    return dto;
+  }
+
   @Roles('admin', 'super_admin')
   @Post()
   @UseInterceptors(
@@ -50,47 +71,12 @@ export class CoursesController {
     maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
-  async create(
-    @Body() createCourseDto: CreateCoursesDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
+  async create(@Body() body: any, @Res() res: Response, @Req() req: Request) {
     try {
-      createCourseDto.image = req.body.uploadedImageUrls?.[0];
-
-      if (createCourseDto.month) {
-        createCourseDto.day = 0;
-      }
-
-      if (createCourseDto.day) {
-        createCourseDto.month = 0;
-      }
-
-      if (createCourseDto.paid_check === 'true') {
-        createCourseDto.form = '';
-        createCourseDto.checkPaid = true;
-        createCourseDto.promo = createCourseDto.promo || 0;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      } else if (createCourseDto.paid_check === 'false') {
-        createCourseDto.checkPaid = false;
-        createCourseDto.price = 0;
-        createCourseDto.promo = 0;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      }
-      const course = await this.coursesService.create(createCourseDto);
-      if (req.user!.role === 'super_admin') {
-        await this.coursesService.createMentoring(
-          createCourseDto.mentoringsId,
-          course.id,
-        );
+      const dto = await this.buildCreateDto(body, req.user);
+      const course = await this.coursesService.create(dto);
+      if (req.user!.role === 'super_admin' && dto.mentoringsId) {
+        await this.coursesService.createMentoring(dto.mentoringsId, course.id);
       }
       if (req.user!.role === 'admin') {
         await this.coursesService.createMentoring(req.user!.id, course.id);
@@ -119,48 +105,17 @@ export class CoursesController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async createKelas(
-    @Body() createCourseDto: CreateCoursesDto,
+    @Body() body: any,
     @Res() res: Response,
     @Req() req: Request,
     @Param('categoryId') categoryId: string,
   ) {
     try {
-      createCourseDto.image = req.body.uploadedImageUrls?.[0];
-
-      if (createCourseDto.month) {
-        createCourseDto.day = 0;
-      }
-
-      if (createCourseDto.day) {
-        createCourseDto.month = 0;
-      }
-
-      if (createCourseDto.paid_check === 'true') {
-        createCourseDto.form = '';
-        createCourseDto.checkPaid = true;
-        createCourseDto.promo = createCourseDto.promo || 0;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      } else if (createCourseDto.paid_check === 'false') {
-        createCourseDto.checkPaid = false;
-        createCourseDto.price = 0;
-        createCourseDto.promo = 0;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      }
-      createCourseDto.categoryId = categoryId;
-      const course = await this.coursesService.create(createCourseDto);
-      if (req.user!.role === 'super_admin') {
-        await this.coursesService.createMentoring(
-          createCourseDto.mentoringsId,
-          course.id,
-        );
+      const dto = await this.buildCreateDto(body, req.user);
+      dto.categoryId = categoryId;
+      const course = await this.coursesService.create(dto);
+      if (req.user!.role === 'super_admin' && dto.mentoringsId) {
+        await this.coursesService.createMentoring(dto.mentoringsId, course.id);
       }
       if (req.user!.role === 'admin') {
         await this.coursesService.createMentoring(req.user!.id, course.id);
@@ -344,10 +299,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
-  async getMinggu(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-  ) {
+  async getMinggu(@Param('courseId') courseId: string, @Res() res: Response) {
     const weeks = await this.coursesService.findCourseWeeks(courseId);
     res.json(weeks);
   }
@@ -364,10 +316,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
-  async getCicilan(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-  ) {
+  async getCicilan(@Param('courseId') courseId: string, @Res() res: Response) {
     const availableMonths = await this.coursesService.findNo(courseId);
     const installments =
       await this.coursesService.findCourseInstallments(courseId);
@@ -875,20 +824,20 @@ export class CoursesController {
   async update(
     @UploadedFile() gambar: Express.Multer.File,
     @Param('courseId') courseId: string,
-    @Body() updateCourseDto: UpdateCoursesDto,
+    @Body() body: any,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const course = await this.coursesService.findOne(courseId);
+      const dto = mapUpdateProgram(req.body ?? body, req.user);
       if (gambar) {
         await this.coursesService.deleteFile(course.image);
-        updateCourseDto.image = req.body.uploadedImageUrls?.[0];
       }
 
-      if (updateCourseDto.mentoringsId) {
+      if (dto.mentoringsId) {
         const currentMentoringUserId = course.mentorings?.[0]?.user?.id;
-        const newMentoringUserId = updateCourseDto.mentoringsId;
+        const newMentoringUserId = dto.mentoringsId;
 
         if (currentMentoringUserId !== newMentoringUserId) {
           await this.coursesService.updateMentoring(
@@ -898,24 +847,7 @@ export class CoursesController {
         }
       }
 
-      if (updateCourseDto.paid_check === 'true') {
-        updateCourseDto.checkPaid = true;
-      } else if (updateCourseDto.paid_check === 'false') {
-        updateCourseDto.checkPaid = false;
-      }
-
-      if (req.user?.role === 'super_admin') {
-        updateCourseDto.process = 'approved';
-      }
-
-      if (
-        req.body.technologiesIds_sent !== undefined &&
-        updateCourseDto.technologiesIds === undefined
-      ) {
-        updateCourseDto.technologiesIds = [];
-      }
-
-      await this.coursesService.update(courseId, updateCourseDto);
+      await this.coursesService.update(courseId, dto);
       req.flash('success', 'Successfully update program');
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
@@ -940,6 +872,23 @@ export class CoursesController {
     } catch (error: any) {
       req.flash('error', error.message || 'program failed to launch');
       res.redirect('/program');
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Patch(':courseId/toggle-launch-json')
+  async updateLaunchJson(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.coursesService.toggleLaunch(courseId);
+      return res.json({ success: true, launch: result.launch });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to toggle launch',
+      });
     }
   }
 

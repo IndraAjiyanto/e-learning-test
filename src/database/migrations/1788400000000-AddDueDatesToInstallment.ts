@@ -7,9 +7,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * untuk SETIAP cicilan secara terpisah. Nilainya ditentukan oleh super admin
  * saat membuat/mengedit data installment (jumlah elemen = jumlah bulan cicilan).
  */
-export class AddDueDatesToInstallment1788400000000
-  implements MigrationInterface
-{
+export class AddDueDatesToInstallment1788400000000 implements MigrationInterface {
   name = 'AddDueDatesToInstallment1788400000000';
 
   public async up(q: QueryRunner): Promise<void> {
