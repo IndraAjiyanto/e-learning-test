@@ -6,9 +6,6 @@
   Route: GET /about/formEdit/:id -> PATCH /about/:id (multipart, image opsional)
   Data: { about }, title & text berbentuk jsonb { id, en, ja }.
 
-  Title dan Description punya tab bahasa masing-masing (titleLang / textLang),
-  bukan satu tab bersama seperti FAQ — mengikuti Figma.
-
   Toast sukses dirender about/index.hbs dari flash setelah redirect.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
@@ -28,7 +25,7 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='headerEditForm({
+      x-data='headerForm({
         title: {{json about.title}},
         text: {{json about.text}},
         image: {{json (default about.image "")}}
@@ -36,70 +33,7 @@
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'
     >
-      <div class='flex flex-col gap-5'>
-        <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
-          <div class='flex flex-col gap-2'>
-            <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Preview</span>
-
-            <div class='flex h-[200px] items-center justify-center overflow-hidden rounded-lg border border-[#d9d9d9] bg-[#f8f9fa]'>
-              <img
-                x-show='previewUrl'
-                :src='previewUrl'
-                alt='Header image preview'
-                class='h-full w-full object-contain'
-              />
-              <span
-                x-show='!previewUrl'
-                x-cloak
-                class='font-montserrat text-xs font-medium leading-4 text-[#718096]'
-              >No image uploaded</span>
-            </div>
-          </div>
-
-          {{!-- Batas di meta mengikuti @ValidateImage AboutController, bukan hint
-               Figma (1900×1000–1920×1080, 10 MB) yang akan ditolak backend. --}}
-          {{> components/ui/super_admin/form/image_dropzone
-            label='Upload New Image'
-            meta='JPG / PNG · 700×700 – 4000×4000 · Max 5 MB'
-            hidePreview=true
-            boxClass='h-[200px]'
-          }}
-        </div>
-
-        {{#*inline 'langField'}}
-          <div class='flex flex-col gap-2'>
-            <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
-
-            <div class='flex flex-col gap-4'>
-              {{> components/ui/super_admin/tabs/language/index
-                ariaLabel=(concat label ' language')
-                state=state
-                size='sm'
-              }}
-
-              {{!-- x-show, bukan x-if: ketiga bahasa harus tetap terkirim. --}}
-              {{#each langs}}
-                <div x-show="{{../state}} === '{{this}}'" x-cloak>
-                  {{> components/ui/super_admin/form/text_field
-                    id=(concat ../field '-' this)
-                    name=(concat ../field '[' this ']')
-                    field=(concat ../field '.' this)
-                    label=../label
-                    hideLabel=true
-                    multiline=../multiline
-                    required=true
-                  }}
-                </div>
-              {{/each}}
-            </div>
-          </div>
-        {{/inline}}
-
-        <div class='flex flex-col gap-3'>
-          {{> langField label='Title' field='title' state='titleLang' langs=(array 'id' 'en' 'ja') }}
-          {{> langField label='Description' field='text' state='textLang' langs=(array 'id' 'en' 'ja') multiline=true }}
-        </div>
-      </div>
+      {{> components/ui/super_admin/form/header/fields }}
 
       <div class='flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end'>
         {{> components/ui/super_admin/form/button
@@ -121,147 +55,4 @@
   </div>
 </div>
 
-<script>
-  (() => {
-    const LANGS = ['id', 'en', 'ja'];
-    const FIELDS = ['title', 'text'];
-    const LABEL = { title: 'Title', text: 'Description' };
-    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
-    const MIN = { title: 3, text: 10 };
-
-    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
-
-    const errorFor = (field, lang, value) => {
-      const val = (value ?? '').toString().trim();
-      if (!val) return `${LABEL[field]} (${LANG_LABEL[lang]}) is required.`;
-      if (val.length < MIN[field]) {
-        return `${LABEL[field]} (${LANG_LABEL[lang]}) must be at least ${MIN[field]} characters.`;
-      }
-      return '';
-    };
-
-    window.headerEditForm = function headerEditForm({ title, text, image } = {}) {
-      const initial = (src) => byLang((l) => (src && src[l]) || '');
-
-      return {
-        loading: false,
-        titleLang: 'id',
-        textLang: 'id',
-
-        originalUrl: image || '',
-        previewUrl: image || '',
-        objectUrl: null,
-        fileName: '',
-        hasFile: false,
-        errorMessage: '',
-        isValid: true,
-
-        formData: { title: initial(title), text: initial(text) },
-        formErrors: { title: byLang(() => ''), text: byLang(() => '') },
-        touched: { title: byLang(() => false), text: byLang(() => false) },
-
-        // Batas mengikuti @ValidateImage AboutController: JPG/PNG, 700–4000 px, maks 5 MB.
-        validateImage(file) {
-          if (!file) return;
-
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.setImageError('Only JPG and PNG formats are allowed');
-            return;
-          }
-
-          if (file.size > 5 * 1024 * 1024) {
-            this.setImageError(
-              `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
-            );
-            return;
-          }
-
-          const img = new Image();
-          const nextUrl = URL.createObjectURL(file);
-
-          img.onload = () => {
-            if (img.width < 700 || img.width > 4000 || img.height < 700 || img.height > 4000) {
-              URL.revokeObjectURL(nextUrl);
-              this.setImageError(
-                `Image is ${img.width}x${img.height}px. Required: 700x700 to 4000x4000 pixels`,
-              );
-              return;
-            }
-
-            if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
-            this.objectUrl = nextUrl;
-            this.previewUrl = nextUrl;
-            this.fileName = file.name;
-            this.hasFile = true;
-            this.isValid = true;
-            this.errorMessage = '';
-          };
-
-          img.onerror = () => {
-            URL.revokeObjectURL(nextUrl);
-            this.setImageError('Failed to load image');
-          };
-
-          img.src = nextUrl;
-        },
-
-        // Berkas ditolak: input dikosongkan dan pratinjau kembali ke gambar
-        // tersimpan, supaya layar tidak menampilkan berkas yang tidak terkirim.
-        setImageError(message) {
-          if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
-          this.objectUrl = null;
-          this.previewUrl = this.originalUrl;
-          this.fileName = '';
-          this.hasFile = false;
-          this.errorMessage = message;
-          this.$refs.dropInput.value = null;
-        },
-
-        validateField(path, value) {
-          const [field, lang] = path.split('.');
-          this.formData[field][lang] = value ?? '';
-          this.formErrors[field][lang] = this.touched[field][lang]
-            ? errorFor(field, lang, this.formData[field][lang])
-            : '';
-        },
-
-        touch(path) {
-          const [field, lang] = path.split('.');
-          this.touched[field][lang] = true;
-          this.validateField(path, this.formData[field][lang]);
-        },
-
-        validateAll() {
-          FIELDS.forEach((field) =>
-            LANGS.forEach((lang) => {
-              this.touched[field][lang] = true;
-              this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
-            }),
-          );
-        },
-
-        // Field yang error bisa berada di tab lain — pindahkan tab field itu dulu.
-        revealFirstInvalid() {
-          for (const field of FIELDS) {
-            const lang = LANGS.find((l) => this.formErrors[field][l]);
-            if (!lang) continue;
-
-            this[field === 'title' ? 'titleLang' : 'textLang'] = lang;
-            this.$nextTick(() => document.getElementById(`${field}-${lang}`)?.focus());
-            return true;
-          }
-          return false;
-        },
-
-        submitForm(event) {
-          this.validateAll();
-          if (this.revealFirstInvalid()) return;
-
-          this.loading = true;
-          event.target.submit();
-        },
-      };
-    };
-  })();
-</script>
+{{> components/ui/super_admin/form/header/form }}
