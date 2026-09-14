@@ -1,0 +1,26 @@
+{{!--
+  Komponen: Fetch Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/tabs/fetch/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Satu tombol tab yang menukar state Alpine sekaligus memanggil toggleFetch(url, name).
+  Berbeda dari tabs/language (hanya menukar state) dan tabs/partner (pindah rute).
+
+  Pemanggil WAJIB menyediakan state `tab` (atau nama lain lewat `state`) dan
+  method toggleFetch(url, tabName) pada x-data pembungkus, mis. tabData() di
+  super_admin/category/detail.hbs. Bungkus beberapa tab dalam <nav role='tablist'>.
+
+  Props:
+  - name  : string (wajib) — nilai state saat tab aktif
+  - label : string (wajib) — teks tombol
+  - url   : string (wajib) — endpoint yang diteruskan ke toggleFetch
+  - state : string (default 'tab')
+--}}
+<button
+  type='button'
+  role='tab'
+  @click="toggleFetch('{{url}}', '{{name}}')"
+  :aria-selected="{{default state 'tab'}} === '{{name}}'"
+  :class="{{default state 'tab'}} === '{{name}}' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+  class='px-4 py-2 rounded-lg shadow transition font-montserratfocus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/40'
+>{{label}}</button>
