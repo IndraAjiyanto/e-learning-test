@@ -14,6 +14,8 @@
   - name        : string (wajib) — name hidden input, mis. 'courseType[]'
   - label       : string (wajib)
   - options     : string (wajib) — nama properti Alpine pemanggil berisi [{ value, label }]
+  - initial     : string (opsional) — nama properti Alpine pemanggil berisi
+                  [{ value, label }] yang sudah terpilih (mis. halaman edit)
   - placeholder : string (opsional)
   - hint        : string (opsional)
   - emptyText   : string (default 'No options found.')
@@ -23,7 +25,7 @@
   x-data='{
     open: false,
     search: "",
-    selected: [],
+    selected: [...({{#if initial}}{{initial}}{{else}}[]{{/if}} || [])],
     get filtered() {
       const needle = this.search.trim().toLowerCase();
       return (this.{{options}} || []).filter(
