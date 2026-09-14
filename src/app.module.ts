@@ -58,6 +58,7 @@ import { MissionsModule } from './missions/missions.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
 import { FaqModule } from './faq/faq.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { UserActivityMiddleware } from './user_activity/user-activity.middleware';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -68,6 +69,8 @@ import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
 import { VoucherModule } from './voucher/voucher.module';
+import { InformationModule } from './information/information.module';
+import { UserActivityModule } from './user_activity/user-activity.module';
 import { FooterModule } from './footer/footer.module';
 import { FooterMiddleware } from './footer/footer.middleware';
 import { InstallmentReminderModule } from './installment_reminder/installment-reminder.module';
@@ -148,6 +151,8 @@ import path from 'path';
     CategoryPartnerModule,
     PartnerModule,
     VoucherModule,
+    InformationModule,
+    UserActivityModule,
     FooterModule,
     InstallmentReminderModule,
     InstallmentPaymentModule,
@@ -184,6 +189,8 @@ export class AppModule {
         '/dashboard/*path',
       )
       .forRoutes('*');
+
+    consumer.apply(UserActivityMiddleware).forRoutes('*');
 
     consumer.apply(FooterMiddleware).forRoutes('*');
   }

@@ -23,7 +23,7 @@
     activeSubDropdown: localStorage.getItem('activeSubDropdown') || null,
 
     setActive(path) {
-      if (path === '/users') {
+      if (path === '/users' || path === '/information') {
         this.activeDropdown = null;
         localStorage.removeItem('activeDropdown');
       }
@@ -35,7 +35,7 @@
     },
 
     setActiveDropdown(dropdown) {
-      if (this.active === '/users') {
+      if (this.active === '/users' || this.active === '/information') {
         this.active = null;
         localStorage.removeItem('activeLink');
       }
@@ -134,6 +134,8 @@
           {{> components/ui/sidebar/nav_link/index href='/program' label='Program' icon='icon_program'}}
 
         {{else if (eq user.role 'super_admin')}}
+
+          {{> components/ui/sidebar/nav_link/index href='/information' label='Information' icon='icon_information'}}
 
           {{> components/ui/sidebar/nav_link/index href='/users' label='Users' icon='icon_users'}}
 
