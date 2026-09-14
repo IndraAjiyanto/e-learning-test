@@ -1,146 +1,80 @@
-<!-- MOBILE HERO SECTION (< 640px) -->
-<div class="block sm:hidden w-full px-5 pt-28 pb-14 bg-[linear-gradient(180deg,_#FAFAFA_0%,_#CEE5F6_50%,_#FAFAFA_100%)] relative font-montserrat overflow-hidden">
-  <!-- Light Classroom Background Image with Light Overlay -->
-  <div class="absolute inset-0 z-0">
-    <img src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}" alt="Hero Background" class="w-full h-full object-cover opacity-15">
-  </div>
+{{!--
+  Section: Hero (L2) - Figma hero-section 250:2796
+  Lokasi: src/views/partials/components/ui/sections/hero/index.hbs
+  Satu pohon markup, base + lg. Data: about.[0].{title,text,image} (jsonb), social.[0].number.
+  sizeClass untuk teks, .page-shell untuk kontainer.
+--}}
+<section class="w-full bg-[#F8F9FA] font-montserrat" data-node-id="250:2796">
+  <div class="page-shell flex flex-col justify-center gap-10 py-24 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-[80px]">
 
-  <div class="relative z-10 w-full text-center flex flex-col items-center space-y-6">
-    <!-- Title Section -->
-    <div class="space-y-3 w-full flex flex-col items-center">
-      <h1 class="font-montserrat font-bold text-[32px] text-[#003060] leading-none text-center">
-        Empowering Future
-      </h1>
-      <div class="w-full max-w-[350px] h-[38px] bg-[#003060] text-white rounded-[30px] px-[16px] py-[8px] flex items-center justify-center text-center shadow-md">
-        <span class="font-montserrat font-bold text-[18px] leading-none text-center whitespace-nowrap">Digital Tech Talents</span>
-      </div>
-    </div>
+    {{!-- content --}}
+    <div class="flex flex-1 flex-col items-start gap-8">
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.heroSection.badge') }}
 
-    <!-- Description Subheading -->
-    <p class="font-montserrat font-medium text-[15px] text-[#333333] leading-[24px] text-center max-w-[350px]">
-      {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Be part of the next generation of digital talents. Kesatria Academy helps you learn technology in an interactive, relevant and engaging way.{{/if}}
-    </p>
-
-    <!-- Mobile Buttons Group -->
-    <div class="flex flex-col gap-3 w-full max-w-[350px] mx-auto pt-1">
-      <!-- Button 1: Explore Programs -->
-      {{> components/ui/button/btn_action/index 
-          onClick="document.getElementById('courses-section-mobile').scrollIntoView({ behavior: 'smooth', block: 'start' })"
-          text=(t 'test.home.heroSection.buttonExplorePrograms')
-          icon="fas fa-arrow-right text-[16px] shrink-0"
-          iconPosition="right"
-          variant="primary"
-          class="w-full h-[48px] gap-[10px] py-[14px] font-montserrat text-[16px]"
-      }}
-
-      <!-- Button 2: Free Consultation -->
-      {{> components/ui/button/consultation/index 
-          phone=social.[0].number
-          variant="light"
-          text=(t 'test.home.heroSection.buttonConsultation')
-          class="w-full h-[48px] gap-[10px] py-[14px] font-montserrat text-[16px]"
-      }}
-    </div>
-  </div>
-</div>
-
-<!-- DESKTOP HERO SECTION (>= 640px) — Figma: hero-section (250:2796) -->
-<div
-  class="hidden sm:flex w-full bg-[#F8F9FA] px-8 lg:px-[80px] py-[80px] lg:py-[120px] gap-10 lg:gap-[80px] items-center justify-center font-montserrat"
-  data-node-id="250:2796"
->
-  <div class="w-full max-w-[1554px] flex flex-col lg:flex-row items-center gap-10 lg:gap-[80px]">
-
-    <!-- hero-content (250:2797) -->
-    <div class="flex-1 min-w-0 flex flex-col items-start gap-[32px]">
-
-      <!-- animated-tag (250:2798) -->
-      <div class="flex items-center gap-[8px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-[100px] px-[16px] py-[6px]">
-        <i class="fas fa-circle text-[8px] leading-none text-[#6EB6E5] shrink-0" aria-hidden="true"></i>
-        <span class="font-montserrat font-bold text-[12px] uppercase text-[#0B1F3B] whitespace-nowrap">
-          {{t 'test.home.heroSection.badge'}}
-        </span>
-      </div>
-
-      <!-- Heading (250:2801) -->
-      <h1 class="font-montserrat font-extrabold text-[36px] lg:text-[48px] xl:text-[56px] tracking-[-1px] leading-[1.15] text-[#0B1F3B] max-w-[619px]">
-        {{#if about.[0].title}}
-          {{highlightLastWords (getByLang about.[0].title lang) 2 '#6EB6E5'}}
-        {{else}}
-          Shape your path in the <span
-            class="inline-grid grid-cols-1 grid-rows-1 text-left align-top"
-            x-data="{
-              words: ['digital frontier'],
-              wordIndex: 0,
-              charIndex: 0,
-              currentText: '',
-              speed: 200,
-              init() {
-                this.type();
-              },
-              type() {
-                const target = this.words[this.wordIndex];
-                if (this.charIndex < target.length) {
-                  this.charIndex = Math.min(this.charIndex + 2, target.length);
-                  this.currentText = target.substring(0, this.charIndex);
-                  setTimeout(() => this.type(), this.speed);
-                } else {
-                  setTimeout(() => {
-                    this.currentText = '';
-                    this.charIndex = 0;
-                    setTimeout(() => this.type(), 300);
-                  }, 2000);
-                }
-              }
-            }"
-          >
-            <!-- Reserved space so heading position never shifts -->
-            <span class="invisible col-start-1 row-start-1 select-none pointer-events-none" aria-hidden="true">digital frontier|</span>
-            <!-- Typewriter text -->
-            <span class="col-start-1 row-start-1 text-[#6EB6E5]"><span x-text="currentText">digital frontier</span><span class="animate-pulse text-[#6EB6E5] font-light">|</span></span>
-          </span>
-        {{/if}}
+      <h1 class="{{sizeClass 'display'}} max-w-[619px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+        <span
+          x-data="heroTypewriter()"
+          data-full="{{#if about.[0].title}}{{getByLang about.[0].title lang}}{{else}}{{t 'test.home.heroSection.title'}}{{/if}}"
+          x-init="start($el.dataset.full)"
+        ><span x-text="head"></span><span class="text-[#6EB6E5]" x-text="tail"></span><span class="ml-1 inline-block h-[0.8em] w-[3px] translate-y-[0.06em] rounded-sm bg-[#6EB6E5] transition-opacity" :class="showCursor ? 'opacity-100' : 'opacity-0'"></span></span>
       </h1>
 
-      <!-- Subheading (250:2802) -->
-      <p class="font-sans font-normal text-[16px] lg:text-[18px] xl:text-[20px] leading-[1.6] text-[#4A5568] max-w-[719px]">
-        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}Kesatria Academy delivers interactive, industry-grade learning experiences to turn ambition into professional impact. Gain real project expertise from global tech mentors.{{/if}}
+      <p class="{{sizeClass 'lead'}} max-w-[719px] font-open-sans text-[#4A5568]">
+        {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}{{t 'test.home.heroSection.description'}}{{/if}}
       </p>
 
-      <!-- hero-ctas (250:2803) -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-[20px]">
-        <!-- primary-cta (250:2804) -->
+      <div class="flex w-full flex-col items-stretch gap-4 sm:w-auto sm:flex-row sm:items-center">
         {{> components/ui/button/btn_action/index
             onClick="document.getElementById('courses-section').scrollIntoView({ behavior: 'smooth', block: 'start' })"
             text=(t 'test.home.heroSection.buttonExplorePrograms')
-            icon="fas fa-arrow-right text-[16px] shrink-0"
+            icon="fas fa-arrow-right text-sm shrink-0"
             iconPosition="right"
             variant="primary"
-            class="gap-[10px] px-[32px] py-[18px] text-[16px] shadow-none hover:-translate-y-0.5 hover:shadow-lg"
-        }}
-
-        <!-- secondary-cta (250:2809) -->
+            class="gap-2.5 px-8 py-4 text-sm shadow-none hover:-translate-y-0.5 hover:shadow-lg" }}
         {{> components/ui/button/consultation/index
             phone=social.[0].number
             variant="light"
             text=(t 'test.home.heroSection.buttonConsultation')
-            class="gap-[10px] px-[32px] py-[18px] text-[16px]"
-        }}
+            class="gap-2.5 px-8 py-4 text-sm" }}
       </div>
-
     </div>
 
-    <!-- hero-visual (250:2814) -->
-    <div class="w-full lg:w-[759px] lg:shrink-0">
-      <div class="relative w-full h-[360px] lg:h-[460px] xl:h-[520px] rounded-[24px] overflow-hidden">
+    {{!-- visual --}}
+    <div class="w-full lg:w-[620px] lg:shrink-0">
+      <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl lg:aspect-[73/50]">
         <img
           src="{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
           alt="Hero"
           onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="absolute inset-0 w-full h-full object-cover rounded-[24px]"
-        >
+          class="size-full object-cover"
+        />
       </div>
     </div>
-
   </div>
-</div>
+</section>
+
+<script>
+  function heroTypewriter() {
+    return {
+      head: '', tail: '', showCursor: true, _target: '', _i: 0,
+      start(full) {
+        full = (full || 'Shape your path in the digital frontier').replace(/\s*\|\s*$/, '').trim();
+        const w = full.split(/\s+/);
+        const n = w.length > 2 ? 2 : 1;
+        this._target = w.slice(-n).join(' ');
+        this.head = w.slice(0, w.length - n).join(' ') + (w.length > n ? ' ' : '');
+        this._i = 0;
+        this._loop();
+        setInterval(() => { this.showCursor = !this.showCursor; }, 530);
+      },
+      _loop() {
+        if (this._i <= this._target.length) {
+          this.tail = this._target.slice(0, this._i++);
+          setTimeout(() => this._loop(), 85);
+        } else {
+          setTimeout(() => { this._i = 0; this._loop(); }, 2600);
+        }
+      }
+    };
+  }
+</script>

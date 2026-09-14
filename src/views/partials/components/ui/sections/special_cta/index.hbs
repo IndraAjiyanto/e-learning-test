@@ -1,57 +1,22 @@
 {{!--
-  Komponen: Special CTA Section (L2 Section)
+  Section: Special CTA - contact (L2) - reskin ke standar internal.
   Lokasi: src/views/partials/components/ui/sections/special_cta/index.hbs
-  
-  Props:
-  - category : Object dengan category.contact (WhatsApp number)
-  - lang     : Bahasa aktif
+  Props: category (.contact - WhatsApp number), lang.
 --}}
-
-<!-- CTA SECTION (CONTACT) -->
-<section id="explore-program" class="w-full mt-16 mb-24 md:mt-20 md:mb-32 font-montserrat relative">
-  <div class="w-full relative min-h-[372px] flex items-center justify-center py-12 px-6">
-    
-    <!-- Background Banner -->
-    <div class="absolute inset-0 z-0 bg-[#6EB6E5]"
-         style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"></div>
-
-    <!-- Content -->
-    <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center relative z-10">
-      
-      <!-- Title -->
-      {{> components/ui/text/sub_title/index
-          text=(t 'test.special_program.contact.title')
-          tag="h2"
-          size="4xl"
-          color="dark"
-          font="montserrat"
-          fontWeight="font-semibold"
-          align="center"
-      }}
-
-      <!-- Subtitle -->
-      {{> components/ui/text/description/index
-          text=(t 'test.special_program.contact.description')
-          size="2xl"
-          color="dark"
-          font="inter"
-          align="center"
-          class="mt-7 mb-20"
-      }}
-
-      <!-- Button -->
-      <div>
-        {{> components/ui/button/btn_action/index
-            href=(concat 'https://wa.me/+' category.contact '?text=Halo%20Saya%20tertarik%20dengan%20program%20ini.')
-            target="_blank"
-            text=(t 'test.special_program.contact.contact')
-            icon="fas fa-phone"
-            variant="primary"
-            class="w-full sm:w-[370px] h-[85px] font-semibold text-xl"
-            textClass="ml-3"
-        }}
+<section id="explore-program" class="w-full bg-white py-14 font-montserrat lg:py-20">
+  <div class="page-shell">
+    <div class="flex flex-col items-center gap-6 rounded-3xl bg-[#003060] px-6 py-14 text-center lg:gap-8 lg:px-10 lg:py-16">
+      <div class="flex max-w-[720px] flex-col items-center gap-3">
+        <h2 class="{{sizeClass 'h2'}} font-montserrat font-extrabold tracking-[-0.01em] text-white">{{t 'test.special_program.contact.title'}}</h2>
+        <p class="{{sizeClass 'lead'}} font-open-sans text-white/80">{{t 'test.special_program.contact.description'}}</p>
       </div>
-
+      <a
+        href="{{#if category.contact}}{{waLink category.contact}}{{else}}#{{/if}}"
+        target="_blank" rel="noopener"
+        class="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 {{sizeClass 'body'}} font-bold text-[#003060] transition hover:-translate-y-0.5 hover:bg-[#E0F2F9]"
+      >
+        <i class="fas fa-phone text-xs"></i>{{t 'test.special_program.contact.contact'}}
+      </a>
     </div>
   </div>
 </section>

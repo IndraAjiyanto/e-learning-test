@@ -42,8 +42,50 @@
 <script src="/public/js/cropper.min.js"></script>
 
 </head>
-<body class="bg-slate-50 text-base-content font-montserrat">
-  
+<body class="{{#if isAuthPage}}bg-[linear-gradient(0deg,#FFFFFF_0%,rgba(255,255,255,0.7)_45%,rgba(255,255,255,0.2)_75%,rgba(255,255,255,0)_100%),url('/public/image/dashboard/login_bg.png')] bg-cover bg-center bg-fixed bg-no-repeat{{else}}bg-slate-50{{/if}} text-base-content font-montserrat">
+  <div id="route-progress"></div>
+  <script>
+    (function () {
+      var bar = document.getElementById('route-progress');
+      if (!bar) return;
+      var fadeT, resetT;
+      function to(scale, dur) {
+        bar.style.transition = 'transform ' + dur + ', opacity 0.35s ease 0.4s';
+        bar.style.transform = 'scaleX(0)';
+        bar.getBoundingClientRect(); // reflow so the next change animates
+        requestAnimationFrame(function () { bar.style.transform = 'scaleX(' + scale + ')'; });
+      }
+      // page arrived -> full left-to-right sweep, then fade
+      function sweep() {
+        clearTimeout(fadeT); clearTimeout(resetT);
+        bar.classList.add('is-active');
+        to(1, '0.7s cubic-bezier(0.4, 0, 0.2, 1)');
+        fadeT = setTimeout(function () { bar.classList.remove('is-active'); }, 720);
+        resetT = setTimeout(function () { bar.style.transition = 'none'; bar.style.transform = 'scaleX(0)'; }, 1120);
+      }
+      // navigating away -> long ease that keeps creeping forward during the wait
+      function start() {
+        clearTimeout(fadeT); clearTimeout(resetT);
+        bar.classList.add('is-active');
+        to(0.9, '10s cubic-bezier(0.1, 0.7, 0.1, 1)');
+      }
+      sweep();
+      window.addEventListener('pageshow', function (e) { if (e.persisted) sweep(); });
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href]');
+        if (!a) return;
+        var href = a.getAttribute('href') || '';
+        if (!href || href.charAt(0) === '#' || /^(mailto:|tel:|javascript:)/i.test(href)) return;
+        if (a.target === '_blank' || a.hasAttribute('download')) return;
+        if (a.origin && a.origin !== location.origin) return;
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        start();
+      }, true);
+      document.addEventListener('submit', function () { start(); }, true);
+      window.addEventListener('beforeunload', start);
+    })();
+  </script>
+
   {{#if (roles user.role 'admin' 'super_admin')}}
           {{#if notSidebar}}
                 <main class="min-h-screen">
@@ -58,7 +100,7 @@
     </div>
     {{/if}}
   {{else}}
-    {{> navbar}}  
+    {{> navbar}}
     <main class="min-h-screen">
       {{{ body }}}  
     </main>
