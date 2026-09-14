@@ -33,11 +33,13 @@
                   agar user bisa memeriksa password yang sedang diketik; ikon
                   alert-circle hanya mengisi slot kanan saat error & field kosong.
   - autocomplete: string (opsional)
+  - hideLabel   : boolean (opsional) — label hanya untuk screen reader, bila label
+                  visual sudah dirender pemanggil (mis. di atas tab bahasa)
 --}}
 <div class='flex flex-col gap-1.5'{{#if toggle}} x-data='{ showValue: false }'{{/if}}>
   <label
     for='{{id}}'
-    class='font-inter text-sm font-medium leading-5 text-[#404040]'
+    class='{{#if hideLabel}}sr-only{{else}}font-inter text-sm font-medium leading-5 text-[#404040]{{/if}}'
   >{{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</label>
 
   <div class='relative'>
