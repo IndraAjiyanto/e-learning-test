@@ -1,170 +1,108 @@
-<div class='py-10' x-data="benefitEditData()">
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Benefit</h2>
+{{!--
+  Halaman: Edit Benefit — Super Admin
+  Lokasi: src/views/super_admin/benefit/edit.hbs
+  Level: L4 Page
 
-    <form
-      action='/benefit/{{benefit.id}}?_method=PATCH'
-      method='post'
-      class='space-y-6'
-      x-data="{ loading: false }"
-      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
-    >
+  Route: GET /benefit/formEdit/:benefitId -> PATCH /benefit/:benefitId
+  (urlencoded + _method override). Data: { benefit, availableNumbers } —
+  availableNumbers sudah memuat nomor milik benefit ini.
 
-    {{> super_admin/benefit/edit/icon_input }}
-    
-    {{> super_admin/benefit/edit/tittle_input }}
+  Beda dari create.hbs: field terisi nilai existing, tombol aksi berada di
+  dalam kartu 03, dan ada kartu Danger Zone untuk menghapus benefit.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-{{> super_admin/benefit/edit/text_input }}
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Edit Benefit'
+      }}
 
-{{> super_admin/benefit/edit/no_input }}
+      {{> components/ui/super_admin/description/index
+        text='Update the benefit and value proposition displayed across Kesatria Academy.'
+      }}
+    </div>
 
-      <!-- Action Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">Update</span>
-        </button>
-        <a
-          href='/benefit'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100'"
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white transition'>
-          Cancel
-        </a>
-      </div>
+    <div class='flex flex-col gap-3.5'>
+      {{!-- Nilai awal lewat helper json, bukan template literal: backtick atau
+           ${ di data tidak lagi memecah skrip. --}}
+      <form
+        action='/benefit/{{benefit.id}}?_method=PATCH'
+        method='post'
+        novalidate
+        x-data='benefitForm({ icon: {{json benefit.icon}}, title: {{json benefit.title}}, description: {{json benefit.description}}, no: {{json benefit.no}}, numbers: {{json availableNumbers}} })'
+        @submit.prevent='submitForm($event)'
+      >
+        {{#> components/ui/super_admin/form/benefit/fields }}
+          <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+            {{> components/ui/super_admin/form/button
+              as='link'
+              variant='secondary'
+              href='/benefit'
+              label='Cancel'
+              loading=true
+            }}
 
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors()'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
+            {{> components/ui/super_admin/form/button
+              type='submit'
+              variant='primary'
+              label='Save Changes'
+              loading=true
+            }}
+          </div>
+        {{/components/ui/super_admin/form/benefit/fields}}
+      </form>
+
+      {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
+           confirmDelete milik partial sweetalert global yang menimpa fungsi senama. --}}
+      <div
+        class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
+      >
+        <div class='flex items-start gap-4 sm:min-h-[72px]'>
+          <span
+            class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
+          >
+            {{!-- lucide: alert-circle --}}
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+              <circle cx='12' cy='12' r='10' />
+              <path d='M12 8v4' />
+              <path d='M12 16h.01' />
+            </svg>
+          </span>
+
+          <div class='flex flex-col gap-1'>
+            {{> components/ui/super_admin/description/index
+              text='Delete Benefit'
+              class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+            }}
+
+            {{> components/ui/super_admin/description/index
+              text='Permanently remove this benefit from Kesatria Academy. This action cannot be undone.'
+              class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
+            }}
+          </div>
         </div>
-      </template>
-    </form>
+
+        <form
+          action='/benefit/{{benefit.id}}?_method=DELETE'
+          method='post'
+          class='shrink-0'
+        >
+          {{> components/ui/super_admin/form/button
+            variant='danger'
+            label='Delete Benefit'
+            onclick='openDeleteModal(this)'
+            class='w-full sm:w-auto'
+          }}
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
-<script>
-  function benefitEditData() {
-    return {
-      icon: `{{benefit.icon}}`,
-      get computedClass() {
-        const raw = (this.formData.icon || '').toString().trim();
-        if (!raw) return 'fa-solid fa-circle-question';
-        const v = raw;
-        const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-        if (hasFaPrefix) {
-          if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-          return v;
-        }
-        if (!v.includes(' ')) return 'fa-solid fa-' + v;
-        return v;
-      },
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Benefit?'
+  description='Are you sure you want to delete this benefit? This action will permanently remove its title and description in all languages and cannot be undone.'
+}}
 
-      // Form validation states
-      formData: {
-        icon: `{{benefit.icon}}`,
-        title: {
-          id: `{{benefit.title.id}}`,
-          en: `{{benefit.title.en}}`,
-          ja: `{{benefit.title.ja}}`
-        },
-        description: {
-          id: `{{benefit.description.id}}`,
-          en: `{{benefit.description.en}}`,
-          ja: `{{benefit.description.ja}}`
-        },
-        no: `{{benefit.no}}` || ''
-      },
-      formErrors: {
-        icon: '',
-        title: { id: '', en: '', ja: '' },
-        description: { id: '', en: '', ja: '' },
-        no: `{{benefit.no}}` ? '' : 'Number selection is required'
-      },
-      formValid: {
-        icon: true,
-        title: { id: true, en: true, ja: true },
-        description: { id: true, en: true, ja: true },
-        no: !!`{{benefit.no}}`
-      },
-
-      validateField(field, lang, value) {
-        if (lang) {
-          this.formData[field][lang] = value;
-        } else {
-          this.formData[field] = value;
-        }
-        
-        switch(field) {
-          case 'icon':
-            if (!value.trim()) {
-              this.formErrors.icon = 'Icon is required';
-              this.formValid.icon = false;
-            } else if (value.trim().length < 2) {
-              this.formErrors.icon = 'Icon must be at least 2 characters';
-              this.formValid.icon = false;
-            } else {
-              this.formErrors.icon = '';
-              this.formValid.icon = true;
-            }
-            break;
-          
-          case 'title':
-            if (!value.trim()) {
-              this.formErrors.title[lang] = 'Title is required';
-              this.formValid.title[lang] = false;
-            } else if (value.trim().length < 3) {
-              this.formErrors.title[lang] = 'Title must be at least 3 characters';
-              this.formValid.title[lang] = false;
-            } else {
-              this.formErrors.title[lang] = '';
-              this.formValid.title[lang] = true;
-            }
-            break;
-
-          case 'description':
-            if (!value.trim()) {
-              this.formErrors.description[lang] = 'Description is required';
-              this.formValid.description[lang] = false;
-            } else if (value.trim().length < 10) {
-              this.formErrors.description[lang] = 'Description must be at least 10 characters';
-              this.formValid.description[lang] = false;
-            } else {
-              this.formErrors.description[lang] = '';
-              this.formValid.description[lang] = true;
-            }
-            break;
-
-          case 'no':
-            if (!value) {
-              this.formErrors.no = 'Number selection is required';
-              this.formValid.no = false;
-            } else {
-              this.formErrors.no = '';
-              this.formValid.no = true;
-            }
-            break;
-        }
-      },
-
-      hasFormErrors() {
-        return Object.values(this.formValid).some(v => typeof v === 'object' ? Object.values(v).some(val => !val) : !v);
-      },
-
-      canSubmit() {
-        return !this.hasFormErrors();
-      }
-    }
-  }
-</script>
+{{> components/ui/super_admin/form/benefit/form }}
