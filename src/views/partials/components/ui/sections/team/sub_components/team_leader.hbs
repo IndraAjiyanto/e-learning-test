@@ -2,7 +2,7 @@
 <div>
   <!-- MOBILE CEO CARD (< 640px) -->
   <div
-    class="block sm:hidden w-full bg-[#F0F8FF] border border-[#E0F1F9] rounded-[24px] p-4 shadow-xs mb-8 space-y-5 font-montserrat text-center flex flex-col items-center relative overflow-hidden"
+    class="block sm:hidden w-full bg-[#F0F8FF] border border-[#E0F1F9] rounded-[24px] p-4 shadow-xs mb-8 space-y-5 font-inter text-center flex flex-col items-center relative overflow-hidden"
     x-data="{ mobEduOpen: false, mobPortOpen: false }"
   >
     <!-- Centered Avatar Circle -->
@@ -11,7 +11,7 @@
     </div>
 
     <!-- CEO Name -->
-    <h3 class="font-montserrat font-bold text-[18px] leading-none text-[#003060] text-center tracking-normal">
+    <h3 class="font-inter font-bold text-[18px] leading-none text-[#003060] text-center tracking-normal">
       {{#if teamLead.[0]}}
         {{teamLead.[0].name}}
       {{else}}
@@ -20,7 +20,7 @@
     </h3>
 
     <!-- CEO Position -->
-    <p class="font-montserrat font-semibold text-[14px] leading-none text-[#555555] text-center tracking-normal">
+    <p class="font-inter font-semibold text-[14px] leading-none text-[#555555] text-center tracking-normal">
       {{#if teamLead.[0]}}
         {{getByLang teamLead.[0].position lang}}
       {{else}}
@@ -40,11 +40,11 @@
 
     <!-- CEO Bio Description -->
     {{#if teamLead.[0]}}
-      <p class="font-sans font-normal text-[13px] leading-[20px] text-[#333333] text-justify w-full tracking-normal">
+      <p class="font-inter font-normal text-[13px] leading-[20px] text-[#333333] text-justify w-full tracking-normal">
         {{getByLang teamLead.[0].description lang}}
       </p>
     {{else}}
-      <p class="font-sans font-normal text-[13px] leading-[20px] text-[#333333] text-justify w-full tracking-normal">
+      <p class="font-inter font-normal text-[13px] leading-[20px] text-[#333333] text-justify w-full tracking-normal">
         Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia. His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company.
       </p>
     {{/if}}
@@ -56,14 +56,14 @@
         <button @click="mobEduOpen = !mobEduOpen" class="w-full px-4 py-3 flex items-center justify-between text-left">
           <div class="flex items-center space-x-2.5">
             <img src="/public/image/about/team/educational.svg" alt="Education" class="w-5 h-5 object-contain" />
-            <span class="font-montserrat font-semibold text-[13px] text-[#003060]">
+            <span class="font-inter font-semibold text-[13px] text-[#003060]">
               {{t 'test.about.team.educationBackground'}}
             </span>
           </div>
           <i class="fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200" :class="mobEduOpen ? 'rotate-180' : ''"></i>
         </button>
         <div x-show="mobEduOpen" x-transition class="px-4 py-3 border-t border-[#000000]/10 bg-white/50 text-left">
-          <ul class="list-disc pl-5 space-y-2 font-sans text-[12px] leading-[18px] text-[#000000CC]">
+          <ul class="list-disc pl-5 space-y-2 font-inter text-[12px] leading-[18px] text-[#000000CC]">
             {{#if background.length}}
               {{#each background}}
                 <li><span class="font-semibold">{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}</li>
@@ -81,14 +81,14 @@
         <button @click="mobPortOpen = !mobPortOpen" class="w-full px-4 py-3 flex items-center justify-between text-left">
           <div class="flex items-center space-x-2.5">
             <img src="/public/image/about/team/portofolio.svg" alt="Portfolio" class="w-5 h-5 object-contain" />
-            <span class="font-montserrat font-semibold text-[13px] text-[#003060]">
+            <span class="font-inter font-semibold text-[13px] text-[#003060]">
               {{t 'test.about.team.portfolioExperience'}}
             </span>
           </div>
           <i class="fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200" :class="mobPortOpen ? 'rotate-180' : ''"></i>
         </button>
         <div x-show="mobPortOpen" x-transition class="px-4 py-3 border-t border-[#000000]/10 bg-white/50 text-left">
-          <ul class="list-disc pl-5 space-y-2 font-sans text-[12px] leading-[18px] text-[#000000CC]">
+          <ul class="list-disc pl-5 space-y-2 font-inter text-[12px] leading-[18px] text-[#000000CC]">
             {{#if experience.length}}
               {{#each experience}}
                 <li><span class="font-semibold">{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}</li>
@@ -115,14 +115,14 @@
         </div>
       </div>
       <div class='flex-1 text-center md:text-left'>
-        <h3 class='text-2xl md:text-4xl font-semibold text-[#000000] font-montserrat leading-none tracking-normal mb-4'>
+        <h3 class='text-2xl md:text-4xl font-semibold text-[#000000] font-inter leading-none tracking-normal mb-4'>
           {{#if teamLead.[0]}}
             {{teamLead.[0].name}}
           {{else}}
             Faisal Wirakusuma, S.Kom., M.Sc.
           {{/if}}
         </h3>
-        <p class='text-[#000000] font-medium mb-4 text-base md:text-3xl font-montserrat'>
+        <p class='text-[#000000] font-medium mb-4 text-base md:text-3xl font-inter'>
           {{#if teamLead.[0]}}
             {{getByLang teamLead.[0].position lang}}
           {{else}}
@@ -148,11 +148,11 @@
     </div>
 
     {{#if teamLead.[0]}}
-      <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
+      <p class='text-[#000000CC] font-inter font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
         {{getByLang teamLead.[0].description lang}}
       </p>
     {{else}}
-      <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
+      <p class='text-[#000000CC] font-inter font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
         Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. 
         He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, 
         Angkasa Pura II, and Bank DBS Indonesia.
@@ -173,7 +173,7 @@
         >
           <div class='flex items-center space-x-3'>
             <img src="/public/image/about/team/educational.svg" alt="Education" class="w-7 object-contain" />
-            <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
+            <span class='font-medium text-[#000000] text-sm sm:text-2xl font-inter'>
               {{t 'test.about.team.educationBackground'}}
             </span>
           </div>
@@ -190,18 +190,18 @@
           x-transition:enter-end='opacity-100 transform translate-y-0'
           class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
         >
-          <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
+          <ul class='list-disc pl-6 space-y-3 font-inter text-xl leading-[35px] text-justify text-black'>
             {{#if background.length}}
               {{#each background}}
-                <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <li class='font-inter text-xl leading-[35px] text-justify text-black font-normal'>
                   <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
                 </li>
               {{/each}}
             {{else}}
-              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <li class='font-inter text-xl leading-[35px] text-justify text-black font-normal'>
                 <span class='font-semibold'>Bachelor of Science, Information Technology (S.Kom)</span> - Indonesia Islamic University (2005 - 2010)
               </li>
-              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <li class='font-inter text-xl leading-[35px] text-justify text-black font-normal'>
                 <span class='font-semibold'>Master of Science, Advanced Computer Science (M.Sc)</span> - The University of Manchester (2014 - 2015)
               </li>
             {{/if}}
@@ -217,7 +217,7 @@
         >
           <div class='flex items-center space-x-3'>
             <img src="/public/image/about/team/portofolio.svg" alt="Portfolio" class="w-7 object-contain" />
-            <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
+            <span class='font-medium text-[#000000] text-sm sm:text-2xl font-inter'>
               {{t 'test.about.team.portfolioExperience'}}
             </span>
           </div>
@@ -234,18 +234,18 @@
           x-transition:enter-end='opacity-100 transform translate-y-0'
           class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
         >
-          <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
+          <ul class='list-disc pl-6 space-y-3 font-inter text-xl leading-[35px] text-justify text-black'>
             {{#if experience.length}}
               {{#each experience}}
-                <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <li class='font-inter text-xl leading-[35px] text-justify text-black font-normal'>
                   <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
                 </li>
               {{/each}}
             {{else}}
-              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <li class='font-inter text-xl leading-[35px] text-justify text-black font-normal'>
                 <span class='font-semibold'>CEO & Founder</span> - PT Wiratek Solusi Asia (2015 - Present)
               </li>
-              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <li class='font-inter text-xl leading-[35px] text-justify text-black font-normal'>
                 <span class='font-semibold'>Senior IT & Data Consultant</span> - Handling enterprise solutions for BUMN & private sectors
               </li>
             {{/if}}

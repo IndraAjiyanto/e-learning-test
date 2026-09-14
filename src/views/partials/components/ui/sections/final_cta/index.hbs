@@ -1,0 +1,26 @@
+{{!--
+  Section: Final CTA - Figma final-cta 250:3070 (landing) / 559:443 (corporate training)
+  Lokasi: src/views/partials/components/ui/sections/final_cta/index.hbs
+  Props (semua opsional, default = copy landing test.home.finalCta.*):
+    title, description, button, href
+  Satu pohon markup, base + lg.
+--}}
+<section class="w-full bg-white py-16 font-montserrat lg:py-24">
+  <div class="page-shell flex flex-col items-center gap-8 text-center lg:gap-10">
+    <div class="flex max-w-[800px] flex-col items-center gap-4">
+      <h2 class="{{sizeClass 'display'}} font-extrabold tracking-[-0.01em] text-[#003060]">
+        {{default title (t 'test.home.finalCta.title')}}
+      </h2>
+      <p class="{{sizeClass 'lead'}} font-open-sans text-[#003060]/80">
+        {{default description (t 'test.home.finalCta.description')}}
+      </p>
+    </div>
+    <a
+      href="{{default href '/register'}}"
+      class="inline-flex items-center gap-2.5 rounded-xl bg-[#003060] px-8 py-4 {{sizeClass 'body'}} font-bold text-white transition hover:bg-[#00244a] hover:-translate-y-0.5"
+    >
+      {{default button (t 'test.home.finalCta.button')}}
+      <i class="fas fa-arrow-right text-xs"></i>
+    </a>
+  </div>
+</section>

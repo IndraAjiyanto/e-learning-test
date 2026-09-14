@@ -158,7 +158,7 @@ export class DashboardController {
     const kategoriList = await this.dashboardService.findCategories();
     const courseTypeList = await this.dashboardService.findCourseTypes();
 
-    res.render('portofolios', {
+    res.render('portofolio', {
       user: req.user,
       // portfolio: portfolioList,
       category: kategoriList,
@@ -246,6 +246,29 @@ export class DashboardController {
     });
   }
 
+  @Get('about/team/lead')
+  async aboutTeamLead(@Req() req: Request, @Res() res: Response) {
+    const [teamLead, background, experience, award] = await Promise.all([
+      this.dashboardService.findTeamLead(),
+      this.dashboardService.findBackground(),
+      this.dashboardService.findExperience(),
+      this.dashboardService.findAward(),
+    ]);
+    return res.render('about_team_lead', {
+      user: req.user,
+      teamLead,
+      background,
+      experience,
+      award,
+    });
+  }
+
+  @Get('about/team')
+  async aboutTeamAll(@Req() req: Request, @Res() res: Response) {
+    const team = await this.dashboardService.findTeam();
+    return res.render('about_team_all', { user: req.user, team });
+  }
+
   @Get('api/category')
   async getCategory(@Res() res: Response) {
     const category = await this.dashboardService.findCategories();
@@ -276,5 +299,46 @@ export class DashboardController {
   @Get('mpp')
   mpp(@Res() res: Response) {
     return res.render('mpp');
+  }
+
+  @Get('corporate-training')
+  async corporateTraining(@Req() req: Request, @Res() res: Response) {
+    const [
+      benefits,
+      alumni,
+      gallery,
+      faq,
+      social,
+      category,
+      programs,
+      courseType,
+      categoryPartner,
+      partners,
+    ] = await Promise.all([
+      this.dashboardService.findAllBenefits(),
+      this.dashboardService.findAllAlumni(),
+      this.galleryService.findAll(),
+      this.dashboardService.findFAQ(),
+      this.dashboardService.findSocial(),
+      this.dashboardService.findCategories(),
+      this.dashboardService.findAllCategories(),
+      this.dashboardService.findCourseTypes(),
+      this.dashboardService.findCategoryPartners(),
+      this.dashboardService.findAllPartners(),
+    ]);
+
+    return res.render('corporate_training', {
+      user: req.user,
+      benefits,
+      alumni,
+      gallery,
+      faq,
+      social,
+      category,
+      programs,
+      courseType,
+      categoryPartner,
+      partners,
+    });
   }
 }
