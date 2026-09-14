@@ -1,38 +1,75 @@
 {{!--
-  Komponen: Editable Select (Dropdown dengan mode klik-untuk-edit)
+  Komponen: Editable Select (Custom Animated Dropdown selaras filter_dropdown)
   Lokasi: src/views/partials/components/ui/input/editable_select/index.hbs
   Level: L1 Atomik
 
-  Butuh Alpine x-data induk yang menyediakan:
-  - editingField (string|null)
-  - startEditing(field)
-
   Props:
   - label            : string (wajib) — teks label di atas select
-  - model            : string (wajib) — target x-model, contoh "currentValues.education"
-  - editingKey       : string (wajib) — key dibandingkan ke `editingField`, contoh "education"
-  - placeholderOption: string (opsional) — teks option pertama yang disabled, contoh "Select Your Education Level"
-  - wrapperClass     : string (opsional) — class tambahan pembungkus
-
-  Children:
-  - Isi block ({{#> ...}}...{{/...}}) berupa daftar <option> spesifik pemanggil, contoh:
-    {{#> components/ui/input/editable_select/index label="Gender" model="currentValues.gender" editingKey="gender" placeholderOption="Select Your Gender"}}
-      <option value="Laki laki">Laki laki</option>
-      <option value="Perempuan">Perempuan</option>
-    {{/components/ui/input/editable_select/index}}
+  - model            : string (wajib) — target x-model, contoh "formData.education"
+  - options          : string (opsional) — nama array Alpine di scope x-data, contoh "educationOptions"
+  - placeholderOption: string (opsional) — teks placeholder ketika belum ada nilai
+  - required         : boolean (opsional, default false)
+  - wrapperClass     : string (opsional)
+  - labelClass       : string (opsional)
+  - selectClass      : string (opsional) — override styling trigger button
 --}}
 
-<div class="{{wrapperClass}}">
-  <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
-    {{label}}
+<div 
+  class="{{wrapperClass}}" 
+  x-data="{ open: false }" 
+  @keydown.escape.stop="open = false" 
+  @click.outside="open = false"
+>
+  <label class="{{default labelClass 'block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]'}}">
+    {{label}}{{#if required}}<span class="text-red-500">*</span>{{/if}}
   </label>
-  <select
-    x-model="{{model}}"
-    @click="startEditing('{{editingKey}}')"
-    :class="editingField === '{{editingKey}}' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
-    class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black transition-all duration-200"
-  >
-    <option value="" disabled>{{default placeholderOption 'Select an option'}}</option>
-    {{#if @partial-block}}{{> @partial-block}}{{/if}}
-  </select>
+
+  <div class="relative">
+    <!-- Trigger Button -->
+    <button
+      type="button"
+      @click="open = !open"
+      class="flex items-center justify-between {{default selectClass 'w-full h-[44px] px-[14px] py-[10px] font-inter font-normal text-[16px] leading-[24px] text-[#0B1F3B] bg-white border border-[#D4D4D4] rounded-[8px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] cursor-pointer'}}"
+    >
+      <span class="truncate text-left" :class="!{{model}} ? 'text-[#737373]' : 'text-[#0B1F3B]'">
+        {{#if options}}
+          <span x-text="({{options}}.find(o => o.value === {{model}}) || {}).label || '{{default placeholderOption "Select an option"}}'"></span>
+        {{else}}
+          <span x-text="{{model}} || '{{default placeholderOption "Select an option"}}'"></span>
+        {{/if}}
+      </span>
+
+      <!-- Chevron with smooth rotate-180 animation -->
+      <i
+        class="fas fa-chevron-down text-xs text-[#003060] transition-transform duration-200 ml-2"
+        :class="open ? 'rotate-180' : ''"
+      ></i>
+    </button>
+
+    <!-- Animated Dropdown Menu (selaras filter_dropdown) -->
+    <div
+      x-show="open"
+      x-transition
+      class="absolute left-0 top-[calc(100%+4px)] z-50 w-full max-h-60 overflow-y-auto bg-white border border-[#D4D4D4] rounded-[8px] shadow-lg p-1 space-y-0.5 font-inter"
+      x-cloak
+    >
+      {{#if options}}
+        <template x-for="opt in {{options}}" :key="opt.value">
+          <button
+            type="button"
+            @click="{{model}} = opt.value; open = false"
+            :class="{{model}} === opt.value ? 'bg-[#003060] text-white' : 'text-[#344054] hover:bg-slate-50'"
+            class="flex items-center justify-between w-full px-3.5 py-2.5 text-[14px] font-medium text-left rounded-[6px] transition-colors cursor-pointer"
+          >
+            <span x-text="opt.label"></span>
+            <i x-show="{{model}} === opt.value" class="fas fa-check text-xs"></i>
+          </button>
+        </template>
+      {{/if}}
+
+      {{#if @partial-block}}
+        {{> @partial-block}}
+      {{/if}}
+    </div>
+  </div>
 </div>

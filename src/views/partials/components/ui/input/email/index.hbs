@@ -22,15 +22,15 @@
 <div class="{{wrapperClass}}">
   <label
     for="{{default id (default name 'email')}}"
-    class="block mb-5 text-[15px] font-medium text-[#2D2D2D] leading-none font-inter lg:text-[20px] {{default labelClass ''}}"
+    class="mb-2 block font-inter text-sm font-medium text-[#2D2D2D] {{default labelClass ''}}"
   >{{label}}</label>
 
   <div class="relative">
-    <div class="flex absolute inset-y-0 left-[25px] items-center pointer-events-none text-[#003060]">
+    <div class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-[#003060]">
       {{#if icon}}
-        <i class="{{icon}} text-lg lg:text-xl"></i>
+        <i class="{{icon}} text-base"></i>
       {{else}}
-        <svg class="size-5 text-[#003060] lg:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="size-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="4" width="20" height="16" rx="3" />
           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
         </svg>
@@ -46,11 +46,11 @@
       autocomplete="{{default autocomplete 'email'}}"
       {{#if required}}required{{/if}}
       {{#if disabled}}disabled readonly{{/if}}
-      class="w-full h-[48px] pl-[74px] pr-3.5 py-2.5 text-[15px] font-normal text-[#2D2D2D] leading-none font-inter bg-white border border-[#D9D9D9] rounded-[6px] shadow-[0px_0px_4px_0px_#00000040] placeholder:text-[15px] placeholder:font-normal placeholder:text-[#2D2D2DCC] focus:outline-none focus:ring-2 focus:ring-[#003060] lg:h-[59px] lg:pl-[74px] lg:pr-4 lg:py-3 {{default inputClass ''}}"
+      class="h-12 w-full rounded-[8px] border border-[#D9D9D9] bg-white pl-11 pr-4 font-inter text-sm font-normal text-[#2D2D2D] shadow-[0px_0px_4px_0px_#00000030] placeholder:text-sm placeholder:text-[#2D2D2DCC] focus:outline-none focus:ring-2 focus:ring-[#003060] {{default inputClass ''}}"
     />
   </div>
 
   {{#if hint}}
-    <p class="mt-1 text-xs text-gray-400 font-inter">{{hint}}</p>
+    <p class="mt-1 font-inter text-xs text-gray-400">{{hint}}</p>
   {{/if}}
 </div>
