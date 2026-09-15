@@ -9,7 +9,7 @@ export class UserActivityMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const user = (req as any).user;
     if (user?.id) {
-      this.userActivityService.touch(user.id).catch(() => undefined);
+      this.userActivityService.handleRequest(user, req).catch(() => undefined);
     }
     next();
   }

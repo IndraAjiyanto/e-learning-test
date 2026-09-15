@@ -120,15 +120,21 @@ export class QuizController {
     )?.course;
 
     if (check) {
-      res.render('user/user_profile/index', {
+      // res.render('user/user_profile/index', {
+      //   user: req.user,
+      //   userWithCourses,
+      //   logbooks,
+      //   portfolio,
+      //   activeCourse,
+      //   activeSection: 'quiz-start',
+      //   quizId,
+      //   questions,
+      //   check,
+      // });
+      res.render('user/quiz/start', {
         user: req.user,
-        userWithCourses,
-        logbooks,
-        portfolio,
-        activeCourse,
-        activeSection: 'quiz-start',
         quizId,
-        questions,
+        pertanyaan: questions,
         check,
       });
     } else {
@@ -136,15 +142,22 @@ export class QuizController {
         req.user!.id,
         quizId,
       );
-      res.render('user/user_profile/index', {
+      // res.render('user/user_profile/index', {
+      //   user: req.user,
+      //   userWithCourses,
+      //   logbooks,
+      //   portfolio,
+      //   activeCourse,
+      //   activeSection: 'quiz-start',
+      //   quizId,
+      //   questions,
+      //   remainingTime,
+      //   check,
+      // });
+      res.render('user/quiz/start', {
         user: req.user,
-        userWithCourses,
-        logbooks,
-        portfolio,
-        activeCourse,
-        activeSection: 'quiz-start',
         quizId,
-        questions,
+        pertanyaan: questions,
         remainingTime,
         check,
       });

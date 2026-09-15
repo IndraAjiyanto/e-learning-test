@@ -36,6 +36,12 @@ export class UserActivity {
   @Column({ type: 'timestamp' })
   lastSeenAt: Date;
 
+  @Column({ type: 'uuid', nullable: true })
+  currentCourseId: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  activityLabel: string | null;
+
   @CreateDateColumn()
   createdAt: Date;
 
