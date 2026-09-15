@@ -1,0 +1,173 @@
+{{!--
+  Komponen: Voucher Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/voucher/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `voucherForm()` untuk super_admin/voucher/{create,edit}.hbs.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
+  form/select_field); loading (form/button); typeOptions & activeOptions
+  (form/select_field); courseOptions, userOptions, initialCourses, initialUsers
+  (form/multi_select_field).
+
+  `active` disimpan sebagai string 'true'/'false' karena select_field
+  membandingkan nilai dengan === dan mengirimkannya lewat hidden input;
+  VoucherService.parseBool sudah menerima bentuk string itu.
+
+  `percent` hanya divalidasi saat type === 'discount' — sejalan dengan service
+  yang menyimpannya null untuk voucher free.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LABEL = {
+      code_voucher: 'Voucher Code',
+      type: 'Type',
+      percent: 'Discount Percent',
+      active: 'Status',
+    };
+
+    // Urutan ini juga urutan fokus saat submit gagal.
+    const PATHS = ['code_voucher', 'type', 'percent', 'active'];
+
+    // Id yang dipasang select_field pada trigger-nya berbeda dari id field.
+    const FOCUS_ID = { type: 'type-trigger', active: 'active-trigger' };
+
+    const errorFor = (field, value, formData) => {
+      const val = (value ?? '').toString().trim();
+
+      if (field === 'percent') {
+        // Tidak relevan untuk voucher free, jadi tidak pernah jadi error.
+        if (formData.type !== 'discount') return '';
+        if (!val) return `${LABEL.percent} is required.`;
+        const n = Number(val);
+        if (!Number.isFinite(n)) return `${LABEL.percent} must be a number.`;
+        if (n <= 0 || n > 100) return `${LABEL.percent} must be between 1 and 100.`;
+        return '';
+      }
+
+      if (!val) return `${LABEL[field]} is required.`;
+
+      if (field === 'code_voucher' && val.length < 3) {
+        return `${LABEL.code_voucher} must be at least 3 characters.`;
+      }
+
+      return '';
+    };
+
+    window.voucherForm = function voucherForm({
+      code_voucher,
+      type,
+      percent,
+      active,
+      courses,
+      users,
+      selectedCourseIds,
+      selectedUserIds,
+    } = {}) {
+      const courseOptions = (courses || []).map((c) => ({
+        value: c.id,
+        label: c.name,
+      }));
+      const userOptions = (users || []).map((u) => ({
+        value: u.id,
+        label: u.email ? `${u.username} (${u.email})` : u.username,
+      }));
+
+      // Menerima dua bentuk: array id ('allowed_user_ids' memang array string)
+      // dan array entity ('voucher.courses' datang sebagai objek Course utuh),
+      // supaya halaman edit tidak perlu memetakannya lebih dulu di template.
+      const preselect = (options, selected) => {
+        const chosen = new Set(
+          (selected || []).map((item) =>
+            String(item && typeof item === 'object' ? item.id : item),
+          ),
+        );
+        return options.filter((option) => chosen.has(String(option.value)));
+      };
+
+      return {
+        loading: false,
+
+        typeOptions: [
+          { value: 'free', label: 'Free' },
+          { value: 'discount', label: 'Discount' },
+        ],
+        activeOptions: [
+          { value: 'true', label: 'Active', dot: 'bg-[#22c55e]' },
+          { value: 'false', label: 'Inactive', dot: 'bg-[#718096]' },
+        ],
+
+        courseOptions,
+        userOptions,
+        initialCourses: preselect(courseOptions, selectedCourseIds),
+        initialUsers: preselect(userOptions, selectedUserIds),
+
+        formData: {
+          code_voucher: code_voucher || '',
+          type: type || '',
+          percent: percent == null ? '' : String(percent),
+          // Voucher baru default aktif, sama seperti default kolom di database.
+          active: active == null ? 'true' : String(active),
+        },
+        formErrors: { code_voucher: '', type: '', percent: '', active: '' },
+        touched: { code_voucher: false, type: false, percent: false, active: false },
+
+        validateField(path, value) {
+          this.formData[path] = value ?? '';
+          this.formErrors[path] = this.touched[path]
+            ? errorFor(path, this.formData[path], this.formData)
+            : '';
+
+          // Berganti tipe mengubah apakah percent wajib, jadi errornya dihitung ulang.
+          if (path === 'type') {
+            this.formErrors.percent = this.touched.percent
+              ? errorFor('percent', this.formData.percent, this.formData)
+              : '';
+          }
+        },
+
+        touch(path) {
+          if (!(path in this.touched)) return;
+          this.touched[path] = true;
+          this.validateField(path, this.formData[path]);
+        },
+
+        validateAll() {
+          PATHS.forEach((path) => this.touch(path));
+        },
+
+        hasFormErrors() {
+          return PATHS.some((path) => this.formErrors[path] !== '');
+        },
+
+        revealFirstInvalid() {
+          const path = PATHS.find((p) => this.formErrors[p]);
+          if (!path) return;
+
+          this.$nextTick(() => {
+            const el = document.getElementById(FOCUS_ID[path] || path);
+            if (!el) {
+              console.warn(`voucherForm: field "${path}" tidak ditemukan — id di form/voucher/fields berubah?`);
+              return;
+            }
+            el.focus();
+          });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

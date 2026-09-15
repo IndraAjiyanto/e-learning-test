@@ -1,0 +1,114 @@
+{{!--
+  Komponen: Voucher Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/voucher/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Kartu 01 Voucher Information, 02 Availability.
+  Dipanggil oleh super_admin/voucher/{create,edit}.hbs; pemanggil menyediakan
+  state Alpine dari form/voucher/form.
+
+  Partial block (opsional) dirender di akhir kartu 02 — Edit menaruh tombol
+  aksinya di sana, Create memakai kartu aksi terpisah.
+
+  PERCENT IKUT TIPE
+  Service menyimpan `percent` hanya saat type === 'discount' (voucher free
+  selalu disimpan null), jadi field-nya ikut disembunyikan untuk tipe free —
+  bukan sekadar diabaikan diam-diam di backend.
+
+  KEDUA MULTI-SELECT BOLEH KOSONG, DAN ITU BERARTI "SEMUA"
+  Voucher tanpa program berlaku untuk seluruh program, dan tanpa target user
+  berlaku untuk semua user (controller melabelinya "Public (All Users)").
+  Karena itu keduanya tidak wajib, dan hint-nya menyebutkan arti kosong itu.
+--}}
+{{#*inline 'voucherCardHeader'}}
+  <div class='flex items-center gap-2'>
+    <span class='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#003060] font-montserrat text-base font-semibold leading-6 text-white'>{{number}}</span>
+    <h2 class='font-montserrat text-base font-semibold leading-6 text-[#003060]'>{{title}}</h2>
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-3.5'>
+  <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
+    {{> voucherCardHeader number='01' title='Voucher Information' }}
+
+    <div class='grid grid-cols-1 gap-x-3 gap-y-2.5 md:grid-cols-2'>
+      {{> components/ui/super_admin/form/text_field
+        id='code_voucher'
+        name='code_voucher'
+        field='code_voucher'
+        label='Voucher Code'
+        placeholder='KESATRIA2026'
+        hint='The code participants type at checkout. Must be unique.'
+        autocomplete='off'
+        required=true
+      }}
+
+      {{> components/ui/super_admin/form/select_field
+        id='type'
+        name='type'
+        field='type'
+        label='Type'
+        placeholder='Select a type'
+        hint='Free waives the whole fee; Discount cuts it by a percentage.'
+        options='typeOptions'
+        required=true
+      }}
+
+      <div x-show="formData.type === 'discount'" x-cloak>
+        {{> components/ui/super_admin/form/text_field
+          id='percent'
+          name='percent'
+          field='percent'
+          label='Discount Percent'
+          placeholder='25'
+          hint='A number between 1 and 100.'
+          autocomplete='off'
+          required=true
+        }}
+      </div>
+
+      {{> components/ui/super_admin/form/select_field
+        id='active'
+        name='active'
+        field='active'
+        label='Status'
+        placeholder='Select a status'
+        hint='Inactive vouchers stay saved but cannot be redeemed.'
+        options='activeOptions'
+        required=true
+      }}
+    </div>
+  </section>
+
+  <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
+    {{> voucherCardHeader number='02' title='Availability' }}
+
+    {{> components/ui/super_admin/form/multi_select_field
+      id='courseIds'
+      name='courseIds'
+      label='Programs'
+      options='courseOptions'
+      initial='initialCourses'
+      placeholder='Search a program...'
+      hint='Leave empty to let this voucher apply to every program.'
+      emptyText='No programs found.'
+    }}
+
+    {{> components/ui/super_admin/form/multi_select_field
+      id='allowed_user_ids'
+      name='allowed_user_ids'
+      label='Target Users'
+      options='userOptions'
+      initial='initialUsers'
+      placeholder='Search a user...'
+      hint='Leave empty to make this voucher public to all users.'
+      emptyText='No users found.'
+    }}
+
+    {{#if @partial-block}}
+      <div class='pt-6'>
+        {{> @partial-block}}
+      </div>
+    {{/if}}
+  </section>
+</div>
