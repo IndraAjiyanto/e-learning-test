@@ -1,0 +1,109 @@
+{{!--
+  Komponen: Mission Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/mission/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `missionForm()` untuk super_admin/missions/{create,edit}.hbs.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
+  loading (form/button); contentLang & itemsLang (tabs/language lewat prop
+  `state` — dua field punya tab bahasa sendiri-sendiri).
+
+  Submit yang gagal memindahkan tab field yang error agar pesannya terlihat.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const LABEL = { content: 'Mission Title', items: 'Mission Description' };
+    const MIN = { content: 3, items: 10 };
+
+    // Urutan ini juga urutan fokus saat submit gagal.
+    const PATHS = ['content', 'items'].flatMap((f) => LANGS.map((l) => `${f}.${l}`));
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    const read = (obj, path) => { const [f, l] = path.split('.'); return obj[f][l]; };
+    const write = (obj, path, value) => { const [f, l] = path.split('.'); obj[f][l] = value; };
+
+    const errorFor = (path, value) => {
+      const [field, lang] = path.split('.');
+      const val = (value ?? '').toString().trim();
+      const label = `${LABEL[field]} (${LANG_LABEL[lang]})`;
+      if (!val) return `${label} is required.`;
+      if (val.length < MIN[field]) {
+        return `${label} must be at least ${MIN[field]} characters.`;
+      }
+      return '';
+    };
+
+    window.missionForm = function missionForm({ content, items } = {}) {
+      // Kolom jsonb nullable: data lama bisa belum punya salah satu bahasa.
+      const initial = (src) => byLang((l) => (src && src[l]) || '');
+
+      return {
+        loading: false,
+        contentLang: 'id',
+        itemsLang: 'id',
+
+        formData: { content: initial(content), items: initial(items) },
+        formErrors: { content: byLang(() => ''), items: byLang(() => '') },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: { content: byLang(() => false), items: byLang(() => false) },
+
+        validateField(path, value) {
+          write(this.formData, path, value ?? '');
+          write(
+            this.formErrors,
+            path,
+            read(this.touched, path) ? errorFor(path, read(this.formData, path)) : '',
+          );
+        },
+
+        touch(path) {
+          write(this.touched, path, true);
+          this.validateField(path, read(this.formData, path));
+        },
+
+        validateAll() {
+          PATHS.forEach((path) => this.touch(path));
+        },
+
+        hasFormErrors() {
+          return PATHS.some((path) => read(this.formErrors, path) !== '');
+        },
+
+        // Id harus sama dengan yang dibentuk form/mission/fields
+        // (`content-id`, `items-en`, ...).
+        revealFirstInvalid() {
+          const path = PATHS.find((p) => read(this.formErrors, p));
+          if (!path) return;
+
+          const [field, lang] = path.split('.');
+          this[`${field}Lang`] = lang;
+          this.$nextTick(() => {
+            const el = document.getElementById(`${field}-${lang}`);
+            if (!el) {
+              console.warn(`missionForm: field "${field}-${lang}" tidak ditemukan — id di form/mission/fields berubah?`);
+              return;
+            }
+            el.focus();
+          });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>
