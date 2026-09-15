@@ -1,422 +1,407 @@
-<script>
- function categoryFormData() {
-  return {
+{{!--
+  Halaman: Edit Category — Super Admin
+  Lokasi: src/views/super_admin/category/edit.hbs
+  Level: L4 Page
 
-    /* ============================================================
-     * STATE
-     * ============================================================ */
+  Route: GET /category/formEdit/:id -> PATCH /category/:id
+  (multipart: name, icon, hero_section_image, description[lang], text[lang],
+  contact, courseType[], type). Data: { category, courseTypes }.
 
-    previewUrl: `{{category.icon}}` ? (`{{category.icon}}`.startsWith('/') ? `{{category.icon}}` : '/' + `{{category.icon}}`) : null,
-    errorMessage: '',
-    isValid: true,
-    fileName: `{{category.icon}}` ? 'Current Icon' : '',
-    fileSize: 0,
-    imageWidth: 0,
-    imageHeight: 0,
-    hasFile: `{{category.icon}}` ? true : false,
-    hasOldIcon: `{{category.icon}}` ? true : false,
-    oldIcon: `{{category.icon}}` || '',
+  Backend hanya mengganti gambar yang dikirim. "Remove" melepas gambar lama di
+  form saja; karena gambar wajib, Save tertahan sampai file pengganti dipilih.
+--}}
+{{#*inline 'categoryLangFields'}}
+  {{!-- x-show, bukan x-if: bahasa di tab yang tidak aktif tetap ikut terkirim. --}}
+  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'description-' code)
+      name=(concat 'description[' code ']')
+      field=(concat 'description.' code)
+      label='Description'
+      multiline=true
+      placeholder=descriptionHint
+      required=true
+    }}
 
-    // Hero Section Image state
-    heroSectionPreviewUrl: `{{category.hero_section_image}}` ? (`{{category.hero_section_image}}`.startsWith('/') ? `{{category.hero_section_image}}` : '/' + `{{category.hero_section_image}}`) : null,
-    heroSectionFileName: `{{category.hero_section_image}}` ? 'Current Hero Image' : '',
-    heroSectionFileSize: 0,
-    heroSectionHasFile: `{{category.hero_section_image}}` ? true : false,
-    heroSectionHasOld: `{{category.hero_section_image}}` ? true : false,
-    heroSectionOld: `{{category.hero_section_image}}` || '',
-    heroSectionIsValid: true,
-    heroSectionErrorMessage: '',
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'text-' code)
+      name=(concat 'text[' code ']')
+      field=(concat 'text.' code)
+      label='Text'
+      multiline=true
+      placeholder=textHint
+      hint='Optional.'
+    }}
+  </div>
+{{/inline}}
 
-    formData: {
-      name: `{{category.name}}`,
-      description: {
-        id: `{{category.description.id}}`,
-        en: `{{category.description.en}}`,
-        ja: `{{category.description.ja}}`
-      },
-      text: {
-        id: `{{category.text.id}}`,
-        en: `{{category.text.en}}`,
-        ja: `{{category.text.ja}}`
-      },
-      contact: `{{category.contact}}`,
-      courseTypes: [],
-      type: `{{category.type}}`,
-    },
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Edit Category'
+      }}
 
-    selectedJenisKelas: {{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}},
-    searchJenisKelas: '',
-    showJenisKelasDropdown: false,
-    availableJenisKelas: {{{json courseTypes}}},
-
-    /* ============================================================
-     * ERROR STATES
-     * ============================================================ */
-
-    formErrors: {
-      name: '',
-      description: { id: '', en: '', ja: '' },
-      text:       { id: '', en: '', ja: '' },
-      contact: '',
-      courseTypes: '',
-      type: '',
-    },
-
-    /* ============================================================
-     * FIELD VALID STATES
-     * ============================================================ */
-
-    formValid: {
-      name: true,
-      description: { id: true, en: true, ja: true },
-      text:      { id: false, en: false, ja: false },
-      contact: false,
-      courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
-      type: true,
-    },
-
-    /* ============================================================
-     * TOUCHED STATES
-     * ============================================================ */
-
-    formTouched: {
-      name: true,
-      description: { id: true, en: true, ja: true },
-      text:      { id: false, en: false, ja: false },
-      contact: false,
-      courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
-      type: true,
-    },
-
-    /* ============================================================
-     * INIT
-     * ============================================================ */
-
-    init() {
-      this.formData.courseTypes = this.selectedJenisKelas.map(jk => jk.id);
-    },
-
-    /* ============================================================
-     * IMAGE VALIDATION
-     * ============================================================ */
-
-    validateImage(file) {
-      if (!file) {
-        this.hasFile = false;
-        return;
-      }
-
-      this.hasFile = true;
-      this.fileName = file.name;
-      this.fileSize = file.size;
-      this.errorMessage = '';
-      this.isValid = true;
-
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
-      const maxSize = 5 * 1024 * 1024;
-
-      if (!allowedTypes.includes(file.type)) {
-        this.errorMessage = 'Only JPEG, JPG, PNG, and SVG formats are allowed';
-        this.isValid = false;
-        this.previewUrl = null;
-        return;
-      }
-
-      if (file.size > maxSize) {
-        const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-        this.errorMessage = `File size too large (${sizeMB}MB). Maximum 5MB`;
-        this.isValid = false;
-        this.previewUrl = null;
-        return;
-      }
-
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-
-      img.onload = () => {
-        this.imageWidth = img.width;
-        this.imageHeight = img.height;
-
-        if (file.type === 'image/svg+xml') {
-          this.previewUrl = objectUrl;
-          this.isValid = true;
-          this.errorMessage = '';
-          URL.revokeObjectURL(objectUrl);
-          return;
-        }
-
-        if (img.width < 1000 || img.width > 2000 || img.height < 1000 || img.height > 2000) {
-          this.errorMessage =
-            `Image dimensions ${img.width}x${img.height}px. ` +
-            `Required: 1000x1000 to 2000x2000 pixels`;
-          this.isValid = false;
-          this.previewUrl = null;
-        } else {
-          this.previewUrl = objectUrl;
-          this.isValid = true;
-          this.errorMessage = '';
-        }
-
-        URL.revokeObjectURL(objectUrl);
-      };
-
-      img.onerror = () => {
-        this.errorMessage = 'Failed to load image';
-        this.isValid = false;
-        this.previewUrl = null;
-        URL.revokeObjectURL(objectUrl);
-      };
-
-      img.src = objectUrl;
-    },
-
-    /* ============================================================
-     * FIELD VALIDATION (ALL TYPES)
-     * ============================================================ */
-
-    validateField(field, value, lang = null) {
-      if (lang) {
-        this.formData[field][lang] = value;
-        this.formTouched[field][lang] = true;
-      } else {
-        this.formData[field] = value;
-        this.formTouched[field] = true;
-      }
-
-      switch (field) {
-        case 'name':
-          this.formValid.name = !!value.trim();
-          this.formErrors.name = this.formValid.name ? '' : 'Category name is required';
-          break;
-
-        case 'description':
-          this.formValid.description[lang] = !!value.trim();
-          this.formErrors.description[lang] = this.formValid.description[lang] ? '' : 'Description is required';
-          break;
-
-        case 'type':
-          this.formValid.type = !!value;
-          this.formErrors.type = value ? '' : 'Type is required';
-          break;
-
-        case 'text':
-          this.formValid.text[lang] = value.trim().length > 0;
-          this.formErrors.text[lang] = '';
-          break;
-
-case 'contact':
-  // Ubah dari validasi isNaN (tidak cocok untuk string HP)
-  if (value && !/^[0-9+\-\s]+$/.test(value)) {
-    this.formErrors.contact = 'Contact must be a valid phone number';
-    this.formValid.contact = false;
-  } else {
-    this.formErrors.contact = '';
-    this.formValid.contact = value.toString().trim().length > 0;
-  }
-  break;
-
-        case 'courseType':
-          this.formValid.courseTypes = Array.isArray(value) && value.length > 0;
-          this.formErrors.courseTypes = '';
-          break;
-      }
-    },
-
-    /* ============================================================
-     * MULTISELECT: JENIS KELAS
-     * ============================================================ */
-
-    selectJenisKelas(jk) {
-      if (!this.selectedJenisKelas.some(s => s.id === jk.id)) {
-        this.selectedJenisKelas.push(jk);
-        this.formData.courseTypes = this.selectedJenisKelas.map(s => s.id);
-        this.validateField('courseType', this.formData.courseTypes);
-      }
-      this.searchJenisKelas = '';
-      this.showJenisKelasDropdown = false;
-    },
-
-    removeJenisKelas(id) {
-      this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== id);
-      this.formData.courseTypes = this.selectedJenisKelas.map(s => s.id);
-      this.validateField('courseType', this.formData.courseTypes);
-    },
-
-    get filteredJenisKelas() {
-      return this.availableJenisKelas.filter(jk =>
-        jk.nameClassesType.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
-        !this.selectedJenisKelas.some(s => s.id === jk.id)
-      );
-    },
-
-    /* ============================================================
-     * CLEAR FILE
-     * ============================================================ */
-
-    clearFile() {
-      this.previewUrl   = this.hasOldIcon ? this.oldIcon : null;
-      this.errorMessage = '';
-      this.isValid      = true;
-      this.fileName     = this.hasOldIcon ? 'Current Icon' : '';
-      this.fileSize     = 0;
-      this.imageWidth   = 0;
-      this.imageHeight  = 0;
-      this.hasFile      = this.hasOldIcon;
-
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = null;
-      }
-    },
-
-    /* ============================================================
-     * HERO SECTION IMAGE
-     * ============================================================ */
-
-    validateHeroSectionImage(file) {
-      if (!file) {
-        this.heroSectionHasFile = this.heroSectionHasOld;
-        return;
-      }
-
-      this.heroSectionHasFile = true;
-      this.heroSectionFileName = file.name;
-      this.heroSectionFileSize = file.size;
-      this.heroSectionErrorMessage = '';
-
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
-      if (!allowedTypes.includes(file.type)) {
-        this.heroSectionErrorMessage = 'Only JPEG, JPG, PNG, and SVG formats are allowed';
-        this.heroSectionIsValid = false;
-        this.heroSectionPreviewUrl = this.heroSectionHasOld ? this.heroSectionOld : null;
-        return;
-      }
-
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        this.heroSectionErrorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-        this.heroSectionIsValid = false;
-        this.heroSectionPreviewUrl = this.heroSectionHasOld ? this.heroSectionOld : null;
-        return;
-      }
-
-      this.heroSectionPreviewUrl = URL.createObjectURL(file);
-      this.heroSectionIsValid = true;
-    },
-
-    clearHeroSectionFile() {
-      this.heroSectionPreviewUrl = this.heroSectionHasOld ? this.heroSectionOld : null;
-      this.heroSectionFileName = this.heroSectionHasOld ? 'Current Hero Image' : '';
-      this.heroSectionFileSize = 0;
-      this.heroSectionHasFile = this.heroSectionHasOld;
-      this.heroSectionIsValid = true;
-      this.heroSectionErrorMessage = '';
-
-      if (this.$refs.heroSectionFileInput) {
-        this.$refs.heroSectionFileInput.value = null;
-      }
-    },
-
-    /* ============================================================
-     * FORM HELPERS
-     * ============================================================ */
-
-    canSubmit() {
-      const imageValid       = (this.hasOldIcon && !this.hasFile) || (this.hasFile && this.isValid);
-      const heroValid        = (this.heroSectionHasOld && !this.heroSectionHasFile) || (this.heroSectionHasFile && this.heroSectionIsValid);
-      const namaKategoriValid = this.formValid.name;
-      const deskripsiValid   = Object.values(this.formValid.description).every(v => v);
-      const typeValid        = this.formValid.type;
-
-      return imageValid && heroValid && namaKategoriValid && deskripsiValid && typeValid;
-    },
-
-    hasFormErrors() {
-      const checkObject = (obj) => {
-        if (typeof obj === 'object' && obj !== null) {
-          return Object.values(obj).some(val =>
-            typeof val === 'object' ? checkObject(val) : val !== ''
-          );
-        }
-        return obj !== '';
-      };
-
-      return Object.values(this.formErrors).some(error => checkObject(error));
-    },
-
-  };
-}
-</script>
-
-<div class='py-10' x-data='categoryFormData()'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Category</h2>
+      {{> components/ui/super_admin/description/index
+        text='Update this program category for Kesatria Academy.'
+      }}
+    </div>
 
     <form
       action='/category/{{category.id}}?_method=PATCH'
-      method='POST'
+      method='post'
       enctype='multipart/form-data'
-      class='space-y-6'
-      x-data='{ loading: false }'
-      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+      novalidate
+      x-data='categoryEditForm({ category: {{json category}}, courseTypes: {{json courseTypes}} })'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
     >
+      <div class='flex flex-col gap-6'>
+        {{> components/ui/super_admin/description/index
+          text='Category Detail'
+          class='font-montserrat text-base font-semibold leading-6 text-[#003060]'
+        }}
 
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-2 gap-6'>
-        <!-- Left Column -->
-        <div class='space-y-6'>
+        <div class='flex flex-col gap-5'>
+          <div class='grid gap-5 lg:grid-cols-2'>
+            {{> components/ui/super_admin/form/text_field
+              id='name'
+              name='name'
+              field='name'
+              label='Category Name'
+              placeholder='Enter category name'
+              required=true
+            }}
 
-        {{> super_admin/category/edit/left_column/name_input }}
-        {{> super_admin/category/edit/left_column/hero_section_image_input }}
-        {{> super_admin/category/edit/left_column/text_input }}
-        {{> super_admin/category/edit/left_column/contact_input }}
-        {{> super_admin/category/edit/left_column/type_program_input }}
+            {{> components/ui/super_admin/form/select_field
+              id='type'
+              name='type'
+              field='type'
+              label='Type'
+              placeholder='Select type'
+              options='typeOptions'
+              required=true
+            }}
 
-        </div>
+            {{> components/ui/super_admin/form/text_field
+              id='contact'
+              name='contact'
+              field='contact'
+              label='Contact'
+              placeholder='Enter contact number'
+              hint='Optional. Digits, spaces, + and - only.'
+            }}
 
-        <!-- Right Column -->
-        <div class='space-y-6'>
+            {{> components/ui/super_admin/form/multi_select_field
+              id='courseTypeSearch'
+              name='courseType[]'
+              label='Program Types'
+              options='courseTypeOptions'
+              initial='selectedCourseTypes'
+              placeholder='Search program types...'
+              hint='Optional. Select every program type in this category.'
+              emptyText='No program types found.'
+            }}
+          </div>
 
-        {{> super_admin/category/edit/right_column/type_input }}
-        {{> super_admin/category/edit/right_column/image_input }}
-        {{> super_admin/category/edit/right_column/description_input }}
+          <div class='flex flex-col gap-5'>
+            {{!-- Tiga tab berlabel penuh lebih lebar dari layar 400px. --}}
+            <div class='overflow-x-auto'>
+              {{> components/ui/super_admin/tabs/language/index ariaLabel='Category content language' }}
+            </div>
 
+            {{> categoryLangFields
+              code='id'
+              descriptionHint='Deskripsi (ID)...'
+              textHint='Teks tambahan (ID)...'
+            }}
+
+            {{> categoryLangFields
+              code='en'
+              descriptionHint='Description (EN)...'
+              textHint='Additional text (EN)...'
+            }}
+
+            {{> categoryLangFields
+              code='ja'
+              descriptionHint='説明 (JA)...'
+              textHint='追加テキスト (JA)...'
+            }}
+          </div>
+
+          <div class='grid gap-5 lg:grid-cols-2'>
+            {{!-- Tiap dropzone butuh scope sendiri: state & x-ref komponennya bernama tetap. --}}
+            <div x-data="imageSlot('icon')">
+              {{> components/ui/super_admin/form/image_dropzone
+                id='icon'
+                name='icon'
+                label='Icon Image'
+                meta='JPG / PNG / SVG · 1000×1000 – 2000×2000 · Max 5 MB'
+                accept='image/jpeg,image/jpg,image/png,image/svg+xml'
+                boxClass='h-[220px]'
+                required=true
+              }}
+            </div>
+
+            <div x-data="imageSlot('hero_section_image')">
+              {{> components/ui/super_admin/form/image_dropzone
+                id='hero_section_image'
+                name='hero_section_image'
+                label='Hero Section Image'
+                meta='JPG / PNG / SVG · Max 5 MB'
+                accept='image/jpeg,image/jpg,image/png,image/svg+xml'
+                boxClass='h-[220px]'
+                required=true
+              }}
+            </div>
+          </div>
+
+          <div class='flex flex-col-reverse gap-4 border-t border-[#d9d9d9] pt-6 sm:flex-row sm:justify-end'>
+            {{> components/ui/super_admin/form/button
+              as='link'
+              variant='secondary'
+              href=(concat '/category/' category.id)
+              label='Cancel'
+              loading=true
+            }}
+
+            {{> components/ui/super_admin/form/button
+              type='submit'
+              variant='primary'
+              label='Save Changes'
+              loading=true
+            }}
+          </div>
         </div>
       </div>
-
-      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500 flex-shrink-0'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
-        </div>
-      </template>
-
-      <div class='flex gap-3 pt-4'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a
-          href='/category/{{category.id}}'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 transition'
-        >
-          Cancel
-        </a>
-      </div>
-
     </form>
   </div>
 </div>
+
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const TYPES = ['Special Program', 'Paid Program', 'Free Program'];
+
+    // Batas mengikuti CategoriesController.update.
+    const IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
+    const MAX_SIZE = 5 * 1024 * 1024;
+    const IMAGE_RULES = {
+      icon: { label: 'icon image', minDim: 1000, maxDim: 2000 },
+      hero_section_image: { label: 'hero section image' },
+    };
+
+    // Urutan = urutan tampil, dipakai untuk memfokuskan error pertama.
+    const FIELD_PATHS = [
+      'name',
+      'type',
+      'contact',
+      ...LANGS.map((l) => `description.${l}`),
+      ...LANGS.map((l) => `text.${l}`),
+    ];
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+    const readPath = (obj, path) => path.split('.').reduce((acc, key) => acc[key], obj);
+    const writePath = (obj, path, value) => {
+      const keys = path.split('.');
+      const last = keys.pop();
+      keys.reduce((acc, key) => acc[key], obj)[last] = value;
+    };
+    const assetUrl = (path) => (path ? (path.startsWith('/') ? path : `/${path}`) : '');
+    const emptyImage = (existingUrl) => ({
+      existingUrl,
+      previewUrl: existingUrl || null,
+      errorMessage: '',
+      isValid: true,
+      hasFile: false,
+      fileName: '',
+    });
+
+    const errorFor = (path, value) => {
+      const [field, lang] = path.split('.');
+      const val = (value ?? '').toString().trim();
+
+      switch (field) {
+        case 'name':
+          return val ? '' : 'Category name is required.';
+        case 'type':
+          return val ? '' : 'Please select a category type.';
+        case 'contact':
+          return val && !/^[0-9+\-\s]+$/.test(val) ? 'Contact must be a valid phone number.' : '';
+        case 'description':
+          return val ? '' : `Description (${LANG_LABEL[lang]}) is required.`;
+        default:
+          return '';
+      }
+    };
+
+    window.categoryEditForm = function categoryEditForm({ category, courseTypes }) {
+      return {
+        loading: false,
+        lang: 'id',
+
+        typeOptions: TYPES.map((t) => ({ value: t, label: t })),
+
+        formData: {
+          name: category.name ?? '',
+          type: category.type ?? '',
+          contact: category.contact ?? '',
+          description: byLang((l) => category.description?.[l] ?? ''),
+          text: byLang((l) => category.text?.[l] ?? ''),
+        },
+        formErrors: { name: '', type: '', contact: '', description: byLang(() => ''), text: byLang(() => '') },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: { name: false, type: false, contact: false, description: byLang(() => false), text: byLang(() => false) },
+
+        courseTypeOptions: (courseTypes || []).map((c) => ({ value: c.id, label: c.nameClassesType })),
+        selectedCourseTypes: (category.courseTypes || []).map((c) => ({ value: c.id, label: c.nameClassesType })),
+
+        images: {
+          icon: emptyImage(assetUrl(category.icon)),
+          hero_section_image: emptyImage(assetUrl(category.hero_section_image)),
+        },
+
+        validateField(path, value) {
+          writePath(this.formData, path, value ?? '');
+          writePath(this.formErrors, path, readPath(this.touched, path) ? errorFor(path, value) : '');
+        },
+
+        touch(path) {
+          writePath(this.touched, path, true);
+          this.validateField(path, readPath(this.formData, path));
+        },
+
+        // Scope untuk satu form/image_dropzone; state aslinya tetap di `images`
+        // supaya validasi submit bisa membacanya.
+        imageSlot(key) {
+          return {
+            get previewUrl() { return this.images[key].previewUrl; },
+            get errorMessage() { return this.images[key].errorMessage; },
+            get isValid() { return this.images[key].isValid; },
+            get hasFile() { return this.images[key].hasFile; },
+            get fileName() { return this.images[key].fileName; },
+            validateImage(file) { this.checkImage(key, file); },
+            clearFile() {
+              this.images[key].existingUrl = '';
+              this.resetImage(key);
+              this.$refs.dropInput.value = null;
+            },
+          };
+        },
+
+        checkImage(key, file) {
+          this.resetImage(key);
+          if (!file) return;
+
+          const slot = this.images[key];
+          const rules = IMAGE_RULES[key];
+          slot.hasFile = true;
+          slot.fileName = file.name;
+
+          if (!IMAGE_TYPES.includes(file.type)) {
+            this.setImageError(key, 'Only JPG, PNG, and SVG formats are allowed');
+            return;
+          }
+
+          if (file.size > MAX_SIZE) {
+            this.setImageError(key, `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`);
+            return;
+          }
+
+          const objectUrl = URL.createObjectURL(file);
+
+          // SVG tidak dicek dimensinya, sama seperti backend.
+          if (!rules.minDim || file.type === 'image/svg+xml') {
+            slot.previewUrl = objectUrl;
+            return;
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            const { minDim, maxDim } = rules;
+            if (img.width < minDim || img.width > maxDim || img.height < minDim || img.height > maxDim) {
+              URL.revokeObjectURL(objectUrl);
+              this.setImageError(
+                key,
+                `Image is ${img.width}x${img.height}px. Required: ${minDim}x${minDim} to ${maxDim}x${maxDim} pixels`,
+              );
+              return;
+            }
+            slot.previewUrl = objectUrl;
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError(key, 'Failed to load image');
+          };
+          img.src = objectUrl;
+        },
+
+        setImageError(key, message) {
+          const slot = this.images[key];
+          slot.errorMessage = message;
+          slot.isValid = false;
+          slot.previewUrl = null;
+        },
+
+        // Kembali ke gambar yang tersimpan; hanya blob URL yang perlu di-revoke.
+        resetImage(key) {
+          const slot = this.images[key];
+          if (slot.previewUrl?.startsWith('blob:')) URL.revokeObjectURL(slot.previewUrl);
+          Object.assign(slot, emptyImage(slot.existingUrl));
+        },
+
+        imageReady(slot) {
+          return slot.hasFile ? slot.isValid : !!slot.existingUrl;
+        },
+
+        validateAll() {
+          FIELD_PATHS.forEach((path) => {
+            writePath(this.touched, path, true);
+            writePath(this.formErrors, path, errorFor(path, readPath(this.formData, path)));
+          });
+
+          Object.entries(IMAGE_RULES).forEach(([key, rules]) => {
+            const slot = this.images[key];
+            if (!slot.hasFile && !slot.existingUrl) this.setImageError(key, `Please upload the ${rules.label}.`);
+          });
+        },
+
+        hasFormErrors() {
+          return FIELD_PATHS.some((path) => readPath(this.formErrors, path) !== '');
+        },
+
+        canSubmit() {
+          return Object.values(this.images).every((slot) => this.imageReady(slot)) && !this.hasFormErrors();
+        },
+
+        // Error bisa berada di tab bahasa lain — pindah tab dulu, baru fokuskan.
+        revealFirstInvalid() {
+          const path = FIELD_PATHS.find((p) => readPath(this.formErrors, p));
+          if (path) {
+            const [field, lang] = path.split('.');
+            if (lang) this.lang = lang;
+            const id = field === 'type' ? 'type-trigger' : path.replace('.', '-');
+            this.$nextTick(() => document.getElementById(id)?.focus());
+            return;
+          }
+
+          const key = Object.keys(this.images).find((k) => !this.imageReady(this.images[k]));
+          if (key) document.getElementById(key)?.parentElement.scrollIntoView({ block: 'center' });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (!this.canSubmit()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

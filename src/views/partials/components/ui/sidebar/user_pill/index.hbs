@@ -78,7 +78,7 @@
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40"
   >
     <span class="flex items-center gap-[14px] min-w-0">
-      <span class="size-[40px] rounded-full overflow-hidden shrink-0 bg-[#003060] flex items-center justify-center">
+      <span class="size-[40px] rounded-full overflow-hidden shrink-0 bg-[#F9F5FF] flex items-center justify-center">
         {{#if profile}}
           <img
             src="{{profile}}"
@@ -87,12 +87,12 @@
             onerror="this.src='/public/image/orang.png'"
           />
         {{else}}
-          <span class="font-montserrat font-bold text-[15px] leading-[22.5px] text-white uppercase">{{initial}}</span>
+          <span class="font-inter font-medium text-[16px] leading-[24px] text-[#7F56D9] uppercase">{{initial}}</span>
         {{/if}}
       </span>
       <span class="flex flex-col items-start min-w-0 text-left">
-        <span class="font-montserrat font-semibold text-[14px] leading-[17.5px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
-        <span class="font-montserrat font-medium text-[12px] leading-[15px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
+        <span class="font-montserrat font-semibold text-[14px] leading-[18px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
+        <span class="font-montserrat font-medium text-[12px] leading-[16px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
       </span>
     </span>
     <span class="flex shrink-0 text-[#718096]">

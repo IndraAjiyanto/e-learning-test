@@ -27,7 +27,71 @@
 
     <div class='flex flex-col gap-3.5'>
       {{> components/ui/super_admin/table/toolbar }}
-      {{> components/ui/super_admin/table/user_table }}
+      {{#> components/ui/super_admin/table/card tableClass='min-w-[1052px]'}}
+        <colgroup>
+          <col class='w-[88px]' />
+          <col class='w-[297px]' />
+          <col class='w-[297px]' />
+          <col class='w-[120px]' />
+          <col class='w-[135px]' />
+          <col class='w-[116px]' />
+        </colgroup>
+        <thead>
+          <tr>
+            {{> components/ui/super_admin/table/header_cell label='Profile' }}
+            {{> components/ui/super_admin/table/header_cell label='Username' }}
+            {{> components/ui/super_admin/table/header_cell label='Email address' }}
+            {{> components/ui/super_admin/table/header_cell label='Role' }}
+            {{> components/ui/super_admin/table/header_cell label='Status' }}
+            {{> components/ui/super_admin/table/header_cell label='Action' }}
+          </tr>
+        </thead>
+        <tbody>
+          {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+            <i class='fas fa-spinner fa-spin text-xl'></i>
+          {{/components/ui/super_admin/table/message_row}}
+
+          <template x-for='(user, index) in (loading ? [] : users)' :key='user.id'>
+            <tr class='transition-colors hover:bg-[#fafafa]'>
+              {{#> components/ui/super_admin/table/cell}}
+                {{> components/ui/super_admin/table/avatar
+                  src='user.profile'
+                  name='user.username'
+                }}
+              {{/components/ui/super_admin/table/cell}}
+
+              {{> components/ui/super_admin/table/cell text='user.username' }}
+
+              {{> components/ui/super_admin/table/cell text='user.email' }}
+
+              {{#> components/ui/super_admin/table/cell}}
+                {{> components/ui/super_admin/badge/index
+                  text='roleLabel(user.role)'
+                  class='bg-[#f9f5ff] text-[#6941c6]'
+                }}
+              {{/components/ui/super_admin/table/cell}}
+
+              {{!-- Status — sumber data: `user.isVerified`, satu-satunya field penentu status. --}}
+              {{#> components/ui/super_admin/table/cell}}
+                {{> components/ui/super_admin/badge/index
+                  dot=true
+                  text='user.isVerified ? "Verified" : "Unverified"'
+                  classExpr="user.isVerified ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#f1f1f1] text-[#718096]'"
+                  dotClassExpr="user.isVerified ? 'bg-[#22c55e]' : 'bg-[#718096]'"
+                }}
+              {{/components/ui/super_admin/table/cell}}
+
+              {{#> components/ui/super_admin/table/cell variant='action'}}
+                {{> components/ui/super_admin/table/row_actions }}
+              {{/components/ui/super_admin/table/cell}}
+            </tr>
+          </template>
+
+          {{#> components/ui/super_admin/table/message_row show='!loading && users.length === 0' colspan='6'}}
+            No users found.
+          {{/components/ui/super_admin/table/message_row}}
+        </tbody>
+      {{/components/ui/super_admin/table/card}}
     </div>
   </div>
 </div>
