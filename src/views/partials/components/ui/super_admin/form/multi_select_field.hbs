@@ -18,6 +18,7 @@
                   [{ value, label }] yang sudah terpilih (mis. halaman edit)
   - placeholder : string (opsional)
   - hint        : string (opsional)
+  - required    : boolean (opsional) — asterisk merah; validasi tetap di pemanggil
   - emptyText   : string (default 'No options found.')
 --}}
 <div
@@ -49,7 +50,7 @@
   <label
     for='{{id}}'
     class='font-inter text-sm font-medium leading-5 text-[#404040]'
-  >{{label}}</label>
+  >{{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</label>
 
   <div x-show='selected.length' x-cloak class='flex flex-wrap gap-2'>
     <template x-for='option in selected' :key='String(option.value)'>

@@ -1,0 +1,67 @@
+{{!--
+  Komponen: Form Progress (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/progress.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Daftar langkah form panjang. Langkah yang lengkap dan langkah pertama yang
+  belum lengkap berwarna aktif; klik langkah untuk scroll ke card-nya.
+
+  KONTRAK PEMAKAIAN
+  Pemanggil menyediakan state Alpine `stepActive(id)` : boolean.
+
+  Props:
+  - steps : string (wajib) — nama variabel Alpine berisi [{ id, title }];
+            id = id elemen form/section_card
+  - tips  : string (opsional) — teks kotak Tips
+--}}
+<aside class='flex flex-col gap-10 rounded-xl border border-[#d9d9d9] bg-white px-4 py-5 lg:sticky lg:top-6 lg:min-h-[645px] lg:justify-between'>
+  <div class='flex flex-col gap-5'>
+    <h2 class='font-montserrat text-lg font-semibold leading-[27px] text-[#003060]'>Form Progress</h2>
+
+    <ol class='flex flex-col gap-8'>
+      <template x-for='(step, index) in {{steps}}' :key='step.id'>
+        <li class='relative'>
+          <span
+            x-show='index < {{steps}}.length - 1'
+            :class="stepActive(step.id) ? 'bg-[#003060]' : 'bg-[#b1b6bd]'"
+            class='absolute left-[11px] top-6 h-8 w-0.5'
+            aria-hidden='true'
+          ></span>
+
+          <button
+            type='button'
+            @click="document.getElementById(step.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+            class='group flex w-full items-center gap-2 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+          >
+            <span
+              :class="stepActive(step.id) ? 'bg-[#003060]' : 'bg-[#b1b6bd] group-hover:bg-[#718096]'"
+              class='flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-montserrat text-sm font-medium leading-5 text-white transition-colors'
+              x-text="String(index + 1).padStart(2, '0')"
+            ></span>
+            <span
+              :class="stepActive(step.id) ? 'text-[#003060]' : 'text-[#737373] group-hover:text-[#404040]'"
+              class='font-inter text-base leading-6 transition-colors'
+              x-text='step.title'
+            ></span>
+          </button>
+        </li>
+      </template>
+    </ol>
+  </div>
+
+  {{#if tips}}
+    <div class='flex flex-col gap-1.5 rounded-[10px] border border-[#e9e9e9] bg-[#e4f1f7] p-3'>
+      <div class='flex items-center gap-1.5'>
+        <span class='flex h-5 w-5 items-center justify-center rounded-full bg-[#003060] text-white' aria-hidden='true'>
+          {{!-- lucide: help --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' class='h-3.5 w-3.5'>
+            <path d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3' />
+            <path d='M12 17h.01' />
+          </svg>
+        </span>
+        <span class='font-inter text-base font-semibold leading-5 text-[#003060]'>Tips</span>
+      </div>
+      <p class='font-montserrat text-xs leading-4 text-[#4a5568]'>{{tips}}</p>
+    </div>
+  {{/if}}
+</aside>
