@@ -93,7 +93,10 @@ async function bootstrap() {
     {
       nameClassesType: 'Web Development',
       icon: 'web_development.png',
-      description: ['development', 'development', 'development'],
+      // Sebelumnya array 3 string yang diperlakukan sebagai [id, en, ja] secara
+      // posisional; bentuk sebenarnya di database (dan yang dikirim form
+      // create/edit) adalah objek per bahasa.
+      description: { id: 'development', en: 'development', ja: 'development' },
     },
   ]);
 

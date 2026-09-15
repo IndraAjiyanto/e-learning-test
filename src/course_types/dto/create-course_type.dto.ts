@@ -1,4 +1,4 @@
-import { IsArray, IsString } from 'class-validator';
+import { IsObject, IsString } from 'class-validator';
 
 export class CreateCourseTypeDto {
   @IsString()
@@ -7,6 +7,8 @@ export class CreateCourseTypeDto {
   @IsString()
   icon: string;
 
-  @IsArray()
-  description: string[];
+  // Dikirim form sebagai description[id] / description[en] / description[ja],
+  // jadi yang sampai di controller adalah objek — bukan array seperti tipe lama.
+  @IsObject()
+  description: { id: string; en: string; ja: string };
 }
