@@ -35,7 +35,8 @@
     init() {
       if (this.initialId) {
         const pre = this.items.find(i => i.id == this.initialId);
-        if (pre) this.select(pre);
+        // locked hanya mengunci aksi user, preselect tetap harus mengisi nilai
+        if (pre) { const wasLocked = this.locked; this.locked = false; this.select(pre); this.locked = wasLocked; }
       }
     },
     get filtered() {
