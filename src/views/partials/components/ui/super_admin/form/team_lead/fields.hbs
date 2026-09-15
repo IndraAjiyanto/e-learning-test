@@ -1,0 +1,177 @@
+{{!--
+  Komponen: Team Lead Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/team_lead/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Layout modular yang menggabungkan:
+  - Foto profil pimpinan (photo_upload)
+  - Informasi utama (nama, LinkedIn, Instagram)
+  - Grid 3-kolom multilingual untuk Position (ID, EN, JP) dengan logo bendera negara
+  - Grid 3-kolom multilingual untuk Description (ID, EN, JP) dengan logo bendera negara
+--}}
+<div class='flex flex-col gap-6'>
+  {{!-- 1. Profile Photo --}}
+  {{> components/ui/super_admin/form/photo_upload
+    id='profile'
+    name='profile'
+    label='Leader Photo'
+    meta='JPG or PNG • Max 5 MB'
+    action='Upload Photo'
+  }}
+
+  {{!-- 2. General Information --}}
+  <div class='grid grid-cols-1 gap-4 md:grid-cols-3'>
+    {{> components/ui/super_admin/form/text_field
+      id='name'
+      name='name'
+      field='name'
+      label='Full Name'
+      placeholder='e.g. Faisal Wirakusuma, S.Kom., M.Sc.'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='linkedin'
+      name='linkedin'
+      field='linkedin'
+      label='LinkedIn Profile URL'
+      placeholder='https://linkedin.com/in/username'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='instagram'
+      name='instagram'
+      field='instagram'
+      label='Instagram Profile URL'
+      placeholder='https://instagram.com/username'
+      hint='Optional social link'
+    }}
+  </div>
+
+  {{!-- 3. Position (Multilingual ID, EN, JP) --}}
+  <div class='flex flex-col gap-3'>
+    <h3 class='font-inter text-base font-semibold text-[#171717]'>Position / Role</h3>
+    <div class='grid grid-cols-1 gap-4 md:grid-cols-3'>
+      <!-- ID -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='position-id' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/id.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>ID</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='position-id'
+          name='position[id]'
+          field='position.id'
+          label='ID'
+          hideLabel=true
+          placeholder='Jabatan (ID)... e.g. Chief Executive Officer'
+          required=true
+        }}
+      </div>
+
+      <!-- EN -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='position-en' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/gb.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>EN</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='position-en'
+          name='position[en]'
+          field='position.en'
+          label='EN'
+          hideLabel=true
+          placeholder='Position (EN)... e.g. Chief Executive Officer'
+          required=true
+        }}
+      </div>
+
+      <!-- JP -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='position-ja' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/jp.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>JP</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='position-ja'
+          name='position[ja]'
+          field='position.ja'
+          label='JP'
+          hideLabel=true
+          placeholder='役職 (JA)... e.g. 最高経営責任者'
+          required=true
+        }}
+      </div>
+    </div>
+  </div>
+
+  {{!-- 4. Description / Bio (Multilingual ID, EN, JP) --}}
+  <div class='flex flex-col gap-3'>
+    <h3 class='font-inter text-base font-semibold text-[#171717]'>Profile Description</h3>
+    <div class='grid grid-cols-1 gap-4 md:grid-cols-3'>
+      <!-- ID -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='description-id' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/id.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>ID</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='description-id'
+          name='description[id]'
+          field='description.id'
+          label='ID'
+          hideLabel=true
+          multiline=true
+          rows=5
+          placeholder='Deskripsi profil lengkap (ID)...'
+          required=true
+        }}
+      </div>
+
+      <!-- EN -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='description-en' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/gb.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>EN</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='description-en'
+          name='description[en]'
+          field='description.en'
+          label='EN'
+          hideLabel=true
+          multiline=true
+          rows=5
+          placeholder='Full profile description (EN)...'
+          required=true
+        }}
+      </div>
+
+      <!-- JP -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='description-ja' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/jp.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>JP</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='description-ja'
+          name='description[ja]'
+          field='description.ja'
+          label='JP'
+          hideLabel=true
+          multiline=true
+          rows=5
+          placeholder='プロフィールの詳細説明 (JA)...'
+          required=true
+        }}
+      </div>
+    </div>
+  </div>
+</div>

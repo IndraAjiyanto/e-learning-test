@@ -34,12 +34,15 @@
                    berada di dalam x-data yang menyediakan `loading`; di luar itu
                    Alpine mengabaikan directive-nya dan label akan kosong.
   - loadingLabel : string (default 'Saving...') — label saat loading
+  - disabled     : string (opsional) — ekspresi boolean Alpine untuk disable tombol,
+                   mis. '!canSubmit() || loading'. Bila tidak diisi, fallback ke loading.
 
   Props mode baris:
   - row         : true — mengaktifkan mode baris
   - cancelHref  : string (wajib) — tujuan tombol Cancel
   - cancelLabel : string (default 'Cancel')
   - submitLabel : string (default 'Save')
+  - disabled    : string (opsional) — binding disable untuk tombol submit
   Submit memakai state Alpine `loading` dari form pemanggil.
 --}}
 {{#if row}}
@@ -63,6 +66,7 @@
         variant='primary'
         label=(default submitLabel 'Save')
         loading=true
+        disabled=disabled
       }}
     </div>
   </div>
