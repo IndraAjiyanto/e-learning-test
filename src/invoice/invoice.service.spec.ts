@@ -25,10 +25,17 @@ describe('InvoiceService', () => {
   };
 
   beforeEach(async () => {
+    mockClient.getInvoiceById.mockReset();
+    mockClient.createInvoice.mockReset();
     invoiceRepo = { save: jest.fn((x) => Promise.resolve(x)) };
-    paymentRepo = { findOne: jest.fn(), save: jest.fn((x) => Promise.resolve(x)) };
+    paymentRepo = {
+      findOne: jest.fn(),
+      save: jest.fn((x) => Promise.resolve(x)),
+    };
     userCourseRepo = { findOne: jest.fn() };
-    paymentsService = { addUserToCourse: jest.fn().mockResolvedValue(undefined) };
+    paymentsService = {
+      addUserToCourse: jest.fn().mockResolvedValue(undefined),
+    };
     installmentService = {
       findByNo: jest.fn(),
       save: jest.fn((x) => Promise.resolve(x)),
@@ -103,7 +110,9 @@ describe('InvoiceService', () => {
     });
 
     it('returns early when payment not in process', async () => {
-      paymentRepo.findOne.mockResolvedValue(makePayment({ process: 'approved' }));
+      paymentRepo.findOne.mockResolvedValue(
+        makePayment({ process: 'approved' }),
+      );
       const result = await service.settleStuckPayment('p1');
       expect(paymentRepo.save).not.toHaveBeenCalled();
       expect(result!.process).toBe('approved');
@@ -131,9 +140,7 @@ describe('InvoiceService', () => {
     });
 
     it('sets dpPaidAt for installment payment without re-enrolling', async () => {
-      paymentRepo.findOne.mockResolvedValue(
-        makePayment({ installment: {} }),
-      );
+      paymentRepo.findOne.mockResolvedValue(makePayment({ installment: {} }));
       mockClient.getInvoiceById.mockResolvedValue({
         status: 'PAID',
         paid_at: '2026-02-02T00:00:00.000Z',
@@ -143,7 +150,9 @@ describe('InvoiceService', () => {
       await service.settleStuckPayment('p1');
 
       expect(paymentRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ dpPaidAt: new Date('2026-02-02T00:00:00.000Z') }),
+        expect.objectContaining({
+          dpPaidAt: new Date('2026-02-02T00:00:00.000Z'),
+        }),
       );
       expect(paymentsService.addUserToCourse).not.toHaveBeenCalled();
     });
@@ -157,6 +166,31 @@ describe('InvoiceService', () => {
       expect(paymentRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({ process: 'rejected' }),
       );
+    });
+
+    it('returns already-approved payment without calling Xendit', async () => {
+      paymentRepo.findOne.mockResolvedValue(
+        makePayment({ process: 'approved' }),
+      );
+      const result = await service.settleStuckPayment('p1');
+      expect(mockClient.getInvoiceById).not.toHaveBeenCalled();
+      expect(result!.process).toBe('approved');
+    });
+
+    it('returns payment without invoice without error', async () => {
+      paymentRepo.findOne.mockResolvedValue(makePayment({ invoice: null }));
+      const result = await service.settleStuckPayment('p1');
+      expect(result!.process).toBe('process');
+    });
+
+    it('keeps process when Xendit returns PENDING', async () => {
+      paymentRepo.findOne.mockResolvedValue(makePayment());
+      mockClient.getInvoiceById.mockResolvedValue({ status: 'PENDING' });
+
+      const result = await service.settleStuckPayment('p1');
+
+      expect(paymentRepo.save).not.toHaveBeenCalled();
+      expect(result!.process).toBe('process');
     });
   });
 

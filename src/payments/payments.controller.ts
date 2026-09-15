@@ -12,6 +12,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
+import { InvoiceService } from 'src/invoice/invoice.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -25,7 +26,10 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 @UseGuards(AuthenticatedGuard)
 @Controller('payment')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(
+    private readonly paymentsService: PaymentsService,
+    private readonly invoiceService: InvoiceService,
+  ) {}
 
   // ======================== XENDIT REDIRECT PAGES ========================
 
@@ -41,10 +45,22 @@ export class PaymentsController {
       const installment =
         await this.paymentsService.getInstallmentPaymentByNo(orderId);
       if (installment) {
-        if (installment.status !== 'approved') {
-          installment.status = 'approved';
-          installment.paidAt = new Date();
-          await this.paymentsService.updateInstallmentPayment(installment);
+        if (
+          installment.status !== 'approved' &&
+          installment.xendit_invoice_id
+        ) {
+          const xenditStatus = await this.invoiceService.getXenditInvoiceStatus(
+            installment.xendit_invoice_id,
+          );
+          if (
+            xenditStatus &&
+            (xenditStatus.status === 'PAID' ||
+              xenditStatus.status === 'SETTLED')
+          ) {
+            installment.status = 'approved';
+            installment.paidAt = xenditStatus.paidAt || new Date();
+            await this.paymentsService.updateInstallmentPayment(installment);
+          }
         }
         return res.redirect('/users/profile?tab=history-payment#installment');
       }
@@ -57,21 +73,16 @@ export class PaymentsController {
 
       const course = order.course;
 
-      // --- MULAI KODE HACK (HANTU BAIK) KHUSUS LOCALHOST ---
-      // Kode ini secara gaib menekan tombol hijau: mengubah status jadi lunas & memasukkan user ke kelas
-      try {
-        if (req.user && course && order.process !== 'approved') {
-          order.process = 'approved';
-          if (order.installment && !order.dpPaidAt) {
-            order.dpPaidAt = new Date();
-          }
-          await this.paymentsService['paymentRepository'].save(order);
-          await this.paymentsService.addUserToCourse(req.user.id, course.id);
+      // Verifikasi status aktual dari Xendit sebelum mengonfirmasi pembayaran
+      if (order.process !== 'approved') {
+        await this.invoiceService
+          .settleStuckPayment(order.id)
+          .catch(() => undefined);
+        const refreshed = await this.paymentsService.getPaymentByNo(orderId);
+        if (refreshed) {
+          Object.assign(order, refreshed);
         }
-      } catch (err) {
-        // Abaikan jika sudah terdaftar
       }
-      // --- SELESAI KODE HACK ---
 
       res.render('payments/index', {
         layout: 'main',
@@ -193,32 +204,25 @@ export class PaymentsController {
 
   @Roles('user')
   @Get('api/payment/:userId')
-  async getPayment(
-    @Param('userId') userId: string,
-    @Res() res: Response,
-  ) {
+  async getPayment(@Param('userId') userId: string, @Res() res: Response) {
     // Cek & perbarui status pembayaran full / DP yang masih menggantung ke Xendit
-    await this.paymentsService.reconcileUserPayments(userId).catch(() => undefined);
+    await this.paymentsService
+      .reconcileUserPayments(userId)
+      .catch(() => undefined);
     const payment = await this.paymentsService.findPayment(userId);
     return res.json({ data: payment });
   }
 
   @Roles('user')
   @Get('api/registration/:userId')
-  async getRegistration(
-    @Param('userId') userId: string,
-    @Res() res: Response,
-  ) {
+  async getRegistration(@Param('userId') userId: string, @Res() res: Response) {
     const registration = await this.paymentsService.findRegistration(userId);
     return res.json({ data: registration });
   }
 
   @Roles('user')
   @Get('api/installment/:userId')
-  async getInstallment(
-    @Param('userId') userId: string,
-    @Res() res: Response,
-  ) {
+  async getInstallment(@Param('userId') userId: string, @Res() res: Response) {
     const installments = await this.paymentsService.findInstallments(userId);
     return res.json({ data: installments });
   }

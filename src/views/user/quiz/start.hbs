@@ -14,9 +14,9 @@ document.addEventListener("change", function(e){
 
         const radio = e.target;
         const name = radio.name;
-        const value = Number(radio.value);
+        const value = radio.value;
 
-        const questionId = Number(name.replace("q-", ""));
+        const questionId = name.replace("q-", "");
 
         // simpan ke localStorage dulu
         localStorage.setItem(name, value);
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function(){
             },
             
             updateAnsweredStatus() {
-                const questionIds = [{{#each questions}}{{#unless @first}},{{/unless}}{{id}}{{/each}}];
+                const questionIds = [{{#each pertanyaan}}{{#unless @first}},{{/unless}}"{{id}}"{{/each}}];
                 this.answeredQuestions = questionIds.map((qId, index) => {
                     const input = this.$el.querySelector(`input[name="q-${qId}"]:checked`);
                     return input !== null;
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function(){
             },
             
             nextQuestion() {
-                if (this.currentQuestion < {{questions.length}} - 1) {
+                if (this.currentQuestion < {{pertanyaan.length}} - 1) {
                     this.currentQuestion++;
                 }
             },
@@ -143,5 +143,71 @@ document.addEventListener("DOMContentLoaded", function(){
             }
         }
     }
+</script>
+
+<script>
+function prepareAndSubmit() {
+    try {
+        if (typeof window.clearQuizStorage === "function") {
+            window.clearQuizStorage();
+        }
+    } catch (e) {}
+
+    const form = document.getElementById('formSubmit');
+    if (!form) return;
+
+    form.querySelectorAll('input[name^="answerUser"]').forEach((el) => el.remove());
+
+    const userId = '{{user.id}}';
+    const checked = form.querySelectorAll('input[type="radio"]:checked');
+
+    checked.forEach((radio, index) => {
+        const questionId = radio.name.replace("q-", "");
+        const append = (name, value) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        };
+        append(`answerUser[${index}][userId]`, userId);
+        append(`answerUser[${index}][questionsId]`, questionId);
+        append(`answerUser[${index}][answersId]`, radio.value);
+    });
+
+    form.submit();
+}
+
+function confirmQuizSubmit() {
+    Swal.fire({
+        title: "Confirmation",
+        text: "Are you sure you want to submit your answers?",
+        icon: "info",
+        showCancelButton: true,
+        buttonsStyling: false,
+        confirmButtonText: "Yes, continue",
+        cancelButtonText: "Cancel",
+        customClass: {
+            confirmButton: "px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition",
+            cancelButton: "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
+            actions: "flex gap-4 justify-center"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) prepareAndSubmit();
+    });
+}
+
+function timeOverSubmit() {
+    Swal.fire({
+        title: "Time's Up!",
+        text: "Quiz time is over, submitting your answers.",
+        icon: "info",
+        customClass: {
+            confirmButton: "px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition",
+        },
+    }).then((result) => {
+        if (result.isConfirmed) prepareAndSubmit();
+    });
+}
 </script>
 

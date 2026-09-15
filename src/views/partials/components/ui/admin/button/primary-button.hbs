@@ -1,0 +1,19 @@
+{{!--
+  Component: Primary Button (Admin) — atomic
+  Path: components/ui/admin/button/primary-button.hbs
+  Props: {{text}}, {{href}} (optional), {{type}} (optional)
+
+  Pencil: w158, p10 18, bg #003060, outline 1px #003060 offset -0.5px,
+  radius 8, text Inter 600 16/normal white
+--}}
+{{#if href}}
+<a href='{{href}}'
+   class='box-border w-[158px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#00254a] transition-colors'>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
+</a>
+{{else}}
+<button type='{{default type 'button'}}'
+   class='box-border w-[158px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#00254a] transition-colors'>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
+</button>
+{{/if}}

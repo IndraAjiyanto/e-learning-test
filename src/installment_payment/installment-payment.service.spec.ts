@@ -123,10 +123,9 @@ describe('InstallmentPaymentService', () => {
         'ip.payment',
         'p',
       );
-      expect(queryBuilderMock.where).toHaveBeenCalledWith(
-        'p.id IN (:...ids)',
-        { ids: ['p1', 'p2'] },
-      );
+      expect(queryBuilderMock.where).toHaveBeenCalledWith('p.id IN (:...ids)', {
+        ids: ['p1', 'p2'],
+      });
       expect(queryBuilderMock.orderBy).toHaveBeenCalledWith('ip.month', 'ASC');
       expect(result).toEqual(rows);
     });

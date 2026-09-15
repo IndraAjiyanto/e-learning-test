@@ -330,7 +330,9 @@ export class PaymentsService {
     // 3) Cicilan bulanan yang masih 'process' -> cek ke Xendit
     const processRows = (
       await Promise.all(
-        parents.map((p) => this.installmentPaymentService.findByPaymentId(p.id)),
+        parents.map((p) =>
+          this.installmentPaymentService.findByPaymentId(p.id),
+        ),
       )
     ).flat();
     for (const row of processRows) {
@@ -362,9 +364,10 @@ export class PaymentsService {
       order: { createdAt: 'DESC' },
     });
 
-    const installmentRows = await this.installmentPaymentService.findByPaymentIds(
-      parents.map((p) => p.id),
-    );
+    const installmentRows =
+      await this.installmentPaymentService.findByPaymentIds(
+        parents.map((p) => p.id),
+      );
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -388,11 +391,7 @@ export class PaymentsService {
         const storedDate = p.installment?.dueDates?.[month - 1];
         const dueDate = storedDate
           ? dateHelpers.toLocalDate(storedDate)
-          : dateHelpers.getMonthlyDueDate(
-              dpDate,
-              month,
-              dpDate.getDate(),
-            );
+          : dateHelpers.getMonthlyDueDate(dpDate, month, dpDate.getDate());
 
         const tx = rows.find((r) => r.month === month);
 
@@ -417,7 +416,8 @@ export class PaymentsService {
 
       const paidMonths = Array.from(paidSet);
       const totalPaid = paidSet.size
-        ? dpAmount + paidMonths.reduce((acc, m) => acc + (schedule[m - 1] || 0), 0)
+        ? dpAmount +
+          paidMonths.reduce((acc, m) => acc + (schedule[m - 1] || 0), 0)
         : dpAmount;
 
       return {
@@ -712,8 +712,7 @@ export class PaymentsService {
         );
         if (
           xenditStatus &&
-          (xenditStatus.status === 'PAID' ||
-            xenditStatus.status === 'SETTLED')
+          (xenditStatus.status === 'PAID' || xenditStatus.status === 'SETTLED')
         ) {
           row.status = 'approved';
           row.paidAt = xenditStatus.paidAt || new Date();

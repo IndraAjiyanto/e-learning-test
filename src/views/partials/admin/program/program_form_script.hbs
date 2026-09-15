@@ -1,0 +1,397 @@
+{{!--
+  Shared Alpine state untuk form Program (Create & Edit).
+  Path: partials/admin/program/program_form_script.hbs
+  Dipakai via {{> admin/program/program_form_script}}.
+  mode 'create': cover wajib. mode 'edit': cover opsional (old photo).
+--}}
+<script>
+function programData(mode) {
+  return {
+    mode: mode,
+    loading: false,
+    submitAttempted: false,
+    touched: {},
+    paidClass: false,
+    methodOnline: true,
+    coverHasFile: false,
+    coverValid: true,
+    categorySelected: null,
+    formComplete: false,
+    fieldStatus: {},
+    _scheduleTimer: null,
+    _lastHidden: {},
+    activeStep: 1,
+
+    formData: {
+      description: { id: '', en: '', ja: '' },
+      location: { id: '', en: '', ja: '' },
+      locationLink: ''
+    },
+    formErrors: { locationLink: '' },
+    formValid: { locationLink: false },
+
+    val(elId) {
+      const el = document.getElementById(elId);
+      return el ? el.value.trim() : '';
+    },
+
+    hiddenValue(nameAttr) {
+      const el = document.querySelector('input[name="' + nameAttr + '"]');
+      return el ? String(el.value).trim() : '';
+    },
+
+    setFieldError(elId, message) {
+      const errEl = document.getElementById(elId + '_error');
+      if (!errEl) return;
+      const show = message && (this.submitAttempted || this.touched[elId]);
+      if (show) {
+        errEl.textContent = message;
+        errEl.classList.remove('hidden');
+      } else {
+        errEl.textContent = '';
+        errEl.classList.add('hidden');
+      }
+    },
+
+    nonEmpty(value, label) {
+      const v = (value === null || value === undefined) ? '' : String(value).trim();
+      return v !== '' ? '' : label + ' is required';
+    },
+
+    setFieldStatus(elId, ok) {
+      const show = this.submitAttempted || this.touched[elId];
+      this.fieldStatus[elId] = show ? (ok ? 'valid' : 'error') : '';
+    },
+
+    clearField(elId) {
+      this.setFieldError(elId, '');
+      this.fieldStatus[elId] = '';
+    },
+
+    borderClass(elId) {
+      const s = this.fieldStatus[elId];
+      if (s === 'error') return '[outline-color:#DC2626]';
+      if (s === 'valid') return '[outline-color:#22C55E]';
+      return '';
+    },
+
+    validateTextField(elId, label) {
+      const msg = this.nonEmpty(this.val(elId), label);
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateNumberField(elId, label, min, max) {
+      const raw = this.val(elId);
+      let msg = this.nonEmpty(raw, label);
+      if (!msg && !/^\d+$/.test(raw)) {
+        msg = label + ' must contain numbers only';
+      }
+      if (!msg) {
+        const n = parseInt(raw, 10);
+        if (n < min || n > max) {
+          msg = label + ' must be between ' + min + ' and ' + max;
+        }
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateDateField(elId, label, compareId, compareLabel) {
+      const raw = this.val(elId);
+      let msg = this.nonEmpty(raw, label);
+      if (!msg && isNaN(new Date(raw).getTime())) {
+        msg = label + ' must be a valid date';
+      }
+      if (!msg && compareId) {
+        const other = this.val(compareId);
+        if (other && !isNaN(new Date(other).getTime())) {
+          if (new Date(raw) < new Date(other)) {
+            msg = label + ' must be on or after ' + compareLabel;
+          }
+        }
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateTimeFields() {
+      const startMsg = this.nonEmpty(this.val('time_start'), 'Time Start');
+      this.setFieldError('time_start', startMsg);
+      this.setFieldStatus('time_start', !startMsg);
+      let endMsg = this.nonEmpty(this.val('time_end'), 'Time End');
+      if (!endMsg && !startMsg && this.val('time_end') <= this.val('time_start')) {
+        endMsg = 'Time End must be later than Time Start';
+      }
+      this.setFieldError('time_end', endMsg);
+      this.setFieldStatus('time_end', !endMsg);
+      return !startMsg && !endMsg;
+    },
+
+    clearTimeErrors() {
+      this.setFieldError('time_start', '');
+      this.setFieldError('time_end', '');
+    },
+
+    validateDropdown(hiddenName, elId, label) {
+      const value = this.hiddenValue(hiddenName);
+      const msg = this.nonEmpty(value, label);
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateList(nameAttr, elId, label) {
+      const inputs = document.querySelectorAll('input[name="' + nameAttr + '"]');
+      const values = Array.from(inputs).map(function (i) { return i.value.trim(); }).filter(function (v) { return v !== ''; });
+      let msg = '';
+      if (values.length === 0) {
+        msg = 'At least one ' + label + ' is required';
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateMethod() {
+      const msg = '';
+      this.setFieldError('method', msg);
+      return true;
+    },
+
+    validateMultiLang(objKey, prefix, labels) {
+      const langs = ['id', 'en', 'ja'];
+      const self = this;
+      langs.forEach(function (lang) {
+        const value = self.formData[objKey][lang] || '';
+        const msg = self.nonEmpty(value, labels[lang]);
+        self.setFieldError(prefix + '_' + lang, msg);
+        self.setFieldStatus(prefix + '_' + lang, !msg);
+      });
+      return langs.every(function (lang) {
+        return (self.formData[objKey][lang] || '').trim() !== '';
+      });
+    },
+
+    validateLocationLink() {
+      const value = this.formData.locationLink || '';
+      let msg = this.nonEmpty(value, 'Link Location');
+      if (!msg) {
+        try { new URL(value.trim()); } catch (e) { msg = 'Please enter a valid URL'; }
+      }
+      const show = this.submitAttempted || this.touched.locationLink;
+      this.formErrors.locationLink = show ? msg : '';
+      this.formValid.locationLink = !msg;
+      return !msg;
+    },
+
+    validateMoneyInput(nameAttr, elId, label, optional) {
+      const raw = this.hiddenValue(nameAttr);
+      let msg = '';
+      if (!raw) {
+        if (!optional) msg = label + ' is required';
+      } else if (!/^\d+$/.test(raw)) {
+        msg = label + ' must contain numbers only';
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    updateCoverValidation(isValid, hasFile) {
+      this.coverValid = isValid;
+      this.coverHasFile = hasFile;
+    },
+
+    validateField(field, valueOrLang) {
+      if (field === 'locationLink') {
+        this.touched.locationLink = true;
+      } else if (field === 'description' || field === 'location') {
+        const prefix = field === 'description' ? 'description' : 'lokasi';
+        this.touched[prefix + '_' + valueOrLang] = true;
+      }
+      this.updateCompleteness();
+    },
+
+    onBlurCapture(e) {
+      const t = e.target || {};
+      if (t.id) this.touched[t.id] = true;
+      const gid = this.groupElId(t.name);
+      if (gid) this.touched[gid] = true;
+      this.updateCompleteness();
+    },
+
+    onInputCapture(e) {
+      const t = e.target || {};
+      if (t.id) this.touched[t.id] = true;
+      const gid = this.groupElId(t.name);
+      if (gid) this.touched[gid] = true;
+      this.updateCompleteness();
+    },
+
+    groupElId(nameAttr) {
+      const map = {
+        'materialsId[]': 'materis_id', 'materialsEn[]': 'materis_en', 'materialsJa[]': 'materis_ja',
+        'learningTargetsId[]': 'targets_id', 'learningTargetsEn[]': 'targets_en', 'learningTargetsJa[]': 'targets_ja',
+        'criteriaId[]': 'criterias_id', 'criteriaEn[]': 'criterias_en', 'criteriaJa[]': 'criterias_ja'
+      };
+      return (nameAttr && map[nameAttr]) || null;
+    },
+
+    trackHiddenChanges() {
+      const keys = [
+        { name: 'categoryId', elId: 'categoryId' },
+        { name: 'courseTypeId', elId: 'courseTypeId' },
+        { name: 'mentoringsId', elId: 'mentoringId' }
+      ];
+      const self = this;
+      keys.forEach(function (k) {
+        const value = self.hiddenValue(k.name);
+        const last = self._lastHidden[k.name];
+        if (value !== last) {
+          if (value) self.touched[k.elId] = true;
+          self._lastHidden[k.name] = value;
+        }
+      });
+    },
+
+    scheduleUpdate() {
+      clearTimeout(this._scheduleTimer);
+      const self = this;
+      this._scheduleTimer = setTimeout(function () { self.updateCompleteness(); }, 50);
+    },
+
+    initScrollObserver() {
+      const self = this;
+      const sections = [];
+      for (let i = 1; i <= 6; i++) {
+        const el = document.getElementById('section-' + String(i).padStart(2, '0'));
+        if (el) sections.push({ id: i, el: el });
+      }
+      if (!sections.length) return;
+
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            const found = sections.find(function (s) { return s.el === entry.target; });
+            if (found) {
+              self.activeStep = found.id;
+            }
+          }
+        });
+      }, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+
+      sections.forEach(function (s) { observer.observe(s.el); });
+    },
+
+    activateSection(target) {
+      // Update progress saat user klik/fokus input di suatu section,
+      // bukan hanya saat scroll. Cari ancestor section terdekat.
+      if (!target || !target.closest) return;
+      const section = target.closest('[id^="section-"]');
+      if (!section) return;
+      const num = parseInt(section.id.replace('section-', ''), 10);
+      if (!isNaN(num) && num >= 1 && num <= 6) {
+        this.activeStep = num;
+      }
+    },
+
+    updateCompleteness() {
+      this.trackHiddenChanges();
+      this.formComplete = this.canSubmit();
+    },
+
+    hasVisibleErrors() {
+      return Object.values(this.fieldStatus).some(function (s) { return s === 'error'; });
+    },
+
+    canSubmit() {
+      const results = [];
+
+      if (this.mode === 'create') {
+        const coverOk = this.coverHasFile && this.coverValid;
+        this.setFieldError('image', coverOk ? '' : 'Cover Program is required');
+        results.push(coverOk);
+      } else {
+        results.push(!(this.coverHasFile && !this.coverValid));
+      }
+
+      results.push(this.validateTextField('name', 'Program Name'));
+      results.push(this.validateTextField('group', 'Group'));
+      results.push(this.validateMultiLang('description', 'description', {
+        id: 'Indonesian description', en: 'English description', ja: 'Japanese description'
+      }));
+      results.push(this.validateMultiLang('location', 'lokasi', {
+        id: 'Location (ID)', en: 'Location (EN)', ja: 'Location (JP)'
+      }));
+      results.push(this.validateMethod());
+
+      results.push(this.validateDropdown('categoryId', 'categoryId', 'Category'));
+      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Program Type'));
+      results.push(this.validateList('technologiesIds[]', 'technologies', 'technology'));
+
+      if (document.querySelector('input[name="mentoringsId"]')) {
+        results.push(this.validateDropdown('mentoringsId', 'mentoringId', 'Mentoring'));
+      }
+
+      if (document.getElementById('harga1')) {
+        if (this.paidClass) {
+          results.push(this.validateMoneyInput('price', 'harga1', 'Price', false));
+        } else { this.clearField('harga1'); }
+      }
+      if (document.getElementById('promo1')) {
+        if (this.paidClass) {
+          results.push(this.validateMoneyInput('promo', 'promo1', 'Promo', true));
+        } else { this.clearField('promo1'); }
+      }
+      if (document.getElementById('kuota1')) {
+        results.push(this.validateMoneyInput('quota', 'kuota1', 'Program Quota', false));
+      }
+
+      if (this.paidClass) {
+        results.push(this.validateNumberField('month', 'Month', 1, 12));
+        this.clearField('day'); this.clearField('time_start'); this.clearField('time_end');
+      } else {
+        results.push(this.validateNumberField('day', 'Day', 1, 31));
+        this.clearField('month');
+        results.push(this.validateTimeFields());
+      }
+
+      results.push(this.validateDateField('date_registration', 'Date Registration'));
+      results.push(this.validateDateField('startDate', 'Start Date'));
+      results.push(this.validateDateField('endDate', 'End Date', 'startDate', 'Start Date'));
+
+      if (document.getElementById('form')) {
+        const formVal = this.val('form');
+        if (formVal) {
+          try { new URL(formVal); } catch (e) {
+            this.setFieldError('form', 'Registration Form Link must be a valid URL');
+            results.push(false);
+          }
+        }
+      }
+
+      results.push(this.validateLocationLink());
+
+      results.push(this.validateList('materialsId[]', 'materis_id', 'lesson (ID)'));
+      results.push(this.validateList('materialsEn[]', 'materis_en', 'lesson (EN)'));
+      results.push(this.validateList('materialsJa[]', 'materis_ja', 'lesson (JP)'));
+      results.push(this.validateList('learningTargetsId[]', 'targets_id', 'learning target (ID)'));
+      results.push(this.validateList('learningTargetsEn[]', 'targets_en', 'learning target (EN)'));
+      results.push(this.validateList('learningTargetsJa[]', 'targets_ja', 'learning target (JP)'));
+      results.push(this.validateList('criteriaId[]', 'criterias_id', 'criteria (ID)'));
+      results.push(this.validateList('criteriaEn[]', 'criterias_en', 'criteria (EN)'));
+      results.push(this.validateList('criteriaJa[]', 'criterias_ja', 'criteria (JP)'));
+
+      return results.every(Boolean);
+    },
+
+    hasFormErrors() {
+      return !this.formComplete;
+    }
+  };
+}
+</script>

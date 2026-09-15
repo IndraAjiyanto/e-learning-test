@@ -1,0 +1,10 @@
+{{!--
+  Component: Page Header (Admin)
+  Path: components/ui/admin/text/page-header.hbs
+  Props: {{title}}, {{subtitle}}
+  Design: flex col, gap 4px
+--}}
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-[4px] justify-start items-start'>
+  {{> components/ui/admin/text/title text=title}}
+  {{> components/ui/admin/text/subtitle text=subtitle}}
+</div>
