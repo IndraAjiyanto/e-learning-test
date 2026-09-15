@@ -1,215 +1,119 @@
-<div
-  class='py-10'
-  x-data="{
-    type: '{{voucher.type}}',
-    selectedCourses: [{{#each voucher.courses}}{{#if @index}},{{/if}}{{this.id}}{{/each}}],
-    searchQuery: '',
-    
-    selectedUsers: [{{#if voucher.allowed_user_ids}}{{#each voucher.allowed_user_ids}}{{#if @index}},{{/if}}{{this}}{{/each}}{{/if}}],
-    searchUserQuery: '',
+{{!--
+  Halaman: Edit Voucher — Super Admin
+  Lokasi: src/views/super_admin/voucher/edit.hbs
+  Level: L4 Page
 
-    get filteredCourses() {
-      const q = this.searchQuery.toLowerCase();
-      return {{json courses}}.filter(c => c.name.toLowerCase().includes(q) && !this.selectedCourses.includes(c.id));
-    },
+  Route: GET /voucher/formEdit/:id -> PATCH /voucher/:id
+  (urlencoded + _method override). Data: { voucher, courses, users }.
 
-    get filteredUsers() {
-      const q = this.searchUserQuery.toLowerCase();
-      return {{json users}}.filter(u => 
-        (u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) && 
-        !this.selectedUsers.includes(u.id)
-      );
-    },
+  `voucher.courses` dikirim sebagai objek Course utuh dan `allowed_user_ids`
+  sebagai array id; factory voucherForm menormalkan keduanya jadi chip terpilih.
 
-    toggleCourse(id) {
-      const idx = this.selectedCourses.indexOf(id);
-      if (idx > -1) this.selectedCourses.splice(idx, 1);
-      else this.selectedCourses.push(id);
-    },
+  Beda dari create.hbs: field terisi nilai existing, tombol aksi berada di dalam
+  kartu 02, dan ada kartu Danger Zone untuk menghapus voucher.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-    removeCourse(id) {
-      const idx = this.selectedCourses.indexOf(id);
-      if (idx > -1) this.selectedCourses.splice(idx, 1);
-    },
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Edit Voucher'
+      }}
 
-    getCourseName(id) {
-      const c = {{json courses}}.find(c => c.id === id);
-      return c ? c.name : '';
-    },
+      {{> components/ui/super_admin/description/index
+        text='Update this voucher, its discount, and who is allowed to redeem it.'
+      }}
+    </div>
 
-    toggleUser(id) {
-      const idx = this.selectedUsers.indexOf(id);
-      if (idx > -1) this.selectedUsers.splice(idx, 1);
-      else this.selectedUsers.push(id);
-    },
+    <div class='flex flex-col gap-3.5'>
+      {{!-- Nilai awal lewat helper json, bukan template literal: kode voucher
+           bebas diketik super admin dan bisa memuat karakter yang memecah skrip. --}}
+      <form
+        action='/voucher/{{voucher.id}}?_method=PATCH'
+        method='post'
+        novalidate
+        x-data='voucherForm({
+          code_voucher: {{json voucher.code_voucher}},
+          type: {{json voucher.type}},
+          percent: {{json voucher.percent}},
+          active: {{json voucher.active}},
+          courses: {{json courses}},
+          users: {{json users}},
+          selectedCourseIds: {{json voucher.courses}},
+          selectedUserIds: {{json voucher.allowed_user_ids}}
+        })'
+        @submit.prevent='submitForm($event)'
+      >
+        {{#> components/ui/super_admin/form/voucher/fields }}
+          <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+            {{> components/ui/super_admin/form/button
+              as='link'
+              variant='secondary'
+              href='/voucher'
+              label='Cancel'
+              loading=true
+            }}
 
-    removeUser(id) {
-      const idx = this.selectedUsers.indexOf(id);
-      if (idx > -1) this.selectedUsers.splice(idx, 1);
-    },
+            {{> components/ui/super_admin/form/button
+              type='submit'
+              variant='primary'
+              label='Save Changes'
+              loading=true
+            }}
+          </div>
+        {{/components/ui/super_admin/form/voucher/fields}}
+      </form>
 
-    getUserName(id) {
-      const u = {{json users}}.find(u => u.id === id);
-      return u ? `${u.username} (${u.email})` : '';
-    }
-  }"
->
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Voucher</h2>
+      {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
+           confirmDelete milik partial sweetalert global yang menimpa fungsi senama. --}}
+      <div
+        class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
+      >
+        <div class='flex items-start gap-4 sm:min-h-[72px]'>
+          <span
+            class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
+          >
+            {{!-- lucide: alert-circle --}}
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+              <circle cx='12' cy='12' r='10' />
+              <path d='M12 8v4' />
+              <path d='M12 16h.01' />
+            </svg>
+          </span>
 
-    <form
-      action='/voucher/{{voucher.id}}?_method=PATCH'
-      method='post'
-      class='space-y-6'
-      x-data='{ loading: false }'
-      @submit='loading = true;'
-    >
+          <div class='flex flex-col gap-1'>
+            {{> components/ui/super_admin/description/index
+              text='Delete Voucher'
+              class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+            }}
 
-      <div>
-        <label class='block text-sm font-medium text-gray-700 mb-1'>Voucher Code</label>
-        <input
-          type='text'
-          name='code_voucher'
-          required
-          value='{{voucher.code_voucher}}'
-          class='w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white'
-        />
-      </div>
+            {{> components/ui/super_admin/description/index
+              text='Permanently remove this voucher. Anyone holding the code will no longer be able to redeem it. This action cannot be undone.'
+              class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
+            }}
+          </div>
+        </div>
 
-      <div>
-        <label class='block text-sm font-medium text-gray-700 mb-1'>Type</label>
-        <select
-          name='type'
-          x-model='type'
-          class='w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white'
+        <form
+          action='/voucher/{{voucher.id}}?_method=DELETE'
+          method='post'
+          class='shrink-0'
         >
-          <option value='free'>Free</option>
-          <option value='discount'>Discount</option>
-        </select>
+          {{> components/ui/super_admin/form/button
+            variant='danger'
+            label='Delete Voucher'
+            onclick='openDeleteModal(this)'
+            class='w-full sm:w-auto'
+          }}
+        </form>
       </div>
-
-      <div x-show="type === 'discount'">
-        <label class='block text-sm font-medium text-gray-700 mb-1'>Percent (%)</label>
-        <input
-          type='number'
-          name='percent'
-          min='0'
-          max='100'
-          value='{{voucher.percent}}'
-          placeholder='e.g. 50'
-          class='w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white'
-        />
-      </div>
-
-      <div class='flex items-center gap-3'>
-        <input type='hidden' name='active' value='false' />
-        <input
-          type='checkbox'
-          name='active'
-          value='true'
-          id='active'
-          {{#if voucher.active}}checked{{/if}}
-          class='w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-900'
-        />
-        <label for='active' class='text-sm font-medium text-gray-700'>Active</label>
-      </div>
-
-      <div class="border-t border-gray-200 pt-6 mt-6">
-        <label class='block text-sm font-medium text-gray-700 mb-1'>Programs (Optional)</label>
-        <p class="text-xs text-gray-500 mb-2">Leave empty if the voucher applies to all programs.</p>
-        <input
-          type='text'
-          x-model='searchQuery'
-          placeholder='Search programs...'
-          class='w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white'
-        />
-
-        <div class='mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100'>
-          <template x-for='course in filteredCourses' :key='course.id'>
-            <button
-              type='button'
-              @click='toggleCourse(course.id)'
-              class='w-full text-left px-4 py-2 hover:bg-gray-50 transition text-sm text-gray-700'
-              x-text='course.name'
-            ></button>
-          </template>
-          <template x-if='filteredCourses.length === 0'>
-            <div class='px-4 py-2 text-sm text-gray-400'>No programs found</div>
-          </template>
-        </div>
-
-        <div class='mt-3 flex flex-wrap gap-2' x-show='selectedCourses.length > 0'>
-          <template x-for='id in selectedCourses' :key='id'>
-            <span class='inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm'>
-              <span x-text='getCourseName(id)'></span>
-              <button type='button' @click='removeCourse(id)' class='text-gray-500 hover:text-red-600'>&times;</button>
-            </span>
-          </template>
-        </div>
-
-        <template x-for='id in selectedCourses' :key='id'>
-          <input type='hidden' name='courseIds' :value='id' />
-        </template>
-      </div>
-
-      <div class="border-t border-gray-200 pt-6 mt-6">
-        <label class='block text-sm font-medium text-gray-700 mb-1'>Allowed Users (Optional)</label>
-        <p class="text-xs text-gray-500 mb-2">Leave empty if the voucher can be used by anyone.</p>
-        <input
-          type='text'
-          x-model='searchUserQuery'
-          placeholder='Search username or email...'
-          class='w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white'
-        />
-
-        <div class='mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100'>
-          <template x-for='user in filteredUsers' :key='user.id'>
-            <button
-              type='button'
-              @click='toggleUser(user.id)'
-              class='w-full text-left px-4 py-2 hover:bg-gray-50 transition text-sm text-gray-700 flex justify-between'
-            >
-              <span x-text='user.username' class="font-medium"></span>
-              <span x-text='user.email' class="text-gray-500 text-xs"></span>
-            </button>
-          </template>
-          <template x-if='filteredUsers.length === 0'>
-            <div class='px-4 py-2 text-sm text-gray-400'>No users found</div>
-          </template>
-        </div>
-
-        <div class='mt-3 flex flex-wrap gap-2' x-show='selectedUsers.length > 0'>
-          <template x-for='id in selectedUsers' :key='id'>
-            <span class='inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-800 border border-blue-200 rounded-full text-sm'>
-              <span x-text='getUserName(id)'></span>
-              <button type='button' @click='removeUser(id)' class='text-blue-500 hover:text-red-600'>&times;</button>
-            </span>
-          </template>
-        </div>
-
-        <template x-for='id in selectedUsers' :key='id'>
-          <input type='hidden' name='allowed_user_ids' :value='id' />
-        </template>
-      </div>
-
-      <div class='flex gap-3 pt-4'>
-        <button
-          type='submit'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a
-          href='/voucher'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
-    </form>
+    </div>
   </div>
 </div>
+
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Voucher?'
+  description='Are you sure you want to delete this voucher? Anyone holding the code will no longer be able to redeem it. This action cannot be undone.'
+}}
+
+{{> components/ui/super_admin/form/voucher/form }}
