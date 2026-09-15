@@ -24,6 +24,7 @@ import {
 } from './mappers/create-course.mapper';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -120,7 +121,11 @@ export class CoursesController {
       if (req.user!.role === 'admin') {
         await this.coursesService.createMentoring(req.user!.id, course.id);
       }
-      req.flash('success', 'program successfully created');
+      flashToast(
+        req,
+        'Program Created',
+        'The new program has been added to this category.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'program failed created');

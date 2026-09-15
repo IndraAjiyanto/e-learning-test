@@ -13,6 +13,7 @@ import { FaqsService } from './faqs.service';
 import { CreateFaqsDto } from './dto/create-faqs.dto';
 import { UpdateFaqsDto } from './dto/update-faqs.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { Request, Response } from 'express';
 
 @Controller('question-general')
@@ -30,7 +31,11 @@ export class FaqsController {
     try {
       createFaqDto.categoryId = categoryId;
       await this.faqsService.create(createFaqDto);
-      req.flash('success', 'FAQ successfully created');
+      flashToast(
+        req,
+        'FAQ Created',
+        'The new FAQ has been added to this category.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to created');
@@ -88,7 +93,11 @@ export class FaqsController {
   ) {
     try {
       await this.faqsService.update(faqsId, updateFaqDto);
-      req.flash('success', 'FAQ successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The FAQ has been updated.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to update');
@@ -106,7 +115,11 @@ export class FaqsController {
   ) {
     try {
       await this.faqsService.remove(faqsId);
-      req.flash('success', 'FAQ successfully deleted');
+      flashToast(
+        req,
+        'FAQ Deleted',
+        'The FAQ has been permanently removed.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to delete');
