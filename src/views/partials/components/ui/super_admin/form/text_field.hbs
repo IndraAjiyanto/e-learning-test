@@ -39,6 +39,7 @@
                   agar user bisa memeriksa password yang sedang diketik; ikon
                   alert-circle hanya mengisi slot kanan saat error & field kosong.
   - autocomplete: string (opsional)
+  - maxlength   : number (opsional) — batas karakter native
   - hideLabel   : boolean (opsional) — label hanya untuk screen reader, bila label
                   visual sudah dirender pemanggil (mis. di atas tab bahasa)
 --}}
@@ -55,6 +56,7 @@
         name='{{name}}'
         rows='{{default rows 4}}'
         {{#if required}}required{{/if}}
+        {{#if maxlength}}maxlength='{{maxlength}}'{{/if}}
         {{#if autocomplete}}autocomplete='{{autocomplete}}'{{/if}}
         placeholder='{{placeholder}}'
         x-model='formData.{{field}}'
@@ -78,6 +80,7 @@
         {{#if (or (eq icon 'clock') (eq icon 'calendar'))}}@click='$el.showPicker && $el.showPicker()'{{/if}}
         {{#if toggle}}:type="showValue ? 'text' : 'password'"{{/if}}
         {{#if required}}required{{/if}}
+        {{#if maxlength}}maxlength='{{maxlength}}'{{/if}}
         {{#if autocomplete}}autocomplete='{{autocomplete}}'{{/if}}
         placeholder='{{placeholder}}'
         x-model='formData.{{field}}'
