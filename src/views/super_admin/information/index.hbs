@@ -1,0 +1,336 @@
+{{!-- Wrapper Utama --}}
+<div class="flex flex-col items-start p-[42px_34px] gap-[10px] w-full max-w-[1408px] min-h-[1024px] bg-[#F3F3F3] font-['Montserrat'] mx-auto">
+  
+  {{!-- Container --}}
+  <div class="flex flex-col items-start p-0 gap-[28px] w-full max-w-[1340px]">
+    
+    {{!-- Title Header --}}
+    <div class="flex flex-col items-start p-0 gap-1 w-full">
+      <h1 class="font-bold text-[34px] leading-[36px] tracking-[-1px] text-[#003060]">
+        {{#if title}}{{title}}{{else}}Dashboard Overview{{/if}}
+      </h1>
+      <p class="font-medium text-[16px] leading-[20px] text-[#718096]">
+        {{#if subtitle}}{{subtitle}}{{else}}Pantau aktivitas dan ringkasan metrik pengguna{{/if}}
+      </p>
+    </div>
+
+    {{!-- ========================================== --}}
+    {{!-- BAGIAN BARU: METRICS (3 KARTU STATISTIK) --}}
+    {{!-- ========================================== --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-[20px] w-full">
+      
+      {{!-- Metric Card 1 (User Round) --}}
+      <div class="card bg-white shadow-[0_8px_30px_rgba(35,57,93,0.07)] rounded-[20px] p-6 w-full flex-col gap-[18px]">
+        <div class="flex flex-row justify-between items-center w-full h-[44px]">
+          <div class="flex justify-center items-center w-[44px] h-[44px] bg-[#EAF1FF] rounded-[12px]">
+            {{!-- Icon Placeholder (Ganti dengan SVG asli) --}}
+            <div class="w-[21px] h-[21px] border-[1.8px] border-[#396FE8] rounded-full"></div>
+          </div>
+          <div class="flex flex-row items-center px-[10px] py-[6px] bg-[#E8F8F2] rounded-full">
+            <span class="font-['Inter'] text-[12px] text-[#20A779] font-medium">+12%</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-start gap-[6px] font-['Inter']">
+          <span class="text-[38px] leading-[46px] text-[#132238]">{{#if totalUsers}}{{totalUsers}}{{else}}1,240{{/if}}</span>
+          <span class="font-semibold text-[15px] leading-[18px] text-[#132238]">Total Users</span>
+          <span class="text-[12px] leading-[15px] text-[#667085]">vs last month</span>
+        </div>
+      </div>
+
+      {{!-- Metric Card 2 (Users) --}}
+      <div class="card bg-white shadow-[0_8px_30px_rgba(35,57,93,0.07)] rounded-[20px] p-6 w-full flex-col gap-[18px]">
+        <div class="flex flex-row justify-between items-center w-full h-[44px]">
+          <div class="flex justify-center items-center w-[44px] h-[44px] bg-[#F0ECFF] rounded-[12px]">
+            {{!-- Icon Placeholder --}}
+            <div class="w-[21px] h-[21px] border-[1.8px] border-[#7B61D9] rounded-sm"></div>
+          </div>
+          <div class="flex flex-row items-center px-[10px] py-[6px] bg-[#E8F8F2] rounded-full">
+            <span class="font-['Inter'] text-[12px] text-[#20A779] font-medium">+8%</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-start gap-[6px] font-['Inter']">
+          <span class="text-[38px] leading-[46px] text-[#132238]">{{#if activeUsers}}{{activeUsers}}{{else}}842{{/if}}</span>
+          <span class="font-semibold text-[15px] leading-[18px] text-[#132238]">Active Users</span>
+          <span class="text-[12px] leading-[15px] text-[#667085]">vs last month</span>
+        </div>
+      </div>
+
+      {{!-- Metric Card 3 (Folder) --}}
+      <div class="card bg-white shadow-[0_8px_30px_rgba(35,57,93,0.07)] rounded-[20px] p-6 w-full flex-col gap-[18px]">
+        <div class="flex flex-row justify-between items-center w-full h-[44px]">
+          <div class="flex justify-center items-center w-[44px] h-[44px] bg-[#FFF5E3] rounded-[12px]">
+            {{!-- Icon Placeholder --}}
+            <div class="w-[21px] h-[21px] border-[1.8px] border-[#F2A43A] rounded-sm"></div>
+          </div>
+          <div class="flex flex-row items-center px-[10px] py-[6px] bg-[#E8F8F2] rounded-full">
+            <span class="font-['Inter'] text-[12px] text-[#20A779] font-medium">+24%</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-start gap-[6px] font-['Inter']">
+          <span class="text-[38px] leading-[46px] text-[#132238]">{{#if totalModules}}{{totalModules}}{{else}}312{{/if}}</span>
+          <span class="font-semibold text-[15px] leading-[18px] text-[#132238]">Modules Completed</span>
+          <span class="text-[12px] leading-[15px] text-[#667085]">vs last month</span>
+        </div>
+      </div>
+
+    </div>
+
+    {{!-- ========================================== --}}
+    {{!-- BAGIAN BAWAH: CHARTS & ACTIVE USERS LIST --}}
+    {{!-- ========================================== --}}
+    <div class="flex flex-col lg:flex-row items-start gap-[26px] w-full">
+      
+      {{!-- KOLOM KIRI (Lebar: 822px di desktop) --}}
+      <div class="flex flex-col items-start p-0 gap-[30px] w-full lg:w-[822px]">
+        
+        {{!-- CARD: Participant Activity --}}
+        <div class="card bg-white shadow-[0_8px_30px_rgba(35,57,93,0.07)] rounded-[20px] p-6 w-full flex-col gap-[22px]">
+          
+          <div class="border border-[#D9D9D9] rounded-[16px] p-[33px] flex flex-col gap-6 w-full">
+            <h2 class="font-semibold text-[16px] text-[#003060]">Participant activity</h2>
+            <div class="flex flex-row items-start gap-[18px] font-['Inter']">
+              <div class="flex flex-row items-center gap-[7px]">
+                <div class="w-2 h-2 bg-[#396FE8]"></div>
+                <span class="text-[12px] text-[#667085]">Login</span>
+              </div>
+              <div class="flex flex-row items-center gap-[7px]">
+                <div class="w-2 h-2 bg-[#7B61D9]"></div>
+                <span class="text-[12px] text-[#667085]">Active</span>
+              </div>
+            </div>
+          </div>
+
+          {{!-- Plot Chart --}}
+          <div class="flex flex-row items-end pt-[12px] gap-[20px] w-full h-[292px] border-b border-[#E4EAF2] overflow-x-auto">
+            
+            {{!-- Looping Chart Bars --}}
+            {{#each chartData}}
+            <div class="flex flex-col justify-between items-center w-[93.43px] h-[280px]">
+              <div class="flex flex-row items-end gap-[6px] h-[265px]">
+                <div class="w-[22px] bg-[#396FE8] rounded-t-[6px]" style="height: {{this.loginHeight}}px;"></div>
+                <div class="w-[22px] bg-[#7B61D9] rounded-t-[6px]" style="height: {{this.activeHeight}}px;"></div>
+              </div>
+              <span class="font-['Inter'] text-[12px] text-[#667085]">{{this.day}}</span>
+            </div>
+            {{else}}
+            {{!-- Fallback Data Statis jika {{chartData}} kosong --}}
+            <div class="flex flex-col justify-between items-center w-[93.43px] h-[280px]">
+              <div class="flex flex-row items-end gap-[6px] h-[265px]">
+                <div class="w-[22px] h-[151.9px] bg-[#396FE8] rounded-t-[6px]"></div>
+                <div class="w-[22px] h-[107.8px] bg-[#7B61D9] rounded-t-[6px]"></div>
+              </div>
+              <span class="font-['Inter'] text-[12px] text-[#667085]">Sen</span>
+            </div>
+            <div class="flex flex-col justify-between items-center w-[93.43px] h-[280px]">
+              <div class="flex flex-row items-end gap-[6px] h-[265px]">
+                <div class="w-[22px] h-[220.5px] bg-[#396FE8] rounded-t-[6px]"></div>
+                <div class="w-[22px] h-[169.05px] bg-[#7B61D9] rounded-t-[6px]"></div>
+              </div>
+              <span class="font-['Inter'] text-[12px] text-[#667085]">Sel</span>
+            </div>
+            {{/each}}
+            
+          </div>
+        </div>
+
+        {{!-- CARD: Ringkasan Hari Ini --}}
+        <div class="card bg-white shadow-[0_8px_30px_rgba(35,57,93,0.07)] rounded-[20px] p-6 pb-0 w-full min-h-[650px] flex-col gap-[20px]">
+          
+          <div class="border border-[#D9D9D9] rounded-[16px] p-[33px] w-full">
+            <h2 class="font-semibold text-[16px] text-[#003060]">Ringkasan hari ini</h2>
+          </div>
+
+          <div class="flex flex-row justify-between items-center p-[18px] w-full h-[98px] bg-[#EAF1FF] rounded-[14px] font-['Inter']">
+            <div class="flex flex-col gap-1">
+              <span class="text-[13px] text-[#667085]">Completion</span>
+              <span class="font-bold text-[28px] text-[#073565]">{{#if completionValue}}{{completionValue}}{{else}}59{{/if}}</span>
+            </div>
+            <div class="flex flex-col justify-center items-center w-[62px] h-[62px] bg-white border-[7px] border-[#396FE8] rounded-full">
+               <span class="font-bold text-[13px] text-[#396FE8]">{{#if completionPercent}}{{completionPercent}}{{else}}28%{{/if}}</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4 w-full font-['Inter'] mt-2">
+            
+            {{!-- List Items --}}
+            <div class="flex flex-row items-center gap-3 w-full">
+              <div class="flex justify-center items-center w-[44px] h-[44px] bg-[#EAF1FF] rounded-[14px]">
+                <div class="w-5 h-5 border border-[#396FE8]"></div> 
+              </div>
+              <div class="flex flex-col gap-1 flex-grow">
+                <span class="text-[13px] text-[#667085]">Modul Diselesaikan</span>
+                <span class="font-bold text-[20px] text-[#073565]">142</span>
+              </div>
+              <span class="font-semibold text-[12px] text-[#1D9A6C]">+12%</span>
+            </div>
+            <hr class="border-[#E4EAF2]"/>
+            
+            <div class="flex flex-row items-center gap-2 mt-4 font-['Inter']">
+               <div class="w-[7px] h-[7px] bg-[#1D9A6C] rounded-full"></div>
+               <span class="text-[12px] text-[#667085]">Diperbarui beberapa detik yang lalu</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {{!-- KOLOM KANAN: Active Users Panel (Lebar: 496px di desktop) --}}
+      <div class="card bg-white shadow-[0_8px_30px_rgba(35,57,93,0.07)] rounded-[20px] p-6 w-full lg:w-[496px] h-auto lg:h-[836px] flex-col gap-[20px]">
+        
+        <div class="border border-[#D9D9D9] rounded-[16px] p-[33px] w-full">
+          <h2 class="font-semibold text-[16px] text-[#003060]">Active Users Panel</h2>
+        </div>
+
+        <div class="flex flex-col gap-3 w-full overflow-y-auto pr-2">
+          
+          {{!-- Dinamis via HBS List --}}
+          {{#each activeUsersList}}
+          <div class="flex flex-row items-center p-4 gap-3 w-full h-[72px] bg-[#F8FAFC] border border-[#D9D9D9] rounded-[12px]">
+            <div class="avatar placeholder">
+              <div class="bg-[{{this.bgColor}}] text-[{{this.textColor}}] rounded-full w-[40px] h-[40px]">
+                <span class="font-semibold text-[14px]">{{this.initials}}</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-[2px] flex-grow">
+              <span class="font-semibold text-[14px] text-[#003060]">{{this.name}}</span>
+              <span class="text-[12px] text-[#667085] truncate w-[200px]">{{this.program}}</span>
+            </div>
+            <div class="flex flex-row items-center gap-[6px]">
+              <div class="w-2 h-2 bg-[#20A779] rounded-full"></div>
+              <span class="font-semibold text-[12px] text-[#20A779]">Online</span>
+            </div>
+          </div>
+          {{else}}
+          <div class="flex items-center justify-center p-6 w-full h-[72px] bg-[#F8FAFC] border border-[#D9D9D9] rounded-[12px]">
+            <span class="text-[12px] text-[#667085]">Belum ada peserta aktif</span>
+          </div>
+          {{/each}}
+          
+        </div>
+      </div>
+
+    </div>
+
+    {{!-- ========================================== --}}
+    {{!-- BAGIAN: SEDANG BELAJAR (REAL-TIME via SSE) --}}
+    {{!-- ========================================== --}}
+    <div class="flex flex-col items-start p-0 gap-[14px] w-full">
+      
+      <div class="flex flex-row justify-between items-center w-full">
+        <div class="flex flex-col gap-1">
+          <h2 class="font-semibold text-[18px] text-[#003060]">Sedang Belajar</h2>
+          <p class="text-[13px] text-[#718096]">User yang sedang aktif mempelajari materi secara real-time</p>
+        </div>
+        <div class="flex flex-row items-center gap-2">
+          <div class="w-[7px] h-[7px] bg-[#1D9A6C] rounded-full animate-pulse"></div>
+          <span class="text-[12px] text-[#667085] font-['Inter']" id="learner-count">0 user sedang belajar</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] w-full" id="learning-list">
+        
+        {{#each learningList}}
+        <div class="learning-card flex flex-col p-5 gap-3 w-full bg-white border border-[#D9D9D9] rounded-[14px] shadow-[0_4px_16px_rgba(35,57,93,0.04)]">
+          <div class="flex flex-row items-center gap-3">
+            <div class="bg-[{{this.bgColor}}] text-[{{this.textColor}}] rounded-full w-[38px] h-[38px] flex items-center justify-center">
+              <span class="font-semibold text-[13px]">{{this.initials}}</span>
+            </div>
+            <div class="flex flex-col gap-[1px] flex-grow min-w-0">
+              <span class="font-semibold text-[14px] text-[#003060] truncate">{{this.name}}</span>
+              <span class="text-[11px] text-[#667085] truncate">{{this.email}}</span>
+            </div>
+          </div>
+          <hr class="border-[#E4EAF2]"/>
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-row items-center gap-2">
+              <div class="w-[6px] h-[6px] bg-[#396FE8] rounded-full"></div>
+              <span class="font-medium text-[12px] text-[#132238]">{{this.courseName}}</span>
+            </div>
+            <div class="flex flex-row items-center gap-2 pl-[14px]">
+              <span class="text-[12px] text-[#667085]">{{this.activityLabel}}</span>
+            </div>
+          </div>
+          <div class="flex flex-row items-center gap-2 mt-auto">
+            <div class="w-[6px] h-[6px] bg-[#20A779] rounded-full"></div>
+            <span class="text-[11px] text-[#667085] font-['Inter']">{{this.lastSeenHuman}}</span>
+          </div>
+        </div>
+        {{else}}
+        <div class="col-span-full flex items-center justify-center p-10 w-full bg-white border border-[#D9D9D9] rounded-[14px]">
+          <span class="text-[13px] text-[#667085]">Tidak ada user yang sedang belajar saat ini</span>
+        </div>
+        {{/each}}
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  const container = document.getElementById('learning-list');
+  const countEl = document.getElementById('learner-count');
+  if (!container) return;
+
+  let learners = {{{learningListJson}}};
+
+  function renderLearners(list) {
+    if (!list || list.length === 0) {
+      container.innerHTML = '<div class="col-span-full flex items-center justify-center p-10 w-full bg-white border border-[#D9D9D9] rounded-[14px]"><span class="text-[13px] text-[#667085]">Tidak ada user yang sedang belajar saat ini</span></div>';
+      countEl.textContent = '0 user sedang belajar';
+      return;
+    }
+
+    countEl.textContent = list.length + ' user' + (list.length > 1 ? ' sedang belajar' : ' sedang belajar');
+
+    container.innerHTML = list.map(function(u) {
+      return '<div class="learning-card flex flex-col p-5 gap-3 w-full bg-white border border-[#D9D9D9] rounded-[14px] shadow-[0_4px_16px_rgba(35,57,93,0.04)]">'
+        + '<div class="flex flex-row items-center gap-3">'
+        +   '<div class="rounded-full w-[38px] h-[38px] flex items-center justify-center" style="background:' + u.bgColor + ';color:' + u.textColor + '">'
+        +     '<span class="font-semibold text-[13px]">' + escapeHtml(u.initials) + '</span>'
+        +   '</div>'
+        +   '<div class="flex flex-col gap-[1px] flex-grow min-w-0">'
+        +     '<span class="font-semibold text-[14px] text-[#003060] truncate">' + escapeHtml(u.name) + '</span>'
+        +     '<span class="text-[11px] text-[#667085] truncate">' + escapeHtml(u.email) + '</span>'
+        +   '</div>'
+        + '</div>'
+        + '<hr class="border-[#E4EAF2]"/>'
+        + '<div class="flex flex-col gap-1">'
+        +   '<div class="flex flex-row items-center gap-2">'
+        +     '<div class="w-[6px] h-[6px] bg-[#396FE8] rounded-full"></div>'
+        +     '<span class="font-medium text-[12px] text-[#132238]">' + escapeHtml(u.courseName) + '</span>'
+        +   '</div>'
+        +   '<div class="flex flex-row items-center gap-2 pl-[14px]">'
+        +     '<span class="text-[12px] text-[#667085]">' + escapeHtml(u.activityLabel) + '</span>'
+        +   '</div>'
+        + '</div>'
+        + '<div class="flex flex-row items-center gap-2 mt-auto">'
+        +   '<div class="w-[6px] h-[6px] bg-[#20A779] rounded-full"></div>'
+        +   '<span class="text-[11px] text-[#667085] font-[\'Inter\']">' + escapeHtml(u.lastSeenHuman) + '</span>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  renderLearners(learners);
+
+  if (typeof EventSource !== 'undefined') {
+    var source = new EventSource('/information/api/learning/stream');
+    source.onmessage = function(e) {
+      try {
+        var data = JSON.parse(e.data);
+        if (data.learners) {
+          renderLearners(data.learners);
+        }
+      } catch(err) {}
+    };
+    source.onerror = function() {};
+  }
+})();
+</script>

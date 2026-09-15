@@ -26,6 +26,9 @@
   - cropSize : number lebar piksel hasil crop (default 1000; tinggi mengikuti
                cropAspect). Nilai tetap dipakai supaya hasilnya selalu lolos
                batas dimensi backend berapa pun ukuran aslinya.
+  - hidePreview : boolean (opsional) — ajakan unggah selalu tampil; pratinjau
+                  dirender pemanggil di luar dropzone (mis. about/edit)
+  - boxClass : string (default 'h-[220px] sm:h-[303px]') — tinggi area unggah
 --}}
 <div class='flex flex-col gap-2'>
   <label
@@ -57,11 +60,11 @@
     :class="dragging
       ? 'border-[#0080ff] bg-[#eef7ff]'
       : (errorMessage ? 'border-[#fca5a5] bg-[#fef7f7]' : 'border-[#d9d9d9] bg-[#f8f9fa] hover:border-[#0080ff]')"
-    class='relative flex h-[220px] w-full items-center justify-center overflow-hidden rounded-lg border px-4 py-2 transition-colors sm:h-[303px]'
+    class='relative flex {{default boxClass "h-[220px] sm:h-[303px]"}} w-full items-center justify-center overflow-hidden rounded-lg border px-4 py-2 transition-colors'
   >
     {{!-- State awal / error: ajakan unggah (klik di mana saja membuka file picker) --}}
     <label
-      x-show='!previewUrl'
+      {{#unless hidePreview}}x-show='!previewUrl'{{/unless}}
       for='{{default id "image"}}'
       class='flex cursor-pointer flex-col items-center justify-center gap-2.5 text-center'
     >
@@ -88,6 +91,7 @@
     </label>
 
     {{!-- State terunggah: pratinjau + aksi ganti/hapus --}}
+    {{#unless hidePreview}}
     <template x-if='previewUrl'>
       <div class='absolute inset-0 flex items-center justify-center bg-[#f8f9fa]'>
         <img :src='previewUrl' alt='Cover preview' class='h-full w-full object-contain' />
@@ -106,6 +110,7 @@
         </div>
       </div>
     </template>
+    {{/unless}}
   </div>
 
   {{!-- Nama file terpilih --}}

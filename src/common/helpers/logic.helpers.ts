@@ -30,10 +30,23 @@ export const logicHelpers = {
       (attendances) => attendances.user && attendances.user.id === userId,
     );
   },
-  ternary: (condition: any, ifTrue: any, ifFalse: any) => (condition ? ifTrue : ifFalse),
+  ternary: (condition: any, ifTrue: any, ifFalse: any) =>
+    condition ? ifTrue : ifFalse,
   roles: (userRole: string, ...roles: string[]) => {
     const allowedRoles = roles.slice(0, -1);
     return allowedRoles.includes(userRole);
+  },
+  array: (...items: any[]) => {
+    items.pop();
+    return items;
+  },
+  obj: (...pairs: any[]) => {
+    pairs.pop();
+    const out: Record<string, any> = {};
+    for (let i = 0; i + 1 < pairs.length; i += 2) {
+      out[String(pairs[i])] = pairs[i + 1];
+    }
+    return out;
   },
   hasRole: (user: any, role: string, options: any) => {
     if (user && user.role === role) {

@@ -1,5 +1,5 @@
 {{!--
-  Table Row Actions (Super Admin) — tombol delete + edit di sel aksi.
+  Table Row Actions (Super Admin) — tombol edit (kiri) + delete (kanan) di sel aksi.
 
   Tombol delete tidak langsung menghapus: openDeleteModal() menahan submit form
   sampai user menekan Delete di modal/delete_confirm.
@@ -13,6 +13,18 @@
   - entity       : dipakai di title/aria-label, default 'user'
 --}}
 <div class='flex items-center gap-1'>
+  <a
+    :href="{{#if editHref}}{{{editHref}}}{{else}}'/users/formEdit/' + user.id{{/if}}"
+    title='Edit {{default entity "user"}}'
+    aria-label='Edit {{default entity "user"}}'
+    class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+  >
+    {{!-- lucide: edit-2 --}}
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+      <path d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z' />
+    </svg>
+  </a>
+
   <form :action="{{#if deleteAction}}{{{deleteAction}}}{{else}}'/users/' + user.id + '?_method=DELETE'{{/if}}" method='post'>
     <button
       type='button'
@@ -31,16 +43,4 @@
       </svg>
     </button>
   </form>
-
-  <a
-    :href="{{#if editHref}}{{{editHref}}}{{else}}'/users/formEdit/' + user.id{{/if}}"
-    title='Edit {{default entity "user"}}'
-    aria-label='Edit {{default entity "user"}}'
-    class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
-  >
-    {{!-- lucide: edit-2 --}}
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
-      <path d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z' />
-    </svg>
-  </a>
 </div>

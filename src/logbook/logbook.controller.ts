@@ -65,9 +65,10 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(
-          `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
-        );
+        // res.redirect(
+        //   `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
+        // );
+        res.redirect(`/program/${session.weeks.course.id}`);
       }
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);

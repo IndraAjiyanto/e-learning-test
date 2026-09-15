@@ -1,76 +1,51 @@
-<!-- ===================== TAB GALLERY ===================== -->
+{{!--
+  Tab: Gallery — Detail Category (Super Admin)
+  Lokasi: src/views/partials/category/gallery_tab.hbs
+  Dipanggil dari: super_admin/category/detail.hbs (butuh state `tab` dari tabData())
+
+  Data diambil dari GET /gallery/category/:categoryId lalu disaring & dipaginasi
+  di client lewat clientTable().
+
+  Tombol delete memakai openDeleteModal, modalnya sudah dipasang di detail.hbs.
+--}}
+{{> components/ui/super_admin/table/client_table }}
+
 <div
   x-show="tab === 'gallery'"
-  class='space-y-4'
-  x-data='galleryData()'
+  x-data='galleryData({{json category.id}})'
   x-init='fetchGallery()'
+  class='flex flex-col gap-4'
 >
-  <!-- Header -->
-  <div class='flex justify-between items-center mb-6'>
-    <div>
-      <h3 class='text-lg font-semibold text-gray-800'>
-        Gallery
-      </h3>
-      <p class='text-sm text-gray-500'>
-        Gallery in this Category
-      </p>
-    </div>
-    <a
-      href='/gallery/formCreate/{{category.id}}'
-      class='bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition flex items-center gap-2'
-    >
-      <svg
-        class='w-5 h-5'
-        fill='none'
-        stroke='currentColor'
-        viewBox='0 0 24 24'
-      >
-        <path
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='2'
-          d='M12 4v16m8-8H4'
-        />
-      </svg>
-      Add Gallery
-    </a>
-  </div>
+  {{> components/ui/super_admin/description/index
+    text='Gallery in this Category'
+    class='font-montserrat text-lg font-semibold leading-6 text-[#003060]'
+  }}
 
-  <!-- Gallery -->
-  <div
-    x-show='data.length > 0'
-    class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'
-  >
-    <template x-for='item in data' :key='item.id'>
-      <div class='bg-white border rounded-lg shadow overflow-hidden'>
-        <img :src='item.filePath' class='w-full h-52 object-cover' />
+  {{> components/ui/super_admin/table/toolbar
+    placeholder='Search gallery...'
+    searchLabel='Search gallery'
+    createHref=(concat '/gallery/formCreate/' category.id)
+    createLabel='Add Gallery'
+  }}
+
+  <div x-show='rows.length > 0' class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4'>
+    <template x-for='item in rows' :key='item.id'>
+      <div class='overflow-hidden rounded-lg border border-gray-200 bg-white shadow'>
+        <img :src='item.filePath' :alt="item.title || 'Gallery'" class='h-52 w-full object-cover' />
         <div class='p-3'>
-          <h4
-            class='font-semibold text-gray-800'
-            x-text="item.title || 'Gallery'"
-          >
-          </h4>
-          <p class='text-gray-600' x-text="item.description || 'Gallery'">
-          </p>
-          <div class='flex items-center gap-2 pt-3 border-t border-gray-100'>
+          <h4 class='font-semibold text-gray-800' x-text="item.title || 'Gallery'"></h4>
+          <p class='text-gray-600' x-text="item.description || 'Gallery'"></p>
+          <div class='mt-3 flex items-center gap-2 border-t border-gray-100 pt-3'>
             <a
               :href="'/gallery/formEdit/' + item.id"
-              class='flex-1 text-center text-sm font-medium border border-gray-200 rounded-lg py-2 hover:bg-gray-900 hover:text-white transition'
-            >
-              Edit
-            </a>
-            <form
-              :action="'/gallery/' + item.id + '?_method=DELETE'"
-              method='post'
-              class='flex-1'
-            >
+              class='flex-1 rounded-lg border border-gray-200 py-2 text-center text-sm font-medium transition hover:bg-gray-900 hover:text-white'
+            >Edit</a>
+            <form :action="'/gallery/' + item.id + '?_method=DELETE'" method='post' class='flex-1'>
               <button
                 type='button'
-                onclick='confirmDelete(this)'
-                class='w-full text-sm font-medium border border-red-200 text-red-600 rounded-lg py-2 hover:bg-red-600 hover:text-white transition'
-              >
-                Delete
-              </button>
+                onclick='openDeleteModal(this)'
+                class='w-full rounded-lg border border-red-200 py-2 text-sm font-medium text-red-600 transition hover:bg-red-600 hover:text-white'
+              >Delete</button>
             </form>
           </div>
         </div>
@@ -78,34 +53,38 @@
     </template>
   </div>
 
-  <!-- Empty -->
-  <div
-    x-show='data.length === 0'
-    class='text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed'
-  >
-    <p class='text-gray-500'>
-      No gallery found.
-    </p>
+  <div x-show='rows.length === 0' class='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12 text-center'>
+    <p class='text-sm text-gray-500' x-text="searchInput ? 'No gallery found.' : 'No gallery yet.'"></p>
+  </div>
+
+  <div x-show='totalPages > 1' class='border-t border-gray-200'>
+    {{> components/ui/super_admin/table/pagination }}
   </div>
 </div>
-{{!-- prettier-ignore --}}
+
 <script>
-function galleryData() {
-  return {
-    data: JSON.parse(localStorage.getItem('galleryData')) || [],
-    async fetchGallery() {
+  function galleryData(categoryId) {
+    // Method ditempel ke objek clientTable, bukan di-spread: spread mengevaluasi
+    // getter rows/totalPages sekali dan mematikan reaktivitasnya.
+    const state = clientTable({
+      size: 8,
+      items: JSON.parse(localStorage.getItem('galleryData')) || [],
+      searchKeys: ['title', 'description'],
+    });
+
+    state.fetchGallery = async function () {
       try {
-        const response = await fetch('/gallery/category/{{category.id}}');
-        if (!response.ok) {
-          throw new Error('Failed fetch gallery');
-        }
-        this.data = await response.json();
-        localStorage.setItem('galleryData', JSON.stringify(this.data));
-      } catch (e) {
-        console.error(e);
-        this.data = [];
+        const res = await fetch(`/gallery/category/${categoryId}`);
+        if (!res.ok) throw new Error('Failed fetch gallery');
+        this.items = await res.json();
+        localStorage.setItem('galleryData', JSON.stringify(this.items));
+      } catch (error) {
+        console.error('Error fetching gallery:', error);
+        this.items = [];
       }
-    }
+      this.applySearch(this.searchInput);
+    };
+
+    return state;
   }
-}
 </script>

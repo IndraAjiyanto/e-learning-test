@@ -72,7 +72,11 @@ describe('PaymentsService', () => {
     it('calls settleStuckPayment for each process payment with invoice', async () => {
       paymentRepo.find
         .mockResolvedValueOnce([
-          { id: 'p1', process: 'process', invoice: { xendit_invoice_id: 'x1' } },
+          {
+            id: 'p1',
+            process: 'process',
+            invoice: { xendit_invoice_id: 'x1' },
+          },
           { id: 'p2', process: 'approved', invoice: {} },
         ])
         .mockResolvedValueOnce([]);
@@ -85,7 +89,9 @@ describe('PaymentsService', () => {
 
     it('reconciles installment rows via Xendit status', async () => {
       paymentRepo.find
-        .mockResolvedValueOnce([{ id: 'p1', process: 'approved', invoice: null }])
+        .mockResolvedValueOnce([
+          { id: 'p1', process: 'approved', invoice: null },
+        ])
         .mockResolvedValueOnce([{ id: 'p1' }]);
 
       installmentService.findByPaymentId.mockResolvedValue([
@@ -113,7 +119,9 @@ describe('PaymentsService', () => {
       installmentService.findByPaymentId.mockResolvedValue([
         { id: 'ip1', month: 1, status: 'process', xendit_invoice_id: 'xi1' },
       ]);
-      invoiceService.getXenditInvoiceStatus.mockResolvedValue({ status: 'EXPIRED' });
+      invoiceService.getXenditInvoiceStatus.mockResolvedValue({
+        status: 'EXPIRED',
+      });
 
       await service.reconcileUserPayments('u1');
 
@@ -128,7 +136,9 @@ describe('PaymentsService', () => {
       paymentRepo.find.mockResolvedValue([]);
       installmentService.findByPaymentIds.mockResolvedValue([]);
 
-      const spy = jest.spyOn(service, 'reconcileUserPayments').mockResolvedValue(undefined);
+      const spy = jest
+        .spyOn(service, 'reconcileUserPayments')
+        .mockResolvedValue(undefined);
 
       await service.getUserInstallmentDetail('u1');
 
@@ -142,13 +152,29 @@ describe('PaymentsService', () => {
         process: 'approved',
         dpPaidAt: new Date('2030-01-01'),
         createdAt: new Date('2030-01-01'),
-        installment: { downPayment: 1000000, price: [500000, 500000, 500000], month: 3 },
-        course: { id: 'c1', name: 'UI/UX', category: { name: 'Design' }, startDate: new Date(), startEnd: new Date() },
+        installment: {
+          downPayment: 1000000,
+          price: [500000, 500000, 500000],
+          month: 3,
+        },
+        course: {
+          id: 'c1',
+          name: 'UI/UX',
+          category: { name: 'Design' },
+          startDate: new Date(),
+          startEnd: new Date(),
+        },
         invoice: {},
       };
       paymentRepo.find.mockResolvedValue([parent]);
       installmentService.findByPaymentIds.mockResolvedValue([
-        { payment: { id: 'p1' }, month: 1, status: 'approved', xendit_invoice_id: 'x1', paidAt: new Date('2026-02-01') },
+        {
+          payment: { id: 'p1' },
+          month: 1,
+          status: 'approved',
+          xendit_invoice_id: 'x1',
+          paidAt: new Date('2026-02-01'),
+        },
       ]);
 
       jest.spyOn(service, 'reconcileUserPayments').mockResolvedValue(undefined);
@@ -210,10 +236,21 @@ describe('PaymentsService', () => {
         course: { name: 'UI/UX' },
       });
       installmentService.findOneByPaymentAndMonth.mockResolvedValue(null);
-      installmentService.create.mockResolvedValue({ id: 'ip1', month: 1, no: 'INV-M1-123' });
-      invoiceService.createInvoiceForInstallment.mockResolvedValue({ id: 'ip1', xendit_invoice_url: 'https://x.com' });
+      installmentService.create.mockResolvedValue({
+        id: 'ip1',
+        month: 1,
+        no: 'INV-M1-123',
+      });
+      invoiceService.createInvoiceForInstallment.mockResolvedValue({
+        id: 'ip1',
+        xendit_invoice_url: 'https://x.com',
+      });
 
-      const result = await service.createMonthlyInstallmentInvoice('u1', 'p1', 1);
+      const result = await service.createMonthlyInstallmentInvoice(
+        'u1',
+        'p1',
+        1,
+      );
 
       const createCall = installmentService.create.mock.calls[0][0];
       expect(createCall.month).toBe(1);

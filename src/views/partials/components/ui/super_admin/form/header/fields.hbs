@@ -1,0 +1,79 @@
+{{!--
+  Komponen: Header Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/header/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Preview + unggah gambar, Title & Description tiga bahasa. Dipakai
+  super_admin/about/{create,edit}.hbs. State Alpine dari form/header/form.
+
+  Title dan Description punya tab bahasa masing-masing (titleLang / textLang).
+  Id field `{field}-{lang}` dipakai form/header/form untuk memfokuskan error.
+
+  Props:
+  - imageRequired : boolean (opsional) — asterisk pada label unggah (Create)
+--}}
+<div class='flex flex-col gap-5'>
+  <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+    <div class='flex flex-col gap-2'>
+      <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Preview</span>
+
+      <div class='flex h-[200px] items-center justify-center overflow-hidden rounded-lg border border-[#d9d9d9] bg-[#f8f9fa]'>
+        <img
+          x-show='previewUrl'
+          :src='previewUrl'
+          alt='Header image preview'
+          class='h-full w-full object-contain'
+        />
+        <span
+          x-show='!previewUrl'
+          x-cloak
+          class='font-montserrat text-xs font-medium leading-4 text-[#718096]'
+        >No image uploaded</span>
+      </div>
+    </div>
+
+    {{!-- Batas di meta mengikuti @ValidateImage AboutController, bukan hint
+         Figma (1900×1000–1920×1080, 10 MB) yang akan ditolak backend. --}}
+    {{> components/ui/super_admin/form/image_dropzone
+      label='Upload New Image'
+      required=imageRequired
+      meta='JPG / PNG · 700×700 – 4000×4000 · Max 5 MB'
+      hidePreview=true
+      boxClass='h-[200px]'
+    }}
+  </div>
+
+  {{#*inline 'langField'}}
+    <div class='flex flex-col gap-2'>
+      <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
+
+      <div class='flex flex-col gap-4'>
+        {{> components/ui/super_admin/tabs/language/index
+          ariaLabel=(concat label ' language')
+          state=state
+          size='sm'
+        }}
+
+        {{!-- x-show, bukan x-if: ketiga bahasa harus tetap terkirim. --}}
+        {{#each langs}}
+          <div x-show="{{../state}} === '{{this}}'" x-cloak>
+            {{> components/ui/super_admin/form/text_field
+              id=(concat ../field '-' this)
+              name=(concat ../field '[' this ']')
+              field=(concat ../field '.' this)
+              label=../label
+              hideLabel=true
+              multiline=../multiline
+              required=true
+            }}
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/inline}}
+
+  <div class='flex flex-col gap-3'>
+    {{> langField label='Title' field='title' state='titleLang' langs=(array 'id' 'en' 'ja') }}
+    {{> langField label='Description' field='text' state='textLang' langs=(array 'id' 'en' 'ja') multiline=true }}
+  </div>
+</div>

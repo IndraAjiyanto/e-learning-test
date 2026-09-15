@@ -1,0 +1,174 @@
+{{!--
+  Komponen: Header Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/header/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `headerForm({ title, text, image, requireImage })` untuk
+  super_admin/about/{create,edit}.hbs. Menyediakan state untuk form/header/fields,
+  form/image_dropzone, form/text_field, tabs/language, dan loading form/button.
+  Tidak merender markup — panggil sekali per halaman.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const FIELDS = ['title', 'text'];
+    const LABEL = { title: 'Title', text: 'Description' };
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const MIN = { title: 3, text: 10 };
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    const errorFor = (field, lang, value) => {
+      const val = (value ?? '').toString().trim();
+      if (!val) return `${LABEL[field]} (${LANG_LABEL[lang]}) is required.`;
+      if (val.length < MIN[field]) {
+        return `${LABEL[field]} (${LANG_LABEL[lang]}) must be at least ${MIN[field]} characters.`;
+      }
+      return '';
+    };
+
+    window.headerForm = function headerForm({ title, text, image, requireImage = false } = {}) {
+      const initial = (src) => byLang((l) => (src && src[l]) || '');
+
+      return {
+        loading: false,
+        titleLang: 'id',
+        textLang: 'id',
+
+        originalUrl: image || '',
+        previewUrl: image || '',
+        objectUrl: null,
+        // Token pemilihan berkas: hasil cek gambar lama yang selesai belakangan diabaikan.
+        imageToken: 0,
+        validatingImage: false,
+        fileName: '',
+        hasFile: false,
+        errorMessage: '',
+        isValid: true,
+
+        formData: { title: initial(title), text: initial(text) },
+        formErrors: { title: byLang(() => ''), text: byLang(() => '') },
+        touched: { title: byLang(() => false), text: byLang(() => false) },
+
+        // Batas mengikuti @ValidateImage AboutController: JPG/PNG, 700–4000 px, maks 5 MB.
+        validateImage(file) {
+          if (!file) return;
+          const token = ++this.imageToken;
+
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.validatingImage = false;
+            this.setImageError('Only JPG and PNG formats are allowed');
+            return;
+          }
+
+          if (file.size > 5 * 1024 * 1024) {
+            this.validatingImage = false;
+            this.setImageError(
+              `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+            );
+            return;
+          }
+
+          this.validatingImage = true;
+          const img = new Image();
+          const nextUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            if (token !== this.imageToken) return URL.revokeObjectURL(nextUrl);
+            this.validatingImage = false;
+            if (img.width < 700 || img.width > 4000 || img.height < 700 || img.height > 4000) {
+              URL.revokeObjectURL(nextUrl);
+              this.setImageError(
+                `Image is ${img.width}x${img.height}px. Required: 700x700 to 4000x4000 pixels`,
+              );
+              return;
+            }
+
+            if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+            this.objectUrl = nextUrl;
+            this.previewUrl = nextUrl;
+            this.fileName = file.name;
+            this.hasFile = true;
+            this.isValid = true;
+            this.errorMessage = '';
+          };
+
+          img.onerror = () => {
+            if (token !== this.imageToken) return URL.revokeObjectURL(nextUrl);
+            this.validatingImage = false;
+            URL.revokeObjectURL(nextUrl);
+            this.setImageError('Failed to load image');
+          };
+
+          img.src = nextUrl;
+        },
+
+        // Berkas ditolak: input dikosongkan dan pratinjau kembali ke gambar
+        // tersimpan, supaya layar tidak menampilkan berkas yang tidak terkirim.
+        setImageError(message) {
+          if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = null;
+          this.previewUrl = this.originalUrl;
+          this.fileName = '';
+          this.hasFile = false;
+          this.errorMessage = message;
+          this.$refs.dropInput.value = null;
+        },
+
+        validateField(path, value) {
+          const [field, lang] = path.split('.');
+          this.formData[field][lang] = value ?? '';
+          this.formErrors[field][lang] = this.touched[field][lang]
+            ? errorFor(field, lang, this.formData[field][lang])
+            : '';
+        },
+
+        touch(path) {
+          const [field, lang] = path.split('.');
+          this.touched[field][lang] = true;
+          this.validateField(path, this.formData[field][lang]);
+        },
+
+        validateAll() {
+          FIELDS.forEach((field) =>
+            LANGS.forEach((lang) => {
+              this.touched[field][lang] = true;
+              this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
+            }),
+          );
+        },
+
+        // Field yang error bisa berada di tab lain — pindahkan tab field itu dulu.
+        revealFirstInvalid() {
+          for (const field of FIELDS) {
+            const lang = LANGS.find((l) => this.formErrors[field][l]);
+            if (!lang) continue;
+
+            this[field === 'title' ? 'titleLang' : 'textLang'] = lang;
+            this.$nextTick(() => document.getElementById(`${field}-${lang}`)?.focus());
+            return true;
+          }
+          return false;
+        },
+
+        submitForm(event) {
+          // Cek gambar masih berjalan: tunggu, jangan tampilkan "image required".
+          if (this.validatingImage) return;
+          this.validateAll();
+          // Create wajib gambar; Edit boleh memakai gambar tersimpan.
+          const missingImage = requireImage && !this.hasFile;
+          if (missingImage) this.errorMessage = 'Header image is required.';
+          if (this.revealFirstInvalid()) return;
+          if (missingImage) {
+            this.$refs.dropInput.parentElement.scrollIntoView({ block: 'center' });
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

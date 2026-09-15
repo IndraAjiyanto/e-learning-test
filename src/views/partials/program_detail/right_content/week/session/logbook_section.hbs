@@ -1,6 +1,6 @@
                                 <!-- Logbook Section -->
                                 <template
-                                  x-if="session.logbooks?.[0]?.process === 'acc'"
+                                  x-if="session.logbooks?.[0]?.process === 'approved'"
                                 >
                                   <div class='mt-3'>
                                     <a
@@ -54,7 +54,7 @@
                                   </div>
                                 </template>
                                 <template
-                                  x-if="session.logbooks?.[0]?.process === 'proces'"
+                                  x-if="session.logbooks?.[0]?.process === 'process'"
                                 >
                                   <div class='mt-3'>
                                     <a
@@ -81,7 +81,7 @@
                                   </div>
                                 </template>
                                 <template
-                                  x-if="!session.logbooks?.[0] || (session.logbooks?.[0]?.process !== 'acc' && session.logbooks?.[0]?.process !== 'rejected' && session.logbooks?.[0]?.process !== 'proces')"
+                                  x-if="!session.logbooks?.[0] || (session.logbooks?.[0]?.process !== 'approved' && session.logbooks?.[0]?.process !== 'rejected' && session.logbooks?.[0]?.process !== 'process')"
                                 >
                                   <div class='mt-3'>
                                     <a
