@@ -4,8 +4,13 @@
   Level: L2 Blok field (scoped super_admin)
 
   Kartu 01 Icon Information, 02 Benefit Information, 03 Information Display.
-  Dipanggil oleh super_admin/benefit/{create,edit}.hbs; pemanggil menyediakan
-  state Alpine dari form/benefit/form.
+  Dipanggil oleh super_admin/benefit/{create,edit}.hbs dan
+  super_admin/benefit_category/create.hbs; pemanggil menyediakan state Alpine
+  dari form/benefit/form.
+
+  Props:
+  - hideOrder : boolean (opsional) — tanpa kartu 03; pasangkan dengan
+                benefitForm({ withOrder: false })
 
   Partial block (opsional) dirender di akhir kartu 03 — Edit menaruh tombol
   aksinya di sana, sedangkan Create memakai kartu aksi terpisah.
@@ -93,6 +98,7 @@
     {{> benefitLangField field='description' label='Description' placeholder='Enter a description...' }}
   </section>
 
+  {{#unless hideOrder}}
   <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
     {{> benefitCardHeader number='03' title='Information Display' }}
 
@@ -112,4 +118,5 @@
       </div>
     {{/if}}
   </section>
+  {{/unless}}
 </div>

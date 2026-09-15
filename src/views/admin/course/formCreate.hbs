@@ -1,98 +1,698 @@
 {{!--
-  Page: Create Program within a Category — Super Admin
-  Path: admin/course/formCreate.hbs
+  Halaman: Create Program — Super Admin (dari tab Program di Detail Category)
+  Lokasi: src/views/admin/course/formCreate.hbs
+  Level: L4 Page
+
   Route: GET /program/formCreate/:categoryId -> POST /program/:categoryId
+  Data: { category, courseType, technologies, mentorings, categoryId }.
 
-  HANYA super_admin. Berbeda dari admin/course/create.hbs yang dipakai bersama
-  role admin, route ini ber-@Roles('super_admin') saja, jadi perubahan di sini
-  tidak menyentuh tampilan mentor.
-
-  Sebelumnya halaman ini adalah satu-satunya yang tertinggal memakai 22 partial
-  per-field di admin/program/create/{left_column,right_column}/ plus salinan
-  `programData()` sepanjang ~460 baris yang ditempel langsung di file ini.
-  Salinan itu sudah menyimpang dari versi bersama (hanya ~41% sama), sehingga
-  perbaikan pada program_form_script tidak pernah sampai ke halaman ini.
-  Sekarang keduanya memakai sumber yang sama.
-
-  Bedanya dengan create.hbs hanya tiga hal, semuanya karena halaman ini dibuka
-  dari sebuah kategori:
-  - form POST ke /program/{{categoryId}}
-  - tombol Cancel kembali ke kategori asal, bukan ke daftar program
-  - dropdown Category terkunci pada kategori itu — card_01_basic_info sudah
-    mendukungnya lewat `locked=categoryId` dan `initialId`, jadi tidak ada
-    markup khusus di sini.
+  Nama field sama persis dengan form lama supaya DTO & controller tidak berubah.
+  Field yang bergantung Paid Program dirender dengan x-if sehingga yang tidak
+  tampil juga tidak ikut terkirim:
+  - Paid (Yes) : quota, price, promo, month
+  - Free (No)  : quota, form, day, time_start, time_end
+  Opsi dropdown dibangun per-field (bukan {{json mentorings}}) agar data lain
+  milik user mentor tidak ikut tertanam di halaman.
 --}}
-{{> admin/program/program_form_script}}
+{{#*inline 'langTabs'}}
+  <div class='overflow-x-auto'>
+    {{> components/ui/super_admin/tabs/language/index ariaLabel=ariaLabel state=state short=short }}
+  </div>
+{{/inline}}
 
-<div class='py-10 px-6'>
-  <div class='max-w-[1100px] mx-auto'
-    x-data='programData("create")'
-    x-init='paidClass = false; methodOnline = true; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);'
+{{#*inline 'programListItem'}}
+  <div x-show="{{lang}} === '{{code}}'" {{#unless first}}x-cloak{{/unless}}>
+    {{> components/ui/super_admin/form/repeater
+      name=name
+      state=(concat 'lists.' key '.' code)
+      field=(concat key '.' code)
+      label=label
+      addLabel=addLabel
+      placeholder=placeholder
+    }}
+  </div>
+{{/inline}}
+
+{{#*inline 'programList'}}
+  {{> programListItem code='id' first=true name=(concat prefix 'Id[]') }}
+  {{> programListItem code='en' name=(concat prefix 'En[]') }}
+  {{> programListItem code='ja' name=(concat prefix 'Ja[]') }}
+{{/inline}}
+
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div
+    class='flex flex-col gap-7'
+    x-data='programCreateForm({
+      categoryId: {{json categoryId}},
+      categories: [{{#each category}}{ value: {{json id}}, label: {{json name}} }{{#unless @last}},{{/unless}}{{/each}}],
+      courseTypes: [{{#each courseType}}{ value: {{json id}}, label: {{json nameClassesType}} }{{#unless @last}},{{/unless}}{{/each}}],
+      technologies: [{{#each technologies}}{ value: {{json id}}, label: {{json name}} }{{#unless @last}},{{/unless}}{{/each}}],
+      mentorings: [{{#each mentorings}}{ value: {{json id}}, label: {{json username}} }{{#unless @last}},{{/unless}}{{/each}}],
+    })'
   >
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index title='Create Program' }}
 
-    {{!-- Page Header --}}
-    <div class='flex flex-col gap-[4px] mb-[24px]'>
-      {{> components/ui/admin/text/title text="Create Program"}}
-      {{> components/ui/admin/text/subtitle text="Add a new program to this category"}}
+      {{> components/ui/super_admin/description/index
+        text='Fill in the information below to create a new program.'
+      }}
     </div>
 
-    {{!-- Main Layout: Content + Sidebar --}}
-    <form
-      method='POST'
-      action='/program/{{categoryId}}'
-      enctype='multipart/form-data'
-      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
-      @input.capture="onInputCapture($event)"
-      @change="updateCompleteness()"
-      @click="scheduleUpdate(); activateSection($event.target)"
-      @focusin.capture="activateSection($event.target)"
-      @focusout.capture="onBlurCapture($event)"
-    >
-      <div class='flex flex-row gap-[16px] justify-start items-start'>
+    <div class='grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_243px]'>
+      <form
+        action='/program/{{categoryId}}'
+        {{!-- createKelas memakai categoryId dari URL, jadi action mengikuti kategori yang dipilih. --}}
+        :action="'/program/' + encodeURIComponent(formData.categoryId || {{json categoryId}})"
+        method='post'
+        enctype='multipart/form-data'
+        novalidate
+        @submit.prevent='submitForm($event)'
+        @click='$nextTick(() => syncTools())'
+        class='flex min-w-0 flex-col gap-4'
+      >
+        {{#> components/ui/super_admin/form/section_card id='section-basic' number='01' title='Basic Information'}}
+          <div class='flex flex-col gap-5'>
+            <div class='grid gap-5 md:grid-cols-2'>
+              {{> components/ui/super_admin/form/image_dropzone
+                id='image'
+                name='image'
+                label='Cover Program'
+                meta='JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB'
+                boxClass='h-32'
+                required=true
+              }}
 
-        {{!-- Left Column - Cards --}}
-        <div class='flex-1 min-w-0 flex flex-col gap-[16px]'>
-          {{> admin/program/create/card_01_basic_info}}
-          {{> admin/program/create/card_02_description}}
-          {{> admin/program/create/card_03_schedule}}
-          {{> admin/program/create/card_04_tools}}
-          {{!-- Section 05 + 06: one row, two columns (slicing.pen Frame 2147229585) --}}
-          <div class='flex flex-row gap-[16px] w-full justify-start items-start'>
-            <div class='flex-1 min-w-0'>
-              {{> admin/program/create/card_05_learning}}
+              <div class='flex flex-col gap-3'>
+                {{> components/ui/super_admin/form/text_field
+                  id='name'
+                  name='name'
+                  field='name'
+                  label='Program Name'
+                  placeholder='Enter program name'
+                  required=true
+                }}
+
+                {{> components/ui/super_admin/form/text_field
+                  id='group'
+                  name='group'
+                  field='group'
+                  label='Group'
+                  placeholder='Enter group'
+                  required=true
+                }}
+              </div>
             </div>
-            <div class='flex-1 min-w-0'>
-              {{> admin/program/create/card_06_criteria}}
+
+            <div class='grid gap-x-3 gap-y-5 md:grid-cols-3'>
+              {{> components/ui/super_admin/form/select_field
+                id='categoryId'
+                name='categoryId'
+                field='categoryId'
+                label='Category'
+                placeholder='Select category'
+                options='categoryOptions'
+                required=true
+              }}
+
+              {{> components/ui/super_admin/form/select_field
+                id='jenis_kelasId'
+                name='jenis_kelasId'
+                field='jenis_kelasId'
+                label='Program Type'
+                placeholder='Select program type'
+                options='courseTypeOptions'
+                required=true
+              }}
+
+              {{> components/ui/super_admin/form/segmented
+                id='paid_check'
+                name='paid_check'
+                field='paid'
+                label='Paid Program'
+                options='paidOptions'
+                required=true
+              }}
+
+              {{> components/ui/super_admin/form/segmented
+                id='method'
+                name='method'
+                field='method'
+                label='Method'
+                options='methodOptions'
+                required=true
+              }}
+            </div>
+
+            <div class='grid gap-x-3 gap-y-5 md:grid-cols-3'>
+              {{> components/ui/super_admin/form/text_field
+                id='quota'
+                name='quota'
+                field='quota'
+                label='Program Quota'
+                placeholder='Enter quota'
+                numeric=true
+                required=true
+              }}
+
+              <template x-if="formData.paid === 'true'">
+                {{> components/ui/super_admin/form/text_field
+                  id='price'
+                  name='price'
+                  field='price'
+                  label='Price'
+                  placeholder='Enter price'
+                  numeric=true
+                  required=true
+                }}
+              </template>
+
+              <template x-if="formData.paid === 'true'">
+                {{> components/ui/super_admin/form/text_field
+                  id='promo'
+                  name='promo'
+                  field='promo'
+                  label='Promo'
+                  placeholder='Enter promo price'
+                  numeric=true
+                }}
+              </template>
+
+              <template x-if="formData.paid === 'false'">
+                <div class='md:col-span-2'>
+                  {{> components/ui/super_admin/form/text_field
+                    id='form'
+                    name='form'
+                    field='form'
+                    type='url'
+                    label='Registration Form Link'
+                    placeholder='https://forms.google.com/...'
+                    icon='link'
+                  }}
+                </div>
+              </template>
             </div>
           </div>
-          {{> admin/program/create/action_bar cancelHref=(concat '/category/' categoryId)}}
+        {{/components/ui/super_admin/form/section_card}}
+
+        {{#> components/ui/super_admin/form/section_card id='section-description' number='02' title='Program Description'}}
+          <div class='flex flex-col gap-5'>
+            {{> langTabs ariaLabel='Description language' state='descLang' }}
+
+            {{#each (array 'id' 'en' 'ja')}}
+              <div x-show="descLang === '{{this}}'" {{#unless @first}}x-cloak{{/unless}}>
+                {{> components/ui/super_admin/form/text_field
+                  id=(concat 'description-' this)
+                  name=(concat 'description[' this ']')
+                  field=(concat 'description.' this)
+                  label='Description'
+                  multiline=true
+                  placeholder='Enter a description...'
+                  required=true
+                }}
+              </div>
+            {{/each}}
+          </div>
+        {{/components/ui/super_admin/form/section_card}}
+
+        {{#> components/ui/super_admin/form/section_card id='section-schedule' number='03' title='Schedule & Location'}}
+          <div class='flex flex-col gap-5'>
+            <div class='grid gap-x-3 gap-y-5 md:grid-cols-3'>
+              <template x-if="formData.paid === 'false'">
+                {{> components/ui/super_admin/form/text_field
+                  id='time_start' name='time_start' field='time_start' type='time' icon='clock'
+                  label='Time Start' placeholder='Select start time' required=true
+                }}
+              </template>
+
+              <template x-if="formData.paid === 'false'">
+                {{> components/ui/super_admin/form/text_field
+                  id='time_end' name='time_end' field='time_end' type='time' icon='clock'
+                  label='Time End' placeholder='Select end time' required=true
+                }}
+              </template>
+
+              {{> components/ui/super_admin/form/text_field
+                id='date_registration' name='date_registration' field='date_registration' type='date' icon='calendar'
+                label='Registration Date' placeholder='Select registration date' required=true
+              }}
+
+              <template x-if="formData.paid === 'true'">
+                {{> components/ui/super_admin/form/text_field
+                  id='month' name='month' field='month' type='number'
+                  label='Month' placeholder='e.g 3' required=true
+                }}
+              </template>
+
+              <template x-if="formData.paid === 'false'">
+                {{> components/ui/super_admin/form/text_field
+                  id='day' name='day' field='day' type='number'
+                  label='Day' placeholder='e.g 3' required=true
+                }}
+              </template>
+
+              {{> components/ui/super_admin/form/text_field
+                id='startDate' name='startDate' field='startDate' type='date' icon='calendar'
+                label='Start Date' placeholder='Select start date' required=true
+              }}
+
+              {{> components/ui/super_admin/form/text_field
+                id='endDate' name='endDate' field='endDate' type='date' icon='calendar'
+                label='End Date' placeholder='Select end date' required=true
+              }}
+            </div>
+
+            <div class='flex flex-col gap-2'>
+              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location<span class='text-[#dc2626]'>*</span></span>
+              <div class='flex flex-col gap-4'>
+                {{> langTabs ariaLabel='Location language' state='locLang' short=true }}
+
+                {{#each (array 'id' 'en' 'ja')}}
+                  <div x-show="locLang === '{{this}}'" {{#unless @first}}x-cloak{{/unless}}>
+                    {{> components/ui/super_admin/form/text_field
+                      id=(concat 'locations-' this)
+                      name=(concat 'locations[' this ']')
+                      field=(concat 'locations.' this)
+                      label='Location'
+                      hideLabel=true
+                      placeholder='Enter location'
+                    }}
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+
+            {{> components/ui/super_admin/form/text_field
+              id='locationLink'
+              name='locationLink'
+              field='locationLink'
+              type='url'
+              icon='link'
+              label='Link Location'
+              placeholder='https://maps.app.goo.gl/...'
+              required=true
+            }}
+          </div>
+        {{/components/ui/super_admin/form/section_card}}
+
+        {{#> components/ui/super_admin/form/section_card id='section-tools' number='04' title='Tools & Lessons'}}
+          <div class='flex flex-col gap-5'>
+            <div class='grid gap-x-3 gap-y-5 md:grid-cols-2'>
+              <div class='flex flex-col gap-1.5'>
+                {{> components/ui/super_admin/form/multi_select_field
+                  id='technologies'
+                  name='technologiesIds[]'
+                  label='Tools'
+                  options='technologyOptions'
+                  placeholder='Search or select tools'
+                  emptyText='No tools found.'
+                  required=true
+                }}
+                <p x-show='formErrors.technologies' x-cloak x-text='formErrors.technologies' class='font-inter text-sm leading-5 text-[#ef4444]'></p>
+              </div>
+
+              {{> components/ui/super_admin/form/select_field
+                id='mentoringsId'
+                name='mentoringsId'
+                field='mentoringsId'
+                label='Mentoring'
+                placeholder='Select mentoring'
+                options='mentoringOptions'
+                required=true
+              }}
+            </div>
+
+            <div class='flex flex-col gap-2'>
+              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Lesson<span class='text-[#dc2626]'>*</span></span>
+              <div class='flex flex-col gap-3.5'>
+                {{> langTabs ariaLabel='Lesson language' state='lessonLang' }}
+
+                {{> programList key='materials' prefix='materials' lang='lessonLang' label='Lesson' addLabel='Add Lesson' placeholder='Enter lesson' }}
+              </div>
+            </div>
+          </div>
+        {{/components/ui/super_admin/form/section_card}}
+
+        <div class='grid gap-4 md:grid-cols-2'>
+          {{#> components/ui/super_admin/form/section_card id='section-learning' number='05' title='Learning Target'}}
+            <div class='flex flex-col gap-3.5'>
+              {{> langTabs ariaLabel='Learning target language' state='targetLang' short=true }}
+
+              {{> programList key='learningTargets' prefix='learningTargets' lang='targetLang' label='Learning target' addLabel='Add Target' placeholder='Enter target' }}
+            </div>
+          {{/components/ui/super_admin/form/section_card}}
+
+          {{#> components/ui/super_admin/form/section_card id='section-criteria' number='06' title='Participant Criteria'}}
+            <div class='flex flex-col gap-3.5'>
+              {{> langTabs ariaLabel='Participant criteria language' state='criteriaLang' short=true }}
+
+              {{> programList key='criteria' prefix='criteria' lang='criteriaLang' label='Criteria' addLabel='Add Criteria' placeholder='Enter criteria' }}
+            </div>
+          {{/components/ui/super_admin/form/section_card}}
         </div>
 
-        {{!-- Right Column - Sidebar --}}
-        {{> admin/program/create/sidebar}}
+        <div class='flex flex-col-reverse gap-3 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5'>
+          {{> components/ui/super_admin/form/button
+            as='link'
+            variant='secondary'
+            href=(concat '/category/' categoryId)
+            label='Cancel'
+            loading=true
+          }}
 
+          <div class='flex flex-col-reverse gap-3 sm:flex-row'>
+            {{> components/ui/super_admin/form/button
+              variant='secondary'
+              label='Save draft'
+              disabled=true
+            }}
+
+            {{> components/ui/super_admin/form/button
+              type='submit'
+              variant='primary'
+              label='Create Program'
+              loadingLabel='Creating...'
+              loading=true
+            }}
+          </div>
+        </div>
+      </form>
+
+      <div class='hidden self-stretch lg:block'>
+        {{> components/ui/super_admin/form/progress
+          steps='steps'
+          tips='You can save draft anytime before publishing'
+        }}
       </div>
-
-      {{!-- Cover Warning --}}
-      <template x-if='coverHasFile && !coverValid'>
-        <div class='flex items-center gap-2 p-3 mt-[16px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
-          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
-          <p class='text-[14px] text-[#DC2626] font-inter'>
-            <span class='font-semibold'>Cannot submit:</span> Please fix the cover image validation errors above.
-          </p>
-        </div>
-      </template>
-
-      {{!-- Submit Warning --}}
-      <template x-if='hasVisibleErrors()'>
-        <div class='flex items-center gap-2 p-3 mt-[8px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
-          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
-          <p class='text-[14px] text-[#DC2626] font-inter'>
-            <span class='font-semibold'>Cannot submit:</span> Please fix all validation errors above.
-          </p>
-        </div>
-      </template>
-
-    </form>
+    </div>
   </div>
 </div>
+
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const LANG_LABEL = { id: 'ID', en: 'EN', ja: 'JP' };
+    const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    // Batas mengikuti @ValidateImage di CoursesController.createKelas.
+    const IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const DIM = { minW: 1900, maxW: 1920, minH: 1000, maxH: 1080 };
+
+    const LISTS = ['materials', 'learningTargets', 'criteria'];
+    const LIST_LABEL = { materials: 'lesson', learningTargets: 'learning target', criteria: 'participant criteria' };
+    const LANG_STATE = {
+      description: 'descLang',
+      locations: 'locLang',
+      materials: 'lessonLang',
+      learningTargets: 'targetLang',
+      criteria: 'criteriaLang',
+    };
+    const NUMERIC = ['quota', 'price', 'promo'];
+    const SELECTS = ['categoryId', 'jenis_kelasId', 'mentoringsId'];
+    const DEPENDENTS = { time_start: 'time_end', startDate: 'endDate', price: 'promo' };
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+    const readPath = (obj, path) => path.split('.').reduce((acc, key) => acc[key], obj);
+    const writePath = (obj, path, value) => {
+      const keys = path.split('.');
+      const last = keys.pop();
+      keys.reduce((acc, key) => acc[key], obj)[last] = value;
+    };
+    const digits = (value) => String(value ?? '').replace(/\D/g, '');
+    const isHttpUrl = (value) => {
+      try {
+        const { protocol } = new URL(value);
+        return protocol === 'http:' || protocol === 'https:';
+      } catch {
+        return false;
+      }
+    };
+    const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
+
+    const sectionPaths = (paid) => ({
+      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : ['form'])],
+      'section-description': LANGS.map((l) => `description.${l}`),
+      'section-schedule': [
+        ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
+        'date_registration',
+        'startDate',
+        'endDate',
+        ...LANGS.map((l) => `locations.${l}`),
+        'locationLink',
+      ],
+      'section-tools': ['technologies', 'mentoringsId', ...LANGS.map((l) => `materials.${l}`)],
+      'section-learning': LANGS.map((l) => `learningTargets.${l}`),
+      'section-criteria': LANGS.map((l) => `criteria.${l}`),
+    });
+
+    const emptyErrors = () => ({
+      name: '', group: '', categoryId: '', jenis_kelasId: '', mentoringsId: '', paid: '', method: '',
+      quota: '', price: '', promo: '', form: '', month: '', day: '', time_start: '', time_end: '',
+      date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
+      description: byLang(() => ''), locations: byLang(() => ''),
+      materials: byLang(() => ''), learningTargets: byLang(() => ''), criteria: byLang(() => ''),
+    });
+
+    window.programCreateForm = function programCreateForm({ categoryId, categories, courseTypes, technologies, mentorings }) {
+      return {
+        loading: false,
+        descLang: 'id',
+        locLang: 'id',
+        lessonLang: 'id',
+        targetLang: 'id',
+        criteriaLang: 'id',
+
+        categoryOptions: categories,
+        courseTypeOptions: courseTypes,
+        technologyOptions: technologies,
+        mentoringOptions: mentorings,
+        paidOptions: [{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }],
+        methodOptions: [{ value: 'online', label: 'Online' }, { value: 'offline', label: 'Offline' }],
+
+        steps: [
+          { id: 'section-basic', title: 'Basic Information' },
+          { id: 'section-description', title: 'Description' },
+          { id: 'section-schedule', title: 'Schedule & Location' },
+          { id: 'section-tools', title: 'Tools & Lessons' },
+          { id: 'section-learning', title: 'Learning Target' },
+          { id: 'section-criteria', title: 'Participant Criteria' },
+        ],
+
+        formData: {
+          name: '', group: '',
+          categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
+          jenis_kelasId: '', mentoringsId: '', paid: 'true', method: 'online',
+          quota: '', price: '', promo: '', form: '', month: '', day: '', time_start: '', time_end: '',
+          date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
+          description: byLang(() => ''), locations: byLang(() => ''),
+        },
+        lists: Object.fromEntries(LISTS.map((key) => [key, byLang(() => [''])])),
+        formErrors: emptyErrors(),
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: {},
+
+        previewUrl: null,
+        errorMessage: '',
+        isValid: true,
+        hasFile: false,
+        fileName: '',
+
+        fieldValue(path) {
+          const [field, lang] = path.split('.');
+          return LISTS.includes(field) ? this.lists[field][lang] : readPath(this.formData, path);
+        },
+
+        errorFor(path) {
+          const [field, lang] = path.split('.');
+          const value = this.fieldValue(path);
+          const val = typeof value === 'string' ? value.trim() : value;
+          const d = this.formData;
+
+          if (LISTS.includes(field)) {
+            return value.some((item) => item.trim()) ? '' : `Add at least one ${LIST_LABEL[field]} (${LANG_LABEL[lang]}).`;
+          }
+
+          switch (field) {
+            case 'name':
+              return val ? '' : 'Program name is required.';
+            case 'group':
+              return val ? '' : 'Group is required.';
+            case 'categoryId':
+              return UUID.test(val) ? '' : 'Please select a category.';
+            case 'jenis_kelasId':
+              return UUID.test(val) ? '' : 'Please select a program type.';
+            case 'mentoringsId':
+              return UUID.test(val) ? '' : 'Please select a mentoring.';
+            case 'quota':
+              return +digits(val) > 0 ? '' : 'Program quota is required.';
+            case 'price':
+              return +digits(val) > 0 ? '' : 'Price is required.';
+            case 'promo':
+              return val && +digits(val) > +digits(d.price) ? 'Promo must not exceed the price.' : '';
+            case 'form':
+              return val && !isHttpUrl(val) ? 'Registration form link must be a valid URL.' : '';
+            case 'month':
+              return inRange(val, 1, 12) ? '' : 'Month must be between 1 and 12.';
+            case 'day':
+              return inRange(val, 1, 31) ? '' : 'Day must be between 1 and 31.';
+            case 'time_start':
+              return val ? '' : 'Time start is required.';
+            case 'time_end':
+              if (!val) return 'Time end is required.';
+              return d.time_start && val <= d.time_start ? 'Time end must be later than time start.' : '';
+            case 'date_registration':
+              return val ? '' : 'Registration date is required.';
+            case 'startDate':
+              return val ? '' : 'Start date is required.';
+            case 'endDate':
+              if (!val) return 'End date is required.';
+              return d.startDate && val < d.startDate ? 'End date must be on or after the start date.' : '';
+            case 'locationLink':
+              if (!val) return 'Link location is required.';
+              return isHttpUrl(val) ? '' : 'Link location must be a valid URL.';
+            case 'technologies':
+              return val > 0 ? '' : 'Please select at least one tool.';
+            case 'description':
+              return val ? '' : `Description (${LANG_LABEL[lang]}) is required.`;
+            case 'locations':
+              return val ? '' : `Location (${LANG_LABEL[lang]}) is required.`;
+            default:
+              return '';
+          }
+        },
+
+        activePaths() {
+          return Object.values(sectionPaths(this.formData.paid === 'true')).flat();
+        },
+
+        refresh(path) {
+          writePath(this.formErrors, path, this.touched[path] ? this.errorFor(path) : '');
+        },
+
+        validateField(path, value) {
+          const next = NUMERIC.includes(path) && digits(value)
+            ? new Intl.NumberFormat('id-ID').format(+digits(value))
+            : value ?? '';
+          writePath(this.formData, path, next);
+          this.refresh(path);
+          if (DEPENDENTS[path]) this.refresh(DEPENDENTS[path]);
+        },
+
+        touch(path) {
+          this.touched[path] = true;
+          this.refresh(path);
+        },
+
+        // multi_select_field memegang pilihannya sendiri; jumlahnya dibaca dari hidden input.
+        syncTools() {
+          this.formData.technologies = this.$root.querySelectorAll('input[name="technologiesIds[]"]').length;
+          this.refresh('technologies');
+        },
+
+        sectionComplete(id) {
+          const paths = sectionPaths(this.formData.paid === 'true')[id];
+          const done = paths.every((path) => !this.errorFor(path));
+          return id === 'section-basic' ? done && this.hasFile && this.isValid : done;
+        },
+
+        stepActive(id) {
+          if (this.sectionComplete(id)) return true;
+          return this.steps.find((step) => !this.sectionComplete(step.id))?.id === id;
+        },
+
+        validateImage(file) {
+          this.clearImage();
+          if (!file) return;
+          this.hasFile = true;
+          this.fileName = file.name;
+          // Tetap tidak valid sampai dimensi selesai dicek di onload, supaya submit tidak lolos lebih dulu.
+          this.isValid = false;
+
+          if (!IMAGE_TYPES.includes(file.type)) {
+            this.setImageError('Only JPG and PNG formats are allowed');
+            return;
+          }
+          if (file.size > MAX_SIZE) {
+            this.setImageError(`File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 10 MB`);
+            return;
+          }
+
+          const objectUrl = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            const { minW, maxW, minH, maxH } = DIM;
+            if (img.width < minW || img.width > maxW || img.height < minH || img.height > maxH) {
+              URL.revokeObjectURL(objectUrl);
+              this.setImageError(`Image is ${img.width}x${img.height}px. Required: ${minW}x${minH} to ${maxW}x${maxH} pixels`);
+              return;
+            }
+            this.isValid = true;
+            this.previewUrl = objectUrl;
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError('Failed to load image');
+          };
+          img.src = objectUrl;
+        },
+
+        clearFile() {
+          this.clearImage();
+          this.$refs.dropInput.value = null;
+        },
+
+        clearImage() {
+          if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+          Object.assign(this, { previewUrl: null, errorMessage: '', isValid: true, hasFile: false, fileName: '' });
+        },
+
+        setImageError(message) {
+          Object.assign(this, { errorMessage: message, isValid: false, previewUrl: null });
+        },
+
+        validateAll() {
+          this.syncTools();
+          this.activePaths().forEach((path) => this.touch(path));
+          if (!this.hasFile) this.setImageError('Please upload the cover program.');
+        },
+
+        // Error bisa berada di tab bahasa lain — pindah tab dulu, baru fokuskan.
+        revealFirstInvalid() {
+          if (!this.hasFile || !this.isValid) {
+            document.getElementById('section-basic').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+
+          const path = this.activePaths().find((p) => readPath(this.formErrors, p));
+          if (!path) return;
+
+          const [field, lang] = path.split('.');
+          if (lang) this[LANG_STATE[field]] = lang;
+          this.$nextTick(() => {
+            const target = document.getElementById(SELECTS.includes(field) ? `${field}-trigger` : path.replace('.', '-'));
+            if (target) {
+              target.focus();
+              target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              return;
+            }
+            const [sectionId] = Object.entries(sectionPaths(this.formData.paid === 'true')).find(([, paths]) => paths.includes(path));
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          const valid = this.hasFile && this.isValid && this.activePaths().every((p) => !readPath(this.formErrors, p));
+          if (!valid) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>
