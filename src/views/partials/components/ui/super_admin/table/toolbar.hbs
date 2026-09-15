@@ -29,10 +29,12 @@
     </span>
   </label>
 
+  {{#unless hideCreate}}
   <a
     href='{{default createHref "/users/formCreate"}}'
     class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
   >
     {{default createLabel 'Create User'}}
   </a>
+  {{/unless}}
 </div>

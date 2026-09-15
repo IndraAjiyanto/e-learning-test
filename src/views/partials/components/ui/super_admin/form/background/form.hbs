@@ -1,0 +1,101 @@
+{{!--
+  Komponen: Background Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/background/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `backgroundForm()` untuk super_admin/background/{create,edit}.hbs.
+  Menyediakan: formData, formErrors, validateField(), touch(), canSubmit(), submitForm(), loading.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const FIELDS = ['content', 'details'];
+    const LANG_LABEL = { id: 'ID', en: 'EN', ja: 'JP' };
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    const splitPath = (path) => {
+      const [field, lang] = path.split('.');
+      return { field, lang };
+    };
+
+    const errorFor = (field, lang, value) => {
+      const val = (value ?? '').toString().trim();
+      const label = field === 'content' ? 'Content' : 'Text';
+
+      if (!val) return `${label} (${LANG_LABEL[lang]}) is required.`;
+      return '';
+    };
+
+    window.backgroundForm = function backgroundForm({ content, details } = {}) {
+      const initial = (src) => byLang((l) => (src && src[l]) || '');
+
+      return {
+        loading: false,
+
+        formData: { content: initial(content), details: initial(details) },
+        formErrors: { content: byLang(() => ''), details: byLang(() => '') },
+        touched: { content: byLang(() => false), details: byLang(() => false) },
+
+        validateField(path, value) {
+          const { field, lang } = splitPath(path);
+          this.formData[field][lang] = value ?? '';
+          this.formErrors[field][lang] = this.touched[field][lang]
+            ? errorFor(field, lang, this.formData[field][lang])
+            : '';
+        },
+
+        touch(path) {
+          const { field, lang } = splitPath(path);
+          this.touched[field][lang] = true;
+          this.validateField(path, this.formData[field][lang]);
+        },
+
+        validateAll() {
+          FIELDS.forEach((field) =>
+            LANGS.forEach((lang) => {
+              this.touched[field][lang] = true;
+              this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
+            }),
+          );
+        },
+
+        hasFormErrors() {
+          return FIELDS.some((field) => LANGS.some((lang) => this.formErrors[field][lang] !== ''));
+        },
+
+        canSubmit() {
+          const allFilled = FIELDS.every((field) =>
+            LANGS.every((lang) => ((this.formData[field] && this.formData[field][lang]) ?? '').toString().trim() !== '')
+          );
+          return allFilled && !this.hasFormErrors();
+        },
+
+        revealFirstInvalid() {
+          for (const field of FIELDS) {
+            for (const lang of LANGS) {
+              if (!this.formErrors[field][lang]) continue;
+
+              this.$nextTick(() => {
+                const el = document.getElementById(`${field}-${lang}`);
+                if (el) el.focus();
+              });
+              return;
+            }
+          }
+        },
+
+        submitForm(event) {
+          if (!this.canSubmit()) {
+            this.validateAll();
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>
