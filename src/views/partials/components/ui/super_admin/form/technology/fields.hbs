@@ -1,0 +1,105 @@
+{{!--
+  Komponen: Technology Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/technology/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Kartu 01 Tech Information, 02 Icon Source.
+  Dipanggil oleh super_admin/technologies/{create,edit}.hbs; pemanggil
+  menyediakan state Alpine dari form/technology/form.
+
+  Partial block (opsional) dirender di akhir kartu 02 — Edit menaruh tombol
+  aksinya di sana, Create memakai kartu aksi terpisah. Pola sama dengan
+  form/benefit/fields dan form/program_type/fields.
+
+  SATU DARI DUA, BUKAN KEDUANYA WAJIB
+  Backend (TechnologiesController) menolak tech yang tidak punya `svg` maupun
+  `imgUrl`, tapi menerima salah satunya. Keduanya karena itu dirender
+  berdampingan di satu kartu dengan satu pesan error bersama — bukan dua field
+  wajib terpisah yang akan saling bertabrakan.
+
+  Input file-nya bernama `image` (bukan `imgUrl`): itu nama yang dibaca
+  FileInterceptor, dan controller yang mengubahnya jadi imgUrl.
+--}}
+{{#*inline 'technologyCardHeader'}}
+  <div class='flex items-center gap-2'>
+    <span class='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#003060] font-montserrat text-base font-semibold leading-6 text-white'>{{number}}</span>
+    <h2 class='font-montserrat text-base font-semibold leading-6 text-[#003060]'>{{title}}</h2>
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-3.5'>
+  <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
+    {{> technologyCardHeader number='01' title='Tech Information' }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='name'
+      name='name'
+      field='name'
+      label='Tech Name'
+      placeholder='React, Laravel, PostgreSQL, etc'
+      required=true
+    }}
+  </section>
+
+  <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
+    {{> technologyCardHeader number='02' title='Icon Source' }}
+
+    <p class='-mt-3 font-inter text-sm leading-5 text-[#525252]'>
+      Provide the logo as inline SVG code or as an uploaded image. Only one is
+      required — if both are given, the SVG is the one displayed.
+    </p>
+
+    <div class='grid grid-cols-1 gap-5 lg:grid-cols-2'>
+      <div class='flex flex-col gap-2'>
+        {{> components/ui/super_admin/form/text_field
+          id='svg'
+          name='svg'
+          field='svg'
+          label='SVG Code'
+          multiline=true
+          rows=6
+          placeholder='<svg viewBox="0 0 128 128">...</svg>'
+          hint='Paste the full <svg> element. Leave empty to use an image instead.'
+        }}
+
+        {{!-- Pratinjau SVG: satu-satunya cara memastikan markup yang ditempel
+             benar-benar tergambar sebelum disimpan. --}}
+        <div
+          x-show='svgPreview'
+          x-cloak
+          class='flex items-center gap-3 rounded-lg border border-[#e5e5e5] bg-[#fafafa] px-3.5 py-3'
+        >
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center [&>svg]:h-10 [&>svg]:w-10' x-html='svgPreview'></span>
+          <span class='font-inter text-xs leading-[18px] text-[#737373]'>SVG preview</span>
+        </div>
+      </div>
+
+      {{> components/ui/super_admin/form/image_dropzone
+        id='image'
+        name='image'
+        label='Image'
+        meta='JPG / PNG / SVG · Max 2 MB'
+        accept='image/jpeg,image/jpg,image/png,image/svg+xml'
+        boxClass='h-[220px]'
+      }}
+    </div>
+
+    {{!-- Nilai dibaca controller saat user menghapus gambar lama tanpa
+         mengunggah pengganti. --}}
+    <input type='hidden' name='remove_image' :value="previewUrl ? 'false' : 'true'" />
+
+    {{!-- Error gabungan: muncul hanya kalau SVG dan gambar sama-sama kosong. --}}
+    <p
+      x-show='formErrors.iconSource'
+      x-cloak
+      x-text='formErrors.iconSource'
+      class='font-inter text-sm leading-5 text-[#ef4444]'
+    ></p>
+
+    {{#if @partial-block}}
+      <div class='pt-6'>
+        {{> @partial-block}}
+      </div>
+    {{/if}}
+  </section>
+</div>

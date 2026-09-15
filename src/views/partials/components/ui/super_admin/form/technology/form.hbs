@@ -1,0 +1,179 @@
+{{!--
+  Komponen: Technology Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/technology/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `technologyForm()` untuk super_admin/technologies/{create,edit}.hbs.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
+  loading (form/button); previewUrl, errorMessage, isValid, hasFile, fileName,
+  validateImage(), clearFile() (form/image_dropzone); svgPreview (form/technology/fields).
+
+  ATURAN "SALAH SATU WAJIB"
+  Backend menolak tech tanpa svg maupun imgUrl. Di sini aturan itu jadi satu
+  kunci error tersendiri (`iconSource`) alih-alih menandai kedua field sebagai
+  wajib — kalau keduanya ditandai wajib, mengisi SVG saja tetap memunculkan
+  error di field gambar, padahal form-nya sudah sah.
+
+  EDIT: GAMBAR LAMA
+  previewUrl diisi imgUrl yang tersimpan, sehingga tombol Change/Remove milik
+  image_dropzone langsung bekerja atas gambar lama. Menekan Remove mengosongkan
+  previewUrl, dan input hidden `remove_image` di fields ikut berubah jadi 'true'
+  — itulah sinyal yang dibaca controller untuk menghapus gambar.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LABEL = { name: 'Tech Name' };
+    const MIN = { name: 2 };
+
+    // Urutan ini juga urutan fokus saat submit gagal.
+    const PATHS = ['name'];
+
+    // Batas mengikuti kontrak backend (@ValidateImage pada TechnologiesController):
+    // JPG/PNG/SVG, maks 2 MB. Tidak ada batas dimensi di sisi backend, jadi tidak
+    // ada pula pengecekan lebar/tinggi di sini.
+    const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
+    const MAX_SIZE = 2 * 1024 * 1024;
+
+    const errorFor = (field, value) => {
+      const val = (value ?? '').toString().trim();
+      if (!val) return `${LABEL[field]} is required.`;
+      if (val.length < MIN[field]) {
+        return `${LABEL[field]} must be at least ${MIN[field]} characters.`;
+      }
+      return '';
+    };
+
+    window.technologyForm = function technologyForm({ name, svg, imgUrl } = {}) {
+      return {
+        loading: false,
+
+        formData: { name: name || '', svg: svg || '' },
+        formErrors: { name: '', iconSource: '' },
+        touched: { name: false },
+
+        // Image dropzone state. previewUrl sudah terisi saat mengedit tech yang
+        // gambarnya ada, supaya pratinjaunya langsung tampil.
+        previewUrl: imgUrl || null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        hasFile: false,
+
+        // Pratinjau hanya dipasang kalau isinya betul-betul elemen <svg>;
+        // teks sembarang tidak ikut disuntikkan ke DOM.
+        get svgPreview() {
+          const markup = (this.formData.svg || '').trim();
+          return /^<svg[\s>]/i.test(markup) ? markup : '';
+        },
+
+        validateField(path, value) {
+          this.formData[path] = value ?? '';
+          this.formErrors[path] = this.touched[path]
+            ? errorFor(path, this.formData[path])
+            : '';
+          // Mengetik SVG harus langsung mencabut error "salah satu wajib".
+          if (path === 'svg') this.validateIconSource();
+        },
+
+        touch(path) {
+          if (!(path in this.touched)) return;
+          this.touched[path] = true;
+          this.validateField(path, this.formData[path]);
+        },
+
+        validateImage(file) {
+          this.clearPreview();
+          if (!file) return;
+
+          this.hasFile = true;
+          this.fileName = file.name;
+
+          if (!ALLOWED_TYPES.includes(file.type)) {
+            return this.setImageError('Only JPG, PNG, and SVG files are allowed');
+          }
+
+          if (file.size > MAX_SIZE) {
+            return this.setImageError(
+              `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 2 MB`,
+            );
+          }
+
+          this.previewUrl = URL.createObjectURL(file);
+          this.isValid = true;
+          this.errorMessage = '';
+          this.validateIconSource();
+        },
+
+        setImageError(message) {
+          this.errorMessage = message;
+          this.isValid = false;
+          this.previewUrl = null;
+        },
+
+        clearPreview() {
+          // Hanya object URL buatan sendiri yang perlu dicabut; imgUrl dari
+          // server adalah URL biasa dan revoke terhadapnya tidak ada gunanya.
+          if (this.previewUrl && this.previewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(this.previewUrl);
+          }
+          this.previewUrl = null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.hasFile = false;
+        },
+
+        clearFile() {
+          this.clearPreview();
+          this.$refs.dropInput.value = null;
+          this.validateIconSource();
+        },
+
+        validateIconSource() {
+          const hasSvg = (this.formData.svg || '').trim() !== '';
+          const hasImage = Boolean(this.previewUrl);
+          this.formErrors.iconSource =
+            hasSvg || hasImage
+              ? ''
+              : 'Provide an SVG code or upload an image — at least one is required.';
+        },
+
+        validateAll() {
+          PATHS.forEach((path) => this.touch(path));
+          this.validateIconSource();
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some((error) => error !== '') || !this.isValid;
+        },
+
+        revealFirstInvalid() {
+          const path = PATHS.find((p) => this.formErrors[p]);
+          this.$nextTick(() => {
+            const el = document.getElementById(path || 'svg');
+            if (!el) {
+              console.warn('technologyForm: field tidak ditemukan — id di form/technology/fields berubah?');
+              return;
+            }
+            el.focus();
+          });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>
