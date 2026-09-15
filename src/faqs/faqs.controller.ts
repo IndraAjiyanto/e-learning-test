@@ -58,11 +58,23 @@ export class FaqsController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const faqs = await this.faqsService.findOne(faqsId);
-    res.render('super_admin/faqs/edit', {
-      user: req.user,
-      faqs,
-    });
+    try {
+      const faqs = await this.faqsService.findOne(faqsId);
+      if (!faqs) {
+        req.flash('error', 'FAQ Not Found');
+        return res.redirect('/category');
+      }
+      res.render('super_admin/faqs/edit', {
+        user: req.user,
+        faqs,
+      });
+    } catch (error) {
+      req.flash(
+        'error',
+        error instanceof Error ? error.message : 'FAQ failed to load',
+      );
+      res.redirect('/category');
+    }
   }
 
   @Roles('super_admin')
