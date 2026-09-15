@@ -27,11 +27,11 @@
       }}
 
       {{> components/ui/super_admin/description/index
-        text='Manage the program types that classify every program in Kesatria Academy.'
+        text='Manage and organize program type used across Kesatria Academy.'
       }}
     </div>
 
-    <div class='flex flex-col gap-3.5'>
+    <div class='flex flex-col gap-2.5'>
       {{> components/ui/super_admin/table/toolbar
         placeholder='Search program type..'
         searchLabel='Search program type'
@@ -43,24 +43,24 @@
         class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'
         x-data="{ lang: 'id' }"
       >
-        <div class='flex flex-col gap-5'>
+        <div class='flex flex-col gap-4'>
 
           {{> components/ui/super_admin/tabs/language/index ariaLabel='Program type language' }}
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1000px]'}}
             <colgroup>
-              <col class='w-[66px]' />
-              <col class='w-[297px]' />
-              <col class='w-[90px]' />
-              <col class='w-[431px]' />
-              <col class='w-[116px]' />
+              <col class='w-[240px]' />
+              <col class='w-[366px]' />
+              <col class='w-[199px]' />
+              <col class='w-[103px]' />
+              <col class='w-[102px]' />
             </colgroup>
             <thead>
               <tr>
-                {{> components/ui/super_admin/table/header_cell label='No' }}
                 {{> components/ui/super_admin/table/header_cell label='Program Type' }}
-                {{> components/ui/super_admin/table/header_cell label='Icon' }}
                 {{> components/ui/super_admin/table/header_cell label='Description' }}
+                {{> components/ui/super_admin/table/header_cell label='Name Icon' }}
+                {{> components/ui/super_admin/table/header_cell label='Icon' }}
                 {{> components/ui/super_admin/table/header_cell label='Action' }}
               </tr>
             </thead>
@@ -69,12 +69,8 @@
                 <i class='fas fa-spinner fa-spin text-xl'></i>
               {{/components/ui/super_admin/table/message_row}}
 
-              <template x-for='(row, index) in (loading ? [] : items)' :key='row.id'>
+              <template x-for='row in (loading ? [] : items)' :key='row.id'>
                 <tr class='transition-colors hover:bg-[#fafafa]'>
-
-                  {{> components/ui/super_admin/table/cell
-                    text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-                  }}
 
                   {{#> components/ui/super_admin/table/cell}}
                     <span
@@ -83,23 +79,23 @@
                     ></span>
                   {{/components/ui/super_admin/table/cell}}
 
-                  {{!-- Ikon dirender dari nama kelas FontAwesome yang disimpan di kolom
-                       `icon`; nama mentahnya ikut jadi tooltip supaya super admin tetap
-                       bisa memverifikasi nilai yang tersimpan tanpa kolom terpisah. --}}
-                  {{#> components/ui/super_admin/table/cell}}
-                    <i
-                      class='flex h-5 w-5 items-center justify-center text-base text-[#525252]'
-                      :class='programTypeIcon(row.icon)'
-                      :title='row.icon'
-                      aria-hidden='true'
-                    ></i>
-                  {{/components/ui/super_admin/table/cell}}
-
                   {{#> components/ui/super_admin/table/cell}}
                     <span
                       class='block truncate font-inter text-sm leading-5 text-[#525252]'
                       x-text="(row.description && row.description[lang]) || '—'"
                     ></span>
+                  {{/components/ui/super_admin/table/cell}}
+
+                  {{!-- Kolom "Name Icon" menampilkan nilai mentah yang tersimpan,
+                       kolom "Icon" merendernya sebagai ikon Font Awesome. --}}
+                  {{> components/ui/super_admin/table/cell text='row.icon || "—"' }}
+
+                  {{#> components/ui/super_admin/table/cell}}
+                    <i
+                      class='flex h-5 w-5 items-center justify-center text-base text-[#525252]'
+                      :class='programTypeIcon(row.icon)'
+                      aria-hidden='true'
+                    ></i>
                   {{/components/ui/super_admin/table/cell}}
 
                   {{#> components/ui/super_admin/table/cell variant='action'}}

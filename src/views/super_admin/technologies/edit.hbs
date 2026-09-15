@@ -1,25 +1,31 @@
 {{!--
-  Halaman: Edit Tech — Super Admin
+  Halaman: Edit Teknologi — Super Admin
   Lokasi: src/views/super_admin/technologies/edit.hbs
   Level: L4 Page
+
+  Figma: LMS Kesatria — page "Super Admin", frame "Program/Edit Teknologi".
+  Judul, sub-judul, dan label field memakai istilah "Teknologi" sesuai Figma.
 
   Route: GET /technology/formEdit/:id -> PATCH /technology/:id
   (multipart + _method override). Data: { technologies }.
 
-  Beda dari create.hbs: field terisi nilai existing (termasuk pratinjau gambar
-  lama lewat previewUrl), tombol aksi berada di dalam kartu 02, dan ada kartu
-  Danger Zone untuk menghapus tech.
+  Beda dari create.hbs: field terisi nilai existing, termasuk pratinjau gambar
+  lama lewat previewUrl.
+
+  TIDAK ADA TOMBOL HAPUS DI SINI — sesuai Figma, halaman edit hanya menyimpan
+  perubahan. Menghapus teknologi dilakukan lewat aksi baris di halaman daftar,
+  yang sudah memakai modal konfirmasi yang sama.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
 
     <div class='flex flex-col gap-1'>
       {{> components/ui/super_admin/page_header/index
-        title='Edit Tech'
+        title='Edit Teknologi'
       }}
 
       {{> components/ui/super_admin/description/index
-        text='Update this technology and the logo shown on program and portfolio pages.'
+        text='Update the teknologi information used across Kesatria Academy.'
       }}
     </div>
 
@@ -35,8 +41,8 @@
         x-data='technologyForm({ name: {{json technologies.name}}, svg: {{json technologies.svg}}, imgUrl: {{json technologies.imgUrl}} })'
         @submit.prevent='submitForm($event)'
       >
-        {{#> components/ui/super_admin/form/technology/fields }}
-          <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+        {{#> components/ui/super_admin/form/technology/fields showPreview=true }}
+          <div class='flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end'>
             {{> components/ui/super_admin/form/button
               as='link'
               variant='secondary'
@@ -55,56 +61,8 @@
         {{/components/ui/super_admin/form/technology/fields}}
       </form>
 
-      {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
-           confirmDelete milik partial sweetalert global yang menimpa fungsi senama. --}}
-      <div
-        class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
-      >
-        <div class='flex items-start gap-4 sm:min-h-[72px]'>
-          <span
-            class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
-          >
-            {{!-- lucide: alert-circle --}}
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
-              <circle cx='12' cy='12' r='10' />
-              <path d='M12 8v4' />
-              <path d='M12 16h.01' />
-            </svg>
-          </span>
-
-          <div class='flex flex-col gap-1'>
-            {{> components/ui/super_admin/description/index
-              text='Delete Tech'
-              class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
-            }}
-
-            {{> components/ui/super_admin/description/index
-              text='Permanently remove this technology. Programs already referencing it will lose the badge. This action cannot be undone.'
-              class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
-            }}
-          </div>
-        </div>
-
-        <form
-          action='/technology/{{technologies.id}}?_method=DELETE'
-          method='post'
-          class='shrink-0'
-        >
-          {{> components/ui/super_admin/form/button
-            variant='danger'
-            label='Delete Tech'
-            onclick='openDeleteModal(this)'
-            class='w-full sm:w-auto'
-          }}
-        </form>
-      </div>
     </div>
   </div>
 </div>
-
-{{> components/ui/super_admin/modal/delete_confirm/index
-  title='Delete Tech?'
-  description='Are you sure you want to delete this technology? Programs already referencing it will lose the badge. This action cannot be undone.'
-}}
 
 {{> components/ui/super_admin/form/technology/form }}

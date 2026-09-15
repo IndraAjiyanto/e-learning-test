@@ -3,53 +3,66 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/program_type/fields.hbs
   Level: L2 Blok field (scoped super_admin)
 
-  Kartu 01 Icon Information, 02 Program Type Information.
-  Dipanggil oleh super_admin/courseType/{create,edit}.hbs; pemanggil menyediakan
-  state Alpine dari form/program_type/form.
+  Figma: LMS Kesatria — page "Super Admin", frame "Program/Create Program Type"
+  dan "Program/Edit Program Type".
 
-  Partial block (opsional) dirender di akhir kartu 02 — Edit menaruh tombol
-  aksinya di sana, sedangkan Create memakai kartu aksi terpisah. Pola ini sama
-  dengan form/benefit/fields.
+  SATU KARTU, URUTAN NAME → ICON CODE → DESCRIPTION
+  Seperti form Teknologi, Figma menaruh semua field dalam satu kartu tanpa
+  header bernomor, dan baris tombol ikut di dalamnya.
 
-  `nameClassesType` bukan kolom multibahasa (kolom varchar biasa), jadi hanya
-  `description` yang punya tab bahasa.
+  Hanya Description yang bertanda wajib di Figma; Program Type Name dan Icon
+  Code tampil tanpa asterisk meski keduanya tetap divalidasi form/program_type/form.
 
-  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
-  meski tab-nya tidak aktif; x-cloak mencegah ketiganya sempat tampil bertumpuk
-  sebelum Alpine (defer) jalan. Id field `description-{kodeBahasa}` dipakai
-  form/program_type/form untuk fokus ke field yang error — jangan diubah sepihak.
+  `nameClassesType` bukan kolom multibahasa (varchar biasa), jadi hanya
+  `description` yang punya tab bahasa. Ketiga bahasa tetap di DOM (x-show,
+  bukan x-if) supaya nilainya ikut terkirim meski tab-nya tidak aktif; x-cloak
+  mencegah ketiganya sempat tampil bertumpuk sebelum Alpine (defer) jalan. Id
+  field `description-{kodeBahasa}` dipakai form/program_type/form untuk fokus ke
+  field yang error — jangan diubah sepihak.
 --}}
-{{#*inline 'programTypeCardHeader'}}
-  <div class='flex items-center gap-2'>
-    <span class='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#003060] font-montserrat text-base font-semibold leading-6 text-white'>{{number}}</span>
-    <h2 class='font-montserrat text-base font-semibold leading-6 text-[#003060]'>{{title}}</h2>
-  </div>
-{{/inline}}
-
 {{#*inline 'programTypeLangPanel'}}
-  <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
+  <div x-show="descriptionLang === '{{code}}'" x-cloak>
     {{> components/ui/super_admin/form/text_field
-      id=(concat field '-' code)
-      name=(concat field '[' code ']')
-      field=(concat field '.' code)
-      label=(concat label ' (' langName ')')
+      id=(concat 'description-' code)
+      name=(concat 'description[' code ']')
+      field=(concat 'description.' code)
+      label=(concat 'Description (' langName ')')
       hideLabel=true
       multiline=true
-      placeholder=placeholder
-      required=true
+      rows=6
+      placeholder='Enter a description...'
     }}
   </div>
 {{/inline}}
 
-{{#*inline 'programTypeLangField'}}
-  <div class='flex flex-col gap-2'>
-    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
+<div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
+  {{> components/ui/super_admin/form/text_field
+    id='nameClassesType'
+    name='nameClassesType'
+    field='nameClassesType'
+    label='Program Type Name'
+    placeholder='Enter a program type name'
+  }}
 
-    <div class='flex flex-col gap-4'>
+  {{!-- Picker searchable menggantikan input biasa di Figma: label, placeholder,
+       dan hint-nya tetap sama persis, panel pencarian baru muncul saat field
+       difokuskan — jadi tampilan diamnya identik dengan desain. --}}
+  {{> components/ui/super_admin/form/icon_picker
+    id='icon'
+    name='icon'
+    field='icon'
+    label='Icon Code'
+    placeholder='Enter a icon code name'
+    hint='Type an icon name like code or fa-code. It will preview using Font Awesome 6 (e.g. fa-solid fa-code).'
+  }}
+
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Description<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-col gap-2'>
       {{> components/ui/super_admin/tabs/language/index
-        state=(concat field 'Lang')
-        short=true
-        ariaLabel=(concat label ' language')
+        state='descriptionLang'
+        ariaLabel='Description language'
       }}
 
       {{> programTypeLangPanel code='id' langName='Indonesian' }}
@@ -57,43 +70,10 @@
       {{> programTypeLangPanel code='ja' langName='Japanese' }}
     </div>
   </div>
-{{/inline}}
 
-<div class='flex flex-col gap-3.5'>
-  <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
-    {{> programTypeCardHeader number='01' title='Icon Information' }}
-
-    {{!-- Picker searchable: pratinjau + daftar ikon sudah di dalam komponen,
-         jadi tidak perlu blok preview terpisah seperti form/benefit/fields. --}}
-    {{> components/ui/super_admin/form/icon_picker
-      id='icon'
-      name='icon'
-      field='icon'
-      label='Icon'
-      placeholder='Search an icon — trash, user, code...'
-      hint='Search by keyword, or paste a Font Awesome class such as fa-solid fa-code.'
-      required=true
-    }}
-  </section>
-
-  <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
-    {{> programTypeCardHeader number='02' title='Program Type Information' }}
-
-    {{> components/ui/super_admin/form/text_field
-      id='nameClassesType'
-      name='nameClassesType'
-      field='nameClassesType'
-      label='Program Type Name'
-      placeholder='Web Development, UI/UX Design, etc'
-      required=true
-    }}
-
-    {{> programTypeLangField field='description' label='Description' placeholder='Enter a description...' }}
-
-    {{#if @partial-block}}
-      <div class='pt-6'>
-        {{> @partial-block}}
-      </div>
-    {{/if}}
-  </section>
+  {{#if @partial-block}}
+    <div class='pt-2'>
+      {{> @partial-block}}
+    </div>
+  {{/if}}
 </div>

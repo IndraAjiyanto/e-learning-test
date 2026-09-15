@@ -30,7 +30,7 @@
     </div>
 
     <div
-      class='flex flex-col gap-3.5'
+      class='flex flex-col gap-2.5'
       x-data='clientTable({ items: {{json vouchers}}, searchKeys: ["code_voucher", "type", "target_users_label"] })'
     >
       {{> components/ui/super_admin/table/toolbar
@@ -42,18 +42,16 @@
 
       {{#> components/ui/super_admin/table/card tableClass='min-w-[1002px]'}}
         <colgroup>
-          <col class='w-[66px]' />
           <col class='w-[150px]' />
           <col class='w-[110px]' />
           <col class='w-[90px]' />
           <col class='w-[120px]' />
           <col class='w-[110px]' />
-          <col class='w-[240px]' />
+          <col class='w-[306px]' />
           <col class='w-[116px]' />
         </colgroup>
         <thead>
           <tr>
-            {{> components/ui/super_admin/table/header_cell label='No' }}
             {{> components/ui/super_admin/table/header_cell label='Code' }}
             {{> components/ui/super_admin/table/header_cell label='Type' }}
             {{> components/ui/super_admin/table/header_cell label='Percent' }}
@@ -64,12 +62,8 @@
           </tr>
         </thead>
         <tbody>
-          <template x-for='(row, index) in rows' :key='row.id'>
+          <template x-for='row in rows' :key='row.id'>
             <tr class='transition-colors hover:bg-[#fafafa]'>
-
-              {{> components/ui/super_admin/table/cell
-                text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-              }}
 
               {{#> components/ui/super_admin/table/cell}}
                 <span
@@ -80,7 +74,7 @@
 
               {{#> components/ui/super_admin/table/cell}}
                 {{> components/ui/super_admin/badge/index
-                  text="row.type === 'free' ? 'Free' : 'Discount'"
+                  text='row.type === "free" ? "Free" : "Discount"'
                   classExpr="row.type === 'free' ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#f9f5ff] text-[#6941c6]'"
                 }}
               {{/components/ui/super_admin/table/cell}}
@@ -88,13 +82,13 @@
               {{!-- Persen hanya bermakna untuk voucher discount; voucher free
                    selalu menampilkan strip, bukan 0%. --}}
               {{> components/ui/super_admin/table/cell
-                text="row.type === 'discount' && row.percent != null ? row.percent + '%' : '—'"
+                text='row.type === "discount" && row.percent != null ? row.percent + "%" : "—"'
               }}
 
               {{#> components/ui/super_admin/table/cell}}
                 {{> components/ui/super_admin/badge/index
                   dot=true
-                  text="row.active ? 'Active' : 'Inactive'"
+                  text='row.active ? "Active" : "Inactive"'
                   classExpr="row.active ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#f1f1f1] text-[#718096]'"
                   dotClassExpr="row.active ? 'bg-[#22c55e]' : 'bg-[#718096]'"
                 }}
@@ -102,7 +96,7 @@
 
               {{!-- Voucher tanpa program berlaku untuk semua program. --}}
               {{> components/ui/super_admin/table/cell
-                text="row.courses && row.courses.length ? row.courses.length + ' program' : 'All programs'"
+                text='row.courses && row.courses.length ? row.courses.length + " program" : "All programs"'
               }}
 
               {{#> components/ui/super_admin/table/cell}}
@@ -123,7 +117,7 @@
             </tr>
           </template>
 
-          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='8'}}
+          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='7'}}
             No vouchers found.
           {{/components/ui/super_admin/table/message_row}}
         </tbody>
