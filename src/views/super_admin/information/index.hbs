@@ -187,7 +187,7 @@
           {{#each activeUsersList}}
           <div class="flex flex-row items-center p-4 gap-3 w-full h-[72px] bg-[#F8FAFC] border border-[#D9D9D9] rounded-[12px]">
             <div class="avatar placeholder">
-              <div class="bg-[{{this.bgColor}}] text-[{{this.textColor}}] rounded-full w-[40px] h-[40px]">
+              <div class="rounded-full w-[40px] h-[40px]" style="background:{{this.bgColor}};color:{{this.textColor}}">
                 <span class="font-semibold text-[14px]">{{this.initials}}</span>
               </div>
             </div>
@@ -232,7 +232,7 @@
         {{#each learningList}}
         <div class="learning-card flex flex-col p-5 gap-3 w-full bg-white border border-[#D9D9D9] rounded-[14px] shadow-[0_4px_16px_rgba(35,57,93,0.04)]">
           <div class="flex flex-row items-center gap-3">
-            <div class="bg-[{{this.bgColor}}] text-[{{this.textColor}}] rounded-full w-[38px] h-[38px] flex items-center justify-center">
+            <div class="rounded-full w-[38px] h-[38px] flex items-center justify-center" style="background:{{this.bgColor}};color:{{this.textColor}}">
               <span class="font-semibold text-[13px]">{{this.initials}}</span>
             </div>
             <div class="flex flex-col gap-[1px] flex-grow min-w-0">
