@@ -1,0 +1,49 @@
+{{!--
+  Komponen: Gallery Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/gallery/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Gambar, Title, lalu Description sesuai CreateGalleryDto. `no` (slot layout)
+  diisi otomatis oleh GalleryService saat create dan tidak berubah saat edit.
+  Pemanggil menyediakan state Alpine dari form/gallery/form.
+  Dipakai super_admin/gallery/create.hbs dan edit.hbs.
+
+  Props:
+  - edit : boolean (opsional) — gambar tidak wajib; kosongkan untuk mempertahankan gambar lama
+--}}
+<div class='flex flex-col gap-5'>
+  {{#if edit}}
+    {{> components/ui/super_admin/form/image_dropzone
+      id='image'
+      name='image'
+      label='Image'
+      meta='Leave empty to keep the current image · JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
+    }}
+  {{else}}
+    {{> components/ui/super_admin/form/image_dropzone
+      id='image'
+      name='image'
+      label='Image'
+      required=true
+      meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
+    }}
+  {{/if}}
+
+  {{> components/ui/super_admin/form/text_field
+    id='title'
+    name='title'
+    field='title'
+    label='Title'
+    placeholder='Gallery title'
+    required=true
+  }}
+
+  {{> components/ui/super_admin/form/text_field
+    id='description'
+    name='description'
+    field='description'
+    label='Description'
+    placeholder='Write a short description...'
+    multiline=true
+  }}
+</div>
