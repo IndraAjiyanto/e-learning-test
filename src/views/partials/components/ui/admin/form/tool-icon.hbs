@@ -1,0 +1,19 @@
+{{!--
+  Component: Tool Icon (Admin) — atomic
+  Path: components/ui/admin/form/tool-icon.hbs
+  Props: {{svg}} (Alpine expression resolving to the tool's svg string),
+         {{img}} (Alpine expression resolving to the tool's image url),
+         {{alt}} (optional, Alpine expression for img alt, default "''"),
+         {{boxClass}} (optional, default "w-[20px] h-[20px]")
+
+  Priority: svg first, then img. Renders nothing when neither exists.
+  Injected svg is scaled to the box via [&>svg] utilities.
+--}}
+<template x-if='{{{svg}}} && {{{svg}}} !== "null" && {{{svg}}}.trim() !== ""'>
+  <span class='flex items-center justify-center shrink-0 overflow-hidden {{default boxClass "w-[20px] h-[20px]"}} [&>svg]:w-full [&>svg]:h-full' x-html='{{{svg}}}'></span>
+</template>
+<template x-if='!({{{svg}}} && {{{svg}}} !== "null" && {{{svg}}}.trim() !== "") && {{{img}}} && {{{img}}} !== "null" && {{{img}}}.trim() !== ""'>
+  <span class='flex items-center justify-center shrink-0 overflow-hidden {{default boxClass "w-[20px] h-[20px]"}}'>
+    <img :src='{{{img}}}'{{#if alt}} :alt='{{{alt}}}'{{/if}} class='w-full h-full object-contain' />
+  </span>
+</template>

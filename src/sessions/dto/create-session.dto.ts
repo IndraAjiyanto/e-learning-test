@@ -1,4 +1,10 @@
-import { IsBooleanString, IsDateString, IsInt, IsString, IsUUID } from 'class-validator';
+import {
+  IsBooleanString,
+  IsDateString,
+  IsInt,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateSessionDto {
   @IsString()

@@ -126,7 +126,7 @@
 
       {{!-- Navigasi --}}
       <nav
-        class="sidebar-scroll flex-1 min-h-0 overflow-y-auto bg-[#FAFAFA] px-[12px] py-[16px] space-y-[4px]"
+        class="sidebar-scroll flex-1 min-h-0 overflow-y-auto bg-[#FAFAFA] px-[12px] pt-[16px] space-y-[4px]"
         aria-label="Sidebar navigation"
       >
         {{#if (eq user.role 'admin')}}
@@ -139,14 +139,14 @@
 
           {{> components/ui/sidebar/nav_link/index href='/users' label='Users' icon='icon_users'}}
 
-          {{#> components/ui/sidebar/nav_group/index key='dashboard' label='Dashboard' icon='icon_dashboard'}}
-            {{> components/ui/sidebar/nav_link/index href='/partnership' label='Partner' level=2 icon=''}}
-            {{> components/ui/sidebar/nav_link/index href='/faq' label='FAQ' level=2 icon=''}}
-            {{> components/ui/sidebar/nav_link/index href='/benefit' label='Benefit' level=2 icon=''}}
+          {{#> components/ui/sidebar/nav_group/index key='dashboard' label='Content' icon='icon_folder_open'}}
+            {{> components/ui/sidebar/nav_link/index href='/partnership' label='Partners' level=2 icon=''}}
+            {{> components/ui/sidebar/nav_link/index href='/faq' label='FAQs' level=2 icon=''}}
+            {{> components/ui/sidebar/nav_link/index href='/benefit' label='Benefits' level=2 icon=''}}
             {{> components/ui/sidebar/nav_link/index href='/about' label='Header' level=2 icon=''}}
           {{/components/ui/sidebar/nav_group/index}}
 
-          {{#> components/ui/sidebar/nav_group/index key='program' label='Program' icon='icon_program'}}
+          {{#> components/ui/sidebar/nav_group/index key='program' label='Learning' icon='icon_book_open'}}
             {{> components/ui/sidebar/nav_link/index href='/category' label='Category' level=2 icon=''}}
             {{> components/ui/sidebar/nav_link/index href='/type-program' label='Program Type' level=2 icon=''}}
             {{> components/ui/sidebar/nav_link/index href='/technology' label='Tech' level=2 icon=''}}
@@ -178,7 +178,7 @@
     </div>
 
     {{!-- Kartu profil user --}}
-    <div class="shrink-0 bg-[#FAFAFA] border-t border-[#D9D9D9] px-[20px] pt-[21px] pb-[20px]">
+    <div class="shrink-0 bg-white border-t border-[#D9D9D9] px-[20px] pt-[21px] pb-[20px]">
       {{> components/ui/sidebar/user_pill/index
           username=user.username
           role=user.role

@@ -1,0 +1,92 @@
+{{!--
+  Card 05 - Learning Target
+  Path: partials/admin/program/create/card_05_learning.hbs
+  Design: slicing.pen "Feature Card - Learning Target" (386.5, radius 12, stroke #D9D9D9)
+  Card chrome via form-card. Lang tabs: language-tabs variant="underline".
+  Input row: num 42x44 bg #F5F5F5 + outline #D9D9D9, zero-padded Montserrat number #718096
+  Input: h44 white, outline #D4D4D4, shadow, placeholder #737373 Inter 16
+  Add button: h44 white, solid outline 1px #3B82F6, shadow, "Add Target" #3B82F6 Inter 16 semibold
+  Delete per row kept for functionality (pen shows single row only).
+--}}
+{{#> components/ui/admin/form/form-card num="05" title="Learning Target" id="section-05"}}
+<div class='flex flex-col gap-[14px] w-full'
+  x-data="{ targetTab: 'id' }">
+
+  {{!-- Language Tabs --}}
+  {{> components/ui/admin/form/language-tabs alpineVar="targetTab" variant="underline"}}
+
+  {{!-- Target Lists --}}
+  <div x-show='targetTab === "id"' x-data="{ items: {{#if course}}({{json course.learningTargetsId}} || ['']){{else}}['']{{/if}} }">
+    <template x-for='(item, index) in items' :key='index'>
+      <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
+        <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
+          <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
+        </div>
+        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <input type='text' :name="'learningTargetsId[]'" x-model='items[index]' placeholder='Enter learning target...'
+            class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]' />
+        </div>
+        <button type='button' @click='items.splice(index, 1)' x-show='items.length > 1'
+          class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+          title='Delete' aria-label='Delete'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+        </button>
+      </div>
+    </template>
+    <button type='button' @click="items.push('')"
+      class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
+      <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Target</span>
+    </button>
+    <div id='targets_id_error' class='hidden text-red-500 text-xs mt-1'></div>
+  </div>
+
+  <div x-show='targetTab === "en"' x-data="{ items: {{#if course}}({{json course.learningTargetsEn}} || ['']){{else}}['']{{/if}} }">
+    <template x-for='(item, index) in items' :key='index'>
+      <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
+        <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
+          <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
+        </div>
+        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <input type='text' :name="'learningTargetsEn[]'" x-model='items[index]' placeholder='Enter learning target...'
+            class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]' />
+        </div>
+        <button type='button' @click='items.splice(index, 1)' x-show='items.length > 1'
+          class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+          title='Delete' aria-label='Delete'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+        </button>
+      </div>
+    </template>
+    <button type='button' @click="items.push('')"
+      class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
+      <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Target</span>
+    </button>
+    <div id='targets_en_error' class='hidden text-red-500 text-xs mt-1'></div>
+  </div>
+
+  <div x-show='targetTab === "ja"' x-data="{ items: {{#if course}}({{json course.learningTargetsJa}} || ['']){{else}}['']{{/if}} }">
+    <template x-for='(item, index) in items' :key='index'>
+      <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
+        <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
+          <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
+        </div>
+        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+          <input type='text' :name="'learningTargetsJa[]'" x-model='items[index]' placeholder='Enter learning target...'
+            class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]' />
+        </div>
+        <button type='button' @click='items.splice(index, 1)' x-show='items.length > 1'
+          class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+          title='Delete' aria-label='Delete'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+        </button>
+      </div>
+    </template>
+    <button type='button' @click="items.push('')"
+      class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
+      <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Target</span>
+    </button>
+    <div id='targets_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
+  </div>
+
+</div>
+{{/components/ui/admin/form/form-card}}

@@ -1,10 +1,28 @@
-import { IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsOptional, IsString, IsUUID, isDateString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { Method } from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
+/**
+ * Kontrak domain untuk pembuatan Program (Course).
+ *
+ * Satu sumber kebenaran: nama field di sini = kolom entitas `Course`
+ * (lihat src/entities/course.entity.ts). Field yang bersifat relasi
+ * (categoryId, courseTypeId, technologiesIds, mentoringsId) dipakai untuk
+ * resolve entity, sisanya langsung disimpan ke kolom entitas.
+ */
 export class CreateCoursesDto {
   @IsString()
-  courseName: string;
+  name: string;
 
   @IsString()
   group: string;
@@ -15,88 +33,123 @@ export class CreateCoursesDto {
   @IsUUID()
   categoryId: string;
 
-  @IsArray()
-  locations: string[];
-
   @IsUUID()
   courseTypeId: string;
 
+  @IsOptional()
   @IsUUID()
-  mentoringsId: string;
+  mentoringsId?: string;
 
-  @IsInt()
-  @IsOptional()
-  month: number;
+  /** jsonb: { id, en, ja } */
+  @IsObject()
+  description: { id: string; en: string; ja: string };
 
-  @IsInt()
-  @IsOptional()
-  day: number;
-
-  @IsDateString()
-  startDate: Date;
-
-  @IsDateString()
-  endDate: Date;
-
-  @IsInt()
-  @IsOptional()
-  price: number;
-
-  @IsInt()
-  @IsOptional()
-  promo: number;
-
-  @IsInt()
-  @IsOptional()
-  quota: number;
+  /** jsonb: { id, en, ja } */
+  @IsObject()
+  locations: { id: string; en: string; ja: string };
 
   @IsString()
-  @IsOptional()
-  form: string;
+  locationLink: string;
 
-  @IsBoolean()
-  @IsOptional()
-  launch: boolean;
+  @IsArray()
+  @IsString({ each: true })
+  materialsId: string[];
 
-  @IsBoolean()
-  @IsOptional()
-  checkPaid: boolean;
+  @IsArray()
+  @IsString({ each: true })
+  materialsEn: string[];
 
-  @IsString()
-  paid_check: string;
+  @IsArray()
+  @IsString({ each: true })
+  materialsJa: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  learningTargetsId: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  learningTargetsEn: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  learningTargetsJa: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  criteriaId?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  criteriaEn?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  criteriaJa?: string[];
 
   @IsOptional()
   @IsArray()
   @IsUUID('all', { each: true })
   technologiesIds?: string[];
 
-  @IsArray()
-  materials: string[];
+  @IsOptional()
+  @IsInt()
+  month?: number;
 
-  @IsArray()
-  learningTarget: string[];
+  @IsOptional()
+  @IsInt()
+  day?: number;
 
+  @IsDateString()
+  startDate: string;
+
+  @IsDateString()
+  endDate: string;
+
+  @IsOptional()
+  @IsInt()
+  price?: number;
+
+  @IsOptional()
+  @IsInt()
+  promo?: number;
+
+  @IsOptional()
+  @IsInt()
+  quota?: number;
+
+  @IsOptional()
   @IsString()
-  @IsOptional()
-  image: string;
+  form?: string;
 
+  @IsOptional()
+  @IsBoolean()
+  launch?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  checkPaid?: boolean;
+
+  @IsOptional()
   @IsEnum(['approved', 'process', 'rejected'])
-  @IsOptional()
-  process: ProcessStatus;
-
-  @IsArray()
-  description: string[];
-
-  @IsArray()
-  @IsOptional()
-  criteria: string[];
+  process?: ProcessStatus;
 
   @IsOptional()
-  date_registration: Date;
+  @IsString()
+  image?: string;
 
   @IsOptional()
+  @IsDateString()
+  date_registration?: string;
+
+  @IsOptional()
+  @IsString()
   time_start?: string;
 
   @IsOptional()
+  @IsString()
   time_end?: string;
 }

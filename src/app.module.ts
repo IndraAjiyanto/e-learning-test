@@ -1,7 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -161,7 +158,6 @@ import path from 'path';
   providers: [AppService],
 })
 export class AppModule {
-
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(I18nMiddleware).forRoutes('*');
     consumer

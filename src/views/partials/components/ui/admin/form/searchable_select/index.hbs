@@ -1,0 +1,93 @@
+{{!--
+  Komponen: Searchable Select (Admin)
+  Lokasi: src/views/partials/components/ui/admin/form/searchable_select/index.hbs
+  Level: L1 Atomik
+
+  Dropdown searchable + hidden input. Satu-satunya penghubung nilai ke backend
+  adalah hidden input `name`; teks pencarian tidak ikut ter-submit.
+
+  Props:
+  - label        : string (wajib, contoh "Program Type*")
+  - forId        : string (wajib, id label & kunci validasi Alpine, contoh "courseTypeId")
+  - errorId      : string (wajib, id elemen error, contoh "courseTypeId_error")
+  - name         : string (wajib, name hidden input = field DTO, contoh "courseTypeId")
+  - itemsJson    : string JSON array (wajib, contoh (json courseType))
+  - displayField : string (wajib, field yang ditampilkan & dicari, contoh "nameClassesType")
+  - placeholder  : string (opsional, default "Search...")
+  - locked       : boolean (opsional, kunci pilihan, default false)
+  - initialId    : string (opsional, preselect by id, contoh categoryId)
+  - dispatchEvent: string (opsional, nama event $dispatch saat pilih/hapus)
+  - dispatchKey  : string (opsional, kunci payload event, default "item")
+  - validateKey  : string (opsional, kunci borderClass() validasi form induk,
+                   contoh "categoryId" Ã¢â‚¬â€ memanggil borderClass dari scope Alpine induk)
+--}}
+<div class='flex-1 min-w-0'
+  x-data="{
+    search: '',
+    selected: null,
+    showDropdown: false,
+    displayField: '{{default displayField 'name'}}',
+    locked: {{#if locked}}true{{else}}false{{/if}},
+    initialId: {{#if initialId}}'{{initialId}}'{{else}}null{{/if}},
+    dispatchEvent: {{#if dispatchEvent}}'{{dispatchEvent}}'{{else}}null{{/if}},
+    dispatchKey: '{{default dispatchKey 'item'}}',
+    items: {{itemsJson}},
+    init() {
+      if (this.initialId) {
+        const pre = this.items.find(i => i.id == this.initialId);
+        if (pre) this.select(pre);
+      }
+    },
+    get filtered() {
+      const q = this.search.toLowerCase();
+      return this.items.filter(i =>
+        String(i[this.displayField] || '').toLowerCase().includes(q)
+      );
+    },
+    select(item) {
+      if (this.locked) return;
+      this.selected = item;
+      this.search = item[this.displayField];
+      this.showDropdown = false;
+      if (this.dispatchEvent) {
+        const payload = {};
+        payload[this.dispatchKey] = item;
+        $dispatch(this.dispatchEvent, payload);
+      }
+    },
+    clear() {
+      if (this.locked) return;
+      this.selected = null;
+      this.search = '';
+      if (this.dispatchEvent) {
+        const payload = {};
+        payload[this.dispatchKey] = null;
+        $dispatch(this.dispatchEvent, payload);
+      }
+    }
+  }"
+  @click.away='showDropdown = false'
+>
+  {{#> components/ui/admin/form/form-field label=label for=forId errorId=errorId}}
+    <div class='relative'>
+      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+        :class="locked ? 'bg-[#F5F5F5]' : ''">
+        <input type='text' x-model='search' @focus='if (!locked) showDropdown = true' @input='if (!locked) showDropdown = true'
+          :disabled='locked' placeholder='{{default placeholder 'Search...'}}'
+          {{#if validateKey}}:class="borderClass('{{validateKey}}')"{{/if}}
+          class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='m6 9 6 6 6-6'/></svg>
+      </div>
+      <div x-show='!locked && showDropdown && filtered.length > 0'
+        class='absolute z-10 w-full mt-1 bg-white [outline:1px_solid_#D4D4D4] rounded-[8px] shadow-lg max-h-60 overflow-y-auto'>
+        <template x-for='item in filtered' :key='item.id'>
+          <button type='button' @click='select(item)'
+            class='w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F5F5F5] transition text-left border-b border-[#F5F5F5] last:border-0'>
+            <span class='text-[14px]/[normal] font-inter font-medium text-[#404040]' x-text='item[displayField]'></span>
+          </button>
+        </template>
+      </div>
+      <input type='hidden' name='{{name}}' :value='selected ? selected.id : ""' />
+    </div>
+  {{/components/ui/admin/form/form-field}}
+</div>

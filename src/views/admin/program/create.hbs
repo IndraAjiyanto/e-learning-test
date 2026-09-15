@@ -1,0 +1,72 @@
+{{!--
+  Page: Admin - Create Program
+  Path: admin/program/create.hbs
+  Design: slicing.pen - Page - Add Program (CSS Spec)
+--}}
+{{> admin/program/program_form_script}}
+
+<div class='py-10 px-6'>
+  <div class='max-w-[1100px] mx-auto'
+    x-data='programData("create")'
+    x-init='paidClass = false; methodOnline = true; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);'
+  >
+
+    {{!-- Page Header --}}
+    <div class='flex flex-col gap-[4px] mb-[24px]'>
+      {{> components/ui/admin/text/title text="Create Program"}}
+      {{> components/ui/admin/text/subtitle text="Add a new program to the system"}}
+    </div>
+
+    {{!-- Main Layout: Content + Sidebar --}}
+    <form
+      method='POST'
+      action='/program'
+      enctype='multipart/form-data'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
+      @input.capture="onInputCapture($event)"
+      @change="updateCompleteness()"
+      @click="scheduleUpdate(); activateSection($event.target)"
+      @focusin.capture="activateSection($event.target)"
+      @focusout.capture="onBlurCapture($event)"
+    >
+      <div class='flex flex-row gap-[16px] justify-start items-start'>
+
+        {{!-- Left Column - Cards --}}
+        <div class='flex-1 min-w-0 flex flex-col gap-[16px]'>
+          {{> admin/program/create/card_01_basic_info}}
+          {{> admin/program/create/card_02_description}}
+          {{> admin/program/create/card_03_schedule}}
+          {{> admin/program/create/card_04_tools}}
+          {{> admin/program/create/card_05_learning}}
+          {{> admin/program/create/card_06_criteria}}
+          {{> admin/program/create/action_bar}}
+        </div>
+
+        {{!-- Right Column - Sidebar --}}
+        {{> admin/program/create/sidebar}}
+
+      </div>
+
+      {{!-- Cover Warning --}}
+      <template x-if='coverHasFile && !coverValid'>
+        <div class='flex items-center gap-2 p-3 mt-[16px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix the cover image validation errors above.
+          </p>
+        </div>
+      </template>
+
+      {{!-- Submit Warning --}}
+      <template x-if='hasVisibleErrors()'>
+        <div class='flex items-center gap-2 p-3 mt-[8px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+
+    </form>
+  </div>
+</div>

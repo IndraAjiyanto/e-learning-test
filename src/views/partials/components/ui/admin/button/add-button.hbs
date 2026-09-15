@@ -1,0 +1,13 @@
+{{!--
+  Component: Add Button (Admin) — atomic
+  Path: components/ui/admin/button/add-button.hbs
+  Props: {{text}}, {{class}} (optional), {{onclick}} (optional, raw Alpine expression, e.g. "items.push('')")
+
+  Design: w fill_container, h44, bg white, outline 2px dashed #D4D4D4, radius 8
+  Text: Inter 16/normal, #3B82F6, medium
+--}}
+<button type='button'
+  {{#if onclick}}@click="{{{onclick}}}"{{/if}}
+   class='box-border w-full shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:2px_dashed_#D4D4D4] [outline-offset:-1px] rounded-[8px] hover:[outline-color:#3B82F6] hover:bg-[#F0F7FF] transition-colors {{class}}'>
+  <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-medium whitespace-nowrap'>{{text}}</span>
+</button>

@@ -1,0 +1,12 @@
+{{!--
+  Component: Ghost Button (Admin) — atomic
+  Path: components/ui/admin/button/ghost-button.hbs
+  Props: {{text}}, {{class}} (optional), {{color}} (optional, default #3B82F6)
+
+  Design: w fill_container, h44, bg white, outline 1px #D4D4D4, radius 8
+  Text: Inter 16/normal, #3B82F6, medium
+--}}
+<button type='button'
+   class='box-border w-full shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#F0F7FF] transition-colors {{class}}'>
+  <span class='text-[16px]/[normal] font-inter font-medium whitespace-nowrap' style='color: {{default color "#3B82F6"}}'>{{text}}</span>
+</button>

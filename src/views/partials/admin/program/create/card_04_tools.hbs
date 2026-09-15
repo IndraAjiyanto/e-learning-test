@@ -1,0 +1,129 @@
+{{!--
+  Card 04 - Tools & Lessons
+  Path: partials/admin/program/create/card_04_tools.hbs
+--}}
+{{#> components/ui/admin/form/form-card num="04" title="Tools & Lessons" id="section-04"}}
+<div class='flex flex-col gap-[16px] w-full'>
+
+  {{!-- Tools Select --}}
+  <div x-data="{
+    search: '',
+    selectedTools: {{#if course}}({{json course.technologies}} || []){{else}}[]{{/if}},
+    showDropdown: false,
+    availableTools: {{json technologies}},
+    get filteredTools() {
+      return this.availableTools.filter(t =>
+        !this.selectedTools.some(s => s.id === t.id) &&
+        t.name.toLowerCase().includes(this.search.toLowerCase())
+      );
+    },
+    selectTool(tool) {
+      this.selectedTools.push(tool);
+      this.search = '';
+      this.showDropdown = false;
+    },
+    removeTool(index) {
+      this.selectedTools.splice(index, 1);
+    }
+  }" @click.away='showDropdown = false'>
+    {{#> components/ui/admin/form/form-field label="Tools*" for="technologies" errorId="technologies_error"}}
+      <div class='relative'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+          <input type='text' x-model='search' @focus='showDropdown = true' @input='showDropdown = true'
+            placeholder='Search tools...'
+            class='text-[16px]/[normal] flex-1 min-w-0 text-[#737373] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='m6 9 6 6 6-6'/></svg>
+        </div>
+        <div x-show='showDropdown && filteredTools.length > 0'
+          class='absolute z-10 w-full mt-1 bg-white [outline:1px_solid_#D4D4D4] rounded-[8px] shadow-lg max-h-60 overflow-y-auto'>
+          <template x-for='tool in filteredTools' :key='tool.id'>
+            <button type='button' @click='selectTool(tool)'
+              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F5F5F5] transition text-left border-b border-[#F5F5F5] last:border-0'>
+              {{> components/ui/admin/form/tool-icon svg="tool.svg" img="tool.imgUrl" alt="tool.name" boxClass="w-[20px] h-[20px]"}}
+              <span class='text-[14px]/[normal] font-inter font-medium text-[#404040]' x-text='tool.name'></span>
+            </button>
+          </template>
+        </div>
+      </div>
+    {{/components/ui/admin/form/form-field}}
+
+    {{!-- Selected Tool Badges --}}
+    <div class='flex flex-row flex-wrap gap-[8px] mt-[8px]'>
+      <template x-for='(tool, index) in selectedTools' :key='tool.id'>
+        {{> components/ui/admin/form/badge-chip xLabel="tool.name" removeClick="removeTool(index)" inputName="technologiesIds[]" inputValueBind="tool.id" iconSvg="tool.svg" iconImg="tool.imgUrl" iconAlt="tool.name"}}
+      </template>
+    </div>
+  </div>
+
+  {{!-- Lessons with Language Tabs --}}
+  <div class='flex flex-col gap-[12px] w-full'
+    x-data="{ lessonTab: 'id' }">
+    <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Lessons*</label>
+
+    {{!-- Lesson Tabs --}}
+    {{> components/ui/admin/form/language-tabs alpineVar="lessonTab"}}
+
+    {{!-- Lesson Lists --}}
+    <div x-show='lessonTab === "id"' x-data="{ items: {{#if course}}({{json course.materialsId}} || ['']){{else}}['']{{/if}} }">
+      <template x-for='(item, index) in items' :key='index'>
+        <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
+          <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px]'>
+            <span class='text-[14px]/[normal] text-[#525252] font-inter font-medium' x-text='index + 1'></span>
+          </div>
+          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+            <input type='text' :name="'materialsId[]'" x-model='items[index]' placeholder='Enter lesson...'
+              class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+          </div>
+          <button type='button' @click='items.splice(index, 1)' x-show='items.length > 1'
+            class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+          </button>
+        </div>
+      </template>
+    {{> components/ui/admin/button/add-button text="+ Add Lesson" onclick="items.push('')"}}
+      <div id='materis_id_error' class='hidden text-red-500 text-xs mt-1'></div>
+    </div>
+
+    <div x-show='lessonTab === "en"' x-data="{ items: {{#if course}}({{json course.materialsEn}} || ['']){{else}}['']{{/if}} }">
+      <template x-for='(item, index) in items' :key='index'>
+        <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
+          <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px]'>
+            <span class='text-[14px]/[normal] text-[#525252] font-inter font-medium' x-text='index + 1'></span>
+          </div>
+          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+            <input type='text' :name="'materialsEn[]'" x-model='items[index]' placeholder='Enter lesson...'
+              class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+          </div>
+          <button type='button' @click='items.splice(index, 1)' x-show='items.length > 1'
+            class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+          </button>
+        </div>
+      </template>
+    {{> components/ui/admin/button/add-button text="+ Add Lesson" onclick="items.push('')"}}
+      <div id='materis_en_error' class='hidden text-red-500 text-xs mt-1'></div>
+    </div>
+
+    <div x-show='lessonTab === "ja"' x-data="{ items: {{#if course}}({{json course.materialsJa}} || ['']){{else}}['']{{/if}} }">
+      <template x-for='(item, index) in items' :key='index'>
+        <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
+          <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px]'>
+            <span class='text-[14px]/[normal] text-[#525252] font-inter font-medium' x-text='index + 1'></span>
+          </div>
+          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+            <input type='text' :name="'materialsJa[]'" x-model='items[index]' placeholder='Enter lesson...'
+              class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+          </div>
+          <button type='button' @click='items.splice(index, 1)' x-show='items.length > 1'
+            class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+          </button>
+        </div>
+      </template>
+    {{> components/ui/admin/button/add-button text="+ Add Lesson" onclick="items.push('')"}}
+      <div id='materis_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
+    </div>
+  </div>
+
+</div>
+{{/components/ui/admin/form/form-card}}

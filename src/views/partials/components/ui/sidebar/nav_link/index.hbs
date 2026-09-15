@@ -34,16 +34,16 @@
     href="{{href}}"
     @click="setActive('{{default path href}}')"
     :class="active === '{{default path href}}'
-      ? 'bg-[#E7F3FB] text-[#003060] font-semibold shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05)]'
-      : 'text-[#4A5568] hover:bg-[#E7F3FB]/60 hover:text-[#003060] active:bg-[#E7F3FB]'"
+      ? 'bg-[#E4F1F7] text-[#003060] font-semibold'
+      : 'text-[#4A5568] hover:bg-[#E4F1F7]/60 hover:text-[#003060] active:bg-[#E4F1F7]'"
     class="flex items-center w-full rounded-[8px] font-montserrat transition-colors duration-150
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40
       {{#if (eq level 3)}}h-[36px] gap-[10px] px-[14px] text-[12px] font-medium
-      {{else if (eq level 2)}}h-[40px] gap-[12px] px-[14px] text-[13px] font-medium
+      {{else if (eq level 2)}}h-[44px] gap-[12px] pl-[16px] pr-[14px] text-[14px] leading-[20px] font-medium
       {{else}}h-[44px] gap-[12px] px-[14px] text-[14px] leading-[21px] font-medium{{/if}}"
   >
     {{#if icon}}
-      <span :class="active === '{{default path href}}' ? 'text-[#055C90]' : 'text-[#335980]'" class="flex shrink-0">
+      <span :class="active === '{{default path href}}' ? 'text-[#055C90]' : 'text-[#4A5568]'" class="flex shrink-0">
         {{> components/ui/sidebar/nav_icon/index name=icon size=(default iconSize '20px')}}
       </span>
     {{/if}}

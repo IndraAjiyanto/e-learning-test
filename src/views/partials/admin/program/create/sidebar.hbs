@@ -1,0 +1,23 @@
+{{!--
+  Sidebar - Form Progress & Tips (sticky + scroll-based)
+  Path: partials/admin/program/create/sidebar.hbs
+
+  Composes atomic components from components/ui/admin/sidebar/.
+  Progress highlight is driven by parent Alpine `activeStep` (see
+  activateSection + initScrollObserver in admin/program/create.hbs).
+  Tips text is static for the Create Program form.
+--}}
+<div class='flex flex-col gap-[16px] w-[243px] shrink-0 sticky top-[24px] self-start'>
+
+  {{!-- Form Progress (Alpine-reactive via parent activeStep) --}}
+  {{> components/ui/admin/sidebar/form-progress
+    alpineMode=true
+    steps=(array "Basic Information" "Description" "Schedule & Location" "Tools & Lessons" "Learning Target" "Participan Criteria")
+  }}
+
+  {{!-- Tips --}}
+  {{> components/ui/admin/sidebar/tips-box
+    text="Fill in each section carefully. Use the tabs to switch between languages for multi-language fields. Mark required fields (*) before publishing."
+  }}
+
+</div>
