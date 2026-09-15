@@ -53,11 +53,13 @@ export class UserAnswersController {
       );
       await this.userAnswersService.deleteAnswerUser(req.user!.id, quizId);
 
-      const quiz = await this.quizService.findOne(quizId);
+      // const quiz = await this.quizService.findOne(quizId);
+      // req.flash('success', 'Success complete quiz');
+      // res.redirect(
+      //   `/program/myProgram/${req.user!.id}?courseId=${quiz!.weeks.course.id}&tab=quiz&weekId=${quiz!.weeks.id}`,
+      // );
       req.flash('success', 'Success complete quiz');
-      res.redirect(
-        `/program/myProgram/${req.user!.id}?courseId=${quiz!.weeks.course.id}&tab=quiz&weekId=${quiz!.weeks.id}`,
-      );
+      res.redirect(`/quiz/form/${quizId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'unsuccess complete quiz');
       res.redirect(`/quiz/form/${quizId}`);

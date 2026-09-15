@@ -11,10 +11,14 @@ import {
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UserActivityService } from 'src/user_activity/user-activity.service';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userActivityService: UserActivityService,
+  ) {}
 
   @Get('login')
   async getLogin(@Res() res: Response, @Req() req: any) {
@@ -78,6 +82,7 @@ export class AuthController {
             req.flash('error', 'Email not verified');
             return res.redirect('/login');
           }
+          this.userActivityService.markActive(user!.id, req.sessionID).catch(() => undefined);
           res.redirect('/dashboard');
         });
       }
@@ -88,7 +93,11 @@ export class AuthController {
   }
 
   @Get('logout')
-  logout(@Req() req: any, @Res() res: Response) {
+  async logout(@Req() req: any, @Res() res: Response) {
+    const userId = req.user?.id;
+    if (userId) {
+      await this.userActivityService.markInactive(userId).catch(() => undefined);
+    }
     req.logout((err) => {
       if (err) {
         return res.status(500).send({ message: 'Logout failed', error: err });

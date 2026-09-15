@@ -27,6 +27,8 @@ import { MentorLogbook } from './mentor_logbook.entity';
 import { QuizProgress } from './quiz_progress.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
+import { UserActivity } from './user_activity.entity';
+import { ActivityLog } from './activity_log.entity';
 import { Exclude } from 'class-transformer';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
@@ -212,4 +214,18 @@ export class User {
   })
   @Exclude()
   mentor_biodata: MentorBiodata;
+
+  @OneToMany(() => UserActivity, (userActivity) => userActivity.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  userActivities: UserActivity[];
+
+  @OneToMany(() => ActivityLog, (activityLog) => activityLog.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  activityLogs: ActivityLog[];
 }

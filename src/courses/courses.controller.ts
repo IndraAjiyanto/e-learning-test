@@ -709,7 +709,26 @@ export class CoursesController {
         }
       }
       if (isUserInKelas) {
-        res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
+        // res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
+          const mingguUpdated = await this.coursesService.findWeeks(
+          id,
+          req.user.id,
+        );
+        const user_kelas = await this.coursesService.findOneUserCourse(
+          // req.user.id,
+          course.id,
+        );
+        const portfolio = await this.coursesService.findOnePortfolio(
+          req.user.id,
+          course.id,
+        );
+        res.render('kelas/detail', {
+          user_kelas,
+          portfolio,
+          user: req.user,
+          course,
+          minggu: mingguUpdated,
+        });
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
         const courseQuestions =
