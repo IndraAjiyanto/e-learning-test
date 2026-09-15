@@ -25,6 +25,7 @@ export class CreateGalleryDto {
   @IsUUID()
   categoryId?: string;
 
+  @IsOptional()
   @IsEnum(['1', '2', '3', '4', '5', '6'])
-  no: noGallery;
+  no?: noGallery;
 }

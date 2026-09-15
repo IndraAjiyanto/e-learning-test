@@ -21,6 +21,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -95,7 +96,11 @@ export class CategoriesController {
       }
 
       await this.categoriesService.create(createCategoriesDto);
-      req.flash('success', 'category successfully created');
+      flashToast(
+        req,
+        'Category Created',
+        'The new category has been added to Kesatria Academy.',
+      );
       res.redirect('/category');
     } catch (error: any) {
       req.flash('error', error.message || 'category failed to create');
@@ -326,7 +331,11 @@ export class CategoriesController {
       }
 
       await this.categoriesService.update(categoryId, updateCategoriesDto);
-      req.flash('success', 'category successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The category information has been updated.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       console.log(error);
@@ -347,10 +356,14 @@ export class CategoriesController {
       await this.categoriesService.deleteFile(category.icon);
       await this.categoriesService.deleteFile(category.hero_section_image);
       await this.categoriesService.remove(categoryId);
-      req.flash('success', 'category successfully deleted');
+      flashToast(
+        req,
+        'Category Deleted',
+        'The category has been permanently removed.',
+      );
       res.redirect('/category');
     } catch (error: any) {
-      req.flash('success', 'category failed to delete');
+      req.flash('error', error.message || 'category failed to delete');
       res.redirect('/category');
     }
   }

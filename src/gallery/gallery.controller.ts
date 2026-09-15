@@ -19,6 +19,7 @@ import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { Response, Request } from 'express';
@@ -95,7 +96,11 @@ export class GalleryController {
 
       const gallery = await this.galleryService.create(createGalleryDto);
 
-      req.flash('success', 'Gallery successfully created');
+      flashToast(
+        req,
+        'Gallery Created',
+        'The new gallery item has been added to this category.',
+      );
 
       res.redirect(
         `/category/${gallery.category?.id ?? createGalleryDto.categoryId}`,
@@ -165,7 +170,11 @@ export class GalleryController {
 
       const gallery = await this.galleryService.update(id, data);
 
-      req.flash('success', 'Gallery successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The gallery item has been updated.',
+      );
 
       res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {
@@ -192,7 +201,11 @@ export class GalleryController {
         return res.json({ success: true });
       }
 
-      req.flash('success', 'Gallery successfully deleted');
+      flashToast(
+        req,
+        'Gallery Deleted',
+        'The gallery item has been permanently removed.',
+      );
 
       return res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {

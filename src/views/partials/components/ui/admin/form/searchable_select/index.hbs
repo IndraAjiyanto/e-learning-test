@@ -36,11 +36,8 @@
     init() {
       if (this.initialId) {
         const pre = this.items.find(i => i.id == this.initialId);
-        // apply(), bukan select(): select() menolak semua pemilihan saat locked,
-        // sehingga nilai awal untuk field yang SENGAJA dikunci tidak pernah
-        // terpasang dan hidden input-nya tetap kosong. Kunci itu untuk menahan
-        // user, bukan menahan inisialisasi.
-        if (pre) this.apply(pre);
+        // locked hanya mengunci aksi user, preselect tetap harus mengisi nilai
+        if (pre) { const wasLocked = this.locked; this.locked = false; this.select(pre); this.locked = wasLocked; }
       }
     },
     get filtered() {

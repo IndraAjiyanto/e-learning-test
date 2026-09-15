@@ -1,0 +1,52 @@
+{{!--
+  Komponen: Segmented Control (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/segmented.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Pilihan tunggal dari sedikit opsi yang selalu terlihat (Yes/No, Online/Offline).
+  Nilai terpilih dikirim lewat <input type='hidden'>.
+
+  KONTRAK PEMAKAIAN
+  Pemanggil menyediakan state Alpine formData & formErrors.
+
+  Props:
+  - id       : string (wajib)
+  - name     : string (wajib) — name hidden input
+  - label    : string (wajib)
+  - field    : string (wajib) — key state Alpine
+  - options  : string (wajib) — nama variabel Alpine berisi [{ value, label }]
+  - required : boolean (opsional)
+--}}
+<div class='flex flex-col gap-1.5'>
+  <span id='{{id}}-label' class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</span>
+
+  <input type='hidden' id='{{id}}' name='{{name}}' :value='formData.{{field}}' />
+
+  <div
+    role='radiogroup'
+    aria-labelledby='{{id}}-label'
+    :class="formErrors.{{field}} ? 'border-[#fca5a5]' : 'border-[#d4d4d4]'"
+    class='flex h-11 w-full gap-0.5 rounded-lg border bg-white p-0.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+  >
+    <template x-for='option in {{options}}' :key='String(option.value)'>
+      <button
+        type='button'
+        role='radio'
+        :aria-checked='formData.{{field}} === option.value'
+        @click='formData.{{field}} = option.value; formErrors.{{field}} = ""'
+        x-text='option.label'
+        :class="formData.{{field}} === option.value
+          ? 'bg-[#003060] font-semibold text-white hover:bg-[#00254a] active:bg-[#001c39]'
+          : 'font-normal text-[#737373] hover:bg-[#f5f5f5] hover:text-[#404040] active:bg-[#ededed]'"
+        class='flex-1 rounded-md font-inter text-base leading-6 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+      ></button>
+    </template>
+  </div>
+
+  <p
+    x-show='formErrors.{{field}}'
+    x-cloak
+    x-text='formErrors.{{field}}'
+    class='font-inter text-sm leading-5 text-[#ef4444]'
+  ></p>
+</div>

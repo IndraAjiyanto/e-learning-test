@@ -1,141 +1,55 @@
-<div
-  class='py-10 w-full mx-auto px-6'
-  x-data="{
-  get computedClass() {
-    const raw = (this.formData.icon || '').toString().trim();
-    if (!raw) return 'fa-solid fa-circle-question';
-    const v = raw;
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-    if (hasFaPrefix) {
-      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-      return v;
-    }
-    if (!v.includes(' ')) return 'fa-solid fa-' + v;
-    return v;
-  },
+{{!--
+  Halaman: Create Benefit Category — Super Admin
+  Lokasi: src/views/super_admin/benefit_category/create.hbs
+  Level: L4 Page
 
-  // Form validation states
-  formData: {
-    icon: '',
-    title: { id: '', en: '', ja: '' },
-    description: { id: '', en: '', ja: '' }
-  },
-  formErrors: {
-    icon: '',
-    title: { id: '', en: '', ja: '' },
-    description: { id: '', en: '', ja: '' }
-  },
-  formValid: {
-    icon: false,
-    title: { id: false, en: false, ja: false },
-    description: { id: false, en: false, ja: false }
-  },
+  Route: GET /benefit_category/formCreate/:categoryId -> POST /benefit_category/:categoryId
+  (urlencoded). Data: { categoryId }.
 
-  validateField(field, lang, value) {
-    if (field === 'icon') {
-      this.formData.icon = value;
-      if (!value.trim()) {
-        this.formErrors.icon = 'Icon is required';
-        this.formValid.icon = false;
-      } else if (value.trim().length < 2) {
-        this.formErrors.icon = 'Icon must be at least 2 characters';
-        this.formValid.icon = false;
-      } else {
-        this.formErrors.icon = '';
-        this.formValid.icon = true;
-      }
-    } else {
-      this.formData[field][lang] = value;
-      
-      switch(field) {
-        case 'title':
-          if (!value.trim()) {
-            this.formErrors.title[lang] = 'Title is required';
-            this.formValid.title[lang] = false;
-          } else if (value.trim().length < 3) {
-            this.formErrors.title[lang] = 'Title must be at least 3 characters';
-            this.formValid.title[lang] = false;
-          } else {
-            this.formErrors.title[lang] = '';
-            this.formValid.title[lang] = true;
-          }
-          break;
-          
-        case 'description':
-          if (!value.trim()) {
-            this.formErrors.description[lang] = 'Description is required';
-            this.formValid.description[lang] = false;
-          } else if (value.trim().length < 10) {
-            this.formErrors.description[lang] = 'Description must be at least 10 characters';
-            this.formValid.description[lang] = false;
-          } else {
-            this.formErrors.description[lang] = '';
-            this.formValid.description[lang] = true;
-          }
-          break;
-      }
-    }
-  },
+  Field dikirim sebagai icon, title[id|en|ja], description[id|en|ja]. Benefit
+  category tidak punya kolom `no`, jadi kartu Display Order disembunyikan.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-  canSubmit() {
-    return this.formValid.icon && 
-           Object.values(this.formValid.title).every(v => v) && 
-           Object.values(this.formValid.description).every(v => v);
-  },
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Benefit Category'
+      }}
 
-  hasFormErrors() {
-    return this.formErrors.icon !== '' || 
-           Object.values(this.formErrors.title).some(e => e !== '') || 
-           Object.values(this.formErrors.description).some(e => e !== '');
-  }
-}"
->
-  <div class='max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8'>
-    <h1 class='text-2xl font-bold text-gray-800 mb-6'>Create Benefit Category</h1>
+      {{> components/ui/super_admin/description/index
+        text='Add a benefit shown on this category program page'
+      }}
+    </div>
 
     <form
       action='/benefit_category/{{categoryId}}'
       method='post'
-      class='space-y-6'
-      x-data="{ loading: false }"
-      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
+      novalidate
+      x-data='benefitForm({ withOrder: false })'
+      @submit.prevent='submitForm($event)'
+      class='flex flex-col gap-3.5'
     >
-{{> super_admin/benefit_category/create/tittle_input }}
-{{> super_admin/benefit_category/create/description_input }}
-{{> super_admin/benefit_category/create/icon_input }}
+      {{> components/ui/super_admin/form/benefit/fields hideOrder=true }}
 
-      <div class='flex gap-3'>
-        <button
+      <div class='flex flex-col-reverse gap-3 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:flex-row sm:justify-end sm:p-5'>
+        {{> components/ui/super_admin/form/button
+          as='link'
+          variant='secondary'
+          href=(concat '/category/' categoryId)
+          label='Cancel'
+          loading=true
+        }}
+
+        {{> components/ui/super_admin/form/button
           type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">Create</span>
-        </button>
-        <a
-          href='/category/{{categoryId}}'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100'"
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white transition'>
-          Cancel
-        </a>
+          variant='primary'
+          label='Create Benefit Category'
+          loading=true
+        }}
       </div>
-
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors()'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
-        </div>
-      </template>
-
     </form>
   </div>
 </div>
+
+{{> components/ui/super_admin/form/benefit/form }}

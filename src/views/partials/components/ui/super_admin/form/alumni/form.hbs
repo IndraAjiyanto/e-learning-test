@@ -1,0 +1,265 @@
+{{!--
+  Komponen: Alumni Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/alumni/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `alumniForm({ courses, alumni })` untuk
+  super_admin/alumni/{createAlumni,editAlumni}.hbs. `alumni` hanya diisi di Edit:
+  field terisi dari data tersimpan dan foto baru jadi opsional.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
+  form/multi_select_field); courseOptions, initialCourse; previewUrl,
+  errorMessage, isValid, hasFile, fileName, validateImage(), clearFile()
+  (form/photo_upload); loading (form/button); lang (tabs/language).
+
+  `lang` ikut di factory ini agar submit yang gagal bisa memindahkan tab ke
+  bahasa yang error — kalau tidak, pesan errornya tersembunyi di tab lain.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const FIELDS = ['name', 'currentPosition', 'message'];
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const LABEL = { name: 'Name', message: 'Message', currentPosition: 'Current position' };
+    const MIN = { name: 2, message: 10, currentPosition: 2 };
+    const MAX = { name: 255, currentPosition: 255 };
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    // `path` berbentuk 'name.id' untuk field multibahasa, atau 'courseId'.
+    const splitPath = (path) => {
+      const [field, lang] = path.split('.');
+      return { field, lang };
+    };
+
+    const errorFor = (field, lang, value) => {
+      const val = (value ?? '').toString().trim();
+
+      if (field === 'courseId') return val ? '' : 'Please select a program.';
+
+      const label = `${LABEL[field]} (${LANG_LABEL[lang]})`;
+      if (!val) return `${label} is required.`;
+      if (val.length < MIN[field]) return `${label} must be at least ${MIN[field]} characters.`;
+      if (MAX[field] && val.length > MAX[field]) return `${label} must be at most ${MAX[field]} characters.`;
+      return '';
+    };
+
+    window.alumniForm = function alumniForm({ courses, alumni } = {}) {
+      const saved = (field) => byLang((l) => alumni?.[field]?.[l] ?? '');
+      const course = alumni?.course;
+
+      return {
+        loading: false,
+        lang: 'id',
+
+        courseOptions: (courses || []).map((c) => ({ value: c.id, label: c.name })),
+        initialCourse: course ? [{ value: course.id, label: course.name }] : [],
+
+        // Foto profil
+        originalUrl: alumni?.profile || '',
+        previewUrl: alumni?.profile || null,
+        objectUrl: null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        hasFile: false,
+
+        formData: {
+          courseId: course?.id || '',
+          name: saved('name'),
+          message: saved('message'),
+          currentPosition: saved('currentPosition'),
+        },
+        formErrors: {
+          courseId: '',
+          name: byLang(() => ''),
+          message: byLang(() => ''),
+          currentPosition: byLang(() => ''),
+        },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: {
+          courseId: false,
+          name: byLang(() => false),
+          message: byLang(() => false),
+          currentPosition: byLang(() => false),
+        },
+
+        validateField(path, value) {
+          const { field, lang } = splitPath(path);
+          if (!lang) {
+            this.formData[field] = value ?? '';
+            this.formErrors[field] = this.touched[field] ? errorFor(field, null, this.formData[field]) : '';
+            return;
+          }
+
+          this.formData[field][lang] = value ?? '';
+          this.formErrors[field][lang] = this.touched[field][lang]
+            ? errorFor(field, lang, this.formData[field][lang])
+            : '';
+        },
+
+        touch(path) {
+          const { field, lang } = splitPath(path);
+          if (!lang) {
+            this.touched[field] = true;
+            this.validateField(path, this.formData[field]);
+            return;
+          }
+
+          this.touched[field][lang] = true;
+          this.validateField(path, this.formData[field][lang]);
+        },
+
+        // Batas mengikuti kontrak backend (ValidateImage pada AlumniController):
+        // JPG/PNG, 300–2000 px, maks 5 MB.
+        validateImage(file) {
+          this.clearPreview();
+
+          if (!file) return;
+
+          this.hasFile = true;
+          this.fileName = file.name;
+
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.setImageError('Only JPG and PNG formats are allowed');
+            return;
+          }
+
+          const maxSize = 5 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.setImageError(
+              `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+            );
+            return;
+          }
+
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+              URL.revokeObjectURL(objectUrl);
+              this.setImageError(
+                `Image is ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`,
+              );
+              return;
+            }
+
+            this.objectUrl = objectUrl;
+            this.previewUrl = objectUrl;
+            this.isValid = true;
+            this.errorMessage = '';
+          };
+
+          img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError('Failed to load image');
+          };
+
+          img.src = objectUrl;
+        },
+
+        // Berkas ditolak dikosongkan dari input agar tidak ikut terkirim;
+        // di Edit pratinjau kembali ke foto tersimpan.
+        setImageError(message) {
+          this.clearPreview();
+          this.errorMessage = message;
+          this.isValid = false;
+          if (this.$refs.fileInput) this.$refs.fileInput.value = null;
+        },
+
+        clearPreview() {
+          if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = null;
+          this.previewUrl = this.originalUrl || null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.hasFile = false;
+        },
+
+        clearFile() {
+          this.clearPreview();
+          this.$refs.fileInput.value = null;
+        },
+
+        hasPhoto() {
+          return this.hasFile || !!this.originalUrl;
+        },
+
+        validateAll() {
+          this.touched.courseId = true;
+          this.formErrors.courseId = errorFor('courseId', null, this.formData.courseId);
+
+          FIELDS.forEach((field) =>
+            LANGS.forEach((lang) => {
+              this.touched[field][lang] = true;
+              this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
+            }),
+          );
+
+          // Create wajib foto (DTO mewajibkan profile); Edit boleh memakai foto tersimpan.
+          if (!this.hasPhoto()) this.setImageError('Please upload a profile photo.');
+        },
+
+        hasFormErrors() {
+          return (
+            this.formErrors.courseId !== '' ||
+            FIELDS.some((field) => LANGS.some((lang) => this.formErrors[field][lang] !== ''))
+          );
+        },
+
+        canSubmit() {
+          // Berkas yang ditolak sudah dibuang dari input, jadi cukup cek ada foto.
+          return this.hasPhoto() && !this.hasFormErrors();
+        },
+
+        // Urutan mengikuti tampilan: program, foto, lalu field per bahasa.
+        // Id `${field}-${lang}` harus sama dengan yang dibentuk form/alumni/fields.
+        revealFirstInvalid() {
+          if (this.formErrors.courseId) {
+            document.getElementById('courseId')?.focus();
+            return;
+          }
+
+          if (!this.hasPhoto()) {
+            this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
+            return;
+          }
+
+          for (const lang of LANGS) {
+            for (const field of FIELDS) {
+              if (!this.formErrors[field][lang]) continue;
+
+              this.lang = lang;
+              this.$nextTick(() => {
+                const el = document.getElementById(`${field}-${lang}`);
+                if (!el) {
+                  console.warn(`alumniForm: field "${field}-${lang}" tidak ditemukan — id di form/alumni/fields berubah?`);
+                  return;
+                }
+                el.focus();
+              });
+              return;
+            }
+          }
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (!this.canSubmit()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

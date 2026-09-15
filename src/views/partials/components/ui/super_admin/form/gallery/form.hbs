@@ -1,0 +1,175 @@
+{{!--
+  Komponen: Gallery Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/gallery/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `galleryForm({ gallery })` untuk super_admin/gallery/{create,edit}.hbs.
+  `gallery` hanya diisi di Edit: field terisi dari data tersimpan dan gambar
+  baru jadi opsional.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
+  previewUrl, errorMessage, isValid, hasFile, fileName, validateImage(),
+  clearFile() (form/image_dropzone); loading (form/button).
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const FIELDS = ['title', 'description'];
+
+    const errorFor = (field, value) => {
+      const val = (value ?? '').toString().trim();
+
+      if (field === 'title') return val ? '' : 'Title is required.';
+      return '';
+    };
+
+    window.galleryForm = function galleryForm({ gallery } = {}) {
+      return {
+        loading: false,
+
+        originalUrl: gallery?.filePath || '',
+        previewUrl: gallery?.filePath || null,
+        objectUrl: null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        hasFile: false,
+
+        formData: {
+          title: gallery?.title || '',
+          description: gallery?.description || '',
+        },
+        formErrors: { title: '', description: '' },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: { title: false, description: false },
+
+        validateField(field, value) {
+          this.formData[field] = value ?? '';
+          this.formErrors[field] = this.touched[field] ? errorFor(field, this.formData[field]) : '';
+        },
+
+        touch(field) {
+          this.touched[field] = true;
+          this.validateField(field, this.formData[field]);
+        },
+
+        // Batas mengikuti ValidateImage pada GalleryController: JPG/PNG, 300–2000 px, maks 5 MB.
+        validateImage(file) {
+          this.clearPreview();
+
+          if (!file) return;
+
+          this.hasFile = true;
+          this.fileName = file.name;
+
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.setImageError('Only JPG and PNG formats are allowed');
+            return;
+          }
+
+          const maxSize = 5 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.setImageError(
+              `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+            );
+            return;
+          }
+
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+              URL.revokeObjectURL(objectUrl);
+              this.setImageError(
+                `Image is ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`,
+              );
+              return;
+            }
+
+            this.objectUrl = objectUrl;
+            this.previewUrl = objectUrl;
+            this.isValid = true;
+            this.errorMessage = '';
+          };
+
+          img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError('Failed to load image');
+          };
+
+          img.src = objectUrl;
+        },
+
+        // Berkas ditolak dikosongkan dari input agar tidak ikut terkirim.
+        setImageError(message) {
+          this.clearPreview();
+          this.errorMessage = message;
+          this.isValid = false;
+          if (this.$refs.dropInput) this.$refs.dropInput.value = null;
+        },
+
+        clearPreview() {
+          if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = null;
+          this.previewUrl = this.originalUrl || null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.hasFile = false;
+        },
+
+        clearFile() {
+          this.clearPreview();
+          this.$refs.dropInput.value = null;
+        },
+
+        hasImage() {
+          return this.hasFile || !!this.originalUrl;
+        },
+
+        validateAll() {
+          FIELDS.forEach((field) => {
+            this.touched[field] = true;
+            this.formErrors[field] = errorFor(field, this.formData[field]);
+          });
+
+          if (!this.hasImage()) this.setImageError('Please upload an image.');
+        },
+
+        // Di Edit gambar lama tetap ada, jadi errorMessage juga dicek agar gambar
+        // pengganti yang ditolak tidak diam-diam tersubmit dengan gambar lama.
+        canSubmit() {
+          return (
+            this.hasImage() &&
+            !this.errorMessage &&
+            FIELDS.every((field) => this.formErrors[field] === '')
+          );
+        },
+
+        // Urutan mengikuti tampilan: gambar, lalu Title.
+        revealFirstInvalid() {
+          if (!this.hasImage() || this.errorMessage) {
+            this.$refs.dropInput.parentElement.scrollIntoView({ block: 'center' });
+            return;
+          }
+          if (this.formErrors.title) document.getElementById('title')?.focus();
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (!this.canSubmit()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>
