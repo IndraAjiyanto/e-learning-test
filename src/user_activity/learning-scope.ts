@@ -218,6 +218,22 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
   },
 ];
 
+/**
+ * Menentukan apakah path merupakan request asset/static (CSS/JS/gambar/favicon/dll).
+ * Request semacam ini hanya memperbarui lastSeenAt dan TIDAK memengaruhi status belajar
+ * (tidak reset currentCourseId), agar status "sedang belajar" tidak hilang seketika saat
+ * browser memuat asset halaman belajar.
+ */
+export function isAssetPath(path: string): boolean {
+  return (
+    path.startsWith('/public/') ||
+    path.startsWith('/uploads/') ||
+    path.startsWith('/asset/') ||
+    path === '/favicon.ico' ||
+    /\.(css|js|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|map|json)$/i.test(path)
+  );
+}
+
 /** Mengembalikan rule scope yang cocok dengan method + path, atau null jika di luar scope. */
 export function matchLearningScope(method: string, path: string): { rule: LearningScopeRule; ids: Record<string, string> } | null {
   for (const rule of LEARNING_SCOPE) {

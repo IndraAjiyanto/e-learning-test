@@ -14,11 +14,10 @@ export class InformationController {
     await this.userActivityService.purgeExpired(60).catch(() => undefined);
     const WEEKLY_THRESHOLD_MINUTES = 5;
 
-    const [summary, weekly, activeUsersList, learningList] = await Promise.all([
+    const [summary, weekly, activeUsersList] = await Promise.all([
       this.userActivityService.getSummaryToday(),
       this.userActivityService.getWeeklyChart(),
       this.userActivityService.getActiveParticipants(WEEKLY_THRESHOLD_MINUTES),
-      this.userActivityService.getCurrentlyLearning(WEEKLY_THRESHOLD_MINUTES),
     ]);
 
     res.render('super_admin/information/index', {
@@ -26,17 +25,19 @@ export class InformationController {
       title: 'Dashboard Overview',
       subtitle: 'Pantau aktivitas dan ringkasan metrik pengguna',
       summary,
-      totalUsers: summary.activeToday,
+      activeToday: summary.activeToday,
       activeUsers: summary.onlineNow,
+      learningNow: summary.learningNow,
+      mentorActive: summary.mentorActive,
+      programActive: summary.programActive,
       chartData: weekly.map((w) => ({
         day: w.label,
         loginHeight: w.loginH,
-        activeHeight: w.activeH,
+        learningHeight: w.learningH,
         max: w.max,
       })),
       activeUsersList,
-      learningList,
-      learningListJson: JSON.stringify(learningList),
+      learningListJson: JSON.stringify(activeUsersList),
     });
   }
 
