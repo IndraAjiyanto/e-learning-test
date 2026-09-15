@@ -1,0 +1,135 @@
+{{!--
+  Komponen: Background Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/background/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Layout side-by-side (grid 3-kolom) untuk membandingkan ketiga bahasa (ID, EN, JP)
+  secara bersamaan lengkap dengan logo bendera negara di label masing-masing.
+--}}
+<div class='flex flex-col gap-6'>
+  <!-- Section: Content -->
+  <div class='flex flex-col gap-3'>
+    <h3 class='font-inter text-base font-semibold text-[#171717]'>Content</h3>
+    <div class='grid grid-cols-1 gap-4 md:grid-cols-3'>
+      <!-- ID -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='content-id' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/id.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>ID</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='content-id'
+          name='content[id]'
+          field='content.id'
+          label='ID'
+          hideLabel=true
+          multiline=true
+          placeholder='Konten (ID)...'
+          required=true
+        }}
+      </div>
+
+      <!-- EN -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='content-en' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/gb.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>EN</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='content-en'
+          name='content[en]'
+          field='content.en'
+          label='EN'
+          hideLabel=true
+          multiline=true
+          placeholder='Content (EN)...'
+          required=true
+        }}
+      </div>
+
+      <!-- JP -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='content-ja' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/jp.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>JP</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='content-ja'
+          name='content[ja]'
+          field='content.ja'
+          label='JP'
+          hideLabel=true
+          multiline=true
+          placeholder='コンテンツ (JA)...'
+          required=true
+        }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Text -->
+  <div class='flex flex-col gap-3'>
+    <h3 class='font-inter text-base font-semibold text-[#171717]'>Text</h3>
+    <div class='grid grid-cols-1 gap-4 md:grid-cols-3'>
+      <!-- ID -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='details-id' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/id.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>ID</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='details-id'
+          name='details[id]'
+          field='details.id'
+          label='ID'
+          hideLabel=true
+          multiline=true
+          placeholder='Teks (ID)...'
+          required=true
+        }}
+      </div>
+
+      <!-- EN -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='details-en' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/gb.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>EN</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='details-en'
+          name='details[en]'
+          field='details.en'
+          label='EN'
+          hideLabel=true
+          multiline=true
+          placeholder='Text (EN)...'
+          required=true
+        }}
+      </div>
+
+      <!-- JP -->
+      <div class='flex flex-col gap-1.5'>
+        <label for='details-ja' class='flex items-center gap-2 font-inter text-sm font-medium leading-5 text-[#404040]'>
+          <img src='/public/flags/4x3/jp.svg' alt='' aria-hidden='true' class='h-4 w-4 rounded-full object-cover ring-1 ring-[#e5e5e5]' />
+          <span>JP</span>
+          <span class='text-[#dc2626]'>*</span>
+        </label>
+        {{> components/ui/super_admin/form/text_field
+          id='details-ja'
+          name='details[ja]'
+          field='details.ja'
+          label='JP'
+          hideLabel=true
+          multiline=true
+          placeholder='テキスト (JA)...'
+          required=true
+        }}
+      </div>
+    </div>
+  </div>
+</div>
