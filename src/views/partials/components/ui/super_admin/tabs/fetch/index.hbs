@@ -8,7 +8,8 @@
 
   Pemanggil WAJIB menyediakan state `tab` (atau nama lain lewat `state`) dan
   method toggleFetch(url, tabName) pada x-data pembungkus, mis. tabData() di
-  super_admin/category/detail.hbs. Bungkus beberapa tab dalam <nav role='tablist'>.
+  super_admin/category/detail.hbs. Bungkus beberapa tab dalam
+  <nav role='tablist' class='flex border-b border-[#d9d9d9]'> agar garis aktif menimpa garis bawah.
 
   Props:
   - name  : string (wajib) — nilai state saat tab aktif
@@ -21,6 +22,6 @@
   role='tab'
   @click="toggleFetch('{{url}}', '{{name}}')"
   :aria-selected="{{default state 'tab'}} === '{{name}}'"
-  :class="{{default state 'tab'}} === '{{name}}' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-  class='px-4 py-2 rounded-lg shadow transition font-montserratfocus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/40'
+  :class="{{default state 'tab'}} === '{{name}}' ? 'border-[#055c90]' : 'border-transparent hover:border-[#d9d9d9]'"
+  class='-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 text-[#003060] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
 >{{label}}</button>

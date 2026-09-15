@@ -11,6 +11,16 @@
   Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
   confirmDelete milik partial sweetalert global yang menimpa fungsi senama.
 --}}
+{{#*inline 'multilangBox'}}
+  <div class='flex flex-col gap-1.5'>
+    <span class='font-montserrat text-sm font-semibold leading-5 text-[#404040]'>{{label}}</span>
+    <div class='min-h-32 rounded-lg border border-[#d4d4d4] bg-white px-3.5 py-2.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+      <p x-show="lang === 'id'" class='whitespace-pre-line break-words font-inter text-base leading-6 text-[#171717]'>{{default value.id '-'}}</p>
+      <p x-show="lang === 'en'" x-cloak class='whitespace-pre-line break-words font-inter text-base leading-6 text-[#171717]'>{{default value.en '-'}}</p>
+      <p x-show="lang === 'ja'" x-cloak class='whitespace-pre-line break-words font-inter text-base leading-6 text-[#171717]'>{{default value.ja '-'}}</p>
+    </div>
+  </div>
+{{/inline}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
 
@@ -24,11 +34,11 @@
       }}
     </div>
 
-    <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
-      <div class='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+    <div class='flex flex-col gap-4'>
+      <div class='flex flex-col gap-3.5 rounded-xl border border-[#d9d9d9] bg-white px-4 py-5 sm:px-5 sm:py-7'>
         <a
           href='/category'
-          class='inline-flex w-fit items-center gap-1 font-montserrat text-sm font-medium leading-5 text-[#525252] transition-colors hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+          class='inline-flex w-fit items-center gap-1 font-montserrat text-base font-medium leading-5 text-[#718096] transition-colors hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
         >
           {{!-- lucide: chevron-left --}}
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-4 w-4'>
@@ -37,10 +47,10 @@
           Back to categories
         </a>
 
-        <div class='flex shrink-0 gap-3 self-end sm:self-auto'>
+        <div class='flex justify-end gap-3'>
           <form action='/category/{{category.id}}?_method=DELETE' method='post'>
             {{> components/ui/super_admin/form/button
-              variant='danger'
+              variant='danger-soft'
               label='Delete'
               onclick='openDeleteModal(this)'
             }}
@@ -52,101 +62,97 @@
             label='Edit Category'
           }}
         </div>
+
+        {{#if category.icon}}
+          <div class='flex justify-center'>
+            <img
+              src='{{category.icon}}'
+              alt='Icon {{category.name}}'
+              class='aspect-square w-full max-w-[280px] rounded-lg bg-white object-contain shadow-[2px_2px_10px_0px_rgba(0,0,0,0.15)]'
+            />
+          </div>
+        {{/if}}
       </div>
 
-      {{#if category.icon}}
-        <div class='flex justify-center'>
-          <img
-            src='{{category.icon}}'
-            alt='Icon {{category.name}}'
-            class='h-40 w-full max-w-[222px] rounded-lg object-contain shadow-[0px_0px_6px_0px_rgba(0,0,0,0.15)] sm:h-[222px]'
-          />
+      <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5' x-data="{ lang: 'id' }">
+        {{!-- Tiga tab berlabel penuh lebih lebar dari layar 400px. --}}
+        <div class='overflow-x-auto'>
+          {{> components/ui/super_admin/tabs/language/index ariaLabel='Category content language' }}
         </div>
-      {{/if}}
-    </div>
 
-    <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
-      {{> components/ui/super_admin/description/index
-        text='Basic Information'
-        class='font-montserrat text-xl font-semibold leading-6 text-[#003060]'
-      }}
+        <div class='flex items-center gap-2'>
+          <span class='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#003060] text-white' aria-hidden='true'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+              <path d='M12 16v-5' />
+              <path d='M12 7h.01' />
+            </svg>
+          </span>
+          <h2 class='font-montserrat text-base font-semibold leading-6 text-[#003060]'>Basic Information</h2>
+        </div>
 
-      <div class='grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2'>
         <div class='flex flex-col gap-5'>
-          {{> components/ui/super_admin/detail/field/index label='Category Name' value=category.name }}
+          <div class='grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-x-3'>
+            {{> components/ui/super_admin/detail/field/index label='Category Name' value=category.name }}
 
-          {{> components/ui/super_admin/detail/field/index label='Type' value=category.type }}
-
-          {{#if category.contact}}
             {{> components/ui/super_admin/detail/field/index label='Contact' value=category.contact }}
-          {{/if}}
 
-          {{#if category.courseTypes}}
+            {{> components/ui/super_admin/detail/field/index label='Type' value=category.type }}
+
             {{#> components/ui/super_admin/detail/field/index label='Type Program'}}
-              <div class='flex flex-wrap gap-2'>
+              <div class='flex flex-wrap gap-1'>
                 {{#each category.courseTypes}}
-                  <span class='inline-flex items-center gap-1.5 rounded-2xl border border-[#d9d9d9] bg-white px-3 py-1 font-inter text-xs font-medium leading-[18px] text-[#404040]'>
+                  <span class='inline-flex items-center gap-1 rounded-2xl bg-[#f5f5f5] py-0.5 pl-1.5 pr-2 font-inter text-xs font-medium leading-[18px] text-[#404040]'>
                     <i class='{{computeIcon this.icon}}'></i>
                     {{this.nameClassesType}}
                   </span>
+                {{else}}
+                  <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
                 {{/each}}
               </div>
             {{/components/ui/super_admin/detail/field/index}}
-          {{/if}}
+          </div>
 
-          {{#if category.hero_section_image}}
-            {{#> components/ui/super_admin/detail/field/index label='Hero Image'}}
+          {{#> components/ui/super_admin/detail/field/index label='Hero Section Image'}}
+            {{#if category.hero_section_image}}
               <img
                 src='{{category.hero_section_image}}'
                 alt='Hero {{category.name}}'
-                class='h-32 w-48 rounded-lg border border-[#d9d9d9] object-cover lg:h-40 lg:w-56'
+                class='h-40 w-full max-w-[360px] rounded-lg border border-[#d9d9d9] object-cover'
               />
-            {{/components/ui/super_admin/detail/field/index}}
-          {{/if}}
-        </div>
+            {{else}}
+              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
+            {{/if}}
+          {{/components/ui/super_admin/detail/field/index}}
 
-        <div class='flex flex-col gap-5'>
-          {{#if category.info}}
-            {{> components/ui/super_admin/detail/field/index label='Info' value=category.info multilang=true }}
-          {{/if}}
+          {{> multilangBox label='Text' value=category.text }}
 
-          {{#if category.text}}
-            {{> components/ui/super_admin/detail/field/index label='Text' value=category.text multilang=true class='border-t border-[#d9d9d9] pt-5' }}
-          {{/if}}
-
-          {{#if category.for}}
-            {{> components/ui/super_admin/detail/field/index label='For' value=category.for multilang=true class='border-t border-[#d9d9d9] pt-5' }}
-          {{/if}}
-
-          {{#if category.description}}
-            {{> components/ui/super_admin/detail/field/index label='Description' value=category.description multilang=true class='border-t border-[#d9d9d9] pt-5' }}
-          {{/if}}
+          {{> multilangBox label='Description' value=category.description }}
         </div>
       </div>
-    </div>
 
-    <div
-      class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
-      x-data='tabData()'
-      x-init='init()'
-    >
-      <nav role='tablist' aria-label='Category sections' class='flex flex-wrap gap-4'>
-        {{> components/ui/super_admin/tabs/fetch/index name='course' label='Program' url=(concat '/category/admin/program/' category.id) }}
-        {{> components/ui/super_admin/tabs/fetch/index name='alumni' label='Alumni' url=(concat '/category/alumni/' category.id) }}
-        {{> components/ui/super_admin/tabs/fetch/index name='gallery' label='Gallery' url=(concat '/category/gallery/' category.id) }}
-        {{> components/ui/super_admin/tabs/fetch/index name='faq' label='FAQ' url=(concat '/category/faq/' category.id) }}
-        {{> components/ui/super_admin/tabs/fetch/index name='benefit' label='Benefit' url=(concat '/category/benefit/' category.id) }}
-      </nav>
+      <div
+        class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white px-4 pb-5 pt-3 sm:px-5'
+        x-data='tabData()'
+        x-init='init()'
+      >
+        <nav role='tablist' aria-label='Category sections' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
+          {{> components/ui/super_admin/tabs/fetch/index name='course' label='Program' url=(concat '/category/admin/program/' category.id) }}
+          {{> components/ui/super_admin/tabs/fetch/index name='alumni' label='Alumni' url=(concat '/category/alumni/' category.id) }}
+          {{> components/ui/super_admin/tabs/fetch/index name='gallery' label='Gallery' url=(concat '/category/gallery/' category.id) }}
+          {{> components/ui/super_admin/tabs/fetch/index name='faq' label='FAQ' url=(concat '/category/faq/' category.id) }}
+          {{> components/ui/super_admin/tabs/fetch/index name='benefit' label='Benefit' url=(concat '/category/benefit/' category.id) }}
+        </nav>
 
-      {{> category/kelas_tab }}
+        {{> category/kelas_tab }}
 
-      {{> category/alumni_tab }}
+        {{> category/alumni_tab }}
 
-      {{> category/faq_tab }}
+        {{> category/faq_tab }}
 
-      {{> category/benefit_tab }}
+        {{> category/benefit_tab }}
 
-      {{> category/gallery_tab category=category }}
+        {{> category/gallery_tab category=category }}
+      </div>
     </div>
   </div>
 </div>

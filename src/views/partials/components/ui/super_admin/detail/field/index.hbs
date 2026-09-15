@@ -6,37 +6,21 @@
   Satu pasangan label + isi pada halaman detail (read-only).
 
   Props:
-  - label     : string (wajib)
-  - value     : string, atau objek { id, en, ja } bila multilang=true
-  - multilang : boolean (opsional) — render tiga baris ID / EN / JA
-  - class     : string (opsional) — class tambahan wrapper, mis. pemisah border-top
+  - label : string (wajib)
+  - value : string
+  - class : string (opsional) — class tambahan wrapper
 
   Isi custom (chip, gambar) dikirim lewat block; value diabaikan:
-    {{#> components/ui/super_admin/detail/field/index label='Hero Image'}}
-      <img ... />
+    {{#> components/ui/super_admin/detail/field/index label='Type Program'}}
+      <span ...>...</span>
     {{/components/ui/super_admin/detail/field/index}}
 --}}
-<div class='flex flex-col gap-1.5{{#if class}} {{class}}{{/if}}'>
-  <span class='font-montserrat text-xs font-semibold uppercase leading-[18px] tracking-wide text-[#718096]'>{{label}}</span>
+<div class='flex flex-col gap-2{{#if class}} {{class}}{{/if}}'>
+  <span class='font-montserrat text-sm font-semibold leading-5 text-[#171717]'>{{label}}</span>
 
   {{#if @partial-block}}
     {{> @partial-block}}
-  {{else if multilang}}
-    <div class='flex flex-col gap-1'>
-      <div class='flex gap-2'>
-        <span class='shrink-0 rounded bg-[#eff6ff] px-1.5 py-0.5 font-inter text-xs font-medium text-[#1d4ed8]'>ID</span>
-        <p class='line-clamp-2 font-inter text-sm leading-5 text-[#262626]'>{{value.id}}</p>
-      </div>
-      <div class='flex gap-2'>
-        <span class='shrink-0 rounded bg-[#f0fdf4] px-1.5 py-0.5 font-inter text-xs font-medium text-[#15803d]'>EN</span>
-        <p class='line-clamp-2 font-inter text-sm leading-5 text-[#262626]'>{{value.en}}</p>
-      </div>
-      <div class='flex gap-2'>
-        <span class='shrink-0 rounded bg-[#fef2f2] px-1.5 py-0.5 font-inter text-xs font-medium text-[#b91c1c]'>JA</span>
-        <p class='line-clamp-2 font-inter text-sm leading-5 text-[#262626]'>{{value.ja}}</p>
-      </div>
-    </div>
   {{else}}
-    <p class='font-inter text-sm leading-5 text-[#262626]'>{{value}}</p>
+    <p class='break-words font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{default value '-'}}</p>
   {{/if}}
 </div>
