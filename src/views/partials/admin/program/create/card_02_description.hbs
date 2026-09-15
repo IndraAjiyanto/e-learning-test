@@ -1,0 +1,50 @@
+{{!--
+  Card 02 - Program Description
+  Path: partials/admin/program/create/card_02_description.hbs
+--}}
+{{#> components/ui/admin/form/form-card num="02" title="Program Description" id="section-02"}}
+<div class='flex flex-col gap-[16px] w-full' x-data="{ descTab: 'id' }">
+
+  {{!-- Language Tabs --}}
+  {{> components/ui/admin/form/language-tabs alpineVar="descTab"}}
+
+  {{!-- Description Textareas --}}
+  <div class='flex flex-col gap-[6px] w-full'>
+    <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Description*</label>
+
+    <div x-show='descTab === "id"'>
+      {{> components/ui/admin/form/textarea-input
+        id="description_id" name="description_id" rows="4"
+        placeholder="Enter program description in Indonesian..."
+        xModel="formData.description.id"
+        onBlur="validateField('description', 'id')"
+        validateKey="description_id"
+      }}
+      <div id='description_id_error' class='hidden text-red-500 text-xs mt-1'></div>
+    </div>
+
+    <div x-show='descTab === "en"'>
+      {{> components/ui/admin/form/textarea-input
+        id="description_en" name="description_en" rows="4"
+        placeholder="Enter program description in English..."
+        xModel="formData.description.en"
+        onBlur="validateField('description', 'en')"
+        validateKey="description_en"
+      }}
+      <div id='description_en_error' class='hidden text-red-500 text-xs mt-1'></div>
+    </div>
+
+    <div x-show='descTab === "ja"'>
+      {{> components/ui/admin/form/textarea-input
+        id="description_ja" name="description_ja" rows="4"
+        placeholder="Enter program description in Japanese..."
+        xModel="formData.description.ja"
+        onBlur="validateField('description', 'ja')"
+        validateKey="description_ja"
+      }}
+      <div id='description_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
+    </div>
+  </div>
+
+</div>
+{{/components/ui/admin/form/form-card}}

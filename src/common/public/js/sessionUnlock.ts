@@ -24,7 +24,7 @@ export interface AttendanceLike {
 }
 
 export interface SessionLike {
-  id?: string | string;
+  id?: string;
   sessionOrder: number;
   sessionProgress?: SessionProgressLike[] | null;
   logbooks?: LogbookLike[] | null;

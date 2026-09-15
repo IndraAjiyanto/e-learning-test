@@ -1,0 +1,232 @@
+{{!--
+  Card 01 - Basic Information
+  Path: partials/admin/program/create/card_01_basic_info.hbs
+--}}
+{{#> components/ui/admin/form/form-card num="01" title="Basic Information" id="section-01"}}
+<div class='flex flex-col gap-[16px] w-full'>
+
+  {{!-- Cover + Name/Group Row --}}
+  <div class='flex flex-row gap-[16px] w-full'>
+
+    {{!-- Cover Upload --}}
+    <div class='w-[363px] shrink-0'
+      x-data="{
+        previewUrl: null,
+        oldPhoto: {{#if course}}'{{course.image}}'{{else}}null{{/if}},
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        imageWidth: 0,
+        imageHeight: 0,
+        hasFile: false,
+        isDragOver: false,
+        validateImage(file) {
+          if (!file) { this.hasFile = false; $dispatch('cover-validation', { isValid: true, hasFile: false }); return; }
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.isValid = false; this.previewUrl = null;
+            $dispatch('cover-validation', { isValid: false, hasFile: true }); return;
+          }
+          const maxSize = 10 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.errorMessage = 'File size too large (' + (file.size / 1024 / 1024).toFixed(2) + 'MB). Maximum 10MB';
+            this.isValid = false; this.previewUrl = null;
+            $dispatch('cover-validation', { isValid: false, hasFile: true }); return;
+          }
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+          img.onload = () => {
+            this.imageWidth = img.width; this.imageHeight = img.height;
+            if (img.width < 1900 || img.width > 1920 || img.height < 1000 || img.height > 1080) {
+              this.errorMessage = 'Image dimensions ' + img.width + 'x' + img.height + 'px. Required: 1900x1000 to 1920x1080 pixels';
+              this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl);
+              $dispatch('cover-validation', { isValid: false, hasFile: true });
+            } else {
+              this.previewUrl = objectUrl; this.isValid = true; this.errorMessage = '';
+              $dispatch('cover-validation', { isValid: true, hasFile: true });
+            }
+          };
+          img.onerror = () => {
+            this.errorMessage = 'Failed to load image'; this.isValid = false; this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+            $dispatch('cover-validation', { isValid: false, hasFile: true });
+          };
+          img.src = objectUrl;
+        },
+        clearFile() {
+          this.previewUrl = null; this.errorMessage = ''; this.isValid = true;
+          this.fileName = ''; this.fileSize = 0; this.imageWidth = 0; this.imageHeight = 0;
+          this.hasFile = false; this.isDragOver = false; $refs.fileInput.value = null;
+          $dispatch('cover-validation', { isValid: true, hasFile: false });
+        },
+        handleDrop(e) {
+          this.isDragOver = false;
+          const file = e.dataTransfer.files[0];
+          if (file) { const dt = new DataTransfer(); dt.items.add(file); $refs.fileInput.files = dt.files; this.validateImage(file); }
+        }
+      }"
+      @cover-validation.window="updateCoverValidation($event.detail.isValid, $event.detail.hasFile)"
+    >
+      {{> components/ui/admin/form/form-label text="Cover Program*"}}
+      <input type='file' id='image' name='image' accept='image/jpeg,image/jpg,image/png' x-ref='fileInput' class='hidden'
+        @change="validateImage($event.target.files[0])" />
+      <label for='image'
+        @dragover.prevent="isDragOver = true" @dragleave="isDragOver = false" @drop.prevent="handleDrop($event)"
+        :class="isDragOver ? 'border-[#003060] bg-[#E4F1F7]' : 'border-[#D9D9D9] bg-[#F8F9FA]'"
+        class='box-border flex flex-col justify-center items-center p-[8px_16px] gap-[10px] w-full h-[128px] border rounded-[8px] cursor-pointer transition-colors hover:border-[#003060] hover:bg-[#E4F1F7]'>
+        <template x-if="!previewUrl{{#if course}} && !oldPhoto{{/if}}">
+          <div class='flex flex-col items-center'>
+            <div class='w-10 h-10 flex justify-center items-center'>
+              <i class='fas fa-image text-[#718096] text-[32px] leading-none'></i>
+            </div>
+            <p class='font-montserrat font-medium text-[12px] leading-[16px] text-[#718096] text-center'>Drag & Drop your Image here or click to browse</p>
+            <p class='font-montserrat font-medium text-[10px] leading-[12px] text-[#ADB7C5] text-center'>JPG / PNG Â· 1900x1000 â€“ 1920x1080 Â· Max 10 MB</p>
+          </div>
+        </template>
+        <template x-if="previewUrl">
+          <div class='w-[240px] h-[126px] rounded-[4px] overflow-hidden flex justify-center items-center shrink-0'>
+            <img :src="previewUrl" alt="Preview" class='w-full h-full object-cover' />
+          </div>
+        </template>
+        {{#if course}}
+        <template x-if="!previewUrl && oldPhoto">
+          <div class='w-[240px] h-[126px] rounded-[4px] overflow-hidden flex justify-center items-center shrink-0'>
+            <img :src="oldPhoto" alt="Current Cover" class='w-full h-full object-cover' />
+          </div>
+        </template>
+        {{/if}}
+      </label>
+      <template x-if="previewUrl && isValid">
+        <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+          <i class='fas fa-check-circle text-green-500'></i>
+          <span class='text-xs text-green-700 font-montserrat'>
+            <span class='font-semibold'>Valid image:</span>
+            <span x-text="imageWidth + 'x' + imageHeight + 'px, ' + (fileSize / 1024 / 1024).toFixed(2) + 'MB'"></span>
+          </span>
+          <button type='button' @click="clearFile()" class='ml-auto text-red-500 hover:text-red-700'><i class='fas fa-times'></i></button>
+        </div>
+      </template>
+      <div id='image_error' class='hidden text-red-500 text-xs mt-1'></div>
+      {{#if course}}
+      <template x-if="!previewUrl && oldPhoto">
+        <p class='text-xs text-gray-500 font-inter'>Current image â€” drag & drop atau click untuk ganti</p>
+      </template>
+      {{/if}}
+      <template x-if="!isValid && errorMessage">
+        <div class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
+          <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+          <div>
+            <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+            <p class='text-xs text-red-700' x-text="errorMessage"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    {{!-- Name + Group --}}
+    <div class='flex flex-col gap-[16px] flex-1 min-w-0'>
+      {{#> components/ui/admin/form/form-field label="Program Name" for="name" errorId="name_error"}}
+        <input type='text' id='name' name='name' placeholder='Enter program name' required
+          {{#if course}}value='{{course.name}}'{{/if}}
+          :class="borderClass('name')"
+          class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] text-[16px]/[normal] text-[#404040] font-inter font-normal outline-none focus:[outline-color:#003060]' />
+      {{/components/ui/admin/form/form-field}}
+
+      {{#> components/ui/admin/form/form-field label="Group" for="group" errorId="group_error"}}
+        <input type='text' id='group' name='group' placeholder='Enter group' required
+          {{#if course}}value='{{course.group}}'{{/if}}
+          :class="borderClass('group')"
+          class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] text-[16px]/[normal] text-[#404040] font-inter font-normal outline-none focus:[outline-color:#003060]' />
+      {{/components/ui/admin/form/form-field}}
+    </div>
+  </div>
+
+  {{!-- Category / Program Type / Paid Row --}}
+  <div class='flex flex-row gap-[16px] w-full'>
+    {{!-- Category --}}
+    {{> components/ui/admin/form/searchable_select/index
+      label="Category*"
+      forId="categoryId"
+      errorId="categoryId_error"
+      name="categoryId"
+      itemsJson=(json category)
+      displayField="name"
+      placeholder="Search category..."
+      locked=categoryId
+      initialId=(default course.category.id categoryId)
+      dispatchEvent="category-selected"
+      dispatchKey="category"
+      validateKey="categoryId"
+    }}
+
+    {{!-- Program Type --}}
+    {{> components/ui/admin/form/searchable_select/index
+      label="Program Type*"
+      forId="courseTypeId"
+      errorId="courseTypeId_error"
+      name="courseTypeId"
+      itemsJson=(json courseType)
+      displayField="nameClassesType"
+      placeholder="Search type..."
+      initialId=(default course.courseType.id '')
+    }}
+
+    {{!-- Paid Program --}}
+    <div class='flex-1 min-w-0'>
+      {{#> components/ui/admin/form/form-field label="Paid Program*"}}
+        {{> components/ui/admin/form/segmented-button
+          alpineVar="paidClass"
+          options=(array
+            (obj 'label' 'Yes' 'value' 'true' 'onClick' 'paidClass = true; updateCompleteness()' 'activeIf' 'paidClass')
+            (obj 'label' 'No' 'value' 'false' 'onClick' 'paidClass = false; updateCompleteness()' 'activeIf' '!paidClass')
+          )
+        }}
+        <input type='hidden' name='paid_check' :value='paidClass' />
+      {{/components/ui/admin/form/form-field}}
+    </div>
+  </div>
+
+  {{!-- Method Row --}}
+  <div class='flex flex-row gap-[16px] w-full'>
+    <div class='w-[240px] shrink-0'>
+      {{#> components/ui/admin/form/form-field label="Method*" errorId="method_error"}}
+        {{> components/ui/admin/form/segmented-button
+          alpineVar="methodOnline"
+          options=(array
+            (obj 'label' 'Online' 'value' 'online' 'onClick' 'methodOnline = true; updateCompleteness()' 'activeIf' 'methodOnline')
+            (obj 'label' 'Offline' 'value' 'offline' 'onClick' 'methodOnline = false; updateCompleteness()' 'activeIf' '!methodOnline')
+          )
+        }}
+        <input type='hidden' name='method' :value='methodOnline ? "online" : "offline"' />
+      {{/components/ui/admin/form/form-field}}
+    </div>
+  </div>
+
+  {{!-- Mentoring (super_admin only) --}}
+  {{#if (roles user.role 'super_admin')}}
+  <div class='flex flex-row gap-[16px] w-full'>
+    <div class='flex-1 min-w-0'>
+    {{> components/ui/admin/form/searchable_select/index
+      label="Mentoring"
+      forId="mentoringId"
+      errorId="mentoringId_error"
+      name="mentoringsId"
+      itemsJson=(json mentorings)
+      displayField="username"
+      placeholder="Search and select mentoring..."
+      initialId=(default course.mentorings.[0].user.id '')
+      validateKey="mentoringId"
+    }}
+    </div>
+  </div>
+  {{/if}}
+
+</div>
+{{/components/ui/admin/form/form-card}}

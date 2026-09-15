@@ -1,0 +1,26 @@
+{{!--
+  Component: Text Input (Admin) â€” atomic
+  Path: components/ui/admin/form/text-input.hbs
+  Props: {{id}}, {{name}}, {{placeholder}}, {{value}}, {{type}} (default "text"),
+          {{xModel}} (optional Alpine), {{class}} (optional), {{disabled}},
+          {{onBlur}} (optional Alpine expression), {{onInput}} (optional Alpine expression),
+          {{validateKey}} (optional, key for parent borderClass() validation outline)
+
+  Design: w fill_container, h44, p10 14, gap 8, bg white,
+  outline 1px #D4D4D4, radius 8, text Inter 16/normal #404040
+--}}
+<div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] {{class}}'
+  {{#if validateKey}}:class="borderClass('{{validateKey}}')"{{/if}}>
+  <input
+    type='{{default type "text"}}'
+    id='{{id}}'
+    name='{{default name id}}'
+    class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]'
+    placeholder='{{default placeholder ""}}'
+    {{#if value}}value='{{value}}'{{/if}}
+    {{#if xModel}}x-model='{{xModel}}'{{/if}}
+    {{#if onBlur}}@blur='{{onBlur}}'{{/if}}
+    {{#if onInput}}@input='{{onInput}}'{{/if}}
+    {{#if disabled}}disabled{{/if}}
+  />
+</div>

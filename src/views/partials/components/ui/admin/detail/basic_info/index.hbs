@@ -1,0 +1,55 @@
+{{!--
+  Component: Detail Basic Information (Admin)
+  Path: components/ui/admin/detail/basic_info/index.hbs
+  Props: {{course}} (Course entity)
+
+  Pencil: Card Basic Information (L7MMw): bg #FFFFFF, outline 1px #D9D9D9, radius 12, padding 20, gap 24
+  Header: icon info 36x36 #003060 circle + Montserrat 16 semibold #003060
+  Body: 2 kolom Left/Right gap 12, tiap field gap 8 (label 14 semibold #171717, value 14 medium #737373) + Description full-width
+--}}
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-[24px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+
+  {{!-- Header --}}
+  <div class='w-full flex flex-row gap-[8px] justify-start items-center'>
+    <div class='box-border w-[36px] h-[36px] shrink-0 flex flex-row gap-0 justify-center items-center bg-[#003060] rounded-full'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><circle cx='12' cy='12' r='10'/><path d='M12 16v4'/><path d='M12 8h.01'/></svg>
+    </div>
+    <span class='text-[16px]/[normal] text-[#003060] font-montserrat font-semibold'>Basic Information</span>
+  </div>
+
+  {{!-- Body --}}
+  <div class='w-full flex flex-col gap-[20px] justify-start items-start'>
+
+    <div class='w-full flex flex-col lg:flex-row gap-[12px] justify-start items-start'>
+
+      {{!-- Left Fields --}}
+      <div class='flex-1 min-w-0 flex flex-col gap-[14px] justify-start items-start'>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Program Name</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium break-words'>{{course.name}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Category</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.category}}{{course.category.name}}{{else}}-{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Method</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if (eq course.method 'online')}}Online{{else}}Offline{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Duration</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.month}}{{course.month}} Month{{else}}{{#if course.day}}{{course.day}} day{{else}}-{{/if}}{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Registration Date</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.date_registration}}{{formatDate course.date_registration}}{{else}}Not set{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Start Date</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.startDate}}{{formatDate course.startDate}}{{else}}Not set{{/if}}</span></div>
+      </div>
+
+      {{!-- Right Fields --}}
+      <div class='flex-1 min-w-0 flex flex-col gap-[14px] justify-start items-start'>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Group</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{course.group}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Program Type</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.courseType}}{{course.courseType.nameClassesType}}{{else}}-{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Location</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.locations}}{{getByLang course.locations 'en'}}{{else}}-{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Time Start</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.time_start}}{{formatTime course.time_start}}{{else}}Not set{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Time End</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.time_end}}{{formatTime course.time_end}}{{else}}Not set{{/if}}</span></div>
+        <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>End Date</span><span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.startEnd}}{{formatDate course.startEnd}}{{else}}Not set{{/if}}</span></div>
+      </div>
+
+    </div>
+
+    {{!-- Description full-width --}}
+    <div class='w-full flex flex-col gap-[8px]'>
+      <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Description</span>
+      <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium break-words'>{{#if course.description}}{{default (getByLang course.description 'en') course.description.id}}{{else}}-{{/if}}</span>
+    </div>
+
+  </div>
+
+</div>

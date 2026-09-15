@@ -1,0 +1,41 @@
+{{!--
+  Component: Form Progress Sidebar (Admin) â€” atomic
+  Path: components/ui/admin/sidebar/form-progress.hbs
+  Props: {{steps}} (array of strings, labels â€” num derived from position),
+         {{alpineMode}} (boolean, optional), {{activeStepVar}} (string, optional, default "activeStep"),
+         {{class}} (optional)
+
+  Static mode (default): all steps render inactive (for static preview).
+  Alpine mode (alpineMode=true): expects parent Alpine scope to have a step
+  variable (default `activeStep`, number). Highlight updates reactively,
+  including on input focus (see activateSection in create.hbs).
+
+  Example:
+    {{> components/ui/admin/sidebar/form-progress
+      alpineMode=true
+      steps=(array "Basic Information" "Description" "Schedule & Location") }}
+
+  Design: w243, bg white, outline 1px #E5E5E5, radius 12, padding 24
+  Header: Inter 18/normal, #003060, semibold
+  Steps: vertical list, gap 0
+--}}
+<div class='box-border w-[243px] shrink-0 h-fit flex flex-col gap-[20px] p-[24px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] {{class}}'>
+  <span class='text-[18px]/[normal] text-[#003060] font-inter font-semibold'>Form Progress</span>
+  <div class='flex flex-col gap-0 justify-start items-start w-full'>
+    {{#each steps}}
+    <div class='flex flex-row gap-[12px] justify-start items-start w-full transition-all duration-300'
+      {{#if ../alpineMode}}:class="{{default ../activeStepVar 'activeStep'}} >= {{addOne @index}} ? 'opacity-100' : 'opacity-50'"{{/if}}>
+      <div class='flex flex-col items-center'>
+        <div class='box-border w-[24px] shrink-0 h-[24px] rounded-full transition-all duration-500'
+          {{#if ../alpineMode}}:class="{{default ../activeStepVar 'activeStep'}} >= {{addOne @index}} ? 'bg-[#003060] scale-110' : 'bg-[#B1B6BD]'"{{else}}class='bg-[#B1B6BD]'{{/if}}></div>
+        {{#unless @last}}
+        <div class='w-[2px] h-[34px] transition-all duration-500'
+          {{#if ../alpineMode}}:class="{{default ../activeStepVar 'activeStep'}} >= {{addOne (addOne @index)}} ? 'bg-[#003060]' : 'bg-[#B1B6BD]'"{{else}}class='bg-[#B1B6BD]'{{/if}}></div>
+        {{/unless}}
+      </div>
+      <span class='text-[16px]/[normal] font-inter font-medium pt-[2px] transition-colors duration-300'
+        {{#if ../alpineMode}}:class="{{default ../activeStepVar 'activeStep'}} >= {{addOne @index}} ? 'text-[#003060]' : 'text-[#737373]'"{{else}}class='text-[#737373]'{{/if}}>{{this}}</span>
+    </div>
+    {{/each}}
+  </div>
+</div>

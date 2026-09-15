@@ -89,9 +89,10 @@ export const stringHelpers = {
     const words = raw.split(/\s+/);
 
     // Bahasa tanpa spasi (Jepang/Cina/Korea): potong per karakter, bukan per kata
-    const isCjk = /[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(
-      raw,
-    );
+    const isCjk =
+      /[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(
+        raw,
+      );
     if (words.length < 2 && isCjk) {
       const chars = Number(cjkCount) > 0 ? Number(cjkCount) : 4;
       const chunk = Array.from(raw);
@@ -105,7 +106,9 @@ export const stringHelpers = {
     const head = words.slice(0, Math.max(words.length - n, 0));
     const tail = words.slice(Math.max(words.length - n, 0));
     return new Handlebars.SafeString(
-      head.length ? `${esc(head.join(' '))} ${wrap(tail.join(' '))}` : wrap(tail.join(' ')),
+      head.length
+        ? `${esc(head.join(' '))} ${wrap(tail.join(' '))}`
+        : wrap(tail.join(' ')),
     );
   },
   concat: function (...args: any[]) {

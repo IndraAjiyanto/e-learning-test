@@ -42,7 +42,7 @@ export class Course {
   name: string;
 
   @Column('jsonb', { nullable: true })
-  description: string[];
+  description: { id: string; en: string; ja: string };
 
   @Column()
   group: string;
@@ -60,7 +60,7 @@ export class Course {
   locationLink: string;
 
   @Column('jsonb', { nullable: true })
-  locations: string[];
+  locations: { id: string; en: string; ja: string };
 
   @Column({ type: 'enum', enum: ['online', 'offline'] })
   method: Method;
