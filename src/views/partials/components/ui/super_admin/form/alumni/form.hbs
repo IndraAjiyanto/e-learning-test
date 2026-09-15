@@ -3,12 +3,14 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/alumni/form.hbs
   Level: L0 Skrip pendamping (scoped super_admin)
 
-  Factory Alpine `alumniForm({ courses })` untuk super_admin/alumni/createAlumni.hbs.
+  Factory Alpine `alumniForm({ courses, alumni })` untuk
+  super_admin/alumni/{createAlumni,editAlumni}.hbs. `alumni` hanya diisi di Edit:
+  field terisi dari data tersimpan dan foto baru jadi opsional.
 
   Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
-  form/select_field); previewUrl, errorMessage, isValid, hasFile, fileName,
-  validateImage(), clearFile() (form/photo_upload); loading (form/button);
-  lang (tabs/language).
+  form/multi_select_field); courseOptions, initialCourse; previewUrl,
+  errorMessage, isValid, hasFile, fileName, validateImage(), clearFile()
+  (form/photo_upload); loading (form/button); lang (tabs/language).
 
   `lang` ikut di factory ini agar submit yang gagal bisa memindahkan tab ke
   bahasa yang error — kalau tidak, pesan errornya tersembunyi di tab lain.
@@ -44,25 +46,31 @@
       return '';
     };
 
-    window.alumniForm = function alumniForm({ courses } = {}) {
+    window.alumniForm = function alumniForm({ courses, alumni } = {}) {
+      const saved = (field) => byLang((l) => alumni?.[field]?.[l] ?? '');
+      const course = alumni?.course;
+
       return {
         loading: false,
         lang: 'id',
 
         courseOptions: (courses || []).map((c) => ({ value: c.id, label: c.name })),
+        initialCourse: course ? [{ value: course.id, label: course.name }] : [],
 
         // Foto profil
-        previewUrl: null,
+        originalUrl: alumni?.profile || '',
+        previewUrl: alumni?.profile || null,
+        objectUrl: null,
         errorMessage: '',
         isValid: true,
         fileName: '',
         hasFile: false,
 
         formData: {
-          courseId: '',
-          name: byLang(() => ''),
-          message: byLang(() => ''),
-          currentPosition: byLang(() => ''),
+          courseId: course?.id || '',
+          name: saved('name'),
+          message: saved('message'),
+          currentPosition: saved('currentPosition'),
         },
         formErrors: {
           courseId: '',
@@ -140,6 +148,7 @@
               return;
             }
 
+            this.objectUrl = objectUrl;
             this.previewUrl = objectUrl;
             this.isValid = true;
             this.errorMessage = '';
@@ -153,15 +162,19 @@
           img.src = objectUrl;
         },
 
+        // Berkas ditolak dikosongkan dari input agar tidak ikut terkirim;
+        // di Edit pratinjau kembali ke foto tersimpan.
         setImageError(message) {
+          this.clearPreview();
           this.errorMessage = message;
           this.isValid = false;
-          this.previewUrl = null;
+          if (this.$refs.fileInput) this.$refs.fileInput.value = null;
         },
 
         clearPreview() {
-          if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
-          this.previewUrl = null;
+          if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = null;
+          this.previewUrl = this.originalUrl || null;
           this.errorMessage = '';
           this.isValid = true;
           this.fileName = '';
@@ -171,6 +184,10 @@
         clearFile() {
           this.clearPreview();
           this.$refs.fileInput.value = null;
+        },
+
+        hasPhoto() {
+          return this.hasFile || !!this.originalUrl;
         },
 
         validateAll() {
@@ -184,8 +201,8 @@
             }),
           );
 
-          // Foto wajib — DTO backend mewajibkan profile.
-          if (!this.hasFile) this.setImageError('Please upload a profile photo.');
+          // Create wajib foto (DTO mewajibkan profile); Edit boleh memakai foto tersimpan.
+          if (!this.hasPhoto()) this.setImageError('Please upload a profile photo.');
         },
 
         hasFormErrors() {
@@ -196,7 +213,8 @@
         },
 
         canSubmit() {
-          return this.hasFile && this.isValid && !this.hasFormErrors();
+          // Berkas yang ditolak sudah dibuang dari input, jadi cukup cek ada foto.
+          return this.hasPhoto() && !this.hasFormErrors();
         },
 
         // Urutan mengikuti tampilan: program, foto, lalu field per bahasa.
@@ -207,7 +225,7 @@
             return;
           }
 
-          if (!this.hasFile || !this.isValid) {
+          if (!this.hasPhoto()) {
             this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
             return;
           }
