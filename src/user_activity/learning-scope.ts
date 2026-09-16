@@ -211,8 +211,24 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     resolve: async (ids) => (ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null),
   },
   {
-    name: 'logbook-detail',
+    name: 'logbook-formEdit',
     method: 'GET',
+    match: /^\/logbooks\/formEdit\/(?<logbookId>[^/]+)$/,
+    resolve: (ids, _req, ctx) => resolveLogbook(ids, ctx),
+  },
+  {
+    // Submit form isi logbook (POST /logbooks/:sessionId). Diletakkan SEBELUM
+    // logbook-detail yang method-nya ALL, agar POST ini tidak tertelan rule detail.
+    name: 'logbook-create',
+    method: 'POST',
+    match: /^\/logbooks\/(?<sessionId>[^/]+)$/,
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Logbook'),
+  },
+  {
+    // ALL agar update logbook (POST ?_method=PATCH /logbooks/:logbookId) ikut
+    // terdeteksi, bukan hanya GET detail.
+    name: 'logbook-detail',
+    method: 'ALL',
     match: /^\/logbooks\/(?<logbookId>[^/]+)$/,
     resolve: (ids, _req, ctx) => resolveLogbook(ids, ctx),
   },
@@ -232,6 +248,22 @@ export function isAssetPath(path: string): boolean {
     path === '/favicon.ico' ||
     /\.(css|js|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|map|json)$/i.test(path)
   );
+}
+
+/**
+ * Menentukan apakah request ini berupa navigasi halaman (buka link / refresh /
+ * redirect), BUKAN request latar seperti fetch/XHR/API. Status belajar hanya
+ * boleh di-reset saat user benar-benar berpindah halaman. Fetch latar (mis.
+ * navbar memanggil /dashboard/api/category saat halaman selesai dimuat) tidak
+ * boleh menghapus status "sedang belajar".
+ */
+export function isNavigationRequest(req: Request): boolean {
+  const dest = req.headers['sec-fetch-dest'];
+  if (typeof dest === 'string') return dest === 'document';
+  const mode = req.headers['sec-fetch-mode'];
+  if (typeof mode === 'string') return mode === 'navigate';
+  const accept = req.headers.accept ?? '';
+  return (req.method ?? 'GET').toUpperCase() === 'GET' && accept.includes('text/html');
 }
 
 /** Mengembalikan rule scope yang cocok dengan method + path, atau null jika di luar scope. */

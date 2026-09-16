@@ -16,7 +16,7 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
 import { format, startOfDay, subDays } from 'date-fns';
-import { isAssetPath, matchLearningScope, ScopeContext } from './learning-scope';
+import { isAssetPath, isNavigationRequest, matchLearningScope, ScopeContext } from './learning-scope';
 
 const DAY_LABELS = [
   'Min',
@@ -203,7 +203,8 @@ export class UserActivityService {
   /**
    * Dipanggil middleware global untuk setiap request.
    * - role 'user' + endpoint dalam scope pembelajaran  => set currentCourseId + label.
-   * - role 'user' + endpoint di luar scope              => reset currentCourseId + label (tidak belajar).
+   * - role 'user' + endpoint di luar scope + navigasi   => reset currentCourseId + label (tidak belajar).
+   * - role 'user' + endpoint di luar scope + fetch/API  => cukup update lastSeenAt (pertahankan status).
    * - role lain                                        => cukup update lastSeenAt.
    */
   async handleRequest(user: any, req: Request) {
@@ -226,9 +227,12 @@ export class UserActivityService {
 
     const matched = matchLearningScope(method, path);
 
-    let courseId: string | null = null;
-    let label: string | null = null;
-
+    // URL cocok polanya tapi id-nya tidak bisa di-resolve (mis. autosave
+    // jawaban quiz `POST /answer-users/chose-answer`, yang match rule
+    // answer-users tapi bukan quizId valid). Ini BUKAN keluar scope, jadi
+    // cukup sentuh lastSeenAt dan pertahankan status belajar yang sedang aktif
+    // agar tidak hilang di tengah mengerjakan quiz. Reset hanya terjadi saat
+    // path benar-benar tidak match rule mana pun.
     if (matched) {
       try {
         const resolution = await matched.rule.resolve(
@@ -236,16 +240,33 @@ export class UserActivityService {
           req as any,
           this.scopeContext(),
         );
-        if (resolution) {
-          courseId = resolution.courseId;
-          label = resolution.label;
+        if (!resolution) {
+          await this.touch(user.id);
+          return;
         }
+        await this.updateActivity(
+          user.id,
+          resolution.courseId,
+          resolution.label,
+        );
       } catch (error) {
-        // Gagal resolve scope !== crash request; biarkan null (dianggap keluar scope).
+        // Gagal resolve !== crash request; perlakukan seperti in-scope tak
+        // terresolve (pertahankan status), bukan keluar scope.
+        await this.touch(user.id);
       }
+      return;
     }
 
-    await this.updateActivity(user.id, courseId, label);
+    // Di luar scope: reset status hanya jika user benar-benar melakukan
+    // navigasi halaman (pindah/keluar). Request latar seperti fetch/XHR/API
+    // (mis. navbar memanggil /dashboard/api/category saat halaman selesai
+    // dimuat) cukup sentuh lastSeenAt agar status "sedang belajar" tidak
+    // hilang sekilas.
+    if (isNavigationRequest(req)) {
+      await this.updateActivity(user.id, null, null);
+    } else {
+      await this.touch(user.id);
+    }
   }
 
   private async updateActivity(
