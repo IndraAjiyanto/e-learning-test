@@ -1,18 +1,21 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateCommitmentDto {
+  // Dikirim form sebagai title[id]/[en]/[ja] dan description[id]/[en]/[ja].
   @IsNotEmpty()
-  @IsArray()
-  title: string[];
+  @IsObject()
+  title: { id: string; en: string; ja: string };
 
   @IsNotEmpty()
-  @IsArray()
-  description: string[];
+  @IsObject()
+  description: { id: string; en: string; ja: string };
 
   @IsNotEmpty()
   @IsString()
   icon: string;
 
+  // Diisi CommitmentService (max + 1 saat create, di-reindex saat delete).
+  @IsOptional()
   @IsNumber()
-  commitmentOrder: number;
+  commitmentOrder?: number;
 }

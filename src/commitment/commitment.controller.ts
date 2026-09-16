@@ -12,6 +12,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 import { CommitmentService } from './commitment.service';
 import { CreateCommitmentDto } from './dto/create-commitment.dto';
 import { UpdateCommitmentDto } from './dto/update-commitment.dto';
@@ -34,7 +35,11 @@ export class CommitmentController {
       createCommitmentDto.commitmentOrder =
         await this.commitmentService.noCommitment();
       await this.commitmentService.create(createCommitmentDto);
-      req.flash('success', 'Commitment created successfully');
+      flashToast(
+        req,
+        'Commitment Created',
+        'The commitment has been added successfully.',
+      );
       res.redirect('/commitment');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create commitment');
@@ -88,7 +93,11 @@ export class CommitmentController {
   ) {
     try {
       await this.commitmentService.update(id, updateCommitmentDto);
-      req.flash('success', 'Commitment updated successfully');
+      flashToast(
+        req,
+        'Commitment Updated',
+        'The changes to this commitment have been saved.',
+      );
       res.redirect('/commitment');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update commitment');
@@ -104,7 +113,11 @@ export class CommitmentController {
   ) {
     try {
       await this.commitmentService.remove(id);
-      req.flash('success', 'Commitment deleted successfully');
+      flashToast(
+        req,
+        'Commitment Deleted',
+        'The commitment has been removed successfully.',
+      );
       res.redirect('/commitment');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete commitment');
