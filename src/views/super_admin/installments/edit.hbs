@@ -1,148 +1,66 @@
-<div
-  class='py-10'
-  x-data='{ 
-    month: `{{installments.month}}`, 
-    priceValues: {{json installments.price}}, 
-    priceDisplays: [], 
-    downPaymentValue: `{{installments.downPayment}}`, 
-    downPaymentDisplay: "",
-    dueDateValues: {{json installments.dueDates}} || [],
-    dueDateDisplays: [],
+{{!--
+  Halaman: Edit Installment — Super Admin
+  Lokasi: src/views/super_admin/installments/edit.hbs
+  Level: L4 Page
 
-    // Form validation states
-    formData: {
-      month: `{{installments.month}}`,
-      downPayment: `{{installments.downPayment}}`,
-      price: {{json installments.price}},
-      dueDates: {{json installments.dueDates}} || []
-    },
-    formErrors: {
-      month: "",
-      downPayment: "",
-      price: [],
-      dueDates: []
-    },
-    formValid: {
-      month: false,
-      downPayment: false,
-      price: [],
-      dueDates: []
-    },
+  Route: GET /installment/formEdit/:id -> PATCH /installment/:id
+  (urlencoded + _method override). Data: { installments, availableMonths }.
 
-    validateField(field, value, index = null) {
-      if (field === "price" || field === "dueDates") {
-        this.formData[field][index] = value;
-        const numValue = parseInt(value);
-        const valid = field === "price"
-          ? !!value && !isNaN(numValue)
-          : !!value;
-        if (!valid) {
-          this.formErrors[field][index] = field === "price" ? "Valid payment amount required" : "Valid due date required";
-          this.formValid[field][index] = false;
-        } else {
-          this.formErrors[field][index] = "";
-          this.formValid[field][index] = true;
-        }
-      } else {
-        this.formData[field] = value;
-        
-        switch(field) {
-          case "month":
-            if (!value) {
-              this.formErrors.month = "Installment period is required";
-              this.formValid.month = false;
-            } else {
-              this.formErrors.month = "";
-              this.formValid.month = true;
-            }
-            break;
-            
-          case "downPayment":
-            const dpNumValue = parseInt(value);
-            if (!value || isNaN(dpNumValue) || dpNumValue <= 0) {
-              this.formErrors.downPayment = "Valid down payment amount required";
-              this.formValid.downPayment = false;
-            } else {
-              this.formErrors.downPayment = "";
-              this.formValid.downPayment = true;
-            }
-            break;
-        }
-      }
-    },
+  Beda dari create.hbs: field terisi nilai existing, periode dikunci (lockMonth),
+  dan tombol aksi berada di dalam kartu field.
 
-    get canSubmit() {
-      const monthCount = parseInt(this.month);
-      const allPriceValid = Array.from({length: monthCount}, (_, i) => this.formValid.price[i] || false).every(valid => valid);
-      const allDueDatesValid = Array.from({length: monthCount}, (_, i) => this.formValid.dueDates[i] || false).every(valid => valid);
-      return this.formValid.month && this.formValid.downPayment && allDueDatesValid && allPriceValid;
-    },
+  `installments.dueDates` sudah dinormalkan service lewat toDateOnlyArray, jadi
+  bentuknya langsung cocok untuk <input type='date'>. Nilai awal dikirim lewat
+  helper json, bukan template literal, agar aman untuk nilai apa pun.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-    hasFormErrors() {
-      return Object.values(this.formErrors).some(error => error !== "" || (Array.isArray(error) && error.some(e => e !== "")));
-    },
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Edit Installment'
+      }}
 
-    handleSubmit() {
-      if (!this.canSubmit) {
-        return false;
-      }
-      return true;
-    },
-
-    formatNumber(event, index = null) { 
-      let angka = event.target.value.replace(/\D/g, ""); 
-      if (index !== null) { 
-        this.priceValues[index] = angka; 
-        this.priceDisplays[index] = new Intl.NumberFormat("id-ID").format(angka);
-        this.validateField("price", angka, index);
-      } else { 
-        this.downPaymentValue = angka; 
-        this.downPaymentDisplay = new Intl.NumberFormat("id-ID").format(angka);
-        this.validateField("downPayment", angka);
-      } 
-    },
-
-    formatDueDate(event, index) {
-      this.validateField("dueDates", event.target.value, index);
-    }
-  }'
-  x-init="priceDisplays = priceValues.map(h => new Intl.NumberFormat('id-ID').format(h)); downPaymentDisplay = new Intl.NumberFormat('id-ID').format(downPaymentValue); formValid.price = Array(parseInt(month)).fill(true); formErrors.price = Array(parseInt(month)).fill(''); dueDateDisplays = Array.from({length: parseInt(month)}, (_, i) => dueDateValues[i] || ''); formValid.dueDates = Array(parseInt(month)).fill(true); formErrors.dueDates = Array(parseInt(month)).fill(''); dueDateDisplays.forEach((d, i) => validateField('dueDates', d, i))"
->
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Installment</h2>
+      {{> components/ui/super_admin/description/index
+        text='Update the down payment, the monthly amounts, and when each payment is due.'
+      }}
+    </div>
 
     <form
       action='/installment/{{installments.id}}?_method=PATCH'
-      method='POST'
-      x-data="{ loading: false }"
-      @submit='handleSubmit(); loading = true'
-      class='space-y-6'
+      method='post'
+      novalidate
+      x-data='installmentForm({
+        month: {{json installments.month}},
+        availableMonths: {{json availableMonths}},
+        downPayment: {{json installments.downPayment}},
+        price: {{json installments.price}},
+        dueDates: {{json installments.dueDates}},
+        lockMonth: true
+      })'
+      @submit.prevent='submitForm($event)'
     >
+      {{#> components/ui/super_admin/form/installment/fields lockMonth=true }}
+        <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+          {{> components/ui/super_admin/form/button
+            as='link'
+            variant='secondary'
+            href=(concat '/program/detail/program/admin/' installments.course.id)
+            label='Cancel'
+            loading=true
+          }}
 
-    {{> super_admin/installment/edit/month_input }}
-
-{{> super_admin/installment/edit/due_day_input }}
-
-{{> super_admin/installment/edit/price_input }}
-
-      <!-- Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          class='text-white px-6 py-2 rounded-lg shadow transition bg-gray-900 hover:bg-gray-600'
-        >
-        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-        <span x-show="!loading">Update</span>
-        </button>
-        <a
-          href='/program/detail/program/admin/{{installments.course.id}}'
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
+          {{> components/ui/super_admin/form/button
+            type='submit'
+            variant='primary'
+            label='Save Changes'
+            loading=true
+            disabled='!canSubmit() || loading'
+          }}
+        </div>
+      {{/components/ui/super_admin/form/installment/fields}}
     </form>
   </div>
 </div>
+
+{{> components/ui/super_admin/form/installment/form }}
