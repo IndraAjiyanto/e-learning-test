@@ -99,18 +99,18 @@
       <img src="/public/image/userProfile/receiptDollar.svg" alt="Receipt Dollar" class="w-16 h-16 object-contain mx-auto">
     </div>
 
-    <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+    <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] mb-2">
       No Installment Payment History
     </h3>
 
-    <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666] mb-12">
+    <p class="font-montserrat font-normal text-sm text-[#666666] mb-8">
       You haven't made any installment payments yet.
     </p>
 
     <button
       type="button"
       onclick="window.location.href='/free-program'"
-      class="w-full max-w-[331px] h-[55px] rounded-[12px] p-[10px] gap-[10px] bg-[#003060] hover:bg-[#001f3f] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-lg sm:text-[20px] leading-none text-white transition-all duration-200 cursor-pointer"
+      class="w-full max-w-[280px] h-11 rounded-lg gap-2 bg-[#003060] hover:bg-[#001f3f] hover:shadow-sm transition-shadow flex items-center justify-center font-montserrat font-medium text-sm leading-none text-white cursor-pointer"
     >
       Start Learning
     </button>
@@ -124,84 +124,67 @@
       <div class="w-16 h-16 rounded-full bg-[#E0F1F9] flex items-center justify-center mx-auto mb-12">
         <i class="fa-solid fa-receipt text-[30px] text-[#003060]"></i>
       </div>
-      <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+      <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] mb-2">
         No Installment Payment History
       </h3>
-      <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666]">
+      <p class="font-montserrat font-normal text-sm text-[#666666]">
         Try adjusting your status filter or search query.
       </p>
 
-      <button 
+      <button
         type="button"
         onclick="window.location.href='/free-program'"
-        class="w-full max-w-[331px] h-[55px] rounded-[12px] p-[10px] gap-[10px] bg-[#003060] hover:bg-[#001f3f] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-lg sm:text-[20px] leading-none text-white transition-all duration-200 cursor-pointer"
+        class="w-full max-w-[280px] h-11 rounded-lg gap-2 bg-[#003060] hover:bg-[#001f3f] hover:shadow-sm transition-shadow flex items-center justify-center font-montserrat font-medium text-sm leading-none text-white cursor-pointer"
       >
         Start Learning
       </button>
     </div>
 
-    <!-- HAS DATA: Transaction Cards Grid -->
-    <div x-show="!showDetail && transactions.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 xl:gap-4 2xl:gap-6">
+    <!-- HAS DATA: Transaction List (row layout, matches Figma "Payment History" reference) -->
+    <div x-show="!showDetail && transactions.length > 0" class="flex flex-col divide-y divide-[#E5E7EB] bg-white rounded-xl border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)]">
       <template x-for="tx in transactions" :key="tx.id">
         <div
           x-show="(statusFilter === 'all' || statusFilter === tx.status) && tx.program.toLowerCase().includes(searchQuery.toLowerCase())"
-          class="w-full max-w-[334px] min-h-[440px] 2xl:w-[334px] 2xl:min-h-[440px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-xl p-4 xl:p-5 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40"
+          class="w-full flex flex-col sm:flex-row sm:items-center gap-3 p-4 xl:px-5"
         >
-          <div>
-            <!-- Badges Row (Top Right Aligned) -->
-            <div class="flex items-center justify-end gap-2 mb-5">
-              <span class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border border-[#003060] font-montserrat font-medium text-xs sm:text-[15px] text-[#003060] leading-none" x-text="tx.type">Bootcamp</span>
-              <span 
-                class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border font-montserrat font-medium text-xs sm:text-[15px] leading-none capitalize" 
-                :class="tx.status === 'accepted' ? 'bg-[#F0FBF4] border-[#04B165] text-[#04B165]' : (tx.status === 'processing' ? 'bg-[#FEEFD6] border-[#FDA40B] text-[#FDA40B]' : 'bg-[#FEE7E7] border-[#F13639] text-[#F13639]')"
-                x-text="tx.status"
-              >Accepted</span>
-            </div>
+          <!-- Icon -->
+          <span class="grid size-11 shrink-0 place-items-center rounded-[10px] bg-[#FEEFD6] text-[#FDA40B]">
+            <i class="fa-solid fa-calendar-check text-lg"></i>
+          </span>
 
-            <!-- Program Title -->
-            <h4 class="font-montserrat font-semibold text-[15px] leading-[25px] text-[#003060] mb-5" x-text="tx.program">UI/UX Designer</h4>
-
-            <!-- Meta: Period + Location -->
-            <div class="flex flex-col gap-1 mb-9">
-              <div class="flex items-center gap-2.5">
-                <i class="fa-regular fa-calendar text-[14px] text-[#003060] flex-shrink-0"></i>
-                <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D]" x-text="tx.period">21 April - 21 Juli 2026</span>
-              </div>
-            </div>
-
-            <!-- Payment Date -->
-            <p class="font-open-sans text-[15px] text-black text-center mb-2">
-              <span class="font-semibold">Payment Date:</span> <span class="font-normal" x-text="tx.paymentDate">25 April 2026</span>
-            </p>
-
-            <!-- Due Dates -->
-            <div x-show="(tx.full.installment?.dueDates || []).length > 0" class="border-t border-white/40 pt-2 mt-1">
-              <div class="flex items-center gap-2 mb-1">
-                <i class="fa-regular fa-calendar-check text-[13px] text-[#003060] flex-shrink-0"></i>
-                <span class="font-open-sans font-semibold text-[13px] text-[#2D2D2D]">Due Dates</span>
-              </div>
-              <div class="space-y-0.5">
-                <template x-for="(d, i) in (tx.full.installment?.dueDates || [])" :key="i">
-                  <div class="flex items-center justify-between text-[12px]">
-                    <span class="text-[#666666]">Payslip <span x-text="i + 1"></span></span>
-                    <span class="font-semibold text-[#2D2D2D]" x-text="formatDate(d)"></span>
-                  </div>
-                </template>
-              </div>
-            </div>
+          <!-- Title + Category -->
+          <div class="flex-1 min-w-0">
+            <h4 class="font-montserrat font-semibold text-sm text-[#003060] truncate" x-text="tx.program">UI/UX Designer</h4>
+            <span class="inline-flex items-center rounded-full bg-[#FEEFD6] px-2.5 py-0.5 text-xs font-medium text-[#FDA40B]" x-text="tx.type">Bootcamp</span>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="flex flex-col gap-2.5 mt-2">
-            <button 
-              type="button" 
+          <!-- Installment Progress -->
+          <div class="flex items-center gap-1.5 text-xs text-[#6B7280] sm:w-[150px] shrink-0">
+            <i class="fa-regular fa-calendar-check text-[#003060]"></i>
+            <span x-text="(tx.full.monthly || []).filter(m => m.status === 'paid').length + ' / ' + (tx.full.monthly || []).length + ' months paid'">0 / 0 months paid</span>
+          </div>
+
+          <!-- Payment Date -->
+          <div class="flex items-center gap-1.5 text-xs text-[#6B7280] sm:w-[130px] shrink-0">
+            <i class="fa-regular fa-calendar text-[#003060]"></i>
+            <span x-text="tx.paymentDate">25 April 2026</span>
+          </div>
+
+          <!-- Status -->
+          <span
+            class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize sm:w-[100px] justify-center shrink-0"
+            :class="tx.status === 'accepted' ? 'bg-[#F0FBF4] text-[#04B165]' : (tx.status === 'processing' ? 'bg-[#FEEFD6] text-[#FDA40B]' : 'bg-[#FEE7E7] text-[#F13639]')"
+            x-text="tx.status"
+          >Accepted</span>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
               @click="openDetail(tx)"
-              class="w-full h-[35px] rounded-[12px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]"
+              class="rounded-lg bg-[#003060] hover:bg-[#001f3f] px-3 py-2 font-montserrat font-medium text-xs text-white transition cursor-pointer"
             >
-              View Payment Details
-            </button>
-            <button type="button" class="w-full h-[35px] rounded-[12px] p-[10px] bg-white/80 hover:bg-white text-[#003060] border border-[#003060] font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.1)]">
-              View Program
+              View Detail <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
         </div>
@@ -210,17 +193,17 @@
       <!-- Filter Empty Search State -->
       <div
         x-show="transactions.length > 0 && transactions.filter(t => (statusFilter === 'all' || statusFilter === t.status) && t.program.toLowerCase().includes(searchQuery.toLowerCase())).length === 0"
-        class="col-span-full py-8 px-4 flex flex-col items-center justify-center text-center"
+        class="py-8 px-4 flex flex-col items-center justify-center text-center"
       >
         <div class="w-16 h-16 rounded-full bg-[#E0F1F9] flex items-center justify-center mx-auto mb-12">
           <i class="fa-solid fa-receipt text-[30px] text-[#003060]"></i>
         </div>
 
-        <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] mb-2">
           No Transactions Found
         </h3>
 
-        <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666]">
+        <p class="font-montserrat font-normal text-sm text-[#666666]">
           Try adjusting your status filter or search query.
         </p>
       </div>

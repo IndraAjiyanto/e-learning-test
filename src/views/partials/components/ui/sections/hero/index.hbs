@@ -4,14 +4,14 @@
   Satu pohon markup, base + lg. Data: about.[0].{title,text,image} (jsonb), social.[0].number.
   sizeClass untuk teks, .page-shell untuk kontainer.
 --}}
-<section class="w-full bg-[#F8F9FA] font-montserrat" data-node-id="250:2796">
+<section class="w-full bg-[#F8F9FA] font-inter" data-node-id="250:2796">
   <div class="page-shell flex flex-col justify-center gap-10 py-24 lg:min-h-[680px] lg:flex-row lg:items-center lg:gap-[80px]">
 
     {{!-- content --}}
     <div class="flex flex-1 flex-col items-start gap-8">
       {{> components/ui/text/eyebrow/index text=(t 'test.home.heroSection.badge') }}
 
-      <h1 class="{{sizeClass 'display'}} max-w-[619px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+      <h1 class="{{sizeClass 'display'}} max-w-[619px] font-inter font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
         <span
           x-data="heroTypewriter()"
           data-full="{{#if about.[0].title}}{{getByLang about.[0].title lang}}{{else}}{{t 'test.home.heroSection.title'}}{{/if}}"
@@ -19,7 +19,7 @@
         ><span x-text="head"></span><span class="text-[#6EB6E5]" x-text="tail"></span><span class="ml-1 inline-block h-[0.8em] w-[3px] translate-y-[0.06em] rounded-sm bg-[#6EB6E5] transition-opacity" :class="showCursor ? 'opacity-100' : 'opacity-0'"></span></span>
       </h1>
 
-      <p class="{{sizeClass 'lead'}} max-w-[719px] font-open-sans text-[#4A5568]">
+      <p class="{{sizeClass 'lead'}} max-w-[719px] font-inter text-[#4A5568]">
         {{#if about.[0].text}}{{{nl2br (getByLang about.[0].text lang)}}}{{else}}{{t 'test.home.heroSection.description'}}{{/if}}
       </p>
 

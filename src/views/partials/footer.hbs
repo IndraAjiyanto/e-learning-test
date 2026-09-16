@@ -1,4 +1,4 @@
-<footer class="bg-[#003060] font-montserrat text-white">
+<footer class="bg-[#003060] font-inter text-white">
   <div class="page-shell py-14 lg:py-16">
 
     <div class="mb-10 flex justify-center lg:mb-12">
@@ -12,7 +12,7 @@
         <h3 class="flex items-center gap-2 {{sizeClass 'h3'}} font-bold uppercase tracking-wide">
           <i class="fas fa-location-dot text-[#6EB6E5]"></i>{{t 'test.footer.address'}}
         </h3>
-        <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-open-sans text-white/90">
+        <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-inter text-white/90">
           <li class="flex items-start gap-3">
             <i class="fas fa-building mt-1 shrink-0 text-white/70"></i>
             <span>{{#if footerData.address}}{{footerData.address}}{{else}}Jl. S. Parman No.62, Karangbawang, Purwokerto Kulon, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah 53141{{/if}}</span>
@@ -31,7 +31,7 @@
       {{!-- Quick links --}}
       <div class="flex flex-col gap-4">
         <h3 class="{{sizeClass 'h3'}} font-bold uppercase tracking-wide">{{t 'test.footer.quickLinks'}}</h3>
-        <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-open-sans text-white/90">
+        <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-inter text-white/90">
           <li><a href="/dashboard" class="transition hover:text-white">{{t 'test.footer.home'}}</a></li>
           <li><a href="/dashboard/about" class="transition hover:text-white">{{t 'test.footer.aboutUs'}}</a></li>
           <li><a href="/dashboard#courses-section" class="transition hover:text-white">{{t 'test.footer.program'}}</a></li>
@@ -43,7 +43,7 @@
       {{!-- Our program --}}
       <div class="flex flex-col gap-4">
         <h3 class="{{sizeClass 'h3'}} font-bold uppercase tracking-wide">{{t 'test.footer.ourProgram'}}</h3>
-        <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-open-sans text-white/90">
+        <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-inter text-white/90">
           {{#if footerCategories.length}}
             {{#each footerCategories}}
               <li><a href="{{#if (eq this.name 'In House Training')}}/dashboard/corporate-training{{else}}/category/program/{{this.name}}{{/if}}" class="transition hover:text-white">{{this.name}}</a></li>
