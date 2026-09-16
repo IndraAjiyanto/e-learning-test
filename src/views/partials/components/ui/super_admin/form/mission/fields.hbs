@@ -24,6 +24,9 @@
   (max + 1 saat create) dan menata ulang sisanya saat ada yang dihapus.
 --}}
 {{#*inline 'missionLangPanel'}}
+  {{!-- hint=false WAJIB di bawah: partial mewarisi konteks induk, jadi tanpa
+       override eksplisit text_field ikut melihat `hint` milik missionLangField
+       dan merendernya sekali lagi di bawah textarea — teks bantunya jadi dobel. --}}
   <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
     {{> components/ui/super_admin/form/text_field
       id=(concat field '-' code)
@@ -35,6 +38,7 @@
       rows=4
       heightClass=heightClass
       placeholder=placeholder
+      hint=false
     }}
   </div>
 {{/inline}}
