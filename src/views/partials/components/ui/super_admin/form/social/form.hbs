@@ -1,0 +1,170 @@
+{{!--
+  Komponen: Social Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/social/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `socialForm({ social })` untuk super_admin/social/{create,edit}.hbs.
+  `social` hanya diisi di Edit, supaya field terisi dari data tersimpan.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
+  loading (form/button).
+
+  Aturan validasi sama persis dengan form lama, termasuk pesan errornya. Yang
+  berubah hanya waktu munculnya: error baru tampil setelah field disentuh atau
+  setelah submit ditekan, dan `canSubmit()` dihitung dari hasil validateAll()
+  bukan dari flag `formValid` yang di Edit dulu di-seed true untuk semua field
+  (sehingga data tersimpan yang tidak valid bisa lolos submit).
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const FIELDS = [
+      'linkedin',
+      'instagram',
+      'youtube',
+      'videoYoutube',
+      'email',
+      'number',
+      'address',
+      'linkAddress',
+      'linkForm',
+    ];
+
+    const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const isUrl = (value) => {
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // Kembalikan '' bila valid. Urutan cek mengikuti form lama: wajib dulu,
+    // baru bentuk URL, baru domain yang diharapkan.
+    const errorFor = (field, value) => {
+      const val = (value ?? '').toString().trim();
+
+      switch (field) {
+        case 'linkedin':
+          if (!val) return 'LinkedIn URL is required';
+          if (!isUrl(val)) return 'Please enter a valid URL';
+          if (!val.includes('linkedin.com')) return 'Please enter a valid LinkedIn URL';
+          return '';
+
+        case 'instagram':
+          if (!val) return 'Instagram URL is required';
+          if (!isUrl(val)) return 'Please enter a valid URL';
+          if (!val.includes('instagram.com')) return 'Please enter a valid Instagram URL';
+          return '';
+
+        case 'youtube':
+          if (!val) return 'YouTube URL is required';
+          if (!isUrl(val)) return 'Please enter a valid URL';
+          if (!val.includes('youtube.com') && !val.includes('youtu.be')) {
+            return 'Please enter a valid YouTube URL';
+          }
+          return '';
+
+        case 'videoYoutube':
+          if (!val) return 'YouTube Video URL is required';
+          if (!isUrl(val)) return 'Please enter a valid URL';
+          if (!val.includes('youtube.com') && !val.includes('youtu.be')) {
+            return 'Please enter a valid YouTube video URL';
+          }
+          return '';
+
+        case 'email':
+          if (!val) return 'Email is required';
+          if (!EMAIL_PATTERN.test(val)) return 'Please enter a valid email address';
+          return '';
+
+        case 'number':
+          if (!val) return 'Phone number is required';
+          if (val.length < 10) return 'Phone number must be at least 10 characters';
+          return '';
+
+        case 'address':
+          if (!val) return 'Address is required';
+          if (val.length < 10) return 'Address must be at least 10 characters';
+          return '';
+
+        // Sengaja hanya dicek "wajib diisi", sama seperti form lama: baris lama
+        // bisa menyimpan potongan embed HTML, bukan hanya URL, dan menolaknya
+        // di sini akan mengunci admin dari halaman Edit-nya sendiri.
+        case 'linkAddress':
+          if (!val) return 'Link address is required';
+          return '';
+
+        case 'linkForm':
+          if (!val) return 'Link form is required';
+          if (!isUrl(val)) return 'Please enter a valid URL';
+          return '';
+
+        default:
+          return '';
+      }
+    };
+
+    const mapFields = (valueFor) => Object.fromEntries(FIELDS.map((f) => [f, valueFor(f)]));
+
+    window.socialForm = function socialForm({ social } = {}) {
+      return {
+        loading: false,
+
+        formData: mapFields((field) => social?.[field] ?? ''),
+        formErrors: mapFields(() => ''),
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: mapFields(() => false),
+
+        validateField(field, value) {
+          this.formData[field] = value ?? '';
+          this.formErrors[field] = this.touched[field]
+            ? errorFor(field, this.formData[field])
+            : '';
+        },
+
+        touch(field) {
+          this.touched[field] = true;
+          this.validateField(field, this.formData[field]);
+        },
+
+        validateAll() {
+          FIELDS.forEach((field) => {
+            this.touched[field] = true;
+            this.formErrors[field] = errorFor(field, this.formData[field]);
+          });
+        },
+
+        hasFormErrors() {
+          return FIELDS.some((field) => this.formErrors[field] !== '');
+        },
+
+        canSubmit() {
+          return !this.hasFormErrors();
+        },
+
+        // Id field di form/social/fields sengaja sama dengan nama field.
+        revealFirstInvalid() {
+          const field = FIELDS.find((f) => this.formErrors[f]);
+          if (!field) return;
+          document.getElementById(field)?.focus();
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (!this.canSubmit()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

@@ -37,8 +37,8 @@ export class SocialController {
       await this.socialService.create(createSocialDto);
       flashToast(
         req,
-        'Social Created',
-        'The social link has been added successfully.',
+        'Social Media Created',
+        'The social media links have been added.',
       );
       res.redirect('/social');
     } catch (error: any) {
@@ -83,8 +83,8 @@ export class SocialController {
       await this.socialService.update(id, updateSocialDto);
       flashToast(
         req,
-        'Social Updated',
-        'The changes to this social link have been saved.',
+        'Changes Saved',
+        'The social media links have been updated.',
       );
       res.redirect('/social');
     } catch (error: any) {
@@ -109,8 +109,8 @@ export class SocialController {
       await this.socialService.remove(id);
       flashToast(
         req,
-        'Social Deleted',
-        'The social link has been removed successfully.',
+        'Social Media Deleted',
+        'The social media links have been permanently removed.',
       );
       res.redirect('/social');
     } catch (error: any) {

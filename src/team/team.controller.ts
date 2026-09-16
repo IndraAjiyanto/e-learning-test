@@ -57,11 +57,11 @@ export class TeamController {
       flashToast(
         req,
         'Team Member Created',
-        'The team member has been added successfully.',
+        'The new team member has been added.',
       );
       res.redirect('/team');
     } catch (error: any) {
-      req.flash('error', error.message || 'team failed to create');
+      req.flash('error', error.message || 'Failed to create team member');
       res.redirect('/team');
     }
   }
@@ -114,14 +114,10 @@ export class TeamController {
         updateTeamDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.teamService.update(teamId, updateTeamDto);
-      flashToast(
-        req,
-        'Team Member Updated',
-        'The changes to this team member have been saved.',
-      );
+      flashToast(req, 'Changes Saved', 'The team member has been updated.');
       res.redirect('/team');
     } catch (error: any) {
-      req.flash('error', error.message || 'team failed to update');
+      req.flash('error', error.message || 'Failed to update team member');
       res.redirect('/team');
     }
   }
@@ -140,11 +136,11 @@ export class TeamController {
       flashToast(
         req,
         'Team Member Deleted',
-        'The team member has been removed successfully.',
+        'The team member has been permanently removed.',
       );
       res.redirect('/team');
     } catch (error: any) {
-      req.flash('error', error.message || 'team failed to delete');
+      req.flash('error', error.message || 'Failed to delete team member');
       res.redirect('/team');
     }
   }

@@ -1,0 +1,23 @@
+{{!--
+  Table Link (Super Admin) — URL eksternal di dalam sel tabel, dipotong bila panjang.
+
+  Semua prop berisi ekspresi Alpine dan dirender ke atribut ber-kutip TUNGGAL,
+  jadi di dalam ekspresi pakai kutip GANDA.
+
+  Props:
+  - href  : ekspresi Alpine berisi URL (wajib). Bila kosong/null, sel menampilkan em dash.
+  - label : ekspresi Alpine teks tautan (opsional, default memakai `href`)
+--}}
+<template x-if='{{{href}}}'>
+  <a
+    :href='{{{href}}}'
+    :title='{{{href}}}'
+    target='_blank'
+    rel='noopener noreferrer'
+    class='block truncate font-inter text-sm leading-5 text-[#003060] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+    x-text='{{#if label}}{{{label}}}{{else}}{{{href}}}{{/if}}'
+  ></a>
+</template>
+<template x-if='!({{{href}}})'>
+  <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>&mdash;</span>
+</template>
