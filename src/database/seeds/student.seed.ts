@@ -515,23 +515,36 @@ async function bootstrap() {
         }),
       );
     }
-    await paymentRepo.save(
-      paymentRepo.create({
-        no: `INV-SEED-CICILAN-${Date.now()}`,
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        process: 'process',
-        current_status: 'University Student',
-        user_fullname: student.username,
-        user_email: student.email,
-        user_no: '+62 812 0000 0001',
-        attend_program: true,
-        dpPaidAt: daysAgo(20),
-        user: student,
-        course,
-        installment,
-      }),
-    );
-    log('membuat 2 pembayaran (1 lunas approved, 1 cicilan process) + 1 rencana cicilan');
+    // Sebagian database (mis. hasil restore dump lama) masih punya constraint UNIQUE
+    // pada payments.installmentId, padahal entity memodelkannya many-to-one. Di sana
+    // satu rencana cicilan hanya boleh dirujuk satu pembayaran, jadi jangan memaksa.
+    const installmentTaken = await paymentRepo.count({
+      where: { installment: { id: installment.id } },
+    });
+    if (installmentTaken === 0) {
+      await paymentRepo.save(
+        paymentRepo.create({
+          no: `INV-SEED-CICILAN-${Date.now()}`,
+          file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          process: 'process',
+          current_status: 'University Student',
+          user_fullname: student.username,
+          user_email: student.email,
+          user_no: '+62 812 0000 0001',
+          attend_program: true,
+          dpPaidAt: daysAgo(20),
+          user: student,
+          course,
+          installment,
+        }),
+      );
+      log('membuat 2 pembayaran (1 lunas approved, 1 cicilan process) + 1 rencana cicilan');
+    } else {
+      log(
+        'membuat 1 pembayaran lunas; rencana cicilan sudah dipakai pembayaran lain, ' +
+          'baris cicilan dilewati',
+      );
+    }
   } else {
     log(`pembayaran sudah ada (${paymentCount}), dilewati`);
   }
