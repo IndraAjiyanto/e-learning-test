@@ -46,6 +46,7 @@
             variant='primary'
             label='Create Program Type'
             loading=true
+            disabled='!canSubmit() || loading'
           }}
         </div>
       {{/components/ui/super_admin/form/program_type/fields}}

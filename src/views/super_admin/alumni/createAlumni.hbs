@@ -35,6 +35,7 @@
           row=true
           cancelHref=(concat '/category/' categoryId)
           submitLabel='Create Alumni'
+          disabled='!canSubmit() || loading'
         }}
       </div>
     </form>
