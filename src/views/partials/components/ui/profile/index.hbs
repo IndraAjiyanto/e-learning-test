@@ -27,7 +27,7 @@
 --}}
 <div
   class='p-4 sm:px-[34px] sm:py-[42px]'
-  x-data='{ ...profilePictureCrop(), ...profileFormState({
+  x-data='profileScope({
     id: "{{user.id}}",
     role: "{{user.role}}",
     username: "{{user.username}}",
@@ -39,7 +39,7 @@
     studyProgram: "{{user.biodata.studyProgram}}",
     gender: "{{user.biodata.gender}}",
     no: "{{user.biodata.no}}"
-  }) }'
+  })'
 >
   <div class='flex flex-col gap-7'>
 
@@ -248,6 +248,15 @@
 </div>
 
 <script>
+  // Spread objek menyalin NILAI getter, bukan getter-nya, jadi `initials` akan
+  // membeku pada hasil pertama. Descriptor kedua factory disalin apa adanya.
+  function profileScope(seed) {
+    return Object.defineProperties(
+      profilePictureCrop(),
+      Object.getOwnPropertyDescriptors(profileFormState(seed)),
+    );
+  }
+
   function profileFormState(seed) {
     const trim = (v) => String(v ?? '').trim();
     const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
