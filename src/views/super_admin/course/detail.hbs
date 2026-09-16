@@ -161,7 +161,7 @@
       </nav>
 
       <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'participants'" x-data='participantData()' x-init='fetchParticipants()'>{{> course/participants_tab}}</div>
+      <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'flow'" x-data='flowData()' x-init='fetchFlow()'>{{> course/flow_tab}}</div>
       <div x-show="tab === 'faq'" x-data='faqData()' x-init='fetchFaqs()'>{{> course/faq_tab}}</div>
       {{#if course.checkPaid}}
