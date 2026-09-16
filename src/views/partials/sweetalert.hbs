@@ -1,3 +1,21 @@
+<style>
+  /* Toast SweetAlert dipasang top-end. Offset-nya disamakan dengan komponen
+     toast baru (ui/super_admin/toast/success) supaya dua kanal notifikasi
+     muncul di titik yang sama dan tidak menimpa navbar sticky (z-50, ~68px).
+     Selector dibatasi ke .swal2-top-end agar dialog konfirmasi (.swal2-center)
+     tidak ikut tergeser. */
+  .swal2-container.swal2-top-end {
+    padding-top: var(--app-toast-top, 5rem);
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .swal2-container.swal2-top-end {
+      padding-right: 34px;
+    }
+  }
+</style>
+
 <script>
   {{#if success}}
     Swal.fire({
@@ -5,7 +23,7 @@
       title: 'Success!',
       text: '{{success}}',
       toast: true,
-      position: 'bottom-start',
+      position: 'top-end',
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true
@@ -18,7 +36,7 @@
       title: 'Info!',
       text: '{{info}}',
       toast: true,
-      position: 'bottom-start',
+      position: 'top-end',
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true
@@ -31,7 +49,7 @@
       title: 'Fail!',
       text: '{{error}}',
       toast: true,
-      position: 'bottom-start',
+      position: 'top-end',
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true
