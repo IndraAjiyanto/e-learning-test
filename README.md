@@ -224,6 +224,7 @@ State on 2026-09-16 at commit `b2762cea` on `test-back-office`:
 | [`docs/prestamp-migrations.sql`](docs/prestamp-migrations.sql) | Marks legacy migration history as applied on the old `e-learning-server` database |
 | [`src/database/migrations/_archive/README.md`](src/database/migrations/_archive/README.md) | Why the old migrations are disabled and which ones are missing from the repo |
 | [`docs/form-submit-gating.md`](docs/form-submit-gating.md) | Which super admin forms gate the submit button on validity |
+| [`docs/user-area-design-alignment-plan.md`](docs/user-area-design-alignment-plan.md) | Plan to bring every student-facing page in line with the design: super admin component library as the token source, legacy route retirement, ticket-sized work packages |
 | [`docs/project-audit-handover-2026-09-17.md`](docs/project-audit-handover-2026-09-17.md) | Fresh-clone audit: quality gates, verified migration-chain failure on an empty database and the proposed fix, open security findings, how the 2026-09-17 `dev-miko` merge conflicts were resolved |
 | [`docs/paid-program-refactoring-handover.md`](docs/paid-program-refactoring-handover.md), [`docs/about-vision-mission-handover.md`](docs/about-vision-mission-handover.md) | Page refactor hand-over notes |
 | [`docs/landing-user-rebuild-plan.md`](docs/landing-user-rebuild-plan.md), [`docs/landing-user-rebuild-checklist.md`](docs/landing-user-rebuild-checklist.md) | Figma-driven rebuild of the public and auth pages |
