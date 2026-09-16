@@ -12,8 +12,8 @@
   menukar state), bukan tabs/fetch. tabData() di sini cuma menyimpan tab aktif
   (kunci localStorage terpisah dari halaman admin).
 
-  Tab yang sudah dimodularkan memakai components/ui/super_admin/program/*; sisanya
-  masih partial lama di partials/course/* yang dipakai bareng halaman admin.
+  Seluruh tab memakai components/ui/super_admin/program/*. Partial lama di
+  partials/course/* sengaja dibiarkan karena masih dipakai halaman admin.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='mx-auto flex w-full max-w-[1052px] flex-col gap-4'>
@@ -168,13 +168,13 @@
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
       {{#if course.checkPaid}}
-        <div x-show="tab === 'installment'" x-data='installmentData()' x-init='fetchInstallment()'>{{> course/installment_tab}}</div>
+        <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
       {{/if}}
-      <div x-show="tab === 'payment'">{{> course/payment_tab}}</div>
+      <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'log_book_user'" x-data='logBookUserData()' x-init='fetchLogBookUsers()'>{{> course/log_book_user_tab}}</div>
-      <div x-show="tab === 'log_book_mentor'" x-data='logBookMentorData()' x-init='fetchLogBookMentors()'>{{> course/log_book_mentor_tab}}</div>
+      <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'mentor'">{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
     </div>
 
@@ -186,6 +186,10 @@
 {{> components/ui/super_admin/table/client_table }}
 
 {{> components/ui/super_admin/table/fa_icon }}
+
+{{> components/ui/super_admin/table/formatters }}
+
+{{> components/ui/super_admin/table/export_excel }}
 
 {{> components/ui/super_admin/modal/delete_confirm/index
   title='Delete Program?'

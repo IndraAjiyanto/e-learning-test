@@ -1,0 +1,108 @@
+{{!--
+  Komponen: Detail Modal (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/modal/detail/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Modal read-only untuk menampilkan satu baris tabel secara utuh (detail log book,
+  bukti pembayaran, dsb). Berbeda dari modal/delete_confirm yang menahan submit
+  form: modal ini tidak mengubah data sama sekali.
+
+  Isinya dikirim lewat partial-block dan boleh membaca state `row` — payload yang
+  dibawa saat modal dibuka.
+
+  KONTRAK PEMAKAIAN
+  Panggil sekali per kanal, di luar x-data lain. Setiap tombol yang membukanya
+  memakai `openDetailModal('<name>', row)`. Prop `name` memisahkan kanal supaya
+  beberapa modal bisa hidup berdampingan di satu halaman tanpa saling membuka.
+
+  Props:
+  - name     : string (wajib) — nama kanal, mis. 'logbook' atau 'payment-proof'
+  - title    : string (wajib) — judul modal
+  - maxWidth : string (default 'max-w-[720px]') — WAJIB literal agar Tailwind
+               ikut men-generate kelasnya saat build
+--}}
+<div
+  x-data='detailModal({{json name}})'
+  x-show='open'
+  x-cloak
+  @detail-modal:open.window="if ($event.detail.name === {{json name}}) show($event.detail.row)"
+  @keydown.escape.window='close()'
+  class='fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur-[16px]'
+  @click.self='close()'
+>
+  <div
+    role='dialog'
+    aria-modal='true'
+    aria-labelledby='detail-modal-title-{{name}}'
+    class='flex max-h-[90vh] w-full {{default maxWidth "max-w-[720px]"}} flex-col overflow-hidden rounded-xl bg-white shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)]'
+  >
+    <div class='flex shrink-0 items-center justify-between gap-4 border-b border-[#e5e5e5] px-6 py-4'>
+      <h2
+        id='detail-modal-title-{{name}}'
+        class='font-inter text-lg font-semibold leading-7 text-[#171717]'
+      >{{title}}</h2>
+
+      <button
+        type='button'
+        x-ref='closeButton'
+        @click='close()'
+        aria-label='Close'
+        class='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+      >
+        {{!-- lucide: x --}}
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+          <path d='M18 6 6 18' />
+          <path d='m6 6 12 12' />
+        </svg>
+      </button>
+    </div>
+
+    {{!-- Isi hanya dirender saat ada payload: template di dalamnya membaca row.*
+         secara langsung, tanpa perlu optional chaining di tiap baris. --}}
+    <div class='min-h-0 flex-1 overflow-auto px-6 py-5'>
+      <template x-if='row'>
+        <div>{{#if @partial-block}}{{> @partial-block}}{{/if}}</div>
+      </template>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Dipanggil tombol di baris tabel: openDetailModal('logbook', row).
+  function openDetailModal(name, row) {
+    window.dispatchEvent(
+      new CustomEvent('detail-modal:open', { detail: { name, row } }),
+    );
+  }
+
+  function detailModal(name) {
+    return {
+      open: false,
+      // Baris yang sedang ditampilkan. Null saat tertutup, sehingga isi modal
+      // tidak pernah merender data baris sebelumnya.
+      row: null,
+
+      show(row) {
+        this.row = row || null;
+        this.open = true;
+        document.body.classList.add('overflow-hidden');
+
+        // requestAnimationFrame setelah $nextTick: x-show baru melepas
+        // `display: none` di frame berikutnya, dan elemen yang masih
+        // display:none tidak bisa menerima focus().
+        this.$nextTick(() => requestAnimationFrame(() => this.$refs.closeButton?.focus()));
+      },
+
+      close() {
+        // `@keydown.escape.window` ikut menyala saat modal tertutup, jadi tanpa
+        // guard ini Escape di mana pun akan melepas scroll-lock body milik
+        // komponen lain yang sedang memakainya.
+        if (!this.open) return;
+
+        this.open = false;
+        this.row = null;
+        document.body.classList.remove('overflow-hidden');
+      },
+    };
+  }
+</script>

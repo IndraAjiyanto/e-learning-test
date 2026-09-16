@@ -12,6 +12,12 @@
   - `url`   : endpoint JSON yang diambil lewat load(), untuk panel yang datanya
               belum ada saat render (mis. tab di halaman detail program)
 
+  `dataKey` dipakai bila endpoint membungkus arraynya dalam objek, mis.
+  GET /program/installment/:courseId yang membalas { availableMonths, installments }
+  — tanpa itu payloadnya bukan array dan tabel tampil kosong. Payload mentahnya
+  disimpan di `raw` supaya pemanggil bisa membaca field pendamping seperti
+  availableMonths.
+
   Kontrak state yang dihasilkan — sesuai yang diharapkan komponen lain:
   - searchInput, handleSearch()          → ui/super_admin/table/toolbar
   - currentPage, totalPages, changePage() → ui/super_admin/table/pagination
@@ -30,7 +36,7 @@
     <div x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'>
 --}}
 <script>
-  function clientTable({ items, size, searchKeys, url }) {
+  function clientTable({ items, size, searchKeys, url, dataKey }) {
     const allItems = items || [];
 
     return {
@@ -47,6 +53,9 @@
       size: size || 10,
       loading: Boolean(url),
       searchTimeout: null,
+      // Payload mentah hasil load(), untuk endpoint yang mengirim field lain di
+      // samping arraynya. Null bila datanya datang lewat `items`.
+      raw: null,
 
       // Dipanggil lewat x-init oleh pemanggil yang memberi `url`. Tanpa `url`
       // tidak melakukan apa-apa, sehingga aman dipasang di komponen yang dipakai
@@ -61,10 +70,25 @@
           if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
 
           const data = await response.json();
-          this.items = Array.isArray(data) ? data : [];
+          this.raw = data;
+
+          const list = dataKey ? data?.[dataKey] : data;
+
+          // Bentuk yang tidak terduga JANGAN lewat diam-diam: tabel kosong tanpa
+          // pesan apa pun sulit dibedakan dari "memang belum ada data".
+          if (!Array.isArray(list)) {
+            console.error(
+              `clientTable: ${url} tidak mengembalikan array` +
+                (dataKey ? ` pada key "${dataKey}"` : '') +
+                '. Tabel dirender kosong.',
+            );
+          }
+
+          this.items = Array.isArray(list) ? list : [];
         } catch (error) {
           // Tabel tetap dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
           console.error('Failed to load table data:', error);
+          this.raw = null;
           this.items = [];
         } finally {
           this.loading = false;

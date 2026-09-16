@@ -9,6 +9,13 @@
   - createHref  : default '/users/formCreate'
   - createLabel : default 'Create User'
   - fullWidth   : boolean (default false) — search mengisi sisa lebar sampai tombol create
+  - hideCreate  : boolean — tanpa tombol create (tabel read-only)
+
+  Aksi tambahan (mis. Export Excel) dikirim lewat partial-block dan muncul di
+  kiri tombol create:
+    {{#> components/ui/super_admin/table/toolbar hideCreate=true}}
+      <button type='button' @click='exportToExcel()'>Export Excel</button>
+    {{/components/ui/super_admin/table/toolbar}}
 --}}
 <div class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
   {{!-- Spasi setelah {{else}} WAJIB ada. Tanpa itu, ekstraktor Tailwind tidak
@@ -34,12 +41,16 @@
     </span>
   </label>
 
-  {{#unless hideCreate}}
-  <a
-    href='{{default createHref "/users/formCreate"}}'
-    class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
-  >
-    {{default createLabel 'Create User'}}
-  </a>
-  {{/unless}}
+  <div class='flex shrink-0 items-center gap-3'>
+    {{#if @partial-block}}{{> @partial-block}}{{/if}}
+
+    {{#unless hideCreate}}
+    <a
+      href='{{default createHref "/users/formCreate"}}'
+      class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
+    >
+      {{default createLabel 'Create User'}}
+    </a>
+    {{/unless}}
+  </div>
 </div>
