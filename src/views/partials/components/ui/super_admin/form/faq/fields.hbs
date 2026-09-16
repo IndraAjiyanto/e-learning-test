@@ -4,8 +4,8 @@
   Level: L2 Blok field (scoped super_admin)
 
   Question + Answer untuk ketiga bahasa. Dipanggil sekali oleh
-  super_admin/faq/{create,edit}.hbs dan super_admin/faqs/{create,edit}.hbs; tidak
-  menerima props.
+  super_admin/faq/{create,edit}.hbs, super_admin/faqs/{create,edit}.hbs, dan
+  super_admin/course_questions/{create,edit}.hbs.
 
   Ketiga bahasa ditulis di sini, bukan diulang di halaman: create & edit
   memakai field dan placeholder yang sama persis, jadi memanggil per bahasa
@@ -19,6 +19,15 @@
   sama dipakai form/faq/form untuk memindahkan fokus ke field pertama yang
   error. Jangan diubah sepihak.
 
+  Props (semua opsional):
+  - questionName : string (default 'question') — hanya `name` yang dikirim ke
+                   backend, bukan key state Alpine. Ada karena DTO-nya berbeda:
+                   CreateFaqDto/CreateFaqsDto menerima `question`, sedangkan
+                   CreateCourseQuestionDto menerima `questions` (jamak). Jangan
+                   diseragamkan tanpa ikut mengubah DTO-nya.
+  - questionMax  : number — maxlength native field Question; tanpa ini tidak ada batas.
+  - answerMax    : number — maxlength native field Answer.
+
   Pemanggil menyediakan state Alpine dari form/faq/form.
 --}}
 {{#*inline 'faqLangFields'}}
@@ -27,10 +36,11 @@
   <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
     {{> components/ui/super_admin/form/text_field
       id=(concat 'question-' code)
-      name=(concat 'question[' code ']')
+      name=(concat (default questionName 'question') '[' code ']')
       field=(concat 'question.' code)
       label='Question'
       multiline=true
+      maxlength=questionMax
       placeholder=questionHint
       required=true
     }}
@@ -41,6 +51,7 @@
       field=(concat 'answer.' code)
       label='Answer'
       multiline=true
+      maxlength=answerMax
       placeholder=answerHint
       required=true
     }}
