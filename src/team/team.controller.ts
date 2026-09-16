@@ -24,6 +24,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -53,7 +54,11 @@ export class TeamController {
       createTeamDto.teamOrder = await this.teamService.getNextOrder();
 
       await this.teamService.create(createTeamDto);
-      req.flash('success', 'team successfully created');
+      flashToast(
+        req,
+        'Team Member Created',
+        'The team member has been added successfully.',
+      );
       res.redirect('/team');
     } catch (error: any) {
       req.flash('error', error.message || 'team failed to create');
@@ -109,7 +114,11 @@ export class TeamController {
         updateTeamDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.teamService.update(teamId, updateTeamDto);
-      req.flash('success', 'team successfully updated');
+      flashToast(
+        req,
+        'Team Member Updated',
+        'The changes to this team member have been saved.',
+      );
       res.redirect('/team');
     } catch (error: any) {
       req.flash('error', error.message || 'team failed to update');
@@ -128,7 +137,11 @@ export class TeamController {
       const team = await this.teamService.findOne(teamId);
       await this.teamService.deleteFile(team.profile);
       await this.teamService.remove(teamId);
-      req.flash('success', 'team successfully deleted');
+      flashToast(
+        req,
+        'Team Member Deleted',
+        'The team member has been removed successfully.',
+      );
       res.redirect('/team');
     } catch (error: any) {
       req.flash('error', error.message || 'team failed to delete');
