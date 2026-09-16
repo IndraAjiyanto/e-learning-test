@@ -7,12 +7,18 @@
   untuk halaman yang datanya sudah dikirim penuh oleh controller (tanpa endpoint
   filter seperti /users/filter).
 
+  Sumber data boleh salah satu dari:
+  - `items` : array yang sudah dirender controller ke template (mayoritas halaman)
+  - `url`   : endpoint JSON yang diambil lewat load(), untuk panel yang datanya
+              belum ada saat render (mis. tab di halaman detail program)
+
   Kontrak state yang dihasilkan — sesuai yang diharapkan komponen lain:
   - searchInput, handleSearch()          → ui/super_admin/table/toolbar
   - currentPage, totalPages, changePage() → ui/super_admin/table/pagination
   - rows                                  → dipakai <template x-for> di halaman
   - size                                  → dipakai halaman untuk menomori baris
-  - loading                               → selalu false; datanya sudah ada saat render
+  - loading                               → true selama load() berjalan; false bila
+                                            memakai `items` (datanya sudah ada saat render)
 
   Filter hanya dijalankan sekali per pencarian (lihat applySearch), bukan tiap
   render — `filtered` sengaja properti biasa, bukan getter.
@@ -24,7 +30,7 @@
     <div x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'>
 --}}
 <script>
-  function clientTable({ items, size, searchKeys }) {
+  function clientTable({ items, size, searchKeys, url }) {
     const allItems = items || [];
 
     return {
@@ -39,8 +45,33 @@
       filtered: allItems,
       currentPage: 1,
       size: size || 10,
-      loading: false,
+      loading: Boolean(url),
       searchTimeout: null,
+
+      // Dipanggil lewat x-init oleh pemanggil yang memberi `url`. Tanpa `url`
+      // tidak melakukan apa-apa, sehingga aman dipasang di komponen yang dipakai
+      // dua-duanya.
+      async load() {
+        if (!url) return;
+
+        this.loading = true;
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
+          const data = await response.json();
+          this.items = Array.isArray(data) ? data : [];
+        } catch (error) {
+          // Tabel tetap dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
+          console.error('Failed to load table data:', error);
+          this.items = [];
+        } finally {
+          this.loading = false;
+          this.currentPage = 1;
+          this.applySearch(this.searchInput);
+        }
+      },
 
       // Membaca path bertitik ("categoryPartner.category") dengan aman —
       // relasi bisa null, mis. partner tanpa kategori.
