@@ -28,7 +28,8 @@
 
     {{!-- Nilai awal lewat helper json, bukan template literal: teks misi bebas
          diketik dan bisa memuat karakter yang memecah skrip. --}}
-    <form
+    <div class='flex flex-col gap-4'>
+      <form
       action='/mission/{{missions.id}}?_method=PATCH'
       method='post'
       novalidate
@@ -53,8 +54,24 @@
           }}
         </div>
       {{/components/ui/super_admin/form/mission/fields}}
-    </form>
+      </form>
+
+      {{!-- Danger Zone — bentuk dan jaraknya mengikuti super_admin/user/edit.hbs. --}}
+      {{> components/ui/super_admin/danger_zone/index
+        title='Delete Misi'
+        description='Permanently remove this misi from the public About page. The remaining missions will be renumbered automatically. This action cannot be undone.'
+        action=(concat '/mission/' missions.id '?_method=DELETE')
+      }}
+    </div>
   </div>
 </div>
+
+{{!-- Konfirmasi delete — komponen yang sama dengan halaman daftar. Tombol Danger
+     Zone memakai onclick='openDeleteModal(this)'; fungsi itu didefinisikan oleh
+     komponen modal ini. --}}
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Misi?'
+  description='Are you sure you want to delete this misi? The remaining missions will be renumbered automatically. This action cannot be undone.'
+}}
 
 {{> components/ui/super_admin/form/mission/form }}
