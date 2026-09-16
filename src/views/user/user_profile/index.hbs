@@ -1,3 +1,9 @@
+{{!-- Toast sukses (flash `toast`) untuk aksi yang redirect ke /users/profile:
+     change password, update profile, dan update akun. Ditaruh di luar
+     percabangan role supaya kedua varian halaman profil (admin & user)
+     memakainya, dan di luar x-data lain sesuai kontrak komponen. --}}
+{{> components/ui/super_admin/toast/success/index toast=toast }}
+
 {{#if (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
   {{> components/ui/profile/index 
     user=user 

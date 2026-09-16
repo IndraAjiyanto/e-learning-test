@@ -42,7 +42,7 @@
 <script src="/public/js/cropper.min.js"></script>
 
 </head>
-<body class="{{#if isAuthPage}}bg-[linear-gradient(0deg,#FFFFFF_0%,rgba(255,255,255,0.7)_45%,rgba(255,255,255,0.2)_75%,rgba(255,255,255,0)_100%),url('/public/image/dashboard/login_bg.png')] bg-cover bg-center bg-fixed bg-no-repeat{{else}}bg-slate-50{{/if}} text-base-content font-montserrat">
+<body data-shell="{{#if (roles user.role 'admin' 'super_admin')}}admin{{else}}public{{/if}}" class="{{#if isAuthPage}}bg-[linear-gradient(0deg,#FFFFFF_0%,rgba(255,255,255,0.7)_45%,rgba(255,255,255,0.2)_75%,rgba(255,255,255,0)_100%),url('/public/image/dashboard/login_bg.png')] bg-cover bg-center bg-fixed bg-no-repeat{{else}}bg-slate-50{{/if}} text-base-content font-montserrat">
   <div id="route-progress"></div>
   <script>
     (function () {

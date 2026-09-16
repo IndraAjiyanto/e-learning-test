@@ -17,6 +17,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('benefit-program')
@@ -37,7 +38,7 @@ export class ProgramBenefitController {
       flashToast(
         req,
         'Benefit Created',
-        'The benefit has been added to this program successfully.',
+        'The program benefit has been added successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -91,7 +92,7 @@ export class ProgramBenefitController {
       flashToast(
         req,
         'Benefit Updated',
-        'The changes to this benefit have been saved.',
+        'The changes to this program benefit have been saved.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -118,7 +119,7 @@ export class ProgramBenefitController {
       flashToast(
         req,
         'Benefit Deleted',
-        'The benefit has been removed from this program successfully.',
+        'The program benefit has been removed successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {

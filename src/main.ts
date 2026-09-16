@@ -93,6 +93,29 @@ async function bootstrap() {
 
   app.use(flash());
 
+  // Sesi disimpan di Postgres (connect-pg-simple), jadi penulisannya asinkron:
+  // express-session baru menulis sesi saat res.end(), sesudah response terkirim.
+  // Pada POST -> redirect, browser mengikuti Location seketika (terukur 0ms jeda),
+  // sehingga GET berikutnya sempat membaca sesi LAMA dan flash yang baru ditulis
+  // hilang — notifikasi tidak pernah muncul. Tunggu sesi tersimpan dulu baru
+  // kirim redirect. Dipasang global supaya berlaku untuk semua controller dan
+  // kedua kanal notifikasi (flash `success` lama maupun flash `toast` baru).
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const redirect = res.redirect.bind(res) as (...args: any[]) => void;
+
+    res.redirect = ((...args: any[]) => {
+      if (!req.session) return redirect(...args);
+
+      req.session.save((err) => {
+        if (err) console.error("Gagal menyimpan sesi sebelum redirect:", err);
+        redirect(...args);
+      });
+    }) as Response["redirect"];
+
+    next();
+  });
+
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
