@@ -70,6 +70,14 @@
           PATHS.forEach((path) => this.touch(path));
         },
 
+        // Gating tombol simpan: form dianggap siap bila SEMUA path lolos errorFor,
+        // terlepas dari sudah disentuh atau belum. Sengaja tidak memakai
+        // hasFormErrors(), yang hanya melihat error yang sudah diungkap `touched`
+        // sehingga form kosong yang belum disentuh akan terbaca "tanpa error".
+        canSubmit() {
+          return PATHS.every((path) => errorFor(path, read(this.formData, path)) === '');
+        },
+
         hasFormErrors() {
           return PATHS.some((path) => read(this.formErrors, path) !== '');
         },

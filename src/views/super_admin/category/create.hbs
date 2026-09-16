@@ -157,6 +157,7 @@
               variant='primary'
               label='Create Category'
               loading=true
+              disabled='!canSubmit() || loading'
             }}
           </div>
         </div>
@@ -333,9 +334,16 @@
           return FIELD_PATHS.some((path) => readPath(this.formErrors, path) !== '');
         },
 
+        // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+        // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+        // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
         canSubmit() {
           const imagesValid = Object.values(this.images).every((slot) => slot.hasFile && slot.isValid);
-          return imagesValid && !this.hasFormErrors();
+          const fieldsOk = FIELD_PATHS.every(
+            (path) => errorFor(path, readPath(this.formData, path)) === '',
+          );
+
+          return imagesValid && fieldsOk;
         },
 
         // Error bisa berada di tab bahasa lain — pindah tab dulu, baru fokuskan.

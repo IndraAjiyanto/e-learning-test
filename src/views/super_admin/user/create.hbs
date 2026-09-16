@@ -93,6 +93,7 @@
           row=true
           cancelHref='/users'
           submitLabel='Create User'
+          disabled='!canSubmit() || loading'
         }}
       </div>
     </form>
@@ -237,9 +238,16 @@
         return Object.values(this.formErrors).some((error) => error !== '');
       },
 
+      // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+      // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+      // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
       canSubmit() {
         const imageValid = !this.hasFile || this.isValid;
-        return imageValid && !this.hasFormErrors();
+        const fieldsOk = Object.keys(this.formData).every(
+          (field) => this.errorFor(field, this.formData[field]) === '',
+        );
+
+        return imageValid && fieldsOk;
       },
 
       // Arahkan user ke masalah pertama: foto profil dulu (pesannya di luar grid field),

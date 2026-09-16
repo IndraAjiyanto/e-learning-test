@@ -37,6 +37,7 @@
           row=true
           cancelHref=(concat '/category/' category.id)
           submitLabel='Save Changes'
+          disabled='!canSubmit() || loading'
         }}
       </div>
     </form>

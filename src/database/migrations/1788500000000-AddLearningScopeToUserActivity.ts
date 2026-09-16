@@ -10,8 +10,8 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * berisi label aktivitas (Materi/Quiz/Tugas/Absensi/Logbook/Belajar).
  *
  * Dua kolom ini nullable dan idempoten: penjaga di up() membuatnya aman
- * dijalankan berkali-kali dan di environment mana pun (termasuk yang sudah
- * berjalan dengan SYNCHRONIZE=true).
+ * dijalankan berkali-kali dan di environment mana pun, termasuk yang kolomnya
+ * terlanjur ada dari sinkronisasi skema otomatis di masa lalu.
  */
 export class AddLearningScopeToUserActivity1788500000000
   implements MigrationInterface

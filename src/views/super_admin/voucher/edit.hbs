@@ -59,6 +59,7 @@
               variant='primary'
               label='Save Changes'
               loading=true
+              disabled='!canSubmit() || loading'
             }}
           </div>
         {{/components/ui/super_admin/form/voucher/fields}}
