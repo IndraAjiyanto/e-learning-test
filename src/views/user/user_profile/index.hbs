@@ -104,41 +104,9 @@
   }"
   x-init="if (activeSection !== 'uiux' && sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }"
 >
-  {{!-- Application bar (Figma 830:9156) - dedicated bar for the logged-in shell, not the public marketing navbar.
-       Gated the same way as the sidebar below: admin/super_admin get the CMS layout's own chrome
-       (layouts/main.hbs -> {{> sidebar}}) instead, so this must not double up for them. --}}
-  {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
-  <header class="sticky top-0 z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#D9D9D9] bg-white px-4 lg:h-[72px] lg:px-8">
-    <div class="flex items-center gap-3">
-      <a href="/users/profile"><img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-6 w-auto object-contain lg:h-7" /></a>
-      <button type="button" @click="sidebarOpen = !sidebarOpen" class="grid size-9 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#F4F7FC]" aria-label="Toggle sidebar">
-        <i class="fas fa-bars text-sm"></i>
-      </button>
-    </div>
-
-    <div class="hidden max-w-[420px] flex-1 items-center gap-2 rounded-full border border-[#D9D9D9] bg-[#F4F7FC] px-3.5 py-2 sm:flex">
-      <i class="fas fa-magnifying-glass text-xs text-[#718096]"></i>
-      <input type="text" placeholder="Search course, program, or anything..." class="w-full bg-transparent font-montserrat text-xs text-[#1F2937] placeholder:text-[#718096] focus:outline-none" />
-    </div>
-
-    <div class="flex items-center gap-3 lg:gap-4">
-      <button type="button" class="grid size-9 shrink-0 place-items-center rounded-full bg-[#F4F7FC] text-[#003060]" aria-label="Notifications">
-        <i class="fas fa-bell text-sm"></i>
-      </button>
-      {{> components/ui/nav/lang_switcher/index }}
-      <div class="hidden items-center gap-2 sm:flex">
-        <span class="font-montserrat text-xs font-semibold text-[#003060]">{{user.username}}</span>
-        <span class="grid size-9 shrink-0 place-items-center rounded-full bg-[#F4F7FC] text-[#003060] overflow-hidden">
-          {{#if user.profile}}
-            <img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />
-          {{else}}
-            <i class="fas fa-user text-sm"></i>
-          {{/if}}
-        </span>
-      </div>
-    </div>
-  </header>
-  {{/unless}}
+  {{!-- Application bar (Figma 830:9156). Markup ada di partial supaya halaman student
+       standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
+  {{> user/app_bar/index user=user sidebarToggle=true }}
 
   <div class="relative z-10 max-w-full flex-1 flex flex-col mb-0">
 

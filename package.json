@@ -31,6 +31,7 @@
     "migrate:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
     "seed": "node dist/database/seeds/user.seed.js",
     "seed:content": "node dist/database/seeds/content.seed.js",
+    "seed:student": "node dist/database/seeds/student.seed.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/data-source.ts"
   },
   "dependencies": {
