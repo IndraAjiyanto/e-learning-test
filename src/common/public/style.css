@@ -226,6 +226,29 @@
   display: none !important;
 }
 
+/* Offset atas untuk dua kanal notifikasi (komponen toast super_admin dan toast
+   SweetAlert), supaya keduanya sejajar dan sadar-shell.
+   - shell publik  : ada navbar sticky (~68px) yang harus dilewati
+   - shell admin   : sidebar tanpa navbar, jadi toast disejajarkan dengan
+                     padding atas halaman (py-8 / sm:py-[42px]) */
+:root {
+  --app-toast-top: 5rem;
+}
+
+[data-shell='admin'] {
+  --app-toast-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --app-toast-top: 115px;
+  }
+
+  [data-shell='admin'] {
+    --app-toast-top: 42px;
+  }
+}
+
 /* GitHub-style top route-progress bar (MPA page transitions) */
 #route-progress {
   position: fixed;

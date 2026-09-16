@@ -59,7 +59,11 @@ export class AlumniController {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       createAlumnusDto.courseId = courseId;
       await this.alumniService.create(createAlumnusDto);
-      req.flash('success', 'Alumni successfully created');
+      flashToast(
+        req,
+        'Alumni Created',
+        'The new alumni has been added to this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
@@ -187,7 +191,11 @@ export class AlumniController {
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
-      req.flash('success', 'Alumni successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The alumni information has been updated.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
@@ -285,7 +293,11 @@ export class AlumniController {
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
-      req.flash('success', 'Alumni successfully removed');
+      flashToast(
+        req,
+        'Alumni Removed',
+        'The alumni has been removed from this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');
