@@ -277,7 +277,7 @@
               activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
               !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-[15px] leading-none cursor-pointer group"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <i class="fas fa-gauge-high text-base"></i>
@@ -292,7 +292,7 @@
               (activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
               !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-[15px] leading-none cursor-pointer group"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span>
@@ -308,7 +308,7 @@
                 activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
                 !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
               ]"
-              class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-[15px] leading-none cursor-pointer"
+              class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
             >
               <div class="flex items-center gap-3">
                 <div class="w-5 flex justify-center items-center flex-shrink-0">
@@ -338,7 +338,7 @@
                   >
                     <i class="fas fa-graduation-cap shrink-0 text-xs" :class="openedCourses['{{this.course.id}}'] ? 'text-[#003060]' : 'text-slate-400'"></i>
                     <span class="min-w-0 flex-1 truncate whitespace-nowrap">{{this.course.name}}</span>
-                    <i class="fas fa-chevron-down shrink-0 text-[10px] transition-transform duration-200" :class="openedCourses['{{this.course.id}}'] ? 'rotate-180' : ''"></i>
+                    <i class="fas fa-chevron-down shrink-0 text-xs transition-transform duration-200" :class="openedCourses['{{this.course.id}}'] ? 'rotate-180' : ''"></i>
                   </button>
 
                   <!-- Nested Items -->
@@ -347,54 +347,54 @@
                     <button
                       @click="selectCourseSection('{{this.course.id}}', 'presentation');"
                       :class="(activeSection === 'presentation' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-[13px] transition-colors cursor-pointer"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
                     >
-                      <i class="fas fa-display shrink-0 text-[11px]"></i>
+                      <i class="fas fa-display shrink-0 text-xs"></i>
                       <span class="truncate whitespace-nowrap">Presentation</span>
                     </button>
 
                     <button
                       @click="selectCourseSection('{{this.course.id}}', 'logbook');"
                       :class="(activeSection === 'logbook' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-[13px] transition-colors cursor-pointer"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
                     >
-                      <i class="fas fa-clipboard-list shrink-0 text-[11px]"></i>
+                      <i class="fas fa-clipboard-list shrink-0 text-xs"></i>
                       <span class="truncate whitespace-nowrap">My Logbook</span>
                     </button>
 
                     <button
                       @click="selectCourseSection('{{this.course.id}}', 'assignment');"
                       :class="(activeSection === 'assignment' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-[13px] transition-colors cursor-pointer"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
                     >
-                      <i class="fas fa-list-check shrink-0 text-[11px]"></i>
+                      <i class="fas fa-list-check shrink-0 text-xs"></i>
                       <span class="truncate whitespace-nowrap">Assignment</span>
                     </button>
 
                     <button
                       @click="selectCourseSection('{{this.course.id}}', 'quiz');"
                       :class="(activeSection === 'quiz' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-[13px] transition-colors cursor-pointer"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
                     >
-                      <i class="fas fa-circle-question shrink-0 text-[11px]"></i>
+                      <i class="fas fa-circle-question shrink-0 text-xs"></i>
                       <span class="truncate whitespace-nowrap">Quiz</span>
                     </button>
 
                     <button
                       @click="selectCourseSection('{{this.course.id}}', 'certificate');"
                       :class="(activeSection === 'certificate' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-[13px] transition-colors cursor-pointer"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
                     >
-                      <i class="fas fa-award shrink-0 text-[11px]"></i>
+                      <i class="fas fa-award shrink-0 text-xs"></i>
                       <span class="truncate whitespace-nowrap">Certificate</span>
                     </button>
 
                     <button
                       @click="toggleActiveSection('group-class');"
                       :class="activeSection === 'group-class' ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-[13px] transition-colors cursor-pointer"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
                     >
-                      <i class="fas fa-users shrink-0 text-[11px]"></i>
+                      <i class="fas fa-users shrink-0 text-xs"></i>
                       <span class="truncate whitespace-nowrap">Join Group Class</span>
                     </button>
 
@@ -411,7 +411,7 @@
               activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
               !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-[15px] leading-none cursor-pointer"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'portfolio' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
@@ -426,7 +426,7 @@
               activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
               !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-[15px] leading-none cursor-pointer"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'history-payment' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
@@ -455,7 +455,7 @@
           <div class="w-5 flex justify-center items-center flex-shrink-0">
             <i class="fa-solid fa-arrow-right-from-bracket text-base" :class="!sidebarOpen ? 'text-[#C0392B]' : 'text-white'"></i>
           </div>
-          <span x-show="sidebarOpen" class="whitespace-nowrap text-[15px]">Log Out</span>
+          <span x-show="sidebarOpen" class="whitespace-nowrap text-sm">Log Out</span>
         </a>
       </div>
       {{/unless}}

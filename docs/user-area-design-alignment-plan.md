@@ -5,6 +5,7 @@
 > **Inputs:** [`user-area-handover-2026-09-16.md`](./user-area-handover-2026-09-16.md), [`user-area-redesign-checklist.md`](./user-area-redesign-checklist.md), [`project-audit-handover-2026-09-17.md`](./project-audit-handover-2026-09-17.md) section 4, and the measured state of every student template in the merged tree
 > **Owner instruction (2026-09-17):** where a student page has no Figma frame, follow the matching super admin page
 > **Design reference (added 2026-09-17):** `docs/design/user-area/` — nine exported frames supplied by the owner, see section 0.1 and its component library
+> **Status:** all work packages landed 2026-09-17. See section 8 for what is done and what is deliberately left.
 > **Scope:** everything a `user` sees after login. **Out of scope:** `src/views/admin/`, `src/views/super_admin/`, any route gated to `admin`/`super_admin`, the marketing site
 
 ## 0. Ground rules
@@ -169,38 +170,38 @@ the reachability check above showed the premise was wrong:
 The shell already has a certificate panel, so no new partial was needed. It gets
 its tokens in a later package.
 
-### WP2 Payment History (L, enlarged by the design reference)
+### WP2 Payment History (L, enlarged by the design reference) — DONE (`2cc39186`)
 - **The design shows ONE list, not three sub-tabs**, titled "Payment History", with a filter card (Date Range, Payment Status, Payment Method, Program/Course), a search field, a type pill per row and pagination. Collapse `full_payment`, `installment` and `registration` into a single source and rename the sidebar item.
 - Keep the row-list shape. Swap tokens: status pills to `badge dot=true`, action buttons to `form/button variant='secondary'`, the payment-proof modal to `modal/detail name='payment-proof'`, pagination to `table/pagination` when a list exceeds one page.
 - Rebuild the three detail partials (75 hard-coded pixel sizes) with `detail/section_card` + `detail/field`, one card for the order, one for the payer, one for the proof.
 - Backend: `PaymentsService.getUserInstallmentDetail` must select `file` so the installment tab can show a proof (noted 2026-09-16, still open).
 - Verify with a student who has rows: in the local restore, `indraajiyanto052@gmail.com` has 5 payments and `indrajajal3@gmail.com` has 3. Set a known password locally first.
 
-### WP3 My Portfolio (L)
+### WP3 My Portfolio (L) — DONE (`7e691390`)
 - Split the 979-line list into `filter_sidebar`, `grid`, and `card` partials. Filter card uses `form/text_field` for the two search boxes and `form/select_field` for Category and Class Type; active filters as `badge`; `empty_state` for zero results.
 - Detail: `detail/section_card` + `detail/field`, buttons via `form/button`.
 - Create and edit: rebuild `user/portofolios/{create,edit}` with `form/section_card` (numbered), `form/text_field`, `form/image_dropzone`, `form/button row=true cancelHref=...`, `canSubmit()` gating; render with `bareShell` and the WP0 app bar. Add the missing "Add portfolio" entry point to the tab and "Edit" to the card.
 - Confirm the intended creation flow with the owner first (see section 7).
 
-### WP4 Logbook tab (M)
+### WP4 Logbook tab (M) — DONE (`f4495aa8`)
 - Mirror the super admin `program/log_book_user_tab`: `clientTable` + `table/card` with date, session, activity, status `badge`, and `row_actions`; `modal/detail name='logbook'` for reading an entry; the existing in-shell create/edit modal restyled with `form/text_field multiline=true` and `form/button`.
 - Do not touch the approval-state logic or the session gating.
 
-### WP5 Assignment fragment (M)
+### WP5 Assignment fragment (M) — DONE (`dddfa851`)
 - One `detail/section_card` per assignment, status `badge`, submission form with `form/text_field` / `form/image_dropzone` and `form/button`.
 - Remove `Poin: 90/100 Good Job`. It returns only when `answer_task` has a real score column (backend ticket).
 - Decide whether `user/assignments` (standalone) is still needed; if the fragment covers it, retire it here.
 
-### WP6 Start Learning subtree, tokens only (L, high risk)
+### WP6 Start Learning subtree, tokens only (L, high risk) — DONE (`3e4eda23`)
 - Files: `start_learning/index.hbs`, `my_learning/index.hbs`, attendance index and modal, materi pdf/ppt/video partials, quiz index and week. Replace the 27 hard-coded pixel sizes and 105 font overrides with component tokens; cards to the section 1 standard.
 - Rule: touch `class` attributes and copy only. Never `x-data` keys, `@click` handlers, `:class` logic, method bodies, the `weekUnlocked` helper, or `Alpine.store('sessionUnlock')`. The referenced `PRD-sequential-session-unlock.md` is not in this repo; get it from the user-area owner before starting.
 - Join Group: `Course.group` exists as a string. Bind the button to it when it is a URL; hide the card otherwise. No more `href="#"`.
 - Verify by clicking through as `indra@gmail.com`: expand a week, expand a session, open the logbook modal, open each material type, start a quiz. A curl-only check is not enough here.
 
-### WP7 Quiz-taking page (M, high risk)
+### WP7 Quiz-taking page (M, high risk) — DONE (`00f1357b`)
 - `quiz/week/start/index.hbs` (617 lines). Audit first: remove the placeholder answer options that sit next to real quiz data. Then tokens only. Timer and scoring logic untouched. Needs a tester with a seeded quiz.
 
-### WP10 Profile rebuild (M) — replaces the old WP8
+### WP10 Profile rebuild (M) — replaces the old WP8 — DONE (`bdd2feb8`)
 
 The design frame (`docs/design/user-area/profile.png`) matches neither the merged
 component nor the reskin's inline form. Rebuild `components/ui/profile/index` to it:
@@ -215,7 +216,7 @@ While in the file, fix the Change Password copy, which currently reads
 ### WP8 Profile polish (S) — folded into WP10
 Superseded. The copy fix moves into WP10.
 
-### WP9 Cross-cutting decisions (S each, last)
+### WP9 Cross-cutting decisions (S each, last) — DONE (`dd4b2070`)
 - i18n: the super admin pages have zero `t` calls and so does `sidebar_user_profile/*`. Following the super admin pages means English copy for now; when i18n happens it is one sweep under `test.userArea.*`.
 - Dashboard stats are only computed on `GET /users/profile`; the other two shell entry routes show zeros. Compute them in a shared service method.
 - "Certificates Earned" equals completed courses. Either query real issuance or rename the stat.
@@ -254,3 +255,55 @@ Use the restored dump (`e_learning_migrasi_test` on port 5499 locally). `indra@g
 8. Profile: does Change Password stay on the Profile page? The frame does not show it, and admins reach it through the same component.
 9. `user/riwayat` (payment history standalone) duplicates the Payment History tab and is linked from the navbar. Merge them, or keep both?
 10. Does the Dashboard need the banner illustration and the Continue Learning pagination the frame shows? Both need assets or backend paging.
+
+## 8. Final state, 2026-09-17
+
+### What landed
+
+| Package | Commit | Substance |
+|---|---|---|
+| WP0 foundations | `f88258af` | Shared app bar partial, `scripts/check-user-area.sh` gate, `npm run seed:student`, verified seed accounts, CONTRIBUTING section |
+| WP1 retire + fix 500s | `ed7fd47f` | Certificate serves the PDF and its template path bug is fixed; three dead routes and the orphaned profile partial tree removed; table 2.2 corrected |
+| Component PR | `a238f22d` | Additive `iconLeft` slot on the super admin text and select fields |
+| WP10 Profile | `bdd2feb8` | Rebuilt to the design frame; change-password card rebuilt on the same components |
+| WP2 Payment History | `2cc39186` | One unified list, new `GET /payment/api/history`, three sub-tab trees deleted |
+| WP4 Logbook | `f4495aa8` | Token table, detail modal, Excel export button actually works now |
+| WP5 Assignment | `dddfa851` | Tokens; fabricated deadline and score removed |
+| WP3 My Portfolio | `7e691390` | Tokens; filter options derived from real data instead of a hard-coded list |
+| WP6 Start Learning | `3e4eda23` | Pixel sizes and legacy shadows flattened across nine files; Join Now wired to `Course.group`; breadcrumb |
+| WP7 Quiz | `00f1357b` | Fake fallback questions replaced with an honest empty state |
+| WP9 cross-cutting | `dd4b2070` | Dashboard stats shared by both shell entry routes; real certificate count |
+
+### Verified at the end
+
+- `tsc --noEmit` clean, `npm run build` passes.
+- 883 templates precompile; the 27 unresolved partial names are the pre-existing
+  baseline in admin, super admin and the landing page, unchanged by this work.
+- `scripts/check-user-area.sh` reports clean across the whole student area: no
+  hard-coded pixel sizes, no legacy shadows, no dead links, no admin files touched.
+- Every student tab, fragment and standalone route returns 200 with no template
+  errors; the certificate route returns 302.
+- Super admin, mentor and public pages unchanged.
+- Unit tests unchanged at 8 of 104 suites, the same baseline as before.
+- Fresh-database bootstrap works: schema, three seeds, then zero entity drift.
+
+### Deliberately left
+
+1. **Week pagination and the amber unlock note** on Start Learning. Both sit on
+   the session-unlock logic, and `PRD-sequential-session-unlock.md` is still
+   missing from the repo (open question 6).
+2. **The Dashboard banner illustration and Continue Learning pagination** from the
+   frame. The first needs an asset, the second needs backend paging.
+3. **Two quiz-taking implementations still exist.** The controller renders
+   `user/quiz/start.hbs`; the shell has its own panel. Deciding which one retires
+   needs an owner and a full read of the timer and scoring logic.
+4. **i18n.** The student area follows the super admin pages, which have no `t`
+   calls at all, so copy stays English. A sweep under `test.userArea.*` would be
+   its own ticket.
+5. **The `:userId` IDOR pattern** on the older payment, registration, portfolio and
+   user routes. The new history endpoint reads the session instead, so nothing was
+   added, but the existing routes still trust the path parameter. This is the top
+   item in `project-audit-handover-2026-09-17.md` and belongs in a security ticket,
+   not a design one.
+6. **Assignment scores and the Change Password card** wait on owner decisions
+   (open questions 3 and 8).
