@@ -458,6 +458,12 @@ export class CoursesController {
     // const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
     const portfolio = await this.coursesService.findPortfolio(req.user!.id);
 
+    // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
+    // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
+    // myProgram menampilkan angka nol di semua kartu statistik.
+    const { dashboardStats, ongoingCourses } =
+      await this.usersService.getDashboardData(req.user!.id);
+
     res.render('user/user_profile/index', {
       course,
       activeCourse,
@@ -467,8 +473,9 @@ export class CoursesController {
       userWithCourses,
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
-      // userWithCourses,
       portfolio,
+      dashboardStats,
+      ongoingCourses,
       bareShell: true,
     });
   }
