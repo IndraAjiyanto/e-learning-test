@@ -1,0 +1,106 @@
+{{!--
+  Komponen: Icon Item Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/icon_item/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  SATU KOMPONEN UNTUK DUA RESOURCE
+  Value dan Commitment punya bentuk field yang persis sama — `icon` (kelas Font
+  Awesome), `title` dan `description` (keduanya jsonb { id, en, ja }), plus kolom
+  urutan yang diisi service, bukan form. Karena itu keduanya memakai blok field
+  yang sama alih-alih dua salinan identik yang harus diperbaiki dua kali.
+  (Benefit juga sebentuk ini dan bisa ikut memakainya kalau suatu saat disentuh
+  lagi; sekarang dibiarkan karena halamannya sudah terverifikasi terhadap Figma.)
+
+  Urutan field mengikuti frame Figma Program Type — satu-satunya desain yang ada
+  untuk bentuk ini: Nama → Icon Code → Description, satu kartu tanpa header
+  bernomor, baris tombol di dalam kartu lewat partial block.
+
+  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
+  meski tabnya tidak aktif; x-cloak mencegah ketiganya sempat tampil bertumpuk
+  sebelum Alpine (defer) jalan. Id field `{field}-{kodeBahasa}` dipakai
+  form/icon_item/form untuk fokus ke field yang error — jangan diubah sepihak.
+
+  Props:
+  - titleHint       : string (opsional) — teks bantu di bawah field Title
+  - descriptionHint : string (opsional) — teks bantu di bawah field Description
+
+  Pemanggil menyediakan state Alpine dari form/icon_item/form.
+--}}
+{{#*inline 'iconItemLangPanel'}}
+  {{!-- hint=false WAJIB di bawah: partial mewarisi konteks induk, jadi tanpa
+       override eksplisit text_field ikut melihat `hint` milik iconItemLangField
+       dan merendernya sekali lagi di bawah textarea — teks bantunya jadi dobel. --}}
+  <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat field '-' code)
+      name=(concat field '[' code ']')
+      field=(concat field '.' code)
+      label=(concat label ' (' langName ')')
+      hideLabel=true
+      multiline=multiline
+      rows=4
+      heightClass=heightClass
+      placeholder=placeholder
+      hint=false
+    }}
+  </div>
+{{/inline}}
+
+{{#*inline 'iconItemLangField'}}
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-col gap-2'>
+      {{> components/ui/super_admin/tabs/language/index
+        state=(concat field 'Lang')
+        ariaLabel=(concat label ' language')
+      }}
+
+      {{> iconItemLangPanel code='id' langName='Indonesian' }}
+      {{> iconItemLangPanel code='en' langName='English' }}
+      {{> iconItemLangPanel code='ja' langName='Japanese' }}
+    </div>
+
+    {{#if hint}}
+      <p class='font-inter text-sm leading-5 text-[#525252]'>{{hint}}</p>
+    {{/if}}
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
+  {{> iconItemLangField
+    field='title'
+    label='Title'
+    multiline=true
+    heightClass='h-[92px]'
+    placeholder='Enter a title...'
+    hint=titleHint
+  }}
+
+  {{!-- Picker searchable: label, placeholder, dan hint-nya sama persis dengan
+       field Icon Code di frame Figma Program Type; panel pencarian baru muncul
+       saat field difokuskan, jadi tampilan diamnya identik dengan desain. --}}
+  {{> components/ui/super_admin/form/icon_picker
+    id='icon'
+    name='icon'
+    field='icon'
+    label='Icon Code'
+    placeholder='Enter a icon code name'
+    hint='Type an icon name like code or fa-code. It will preview using Font Awesome 6 (e.g. fa-solid fa-code).'
+  }}
+
+  {{> iconItemLangField
+    field='description'
+    label='Description'
+    multiline=true
+    heightClass='h-[124px]'
+    placeholder='Enter a description...'
+    hint=descriptionHint
+  }}
+
+  {{#if @partial-block}}
+    <div class='pt-2'>
+      {{> @partial-block}}
+    </div>
+  {{/if}}
+</div>
