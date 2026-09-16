@@ -518,7 +518,7 @@
 
         <!-- Join Group Class Tab Content -->
         <div x-show="activeSection === 'group-class'">
-          {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index }}
+          {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index course=activeCourse }}
         </div>
 
         <!-- Presentation Tab Content (loaded per course via loadCourseFragment) -->

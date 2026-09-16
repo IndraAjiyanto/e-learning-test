@@ -110,7 +110,7 @@
           <div class="flex flex-col gap-[12px]">
             <!-- Badge -->
             <div class="w-fit px-2 h-[23px] bg-[#0B1F3B1A]/10 rounded-md flex items-center justify-center">
-              <span class="font-montserrat font-medium text-[10px] text-[#003060]">{{this.category.name}}</span>
+              <span class="font-montserrat font-medium text-xs text-[#003060]">{{this.category.name}}</span>
             </div>
             <!-- Image -->
             <img
@@ -120,19 +120,19 @@
               class="w-full h-[138px] rounded-xl object-cover"
             >
             <!-- Course Title -->
-            <h3 class="font-montserrat font-semibold text-[15px] text-[#003060]">
+            <h3 class="font-montserrat font-semibold text-base text-[#003060]">
               {{this.name}}
             </h3>
             <!-- Tag Row -->
             <div class="flex items-center gap-[6px] flex-wrap">
               {{#if this.method}}
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
-                <i class="fa-solid fa-location-dot text-[10px]"></i>
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-xs text-[#003060]">
+                <i class="fa-solid fa-location-dot text-xs"></i>
                 {{this.method}}
               </span>
               {{/if}}
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
-                <i class="fa-solid fa-graduation-cap text-[10px]"></i>
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-xs text-[#003060]">
+                <i class="fa-solid fa-graduation-cap text-xs"></i>
                 {{this.weeks.length}} Weeks
               </span>
             </div>
@@ -140,7 +140,7 @@
           <!-- Button -->
           <a
             href="/program/{{this.id}}"
-            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
+            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
           >
             <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
             <i class="fa-solid fa-arrow-right text-sm"></i>

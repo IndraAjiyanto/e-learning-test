@@ -205,7 +205,7 @@
                   :class="attendanceStatus(sIndex) === 'LOCKED' ? 'bg-[#F3F4F6] border border-[#D1D5DB]' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'bg-[#E5F6D4] border border-[#12BD26]' : 'bg-[#F2DBDB] border border-[#F25151]')"
                 >
                   <span
-                    class="font-open-sans font-normal text-[15px] leading-none"
+                    class="font-open-sans font-normal text-base leading-none"
                     :class="attendanceStatus(sIndex) === 'LOCKED' ? 'text-[#6B7280]' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'text-[#12BD26]' : 'text-[#F25151]')"
                     x-text="attendanceStatus(sIndex) === 'LOCKED' ? 'Locked' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'Attendance Recorded' : 'Attendance Required')"
                   ></span>
@@ -226,7 +226,7 @@
 
                 <template x-if="!isSessionUnlocked(sIndex)">
                   <span class="ml-2 text-[#F25151] text-sm">
-                    <i class="fa-solid fa-lock text-[#F25151] text-[14px]"></i>
+                    <i class="fa-solid fa-lock text-[#F25151] text-sm"></i>
                   </span>
                 </template>
               </div>

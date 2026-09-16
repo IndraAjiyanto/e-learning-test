@@ -59,11 +59,11 @@
           <span class="font-montserrat font-semibold text-lg text-[#003060] truncate">
             {{description}} : {{quiz.[0].quizName}}
           </span>
-          <a href="#"
-             @click.prevent="openQuiz('{{id}}')"
+          <button type="button"
+             @click="openQuiz('{{id}}')"
              :class="quizStatus['{{id}}'] && quizStatus['{{id}}'].unlocked ? 'bg-[#003060] hover:bg-[#001F3F] cursor-pointer' : 'bg-[#9CA3AF] cursor-not-allowed'"
              class="inline-flex items-center justify-center px-4 py-2 text-white rounded-lg font-montserrat font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0">Take Quiz
-          </a>
+          </button>
         </div>
       </div>
       {{/if}}

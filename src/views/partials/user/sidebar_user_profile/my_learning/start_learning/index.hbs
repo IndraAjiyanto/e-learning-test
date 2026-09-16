@@ -88,6 +88,18 @@
 
     {{! --- HEADER SECTION --- }}
   <div class="space-y-3">
+    {{!-- Breadcrumb sesuai frame desain: My Learning / Start Learning. --}}
+    <nav aria-label="Breadcrumb" class="mb-2 flex items-center gap-2 font-inter text-sm text-[#737373]">
+      <button type="button" @click="toggleActiveSection('learning')" class="inline-flex items-center gap-1.5 transition-colors hover:text-[#003060]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+        My Learning
+      </button>
+      <span aria-hidden="true">/</span>
+      <span class="inline-flex items-center gap-1.5 font-medium text-[#003060]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        Start Learning
+      </span>
+    </nav>
     <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none">
       Start Learning
     </h1>
@@ -106,7 +118,7 @@
   {{#each course.weeks}}
   <div class="space-y-6 {{#unless @first}}pt-2 border-t border-slate-200{{/unless}}">
 
-    <!-- Week Header (flex justify-between, font-montserrat font-semibold text-[25px] text-[#003060] + icon 35x35) -->
+    <!-- Week Header (flex justify-between, font-montserrat font-semibold text-2xl text-[#003060] + icon 35x35) -->
     <button
       type="button"
       @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if (or (weekUnlocked weekProgresses) @first)}}loadSessions('{{id}}'){{/if}} }"
@@ -185,7 +197,7 @@
 
                   <!-- Attendance Recorded Badge (178x24px, radius 12px, bg #E5F6D4, border 1px #12BD26) -->
                   <div class="pt-1" x-show="isSessionAttended(session)">
-                    <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-[14px] text-[#12BD26] inline-flex items-center justify-center leading-none">
+                    <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-sm text-[#12BD26] inline-flex items-center justify-center leading-none">
                       <span>Attendance Recorded</span>
                     </span>
                   </div>
@@ -324,9 +336,9 @@
       </template>
 
       <!-- QUIZ BOX (centered title + lock icon at the far right edge matching Figma; disabled until every session in this week is attended AND logbook-approved) -->
-      <a
-        href="#"
-        @click.prevent="if (isWeekQuizUnlocked('{{id}}')) { window.location.href = '{{#if quiz.[0].id}}/quiz/start/{{quiz.[0].id}}{{else}}#{{/if}}' }"
+      <button
+        type="button"
+        @click="if (isWeekQuizUnlocked('{{id}}')) { window.location.href = '{{#if quiz.[0].id}}/quiz/start/{{quiz.[0].id}}{{else}}#{{/if}}' }"
         :class="isWeekQuizUnlocked('{{id}}') ? 'cursor-pointer' : 'cursor-not-allowed'"
         class="relative w-full h-11 rounded-[12px] px-5 sm:px-6 bg-[#D9D9D980] border-[0.1px] border-[#D9D9D980] backdrop-blur-[6.6px] flex items-center justify-center gap-3 transition-all group mt-4"
       >
@@ -339,7 +351,7 @@
         <div x-show="!isWeekQuizUnlocked('{{id}}')" class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
           <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
         </div>
-      </a>
+      </button>
 
     </div>
     {{else}}
@@ -472,7 +484,7 @@
                 name="activity"
                 required
                 placeholder="Enter activity description..."
-                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
             </div>
 
@@ -486,7 +498,7 @@
                 name="activityDetails"
                 required
                 placeholder="Enter detailed description of your activity..."
-                class="w-full h-[180px] rounded-[6px] p-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-colors"
+                class="w-full h-[180px] rounded-[6px] p-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-colors"
               ></textarea>
             </div>
 
@@ -505,7 +517,7 @@
                 name="obstacles"
                 required
                 placeholder="Enter any obstacles faced..."
-                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
             </div>
 
@@ -526,7 +538,7 @@
                   >
                 </label>
                 <span 
-                  class="font-montserrat font-medium text-xs sm:text-[18px] text-black/50 truncate"
+                  class="font-montserrat font-medium text-xs sm:text-lg text-black/50 truncate"
                   x-text="fileName || 'No file chosen'"
                 ></span>
               </div>
@@ -542,7 +554,7 @@
                 name="otherDocumentation"
                 required
                 placeholder="Enter Link Documentation"
-                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
             </div>
 

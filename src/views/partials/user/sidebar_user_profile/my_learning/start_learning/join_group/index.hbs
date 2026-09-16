@@ -21,13 +21,24 @@
         Join your class group to receive important announcements, learning materials, schedules, and communicate with mentors and fellow participants.
       </p>
 
-      <a
-        href="#"
-        target="_blank"
-        class="w-[153px] h-11 p-[10px] gap-[5px] bg-[#003060] hover:bg-[#002347] border border-[#003060] rounded-[6px] hover:shadow-sm transition-shadow inline-flex items-center justify-center transition-all cursor-pointer"
-      >
-        <span class="font-montserrat font-medium text-sm leading-none text-center text-white">Join Now</span>
-      </a>
+      {{!-- Tautan grup diambil dari kolom Course.group. Sebelumnya tautannya kosong,
+           sehingga tombol Join Now tidak pernah membawa student ke mana pun.
+           Bila kolomnya belum diisi, yang muncul keterangan, bukan tombol mati
+           yang menjanjikan sesuatu yang tidak ada. --}}
+      {{#if course.group}}
+        <a
+          href="{{course.group}}"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+        >
+          Join Now
+        </a>
+      {{else}}
+        <p class="font-inter text-sm text-[#737373]">
+          The group link has not been shared by your mentor yet.
+        </p>
+      {{/if}}
     </div>
 
   </div>

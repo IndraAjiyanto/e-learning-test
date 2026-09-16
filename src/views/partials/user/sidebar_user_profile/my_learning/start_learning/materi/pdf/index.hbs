@@ -40,7 +40,7 @@
 
     <!-- PDF VIEWER -->
     <div class="w-full xl:max-w-[726px] flex-1">
-      <div class="w-full h-[240px] sm:h-[320px] md:h-[402px] bg-black rounded-[11px] shadow-[0px_0px_7.44px_0px_rgba(0,0,0,0.25)] relative flex items-center justify-center overflow-hidden group">
+      <div class="w-full h-[240px] sm:h-[320px] md:h-[402px] bg-black rounded-[11px] border border-[#d9d9d9] relative flex items-center justify-center overflow-hidden group">
 
         <!-- PDF Playing State -->
         <template x-if="isPlaying && currentPdf && currentPdf.file">
@@ -97,7 +97,7 @@
           >
             <span
               :class="currentPdf && currentPdf.id === item.id ? 'font-semibold text-black' : 'font-medium text-black'"
-              class="font-montserrat text-base sm:text-[18px] truncate leading-none"
+              class="font-montserrat text-base sm:text-lg truncate leading-none"
               x-text="item.title"
             ></span>
           </div>
