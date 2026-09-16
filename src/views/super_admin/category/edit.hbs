@@ -165,6 +165,7 @@
               variant='primary'
               label='Save Changes'
               loading=true
+              disabled='!canSubmit() || loading'
             }}
           </div>
         </div>
@@ -378,8 +379,16 @@
           return FIELD_PATHS.some((path) => readPath(this.formErrors, path) !== '');
         },
 
+        // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+        // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+        // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
         canSubmit() {
-          return Object.values(this.images).every((slot) => this.imageReady(slot)) && !this.hasFormErrors();
+          const imagesValid = Object.values(this.images).every((slot) => this.imageReady(slot));
+          const fieldsOk = FIELD_PATHS.every(
+            (path) => errorFor(path, readPath(this.formData, path)) === '',
+          );
+
+          return imagesValid && fieldsOk;
         },
 
         // Error bisa berada di tab bahasa lain — pindah tab dulu, baru fokuskan.

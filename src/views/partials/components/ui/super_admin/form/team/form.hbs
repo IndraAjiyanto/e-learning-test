@@ -207,10 +207,20 @@
           );
         },
 
+        // Foto tidak wajib di sini, sama seperti form lama: yang dicek hanya
+        // berkas yang dipilih tapi ditolak (isValid=false).
+        // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+        // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+        // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
         canSubmit() {
-          // Foto tidak wajib di sini, sama seperti form lama: yang dicek hanya
-          // berkas yang dipilih tapi ditolak (isValid=false).
-          return this.isValid && !this.hasFormErrors();
+          const plainOk = ['name', 'linkedin'].every(
+            (field) => errorFor(field, null, this.formData[field]) === '',
+          );
+          const langOk = LANG_FIELDS.every((field) =>
+            LANGS.every((lang) => errorFor(field, lang, this.formData[field][lang]) === ''),
+          );
+
+          return this.isValid && plainOk && langOk;
         },
 
         // Urutan mengikuti tampilan: foto, name, linkedin, lalu field per bahasa.

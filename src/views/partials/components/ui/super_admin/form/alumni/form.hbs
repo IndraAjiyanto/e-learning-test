@@ -212,9 +212,17 @@
           );
         },
 
+        // Berkas yang ditolak sudah dibuang dari input, jadi cukup cek ada foto.
+        // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+        // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+        // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
         canSubmit() {
-          // Berkas yang ditolak sudah dibuang dari input, jadi cukup cek ada foto.
-          return this.hasPhoto() && !this.hasFormErrors();
+          const courseOk = errorFor('courseId', null, this.formData.courseId) === '';
+          const langOk = FIELDS.every((field) =>
+            LANGS.every((lang) => errorFor(field, lang, this.formData[field][lang]) === ''),
+          );
+
+          return this.hasPhoto() && courseOk && langOk;
         },
 
         // Urutan mengikuti tampilan: program, foto, lalu field per bahasa.

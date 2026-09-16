@@ -63,6 +63,7 @@
               variant='primary'
               label='Create Category'
               loading=true
+              disabled='!canSubmit() || loading'
             }}
           </div>
         </div>
@@ -113,8 +114,13 @@
         return Object.values(this.formErrors).some((error) => error !== '');
       },
 
+      // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+      // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+      // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
       canSubmit() {
-        return !this.hasFormErrors();
+        return Object.keys(this.formData).every(
+          (field) => this.errorFor(field, this.formData[field]) === '',
+        );
       },
 
       focusFirstInvalid() {

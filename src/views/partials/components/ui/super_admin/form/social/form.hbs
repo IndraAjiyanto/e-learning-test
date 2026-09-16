@@ -142,8 +142,11 @@
           return FIELDS.some((field) => this.formErrors[field] !== '');
         },
 
+        // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+        // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+        // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
         canSubmit() {
-          return !this.hasFormErrors();
+          return FIELDS.every((field) => errorFor(field, this.formData[field]) === '');
         },
 
         // Id field di form/social/fields sengaja sama dengan nama field.

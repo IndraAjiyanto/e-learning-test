@@ -60,6 +60,16 @@
           LANGS.forEach((lang) => this.touch(`paragraphs.${lang}`));
         },
 
+        // Gating tombol simpan: form siap bila semua field wajib lolos errorFor,
+        // terlepas dari sudah disentuh atau belum. Sengaja bukan hasFormErrors(),
+        // yang hanya melihat error yang sudah diungkap `touched` sehingga form
+        // kosong yang belum disentuh justru terbaca "tanpa error".
+        canSubmit() {
+          return LANGS.every(
+            (lang) => errorFor(lang, this.formData.paragraphs[lang]) === '',
+          );
+        },
+
         hasFormErrors() {
           return LANGS.some((lang) => this.formErrors.paragraphs[lang] !== '');
         },

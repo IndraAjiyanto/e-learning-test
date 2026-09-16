@@ -146,6 +146,21 @@
           this.validateIconSource();
         },
 
+        // Gating tombol simpan: form siap bila semua field wajib lolos errorFor,
+        // terlepas dari sudah disentuh atau belum. Sengaja bukan hasFormErrors(),
+        // yang hanya melihat error yang sudah diungkap `touched` sehingga form
+        // kosong yang belum disentuh justru terbaca "tanpa error".
+        // Sumber ikon mengikuti aturan backend: svg ATAU gambar, minimal satu.
+        // previewUrl sudah terisi saat mengedit tech bergambar, jadi halaman edit
+        // tidak ikut terkunci hanya karena file tidak diunggah ulang.
+        canSubmit() {
+          const fieldsOk = PATHS.every((path) => errorFor(path, this.formData[path]) === '');
+          const hasIconSource =
+            (this.formData.svg || '').trim() !== '' || Boolean(this.previewUrl);
+
+          return fieldsOk && hasIconSource && this.isValid && !this.errorMessage;
+        },
+
         hasFormErrors() {
           return Object.values(this.formErrors).some((error) => error !== '') || !this.isValid;
         },
