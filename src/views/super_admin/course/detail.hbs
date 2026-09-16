@@ -8,9 +8,12 @@
          Delete -> DELETE /program/:courseId (body `previous`)
 
   Versi Super Admin dari admin/course/detail.hbs; halaman admin dibiarkan apa adanya.
-  Tiap tab mengambil datanya sendiri lewat x-data partial di partials/course/*, jadi
-  tombolnya memakai tabs/panel (hanya menukar state), bukan tabs/fetch. tabData() di
-  sini cuma menyimpan tab aktif (kunci localStorage terpisah dari halaman admin).
+  Tiap tab mengambil datanya sendiri, jadi tombolnya memakai tabs/panel (hanya
+  menukar state), bukan tabs/fetch. tabData() di sini cuma menyimpan tab aktif
+  (kunci localStorage terpisah dari halaman admin).
+
+  Tab yang sudah dimodularkan memakai components/ui/super_admin/program/*; sisanya
+  masih partial lama di partials/course/* yang dipakai bareng halaman admin.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='mx-auto flex w-full max-w-[1052px] flex-col gap-4'>
@@ -163,12 +166,12 @@
       <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'faq'" x-data='faqData()' x-init='fetchFaqs()'>{{> course/faq_tab}}</div>
+      <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
       {{#if course.checkPaid}}
         <div x-show="tab === 'installment'" x-data='installmentData()' x-init='fetchInstallment()'>{{> course/installment_tab}}</div>
       {{/if}}
       <div x-show="tab === 'payment'">{{> course/payment_tab}}</div>
-      <div x-show="tab === 'alumni'" x-data='alumniData()' x-init='fetchAlumni()'>{{> course/alumni_tab}}</div>
+      <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'user'" x-data='userData()' x-init='fetchUsers()'>{{> course/user_tab}}</div>
       <div x-show="tab === 'log_book_user'" x-data='logBookUserData()' x-init='fetchLogBookUsers()'>{{> course/log_book_user_tab}}</div>
       <div x-show="tab === 'log_book_mentor'" x-data='logBookMentorData()' x-init='fetchLogBookMentors()'>{{> course/log_book_mentor_tab}}</div>
