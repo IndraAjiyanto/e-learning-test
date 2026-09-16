@@ -3,7 +3,8 @@
 > **Date:** 2026-09-17
 > **Branch:** local `dev-miko` after the `origin/dev-miko` merge (`46503c1b`)
 > **Inputs:** [`user-area-handover-2026-09-16.md`](./user-area-handover-2026-09-16.md), [`user-area-redesign-checklist.md`](./user-area-redesign-checklist.md), [`project-audit-handover-2026-09-17.md`](./project-audit-handover-2026-09-17.md) section 4, and the measured state of every student template in the merged tree
-> **Owner instruction (2026-09-17):** where a student page has no Figma frame, follow the matching super admin page and its component library
+> **Owner instruction (2026-09-17):** where a student page has no Figma frame, follow the matching super admin page
+> **Design reference (added 2026-09-17):** `docs/design/user-area/` — nine exported frames supplied by the owner, see section 0.1 and its component library
 > **Scope:** everything a `user` sees after login. **Out of scope:** `src/views/admin/`, `src/views/super_admin/`, any route gated to `admin`/`super_admin`, the marketing site
 
 ## 0. Ground rules
@@ -15,6 +16,55 @@
 5. **Legacy standalone student pages are retired, not reskinned.** Evidence in section 2.2: none is linked from the shell, and two already return 500 because their view file no longer exists.
 6. **No fabricated data.** The 2026-09-16 rule stands: remove or hide placeholders, never invent numbers.
 7. **One page or module per PR** (CONTRIBUTING). `npm run build` passes, before/after screenshots attached, and `git status --porcelain | grep -iE 'admin'` is empty.
+
+## 0.1 Design reference
+
+Nine exported frames now live in [`docs/design/user-area/`](design/user-area/). They
+supersede the "screenshot-driven" and "no reference" caveats the 2026-09-16
+hand-over had to work around, and they cover more than the Figma node list did.
+
+| File | Screen | Status of what we have |
+|---|---|---|
+| `dashboard.png` | Dashboard | Close. Missing the banner illustration and the Continue Learning pagination |
+| `profile.png` | Profile | **Does not match.** See below |
+| `my-learning.png` | My Learning list | Close. Card lacks the quota bar and the pill row |
+| `start-learning.png` | Start Learning | Two-column shape matches. Missing breadcrumb, week pagination, amber unlock notes |
+| `start-learning-week-expanded.png` | Week expanded | Not yet compared |
+| `payment-history.png` | Payment History | **Does not match.** See below |
+| `payment-history-detail.png` | Payment detail | Not yet compared |
+| `payment-history-proof-modal.png` | Proof modal | Not yet compared |
+| `my-portfolio.png` | My Portfolio | Filter-sidebar shape matches |
+
+Three findings change decisions already taken:
+
+1. **Profile does not match either candidate from the merge.** The frame shows two
+   cards. Card one holds the avatar on the left with Username and Email stacked to
+   its right and a Save Changes button. Card two, "Your Biodata", opens with a
+   round icon chip plus title and subtitle, then Full Name, Address as a tall
+   field, then Education with Studi Program and Gender with WhatsApp Number in two
+   columns, then Save Changes. Every input carries a left icon. **There is no
+   Change Password card.** The component we merged (`components/ui/profile/index`)
+   has a photo-upload row, a two-column username/email grid and a third
+   Change Password card, so it is closer than the reskin's inline form but still
+   wrong. Profile moves out of "done" into its own work package, WP10.
+2. **Payment History is one list, not three sub-tabs.** The frame is titled
+   "Payment History", the sidebar item is renamed to match, and it shows a filter
+   card (Date Range, Payment Status, Payment Method, Program/Course, Apply Filter,
+   Reset Filter), a search field, then one row list mixing Course and Program
+   entries with a type pill, payment date, payment method, a status pill
+   (Paid / Pending / Processing / Failed), View proof and View Detail buttons, and
+   pagination. Our three sub-tabs must collapse into it. This enlarges WP2.
+3. **The sidebar has no course tree.** Five flat items, Dashboard through
+   Payment History, then Log Out. This answers the second merge judgment call from
+   [`project-audit-handover-2026-09-17.md`](./project-audit-handover-2026-09-17.md)
+   section 4.2: the tree the merge restored is not in the design. Removing it is
+   WP6's call, and the My Learning list already links into a course.
+
+The frames also show conventions we do not have anywhere yet: a breadcrumb above
+the page title, pagination on long lists, and an amber note under a locked week.
+
+One caution: `my-portfolio.png` still carries the "Start Learning" title and
+breadcrumb from the frame it was duplicated from. Take the layout, not the copy.
 
 ## 1. The standard, in tokens
 
@@ -63,43 +113,65 @@ Gap markers are counts in the file today: hard-coded `text-[NNpx]`, per-element 
 
 ### 2.2 Legacy standalone student pages
 
-Every `@Roles('user')` GET that renders a view outside the shell, with the number of student templates that link to it (literal path search across `src/views/user`, `src/views/partials/user`, `components/ui/profile`).
+**This table was wrong in the first draft and has been re-verified.** The original
+"0 inbound links" column came from a search that only swept `src/views/user` and
+`src/views/partials/user`, and used guessed route prefixes. Several controllers are
+mounted elsewhere than their folder name suggests, `logbook` at `/logbooks` being
+the clearest. Sweeping all of `src/views` with the real prefixes shows most of
+these routes are reachable. The corrected picture:
 
-| Route | View | Inbound links | Finding | Action |
-|---|---|---|---|---|
-| `GET /payment/history/:userId` | `user/riwayat` + `partials/user/payment_history/*` | 0 (only controller redirects after a payment) | Duplicate of the History Payment tab | Redirect to `/users/profile?tab=history-payment` |
-| `GET /payment/detail/:courseId` | `user/payment` | 0 from student views | Ignores `course`, shows a hard-coded title and a stock photo | Check inbound from `detail_program/*` first; if used, rebuild with `detail/program_hero` + section cards, else retire |
-| `GET /logbook/user/:courseId`, `/logbook/:id`, `/logbook/formCreate/...`, `/logbook/formEdit/:id` | `user/logbooks/*` + `partials/user/logbook/*` | 0 | Logbook lives in the shell modal | Redirect list to `?tab=logbook`; keep POST/PATCH; drop GET form views once the modal covers edit |
-| `GET /portfolio/myportfolio/:userId` | `user/myportfolio` + `partials/user/myPortfolio/*` | 0 (confirmed twice) | Orphaned | Redirect to `?tab=portfolio`, delete |
-| `GET /portfolio` | `portfolio` | - | **View does not exist, returns 500** | Remove the route or redirect |
-| `GET /portfolio/formCreate/:courseId`, `/portfolio/formEdit/:id/:courseId`, `/portfolio/:id/:courseId` | `user/portofolios/{create,edit,detail}` + `partials/user/portfolio/create/form` | 1 (detail -> edit only) | **No student template links to create.** Students cannot reach portfolio creation from the UI | Keep until WP3 rebuilds them and adds entry points |
-| `GET /certificates/:courseId` | `user/certificates/detail` | 1 (the shell) | **View does not exist, returns 500** | WP1 builds it |
-| `GET /attendance/form/:id` | `user/attendance/create` | 0 | Attendance is in the shell | Redirect to `?tab=uiux` |
-| `GET /quiz/form/:quizId`, `GET /questions/quiz/...` | `user/quiz/{quiz,detail}` | 0 | Quiz lives in the shell | Retire after confirming `quiz.controller.ts` lines 134 and 158 (the two `user/quiz/start` branches) are unreachable |
-| `GET /biodata/formCreate`, `/biodata/formEdit/:id` | `user/biodata/*` | 1, from the orphaned `partials/user/profile/index/*` tree | Profile component covers biodata | Retire with that tree |
-| `GET /assignment/:sessionId/:assignmentId` | `user/assignments` | linked from the assignment fragment | Standalone duplicate of the fragment | Decide in WP5 |
-| `GET /learning-material/:fileType/:sessionId` | `materi/{pdf,video,ppt}` | 0 from student views | Probably an admin preview | Leave, not a student page |
-| `GET /register/:id` | `user/mycourse` | 0 | Old, oddly placed under the root controller | Retire |
+| Route | View | Reached from | Verdict |
+|---|---|---|---|
+| `GET /payment/history/:userId` | `user/riwayat` | `partials/navbar.hbs`, `payments/success.hbs`, plus controller redirects after payment | **Live.** Duplicates the History Payment tab; merging them is a product decision, not cleanup |
+| `GET /logbooks/user/:courseId` | `user/logbooks/index` | `partials/program_detail/left_content/program_info.hbs` | **Live** |
+| `GET /logbooks/formCreate/...`, `formEdit/...`, `/:id` | `user/logbooks/*` | `partials/program_detail/.../logbook_section.hbs`, `partials/sub_partials/session/logbook_tab/table.hbs`, and the Start Learning partial | **Live** |
+| `GET /portfolio/myportfolio/:userId` | `user/myportfolio` | `partials/navbar.hbs` | **Live.** The 2026-09-16 note calling it orphaned checked only student views |
+| `GET /portfolio/formCreate/:courseId` | `user/portofolios/create` | `partials/program_detail/right_content/portfolio.hbs` | **Live.** The earlier claim that students cannot reach portfolio creation was wrong |
+| `GET /portfolio/formEdit/...`, `/:id/:courseId` | `user/portofolios/{edit,detail}` | `user/portofolios/detail.hbs` | **Live** |
+| `GET /attendance/form/:id` | `user/attendance/create` | `partials/program_detail/.../attendance_noYet.hbs`, `partials/session/absen_tab.hbs` | **Live** |
+| `GET /quiz/form/:quizId` | `user/quiz/quiz` | `partials/program_detail/right_content/week/quiz.hbs` | **Live** |
+| `GET /answer-assigment/...` | `user/assignments` | four partials including the assignment fragment | **Live** |
+| `GET /register/:id` | `user/mycourse` | `partials/course/payment_tab.hbs`, `partials/sub_partials/program/payment_tab/payment.hbs` | **Live** |
+| `GET /biodata/formCreate`, `formEdit/:id` | `user/biodata/*` | only the deleted `partials/user/profile/index/*` tree | **Unreachable by link, still routable.** Left in place; decide with WP10 whether biodata keeps a standalone first-time flow |
+| `GET /certificates/:courseId` | was `user/certificates/detail` | the shell | **Fixed in WP1.** View never existed; now serves the PDF |
+| `GET /portfolio` | was `portfolio` | nothing | **Removed in WP1.** View never existed |
+| `GET /question/quiz/user/...` | `user/quiz/detail` | nothing | **Removed in WP1** |
+| `GET /payment/detail/:courseId` | `user/payment` | nothing | **Removed in WP1.** The view ignored `course` and showed hard-coded copy |
+| `partials/user/profile/index/*` | — | nothing; `src/views/profile/` is gone | **Deleted in WP1** |
 
-Roughly 5,500 lines of legacy templates fall under this table. The portfolio forms stay until WP3.
+The lesson for later packages: check the `@Controller()` prefix before concluding a
+route is dead, and search all of `src/views`, because `partials/program_detail/*`
+is rendered through `kelas/detail.hbs` and links out to most of this list.
 
 ## 3. Work packages
 
 Each is one PR with its own ticket. Size is S (under a day), M (one to two days), L (three or more).
 
-### WP0 Foundations (S)
+### WP0 Foundations (S) — DONE 2026-09-17 (`f88258af`)
 - Extract the shell's `<header>` (currently inline at `user_profile/index.hbs` line 111) into `partials/user/app_bar/index.hbs`. Standalone student pages can then share it via `bareShell`.
 - Add `scripts/check-user-area.sh`: greps `src/views/user` and `src/views/partials/user` for `text-[NNpx]`, `shadow-[0px_0px_`, `href="#"`, and reports `git status --porcelain | grep -iE 'admin'`. Every PR below runs it on the files it touched and reports zero.
 - Add `src/database/seeds/student.seed.ts` reproducing the 2026-09-16 local rows (weeks, sessions, materials, logbooks, assignments and submissions, quiz, payments, installment plan, portfolio items for `indra@gmail.com`), and set `isVerified: true` in `user.seed.ts`. Without it every tab is an empty state on a fresh database.
 - After it lands, copy section 1 of this plan into `CONTRIBUTING.md` as a "User area" section.
 
-### WP1 Retire legacy routes and fix the two 500s (M)
-- Apply the Action column of 2.2: redirects in the controllers, delete the views and the partial trees `partials/user/{logbook,myPortfolio,myProgram,payment_history,profile,quiz}` after a final grep for consumers. Keep `partials/user/portfolio/create/form` for WP3.
-- Certificate: build `sidebar_user_profile/certificate/index.hbs` as a shell panel (`detail/section_card` with course, completion date, download via `form/button as='link'`), fed by `certificates.service.ts`, which is already completion-gated. Point the shell's certificate link at `?tab=certificate` instead of the dead route.
-- Remove `GET /portfolio` or redirect it.
+### WP1 Retire legacy routes and fix the two 500s (M) — DONE 2026-09-17 (`ed7fd47f`), scope corrected
+What was planned: retire most of the routes in 2.2. What actually shipped, after
+the reachability check above showed the premise was wrong:
 
-### WP2 History Payment (M)
-- Keep the `598:2107` row-list layout. Swap tokens: status pills to `badge dot=true`, action buttons to `form/button variant='secondary'`, the payment-proof modal to `modal/detail name='payment-proof'`, pagination to `table/pagination` when a list exceeds one page.
+- Certificate serves the PDF instead of rendering a view that never existed, and
+  the template path in `certificates.service.ts` was corrected from
+  `<cwd>/common/assets/certificates.pdf` to `src/common/assets/sertifikat.pdf`.
+  That path bug meant certificate generation had never worked anywhere.
+- `GET /portfolio`, `GET /question/quiz/user/...` and `GET /payment/detail/:courseId`
+  removed with their views. None had a referrer.
+- `partials/user/profile/index/*` deleted; nothing included it.
+- Everything else in 2.2 left alone because it is reachable.
+
+The shell already has a certificate panel, so no new partial was needed. It gets
+its tokens in a later package.
+
+### WP2 Payment History (L, enlarged by the design reference)
+- **The design shows ONE list, not three sub-tabs**, titled "Payment History", with a filter card (Date Range, Payment Status, Payment Method, Program/Course), a search field, a type pill per row and pagination. Collapse `full_payment`, `installment` and `registration` into a single source and rename the sidebar item.
+- Keep the row-list shape. Swap tokens: status pills to `badge dot=true`, action buttons to `form/button variant='secondary'`, the payment-proof modal to `modal/detail name='payment-proof'`, pagination to `table/pagination` when a list exceeds one page.
 - Rebuild the three detail partials (75 hard-coded pixel sizes) with `detail/section_card` + `detail/field`, one card for the order, one for the payer, one for the proof.
 - Backend: `PaymentsService.getUserInstallmentDetail` must select `file` so the installment tab can show a proof (noted 2026-09-16, still open).
 - Verify with a student who has rows: in the local restore, `indraajiyanto052@gmail.com` has 5 payments and `indrajajal3@gmail.com` has 3. Set a known password locally first.
@@ -128,9 +200,20 @@ Each is one PR with its own ticket. Size is S (under a day), M (one to two days)
 ### WP7 Quiz-taking page (M, high risk)
 - `quiz/week/start/index.hbs` (617 lines). Audit first: remove the placeholder answer options that sit next to real quiz data. Then tokens only. Timer and scoring logic untouched. Needs a tester with a seeded quiz.
 
-### WP8 Profile polish (S)
-- `components/ui/profile/index.hbs` line 335 describes the Change Password card as "Permanently remove this user and revoke access". Replace with the password copy. This file is shared with admins, so it is a component PR.
-- Nothing else. The tab is done.
+### WP10 Profile rebuild (M) — replaces the old WP8
+
+The design frame (`docs/design/user-area/profile.png`) matches neither the merged
+component nor the reskin's inline form. Rebuild `components/ui/profile/index` to it:
+avatar left of a stacked Username and Email in card one, a "Your Biodata" card
+opening with an icon chip, Address as a tall field, Education/Studi Program and
+Gender/WhatsApp in two columns, left icons on every input, one Save Changes per
+card. The frame shows no Change Password card: confirm with the owner whether it
+moves elsewhere or is dropped, since admins reach it through this same component.
+While in the file, fix the Change Password copy, which currently reads
+"Permanently remove this user and revoke access".
+
+### WP8 Profile polish (S) — folded into WP10
+Superseded. The copy fix moves into WP10.
 
 ### WP9 Cross-cutting decisions (S each, last)
 - i18n: the super admin pages have zero `t` calls and so does `sidebar_user_profile/*`. Following the super admin pages means English copy for now; when i18n happens it is one sweep under `test.userArea.*`.
@@ -161,10 +244,13 @@ Use the restored dump (`e_learning_migrasi_test` on port 5499 locally). `indra@g
 
 ## 7. Open questions for owners
 
-1. May the legacy routes in 2.2 be removed outright, or must they redirect for a release?
-2. How should a student create a portfolio item: from the My Portfolio tab, from a completed session, or only via a mentor? Nothing links to the create form today.
+1. ~~May the legacy routes in 2.2 be removed outright?~~ Moot: most are reachable and were left alone.
+2. ~~How should a student create a portfolio item?~~ Answered: the program detail page links to the create form.
 3. Assignment scores: will `answer_task` get a `score` column, or is the placeholder removed for good?
 4. Is `Course.group` the WhatsApp link the Join Group card should open?
-5. Certificate: shell panel (this plan) or a standalone page?
-6. Where is `PRD-sequential-session-unlock.md`? It is referenced by two hand-over docs and is not in the repo.
-7. The merge kept the My Learning sidebar course tree that `921dac97` had removed. Confirm it stays, since WP6 restyles it.
+5. ~~Certificate: shell panel or standalone page?~~ Answered: the existing shell panel stays; the route now serves the PDF.
+6. Where is `PRD-sequential-session-unlock.md`? Referenced by two hand-over docs, not in the repo. Blocks WP6 and WP7.
+7. ~~Confirm the My Learning sidebar course tree stays.~~ The design shows no tree. Confirm removal, which WP6 would carry out.
+8. Profile: does Change Password stay on the Profile page? The frame does not show it, and admins reach it through the same component.
+9. `user/riwayat` (payment history standalone) duplicates the Payment History tab and is linked from the navbar. Merge them, or keep both?
+10. Does the Dashboard need the banner illustration and the Continue Learning pagination the frame shows? Both need assets or backend paging.
