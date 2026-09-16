@@ -251,17 +251,6 @@ export class PaymentsController {
   }
 
   @Roles('user')
-  @Get('detail/:courseId')
-  async detail(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const course = await this.paymentsService.findCourse(courseId);
-    res.render('user/payment', { user: req.user, course });
-  }
-
-  @Roles('user')
   @Get('registration/:courseId')
   async registrationPage(
     @Param('courseId') courseId: string,
