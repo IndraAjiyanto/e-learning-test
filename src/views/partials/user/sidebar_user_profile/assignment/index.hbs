@@ -1,16 +1,11 @@
 <div x-data="{ view: 'list', selectedAssignment: null }" class="w-full">
   
   <!-- ==================== VIEW: LIST (DEFAULT) ==================== -->
-  <div x-show="view === 'list'" x-transition class="w-full flex flex-col items-start p-5 gap-[15px]">
+  <div x-show="view === 'list'" x-transition class="w-full p-4 sm:px-[34px] sm:py-[42px]">
 
-    <!-- Assignment Header -->
-    <div class="flex flex-col gap-2">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl leading-tight text-[#003060]">
-        Assignment
-      </h1>
-      <p class="font-open-sans font-normal text-sm sm:text-base leading-relaxed text-[#003060]">
-        Your tasks will be displayed here.
-      </p>
+    <div class="flex flex-col gap-1">
+      {{> components/ui/super_admin/page_header/index titleTag='h2' title='Assignment' }}
+      {{> components/ui/super_admin/description/index text='Your tasks will be displayed here.' }}
     </div>
 
     <!-- Week Sections (Dynamic with Alpine.js): one collapsible block per real week -->
@@ -46,9 +41,9 @@
 
       <!-- Week Header -->
       <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')">
-        <h2 class="font-montserrat font-semibold text-lg sm:text-xl leading-snug text-[#003060]">
+        <h3 class="font-montserrat text-xl font-bold leading-tight text-[#003060]">
           Week {{weekNumber}} : {{description}}
-        </h2>
+        </h3>
         <div class="w-9 h-9 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
           <i class="fas fa-chevron-up text-sm transition-transform duration-300" :class="openWeek ? '' : 'rotate-180'"></i>
         </div>
@@ -128,13 +123,17 @@
                 this.submitting = false;
               }
             },
-          }" class="relative w-full max-w-[1232px] p-6 sm:p-8 bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex flex-col gap-6">
+          }" class="relative flex w-full flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8">
 
             <!-- Status Badges: normal flow, not absolute - an absolute top-right badge here used
                  to sit directly on top of the chevron toggle button below, causing a visible overlap. -->
             <div x-show="status === 'review' || status === 'approved'" x-cloak class="flex justify-end">
-              <span x-show="status === 'review'" class="bg-[#FEEFD6] border border-[#FDA40B] rounded-[12px] px-[14px] py-[1px] font-open-sans font-normal text-xs text-[#FDA40B]" title="Waiting for admin review">Under Review</span>
-              <span x-show="status === 'approved'" class="bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-[14px] py-[1px] font-open-sans font-normal text-xs text-[#12BD26]" title="Approved by admin">Approve</span>
+              {{> components/ui/super_admin/badge/index
+                text="status === 'approved' ? 'Approved' : 'Under review'"
+                dot=true
+                classExpr="status === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#fffbeb] text-[#b45309]'"
+                dotClassExpr="status === 'approved' ? 'bg-[#22c55e]' : 'bg-[#f59e0b]'"
+              }}
             </div>
 
             <!-- Header Card (click to expand/collapse this session's assignment) -->
@@ -148,21 +147,12 @@
             <!-- Session Content (Collapsible) -->
             <div x-show="open" x-transition class="flex flex-col gap-6">
 
-              <!-- Date & Time Info: no due_date/deadline_time column exists yet on session/assignment, left blank until backend adds it -->
-              <div class="flex flex-col gap-[10px]">
-                <div class="flex items-center gap-[8px] text-[#003060]">
-                  <i class="far fa-calendar text-sm"></i>
-                  <span class="font-open-sans font-semibold text-sm leading-relaxed">
-                    Due date:Apr, 10 2026
-                  </span>
-                </div>
-                <div class="flex items-center gap-[8px] text-[#003060]">
-                  <i class="far fa-clock text-sm"></i>
-                  <span class="font-open-sans font-semibold text-sm leading-relaxed">
-                    Deadline time:23:59 WIB
-                  </span>
-                </div>
-              </div>
+              {{!-- Tenggat sengaja TIDAK dirender. Sebelumnya di sini ada teks
+                   "Due date: Apr, 10 2026" dan "Deadline time: 23:59 WIB" yang
+                   dituliskan tetap, padahal entity Assignment maupun Session tidak
+                   punya kolom tenggat sama sekali. Menampilkan tanggal karangan
+                   pada halaman tugas lebih berbahaya daripada tidak menampilkan
+                   apa pun. Munculkan lagi setelah backend menambah kolomnya. --}}
 
               <!-- Assignment Link -->
               <div class="flex flex-col gap-2" x-show="session.assignments?.[0]?.file">
@@ -182,26 +172,24 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-[15px] mt-2">
-                  <div class="w-full max-w-[504px] h-11 bg-white border border-[#D9D9D9] rounded-[12px] flex items-center px-[20px] focus-within:ring-2 focus-within:ring-[#003060]">
-                    <input
-                      type="url"
-                      x-model="answerUrl"
-                      placeholder="https://drive.google.com/..."
-                      required
-                      title="Harap masukkan URL yang valid, contoh: https://drive.google.com"
-                      class="w-full bg-transparent border-none outline-none font-montserrat font-medium text-sm text-slate-700 placeholder:text-black/50"
-                    >
-                  </div>
+                  <input
+                    type="url"
+                    x-model="answerUrl"
+                    placeholder="https://drive.google.com/..."
+                    required
+                    title="Enter a valid URL, for example https://drive.google.com"
+                    class="h-11 w-full max-w-[504px] rounded-lg border border-[#d4d4d4] bg-white px-3.5 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20"
+                  >
                 </div>
 
                 <p x-show="submitError" x-cloak x-text="submitError" class="font-open-sans text-xs text-red-600"></p>
 
                 <div class="flex items-center gap-4 mt-6">
-                  <button type="submit" :disabled="submitting" class="w-[180px] h-11 bg-[#003060] border border-[#003060] hover:shadow-sm transition-shadow rounded-[6px] flex items-center justify-center font-montserrat font-medium text-sm text-white hover:bg-[#002244] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                  <button type="submit" :disabled="submitting" class="inline-flex h-11 items-center justify-center rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-60">
                     <span x-show="!submitting">Submit Answer</span>
                     <span x-show="submitting" x-cloak>Submitting...</span>
                   </button>
-                  <button x-show="editing" type="button" @click="editing = false" class="font-montserrat font-medium text-sm text-[#003060] underline cursor-pointer">
+                  <button x-show="editing" type="button" @click="editing = false" class="inline-flex h-11 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#f9fafb]">
                     Cancel
                   </button>
                 </div>
@@ -237,16 +225,14 @@
                 <!-- Action / Result Area -->
                 <div class="mt-4">
                   <!-- Button shown only when Under Review -->
-                  <button x-show="status === 'review'" type="button" @click="editing = true" class="w-[180px] h-11 mt-2 bg-transparent border border-[#003060] hover:shadow-sm transition-shadow rounded-[6px] flex items-center justify-center font-montserrat font-medium text-sm text-[#003060] hover:bg-[#003060]/5 transition cursor-pointer">
+                  <button x-show="status === 'review'" type="button" @click="editing = true" class="mt-2 inline-flex h-11 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#f9fafb]">
                     Edit Submission
                   </button>
 
-                  <!-- Score shown only when Approved: no score/grade column exists yet on answer_task, left as a placeholder until backend adds it -->
-                  <div x-show="status === 'approved'" class="mt-4">
-                    <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">
-                      Poin: 90/100 Good Job
-                    </p>
-                  </div>
+                  {{!-- Nilai sengaja TIDAK dirender. Sebelumnya setiap tugas yang
+                       disetujui menampilkan "Poin: 90/100 Good Job" secara tetap,
+                       padahal entity AnswerTask tidak punya kolom nilai. Munculkan
+                       lagi setelah backend menambah kolomnya. --}}
                 </div>
               </div>
 
@@ -262,20 +248,15 @@
   </div>
 
   <!-- ==================== VIEW: DETAIL (PDF PREVIEW) ==================== -->
-  <div x-show="view === 'detail'" x-cloak x-transition class="w-full flex flex-col items-start p-5 gap-[15px]">
+  <div x-show="view === 'detail'" x-cloak x-transition class="w-full p-4 sm:px-[34px] sm:py-[42px]">
 
-    <!-- Detail Header -->
     <div class="flex items-center gap-4">
-      <button @click="view = 'list'" class="w-11 h-11 flex justify-center items-center rounded-full border border-[#003060] hover:bg-slate-100 hover:shadow-sm transition-shadow transition cursor-pointer">
-        <i class="fas fa-arrow-left text-[#0B1F3B] text-base"></i>
+      <button @click="view = 'list'" aria-label="Back to assignment list" class="grid size-11 shrink-0 place-items-center rounded-lg border border-[#d4d4d4] bg-white text-[#344054] transition-colors hover:bg-[#f9fafb]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </button>
-      <div class="flex flex-col gap-2">
-        <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl leading-tight text-[#003060]">
-          Your Assignment Here
-        </h1>
-        <p class="font-open-sans font-normal text-sm sm:text-base leading-relaxed text-[#003060]">
-          Check your assignment and submit it before the deadline
-        </p>
+      <div class="flex flex-col gap-1">
+        {{> components/ui/super_admin/page_header/index titleTag='h2' title='Your Assignment Here' }}
+        {{> components/ui/super_admin/description/index text='Check your assignment and submit it.' }}
       </div>
     </div>
 
@@ -283,7 +264,7 @@
     <div class="flex flex-wrap lg:flex-nowrap gap-8 mt-12 w-full">
       
       <!-- Left: PDF Preview Box -->
-      <div class="w-full max-w-[732px] h-[540px] bg-white rounded-[12px] border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex items-center justify-center overflow-hidden relative">
+      <div class="relative flex h-[540px] w-full max-w-[732px] items-center justify-center overflow-hidden rounded-xl border border-[#d9d9d9] bg-white">
         <template x-if="selectedAssignment?.file">
           <iframe :src="selectedAssignment.file" type="application/pdf" class="w-full h-full" title="Assignment PDF"></iframe>
         </template>
