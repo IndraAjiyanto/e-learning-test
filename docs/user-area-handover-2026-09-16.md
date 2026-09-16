@@ -1,13 +1,61 @@
 # User area (post-login) redesign — handover, 2026-09-16
 
-Branch: `dev-miko` (pushed, commit `025995ce`). This doc picks up where
-[`user-area-redesign-checklist.md`](./user-area-redesign-checklist.md) (dated 2026-09-15) left off —
-read that one first for architecture background (the shell, the 3 entry routes, why most of this
-area has no Figma reference). This doc covers everything that happened after it: a full sizing
-sweep, a shadow standard, structural rebuilds of 3 tabs to match late-arriving Figma references,
-and the current state to hand off.
+Branch: `dev-miko` (pushed, commit `025995ce` + `5d502a96`). This doc picks up where
+[`user-area-redesign-checklist.md`](./user-area-redesign-checklist.md) (dated 2026-09-15) left off
+— that one has more detail on the shell architecture (the 3 entry routes, why most of this area
+has no Figma reference) if you need it, but everything you need to start working is repeated here
+so you don't have to cross-reference both files.
 
-## 1. What changed since the 2026-09-15 checklist
+## 0. Figma access
+
+File: **`LYJhMeQfBgu82us13XRHhv`** ("Kesatria-Academy") —
+`https://www.figma.com/design/LYJhMeQfBgu82us13XRHhv/Kesatria-Academy`
+
+- Node `830:8545` = "Role User: Sudah Ikut Program" (the logged-in-with-a-course section). Real
+  screens actually found in it: Dashboard `830:9155`, Profile `830:8546`, My Learning list
+  `830:8684`, View Program detail `830:8804`, Week-expanded `830:8956`. Empty-state frame
+  `830:8544` ("Belum Ikut Program Apapun").
+- Node `598:2107` was also checked directly — this is where History Payment / My Portfolio /
+  Start Learning's real frames turned out to live (found via screenshots the user pasted directly
+  in chat, not a successful API pull — see below).
+- **Do not confuse this with the other Figma file in play**: `mJTccZVBSX9SUB57lwrjkp`
+  ("LMS Kesatria") is the marketing/landing redesign **and** the admin/super-admin dashboards —
+  unrelated to this logged-in-user work, and admin is out of scope here regardless (see §5).
+- **API access is rate-limited as of 2026-09-16.** The project's `.mcp.json` (gitignored) points
+  at the unofficial `figma-developer-mcp` server with a personal access token on a Viewer seat —
+  Figma's REST API caps Viewer-seat traffic hard, and this session hit 429s repeatedly with
+  multi-day reset windows shown in the error. Check whether it's cleared before relying on it
+  (`mcp__figma__get_figma_data` with the file key above); if not, either wait, get the token
+  upgraded to a paid Dev/Full seat, or work from screenshots the way this session did for
+  History Payment / Start Learning / My Portfolio (see §2).
+
+## 1. Current state by page/tab
+
+| Area | Figma-verified? | Status |
+|---|---|---|
+| Dashboard | ✅ yes (`830:9155`) | Done |
+| Profile | ✅ yes (`830:8546`) | Done |
+| My Learning (list) | ✅ yes (`830:8684`) | Done |
+| Start Learning (weeks/sessions) | ⚠️ screenshot-driven, not API-pulled | Layout rebuilt to 2-column per reference; internals (session unlock logic) untouched |
+| History Payment (all 3 sub-tabs) | ⚠️ screenshot-driven, not API-pulled | Rebuilt to row-list layout per reference |
+| My Portfolio (list) | ⚠️ screenshot-driven, not API-pulled | Rebuilt to left-filter-sidebar layout per reference |
+| My Portfolio (detail) | ❌ no reference | Sized, but shadow standard (§2 below) never applied |
+| Assignment | ❌ no reference | Sized + shadow standard + badge-overlap bug fixed |
+| Logbook (sidebar tab) | ❌ no reference | Sized + shadow standard |
+| Quiz (sidebar summary tabs) | ❌ no reference | Text sized down; padding scale never unified with rest of app |
+| Quiz-taking page (`quiz/week/start`) | ❌ no reference | Only the `<h1>` sized; still has placeholder answer options mixed into real logic — high-risk, unaudited otherwise |
+| materi (pdf/video/ppt) standalone pages | ❌ no reference | **Never opened this session** — distinct from the sidebar materi partials, which were done |
+| `certificates/detail`, `quiz/detail` (standalone) | ❌ no reference | **Never opened this session** |
+| Legacy pages (riwayat/logbooks/portofolios/biodata/attendance standalone) | ❌ no reference | Only page `<h1>` sized; inner content untouched |
+| `user/myportfolio.hbs` | n/a | Confirmed orphaned (no real links to it) — deliberately left alone |
+| Admin / super_admin (all) | n/a | **Out of scope, never touched, do not touch** |
+
+"Screenshot-driven" means: the user pasted real Figma frame screenshots directly in chat this
+session (API was down), and layout/spacing was read off those images by eye — close, but not
+pixel-measured the way the ✅ rows were (those came from a direct `get_figma_data` node fetch
+earlier in the week, before the rate limit hit).
+
+## 2. What changed since the 2026-09-15 checklist
 
 ### Sizing sweep (all of `sidebar_user_profile/*` + the standalone pages it links out to)
 Every tab was oversized relative to normal UI scale — some headings were literally `text-[36px]`
@@ -37,11 +85,11 @@ editable_field}`, the auth username field), every card in Dashboard/History Paym
 Portfolio/Assignment/Start Learning, and the public registration forms
 (`payments/registration.hbs`, `free_program/form_daftar_program.hbs`). **Do a final grep before
 shipping**: `grep -rn 'shadow-\[0px_0px_[0-9]*px' src/views/partials/user/ src/views/user/` — a
-few may still be lurking in files this pass didn't reach (see §3 below).
+few may still be lurking in files this pass didn't reach (see §4 below).
 
 ### Structural rebuilds (from real Figma screenshots the user pasted directly — not pulled via API)
 Figma API access has been rate-limited most of this session (Viewer-seat quota, ~429s, multi-day
-reset window — see §4). The user pasted real screenshots of 3 additional Figma frames not covered
+reset window — see §5). The user pasted real screenshots of 3 additional Figma frames not covered
 by the original checklist's `598:2107` node fetch. These drove actual layout changes, not just
 sizing:
 
@@ -116,7 +164,7 @@ repo (no `src/database/seeds/*` changes), it was raw `psql` INSERTs against the 
 this reproducible, the INSERT statements aren't saved anywhere — they were run and discarded as
 scratch SQL files this session. Worth turning into a proper seed script if this keeps coming up.
 
-## 2. Flagged issues — not fixed, need a decision
+## 3. Flagged issues — not fixed, need a decision
 
 - **`assignment/index.hbs`**: hardcoded `"Poin: 90/100 Good Job"` score shown for every approved
   assignment. Pre-existing (not introduced this session), commented in the code as a placeholder
@@ -133,7 +181,7 @@ scratch SQL files this session. Worth turning into a proper seed script if this 
 - **Dashboard's "Certificates Earned" stat** is a proxy (`= completedCount`), not a real
   certificate-issuance query — noted in the 2026-09-15 checklist already, still true.
 
-## 3. Not yet covered by this pass — genuinely unaudited
+## 4. Not yet covered by this pass — genuinely unaudited
 
 These were named directly by the user in the last session but never opened:
 
@@ -154,7 +202,7 @@ These were named directly by the user in the last session but never opened:
   `biodata/{create,edit}.hbs`, `attendance/create.hbs`) — only their page-title `<h1>` got resized;
   the actual form/card content inside was never touched for the shadow standard or tighter scale.
 
-## 4. Environment gotchas
+## 5. Environment gotchas
 
 - **Figma API is rate-limited** (Viewer-seat quota on the `figma-developer-mcp` unofficial MCP
   server configured in `.mcp.json`, gitignored). Hit 429 repeatedly this session with multi-day
@@ -177,16 +225,16 @@ These were named directly by the user in the last session but never opened:
   `git status --porcelain | grep -iE 'admin'` after every batch this whole session — stayed clean
   throughout. Keep doing this before every commit.
 
-## 5. Suggested next steps, in priority order
+## 6. Suggested next steps, in priority order
 
-1. Run the app, read through §3's unaudited files with fresh eyes before deciding what (if
+1. Run the app, read through §4's unaudited files with fresh eyes before deciding what (if
    anything) they need.
-2. Decide what to do with the 2 flagged fabricated-data spots (§2) — at minimum, they should be
+2. Decide what to do with the 2 flagged fabricated-data spots (§3) — at minimum, they should be
    flagged to whoever owns the backend for those features.
 3. If the friend wants Figma-accurate values instead of the "copied from the Dashboard/screenshot
    guesses" values used throughout this pass, wait out the API rate limit or get a Dev-seat
    upgrade — the visual result is close but not pixel-verified for anything outside the 3 real
    Figma screens (Dashboard, Profile, My Learning list) plus the 3 screenshot-driven rebuilds in
-   §1.
-4. Turn the local-only seed data (§1) into a real seed script if empty-state testing keeps coming
+   §2.
+4. Turn the local-only seed data (§2) into a real seed script if empty-state testing keeps coming
    up as a blocker.
