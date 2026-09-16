@@ -1,0 +1,123 @@
+{{!--
+  Komponen: Program Installment Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/installment_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Installment" di halaman detail program: search + tabel skema cicilan
+  + pagination. Datanya diambil sendiri dari GET /program/installment/:courseId,
+  karena controller detail tidak ikut mengirimnya saat render.
+
+  Halaman pemanggil hanya merender tab ini untuk program berbayar (course.checkPaid).
+
+  Tanpa tabs/language: seluruh kolomnya angka & tanggal, tidak ada field multibahasa.
+
+  Endpoint ini SATU-SATUNYA di halaman detail yang membungkus arraynya:
+  { availableMonths, installments } — karena itu clientTable dipanggil dengan
+  dataKey. `availableMonths` adalah sisa durasi yang belum punya skema cicilan;
+  bila habis, tombol Add Installment disembunyikan seperti pada versi lama.
+
+  Aksi delete memakai /installment/:id TANPA courseId — beda dari tab lain —
+  mengikuti @Delete(':id') di installments.controller.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+  - components/ui/super_admin/table/formatters    (formatRupiah)
+  - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
+
+  Props:
+  - courseId : string (wajib) — dipakai untuk endpoint dan tombol create
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  x-data='clientTable({ url: "/program/installment/" + {{json courseId}}, searchKeys: ["month"], dataKey: "installments" })'
+  x-init='load()'
+>
+  {{!-- Tombol create lewat slot aksi, bukan prop createHref: tampil hanya bila
+       masih ada durasi yang belum punya skema cicilan. --}}
+  {{#> components/ui/super_admin/table/toolbar
+    placeholder='Search installment..'
+    searchLabel='Search program installment'
+    hideCreate=true
+    fullWidth=true
+  }}
+    <template x-if='(raw?.availableMonths || []).length > 0'>
+      <a
+        href='/installment/formCreate/{{courseId}}'
+        class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
+      >Add Installment</a>
+    </template>
+  {{/components/ui/super_admin/table/toolbar}}
+
+  {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+    <colgroup>
+      <col class='w-[66px]' />
+      <col class='w-[110px]' />
+      <col class='w-[300px]' />
+      <col class='w-[150px]' />
+      <col class='w-[268px]' />
+      <col class='w-[116px]' />
+    </colgroup>
+    <thead>
+      <tr>
+        {{> components/ui/super_admin/table/header_cell label='No' }}
+        {{> components/ui/super_admin/table/header_cell label='Duration' }}
+        {{> components/ui/super_admin/table/header_cell label='Due Date' }}
+        {{> components/ui/super_admin/table/header_cell label='Down Payment' }}
+        {{> components/ui/super_admin/table/header_cell label='Monthly Price' }}
+        {{> components/ui/super_admin/table/header_cell label='Action' }}
+      </tr>
+    </thead>
+    <tbody>
+      <template x-for='(row, index) in rows' :key='row.id'>
+        <tr class='align-top transition-colors hover:bg-[#fafafa]'>
+
+          {{> components/ui/super_admin/table/cell
+            text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+          }}
+
+          {{> components/ui/super_admin/table/cell text='row.month + " Months"' }}
+
+          {{#> components/ui/super_admin/table/cell}}
+            <div class='flex flex-col gap-1'>
+              <template x-for='(dueDate, monthIndex) in (row.dueDates || [])' :key='monthIndex'>
+                <span
+                  class='rounded bg-[#f5f5f5] px-2 py-1 font-inter text-xs leading-[18px] text-[#404040]'
+                  x-text='"Month " + (monthIndex + 1) + ": " + (dueDate || "").slice(0, 10)'
+                ></span>
+              </template>
+            </div>
+          {{/components/ui/super_admin/table/cell}}
+
+          {{> components/ui/super_admin/table/cell text='formatRupiah(row.downPayment)' }}
+
+          {{#> components/ui/super_admin/table/cell}}
+            <div class='flex flex-col gap-1'>
+              <template x-for='(price, monthIndex) in (row.price || [])' :key='monthIndex'>
+                <span
+                  class='rounded bg-[#f5f5f5] px-2 py-1 font-inter text-xs leading-[18px] text-[#404040]'
+                  x-text='"Month " + (monthIndex + 1) + ": " + formatRupiah(price)'
+                ></span>
+              </template>
+            </div>
+          {{/components/ui/super_admin/table/cell}}
+
+          {{#> components/ui/super_admin/table/cell variant='action'}}
+            {{> components/ui/super_admin/table/row_actions
+              entity='installment'
+              deleteAction="'/installment/' + row.id + '?_method=DELETE'"
+              editHref="'/installment/formEdit/' + row.id"
+            }}
+          {{/components/ui/super_admin/table/cell}}
+        </tr>
+      </template>
+
+      {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+        Loading installments…
+      {{/components/ui/super_admin/table/message_row}}
+
+      {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
+        No installments found.
+      {{/components/ui/super_admin/table/message_row}}
+    </tbody>
+  {{/components/ui/super_admin/table/card}}
+</div>

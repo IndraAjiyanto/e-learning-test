@@ -1,0 +1,109 @@
+{{!--
+  Komponen: Mentor Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/mentor/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Foto profil, lalu Name / LinkedIn / Technologies, lalu Position & Description
+  per bahasa. Tidak menerima props; pemanggil menyediakan state Alpine dari
+  form/mentor/form.
+
+  Field per bahasa dikirim sebagai position[id]/position[en]/position[ja]
+  (idem description) — bentuk yang dibaca halaman publik lewat getByLang.
+
+  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
+  meski tab-nya tidak aktif.
+
+  Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `position-id`) — dipakai
+  form/mentor/form untuk memfokuskan field pertama yang error.
+
+  Teknologi dikirim sebagai `technologyId[]`, nama yang dibaca CreateMentorDto
+  dan MentorService — bukan `technologiesIds[]` seperti form lama, yang membuat
+  pilihannya tidak pernah tersimpan.
+--}}
+{{#*inline 'mentorLangFields'}}
+  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'position-' code)
+      name=(concat 'position[' code ']')
+      field=(concat 'position.' code)
+      label='Position'
+      placeholder=positionHint
+      maxlength=255
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'description-' code)
+      name=(concat 'description[' code ']')
+      field=(concat 'description.' code)
+      label='Description'
+      multiline=true
+      placeholder=descriptionHint
+      maxlength=1000
+      required=true
+    }}
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-5'>
+  {{> components/ui/super_admin/form/photo_upload
+    id='profile'
+    name='profile'
+    label='Profile Photo'
+    meta='JPG or PNG · 300×300 to 2000×2000 px · Max 5 MB'
+    action='Upload Photo'
+    crop=true
+  }}
+
+  <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+    {{> components/ui/super_admin/form/text_field
+      id='name'
+      name='name'
+      field='name'
+      label='Name'
+      placeholder='Full name'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='linkedin'
+      name='linkedin'
+      field='linkedin'
+      type='url'
+      icon='link'
+      label='LinkedIn URL'
+      placeholder='https://linkedin.com/in/username'
+      required=true
+    }}
+  </div>
+
+  {{> components/ui/super_admin/form/multi_select_field
+    id='technologyId'
+    name='technologyId[]'
+    label='Technologies'
+    placeholder='Search and select technologies'
+    options='technologyOptions'
+    initial='initialTechnologies'
+    hint='Optional.'
+  }}
+
+  {{> components/ui/super_admin/tabs/language/index ariaLabel='Mentor language' }}
+
+  {{> mentorLangFields
+    code='id'
+    positionHint='Posisi (ID)'
+    descriptionHint='Deskripsi singkat (ID)...'
+  }}
+
+  {{> mentorLangFields
+    code='en'
+    positionHint='Position (EN)'
+    descriptionHint='Short description (EN)...'
+  }}
+
+  {{> mentorLangFields
+    code='ja'
+    positionHint='役職 (JA)'
+    descriptionHint='簡単な説明 (JA)...'
+  }}
+</div>

@@ -1,0 +1,215 @@
+{{!--
+  Halaman: Detail Program — Super Admin
+  Lokasi: src/views/super_admin/course/detail.hbs
+  Level: L4 Page
+
+  Route: GET /program/detail/program/admin/:courseId -> { user, course, categoryId? }
+         Edit   -> GET /program/edit/:courseId{/:categoryId}
+         Delete -> DELETE /program/:courseId (body `previous`)
+
+  Versi Super Admin dari admin/course/detail.hbs; halaman admin dibiarkan apa adanya.
+  Tiap tab mengambil datanya sendiri, jadi tombolnya memakai tabs/panel (hanya
+  menukar state), bukan tabs/fetch. tabData() di sini cuma menyimpan tab aktif
+  (kunci localStorage terpisah dari halaman admin).
+
+  Seluruh tab memakai components/ui/super_admin/program/*. Partial lama di
+  partials/course/* sengaja dibiarkan karena masih dipakai halaman admin.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='mx-auto flex w-full max-w-[1052px] flex-col gap-4'>
+
+    {{> components/ui/super_admin/detail/program_hero/index course=course categoryId=categoryId }}
+
+    {{#> components/ui/super_admin/detail/section_card/index
+      title='Basic Information'
+      iconPaths='<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'}}
+      <div class='grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-x-3'>
+        {{> components/ui/super_admin/detail/field/index label='Program Name' value=course.name }}
+
+        {{> components/ui/super_admin/detail/field/index label='Group' value=course.group }}
+
+        {{> components/ui/super_admin/detail/field/index label='Category' value=course.category.name }}
+
+        {{> components/ui/super_admin/detail/field/index label='Program Type' value=course.courseType.nameClassesType }}
+
+        {{#> components/ui/super_admin/detail/field/index label='Method'}}
+          <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if (eq course.method 'online')}}Online{{else if (eq course.method 'offline')}}Offline{{else}}-{{/if}}</p>
+        {{/components/ui/super_admin/detail/field/index}}
+
+        {{> components/ui/super_admin/detail/field/index label='Location' value=(getByLang course.locations 'en') }}
+
+        {{#> components/ui/super_admin/detail/field/index label='Duration'}}
+          <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.month}}{{course.month}} Month{{else if course.day}}{{course.day}} Day{{else}}-{{/if}}</p>
+        {{/components/ui/super_admin/detail/field/index}}
+
+        {{> components/ui/super_admin/detail/field/index label='Registration Date' value=(formatDate course.date_registration) }}
+
+        {{> components/ui/super_admin/detail/field/index label='Start Date' value=(formatDate course.startDate) }}
+
+        {{> components/ui/super_admin/detail/field/index label='End Date' value=(formatDate course.startEnd) }}
+
+        {{> components/ui/super_admin/detail/field/index label='Time Start' value=(formatTime course.time_start) }}
+
+        {{> components/ui/super_admin/detail/field/index label='Time End' value=(formatTime course.time_end) }}
+      </div>
+
+      {{> components/ui/super_admin/detail/field/index
+        label='Description'
+        value=(getByLang course.description 'en')
+      }}
+    {{/components/ui/super_admin/detail/section_card/index}}
+
+    <div class='flex w-full flex-col gap-4 lg:flex-row lg:items-stretch'>
+      <div class='flex min-w-0 flex-1'>
+        {{#> components/ui/super_admin/detail/section_card/index
+          title='Form & Information'
+          iconPaths='<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'}}
+          {{#> components/ui/super_admin/detail/field/index label='Form link'}}
+            {{#if course.form}}
+              <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-montserrat text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
+            {{else if course.locationLink}}
+              <a href='{{course.locationLink}}' target='_blank' rel='noopener noreferrer' class='break-all font-montserrat text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.locationLink}}</a>
+            {{else}}
+              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
+            {{/if}}
+          {{/components/ui/super_admin/detail/field/index}}
+
+          {{#> components/ui/super_admin/detail/field/index label='Type'}}
+            <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.checkPaid}}Paid{{else}}Free{{/if}}</p>
+          {{/components/ui/super_admin/detail/field/index}}
+        {{/components/ui/super_admin/detail/section_card/index}}
+      </div>
+
+      <div class='flex min-w-0 flex-1'>
+        {{#> components/ui/super_admin/detail/section_card/index
+          title='Capacity & Enrollment'
+          iconPaths='<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'}}
+          <div class='flex w-full flex-col gap-1.5'>
+            <div class='flex w-full items-center justify-between'>
+              <span class='font-montserrat text-sm font-semibold leading-5 text-[#171717]'>Enrollment</span>
+              <span class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{default course.userCourses.length 0}}/{{default course.quota 0}}</span>
+            </div>
+            <div class='h-5 w-full overflow-hidden rounded-lg bg-[#e4e5e6]'>
+              <div
+                class='h-5 rounded-lg bg-gradient-to-r from-[#0063c6] to-[#003060]'
+                style='width: {{#if course.quota}}{{multiply (divide (default course.userCourses.length 0) course.quota) 100}}{{else}}0{{/if}}%;'
+              ></div>
+            </div>
+          </div>
+
+          <div class='grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-x-3'>
+            {{#> components/ui/super_admin/detail/field/index label='Student Capacity'}}
+              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.quota}}{{course.quota}} Students{{else}}Not set{{/if}}</p>
+            {{/components/ui/super_admin/detail/field/index}}
+
+            {{#> components/ui/super_admin/detail/field/index label='Student Joined'}}
+              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{default course.userCourses.length 0}} Students</p>
+            {{/components/ui/super_admin/detail/field/index}}
+          </div>
+        {{/components/ui/super_admin/detail/section_card/index}}
+      </div>
+    </div>
+
+    {{#> components/ui/super_admin/detail/section_card/index
+      title='Learning Details'
+      iconPaths='<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>'}}
+      {{#> components/ui/super_admin/detail/field/index label='Account Mentor'}}
+        <p class='break-words font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>
+          {{#each course.mentorings}}{{this.user.username}}{{#unless @last}}, {{/unless}}{{else}}-{{/each}}
+        </p>
+      {{/components/ui/super_admin/detail/field/index}}
+
+      {{#> components/ui/super_admin/detail/field/index label='Target'}}
+        <p class='break-words font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>
+          {{#each course.learningTargetsId}}{{this}}{{#unless @last}}, {{/unless}}{{else}}-{{/each}}
+        </p>
+      {{/components/ui/super_admin/detail/field/index}}
+
+      {{#> components/ui/super_admin/detail/field/index label='Tools'}}
+        <div class='flex flex-wrap items-center gap-1'>
+          {{#each course.technologies}}
+            <span class='inline-flex items-center gap-1.5 rounded-2xl bg-[#f5f5f5] px-2 py-0.5 font-inter text-xs font-medium leading-[18px] text-[#404040]'>
+              {{#if this.svg}}
+                <span class='flex h-3.5 w-3.5 shrink-0 items-center justify-center overflow-hidden [&>svg]:h-full [&>svg]:w-full'>{{{this.svg}}}</span>
+              {{else if this.imgUrl}}
+                <img src='{{this.imgUrl}}' alt='' class='h-3.5 w-3.5 shrink-0 object-contain' />
+              {{/if}}
+              {{this.name}}
+            </span>
+          {{else}}
+            <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
+          {{/each}}
+        </div>
+      {{/components/ui/super_admin/detail/field/index}}
+    {{/components/ui/super_admin/detail/section_card/index}}
+
+    <div
+      class='flex w-full flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white px-4 pb-5 pt-3 sm:px-5'
+      x-data='tabData({{#if course.checkPaid}}true{{else}}false{{/if}})'
+    >
+      <nav role='tablist' aria-label='Program sections' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
+        {{> components/ui/super_admin/tabs/panel/index name='benefit' label='Benefit' }}
+        {{> components/ui/super_admin/tabs/panel/index name='participants' label='Participants' }}
+        {{> components/ui/super_admin/tabs/panel/index name='flow' label='Flow' }}
+        {{> components/ui/super_admin/tabs/panel/index name='faq' label='FAQ' }}
+        {{#if course.checkPaid}}
+          {{> components/ui/super_admin/tabs/panel/index name='installment' label='Installment' }}
+        {{/if}}
+        {{> components/ui/super_admin/tabs/panel/index name='payment' label='Payment' }}
+        {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
+        {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
+        {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
+        {{> components/ui/super_admin/tabs/panel/index name='log_book_mentor' label='Log Book Mentor' }}
+        {{> components/ui/super_admin/tabs/panel/index name='mentor' label='Mentor' }}
+      </nav>
+
+      <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
+      {{#if course.checkPaid}}
+        <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+      {{/if}}
+      <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
+      <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'mentor'">{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
+    </div>
+
+  </div>
+</div>
+
+{{> components/ui/super_admin/toast/success/index toast=toast }}
+
+{{> components/ui/super_admin/table/client_table }}
+
+{{> components/ui/super_admin/table/fa_icon }}
+
+{{> components/ui/super_admin/table/formatters }}
+
+{{> components/ui/super_admin/table/export_excel }}
+
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Program?'
+  description='Are you sure you want to delete this program? This action will permanently remove the program and cannot be undone.'
+}}
+
+<script>
+  function tabData(hasInstallment) {
+    return {
+      tab: localStorage.getItem('activeTabProgram') || 'benefit',
+
+      init() {
+        this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
+
+        // Tab Installment hanya dirender untuk program berbayar. Tanpa jepitan ini,
+        // pindah dari program berbayar ke program gratis menyisakan tab tersimpan
+        // yang tombolnya tidak ada. $watch sengaja dipasang lebih dulu supaya
+        // koreksinya ikut tersimpan.
+        if (this.tab === 'installment' && !hasInstallment) this.tab = 'benefit';
+      },
+    };
+  }
+</script>

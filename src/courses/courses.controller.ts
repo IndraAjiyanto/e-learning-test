@@ -429,7 +429,7 @@ export class CoursesController {
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);
-      res.render('admin/course/detail', {
+      res.render('super_admin/course/detail', {
         user: req.user,
         course,
         categoryId,

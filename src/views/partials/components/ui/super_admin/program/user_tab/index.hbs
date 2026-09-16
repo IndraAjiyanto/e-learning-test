@@ -1,0 +1,80 @@
+{{!--
+  Komponen: Program User Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/user_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "User" di halaman detail program: search + tabel peserta terdaftar
+  + pagination. Datanya diambil sendiri dari GET /program/userProgram/:courseId,
+  karena controller detail tidak ikut mengirimnya saat render.
+
+  Baris yang dikembalikan endpoint adalah record relasi user-course, jadi datanya
+  dibaca lewat row.user.* dan key x-for memakai row.user.id.
+
+  Tab ini read-only: pendaftaran dikelola dari sisi user, bukan dari sini. Karena
+  itu tanpa tombol create dan tanpa kolom aksi — toolbar dipanggil dengan
+  hideCreate, dan tanpa tabs/language karena tidak ada field multibahasa.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+
+  Props:
+  - courseId : string (wajib) — dipakai untuk endpoint
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  x-data='clientTable({ url: "/program/userProgram/" + {{json courseId}}, searchKeys: ["user.username", "user.email"] })'
+  x-init='load()'
+>
+  {{> components/ui/super_admin/table/toolbar
+    placeholder='Search user..'
+    searchLabel='Search enrolled user'
+    hideCreate=true
+    fullWidth=true
+  }}
+
+  {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+    <colgroup>
+      <col class='w-[66px]' />
+      <col class='w-[73px]' />
+      <col class='w-[455px]' />
+      <col class='w-[416px]' />
+    </colgroup>
+    <thead>
+      <tr>
+        {{> components/ui/super_admin/table/header_cell label='No' }}
+        {{> components/ui/super_admin/table/header_cell label='Profile' }}
+        {{> components/ui/super_admin/table/header_cell label='Name' }}
+        {{> components/ui/super_admin/table/header_cell label='Email' }}
+      </tr>
+    </thead>
+    <tbody>
+      <template x-for='(row, index) in rows' :key='row.user.id'>
+        <tr class='transition-colors hover:bg-[#fafafa]'>
+
+          {{> components/ui/super_admin/table/cell
+            text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+          }}
+
+          {{#> components/ui/super_admin/table/cell variant='media'}}
+            {{> components/ui/super_admin/table/avatar
+              src='row.user.profile'
+              name='row.user.username'
+            }}
+          {{/components/ui/super_admin/table/cell}}
+
+          {{> components/ui/super_admin/table/cell text='row.user.username' }}
+
+          {{> components/ui/super_admin/table/cell text='row.user.email' }}
+        </tr>
+      </template>
+
+      {{#> components/ui/super_admin/table/message_row show='loading' colspan='4'}}
+        Loading users…
+      {{/components/ui/super_admin/table/message_row}}
+
+      {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='4'}}
+        No users found.
+      {{/components/ui/super_admin/table/message_row}}
+    </tbody>
+  {{/components/ui/super_admin/table/card}}
+</div>
