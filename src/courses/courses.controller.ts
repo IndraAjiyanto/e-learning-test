@@ -515,6 +515,7 @@ export class CoursesController {
       activeSection: courseId ? 'uiux' : 'learning',
       // userWithCourses,
       portfolio,
+      bareShell: true,
     });
   }
 

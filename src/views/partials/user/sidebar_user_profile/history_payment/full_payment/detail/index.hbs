@@ -16,7 +16,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 2xl:gap-9 items-stretch">
     
     <!-- CARD 1: Payment Information (Row 1, Col 1) -->
-    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white rounded-[12px] p-5 border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex flex-col justify-between">
       <div>
         <!-- Top Row: Title + Type Badge -->
         <div class="flex items-center justify-between mb-4">
@@ -69,7 +69,7 @@
     </div>
 
     <!-- CARD 2: Payment Status (Row 1, Col 2) -->
-    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white rounded-[12px] p-5 border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex flex-col justify-between">
       <div>
         <!-- Top Row: Title + Dynamic Status Badge -->
         <div class="flex items-center justify-between mb-3">
@@ -134,7 +134,7 @@
       <div x-show="!selectedTx || selectedTx?.status === 'accepted'" class="space-y-2">
         <button 
           type="button"
-          class="w-full h-[24px] border border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] rounded-lg text-[#003060] font-montserrat font-medium text-[12px] leading-none text-center hover:bg-[#003060]/5 flex items-center justify-center transition-all cursor-pointer"
+          class="w-full h-[24px] border border-[#003060] rounded-lg text-[#003060] font-montserrat font-medium text-[12px] leading-none hover:bg-[#003060]/5 hover:shadow-sm transition-all flex items-center justify-center cursor-pointer"
         >
           View Payment Receipt
         </button>
@@ -188,7 +188,7 @@
     </div>
 
     <!-- CARD 3: Payment Summary (Row 1, Col 3) -->
-    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white rounded-[12px] p-5 border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex flex-col justify-between">
       <div>
         <!-- Title -->
         <div class="flex items-center justify-between mb-4">
@@ -228,7 +228,7 @@
     </div>
 
     <!-- CARD 4: Payment Timeline (Row 2, Merges Col 1 & Col 2 via lg:col-span-2) -->
-    <div class="md:col-span-2 lg:col-span-2 w-full min-h-[168px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 2xl:p-6 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80">
+    <div class="md:col-span-2 lg:col-span-2 w-full min-h-[168px] bg-white rounded-[12px] p-5 2xl:p-6 border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
       <h3 class="font-sans font-bold text-xs 2xl:text-[12px] text-[#2D2D2D] mb-6">
         Payment Timeline
       </h3>

@@ -31,17 +31,17 @@
 
 <div class="w-full flex flex-col {{#if (eq align 'text-left')}}items-start{{else if (eq align 'text-right')}}items-end{{else}}items-center{{/if}} {{default align 'text-center'}} {{wrapperClass}}">
   {{#if badge}}
-    <div class="inline-flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] shadow-sm {{default badgeClass 'px-5 py-2 text-[14px] font-medium font-montserrat mb-4'}}">
+    <div class="inline-flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] shadow-sm {{default badgeClass 'px-5 py-2 text-[14px] font-medium font-inter mb-4'}}">
       {{{badge}}}
     </div>
   {{/if}}
 
   {{#if (eq titleTag 'h1')}}
-    <h1 class="leading-tight {{#if titleSize}}{{sizeClass titleSize}} {{default titleClass 'font-montserrat font-bold text-[#0B1F3B] mb-3'}}{{else}}{{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}{{/if}}">
+    <h1 class="leading-tight {{#if titleSize}}{{sizeClass titleSize}} {{default titleClass 'font-inter font-bold text-[#0B1F3B] mb-3'}}{{else}}{{default titleClass 'font-inter font-bold text-2xl text-[#0B1F3B] mb-3'}}{{/if}}">
       {{#> titleBlock}}{{{title}}}{{/titleBlock}}
     </h1>
   {{else}}
-    <h2 class="leading-tight {{#if titleSize}}{{sizeClass titleSize}} {{default titleClass 'font-montserrat font-bold text-[#0B1F3B] mb-3'}}{{else}}{{default titleClass 'font-montserrat font-bold text-2xl text-[#0B1F3B] mb-3'}}{{/if}}">
+    <h2 class="leading-tight {{#if titleSize}}{{sizeClass titleSize}} {{default titleClass 'font-inter font-bold text-[#0B1F3B] mb-3'}}{{else}}{{default titleClass 'font-inter font-bold text-2xl text-[#0B1F3B] mb-3'}}{{/if}}">
       {{#> titleBlock}}{{{title}}}{{/titleBlock}}
     </h2>
   {{/if}}
@@ -49,7 +49,7 @@
   {{#unless dividerAfterDesc}}{{> sectionHeaderDivider}}{{/unless}}
 
   {{#if description}}
-    <p class="leading-relaxed {{#if descSize}}{{sizeClass descSize}} {{default descClass 'font-sans font-normal text-[#2D2D2D]'}}{{else}}{{default descClass 'font-sans font-normal text-sm text-[#2D2D2D]'}}{{/if}}">
+    <p class="leading-relaxed {{#if descSize}}{{sizeClass descSize}} {{default descClass 'font-inter font-normal text-[#2D2D2D]'}}{{else}}{{default descClass 'font-inter font-normal text-sm text-[#2D2D2D]'}}{{/if}}">
       {{{description}}}
     </p>
   {{/if}}

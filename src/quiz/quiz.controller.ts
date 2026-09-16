@@ -130,6 +130,7 @@ export class QuizController {
         quizId,
         questions,
         check,
+        bareShell: true,
       });
     } else {
       const remainingTime = await this.quizService.getRemainingTime(
@@ -147,6 +148,7 @@ export class QuizController {
         questions,
         remainingTime,
         check,
+        bareShell: true,
       });
     }
   }

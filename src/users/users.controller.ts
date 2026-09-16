@@ -242,6 +242,14 @@ export class UsersController {
           .map((c) => [c.category.id, c.category]),
       ).values(),
     ];
+    const userCourses = userWithCourses?.userCourses ?? [];
+    const ongoingCourses = userCourses.filter((uc) => !uc.progress);
+    const completedCourses = userCourses.filter((uc) => uc.progress);
+    const dashboardStats = {
+      ongoingCount: ongoingCourses.length,
+      completedCount: completedCourses.length,
+      certificatesCount: completedCourses.length,
+    };
     return res.render('user/user_profile/index', {
       user: user,
       portfolio,
@@ -249,19 +257,10 @@ export class UsersController {
       logbooks,
       course,
       category,
+      dashboardStats,
+      ongoingCourses,
+      bareShell: true,
     });
-  }
-
-  @Roles('user', 'admin', 'super_admin')
-  @Get('profile/password')
-  async editPassword(@Res() res: Response, @Req() req: Request) {
-    return res.render('profile/editPassword', { user: req.user });
-  }
-
-  @Roles('user', 'admin', 'super_admin')
-  @Get('profile/info_account')
-  async editInfoAkun(@Res() res: Response, @Req() req: Request) {
-    return res.render('profile/editInfo', { user: req.user });
   }
 
   @Roles('super_admin')

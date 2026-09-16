@@ -1,6 +1,6 @@
 <!-- PROFILE CONTENT PARTIAL -->
 <div 
-  class="space-y-24 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 pb-10 mb-28"
+  class="space-y-12 font-montserrat bg-[#FAFAFA] p-5"
   x-data="profilePictureCrop()"
 >
   
@@ -11,7 +11,7 @@
       align="text-left"
       titleTag="h1"
       title=(concat "Welcome, " user.username)
-      titleClass="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]"
+      titleClass="font-montserrat font-semibold text-2xl text-[#003060] leading-none mb-2"
     }}
     {{> components/ui/text/description/index
       text="Below is your profile information."
@@ -19,22 +19,23 @@
       align="left"
       color="text-[#003060]"
       size="md"
-      class="!font-montserrat sm:!text-lg md:!text-[20px] !leading-none mb-12"
+      class="!font-montserrat !text-sm !leading-relaxed mb-6"
     }}
 
     <!-- Avatar Section (avatar to form spacing: 55px) -->
-    <div class="mb-12">
+    <div class="mb-6">
       {{> components/ui/avatar/profile_avatar/index
         user=user
         inputId="profile-upload-sidebar"
-        sizeClass="w-[100px] h-[100px]"
+        sizeClass="w-20 h-20"
+        textSizeClass="text-base"
         editIconSrc="/public/image/user_profile/edit.svg"
       }}
     </div>
 
     <!-- Account Inputs Form (input spacing: 30px, label to input spacing: 25px) -->
     <form 
-      class="space-y-[30px] max-w-[1146px]"
+      class="space-y-5 max-w-[1146px]"
       x-data="{
         originalUsername: '{{user.username}}',
         originalEmail: '{{user.email}}',
@@ -106,7 +107,109 @@
         xDisabled="!hasChanges || saving"
         enabledClass="bg-[#003060] cursor-pointer hover:opacity-90"
         disabledClass="bg-[#D9D9D9] cursor-not-allowed pointer-events-none"
-        class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-base text-white"
+        class="w-[190px] h-10 rounded-lg opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-sm text-white"
+      }}
+    </form>
+  </div>
+
+  <!-- Change Password Section (folded in from the old standalone profile/editPassword page, 2026-09-15) -->
+  <div>
+    {{> components/ui/text/section_header/index
+      align="text-left"
+      titleTag="h2"
+      title="Change Password"
+      titleClass="font-montserrat font-semibold text-2xl text-[#003060] leading-none mb-2"
+    }}
+    {{> components/ui/text/description/index
+      text="Update the password you use to sign in."
+      tag="p"
+      align="left"
+      color="text-[#003060]"
+      size="md"
+      class="!font-montserrat !text-sm !leading-relaxed mb-6"
+    }}
+
+    <form
+      class="space-y-5 max-w-[1146px]"
+      x-data="{
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+        editingField: null,
+        saving: false,
+        error: '',
+        get hasChanges() {
+          return this.currentPassword !== '' && this.newPassword !== '' && this.confirmPassword !== '';
+        },
+        startEditing(field) {
+          this.editingField = field;
+        },
+        checkChanges() {},
+        async save() {
+          if (!this.hasChanges || this.saving) return;
+          if (this.newPassword !== this.confirmPassword) {
+            this.error = 'New password and confirmation do not match';
+            return;
+          }
+          this.error = '';
+          this.saving = true;
+          try {
+            const res = await fetch('/users/password/{{user.id}}', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                currentPassword: this.currentPassword,
+                newPassword: this.newPassword,
+                confirmPassword: this.confirmPassword
+              }),
+              redirect: 'manual'
+            });
+            window.location.href = '/users/profile?tab=profile';
+          } catch (err) {
+            this.error = 'Failed to update password';
+          } finally {
+            this.saving = false;
+          }
+        }
+      }"
+      @submit.prevent="save()"
+    >
+      {{> components/ui/input/editable_field/index
+        label="Current Password"
+        type="password"
+        model="currentPassword"
+        editingKey="currentPassword"
+        placeholder="Input Your Current Password"
+      }}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 max-w-[1146px]">
+        {{> components/ui/input/editable_field/index
+          label="New Password"
+          type="password"
+          model="newPassword"
+          editingKey="newPassword"
+          placeholder="Input Your New Password"
+        }}
+        {{> components/ui/input/editable_field/index
+          label="Confirm New Password"
+          type="password"
+          model="confirmPassword"
+          editingKey="confirmPassword"
+          placeholder="Re-enter Your New Password"
+        }}
+      </div>
+
+      <p x-show="error" x-text="error" class="font-montserrat text-sm font-medium text-red-600"></p>
+
+      {{> components/ui/btn_action
+        type="submit"
+        text="Save Changes"
+        saving="saving"
+        savingLabel="Saving..."
+        xDisabled="!hasChanges || saving"
+        enabledClass="bg-[#003060] cursor-pointer hover:opacity-90"
+        disabledClass="bg-[#D9D9D9] cursor-not-allowed pointer-events-none"
+        class="w-[190px] h-10 rounded-lg opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-sm text-white"
       }}
     </form>
   </div>
@@ -118,7 +221,7 @@
       align="text-left"
       titleTag="h2"
       title="Your Biodata"
-      titleClass="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]"
+      titleClass="font-montserrat font-semibold text-2xl text-[#003060] leading-none mb-2"
     }}
     {{> components/ui/text/description/index
       text="Below is your profile information."
@@ -126,12 +229,12 @@
       align="left"
       color="text-[#003060]"
       size="md"
-      class="!font-montserrat !text-[20px] !leading-none mb-12"
+      class="!font-montserrat !text-sm !leading-relaxed mb-6"
     }}
 
     <!-- Biodata Form -->
     <form 
-      class="space-y-[30px] max-w-[1146px]"
+      class="space-y-5 max-w-[1146px]"
       x-data="{
         biodataId: {{#if user.biodata}}'{{user.biodata.id}}'{{else}}null{{/if}},
         originalValues: {
@@ -221,7 +324,7 @@
       }}
 
       <!-- Grid 2 Columns -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[117px] gap-y-[30px] max-w-[1146px]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 max-w-[1146px]">
 
         <!-- Education Select -->
         {{#> components/ui/input/editable_select/index
@@ -275,7 +378,7 @@
           xDisabled="!hasChanges || saving"
           enabledClass="bg-[#003060] cursor-pointer hover:opacity-90"
           disabledClass="bg-[#D9D9D9] cursor-not-allowed pointer-events-none"
-          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-base text-white"
+          class="w-[190px] h-10 rounded-lg opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-medium text-sm text-white"
         }}
       </div>
     </form>

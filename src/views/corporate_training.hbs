@@ -8,7 +8,7 @@
   Catatan font: Figma memakai "Outfit" untuk kartu (tak tersedia di proyek) -> dipetakan ke Inter.
   Standar: sizeClass, .page-shell, base + lg.
 --}}
-<div class="min-h-screen bg-white font-montserrat">
+<div class="min-h-screen bg-white font-inter">
 
   {{!-- ================= HERO (559:229) ================= --}}
   <section class="w-full bg-[#F8F9FA] py-14 lg:py-20">
@@ -17,10 +17,10 @@
       {{!-- headline block --}}
       <div class="flex flex-col items-start gap-5">
         {{> components/ui/text/eyebrow/index text=(t 'test.corporateTraining.hero.badge') }}
-        <h1 class="{{sizeClass 'display'}} max-w-[900px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+        <h1 class="{{sizeClass 'display'}} max-w-[900px] font-inter font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
           {{{t 'test.corporateTraining.hero.title'}}}
         </h1>
-        <p class="{{sizeClass 'lead'}} max-w-[760px] font-open-sans text-[#4A5568]">
+        <p class="{{sizeClass 'lead'}} max-w-[760px] font-inter text-[#4A5568]">
           {{t 'test.corporateTraining.hero.description'}}
         </p>
       </div>
@@ -78,7 +78,7 @@
   <section id="courses-section" class="w-full bg-white py-14 lg:py-20">
     <div class="page-shell flex flex-col items-center gap-12 text-center">
       <div class="flex max-w-[680px] flex-col items-center gap-3">
-        <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#111827]">{{{t 'test.corporateTraining.program.title'}}}</h2>
+        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#111827]">{{{t 'test.corporateTraining.program.title'}}}</h2>
         <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{t 'test.corporateTraining.program.description'}}</p>
       </div>
       <div class="flex w-full max-w-[722px] flex-col items-center gap-5 rounded-[20px] border border-[#E5E7EB] bg-white p-10 shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-16">
@@ -100,8 +100,8 @@
 
     <div class="page-shell relative flex flex-col items-center gap-12 lg:gap-14">
       <div class="flex max-w-[900px] flex-col items-center gap-3 text-center">
-        <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-white">{{t 'test.corporateTraining.whyChoose.title'}}</h2>
-        <p class="{{sizeClass 'body'}} font-open-sans text-[#93C5FD]">{{t 'test.corporateTraining.whyChoose.description'}}</p>
+        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-white">{{t 'test.corporateTraining.whyChoose.title'}}</h2>
+        <p class="{{sizeClass 'body'}} font-inter text-[#93C5FD]">{{t 'test.corporateTraining.whyChoose.description'}}</p>
       </div>
 
       <div class="grid w-full grid-cols-1 gap-[30px] sm:grid-cols-2 lg:grid-cols-3">
