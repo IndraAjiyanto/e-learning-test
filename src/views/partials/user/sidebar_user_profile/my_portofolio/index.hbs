@@ -4,7 +4,7 @@
   window.userCoursesData = {{{json userWithCourses.userCourses}}};
 </script>
 <div 
-  class="space-y-12 font-montserrat bg-[#FAFAFA] p-5 min-h-screen"
+  class="p-4 sm:px-[34px] sm:py-[42px]"
   x-data="{
     searchQuery: '',
     categoryFilter: 'all',
@@ -31,14 +31,16 @@
     },
     overviewEditorInstance: null,
     portfolios: window.backendPortfolioData || [],
+    get categoryOptions() {
+      return [...new Set((this.portfolios || []).map(p => p.category).filter(Boolean))].sort();
+    },
+    get classTypeOptions() {
+      return [...new Set((this.portfolios || []).map(p => p.classType).filter(Boolean))].sort();
+    },
     filteredPortfolios() {
       if (!this.portfolios) return [];
       return this.portfolios.filter(item => {
-        const matchCategory = this.categoryFilter === 'all' || 
-                              this.categoryFilter === item.category ||
-                              (this.categoryFilter === 'Web Development' && (item.category === 'Web Dev' || item.category === 'Fullstack Web Developer')) ||
-                              (this.categoryFilter === 'UI/UX Design' && (item.category === 'UI/UX' || item.category === 'UI/UX Design')) ||
-                              (this.categoryFilter === 'Python' && (item.category === 'Python' || item.category === 'Data Analyst'));
+        const matchCategory = this.categoryFilter === 'all' || this.categoryFilter === item.category;
         const matchClassType = this.classTypeFilter === 'all' || this.classTypeFilter === item.classType;
         const matchSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
         return matchCategory && matchClassType && matchSearch;
@@ -273,35 +275,32 @@
   }"
 >
   <!-- LIST PORTOFOLIO VIEW -->
-  <div x-show="!showDetail" class="space-y-12">
-    <!-- HEADER SECTION -->
-    <div class="text-center w-full space-y-5">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none mb-2">
-        My Portofolio
-      </h1>
-      <p class="font-montserrat font-normal text-sm sm:text-base text-[#003060] leading-relaxed max-w-4xl mx-auto">
-        Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
-      </p>
+  <div x-show="!showDetail" class="flex flex-col gap-7">
+    <div class="flex flex-col gap-1">
+      {{> components/ui/super_admin/page_header/index titleTag='h2' title='My Portfolio' }}
+      {{> components/ui/super_admin/description/index
+        text='Your project collection. Each portfolio shows the technical skills and solutions you built during the program.'
+      }}
     </div>
 
-    <!-- SEARCH BAR -->
-    <div class="max-w-[839px] mx-auto w-full">
-      <div class="w-full h-11 bg-[#E0F1F9] rounded-md flex items-center gap-3 px-4 border border-slate-200/80 hover:shadow-sm transition-shadow">
-        <i class="fa-solid fa-magnifying-glass text-[#003060] text-sm flex-shrink-0"></i>
-        <input
-          type="text"
-          x-model="searchQuery"
-          placeholder="Search portfolio"
-          class="w-full bg-transparent font-montserrat font-medium text-sm text-black placeholder:text-[#676767] focus:outline-none"
-        >
-      </div>
+    <div class="relative w-full">
+      <span class="pointer-events-none absolute left-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-[#737373]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </span>
+      <input
+        type="search"
+        x-model="searchQuery"
+        aria-label="Search portfolio"
+        placeholder="Search portfolio by title or description..."
+        class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-10 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20"
+      >
     </div>
 
     <!-- TWO-COLUMN LAYOUT: left filter sidebar + right results, matches Figma reference -->
     <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start">
 
       <!-- LEFT: Filter Sidebar -->
-      <aside class="bg-white rounded-xl border border-[#E5E7EB] p-5 space-y-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] mb-6 lg:mb-0">
+      <aside class="mb-6 space-y-5 rounded-xl border border-[#d9d9d9] bg-white p-5 lg:mb-0">
         <div class="flex items-center justify-between">
           <h3 class="font-montserrat font-semibold text-sm text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Active Filters</h3>
           <button type="button" @click="resetFilters()" class="font-montserrat font-medium text-xs text-[#0369A1] hover:underline cursor-pointer flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset</button>
@@ -316,10 +315,10 @@
         <!-- Category -->
         <div class="space-y-2">
           <label class="font-montserrat font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> Category</label>
-          <input type="text" x-model="categorySearch" placeholder="Search category..." class="w-full h-9 rounded-lg border border-[#D9D9D9] px-3 font-montserrat text-xs text-black placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060]">
-          <select x-model="categoryFilter" class="w-full h-9 rounded-lg border border-[#D9D9D9] px-3 font-montserrat text-xs text-black bg-white focus:outline-none focus:border-[#003060] cursor-pointer">
+          <input type="text" x-model="categorySearch" placeholder="Search category..." class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
+          <select x-model="categoryFilter" class="h-11 w-full cursor-pointer rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
             <option value="all">All Categories</option>
-            <template x-for="c in ['Short Class', 'Bootcamp'].filter(c => c.toLowerCase().includes(categorySearch.toLowerCase()))" :key="c">
+            <template x-for="c in categoryOptions.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase()))" :key="c">
               <option :value="c" x-text="c"></option>
             </template>
           </select>
@@ -328,10 +327,10 @@
         <!-- Class Type -->
         <div class="space-y-2">
           <label class="font-montserrat font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Class Type</label>
-          <input type="text" x-model="classTypeSearch" placeholder="Search class type..." class="w-full h-9 rounded-lg border border-[#D9D9D9] px-3 font-montserrat text-xs text-black placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060]">
-          <select x-model="classTypeFilter" class="w-full h-9 rounded-lg border border-[#D9D9D9] px-3 font-montserrat text-xs text-black bg-white focus:outline-none focus:border-[#003060] cursor-pointer">
+          <input type="text" x-model="classTypeSearch" placeholder="Search class type..." class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
+          <select x-model="classTypeFilter" class="h-11 w-full cursor-pointer rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
             <option value="all">All</option>
-            <template x-for="c in ['Python', 'Web Development', 'UI/UX Design'].filter(c => c.toLowerCase().includes(classTypeSearch.toLowerCase()))" :key="c">
+            <template x-for="c in classTypeOptions.filter(c => c.toLowerCase().includes(classTypeSearch.toLowerCase()))" :key="c">
               <option :value="c" x-text="c"></option>
             </template>
           </select>
@@ -346,7 +345,7 @@
       <!-- RIGHT: Results -->
       <div class="min-w-0">
 
-    <!-- HAS DATA ACTION: Create Portofolio Button -->
+    <!-- HAS DATA ACTION: Create Portfolio Button -->
     <div x-show="filteredPortfolios().length > 0" class="w-full mb-6">
       <button
         type="button"
@@ -354,7 +353,7 @@
         class="w-[190px] h-11 rounded-lg gap-2 border border-[#003060] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm leading-none flex items-center justify-center cursor-pointer shadow-md transition-all"
       >
         <i class="fa-solid fa-plus text-base"></i>
-        <span>Create Portofolio</span>
+        <span>Create Portfolio</span>
       </button>
     </div>
 
@@ -481,8 +480,8 @@
                 <span x-text="item.author.charAt(0)">T</span>
               </div>
               <div class="flex flex-col min-w-0">
-                <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] text-black leading-none truncate mb-0.5" x-text="item.author">Trisna</span>
-                <span class="font-sans font-normal text-xs 2xl:text-[12px] text-[#666666] leading-[15px] truncate" x-text="item.email">trisna@gmail.com</span>
+                <span class="font-montserrat font-semibold text-sm text-black leading-none truncate mb-0.5" x-text="item.author">Trisna</span>
+                <span class="font-sans font-normal text-xs text-[#666666] leading-[15px] truncate" x-text="item.email">trisna@gmail.com</span>
               </div>
             </div>
           </div>
@@ -539,10 +538,10 @@
           
           <!-- LEFT COLUMN -->
           <div class="space-y-6">
-            <!-- Portofolio Title -->
+            <!-- Portfolio Title -->
             <div class="space-y-3">
               <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Portofolio Title
+                Portfolio Title
               </label>
               <input 
                 type="text" 
