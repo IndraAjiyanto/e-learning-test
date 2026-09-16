@@ -264,7 +264,7 @@ Use the restored dump (`e_learning_migrasi_test` on port 5499 locally). `indra@g
 |---|---|---|
 | WP0 foundations | `f88258af` | Shared app bar partial, `scripts/check-user-area.sh` gate, `npm run seed:student`, verified seed accounts, CONTRIBUTING section |
 | WP1 retire + fix 500s | `ed7fd47f` | Certificate serves the PDF and its template path bug is fixed; three dead routes and the orphaned profile partial tree removed; table 2.2 corrected |
-| Component PR | `a238f22d` | Additive `iconLeft` slot on the super admin text and select fields |
+| Component PR | `c0ffb498` | Additive `iconLeft` slot on the super admin text and select fields |
 | WP10 Profile | `bdd2feb8` | Rebuilt to the design frame; change-password card rebuilt on the same components |
 | WP2 Payment History | `2cc39186` | One unified list, new `GET /payment/api/history`, three sub-tab trees deleted |
 | WP4 Logbook | `f4495aa8` | Token table, detail modal, Excel export button actually works now |
