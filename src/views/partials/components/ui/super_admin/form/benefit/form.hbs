@@ -3,8 +3,12 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/benefit/form.hbs
   Level: L0 Skrip pendamping (scoped super_admin)
 
-  Factory Alpine `benefitForm()` untuk super_admin/benefit/{create,edit}.hbs —
-  keduanya memakai field, validasi, dan aturan submit yang sama.
+  Factory Alpine `benefitForm()` untuk super_admin/benefit/{create,edit}.hbs dan
+  super_admin/benefit_category/create.hbs — memakai field, validasi, dan aturan
+  submit yang sama.
+
+  Opsi `withOrder` (default true): false untuk benefit category, yang tidak punya
+  kolom `no`, agar Display Order tidak ikut divalidasi.
 
   Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
   form/select_field); loading (form/button); titleLang & descriptionLang
@@ -67,9 +71,10 @@
       return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
     };
 
-    window.benefitForm = function benefitForm({ icon, title, description, no, numbers } = {}) {
+    window.benefitForm = function benefitForm({ icon, title, description, no, numbers, withOrder = true } = {}) {
       // Kolom jsonb nullable: data lama bisa belum punya salah satu bahasa.
       const initial = (src) => byLang((l) => (src && src[l]) || '');
+      const paths = withOrder ? PATHS : PATHS.filter((p) => p !== 'no');
 
       return {
         loading: false,
@@ -104,17 +109,25 @@
         },
 
         validateAll() {
-          PATHS.forEach((path) => this.touch(path));
+          paths.forEach((path) => this.touch(path));
+        },
+
+        // Gating tombol simpan: form dianggap siap bila SEMUA path lolos errorFor,
+        // terlepas dari sudah disentuh atau belum. Sengaja tidak memakai
+        // hasFormErrors(), yang hanya melihat error yang sudah diungkap `touched`
+        // sehingga form kosong yang belum disentuh akan terbaca "tanpa error".
+        canSubmit() {
+          return PATHS.every((path) => errorFor(path, read(this.formData, path)) === '');
         },
 
         hasFormErrors() {
-          return PATHS.some((path) => read(this.formErrors, path) !== '');
+          return paths.some((path) => read(this.formErrors, path) !== '');
         },
 
         // Id harus sama dengan yang dibentuk form/benefit/fields dan
         // form/select_field (`icon`, `title-id`, `no-trigger`, ...).
         revealFirstInvalid() {
-          const path = PATHS.find((p) => read(this.formErrors, p));
+          const path = paths.find((p) => read(this.formErrors, p));
           if (!path) return;
 
           const [field, lang] = path.split('.');

@@ -215,7 +215,11 @@ export class UsersController {
     try {
       createUserDto.profile = req.body.uploadedImageUrls?.[0];
       await this.usersService.create(createUserDto);
-      req.flash('success', 'User created successfully');
+      flashToast(
+        req,
+        'User Created',
+        'The new user account has been added successfully.',
+      );
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create user');
@@ -328,7 +332,11 @@ export class UsersController {
         // PATCH /users/super_admin/:userId — bukan dari update profil sendiri.
         delete updateUserDto.isVerified;
         await this.usersService.update(id, updateUserDto);
-        req.flash('success', 'User successfully updated');
+        flashToast(
+          req,
+          'Account Updated',
+          'The changes to your account have been saved.',
+        );
         res.redirect('/users/profile');
       } else {
         req.flash('error', 'Failed to update user');
@@ -377,7 +385,11 @@ export class UsersController {
         updateUserDto.isVerified = `${updateUserDto.isVerified}` === 'true';
       }
       await this.usersService.update(userId, updateUserDto);
-      req.flash('success', 'User successfully updated');
+      flashToast(
+        req,
+        'User Updated',
+        'The changes to this user account have been saved.',
+      );
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'User failed to update');
@@ -396,7 +408,11 @@ export class UsersController {
     try {
       if (req.user!.id == id) {
         await this.usersService.updatePassword(id, updatePasswordDto);
-        req.flash('success', 'Password successfully updated');
+        flashToast(
+          req,
+          'Password Updated',
+          'Your password has been changed successfully.',
+        );
         res.redirect('/users/profile');
       } else {
         req.flash('error', 'Unauthorized access');
@@ -441,7 +457,11 @@ export class UsersController {
 
       if (req.user!.id === userIdNum) {
         await this.usersService.updateProfile(userIdNum, updateProfileDto);
-        req.flash('success', 'update profile success');
+        flashToast(
+          req,
+          'Profile Updated',
+          'The changes to your profile have been saved.',
+        );
         res.redirect('/users/profile');
       } else {
         req.flash('error', 'update profile failed');

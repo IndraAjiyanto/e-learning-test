@@ -1,315 +1,45 @@
-<div class='py-10'>
-  <div
-    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data="{
-        previewUrl: null,
-        errorMessage: '',
-        isValid: true,
-        fileName: '',
-        fileSize: 0,
-        hasFile: false,
-        cropper: null,
-        showCropModal: false,
-        tempImageUrl: null,
-        croppedBlob: null,
+{{!--
+  Halaman: Create Team Member — Super Admin
+  Lokasi: src/views/super_admin/team/create.hbs
+  Level: L4 Page
 
-        formData: {
-          name: '',
-          position: {id: '', en: '', ja: ''},
-          linkedin: '',
-          instagram: '',
-          description: { id: '', en: '', ja: '' }
-        },
-        formErrors: {
-          name: '',
-          position: {id: '', en: '', ja: ''},
-          linkedin: '',
-          instagram: '',
-          description: { id: '', en: '', ja: '' }
-        },
-        formValid: {
-          name: false,
-          position: {id: false, en: false, ja: false},
-          linkedin: false,
-          instagram: true,
-          description: { id: true, en: true, ja: true }
-        },
+  Route: GET /team/formCreate -> POST /team (multipart: profile + field teks,
+  position[id|en|ja] dan description[id|en|ja]).
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-        validateImage(file) {
-          if (!file) {
-            this.hasFile = false;
-            return;
-          }
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Team Member'
+      }}
 
-          this.fileName = file.name;
-          this.fileSize = file.size;
-          this.errorMessage = '';
-          this.isValid = true;
-
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-            this.isValid = false;
-            return;
-          }
-
-          const maxSize = 5 * 1024 * 1024;
-          if (file.size > maxSize) {
-            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-            this.isValid = false;
-            return;
-          }
-
-          // Open crop modal
-          this.tempImageUrl = URL.createObjectURL(file);
-          this.showCropModal = true;
-          
-          this.$nextTick(() => {
-            this.initCropper();
-          });
-        },
-
-        initCropper() {
-          const image = document.getElementById('cropImage');
-          if (this.cropper) {
-            this.cropper.destroy();
-          }
-          
-          this.cropper = new Cropper(image, {
-            aspectRatio: 1,
-            viewMode: 1,
-            dragMode: 'move',
-            autoCropArea: 0.8,
-            restore: false,
-            guides: false,
-            center: true,
-            highlight: false,
-            cropBoxMovable: true,
-            cropBoxResizable: true,
-            toggleDragModeOnDblclick: false,
-            ready() {
-              const cropper = this.cropper;
-              const containerData = cropper.getContainerData();
-              const cropBoxData = cropper.getCropBoxData();
-              
-              // Make crop box circular
-              const cropBox = cropper.cropBox;
-              cropBox.querySelector('.cropper-view-box').style.borderRadius = '50%';
-              cropBox.querySelector('.cropper-face').style.borderRadius = '50%';
-            }
-          });
-        },
-
-        async applyCrop() {
-          if (!this.cropper) return;
-
-          const canvas = this.cropper.getCropBoxData();
-          this.cropper.getCroppedCanvas({
-            width: 400,
-            height: 400,
-            imageSmoothingEnabled: true,
-            imageSmoothingQuality: 'high',
-          }).toBlob((blob) => {
-            this.croppedBlob = blob;
-            this.previewUrl = URL.createObjectURL(blob);
-            this.hasFile = true;
-            this.closeCropModal();
-          }, 'image/jpeg', 0.9);
-        },
-
-        closeCropModal() {
-          this.showCropModal = false;
-          if (this.cropper) {
-            this.cropper.destroy();
-            this.cropper = null;
-          }
-          if (this.tempImageUrl) {
-            URL.revokeObjectURL(this.tempImageUrl);
-            this.tempImageUrl = null;
-          }
-          this.$refs.fileInput.value = null;
-        },
-
-        validateField(field, value, lang = null) {
-          if (lang) {
-            // Multi-language field
-            this.formData[field][lang] = value;
-          } else {
-            // Single language field
-            this.formData[field] = value;
-          }
-          
-          switch(field) {
-            case 'name':
-              if (!value.trim()) {
-                this.formErrors.name = 'Name is required';
-                this.formValid.name = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.name = 'Name must be at least 2 characters';
-                this.formValid.name = false;
-              } else {
-                this.formErrors.name = '';
-                this.formValid.name = true;
-              }
-              break;
-              
-            case 'position':
-              if (!value.trim()) {
-                this.formErrors.position[lang] = 'Position is required';
-                this.formValid.position[lang] = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.position[lang] = 'Position must be at least 2 characters';
-                this.formValid.position[lang] = false;
-              } else {
-                this.formErrors.position[lang] = '';
-                this.formValid.position[lang] = true;
-              }
-              break;
-              
-            case 'linkedin':
-              if (!value.trim()) {
-                this.formErrors.linkedin = 'LinkedIn URL is required';
-                this.formValid.linkedin = false;
-              } else {
-                const urlPattern = /^https?:\/\/(www\.)?linkedin\.com\/.+/;
-                if (!urlPattern.test(value)) {
-                  this.formErrors.linkedin = 'Please enter a valid LinkedIn URL';
-                  this.formValid.linkedin = false;
-                } else {
-                  this.formErrors.linkedin = '';
-                  this.formValid.linkedin = true;
-                }
-              }
-              break;
-              
-            case 'instagram':
-              this.formErrors.instagram = '';
-              this.formValid.instagram = true;
-              break;
-              
-            case 'description':
-              this.formErrors.description[lang] = '';
-              this.formValid.description[lang] = true;
-              break;
-          }
-        },
-
-        clearFile() {
-          this.previewUrl = null;
-          this.errorMessage = '';
-          this.isValid = true;
-          this.fileName = '';
-          this.fileSize = 0;
-          this.hasFile = false;
-          this.croppedBlob = null;
-          this.$refs.fileInput.value = null;
-        },
-
-        canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
-          const posisiValid = Object.values(this.formValid.position).every(v => v);
-          const formValid = this.formValid.name && posisiValid && this.formValid.linkedin;
-          return imageValid && formValid;
-        },
-
-        hasFormErrors() {
-          const posisiErrors = Object.values(this.formErrors.position).some(e => e !== '');
-          const otherErrors = this.formErrors.name !== '' || posisiErrors || 
-                             this.formErrors.linkedin !== '';
-          return otherErrors;
-        },
-
-        async handleSubmit(e) {
-          if (!this.canSubmit()) {
-            e.preventDefault();
-            alert('Please fix all validation errors before submitting.');
-            return;
-          }
-
-          // If there's a cropped image, convert blob to file and update input
-          if (this.croppedBlob) {
-            e.preventDefault();
-            
-            // Create a new File from the cropped blob
-            const file = new File([this.croppedBlob], this.fileName, { 
-              type: this.croppedBlob.type 
-            });
-            
-            // Create a new DataTransfer to set the file input
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            this.$refs.fileInput.files = dataTransfer.files;
-            
-            // Now submit the form normally
-            e.target.submit();
-          }
-          // If no cropped image, form will submit normally (we don't prevent default)
-        }
-      }"
-  >
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Team</h2>
+      {{> components/ui/super_admin/description/index
+        text='Add a new team member shown on the About page of Kesatria Academy.'
+      }}
+    </div>
 
     <form
       action='/team'
       method='post'
-      class='space-y-6'
-      x-data='{loading: false}'
       enctype='multipart/form-data'
-      @submit='handleSubmit; if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
+      novalidate
+      x-data='teamForm()'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-5'
     >
+      <div class='flex flex-col gap-5'>
+        {{> components/ui/super_admin/form/team/fields }}
 
-    {{> super_admin/team/create/profile_input}}
-
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-
-    {{> super_admin/team/create/name_input}}
-    {{> super_admin/team/create/position_input}}
-    {{> super_admin/team/create/linkedin_input}}
-    {{> super_admin/team/create/instagram_input}}
-
+        {{> components/ui/super_admin/form/button
+          row=true
+          cancelHref='/team'
+          submitLabel='Create Team Member'
+          disabled='!canSubmit() || loading'
+        }}
       </div>
-
-    {{> super_admin/team/create/description_input}}
-
-      <!-- Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a
-          href='/team'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
-
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
-        </div>
-      </template>
     </form>
-
-{{> super_admin/team/create/crop_modal}}
-
   </div>
 </div>
+
+{{> components/ui/super_admin/form/team/form }}

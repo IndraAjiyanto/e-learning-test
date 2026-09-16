@@ -1,263 +1,104 @@
-<div class="py-10">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg"
-    x-data="{
-        previewUrl: null,
-        errorMessage: '',
-        isValid: true,
-        fileName: '',
-        fileSize: 0,
-        imageWidth: 0,
-        imageHeight: 0,
-        hasFile: false,
-        oldPhoto: `{{#if teamLead.profile}}{{teamLead.profile}}{{else}}/images/default-avatar.png{{/if}}`,
+{{!--
+  Halaman: Edit Team Lead — Super Admin
+  Lokasi: src/views/super_admin/team_lead/edit.hbs
+  Level: L4 Page
 
-        // Form validation states
-        formData: {
-          name: `{{teamLead.name}}`,
-          position: {
-          id: `{{teamLead.position.id}}`,
-          en: `{{teamLead.position.en}}`,
-          ja: `{{teamLead.position.ja}}`
-          },
-          linkedin: `{{teamLead.linkedin}}`,
-          instagram: `{{teamLead.instagram}}`,
-          description: {
-            id: `{{teamLead.description.id}}`,
-            en: `{{teamLead.description.en}}`,
-            ja: `{{teamLead.description.ja}}`
-          }
-        },
-        formErrors: {
-          name: '',
-          position: { id: '', en: '', ja: '' },
-          linkedin: '',
-          instagram: '',
-          description: { id: '', en: '', ja: '' }
-        },
-        formValid: {
-          name: true,
-          position: { id: true, en: true, ja: true },
-          linkedin: true,
-          instagram: true,
-          description: { id: true, en: true, ja: true }
-        },
+  Route: GET /team-lead/formEdit/:id -> PATCH /team-lead/:id
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-        validateImage(file) {
-          if (!file) {
-            this.hasFile = false;
-            return;
-          }
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Edit Team Lead'
+      }}
 
-          this.hasFile = true;
-          this.fileName = file.name;
-          this.fileSize = file.size;
-          this.errorMessage = '';
-          this.isValid = true;
+      {{> components/ui/super_admin/description/index
+        text='Update the details, credentials, and executive bio of this leadership profile.'
+      }}
+    </div>
 
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
-
-          const maxSize = 5 * 1024 * 1024; // 5MB
-          if (file.size > maxSize) {
-            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
-
-          // Create preview without dimension validation (backend doesn't enforce dimensions)
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-
-          img.onload = () => {
-            this.imageWidth = img.width;
-            this.imageHeight = img.height;
-            this.previewUrl = objectUrl;
-            this.isValid = true;
-            this.errorMessage = '';
-          };
-
-          img.onerror = () => {
-            this.errorMessage = 'Failed to load image';
-            this.isValid = false;
-            this.previewUrl = null;
-            URL.revokeObjectURL(objectUrl);
-          };
-
-          img.src = objectUrl;
-        },
-
-        validateField(field, value, lang = null) {
-          if (lang) {
-            this.formData[field][lang] = value;
-          } else {
-            this.formData[field] = value;
-          }
-          
-          switch(field) {
-            case 'name':
-              if (!value.trim()) {
-                this.formErrors.name = 'Name is required';
-                this.formValid.name = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.name = 'Name must be at least 2 characters';
-                this.formValid.name = false;
-              } else {
-                this.formErrors.name = '';
-                this.formValid.name = true;
-              }
-              break;
-              
-            case 'position':
-              if (!value.trim()) {
-                this.formErrors.position[lang] = 'Position is required';
-                this.formValid.position[lang] = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.position[lang] = 'Position must be at least 2 characters';
-                this.formValid.position[lang] = false;
-              } else {
-                this.formErrors.position[lang] = '';
-                this.formValid.position[lang] = true;
-              }
-              break;
-              
-            case 'linkedin':
-              if (!value.trim()) {
-                this.formErrors.linkedin = 'LinkedIn URL is required';
-                this.formValid.linkedin = false;
-              } else {
-                const urlPattern = /^https?:\/\/(www\.)?linkedin\.com\/.+/;
-                if (!urlPattern.test(value)) {
-                  this.formErrors.linkedin = 'Please enter a valid LinkedIn URL';
-                  this.formValid.linkedin = false;
-                } else {
-                  this.formErrors.linkedin = '';
-                  this.formValid.linkedin = true;
-                }
-              }
-              break;
-              
-            case 'instagram':
-              if (value.trim()) {
-                const urlPattern = /^https?:\/\/(www\.)?instagram\.com\/.+/;
-                if (!urlPattern.test(value)) {
-                  this.formErrors.instagram = 'Please enter a valid Instagram URL';
-                  this.formValid.instagram = false;
-                } else {
-                  this.formErrors.instagram = '';
-                  this.formValid.instagram = true;
-                }
-              } else {
-                this.formErrors.instagram = '';
-                this.formValid.instagram = true; // optional field
-              }
-              break;
-              
-            case 'description':
-              if (!value.trim()) {
-                this.formErrors.description[lang] = 'Description is required';
-                this.formValid.description[lang] = false;
-              } else if (value.trim().length < 10) {
-                this.formErrors.description[lang] = 'Description must be at least 10 characters';
-                this.formValid.description[lang] = false;
-              } else {
-                this.formErrors.description[lang] = '';
-                this.formValid.description[lang] = true;
-              }
-              break;
-          }
-        },
-
-        clearFile() {
-          this.previewUrl = null;
-          this.errorMessage = '';
-          this.isValid = true;
-          this.fileName = '';
-          this.fileSize = 0;
-          this.imageWidth = 0;
-          this.imageHeight = 0;
-          this.hasFile = false;
-          this.$refs.fileInput.value = null;
-        },
-
-        canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
-          const positionValid = Object.values(this.formValid.position).every(v => v);
-          const formValid = this.formValid.name && positionValid && 
-                           this.formValid.linkedin && this.formValid.instagram && 
-                           Object.values(this.formValid.description).every(v => v);
-          return imageValid && formValid;
-        },
-
-        hasFormErrors() {
-          const checkObject = (obj) => {
-            if (typeof obj === 'object' && obj !== null) {
-              return Object.values(obj).some(val => typeof val === 'object' ? checkObject(val) : val !== '');
-            }
-            return obj !== '';
-          };
-          return Object.values(this.formErrors).some(error => checkObject(error));
-        }
-      }"
-  >
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Team Lead</h2>
-
-    <form action="/team-lead/{{teamLead.id}}?_method=PATCH" method="POST" enctype="multipart/form-data" class="space-y-6" x-data="{loading: false}"
-      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+    <form
+      action='/team-lead/{{teamLead.id}}?_method=PATCH'
+      method='post'
+      enctype='multipart/form-data'
+      novalidate
+      x-data='teamLeadForm({ teamLead: {{json teamLead}} })'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'
     >
+      <div class='flex flex-col gap-6'>
+        {{> components/ui/super_admin/form/team_lead/fields }}
 
-    {{> super_admin/team_lead/edit/profile_input}}
+        <div class='flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end'>
+          {{> components/ui/super_admin/form/button
+            as='link'
+            variant='secondary'
+            href='/team-lead'
+            label='Cancel'
+            loading=true
+          }}
 
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-
-                      {{> super_admin/team_lead/edit/name_input}}
-    {{> super_admin/team_lead/edit/position_input}}
-    {{> super_admin/team_lead/edit/linkedin_input}}
-    {{> super_admin/team_lead/edit/instagram_input}}
-
-      </div>
-
-    {{> super_admin/team_lead/edit/description_input}}
-
-      <!-- Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show='loading'class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a
-          href='/team-lead'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
-
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
+          {{> components/ui/super_admin/form/button
+            type='submit'
+            variant='primary'
+            label='Save Changes'
+            loading=true
+            disabled='!canSubmit() || loading'
+          }}
         </div>
-      </template>
+      </div>
     </form>
+
+    {{!-- Danger Zone Card --}}
+    <div
+      class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
+    >
+      <div class='flex items-start gap-4 sm:min-h-[72px]'>
+        <span
+          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
+        >
+          {{!-- lucide: alert-circle --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+            <circle cx='12' cy='12' r='10' />
+            <path d='M12 8v4' />
+            <path d='M12 16h.01' />
+          </svg>
+        </span>
+
+        <div class='flex flex-col gap-1'>
+          {{> components/ui/super_admin/description/index
+            text='Delete Team Lead'
+            class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+          }}
+
+          {{> components/ui/super_admin/description/index
+            text='Permanently remove this leadership profile from Kesatria Academy. This action cannot be undone.'
+            class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
+          }}
+        </div>
+      </div>
+
+      <form
+        action='/team-lead/{{teamLead.id}}?_method=DELETE'
+        method='post'
+        class='shrink-0'
+      >
+        {{> components/ui/super_admin/form/button
+          variant='danger'
+          label='Delete Team Lead'
+          onclick='openDeleteModal(this)'
+          class='w-full sm:w-auto'
+        }}
+      </form>
+    </div>
   </div>
 </div>
 
+{{!-- Modal konfirmasi delete --}}
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Team Lead?'
+  description='Are you sure you want to delete this team lead? This action will permanently remove the leadership profile and cannot be undone.'
+}}
 
+{{> components/ui/super_admin/form/team_lead/form }}

@@ -1,0 +1,25 @@
+{{!--
+  Komponen: Form Section Card (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/section_card.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Card bernomor untuk memecah form panjang menjadi beberapa bagian. Isi card
+  dikirim lewat partial block.
+
+  Props:
+  - id     : string (opsional) — id elemen, target scroll dari form/progress
+  - number : string (wajib) — mis. '01'
+  - title  : string (wajib)
+  - class  : string (opsional) — class tambahan untuk layout
+--}}
+<section
+  {{#if id}}id='{{id}}'{{/if}}
+  class='flex scroll-mt-6 flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5{{#if class}} {{class}}{{/if}}'
+>
+  <div class='flex items-center gap-2'>
+    <span class='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#003060] font-montserrat text-base font-semibold leading-6 text-white' aria-hidden='true'>{{number}}</span>
+    <h2 class='font-montserrat text-base font-semibold leading-6 text-[#003060]'>{{title}}</h2>
+  </div>
+
+  {{> @partial-block}}
+</section>

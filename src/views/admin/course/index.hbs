@@ -8,16 +8,16 @@
      x-data='kelasTable()'
      x-init='fetchKelas()'>
 
-  <div class='box-border w-full max-w-[1052px] h-fit flex flex-col gap-[28px] justify-start items-start'>
+  <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-stretch'>
 
     {{!-- Title --}}
     {{> components/ui/admin/text/page-header title='Program List' subtitle='Manage programs, quotas, and students.'}}
 
     {{!-- Content --}}
-    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-start'>
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
 
       {{!-- Toolbar --}}
-      <div class='box-border w-full h-[44px] shrink-0 flex flex-row gap-[12px] justify-between items-center'>
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
         {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
         {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
       </div>

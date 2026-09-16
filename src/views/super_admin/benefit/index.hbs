@@ -79,7 +79,7 @@
                   {{#> components/ui/super_admin/table/cell}}
                     <i
                       class='flex h-5 w-5 items-center justify-center text-base text-[#525252]'
-                      :class='benefitIcon(row.icon)'
+                      :class='faIconClass(row.icon)'
                       aria-hidden='true'
                     ></i>
                   {{/components/ui/super_admin/table/cell}}
@@ -128,14 +128,4 @@
 
 {{> components/ui/super_admin/table/client_table }}
 
-<script>
-  // Mirrors the computeIcon helper, which runs on the server and can't be called inside x-for.
-  function benefitIcon(value) {
-    const icon = String(value || '').trim();
-    if (!icon) return 'fa-solid fa-circle-question';
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(icon)
-      || icon.split(/\s+/).some((part) => /^fa-/i.test(part));
-    if (hasFaPrefix) return /^fa-\w+/i.test(icon) && !/\s/.test(icon) ? 'fa-solid ' + icon : icon;
-    return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
-  }
-</script>
+{{> components/ui/super_admin/table/fa_icon }}

@@ -16,6 +16,7 @@ import { UpdateVisionsDto as UpdateVisionsDto } from './dto/update-vision.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('vision')
@@ -32,7 +33,11 @@ export class VisionsController {
     try {
       await this.visionService.create(createVisionDto);
 
-      req.flash('success', 'visions successfully created');
+      flashToast(
+        req,
+        'Visi Created',
+        'The visi statement has been added successfully.',
+      );
       res.redirect('/vision');
     } catch (error: any) {
       req.flash('error', error.message || 'vision failed to create');
@@ -77,7 +82,11 @@ export class VisionsController {
   ) {
     try {
       await this.visionService.update(visionId, updateVisionDto);
-      req.flash('success', 'visions successfully updated');
+      flashToast(
+        req,
+        'Visi Updated',
+        'The changes to this visi statement have been saved.',
+      );
       res.redirect('/vision');
     } catch (error: any) {
       req.flash('error', error.message || 'visions failed to update');
@@ -94,7 +103,11 @@ export class VisionsController {
   ) {
     try {
       await this.visionService.remove(visionId);
-      req.flash('success', 'visions successfully remove');
+      flashToast(
+        req,
+        'Visi Deleted',
+        'The visi statement has been removed successfully.',
+      );
       res.redirect('/vision');
     } catch (error: any) {
       req.flash('error', error.message || 'visions failed to remove');

@@ -1,0 +1,326 @@
+{{!--
+  Komponen: Program Log Book User Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/log_book_user_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Log Book User" di halaman detail program: search + tabel catatan
+  peserta + pagination + unduh Excel + modal detail. Datanya diambil sendiri dari
+  GET /program/logbookUser/:courseId.
+
+  Read-only: catatan diisi peserta, tidak diubah dari sini. Kolom Actions hanya
+  membuka modal detail (modal/detail kanal 'logbook-user'), bukan mengedit.
+
+  Tabelnya paling lebar di halaman ini (17 kolom) dan discroll horizontal oleh
+  table/card.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+  - components/ui/super_admin/table/formatters    (formatDate)
+  - components/ui/super_admin/table/export_excel   (exportRowsToExcel)
+
+  modal/detail dipanggil oleh komponen ini sendiri (kanal 'logbook-user'), jadi
+  halaman tidak perlu menambahkannya.
+
+  Props:
+  - courseId : string (wajib) — dipakai untuk endpoint
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  x-data='logBookUserTable({{json courseId}})'
+  x-init='load()'
+>
+  {{#> components/ui/super_admin/table/toolbar
+    placeholder='Search log book..'
+    searchLabel='Search user log book'
+    hideCreate=true
+    fullWidth=true
+  }}
+    <div class='flex items-center gap-2'>
+      <template x-if='exportFailed'>
+        <span class='font-inter text-sm leading-5 text-[#dc2626]'>Export failed</span>
+      </template>
+
+      <button
+        type='button'
+        @click='exportToExcel()'
+        :disabled='rows.length === 0'
+        class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#404040]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60'
+      >
+        {{!-- lucide: download --}}
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+          <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+          <polyline points='7 10 12 15 17 10' />
+          <line x1='12' x2='12' y1='15' y2='3' />
+        </svg>
+        Export Excel
+      </button>
+    </div>
+  {{/components/ui/super_admin/table/toolbar}}
+
+  {{#> components/ui/super_admin/table/card tableClass='min-w-[2506px]'}}
+    <colgroup>
+      <col class='w-[66px]' />
+      <col class='w-[150px]' />
+      <col class='w-[210px]' />
+      <col class='w-[150px]' />
+      <col class='w-[110px]' />
+      <col class='w-[100px]' />
+      <col class='w-[200px]' />
+      <col class='w-[140px]' />
+      <col class='w-[140px]' />
+      <col class='w-[150px]' />
+      <col class='w-[200px]' />
+      <col class='w-[220px]' />
+      <col class='w-[120px]' />
+      <col class='w-[120px]' />
+      <col class='w-[200px]' />
+      <col class='w-[220px]' />
+      <col class='w-[110px]' />
+    </colgroup>
+    <thead>
+      <tr>
+        {{> components/ui/super_admin/table/header_cell label='No' }}
+        {{> components/ui/super_admin/table/header_cell label='User' }}
+        {{> components/ui/super_admin/table/header_cell label='Email' }}
+        {{> components/ui/super_admin/table/header_cell label='Created At' }}
+        {{> components/ui/super_admin/table/header_cell label='Meeting No' }}
+        {{> components/ui/super_admin/table/header_cell label='Week No' }}
+        {{> components/ui/super_admin/table/header_cell label='Program Name' }}
+        {{> components/ui/super_admin/table/header_cell label='Program Type' }}
+        {{> components/ui/super_admin/table/header_cell label='Category' }}
+        {{> components/ui/super_admin/table/header_cell label='Mentor' }}
+        {{> components/ui/super_admin/table/header_cell label='Activity' }}
+        {{> components/ui/super_admin/table/header_cell label='Activity Details' }}
+        {{> components/ui/super_admin/table/header_cell label='Documentation' }}
+        {{> components/ui/super_admin/table/header_cell label='Status' }}
+        {{> components/ui/super_admin/table/header_cell label='Issues' }}
+        {{> components/ui/super_admin/table/header_cell label='Additional Documentation' }}
+        {{> components/ui/super_admin/table/header_cell label='Actions' }}
+      </tr>
+    </thead>
+    <tbody>
+      <template x-for='(row, index) in rows' :key='row.id'>
+        <tr class='transition-colors hover:bg-[#fafafa]'>
+
+          {{> components/ui/super_admin/table/cell
+            text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+          }}
+
+          {{> components/ui/super_admin/table/cell text='row.user?.username || "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.user?.email || "—"' }}
+          {{> components/ui/super_admin/table/cell text='formatDate(row.createdAt)' }}
+          {{> components/ui/super_admin/table/cell text='row.session?.sessionOrder ?? "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.session?.weeks?.weekNumber ?? "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.session?.weeks?.course?.name || "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.session?.weeks?.course?.courseType?.nameClassesType || "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.session?.weeks?.course?.category?.name || "—"' }}
+          {{> components/ui/super_admin/table/cell text='mentorName(row) || "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.activity || "—"' }}
+          {{> components/ui/super_admin/table/cell text='row.activityDetails || "—"' }}
+
+          {{#> components/ui/super_admin/table/cell variant='media'}}
+            <template x-if='row.documentation'>
+              <button
+                type='button'
+                @click="openDetailModal('logbook-user', row)"
+                class='block overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+                aria-label='View documentation'
+              >
+                <img
+                  :src='row.documentation'
+                  alt=''
+                  class='h-12 w-12 object-cover transition-transform hover:scale-110'
+                />
+              </button>
+            </template>
+            <template x-if='!row.documentation'>
+              <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>&mdash;</span>
+            </template>
+          {{/components/ui/super_admin/table/cell}}
+
+          {{#> components/ui/super_admin/table/cell}}
+            <template x-if='row.process'>
+              <span
+                class='inline-flex items-center rounded-2xl bg-[#e0f1f9] px-2 py-0.5 font-inter text-xs font-medium leading-[18px] text-[#055c90]'
+                x-text='row.process'
+              ></span>
+            </template>
+            <template x-if='!row.process'>
+              <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>&mdash;</span>
+            </template>
+          {{/components/ui/super_admin/table/cell}}
+
+          {{> components/ui/super_admin/table/cell text='row.obstacles || "—"' }}
+
+          {{#> components/ui/super_admin/table/cell}}
+            {{> components/ui/super_admin/table/link href='row.otherDocumentation' }}
+          {{/components/ui/super_admin/table/cell}}
+
+          {{#> components/ui/super_admin/table/cell variant='action'}}
+            <button
+              type='button'
+              @click="openDetailModal('logbook-user', row)"
+              title='View log book'
+              aria-label='View log book'
+              class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+            >
+              {{!-- lucide: eye --}}
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
+                <circle cx='12' cy='12' r='3' />
+              </svg>
+            </button>
+          {{/components/ui/super_admin/table/cell}}
+        </tr>
+      </template>
+
+      {{#> components/ui/super_admin/table/message_row show='loading' colspan='17'}}
+        Loading log books…
+      {{/components/ui/super_admin/table/message_row}}
+
+      {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='17'}}
+        No log books found.
+      {{/components/ui/super_admin/table/message_row}}
+    </tbody>
+  {{/components/ui/super_admin/table/card}}
+</div>
+
+<script>
+  function logBookUserTable(courseId) {
+    // Properti ditempelkan ke objek hasil clientTable(), TIDAK disebar dengan
+    // spread: `rows` dan `totalPages` di sana adalah getter, dan spread hanya
+    // menyalin nilainya sekali sehingga tabel berhenti bereaksi.
+    const table = clientTable({
+      url: '/program/logbookUser/' + courseId,
+      searchKeys: [
+        'user.username',
+        'user.email',
+        'session.weeks.course.name',
+        'activity',
+        'activityDetails',
+        'process',
+        'obstacles',
+      ],
+    });
+
+    return Object.assign(table, {
+      exportFailed: false,
+
+      mentorName(row) {
+        return row.session?.weeks?.course?.mentor?.[0]?.name || '';
+      },
+
+      // Mengekspor seluruh hasil pencarian yang sedang aktif, bukan hanya halaman
+      // yang terlihat — `filtered`, bukan `rows`.
+      exportToExcel() {
+        const ok = exportRowsToExcel({
+          rows: this.filtered,
+          sheetName: 'Log Book User',
+          filePrefix: 'Log_Book_User',
+          columns: [
+            { header: 'No', width: 5, value: (row, index) => index + 1 },
+            { header: 'User', width: 20, value: (row) => row.user?.username },
+            { header: 'Email', width: 28, value: (row) => row.user?.email },
+            { header: 'Created At', width: 15, value: (row) => formatDate(row.createdAt) },
+            { header: 'Meeting No', width: 10, value: (row) => row.session?.sessionOrder },
+            { header: 'Week No', width: 8, value: (row) => row.session?.weeks?.weekNumber },
+            { header: 'Program Name', width: 25, value: (row) => row.session?.weeks?.course?.name },
+            { header: 'Program Type', width: 15, value: (row) => row.session?.weeks?.course?.courseType?.nameClassesType },
+            { header: 'Category', width: 15, value: (row) => row.session?.weeks?.course?.category?.name },
+            { header: 'Mentor', width: 20, value: (row) => this.mentorName(row) },
+            { header: 'Activity', width: 30, value: (row) => row.activity },
+            { header: 'Activity Details', width: 50, value: (row) => row.activityDetails },
+            { header: 'Documentation', width: 60, value: (row) => row.documentation },
+            { header: 'Status', width: 15, value: (row) => row.process },
+            { header: 'Issues', width: 40, value: (row) => row.obstacles },
+            { header: 'Additional Documentation', width: 60, value: (row) => row.otherDocumentation },
+          ],
+        });
+
+        this.exportFailed = !ok;
+      },
+    });
+  }
+</script>
+
+{{!-- Modal detail dipanggil di sini, bukan di halaman, supaya isi khusus log book
+     tidak bocor ke file page (page hanya merangkai section). --}}
+{{#> components/ui/super_admin/modal/detail/index
+  name='logbook-user'
+  title='Log Book Detail'
+  maxWidth='max-w-[900px]'
+}}
+  <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+    <div class='flex flex-col gap-4'>
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>User Information</span>
+        <p class='font-inter text-sm font-medium leading-5 text-[#171717]' x-text='row.user?.username || "—"'></p>
+        <p class='font-inter text-sm leading-5 text-[#525252]' x-text='row.user?.email || "—"'></p>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Program Details</span>
+        <p class='font-inter text-sm leading-5 text-[#171717]'>Name: <span x-text='row.session?.weeks?.course?.name || "—"'></span></p>
+        <p class='font-inter text-sm leading-5 text-[#171717]'>Type: <span x-text='row.session?.weeks?.course?.courseType?.nameClassesType || "—"'></span></p>
+        <p class='font-inter text-sm leading-5 text-[#171717]'>Mentor: <span x-text='row.session?.weeks?.course?.mentor?.[0]?.name || "—"'></span></p>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Timeline</span>
+        <p class='font-inter text-sm leading-5 text-[#171717]'>Week <span x-text='row.session?.weeks?.weekNumber ?? "—"'></span>, Meeting <span x-text='row.session?.sessionOrder ?? "—"'></span></p>
+        <p class='font-inter text-sm leading-5 text-[#525252]' x-text='formatDate(row.createdAt)'></p>
+      </div>
+    </div>
+
+    <div class='flex flex-col gap-4'>
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Activity &amp; Details</span>
+        <p class='font-inter text-sm font-semibold leading-5 text-[#171717]' x-text='row.activity || "—"'></p>
+        <div
+          class='whitespace-pre-line rounded-lg bg-[#f5f5f5] p-3 font-inter text-sm leading-5 text-[#404040]'
+          x-text='row.activityDetails || "—"'
+        ></div>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Issues</span>
+        <p class='font-inter text-sm leading-5 text-[#dc2626]' x-text='row.obstacles || "None"'></p>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Status</span>
+        <span
+          class='inline-flex w-fit items-center rounded-2xl bg-[#e0f1f9] px-2 py-0.5 font-inter text-xs font-medium leading-[18px] text-[#055c90]'
+          x-text='row.process || "—"'
+        ></span>
+      </div>
+    </div>
+
+    <div class='flex flex-col gap-4 border-t border-[#e5e5e5] pt-4 md:col-span-2'>
+      <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Documentation</span>
+
+      <div class='grid grid-cols-1 gap-6 sm:grid-cols-2'>
+        <div class='flex flex-col gap-2'>
+          <p class='font-inter text-sm font-medium leading-5 text-[#404040]'>Main Documentation</p>
+          <template x-if='row.documentation'>
+            <a :href='row.documentation' target='_blank' rel='noopener noreferrer' class='block'>
+              <img
+                :src='row.documentation'
+                alt=''
+                class='max-h-80 w-full rounded-xl border border-[#e5e5e5] bg-[#fafafa] object-contain'
+              />
+            </a>
+          </template>
+          <template x-if='!row.documentation'>
+            <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>&mdash;</span>
+          </template>
+        </div>
+
+        <div class='flex flex-col gap-2'>
+          <p class='font-inter text-sm font-medium leading-5 text-[#404040]'>Additional Documentation</p>
+          {{> components/ui/super_admin/table/link href='row.otherDocumentation' }}
+        </div>
+      </div>
+    </div>
+  </div>
+{{/components/ui/super_admin/modal/detail/index}}

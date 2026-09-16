@@ -23,8 +23,18 @@
                   form pemanggil ikut menanganinya.
   - multiline   : boolean (opsional) — render <textarea> alih-alih <input>
   - rows        : number (default 4) — hanya untuk multiline; tinggi sebenarnya
-                  dikunci h-32
+                  diatur `heightClass`, bukan rows
+  - heightClass : string (default 'h-32') — tinggi textarea; dipakai bila desain
+                  memakai kotak lebih tinggi (mis. SVG Code di form Teknologi)
   - type        : 'text' | 'email' | 'password' (default 'text') — diabaikan bila multiline
+                  dikunci h-32
+  - type        : 'text' | 'email' | 'password' | 'number' | 'url' | 'date' | 'time'
+                  (default 'text') — diabaikan bila multiline
+  - icon        : 'link' (kiri) | 'clock' | 'calendar' (kanan; ikon picker native
+                  disembunyikan; klik input membuka picker lewat showPicker. Firefox tidak bisa
+                  menyembunyikan ikon native, jadi di sana SVG ini yang disembunyikan)
+  - numeric     : boolean (opsional) — tampilan angka berformat dari formData, sementara
+                  nilai yang dikirim hanya digit lewat hidden input `name`
   - placeholder : string (opsional)
   - hint        : string (opsional) — hint statis, disembunyikan saat ada error
   - required    : boolean (opsional) — asterisk merah + attribute required
@@ -33,6 +43,7 @@
                   agar user bisa memeriksa password yang sedang diketik; ikon
                   alert-circle hanya mengisi slot kanan saat error & field kosong.
   - autocomplete: string (opsional)
+  - maxlength   : number (opsional) — batas karakter native
   - hideLabel   : boolean (opsional) — label hanya untuk screen reader, bila label
                   visual sudah dirender pemanggil (mis. di atas tab bahasa)
 --}}
@@ -49,6 +60,7 @@
         name='{{name}}'
         rows='{{default rows 4}}'
         {{#if required}}required{{/if}}
+        {{#if maxlength}}maxlength='{{maxlength}}'{{/if}}
         {{#if autocomplete}}autocomplete='{{autocomplete}}'{{/if}}
         placeholder='{{placeholder}}'
         x-model='formData.{{field}}'
@@ -61,15 +73,18 @@
         {{!-- slot ikon error: inline style agar tidak kalah urutan dari utility pr-3.5 --}}
         :style="formErrors.{{field}} && 'padding-right: 44px'"
         {{!-- block: textarea inline menyisakan ruang baseline ~7px di bawahnya --}}
-        class='block h-32 w-full resize-none rounded-lg border bg-white py-2.5 pl-3.5 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
+        class='block {{default heightClass "h-32"}} w-full resize-none rounded-lg border bg-white py-2.5 pl-3.5 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
       ></textarea>
     {{else}}
       <input
         id='{{id}}'
-        name='{{name}}'
+        {{#unless numeric}}name='{{name}}'{{/unless}}
         type='{{default type "text"}}'
+        {{#if numeric}}inputmode='numeric'{{/if}}
+        {{#if (or (eq icon 'clock') (eq icon 'calendar'))}}@click='$el.showPicker && $el.showPicker()'{{/if}}
         {{#if toggle}}:type="showValue ? 'text' : 'password'"{{/if}}
         {{#if required}}required{{/if}}
+        {{#if maxlength}}maxlength='{{maxlength}}'{{/if}}
         {{#if autocomplete}}autocomplete='{{autocomplete}}'{{/if}}
         placeholder='{{placeholder}}'
         x-model='formData.{{field}}'
@@ -79,12 +94,42 @@
         :class="formErrors.{{field}}
           ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
           : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
-        {{#unless toggle}}
+        {{#unless (or toggle (eq icon 'calendar') (eq icon 'clock'))}}
           {{!-- slot ikon error: pakai inline style agar tidak kalah urutan dari utility pr-3.5 --}}
           :style="formErrors.{{field}} && 'padding-right: 44px'"
         {{/unless}}
-        class='h-11 w-full rounded-lg border bg-white py-2.5 pl-3.5 {{#if toggle}}pr-11{{else}}pr-3.5{{/if}} font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
+        class='h-11 w-full rounded-lg border bg-white py-2.5 {{#if (eq icon 'link')}}pl-10{{else}}pl-3.5{{/if}} {{#if toggle}}pr-11{{else if (or (eq icon 'clock') (eq icon 'calendar'))}}pr-10 cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden{{else}}pr-3.5{{/if}} font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
       />
+
+      {{#if numeric}}
+        <input type='hidden' name='{{name}}' :value="String(formData.{{field}} ?? '').replace(/\D/g, '')" />
+      {{/if}}
+
+      {{#if (eq icon 'link')}}
+        <span class='pointer-events-none absolute left-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-[#737373]' aria-hidden='true'>
+          {{!-- lucide: link --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+            <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71' />
+            <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71' />
+          </svg>
+        </span>
+      {{else if (eq icon 'clock')}}
+        <span :class="formErrors.{{field}} ? 'text-[#ef4444]' : 'text-[#737373]'" class='pointer-events-none absolute right-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center supports-[-moz-orient:inline]:hidden' aria-hidden='true'>
+          {{!-- lucide: clock --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+            <circle cx='12' cy='12' r='10' />
+            <path d='M12 6v6l4 2' />
+          </svg>
+        </span>
+      {{else if (eq icon 'calendar')}}
+        <span :class="formErrors.{{field}} ? 'text-[#ef4444]' : 'text-[#737373]'" class='pointer-events-none absolute right-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center supports-[-moz-orient:inline]:hidden' aria-hidden='true'>
+          {{!-- lucide: calendar --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+            <rect width='18' height='18' x='3' y='4' rx='2' />
+            <path d='M16 2v4M8 2v4M3 10h18' />
+          </svg>
+        </span>
+      {{/if}}
 
       {{#if toggle}}
         <button
@@ -110,6 +155,7 @@
       {{/if}}
     {{/if}}
 
+    {{#unless (or (eq icon 'clock') (eq icon 'calendar'))}}
     {{!-- Textarea rata atas, jadi ikonnya dipatok ke baris pertama, bukan tengah. --}}
     <span
       x-show='formErrors.{{field}}{{#if toggle}} && !formData.{{field}}{{/if}}'
@@ -123,6 +169,7 @@
         <path d='M12 16h.01' />
       </svg>
     </span>
+    {{/unless}}
   </div>
 
   <p

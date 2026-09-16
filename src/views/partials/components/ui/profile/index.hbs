@@ -155,18 +155,31 @@
         <div>
           <button 
             type="button" 
-            @click="$refs.profileFileInput.click()"
+            @click="$refs.fileInput.click()"
             class="h-9 px-3.5 py-2 bg-white hover:bg-slate-50 border border-[#D9D9D9] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] text-sm font-semibold font-inter text-[#344054] cursor-pointer transition-all"
           >
             Update Photo
           </button>
-          <input 
-            type="file" 
-            x-ref="profileFileInput" 
-            class="hidden" 
-            accept="image/png, image/jpeg, image/jpg"
-            @change="handleFileUpload($event)"
-          />
+          {{!-- Form unggah foto. Modal preview_photo menaruh hasil crop ke
+               $refs.fileInput lalu memanggil $refs.profileForm.submit(), jadi nama
+               ref dan name="profile" harus persis seperti ini — komponen ini
+               sebelumnya hanya punya <input> lepas tanpa form, sehingga tombol
+               Save di modal melempar error dan foto tidak pernah terkirim. --}}
+          <form
+            x-ref="profileForm"
+            action="/users/update/profile/{{user.id}}?_method=PATCH"
+            method="post"
+            enctype="multipart/form-data"
+            class="hidden"
+          >
+            <input
+              type="file"
+              name="profile"
+              x-ref="fileInput"
+              accept="image/png, image/jpeg, image/jpg"
+              @change="handleFileUpload($event)"
+            />
+          </form>
         </div>
       </div>
     </div>
@@ -461,8 +474,8 @@
           URL.revokeObjectURL(this.tempImageUrl);
           this.tempImageUrl = null;
         }
-        if (this.$refs.profileFileInput) {
-          this.$refs.profileFileInput.value = null;
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null;
         }
       },
 
@@ -478,8 +491,8 @@
         this.imageInfo = '';
         this.croppedBlob = null;
 
-        if (this.$refs.profileFileInput) {
-          this.$refs.profileFileInput.value = null;
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null;
         }
       },
     };

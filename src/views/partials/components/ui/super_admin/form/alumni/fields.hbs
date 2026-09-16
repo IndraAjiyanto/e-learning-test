@@ -1,0 +1,100 @@
+{{!--
+  Komponen: Alumni Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/alumni/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Program, foto profil, lalu Name / Current Position / Message per bahasa.
+  Pemanggil menyediakan state Alpine dari form/alumni/form.
+
+  Props:
+  - hideProgram : boolean (opsional) — sembunyikan field Program, untuk halaman
+                  yang sudah mendapat courseId dari URL. Panggil form/alumni/form
+                  tanpa `courses` agar validasinya ikut dilewati.
+
+  Field dikirim sebagai name[id]/name[en]/name[ja] (idem message, currentPosition)
+  sesuai Create/UpdateAlumnusDto. Dipakai keempat halaman form alumni.
+
+  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
+  meski tab-nya tidak aktif.
+
+  Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `name-id`) — dipakai
+  form/alumni/form untuk memfokuskan field pertama yang error.
+--}}
+{{#*inline 'alumniLangFields'}}
+  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'name-' code)
+      name=(concat 'name[' code ']')
+      field=(concat 'name.' code)
+      label='Name'
+      placeholder=nameHint
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'currentPosition-' code)
+      name=(concat 'currentPosition[' code ']')
+      field=(concat 'currentPosition.' code)
+      label='Current Position'
+      placeholder=positionHint
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'message-' code)
+      name=(concat 'message[' code ']')
+      field=(concat 'message.' code)
+      label='Message'
+      multiline=true
+      placeholder=messageHint
+      required=true
+    }}
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-5'>
+  {{#unless hideProgram}}
+    {{> components/ui/super_admin/form/multi_select_field
+      id='courseId'
+      name='courseId'
+      field='courseId'
+      single=true
+      label='Program'
+      placeholder='Search and select a program'
+      options='courseOptions'
+      initial='initialCourse'
+      required=true
+    }}
+  {{/unless}}
+
+  {{> components/ui/super_admin/form/photo_upload
+    id='profile'
+    name='profile'
+    label='Profile Photo'
+    meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
+    action='Upload Photo'
+  }}
+
+  {{> components/ui/super_admin/tabs/language/index ariaLabel='Alumni language' }}
+
+  {{> alumniLangFields
+    code='id'
+    nameHint='Nama alumni'
+    positionHint='Posisi saat ini'
+    messageHint='Tulis pesan alumni dalam Bahasa Indonesia...'
+  }}
+
+  {{> alumniLangFields
+    code='en'
+    nameHint='Alumni name'
+    positionHint='Current position'
+    messageHint='Write the alumni message in English...'
+  }}
+
+  {{> alumniLangFields
+    code='ja'
+    nameHint='名前'
+    positionHint='現在のポジション'
+    messageHint='メッセージを日本語で入力してください...'
+  }}
+</div>

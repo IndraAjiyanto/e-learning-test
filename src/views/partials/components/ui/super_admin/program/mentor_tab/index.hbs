@@ -1,0 +1,135 @@
+{{!--
+  Komponen: Program Mentor Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/mentor_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Mentor" di halaman detail program: search + tabel mentor
+  + pagination. Datanya diambil sendiri dari GET /program/mentorProgram/:courseId,
+  karena controller detail tidak ikut mengirimnya saat render.
+
+  `lang` hidup di scope Alpine bersarang: getter `rows` dan `totalPages` milik
+  clientTable() akan hilang bila state digabung.
+
+  name & linkedin string biasa; position & description objek { id, en, ja }
+  sesuai yang dikirim form mentor. Entity Mentor menuliskannya string[], usang.
+
+  Kolom Tech merender svg mentah dari tabel technology lewat x-html — sama
+  seperti yang sudah dilakukan kartu Learning Details di halaman detail. Isinya
+  dikelola super admin, bukan input peserta.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+  - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
+
+  Props:
+  - courseId : string (wajib) — dipakai untuk endpoint, tombol create, dan aksi delete
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  x-data='clientTable({ url: "/program/mentorProgram/" + {{json courseId}}, searchKeys: ["name", "linkedin", "position.id", "position.en", "position.ja", "description.id", "description.en", "description.ja"] })'
+  x-init='load()'
+>
+  {{> components/ui/super_admin/table/toolbar
+    placeholder='Search mentor..'
+    searchLabel='Search program mentor'
+    createHref=(concat '/mentor/formCreate/' courseId)
+    createLabel='Add Mentor'
+    fullWidth=true
+  }}
+
+  {{!-- courseId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
+       yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
+  <div class='flex flex-col gap-5' x-data='{ lang: "id", courseId: {{json courseId}} }'>
+    {{> components/ui/super_admin/tabs/language/index ariaLabel='Program mentor language' }}
+
+    {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+      <colgroup>
+        <col class='w-[66px]' />
+        <col class='w-[73px]' />
+        <col class='w-[140px]' />
+        <col class='w-[140px]' />
+        <col class='w-[200px]' />
+        <col class='w-[100px]' />
+        <col class='w-[175px]' />
+        <col class='w-[116px]' />
+      </colgroup>
+      <thead>
+        <tr>
+          {{> components/ui/super_admin/table/header_cell label='No' }}
+          {{> components/ui/super_admin/table/header_cell label='Profile' }}
+          {{> components/ui/super_admin/table/header_cell label='Name' }}
+          {{> components/ui/super_admin/table/header_cell label='Position' }}
+          {{> components/ui/super_admin/table/header_cell label='Description' }}
+          {{> components/ui/super_admin/table/header_cell label='Tech' }}
+          {{> components/ui/super_admin/table/header_cell label='LinkedIn' }}
+          {{> components/ui/super_admin/table/header_cell label='Action' }}
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for='(row, index) in rows' :key='row.id'>
+          <tr class='transition-colors hover:bg-[#fafafa]'>
+
+            {{> components/ui/super_admin/table/cell
+              text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+            }}
+
+            {{#> components/ui/super_admin/table/cell variant='media'}}
+              {{> components/ui/super_admin/table/avatar
+                src='row.profile'
+                name='row.name'
+              }}
+            {{/components/ui/super_admin/table/cell}}
+
+            {{> components/ui/super_admin/table/cell text='row.name || "—"' }}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row.position && row.position[lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row.description && row.description[lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <div class='flex flex-wrap items-center gap-1'>
+                <template x-for='tech in (row.technologies || [])' :key='tech.id'>
+                  <span
+                    class='flex h-4 w-4 shrink-0 items-center justify-center overflow-hidden [&>svg]:h-full [&>svg]:w-full'
+                    :title='tech.name'
+                    x-html='tech.svg'
+                  ></span>
+                </template>
+              </div>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              {{> components/ui/super_admin/table/link href='row.linkedin' }}
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell variant='action'}}
+              {{> components/ui/super_admin/table/row_actions
+                entity='mentor'
+                deleteAction="'/mentor/' + row.id + '/' + courseId + '?_method=DELETE'"
+                editHref="'/mentor/formEdit/' + row.id"
+              }}
+            {{/components/ui/super_admin/table/cell}}
+          </tr>
+        </template>
+
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='8'}}
+          Loading mentors…
+        {{/components/ui/super_admin/table/message_row}}
+
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='8'}}
+          No mentors found.
+        {{/components/ui/super_admin/table/message_row}}
+      </tbody>
+    {{/components/ui/super_admin/table/card}}
+  </div>
+</div>
