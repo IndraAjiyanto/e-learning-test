@@ -10,8 +10,9 @@
 
   Backend hanya mengganti gambar yang dikirim. "Remove" melepas gambar lama di
   form saja; karena gambar wajib, Save tertahan sampai file pengganti dipilih.
-  Form DELETE berada di luar form PATCH (form tidak boleh bersarang), jadi tombol
-  Delete menunjuknya lewat atribut `form`.
+  Delete dirender komponen danger_zone di bawah form PATCH — kartu yang sama
+  dengan halaman edit super admin lain — yang membawa form DELETE-nya sendiri
+  karena form tidak boleh bersarang.
 --}}
 {{#*inline 'categoryLangFields'}}
   {{!-- x-show, bukan x-if: bahasa di tab yang tidak aktif tetap ikut terkirim. --}}
@@ -152,10 +153,11 @@
 
           <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
             {{> components/ui/super_admin/form/button
-              variant='danger-soft'
-              label='Delete'
-              form='categoryDeleteForm'
-              onclick='openDeleteModal(this)'
+              as='link'
+              variant='secondary'
+              href='/category'
+              label='Cancel'
+              loading=true
             }}
 
             {{> components/ui/super_admin/form/button
@@ -169,7 +171,12 @@
       </div>
     </form>
 
-    <form id='categoryDeleteForm' action='/category/{{category.id}}?_method=DELETE' method='post' class='hidden'></form>
+    {{!-- Danger Zone — kartu yang sama dengan halaman edit super admin lain. --}}
+    {{> components/ui/super_admin/danger_zone/index
+      title='Delete Category'
+      description='Permanently remove this category. Programs, alumni, galleries and FAQs under it will lose their category. This action cannot be undone.'
+      action=(concat '/category/' category.id '?_method=DELETE')
+    }}
   </div>
 </div>
 
