@@ -1,371 +1,400 @@
 {{!--
-  Komponen: Global Unified Profile Component
+  Komponen: Unified Profile
   Lokasi: src/views/partials/components/ui/profile/index.hbs
   Level: L2 Section
 
+  Dipakai dua tempat lewat shell user_profile/index.hbs:
+  - role `user`   : isi tab Profile
+  - role admin / super_admin : seluruh halaman /users/profile
+
+  Susunannya mengikuti docs/design/user-area/profile.png: judul sapaan, kartu
+  akun dengan avatar di kiri dan Username/Email menumpuk di kanannya, lalu kartu
+  "Your Biodata" yang diawali chip ikon. Tokennya memakai komponen super admin
+  (page_header, description, form/text_field, form/select_field, form/button)
+  sesuai aturan di CONTRIBUTING.md bagian "User area".
+
+  Kartu biodata hanya untuk role `user`; admin tidak punya biodata.
+
+  CATATAN: frame desain tidak memperlihatkan kartu Change Password, tapi
+  gambarnya terpotong di bawah dan kartu itu satu-satunya jalan menuju tab
+  ganti password (shell: activeSection === 'password'). Dihapus berarti student
+  dan admin tidak bisa mengganti password sama sekali, jadi kartunya
+  dipertahankan sampai pemilik memutuskan. Lihat pertanyaan terbuka 8 di
+  docs/user-area-design-alignment-plan.md.
+
   Props:
-  - user: object (data user yang sedang login dari backend, role: 'user' | 'admin' | 'super_admin')
+  - user : object (wajib) — user yang sedang login, beserta relasi biodata
 --}}
-<div 
-  class="font-montserrat bg-[#F3F3F3] p-4 sm:px-[34px] sm:py-[42px] min-h-screen space-y-4"
-  x-data="{
-    ...profilePictureCrop(),
-    biodataId: {{#if user.biodata}}'{{user.biodata.id}}'{{else}}null{{/if}},
-    originalData: {
-      username: '{{user.username}}',
-      email: '{{user.email}}',
-      fullName: '{{user.biodata.fullName}}',
-      city: '{{user.biodata.city}}',
-      education: '{{user.biodata.education}}',
-      studyProgram: '{{user.biodata.studyProgram}}',
-      gender: '{{user.biodata.gender}}',
-      no: '{{user.biodata.no}}'
-    },
-    formData: {
-      username: '{{user.username}}',
-      email: '{{user.email}}',
-      fullName: '{{user.biodata.fullName}}',
-      city: '{{user.biodata.city}}',
-      education: '{{user.biodata.education}}',
-      studyProgram: '{{user.biodata.studyProgram}}',
-      gender: '{{user.biodata.gender}}',
-      no: '{{user.biodata.no}}'
-    },
-    educationOptions: [
-      { value: 'SMP/Sederajat', label: 'SMP / Sederajat' },
-      { value: 'SMA/SMK/Sederajat', label: 'SMA / SMK / Sederajat' },
-      { value: 'Diploma(D3/D4)', label: 'Diploma (D3/D4)' },
-      { value: 'Sarjana(S1)', label: 'Sarjana (S1)' }
-    ],
-    genderOptions: [
-      { value: 'Laki laki', label: 'Laki laki' },
-      { value: 'Perempuan', label: 'Perempuan' }
-    ],
-    saving: false,
-    get hasAccountChanges() {
-      return this.formData.username !== this.originalData.username
-        || this.formData.email !== this.originalData.email;
-    },
-    get hasBiodataChanges() {
-      return this.formData.fullName !== this.originalData.fullName
-        || this.formData.city !== this.originalData.city
-        || this.formData.education !== this.originalData.education
-        || this.formData.studyProgram !== this.originalData.studyProgram
-        || this.formData.gender !== this.originalData.gender
-        || this.formData.no !== this.originalData.no;
-    },
-    get hasChanges() {
-      return this.hasAccountChanges || this.hasBiodataChanges;
-    },
-    resetForm() {
-      this.formData = { ...this.originalData };
-    },
-    async saveAll() {
-      if (!this.hasChanges || this.saving) return;
-      this.saving = true;
-      try {
-        // 1. Update user account if changed
-        if (this.hasAccountChanges) {
-          const resUser = await fetch('/users/{{user.id}}', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              username: this.formData.username.trim(),
-              email: this.formData.email.trim()
-            }),
-            redirect: 'manual'
-          });
-          if (resUser.type !== 'opaqueredirect' && !resUser.ok) {
-            const errData = await resUser.json().catch(() => null);
-            throw new Error(errData?.message || 'Failed to update account');
-          }
-        }
-
-        // 2. Update biodata if changed (hanya untuk role user)
-        if (this.hasBiodataChanges) {
-          const isUpdate = this.biodataId !== null;
-          const resBiodata = await fetch(isUpdate ? `/biodata/${this.biodataId}` : '/biodata', {
-            method: isUpdate ? 'PATCH' : 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fullName: (this.formData.fullName || '').trim(),
-              city: (this.formData.city || '').trim(),
-              education: this.formData.education || '',
-              studyProgram: (this.formData.studyProgram || '').trim(),
-              gender: this.formData.gender || '',
-              no: (this.formData.no || '').trim()
-            }),
-            redirect: 'manual'
-          });
-          if (resBiodata.type !== 'opaqueredirect' && !resBiodata.ok) {
-            const errData = await resBiodata.json().catch(() => null);
-            throw new Error(errData?.message || 'Failed to update biodata');
-          }
-        }
-
-        window.location.href = '/users/profile';
-      } catch (err) {
-        alert(err.message || 'Failed to update profile');
-      } finally {
-        this.saving = false;
-      }
-    }
-  }"
+<div
+  class='p-4 sm:px-[34px] sm:py-[42px]'
+  x-data='{ ...profilePictureCrop(), ...profileFormState({
+    id: "{{user.id}}",
+    role: "{{user.role}}",
+    username: "{{user.username}}",
+    email: "{{user.email}}",
+    biodataId: {{#if user.biodata}}"{{user.biodata.id}}"{{else}}null{{/if}},
+    fullName: "{{user.biodata.fullName}}",
+    city: "{{user.biodata.city}}",
+    education: "{{user.biodata.education}}",
+    studyProgram: "{{user.biodata.studyProgram}}",
+    gender: "{{user.biodata.gender}}",
+    no: "{{user.biodata.no}}"
+  }) }'
 >
-  
-  <!-- Title (#2561:2575) -->
-  {{#> components/ui/text/section_header/index
-    align="text-left"
-    wrapperClass="gap-1"
-    titleTag="h1"
-    titleClass="font-montserrat font-bold text-[34px] !leading-[36px] tracking-[-0.0294em] text-[#003060] !mb-0"
-    description="Below is your profile information."
-    descClass="font-montserrat font-medium text-[16px] !leading-[20px] text-[#718096]"
-  }}
-    {{#*inline "titleBlock"}}
-      Welcome, {{user.username}}
-    {{/inline}}
-  {{/components/ui/text/section_header/index}}
+  <div class='flex flex-col gap-7'>
 
-  <!-- Card 1 — Main Form (Profile Photo & Account) (#2561:2579) -->
-  <div class="bg-white rounded-[12px] p-8 border border-[#D9D9D9] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col gap-6">
-    
-    <!-- Section A: Profile Photo (#2561:2580) -->
-    <div class="flex items-center gap-6 pb-6 border-b border-[#D9D9D9]">
-      <!-- Avatar 96x96 -->
-      <div class="relative size-24 rounded-full bg-[#F9F5FF] ring-4 ring-white shadow-[0_4px_6px_-2px_rgba(0,0,0,0.03),0_12px_16px_-4px_rgba(0,0,0,0.08)] flex items-center justify-center overflow-hidden flex-shrink-0">
-        {{#if user.profile}}
-          <img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover rounded-full" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <span class="hidden size-full items-center justify-center font-inter font-medium text-[32px] text-[#7F56D9]">
-            <i class="fa-regular fa-user text-3xl text-[#7F56D9]"></i>
-          </span>
-        {{else}}
-          <span class="size-full flex items-center justify-center font-inter font-medium text-[32px] text-[#7F56D9]">
-            <i class="fa-regular fa-user text-3xl text-[#7F56D9]"></i>
-          </span>
-        {{/if}}
-      </div>
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        titleTag='h2'
+        title=(concat 'Welcome, ' user.username)
+      }}
+      {{> components/ui/super_admin/description/index
+        text='Below is your profile information.'
+      }}
+    </div>
 
-      <!-- Info & Upload Button -->
-      <div class="flex flex-col gap-1.5">
-        <div class="flex flex-wrap items-baseline gap-2">
-          <span class="font-montserrat font-semibold text-sm text-[#003060]">Profile Photo</span>
-          <span class="font-montserrat text-xs text-[#718096]">JPG or PNG • Max 5 MB</span>
-        </div>
-        <div>
-          <button 
-            type="button" 
-            @click="$refs.fileInput.click()"
-            class="h-9 px-3.5 py-2 bg-white hover:bg-slate-50 border border-[#D9D9D9] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] text-sm font-semibold font-inter text-[#344054] cursor-pointer transition-all"
+    {{!-- Kartu 1 — Akun: avatar di kiri, Username & Email menumpuk di kanan --}}
+    <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'>
+      <div class='flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8'>
+
+        <div class='relative shrink-0'>
+          {{!-- Inisial sebagai lapisan dasar, foto menimpa di atasnya. Bila foto
+               gagal dimuat (URL /asset/* sering tidak ikut terbawa ke lokal),
+               elemennya dibuang dan inisialnya muncul kembali. --}}
+          <span class='relative grid size-20 place-items-center overflow-hidden rounded-full bg-[#003060] font-inter text-2xl font-semibold uppercase text-white'>
+            <span x-text='initials'></span>
+            {{#if user.profile}}
+              <img src='{{user.profile}}' alt='' class='absolute inset-0 size-full object-cover' onerror='this.remove()' />
+            {{/if}}
+          </span>
+          <button
+            type='button'
+            @click='$refs.fileInput.click()'
+            aria-label='Update profile photo'
+            class='absolute -bottom-0.5 -right-0.5 grid size-7 place-items-center rounded-full border border-[#d9d9d9] bg-white text-[#003060] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f4f7fc]'
           >
-            Update Photo
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-3.5 w-3.5'><path d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7'/><path d='M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z'/></svg>
           </button>
-          {{!-- Form unggah foto. Modal preview_photo menaruh hasil crop ke
-               $refs.fileInput lalu memanggil $refs.profileForm.submit(), jadi nama
-               ref dan name="profile" harus persis seperti ini — komponen ini
-               sebelumnya hanya punya <input> lepas tanpa form, sehingga tombol
-               Save di modal melempar error dan foto tidak pernah terkirim. --}}
+
+          {{!-- Modal crop menaruh hasilnya ke $refs.fileInput lalu memanggil
+               $refs.profileForm.submit(); nama ref dan name="profile" harus persis. --}}
           <form
-            x-ref="profileForm"
-            action="/users/update/profile/{{user.id}}?_method=PATCH"
-            method="post"
-            enctype="multipart/form-data"
-            class="hidden"
+            x-ref='profileForm'
+            action='/users/update/profile/{{user.id}}?_method=PATCH'
+            method='post'
+            enctype='multipart/form-data'
+            class='hidden'
           >
-            <input
-              type="file"
-              name="profile"
-              x-ref="fileInput"
-              accept="image/png, image/jpeg, image/jpg"
-              @change="handleFileUpload($event)"
-            />
+            <input type='file' name='profile' x-ref='fileInput' accept='image/png, image/jpeg, image/jpg' @change='handleFileUpload($event)' />
           </form>
         </div>
+
+        <div class='flex min-w-0 flex-1 flex-col gap-5'>
+          {{> components/ui/super_admin/form/text_field
+            id='profile-username'
+            name='username'
+            field='username'
+            label='Username'
+            iconLeft='user'
+            placeholder='Input Your Username'
+          }}
+          {{> components/ui/super_admin/form/text_field
+            id='profile-email'
+            name='email'
+            field='email'
+            label='Email'
+            type='email'
+            iconLeft='mail'
+            placeholder='Input Your Email'
+          }}
+          <div>
+            {{> components/ui/super_admin/form/button
+              label='Save Changes'
+              onclick='saveAccount()'
+              loading=true
+              disabled='!canSubmitAccount() || loading'
+            }}
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Row Inputs: Username & Email Address (#2561:2591) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {{> components/ui/input/editable_field/index
-        label="Username"
-        model="formData.username"
-        placeholder="Username"
-        wrapperClass="flex flex-col gap-1.5"
-        labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-      }}
-      {{> components/ui/input/editable_field/index
-        label="Email Address"
-        model="formData.email"
-        type="email"
-        placeholder="Email Address"
-        wrapperClass="flex flex-col gap-1.5"
-        labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-      }}
-    </div>
+    {{!-- Kartu 2 — Biodata, hanya role user --}}
+    {{#if (eq user.role 'user')}}
+    <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'>
 
-    {{!-- Jika Admin / Superadmin (tidak ada card biodata), tombol Save Changes ada di Card 1 --}}
-    {{#unless (eq user.role 'user')}}
-    <div class="pt-6 border-t border-[#D9D9D9] flex items-center justify-end gap-3">
-      <button 
-        type="button" 
-        @click="resetForm()"
-        class="h-11 px-4 py-2.5 bg-white hover:bg-slate-50 border border-[#D9D9D9] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-sm text-[#344054] cursor-pointer transition-all"
-      >
-        Cancel
-      </button>
-      <button 
-        type="button" 
-        @click="saveAll()"
-        :disabled="saving || !hasChanges"
-        class="h-11 px-[18px] py-[10px] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-sm text-white transition-all flex items-center gap-2 cursor-pointer"
-        :class="(saving || !hasChanges) ? 'bg-[#003060]/70 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#002244]'"
-      >
-        <span x-show="!saving">Save Changes</span>
-        <span x-show="saving" class="flex items-center gap-2">
-          <i class="fa-solid fa-spinner fa-spin"></i> Saving...
+      <div class='flex items-start gap-4'>
+        <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
         </span>
-      </button>
+        <div class='flex flex-col gap-1'>
+          <h3 class='font-montserrat text-xl font-bold leading-tight text-[#003060]'>Your Biodata</h3>
+          {{> components/ui/super_admin/description/index
+            text='Below is your profile information.'
+          }}
+        </div>
+      </div>
+
+      <div class='flex flex-col gap-5'>
+        {{> components/ui/super_admin/form/text_field
+          id='biodata-fullname'
+          name='fullName'
+          field='fullName'
+          label='Full Name'
+          iconLeft='user'
+          placeholder='Input Your Full Name'
+          required=true
+        }}
+
+        {{> components/ui/super_admin/form/text_field
+          id='biodata-city'
+          name='city'
+          field='city'
+          label='Address'
+          iconLeft='map-pin'
+          placeholder='Input Your City'
+          multiline=true
+          heightClass='h-24'
+          rows=3
+        }}
+
+        <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+          {{> components/ui/super_admin/form/select_field
+            id='biodata-education'
+            name='education'
+            field='education'
+            label='Education'
+            options='educationOptions'
+            iconLeft='graduation-cap'
+            placeholder='Select Your Education Level'
+          }}
+          {{> components/ui/super_admin/form/text_field
+            id='biodata-studyprogram'
+            name='studyProgram'
+            field='studyProgram'
+            label='Studi Program'
+            iconLeft='book'
+            placeholder='Input Your Studi Program'
+            multiline=true
+            heightClass='h-24'
+            rows=3
+          }}
+        </div>
+
+        <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+          {{> components/ui/super_admin/form/select_field
+            id='biodata-gender'
+            name='gender'
+            field='gender'
+            label='Gender'
+            options='genderOptions'
+            iconLeft='user'
+            placeholder='Select Your Gender'
+          }}
+          {{> components/ui/super_admin/form/text_field
+            id='biodata-no'
+            name='no'
+            field='no'
+            label='WhatsApp Number'
+            type='tel'
+            iconLeft='phone'
+            placeholder='Input Your WhatsApp Number'
+            multiline=true
+            heightClass='h-24'
+            rows=3
+          }}
+        </div>
+      </div>
+
+      <div>
+        {{> components/ui/super_admin/form/button
+          label='Save Changes'
+          onclick='saveBiodata()'
+          loading=true
+          disabled='!canSubmitBiodata() || loading'
+        }}
+      </div>
     </div>
-    {{/unless}}
+    {{/if}}
+
+    {{!-- Kartu 3 — Change Password. Lihat catatan di kepala berkas. --}}
+    <div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'>
+      <div class='flex flex-col gap-1'>
+        <h3 class='font-montserrat text-xl font-bold leading-tight text-[#003060]'>Change Password</h3>
+        {{> components/ui/super_admin/description/index
+          text='Update the password you use to sign in to Kesatria Academy.'
+        }}
+      </div>
+      <div>
+        {{#if (eq user.role 'user')}}
+          {{> components/ui/super_admin/form/button
+            label='Change Password'
+            onclick="toggleActiveSection('password')"
+          }}
+        {{else}}
+          {{> components/ui/super_admin/form/button
+            label='Change Password'
+            as='link'
+            href='/users/profile/password'
+          }}
+        {{/if}}
+      </div>
+    </div>
 
   </div>
 
-  {{!-- Card 2 — Your Biodata (HANYA MUNCUL JIKA ROLE ADALAH 'user') --}}
-  {{#if (eq user.role 'user')}}
-  <div class="bg-white rounded-[12px] p-8 border border-[#D9D9D9] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col gap-6">
-    <!-- Judul "Your Biodata" (#2561:2604) -->
-    <h2 class="font-montserrat font-semibold text-[16px] leading-[20px] text-[#003060]">
-      Your Biodata
-    </h2>
-
-    <!-- Form Fields: 3 baris x 2 input sejajar (#2561:2605) -->
-    <div class="flex flex-col gap-3">
-      <!-- Row 1: Full Name | Address -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {{> components/ui/input/editable_field/index
-          label="Full Name"
-          model="formData.fullName"
-          placeholder="Enter your full name"
-          wrapperClass="flex flex-col gap-1.5"
-          labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-        }}
-        {{> components/ui/input/editable_field/index
-          label="Address"
-          model="formData.city"
-          placeholder="Enter your address"
-          wrapperClass="flex flex-col gap-1.5"
-          labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-        }}
-      </div>
-
-      <!-- Row 2: Education | Studi Program -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {{> components/ui/input/editable_select/index
-          label="Education"
-          model="formData.education"
-          options="educationOptions"
-          placeholderOption="Select your education level"
-          wrapperClass="flex flex-col gap-1.5"
-          labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-        }}
-
-        {{> components/ui/input/editable_field/index
-          label="Studi Program"
-          model="formData.studyProgram"
-          placeholder="Enter your studi program"
-          wrapperClass="flex flex-col gap-1.5"
-          labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-        }}
-      </div>
-
-      <!-- Row 3: Gender | WhatsApp Number -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {{> components/ui/input/editable_select/index
-          label="Gender"
-          model="formData.gender"
-          options="genderOptions"
-          placeholderOption="Select your gender"
-          wrapperClass="flex flex-col gap-1.5"
-          labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-        }}
-
-        {{> components/ui/input/editable_field/index
-          label="WhatsApp Number"
-          model="formData.no"
-          type="tel"
-          placeholder="Enter whatsapp number"
-          wrapperClass="flex flex-col gap-1.5"
-          labelClass="font-montserrat font-medium text-[14px] text-[#344054]"
-        }}
-      </div>
-    </div>
-
-    <!-- Section D: Primary Actions (#2561:2624) - Ada di Biodata untuk User -->
-    <div class="pt-6 border-t border-[#D9D9D9] flex items-center justify-end gap-3">
-      <button 
-        type="button" 
-        @click="resetForm()"
-        class="h-11 px-4 py-2.5 bg-white hover:bg-slate-50 border border-[#D9D9D9] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-sm text-[#344054] cursor-pointer transition-all"
-      >
-        Cancel
-      </button>
-      <button 
-        type="button" 
-        @click="saveAll()"
-        :disabled="saving || !hasChanges"
-        class="h-11 px-[18px] py-[10px] rounded-[8px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-inter font-semibold text-sm text-white transition-all flex items-center gap-2 cursor-pointer"
-        :class="(saving || !hasChanges) ? 'bg-[#003060]/70 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#002244]'"
-      >
-        <span x-show="!saving">Save Changes</span>
-        <span x-show="saving" class="flex items-center gap-2">
-          <i class="fa-solid fa-spinner fa-spin"></i> Saving...
-        </span>
-      </button>
-    </div>
-  </div>
-  {{/if}}
-
-  <!-- Card 3 — Change Password (#2561:2628) -->
-  <div class="bg-white rounded-[16px] p-8 border border-[#D9D9D9] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col gap-5">
-    <div class="flex flex-col gap-1">
-      <h3 class="font-montserrat font-semibold text-[16px] leading-[20px] text-[#003060]">
-        Change Password
-      </h3>
-      <p class="font-montserrat font-medium text-[14px] leading-[20px] text-[#718096]">
-        Permanently remove this user and revoke access to Kesatria Academy. This action cannot be undone.
-      </p>
-    </div>
-    <div>
-      {{#if (eq user.role 'user')}}
-        {{> components/ui/button/btn_action/index
-          xClick="toggleActiveSection('password')"
-          text="Change Password"
-          variant="primary"
-          class="!px-[18px] !py-[10px] !h-11 !rounded-[8px] !shadow-[0_1px_2px_rgba(0,0,0,0.05)] !active:scale-100 cursor-pointer"
-          textClass="font-inter font-semibold !text-[16px] !leading-[24px] text-white"
-        }}
-      {{else}}
-        {{> components/ui/button/btn_action/index
-          href="/users/profile/password"
-          text="Change Password"
-          variant="primary"
-          class="!px-[18px] !py-[10px] !h-11 !rounded-[8px] !shadow-[0_1px_2px_rgba(0,0,0,0.05)] !active:scale-100 cursor-pointer"
-          textClass="font-inter font-semibold !text-[16px] !leading-[24px] text-white"
-        }}
-      {{/if}}
-    </div>
-  </div>
-
-  <!-- Crop Modal -->
-  {{> components/ui/modal/crop_photo/index cropImageId="cropImageUnified"}}
-
-  <!-- Profile Picture Preview Modal -->
+  {{> components/ui/modal/crop_photo/index cropImageId='cropImageUnified'}}
   {{> components/ui/modal/preview_photo/index}}
-
 </div>
 
-<!-- Profile Picture Crop Function -->
 <script>
+  function profileFormState(seed) {
+    const trim = (v) => String(v ?? '').trim();
+    const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const original = {
+      username: seed.username || '',
+      email: seed.email || '',
+      fullName: seed.fullName || '',
+      city: seed.city || '',
+      education: seed.education || '',
+      studyProgram: seed.studyProgram || '',
+      gender: seed.gender || '',
+      no: seed.no || '',
+    };
+
+    // Pesan error per field, dihitung ulang dari nilai terkini — bukan dari error
+    // yang kebetulan sudah tampil. Sama seperti konvensi form super admin, lihat
+    // docs/form-submit-gating.md.
+    const errorFor = (field, value) => {
+      const val = trim(value);
+      switch (field) {
+        case 'username':
+          if (!val) return 'Username is required.';
+          if (val.length < 3) return 'Username must be at least 3 characters.';
+          return '';
+        case 'email':
+          if (!val) return 'Email is required.';
+          if (!EMAIL.test(val)) return 'Please enter a valid email address.';
+          return '';
+        case 'fullName':
+          if (!val) return 'Full name is required.';
+          if (val.length < 3) return 'Full name must be at least 3 characters.';
+          return '';
+        default:
+          return '';
+      }
+    };
+
+    return {
+      userId: seed.id,
+      biodataId: seed.biodataId,
+      loading: false,
+      formData: { ...original },
+      formErrors: {},
+      touched: {},
+
+      educationOptions: [
+        { value: 'SMP/Sederajat', label: 'SMP / Sederajat' },
+        { value: 'SMA/SMK/Sederajat', label: 'SMA / SMK / Sederajat' },
+        { value: 'Diploma(D3/D4)', label: 'Diploma (D3/D4)' },
+        { value: 'Sarjana(S1)', label: 'Sarjana (S1)' },
+      ],
+      genderOptions: [
+        { value: 'Laki laki', label: 'Laki laki' },
+        { value: 'Perempuan', label: 'Perempuan' },
+      ],
+
+      get initials() {
+        return trim(this.formData.username).slice(0, 2) || '?';
+      },
+
+      validateField(field, value) {
+        const message = errorFor(field, value);
+        if (message && this.touched[field]) this.formErrors[field] = message;
+        else delete this.formErrors[field];
+      },
+
+      touch(field) {
+        this.touched[field] = true;
+        this.validateField(field, this.formData[field]);
+      },
+
+      dirty(fields) {
+        return fields.some((f) => trim(this.formData[f]) !== trim(original[f]));
+      },
+
+      valid(fields) {
+        return fields.every((f) => !errorFor(f, this.formData[f]));
+      },
+
+      canSubmitAccount() {
+        const fields = ['username', 'email'];
+        return this.dirty(fields) && this.valid(fields);
+      },
+
+      canSubmitBiodata() {
+        const fields = ['fullName', 'city', 'education', 'studyProgram', 'gender', 'no'];
+        return this.dirty(fields) && this.valid(['fullName']);
+      },
+
+      async send(url, method, body) {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          redirect: 'manual',
+        });
+        if (res.type === 'opaqueredirect' || res.ok) return null;
+        const data = await res.json().catch(() => null);
+        return data?.message || 'Failed to save. Please try again.';
+      },
+
+      async saveAccount() {
+        if (!this.canSubmitAccount() || this.loading) return;
+        this.loading = true;
+        try {
+          const error = await this.send('/users/' + this.userId, 'PATCH', {
+            username: trim(this.formData.username),
+            email: trim(this.formData.email),
+          });
+          if (error) throw new Error(error);
+          window.location.href = '/users/profile';
+        } catch (err) {
+          alert(err.message || 'Failed to update account');
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      async saveBiodata() {
+        if (!this.canSubmitBiodata() || this.loading) return;
+        this.loading = true;
+        try {
+          const isUpdate = this.biodataId !== null;
+          const error = await this.send(
+            isUpdate ? '/biodata/' + this.biodataId : '/biodata',
+            isUpdate ? 'PATCH' : 'POST',
+            {
+              fullName: trim(this.formData.fullName),
+              city: trim(this.formData.city),
+              education: this.formData.education || '',
+              studyProgram: trim(this.formData.studyProgram),
+              gender: this.formData.gender || '',
+              no: trim(this.formData.no),
+            },
+          );
+          if (error) throw new Error(error);
+          window.location.href = '/users/profile';
+        } catch (err) {
+          alert(err.message || 'Failed to update biodata');
+        } finally {
+          this.loading = false;
+        }
+      },
+    };
+  }
+
   function profilePictureCrop() {
     return {
       previewUrl: '',
@@ -405,17 +434,12 @@
 
         this.tempImageUrl = URL.createObjectURL(file);
         this.showCropModal = true;
-
-        this.$nextTick(() => {
-          this.initCropper();
-        });
+        this.$nextTick(() => this.initCropper());
       },
 
       initCropper() {
         const image = document.getElementById('cropImageUnified');
-        if (this.cropper) {
-          this.cropper.destroy();
-        }
+        if (this.cropper) this.cropper.destroy();
 
         this.cropper = new Cropper(image, {
           aspectRatio: 1,
@@ -440,28 +464,25 @@
       applyCrop() {
         if (!this.cropper) return;
 
-        this.cropper.getCroppedCanvas({
-          width: 400,
-          height: 400,
-          imageSmoothingEnabled: true,
-          imageSmoothingQuality: 'high',
-        }).toBlob((blob) => {
-          this.croppedBlob = blob;
+        this.cropper
+          .getCroppedCanvas({ width: 400, height: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' })
+          .toBlob((blob) => {
+            this.croppedBlob = blob;
 
-          const fileSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(blob);
+            const fileSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+            const img = new Image();
+            const objectUrl = URL.createObjectURL(blob);
 
-          img.onload = () => {
-            this.previewUrl = objectUrl;
-            this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • Ready to upload`;
-            this.validationError = '';
-            this.open = true;
-          };
+            img.onload = () => {
+              this.previewUrl = objectUrl;
+              this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • Ready to upload`;
+              this.validationError = '';
+              this.open = true;
+            };
 
-          img.src = objectUrl;
-          this.closeCropModal();
-        }, 'image/jpeg', 0.9);
+            img.src = objectUrl;
+            this.closeCropModal();
+          }, 'image/jpeg', 0.9);
       },
 
       closeCropModal() {
@@ -474,26 +495,17 @@
           URL.revokeObjectURL(this.tempImageUrl);
           this.tempImageUrl = null;
         }
-        if (this.$refs.fileInput) {
-          this.$refs.fileInput.value = null;
-        }
+        if (this.$refs.fileInput) this.$refs.fileInput.value = null;
       },
 
       closeModal() {
         this.open = false;
-
-        if (this.previewUrl) {
-          URL.revokeObjectURL(this.previewUrl);
-        }
-
+        if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
         this.previewUrl = '';
         this.validationError = '';
         this.imageInfo = '';
         this.croppedBlob = null;
-
-        if (this.$refs.fileInput) {
-          this.$refs.fileInput.value = null;
-        }
+        if (this.$refs.fileInput) this.$refs.fileInput.value = null;
       },
     };
   }
