@@ -172,10 +172,10 @@
       {{/if}}
       <div x-show="tab === 'payment'">{{> course/payment_tab}}</div>
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'user'" x-data='userData()' x-init='fetchUsers()'>{{> course/user_tab}}</div>
+      <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_user'" x-data='logBookUserData()' x-init='fetchLogBookUsers()'>{{> course/log_book_user_tab}}</div>
       <div x-show="tab === 'log_book_mentor'" x-data='logBookMentorData()' x-init='fetchLogBookMentors()'>{{> course/log_book_mentor_tab}}</div>
-      <div x-show="tab === 'mentor'" x-data='mentorData()' x-init='fetchMentors()'>{{> course/mentor_tab}}</div>
+      <div x-show="tab === 'mentor'">{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
     </div>
 
   </div>
