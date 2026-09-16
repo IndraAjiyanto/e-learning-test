@@ -14,7 +14,8 @@
   - itemsJson    : string JSON array (wajib, contoh (json courseType))
   - displayField : string (wajib, field yang ditampilkan & dicari, contoh "nameClassesType")
   - placeholder  : string (opsional, default "Search...")
-  - locked       : boolean (opsional, kunci pilihan, default false)
+  - locked       : boolean (opsional, kunci pilihan, default false). Menahan
+                   interaksi user saja; `initialId` tetap terpasang saat init.
   - initialId    : string (opsional, preselect by id, contoh categoryId)
   - dispatchEvent: string (opsional, nama event $dispatch saat pilih/hapus)
   - dispatchKey  : string (opsional, kunci payload event, default "item")
@@ -45,8 +46,7 @@
         String(i[this.displayField] || '').toLowerCase().includes(q)
       );
     },
-    select(item) {
-      if (this.locked) return;
+    apply(item) {
       this.selected = item;
       this.search = item[this.displayField];
       this.showDropdown = false;
@@ -55,6 +55,10 @@
         payload[this.dispatchKey] = item;
         $dispatch(this.dispatchEvent, payload);
       }
+    },
+    select(item) {
+      if (this.locked) return;
+      this.apply(item);
     },
     clear() {
       if (this.locked) return;

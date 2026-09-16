@@ -37,12 +37,15 @@
                    berada di dalam x-data yang menyediakan `loading`; di luar itu
                    Alpine mengabaikan directive-nya dan label akan kosong.
   - loadingLabel : string (default 'Saving...') — label saat loading
+  - disabled     : string (opsional) — ekspresi boolean Alpine untuk disable tombol,
+                   mis. '!canSubmit() || loading'. Bila tidak diisi, fallback ke loading.
 
   Props mode baris:
   - row         : true — mengaktifkan mode baris
   - cancelHref  : string (wajib) — tujuan tombol Cancel
   - cancelLabel : string (default 'Cancel')
   - submitLabel : string (default 'Save')
+  - disabled    : string (opsional) — binding disable untuk tombol submit
   Submit memakai state Alpine `loading` dari form pemanggil.
 --}}
 {{#if row}}
@@ -66,6 +69,7 @@
         variant='primary'
         label=(default submitLabel 'Save')
         loading=true
+        disabled=disabled
       }}
     </div>
   </div>
@@ -74,7 +78,7 @@
     href='{{href}}'
     {{#if onclick}}onclick='{{{onclick}}}'{{/if}}
     {{#if loading}}:class="loading && 'pointer-events-none opacity-60'"{{/if}}
-    class='inline-flex h-11 items-center justify-center rounded-lg px-[18px] py-2.5 font-inter text-base font-semibold leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 {{#if (eq variant 'danger')}}bg-[#dc2626] text-white hover:bg-[#b91c1c] active:bg-[#991b1b] focus-visible:ring-[#dc2626]/40{{else if (eq variant 'danger-soft')}}border border-[#fca5a5] bg-[#fef2f2] text-[#ef4444] hover:bg-[#fee2e2] active:bg-[#fecaca] focus-visible:ring-[#ef4444]/40{{else if (eq variant 'secondary')}}border border-[#d4d4d4] bg-white text-[#003060] hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:ring-[#003060]/40{{else}}gap-2 border border-[#003060] bg-[#003060] text-white hover:border-[#00254a] hover:bg-[#00254a] active:bg-[#001c39] focus-visible:ring-[#003060]/40{{/if}}{{#if class}} {{class}}{{/if}}'
+    class='inline-flex h-11 items-center justify-center rounded-lg px-[18px] py-2.5 font-inter text-base font-semibold leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 {{#if (eq variant 'danger')}}bg-[#dc2626] text-white hover:bg-[#b91c1c] active:bg-[#991b1b] focus-visible:ring-[#dc2626]/40{{else if (eq variant 'danger-soft')}}border border-[#fca5a5] bg-[#fef2f2] text-[#ef4444] hover:bg-[#fee2e2] active:bg-[#fecaca] focus-visible:ring-[#ef4444]/40 {{else if (eq variant 'secondary')}}border border-[#d4d4d4] bg-white text-[#003060] hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:ring-[#003060]/40{{else}}gap-2 border border-[#003060] bg-[#003060] text-white hover:border-[#00254a] hover:bg-[#00254a] active:bg-[#001c39] focus-visible:ring-[#003060]/40{{/if}}{{#if class}} {{class}}{{/if}}'
   >{{label}}</a>
 {{else}}
   <button

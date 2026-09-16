@@ -35,6 +35,35 @@ export class TechnologiesService {
     });
   }
 
+  // Sumber data tabel /technology (client-side fetch), sejajar dengan
+  // CourseTypesService.findAllPaginated.
+  //
+  // Halaman ini sengaja TIDAK memakai clientTable seperti Benefit: kolom `svg`
+  // menyimpan markup SVG utuh (ribuan byte per baris), jadi mengirim seluruh
+  // tabel ke dalam HTML lewat {{json technologies}} membuat halaman membengkak
+  // seiring bertambahnya teknologi. Paginasi di server menahan payload-nya
+  // tetap sebesar satu halaman.
+  async findAllPaginated(params: {
+    search?: string;
+    page: number;
+    limit: number;
+  }) {
+    const query = this.technologiesRepository
+      .createQueryBuilder('technology')
+      .orderBy('technology.createdAt', 'DESC');
+
+    if (params.search) {
+      query.where('technology.name ILIKE :search', {
+        search: `%${params.search}%`,
+      });
+    }
+
+    query.skip((params.page - 1) * params.limit).take(params.limit);
+
+    const [data, total] = await query.getManyAndCount();
+    return { data, total };
+  }
+
   async findOne(id: string) {
     const technologies = await this.technologiesRepository.findOne({
       where: { id },

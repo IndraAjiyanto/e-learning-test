@@ -1,12 +1,15 @@
-import { IsArray, IsNumber } from 'class-validator';
+import { IsNumber, IsObject, IsOptional } from 'class-validator';
 
 export class CreateMissionDto {
-  @IsArray()
-  content: string[];
+  // Dikirim form sebagai content[id]/[en]/[ja] dan items[id]/[en]/[ja].
+  @IsObject()
+  content: { id: string; en: string; ja: string };
 
+  @IsObject()
+  items: { id: string; en: string; ja: string };
+
+  // Diisi service (max + 1 saat create, di-reindex saat delete), bukan form.
+  @IsOptional()
   @IsNumber()
-  missionOrder: number;
-
-  @IsArray()
-  items: string[];
+  missionOrder?: number;
 }

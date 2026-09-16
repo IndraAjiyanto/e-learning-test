@@ -11,7 +11,12 @@
   - fullWidth   : boolean (default false) — search mengisi sisa lebar sampai tombol create
 --}}
 <div class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-  <label class='relative block w-full {{#if fullWidth}}sm:flex-1{{else}}sm:w-[400px]{{/if}}'>
+  {{!-- Spasi setelah {{else}} WAJIB ada. Tanpa itu, ekstraktor Tailwind tidak
+       pernah melihat `sm:w-[400px]` sebagai kandidat kelas (nilai arbitrer yang
+       menempel langsung pada `}}` tidak terdeteksi), kelasnya tidak pernah
+       ter-generate, dan search box melebar jadi w-full di SEMUA halaman daftar
+       super_admin. `sm:flex-1` tidak kena karena bukan nilai arbitrer. --}}
+  <label class='relative block w-full {{#if fullWidth}}sm:flex-1{{else}} sm:w-[400px]{{/if}}'>
     <span class='sr-only'>{{default searchLabel 'Search user'}}</span>
     <input
       type='search'
@@ -29,10 +34,12 @@
     </span>
   </label>
 
+  {{#unless hideCreate}}
   <a
     href='{{default createHref "/users/formCreate"}}'
     class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
   >
     {{default createLabel 'Create User'}}
   </a>
+  {{/unless}}
 </div>

@@ -22,8 +22,13 @@ export class CourseType {
   @Column()
   icon: string;
 
+  // Kolom multibahasa, sejajar dengan Course.description — BUKAN array.
+  // Tipe sebelumnya (`string[]`) tidak pernah cocok dengan isi tabel: form
+  // create/edit selalu mengirim description[id]/[en]/[ja] dan baris yang ada
+  // di database berbentuk objek. Kolomnya jsonb, jadi koreksi ini murni tipe
+  // TypeScript dan tidak butuh migrasi.
   @Column('jsonb', { nullable: true })
-  description: string[];
+  description: { id: string; en: string; ja: string };
 
   @OneToMany(() => Course, (course) => course.courseType)
   @Exclude()

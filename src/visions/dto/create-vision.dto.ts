@@ -1,6 +1,7 @@
-import { IsArray, IsString } from 'class-validator';
+import { IsObject } from 'class-validator';
 
 export class CreateVisionsDto {
-  @IsArray()
-  visions: string[];
+  // Dikirim form sebagai visions[id] / visions[en] / visions[ja].
+  @IsObject()
+  visions: { id: string; en: string; ja: string };
 }

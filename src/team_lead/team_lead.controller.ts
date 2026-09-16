@@ -25,6 +25,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -52,7 +53,11 @@ export class TeamLeadController {
     try {
       createTeamLeadDto.profile = req.body.uploadedImageUrls?.[0];
       await this.teamLeadService.create(createTeamLeadDto);
-      req.flash('success', 'Team Lead created successfully');
+      flashToast(
+        req,
+        'Team Lead Created',
+        'The team lead profile has been added successfully.',
+      );
       res.redirect('/team-lead');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create Team Lead');
@@ -109,7 +114,11 @@ export class TeamLeadController {
         updateTeamLeadDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.teamLeadService.update(id, updateTeamLeadDto);
-      req.flash('success', 'Team Lead updated successfully');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The team lead profile has been updated successfully.',
+      );
       res.redirect('/team-lead');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update Team Lead');
@@ -132,7 +141,11 @@ export class TeamLeadController {
       }
       await this.teamLeadService.deleteFile(teamLead.profile);
       await this.teamLeadService.remove(id);
-      req.flash('success', 'Team Lead deleted successfully');
+      flashToast(
+        req,
+        'Team Lead Deleted',
+        'The team lead profile has been removed successfully.',
+      );
       res.redirect('/team-lead');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete Team Lead');
