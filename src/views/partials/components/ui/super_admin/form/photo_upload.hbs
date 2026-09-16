@@ -14,12 +14,20 @@
   State Alpine dipegang oleh form pemanggil (createUserForm/editUserForm):
   previewUrl, errorMessage, isValid, hasFile, fileName, validateImage(), clearFile().
 
+  Dengan prop `crop`, file yang dipilih masuk ke form/crop_modal dulu dan yang
+  dikirim ke backend adalah hasil cropnya — sama seperti form/image_dropzone.
+  Form pemanggil tidak perlu tahu soal crop; ia tetap hanya menerima File lewat
+  validateImage().
+
   Props:
-  - id      : string (default 'profile')
-  - name    : string (default 'profile')
-  - label   : string (default 'Profile Photo')
-  - meta    : string (default 'JPG or PNG • Max 5 MB')
-  - action  : string (default 'Update Photo')
+  - id        : string (default 'profile')
+  - name      : string (default 'profile')
+  - label     : string (default 'Profile Photo')
+  - meta      : string (default 'JPG or PNG • Max 5 MB')
+  - action    : string (default 'Update Photo')
+  - crop      : boolean (opsional) — aktifkan modal crop sebelum validasi
+  - cropAspect: number rasio area crop (default 1, persegi — foto profil bulat)
+  - cropSize  : number lebar piksel hasil crop (default 1000)
 --}}
 <div class='flex flex-col items-start gap-6 border-b border-[#d9d9d9] pb-6 sm:flex-row sm:items-center'>
   <div class='relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f9f5ff] ring-4 ring-white shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'>
@@ -62,7 +70,12 @@
         accept='image/jpeg,image/jpg,image/png'
         x-ref='fileInput'
         class='sr-only'
+        {{#if crop}}
+        @change="$dispatch('crop-open-{{default id "profile"}}', { file: $event.target.files[0] })"
+        @crop-done-{{default id "profile"}}.window='validateImage($event.detail.file)'
+        {{else}}
         @change='validateImage($event.target.files[0])'
+        {{/if}}
       />
       <button
         type='button'
@@ -87,3 +100,11 @@
     ></p>
   </div>
 </div>
+
+{{#if crop}}
+  {{> components/ui/super_admin/form/crop_modal
+    inputId=(default id 'profile')
+    aspect=(default cropAspect 1)
+    size=(default cropSize 1000)
+  }}
+{{/if}}
