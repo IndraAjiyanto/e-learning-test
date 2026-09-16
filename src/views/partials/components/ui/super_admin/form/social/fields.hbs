@@ -1,0 +1,112 @@
+{{!--
+  Komponen: Social Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/social/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Enam tautan pendek dalam grid dua kolom, lalu Address / Google Maps / Link Form
+  yang butuh lebar penuh. Tidak menerima props; pemanggil menyediakan state Alpine
+  dari form/social/form.
+
+  Id tiap field = nama field, dipakai form/social/form untuk memfokuskan field
+  pertama yang error.
+--}}
+<div class='flex flex-col gap-5'>
+  <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+    {{> components/ui/super_admin/form/text_field
+      id='linkedin'
+      name='linkedin'
+      field='linkedin'
+      type='url'
+      icon='link'
+      label='LinkedIn URL'
+      placeholder='https://linkedin.com/company/...'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='instagram'
+      name='instagram'
+      field='instagram'
+      type='url'
+      icon='link'
+      label='Instagram URL'
+      placeholder='https://instagram.com/username'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='youtube'
+      name='youtube'
+      field='youtube'
+      type='url'
+      icon='link'
+      label='YouTube URL'
+      placeholder='https://youtube.com/@channel'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='videoYoutube'
+      name='videoYoutube'
+      field='videoYoutube'
+      type='url'
+      icon='link'
+      label='YouTube Video URL'
+      placeholder='https://youtube.com/watch?v=...'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='email'
+      name='email'
+      field='email'
+      type='email'
+      label='Email'
+      placeholder='contact@example.com'
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id='number'
+      name='number'
+      field='number'
+      label='Phone Number'
+      placeholder='+62 812 3456 7890'
+      required=true
+    }}
+  </div>
+
+  {{> components/ui/super_admin/form/text_field
+    id='address'
+    name='address'
+    field='address'
+    label='Address'
+    placeholder='Full address...'
+    multiline=true
+    rows=3
+    heightClass='h-24'
+    required=true
+  }}
+
+  {{> components/ui/super_admin/form/text_field
+    id='linkAddress'
+    name='linkAddress'
+    field='linkAddress'
+    icon='link'
+    label='Google Maps Link'
+    placeholder='https://maps.app.goo.gl/...'
+    hint='Paste the share link, not the embed code — the list renders it as a clickable link.'
+    required=true
+  }}
+
+  {{> components/ui/super_admin/form/text_field
+    id='linkForm'
+    name='linkForm'
+    field='linkForm'
+    type='url'
+    icon='link'
+    label='Job Form Link'
+    placeholder='https://forms.gle/...'
+    required=true
+  }}
+</div>
