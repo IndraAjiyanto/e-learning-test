@@ -205,6 +205,10 @@ const SCREENS = [
         /\d+ sessions?/i.test(header), header.slice(0, 120).replace(/\n/g, ' '));
       check(s, 'no "click to review" filler',
         !/Click to (Review|Expand)/i.test(header));
+
+      // Sesi kini membuka halamannya sendiri, bukan akordeon di dalam akordeon.
+      check(s, 'sessions link to their own page',
+        await page.locator('#start-learning-container a[href*="/program/session/detail/"]').count() > 0);
       // Pemilik meminta breadcrumb dihapus dari seluruh area student, termasuk
       // Start Learning, meskipun frame desainnya menggambarkannya.
       check(s, 'no breadcrumb anywhere in the student area',
@@ -219,7 +223,8 @@ const SCREENS = [
 
       // Tombol Detail Program pernah menunjuk /program/detail/:id yang selalu 404;
       // path sebenarnya mengulang prefix controller.
-      const detailHref = await page.locator('a[href*="detail"]').first().getAttribute('href').catch(() => null);
+      const detailHref = await page.locator('a[href*="/program/program/detail/"], a:has-text("Detail Program")')
+        .first().getAttribute('href').catch(() => null);
       check(s, 'Detail Program link resolves', !detailHref || detailHref.includes('/program/program/detail/'), String(detailHref));
     },
   },
@@ -326,6 +331,40 @@ const SCREENS = [
         await page.goto(`${BASE}${screenUrl}`, { waitUntil: 'networkidle' }).catch(() => {});
         await page.waitForTimeout(1200);
       }
+    },
+  },
+  {
+    // Halaman baru: satu sesi punya URL sendiri, menggantikan akordeon di dalam
+    // akordeon minggu pada panel Start Learning.
+    name: 'session-detail',
+    urlFrom: (ids) => {
+      const extra = JSON.parse(process.env.EXTRA_IDS || '{}');
+      return `/program/session/detail/${extra.sid}`;
+    },
+    design: null,
+    async assert(page, s) {
+      check(s, 'renders inside the backoffice shell',
+        await page.getByRole('link', { name: /Payment History/ }).count() > 0);
+      const head = (await page.locator('h1').first().evaluate(
+        (el) => (el.parentElement?.innerText || ''))).replace(/\s+/g, ' ');
+      check(s, 'week and session position', /Week \d+ . Session \d+ of \d+/i.test(head), head.slice(0, 70));
+      check(s, 'session progress bar', await page.locator('[role="progressbar"]').count() > 0);
+
+      // Empat bagian yang membentuk satu sesi.
+      for (const [label, rx] of [['Attendance', /Attendance/], ['Materials', /Materials/],
+                                 ['Assignment', /Assignment/], ['Logbook', /Logbook/i]]) {
+        check(s, `${label} section`, await page.getByRole('heading', { name: rx }).count() > 0);
+      }
+
+      // Materi terkunci sampai student absen; kalau sudah absen, ubinnya tautan.
+      const attended = await page.getByText(/Attendance Recorded/i).count() > 0;
+      const tiles = await page.locator('a[href*="/learning-material/"]').count();
+      const lockedTiles = await page.locator('span[aria-disabled="true"]').count();
+      check(s, attended ? 'material tiles are links once attended' : 'material tiles locked until attendance',
+        attended ? tiles > 0 : lockedTiles >= 0, `attended=${attended} links=${tiles} locked=${lockedTiles}`);
+
+      check(s, 'back link returns to the learning area',
+        await page.locator('a[href*="/program/myProgram/"]').count() > 0);
     },
   },
   {

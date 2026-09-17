@@ -547,6 +547,74 @@ export class CoursesService {
       .getMany();
   }
 
+  /**
+   * Data untuk halaman detail sesi milik student.
+   *
+   * Mengembalikan sesi beserta seluruh isinya, saudara-saudaranya dalam minggu
+   * yang sama (untuk navigasi dan perhitungan kunci), dan status buka-kunci.
+   *
+   * Status kunci DIHITUNG DI SINI, tidak lagi hanya di sisi klien. Sebelum ada
+   * halaman ini, penguncian sesi hanya ada di `sessionUnlock.ts` yang berjalan
+   * di browser; begitu sesi punya URL sendiri, aturan yang sama harus berlaku
+   * di server, kalau tidak student bisa melompati kunci dengan menempel URL.
+   * Aturannya disalin persis dari canOpenNextSession():
+   *   sesi sebelumnya harus hadir DAN logbooknya disetujui.
+   */
+  async findSessionDetail(sessionId: string, userId: string) {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
+    });
+    if (!session?.weeks?.course) {
+      throw new NotFoundException('Session not found');
+    }
+    const courseId = session.weeks.course.id;
+
+    // Student hanya boleh melihat sesi dari program yang benar-benar diikutinya.
+    const enrolment = await this.userCourseRepository.findOne({
+      where: { user: { id: userId }, course: { id: courseId } },
+    });
+    if (!enrolment) {
+      throw new NotFoundException('Session not found');
+    }
+
+    // Sesi satu minggu, lengkap dengan data milik user ini. Dipakai dua kali:
+    // mencari sesi yang diminta, dan menghitung kuncinya dari sesi sebelumnya.
+    const siblings = await this.findSession(session.weeks.id, userId);
+    const index = siblings.findIndex((x) => x.id === sessionId);
+    const current = index >= 0 ? siblings[index] : null;
+    if (!current) {
+      throw new NotFoundException('Session not found');
+    }
+
+    // PENTING soal penamaan: `session_progresses.isAttended` bukan berarti
+    // student sudah mengisi absensi, melainkan sesinya sudah TERBUKA. Baris itu
+    // ditulis saat pendaftaran (sesi pertama) dan saat logbook sesi sebelumnya
+    // disetujui (logbook.service.ts). Kehadiran sungguhan ada di tabel
+    // `attendance`. Panel Start Learning memakai arti yang sama, jadi aturan di
+    // sini sengaja disamakan dengannya - kalau tidak, panel menampilkan sesi
+    // sebagai terbuka sementara halamannya menolak membukanya.
+    const unlocked = current.sessionProgress?.[0]?.isAttended === true;
+    const attended = (current.attendances?.length ?? 0) > 0;
+    const logbookDone =
+      current.sessionProgress?.[0]?.logbook === true ||
+      current.logbooks?.[0]?.process === 'approved';
+    const previous = index > 0 ? siblings[index - 1] : null;
+
+    return {
+      session: current,
+      week: session.weeks,
+      course: session.weeks.course,
+      previous,
+      next: index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : null,
+      position: index + 1,
+      totalSessions: siblings.length,
+      unlocked,
+      attended,
+      logbookDone,
+    };
+  }
+
   async findWeeks(courseId: string, userId: string) {
     const course = await this.findOne(courseId);
     if (!course) {

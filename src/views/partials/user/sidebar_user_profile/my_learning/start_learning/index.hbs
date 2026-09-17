@@ -235,51 +235,89 @@
                   x-show='!loading && !error && dataLoaded'
                   class='space-y-3 mt-4'
                 >
-                  <!-- Sessions List -->
-                  <template
-                    x-for='session in sessions'
-                    :key='session.id'
-                  >
+                  {{!--
+                    Daftar sesi.
+
+                    Sebelumnya tiap sesi adalah akordeon di dalam akordeon
+                    minggu: untuk membaca satu tugas, student membuka minggu,
+                    lalu membuka sesi, lalu membacanya di ruang selebar setengah
+                    layar. Sekarang barisnya menjadi tautan menuju halaman
+                    detail sesi (/program/session/detail/:id), dan seluruh isi
+                    sesi tinggal di sana.
+
+                    Arti `sessionProgress[0].isAttended` di sini adalah SESI
+                    SUDAH TERBUKA, bukan student sudah absen; kehadiran
+                    sungguhan ada di `attendances`. Aturan yang sama dipakai
+                    server di CoursesService.findSessionDetail.
+                  --}}
+                  <template x-for='session in sessions' :key='session.id'>
                     <div>
-
-                      <template
-                        x-if='session.sessionProgress.length > 0 && session.sessionProgress[0].isAttended === true'
-                      >
-                        <div
-                          x-data="{
-    open: localStorage.getItem(`open-session-${session.id}`) === 'true'
-  }"
-                          @click.away='open = false; localStorage.setItem(`open-session-${session.id}`, false)'
-                          class='border border-[#E5E5E5] rounded-lg shadow-md bg-white overflow-hidden'
+                      {{!-- Sesi terbuka --}}
+                      <template x-if='session.sessionProgress.length > 0 && session.sessionProgress[0].isAttended === true'>
+                        <a
+                          :href='`/program/session/detail/${session.id}`'
+                          class='group flex items-center justify-between gap-3 rounded-lg border border-[#E5E5E5] bg-white px-4 py-3 no-underline transition-colors hover:border-[#003060] hover:bg-[#FAFAFA]'
                         >
+                          <div class='flex min-w-0 items-center gap-3'>
+                            <span
+                              class='grid size-8 shrink-0 place-items-center rounded-lg font-inter text-xs font-bold'
+                              :class="session.sessionProgress?.[0]?.logbook ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#E4F1F7] text-[#003060]'"
+                            >
+                              <template x-if='session.sessionProgress?.[0]?.logbook'>
+                                <i class='fa-solid fa-check'></i>
+                              </template>
+                              <template x-if='!session.sessionProgress?.[0]?.logbook'>
+                                <span x-text='session.sessionOrder'></span>
+                              </template>
+                            </span>
 
-{{> program_detail/right_content/week/session/button_session}}
-
-                          <div
-                            x-show='open'
-                            x-collapse
-                            class='px-4 pb-4 bg-white'
-                          >
-                            <!-- Attendance Check -->
-                            <template x-if='session.attendances.length > 0'>
-                              <div>
-
-{{> program_detail/right_content/week/session/attendance_status}}
-
-{{> program_detail/right_content/week/session/materi_section}}
-
-{{> program_detail/right_content/week/session/assigment_section}}
-
-{{> program_detail/right_content/week/session/logbook_section}}
+                            <div class='min-w-0'>
+                              <div class='flex flex-wrap items-center gap-2'>
+                                <h4
+                                  class='truncate font-montserrat text-sm font-bold text-[#171717]'
+                                  x-text='session.topic || `{{t "test.startLearning.session"}} ${session.sessionOrder}`'
+                                ></h4>
+                                <template x-if='session.sessionProgress?.[0]?.logbook'>
+                                  <span class='rounded-full bg-[#f0fdf4] px-2 py-0.5 font-inter text-xs font-semibold text-[#15803d]'>
+                                    {{t 'test.startLearning.completed'}}
+                                  </span>
+                                </template>
+                                <template x-if='!session.sessionProgress?.[0]?.logbook && session.attendances.length === 0'>
+                                  <span class='rounded-full bg-[#FEFCE8] px-2 py-0.5 font-inter text-xs font-semibold text-[#A16207]'>
+                                    {{t 'test.startLearning.attendanceRequired'}}
+                                  </span>
+                                </template>
                               </div>
-                            </template>
 
-{{> program_detail/right_content/week/session/attendance_noYet}}
+                              {{!-- Isi sesi disebut di sini supaya student tahu
+                                   ada apa sebelum membukanya. --}}
+                              <p class='mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 font-inter text-xs text-[#737373]'>
+                                <template x-if='session.date'>
+                                  <span x-text='new Date(session.date).toLocaleDateString()'></span>
+                                </template>
+                                <template x-if='session.materials?.length'>
+                                  <span>
+                                    <span x-text='session.materials.length'></span>
+                                    {{t 'test.startLearning.materials'}}
+                                  </span>
+                                </template>
+                                <template x-if='session.assignments?.length'>
+                                  <span>
+                                    <span x-text='session.assignments.length'></span>
+                                    {{t 'test.startLearning.assignment'}}
+                                  </span>
+                                </template>
+                              </p>
+                            </div>
                           </div>
-                        </div>
+
+                          <span class='inline-flex shrink-0 items-center gap-1.5 font-inter text-xs font-semibold text-[#003060]'>
+                            <span class='hidden sm:inline'>{{t 'test.startLearning.openSession'}}</span>
+                            <i class='fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-0.5'></i>
+                          </span>
+                        </a>
                       </template>
 
-                      
 {{> program_detail/right_content/week/session/locked_session}}
                     </div>
                   </template>

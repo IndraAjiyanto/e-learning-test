@@ -30,7 +30,7 @@
   <div class="flex items-center gap-3">
     <a href="{{default homeHref '/users/profile'}}"><img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-6 w-auto object-contain lg:h-7" /></a>
     {{#if sidebarToggle}}
-    <button type="button" @click="sidebarOpen = !sidebarOpen" class="grid size-9 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#F4F7FC]" aria-label="Toggle sidebar">
+    <button type="button" @click="sidebarOpen = !sidebarOpen; localStorage.setItem('user-sidebar-open', sidebarOpen)" class="grid size-9 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#F4F7FC]" aria-label="Toggle sidebar">
       <i class="fas fa-bars text-sm"></i>
     </button>
     {{/if}}

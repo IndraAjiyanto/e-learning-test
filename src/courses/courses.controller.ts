@@ -1047,6 +1047,88 @@ await this.coursesService.addUserToCourse(userId, courseId);
     }
   }
 
+  // Halaman detail sesi.
+  //
+  // WAJIB dideklarasikan SEBELUM `session/:weeksId` di bawahnya: Nest mencocokkan
+  // rute sesuai urutan pendaftaran, jadi kalau terbalik, `session/:weeksId` akan
+  // menelan "detail" sebagai weeksId dan halaman ini tidak pernah tercapai.
+  @Roles('user')
+  @Get('session/detail/:sessionId')
+  async sessionDetail(
+    @Param('sessionId') sessionId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.coursesService.findSessionDetail(
+      sessionId,
+      req.user!.id,
+    );
+
+    // Sesi terkunci tidak dirender isinya; student dikembalikan ke area belajar
+    // dengan alasannya. Penguncian dihitung di service, bukan di template.
+    if (!detail.unlocked) {
+      req.flash(
+        'error',
+        'Complete the previous session before opening this one.',
+      );
+      return res.redirect(
+        `/program/myProgram/${req.user!.id}?courseId=${detail.course.id}`,
+      );
+    }
+
+    // Bentuk data dirapikan di sini, bukan di template: Handlebars tidak punya
+    // filter, jadi mengelompokkan materi per jenis di view berarti tiga kali
+    // perulangan penuh beserta {{#if}} di dalamnya.
+    const materials = {
+      pdf: detail.session.materials.filter((m) => m.fileType === 'pdf'),
+      ppt: detail.session.materials.filter((m) => m.fileType === 'ppt'),
+      video: detail.session.materials.filter((m) => m.fileType === 'video'),
+    };
+    const assignments = detail.session.assignments.map((a) => ({
+      ...a,
+      answer: a.taskAnswers?.[0] ?? null,
+      submitted: (a.taskAnswers?.length ?? 0) > 0,
+    }));
+    const logbook = detail.session.logbooks?.[0] ?? null;
+
+    // Empat langkah yang membentuk satu sesi. Dipakai untuk penanda kemajuan di
+    // kepala halaman, supaya student melihat sisa pekerjaannya sekali lihat.
+    const steps = [
+      { key: 'attendance', done: detail.attended, available: true },
+      {
+        key: 'materials',
+        done: detail.session.materials.length > 0 && detail.attended,
+        available: detail.session.materials.length > 0,
+      },
+      {
+        key: 'assignment',
+        done: assignments.length > 0 && assignments.every((a) => a.submitted),
+        available: assignments.length > 0,
+      },
+      { key: 'logbook', done: detail.logbookDone, available: true },
+    ];
+    const stepsAvailable = steps.filter((x) => x.available);
+    const stepsDone = stepsAvailable.filter((x) => x.done).length;
+
+    return res.render('user/learning/session', {
+      user: req.user,
+      ...detail,
+      materials,
+      materialsCount: detail.session.materials.length,
+      // Materi baru terbuka setelah student absen pada sesi ini.
+      materialsLocked: !detail.attended,
+      assignments,
+      logbook,
+      steps,
+      stepsDone,
+      stepsTotal: stepsAvailable.length,
+      stepsPercent: stepsAvailable.length
+        ? Math.round((stepsDone / stepsAvailable.length) * 100)
+        : 0,
+      bareShell: true,
+    });
+  }
+
   @Roles('user')
   @Get('session/:weeksId')
   async getPertemuan(

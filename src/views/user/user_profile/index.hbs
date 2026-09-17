@@ -19,7 +19,14 @@
 <div 
   class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-montserrat overflow-hidden"
   x-data="{
-    sidebarOpen: true,
+    {{!-- Sidebar student mulai dalam keadaan menciut, atas permintaan pemilik.
+         Ditulis bersyarat pada peran supaya tetap benar bila kelak shell ini
+         dipakai peran lain; hari ini sidebar-nya memang hanya dirender untuk
+         peran `user`. Pilihan student disimpan, jadi begitu ia membentangkannya
+         sekali, keadaan itu yang dipakai pada kunjungan berikutnya. --}}
+    sidebarOpen: localStorage.getItem('user-sidebar-open') !== null
+      ? localStorage.getItem('user-sidebar-open') === 'true'
+      : {{#if (roles user.role 'admin' 'super_admin')}}true{{else}}false{{/if}},
     lang: '{{lang}}',
     activeSection: new URLSearchParams(window.location.search).get('tab') || '{{activeSection}}' || '{{#if (or (eq user.role "admin") (eq user.role "super_admin"))}}profile{{else}}dashboard{{/if}}',
     openMyLearning: true,
