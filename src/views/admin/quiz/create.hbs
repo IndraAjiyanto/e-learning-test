@@ -32,7 +32,7 @@
           {{!-- Quiz Name --}}
           {{#> components/ui/admin/form/form-field label="Quiz Name*" for="quizName" errorId="quizName_error"}}
             {{> components/ui/admin/form/textarea-input
-              id="quizName" name="quizName" rows="3"
+              id="quizName" name="quizName" rows="3" required=true
               placeholder="Enter quiz name..."
               xModel="quizName"
             }}

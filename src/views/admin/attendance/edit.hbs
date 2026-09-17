@@ -14,7 +14,10 @@
 --}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'
-    x-data='{ loading: false }'>
+    x-data='{ ...adminFormGate(), loading: false }'
+    x-init="initGate()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
     {{!-- Title --}}
     {{> components/ui/admin/text/page-header title="Edit Attendance" subtitle="Update the attendance record below"}}
@@ -69,7 +72,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' attendance.session.id) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Update Attendance' type='submit' loading='loading' width='183'}}
+          {{> components/ui/admin/button/primary-button text='Update Attendance' type='submit' loading='loading' disabled='!formValid || !isDirty' width='183'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

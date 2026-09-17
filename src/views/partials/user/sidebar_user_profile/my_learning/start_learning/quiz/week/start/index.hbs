@@ -20,7 +20,7 @@ window.addEventListener("load", function(){
             Quiz {{quiz.weeks.description}}
         </h1>
 
-        <p class="font-sans text-[20px] text-[#003060]">
+        <p class="font-sans text-xl text-[#003060]">
             Complete the quiz to assess your understanding of the learning material.
         </p>
     </div>
@@ -128,35 +128,19 @@ window.addEventListener("load", function(){
 
                     {{else}}
 
-                    <!-- Static fallback: 1 question per page -->
-                    <div x-show="currentQuestion === 0">
-                        <div class="flex items-start gap-4 mb-6">
-                            <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">1</div>
-                            <div class="flex-1">
-                                <p class="font-semibold text-slate-900 text-lg leading-relaxed">Static question 1?</p>
-                            </div>
-                        </div>
-                        <div class="px-8 space-y-3">
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="1" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer A</span></label>
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="2" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer B</span></label>
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="3" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer C</span></label>
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="4" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer D</span></label>
-                        </div>
-                    </div>
-
-                    <div x-show="currentQuestion === 1">
-                        <div class="flex items-start gap-4 mb-6">
-                            <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">2</div>
-                            <div class="flex-1">
-                                <p class="font-semibold text-slate-900 text-lg leading-relaxed">Static question 2?</p>
-                            </div>
-                        </div>
-                        <div class="px-8 space-y-3">
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="1" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer A</span></label>
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="2" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer B</span></label>
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="3" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer C</span></label>
-                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="4" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer D</span></label>
-                        </div>
+                    {{!-- Cabang ini dulu merender DUA soal palsu lengkap dengan
+                         pilihan "Answer A/B/C/D" ketika sebuah quiz belum punya
+                         soal. Isinya bercampur dengan formulir yang sungguhan,
+                         sehingga student bisa mengirim jawaban atas soal yang
+                         tidak ada. Diganti keadaan kosong yang jujur. --}}
+                    <div class="flex flex-col items-center gap-3 px-8 py-12 text-center">
+                        <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                        </span>
+                        <h3 class="font-montserrat text-xl font-bold text-[#003060]">This quiz has no questions yet</h3>
+                        <p class="font-inter text-sm text-[#737373]">
+                            Your mentor has not added any questions. Please check back later.
+                        </p>
                     </div>
 
                     {{/if}}
@@ -297,7 +281,8 @@ window.addEventListener("load", function(){
                     <div class="values font-semibold text-slate-700"></div>
                 </div>
 
-                <script>
+                {{#if remainingTime}}
+<script>
                 document.addEventListener("DOMContentLoaded", function () {
 
                     const form = document.querySelector('#formSubmit');
@@ -306,7 +291,7 @@ window.addEventListener("load", function(){
                     timer.start({
                         countdown: true,
                         startValues: {
-                            seconds: {{remainingTime}}
+                            seconds: {{default remainingTime 0}}
                         }
                     });
 
@@ -326,6 +311,7 @@ window.addEventListener("load", function(){
 
                 });
                 </script>
+{{/if}}
 
             {{/if}}
 

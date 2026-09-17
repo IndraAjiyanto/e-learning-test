@@ -1,0 +1,140 @@
+{{!--
+  Komponen: Form Gate (Admin) — helper gating tombol submit
+  Lokasi: src/views/partials/components/ui/admin/form/gate.hbs
+  Level: L0 — hanya mendefinisikan fungsi global, tidak merender apa pun.
+
+  MASALAH YANG DISELESAIKAN
+  Tombol submit di halaman admin tetap menyala pada form kosong; validasi baru
+  terasa setelah diklik (beberapa halaman bahkan memakai alert()). Helper ini
+  menyediakan satu sumber kebenaran "form ini layak dikirim" supaya tombolnya
+  bisa dimatikan sejak awal, sama seperti aturan di halaman super admin
+  (lihat docs/form-submit-gating.md).
+
+  KENAPA TIDAK checkValidity() SAJA
+  searchable_select menaruh nilainya di <input type="hidden">, dan constraint
+  validation bawaan browser MELEWATI field hidden — form dengan select wajib
+  yang masih kosong tetap terbaca valid. Karena itu hidden input yang wajib
+  ditandai `data-required` dan diperiksa terpisah.
+
+  CARA PAKAI
+    x-data="{ ...adminFormGate(), loading: false }"
+    x-init="initGate()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()"
+
+  lalu kirim ke tombolnya:
+    disabled='!formValid'                     -> halaman create
+    disabled='!formValid || !isDirty'          -> halaman edit
+
+  `loading` tidak perlu ikut ditulis di sini — primary-button meng-OR-kannya
+  sendiri ke :disabled.
+--}}
+<script>
+
+  // Deteksi "sudah ada yang berubah" untuk halaman EDIT. Dipakai bersama
+  // canSubmit()/formValid: tombol Save baru aktif bila form valid DAN isinya
+  // benar-benar berbeda dari saat halaman dibuka.
+  //
+  // Sengaja di level DOM, bukan di dalam factory form: satu factory super admin
+  // dipakai halaman create dan edit sekaligus, sedangkan aturan ini hanya untuk
+  // edit. Membacanya dari <form> membuat halaman create tidak ikut terkunci.
+  function formDirtyGate() {
+    return {
+      isDirty: false,
+      _baseline: null,
+
+      // File tidak bisa di-JSON-kan, jadi diwakili nama+ukuran: input berkas yang
+      // tidak disentuh tetap sama, begitu user memilih berkas nilainya berubah.
+      _snapshot(form) {
+        const parts = [];
+        for (const el of form.elements) {
+          if (!el.name || el.disabled) continue;
+          if (el.type === 'file') {
+            parts.push(el.name + '=' + Array.from(el.files || [])
+              .map((f) => f.name + ':' + f.size).join('|'));
+          } else if (el.type === 'checkbox' || el.type === 'radio') {
+            parts.push(el.name + '=' + (el.checked ? el.value : ''));
+          } else {
+            parts.push(el.name + '=' + (el.value ?? ''));
+          }
+        }
+        return parts.join('\u0001');
+      },
+
+      _form() {
+        return this.$el.tagName === 'FORM'
+          ? this.$el
+          : this.$el.closest('form') || this.$el.querySelector('form');
+      },
+
+      captureBaseline() {
+        const form = this._form();
+        this._baseline = form ? this._snapshot(form) : null;
+        this.isDirty = false;
+        if (form) this._bindWatchers(form);
+      },
+
+      // @input/@change di markup tidak cukup: dropdown kustom (mis. pemilih
+      // kategori partner) menaruh nilainya di <input type="hidden"> lewat
+      // binding Alpine, dan menyetel .value secara langsung TIDAK memicu event
+      // apa pun. Tanpa ini, halaman yang seluruh field-nya berupa dropdown
+      // semacam itu tombolnya tidak pernah menyala. `click` menangkap pemilihan
+      // di dropdown, dan $nextTick menunggu Alpine menuliskan nilainya dulu.
+      _bindWatchers(form) {
+        if (form._dirtyWatchersBound) return;
+        form._dirtyWatchersBound = true;
+
+        const recompute = () => this.$nextTick(() => this.recomputeDirty());
+        ['input', 'change', 'click'].forEach((ev) =>
+          form.addEventListener(ev, recompute, true),
+        );
+      },
+
+      recomputeDirty() {
+        const form = this._form();
+        if (!form || this._baseline === null) { this.isDirty = false; return; }
+        this.isDirty = this._snapshot(form) !== this._baseline;
+      },
+    };
+  }
+
+  function adminFormGate() {
+    return {
+      ...formDirtyGate(),
+      formValid: false,
+
+      // Satu pintu masuk untuk x-init: rekam patokan dulu, baru hitung kelayakan.
+      // Urutannya penting — patokan harus diambil sebelum nilai apa pun berubah.
+      initGate() {
+        // Ditunda satu tick: sebagian halaman edit mengisi nilai awalnya lewat
+        // binding Alpine (mis. x-init prefill), yang baru diterapkan sesudah
+        // init. Mengambil patokan terlalu cepat membuat form langsung terbaca
+        // berubah padahal user belum menyentuh apa pun.
+        this.$nextTick(() => {
+          this.captureBaseline();
+          this.recomputeFormValid();
+        });
+      },
+
+      // Dihitung ulang dari nilai terkini, bukan dari pesan error yang kebetulan
+      // sudah tampil — jebakan yang sama sudah didokumentasikan untuk super admin.
+      recomputeFormValid() {
+        this.recomputeDirty();
+
+        // x-data kadang di <form> itu sendiri, kadang di div pembungkus di
+        // luarnya — jadi dicari ke atas dulu, baru ke bawah.
+        const form =
+          this.$el.tagName === 'FORM'
+            ? this.$el
+            : this.$el.closest('form') || this.$el.querySelector('form');
+        if (!form) { this.formValid = false; return; }
+
+        if (!form.checkValidity()) { this.formValid = false; return; }
+
+        // Hidden input tidak ikut checkValidity(), jadi diperiksa sendiri.
+        const hidden = form.querySelectorAll('input[type="hidden"][data-required]');
+        this.formValid = Array.from(hidden).every((i) => (i.value || '').trim() !== '');
+      },
+    };
+  }
+</script>

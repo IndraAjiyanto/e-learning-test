@@ -13,7 +13,7 @@
       <!-- Attendance Status Field -->
       <div class="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
         <div class="content-stretch flex flex-col items-start relative shrink-0">
-          <p class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[37px] leading-[normal] relative shrink-0 text-[20px] text-[#003060]">
+          <p class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[37px] leading-[normal] relative shrink-0 text-sm text-[#003060]">
             Attendance Status
           </p>
         </div>
@@ -21,10 +21,10 @@
           <button
             type="button"
             @click="statusDropdownOpen = !statusDropdownOpen"
-            class="bg-white content-stretch drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] flex gap-[15px] h-[60px] items-center justify-between p-[10px] relative rounded-[12px] shrink-0 w-[503px] cursor-pointer"
+            class="bg-white content-stretch shadow-lg flex gap-[15px] h-[60px] items-center justify-between p-[10px] relative rounded-[12px] shrink-0 w-[503px] cursor-pointer"
           >
             <p
-              class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[27px] leading-[normal] relative shrink-0 text-[18px] text-left"
+              class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[27px] leading-[normal] relative shrink-0 text-lg text-left"
               :class="editStatus ? 'text-[#003060]' : 'text-[rgba(0,0,0,0.5)]'"
               x-text="editStatus ? statusLabels[editStatus] : 'Select attendance status'"
             ></p>
@@ -41,14 +41,14 @@
           <div
             x-show="statusDropdownOpen"
             x-transition
-            class="absolute mt-[70px] bg-white rounded-[12px] drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] w-[503px] py-[10px] z-10"
+            class="absolute mt-[70px] bg-white rounded-[12px] shadow-lg w-[503px] py-[10px] z-10"
             style="display: none;"
           >
             <template x-for="key in Object.keys(statusLabels)" :key="key">
               <button
                 type="button"
                 @click="editStatus = key; statusDropdownOpen = false"
-                class="w-full text-left px-[20px] py-[10px] font-['Montserrat:Medium'] font-medium text-[18px] cursor-pointer hover:bg-[#F3F4F6]"
+                class="w-full text-left px-[20px] py-[10px] font-['Montserrat:Medium'] font-medium text-lg cursor-pointer hover:bg-[#F3F4F6]"
                 :class="editStatus === key ? 'text-[#003060]' : 'text-black'"
                 x-text="statusLabels[key]"
               ></button>
@@ -60,7 +60,7 @@
       <!-- Notes Field -->
       <div class="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
         <div class="content-stretch flex flex-col items-start relative shrink-0">
-          <p class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[37px] leading-[normal] relative shrink-0 text-[20px] text-[#003060]">
+          <p class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[37px] leading-[normal] relative shrink-0 text-sm text-[#003060]">
             Notes
           </p>
         </div>
@@ -69,7 +69,7 @@
             x-model="editNotes"
             placeholder="Enter attendance notes..."
             rows="2"
-            class="bg-white content-stretch drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-['Montserrat:Medium'] font-medium leading-[normal] text-[18px] text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
+            class="bg-white content-stretch shadow-lg flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-['Montserrat:Medium'] font-medium leading-[normal] text-lg text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
           ></textarea>
         </div>
       </div>
@@ -80,15 +80,15 @@
           @click="saveAttendance()"
           :disabled="!editStatus"
           :class="!editStatus ? 'opacity-50 cursor-not-allowed' : ''"
-          class="bg-[#003060] border border-[#003060] border-solid content-stretch drop-shadow-[0px_0px_2px_rgba(0,0,0,0.5)] flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shrink-0 w-[244px]"
+          class="bg-[#003060] border border-[#003060] border-solid content-stretch hover:shadow-sm transition-shadow flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shrink-0 w-[244px]"
         >
-          <span class="font-['Montserrat:Medium'] font-medium leading-[normal] text-[20px] text-white">Save</span>
+          <span class="font-['Montserrat:Medium'] font-medium leading-[normal] text-sm text-white">Save</span>
         </button>
         <button
           @click="showEditModal = false"
-          class="border border-[#003060] border-solid content-stretch flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] shrink-0 w-[244px] bg-white"
+          class="border border-[#003060] border-solid content-stretch flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] hover:shadow-sm transition-shadow shrink-0 w-[244px] bg-white"
         >
-          <span class="font-['Montserrat:Medium'] font-medium leading-[normal] text-[20px] text-black">Cancel</span>
+          <span class="font-['Montserrat:Medium'] font-medium leading-[normal] text-sm text-black">Cancel</span>
         </button>
       </div>
 
@@ -129,7 +129,7 @@
 
     <!-- Success Title -->
     <h2
-      class="font-['Montserrat:Medium'] font-medium text-[20px] leading-[normal] text-[#003060] text-center"
+      class="font-['Montserrat:Medium'] font-medium text-sm leading-[normal] text-[#003060] text-center"
     >
       Success!
     </h2>

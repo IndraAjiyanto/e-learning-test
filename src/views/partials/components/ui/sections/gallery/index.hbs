@@ -11,7 +11,7 @@
 --}}
 <section
   id="gallery"
-  class="{{default sectionClass (default desktopSectionClass 'w-full bg-[#F8F9FA] py-14 font-montserrat lg:py-20')}}"
+  class="{{default sectionClass (default desktopSectionClass 'w-full bg-[#F8F9FA] py-14 font-inter lg:py-20')}}"
   x-data="galleryCarousel(window.__galleryItems || [])"
 >
   <div class="{{default wrapperClass (default desktopWrapperClass 'page-shell flex flex-col items-center')}}">
@@ -20,8 +20,8 @@
       {{#unless (eq showBadge false)}}
         {{> components/ui/text/eyebrow/index text=(t (default badgeKey 'test.home.gallery.gallery')) }}
       {{/unless}}
-      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{{t (default titleKey 'test.home.gallery.title')}}}</h2>
-      <p class="{{sizeClass 'body'}} max-w-[658px] font-open-sans text-[#4A5568]">{{t (default descKey 'test.home.gallery.description')}}</p>
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{{t (default titleKey 'test.home.gallery.title')}}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[658px] font-inter text-[#4A5568]">{{t (default descKey 'test.home.gallery.description')}}</p>
       {{#unless (eq showDivider false)}}
         <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
       {{/unless}}
@@ -38,7 +38,7 @@
 
     <div class="mt-8 flex flex-col items-center gap-5 lg:mt-10">
       {{#unless (eq showBottomLink false)}}
-        <a href="/dashboard/gallery" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
+        <a href="/dashboard/gallery" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-inter text-base font-semibold text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
           {{t (default linkKey 'test.home.gallery.chooseGallery')}} <i class="fa-solid fa-arrow-right text-sm"></i>
         </a>
       {{/unless}}
@@ -63,9 +63,17 @@
       items: items,
       page: 0,
       per: 3,
+      _timer: null,
       get pages() { return Math.max(1, Math.ceil(this.items.length / this.per)); },
       get visible() { return this.items.slice(this.page * this.per, this.page * this.per + this.per); },
-      goTo(i) { this.page = Math.max(0, Math.min(i, this.pages - 1)); },
+      init() { this._restart(); },
+      goTo(i) { this.page = Math.max(0, Math.min(i, this.pages - 1)); this._restart(); },
+      _restart() {
+        clearInterval(this._timer);
+        if (this.pages <= 1) return;
+        // auto-scroll left every 5s per design (yana, WA 2026-09-10)
+        this._timer = setInterval(() => { this.page = (this.page + 1) % this.pages; }, 5000);
+      },
     };
   }
 </script>

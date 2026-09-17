@@ -8,7 +8,10 @@
 --}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto'
-    x-data='{ loading: false, isFinal: false }'>
+    x-data='{ ...adminFormGate(), loading: false, isFinal: false }'
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
     {{!-- Title: Create Week + subtitle --}}
     <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
@@ -22,7 +25,7 @@
         {{#> components/ui/admin/form/form-card noNumber=true}}
           {{#> components/ui/admin/form/form-field label="Description*" for="description" errorId="description_error"}}
             {{> components/ui/admin/form/text-input
-              id="description" name="description"
+              id="description" name="description" required=true
               placeholder="Enter description week"
             }}
           {{/components/ui/admin/form/form-field}}
@@ -43,7 +46,7 @@
           {{!-- Button Row --}}
           <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-start sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/program/detail/program/admin/' id)}}
-            {{> components/ui/admin/button/primary-button text="Create Week" loading="loading" width="136"}}
+            {{> components/ui/admin/button/primary-button text="Create Week" loading="loading" disabled='!formValid' width="136"}}
           </div>
         </div>
 

@@ -18,7 +18,10 @@
 --}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'
-    x-data='{ loading: false }'>
+    x-data='{ ...adminFormGate(), loading: false }'
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
     {{!-- Title --}}
     {{> components/ui/admin/text/page-header title="Add Attendance" subtitle="Record attendance for the session participants"}}
@@ -34,6 +37,7 @@
         {{!-- Row: User* + Status* --}}
         <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           {{> components/ui/admin/form/searchable_select/index
+            required=true
             label="User*"
             forId="userId"
             errorId="userId_error"
@@ -71,7 +75,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' width='183'}}
+          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' disabled='!formValid' width='183'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

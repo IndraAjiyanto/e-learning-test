@@ -10,7 +10,10 @@
 --}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto'
-    x-data='{ loading: false, isFinal: false }'>
+    x-data='{ ...adminFormGate(), loading: false, isFinal: false }'
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
     {{!-- Title: Create Session + subtitle --}}
     <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
@@ -73,7 +76,7 @@
           {{!-- Field Description (posts to `topic`) --}}
           {{#> components/ui/admin/form/form-field label="Description*" for="topic" errorId="topic_error"}}
             {{> components/ui/admin/form/textarea-input
-              id="topic" name="topic" rows="5"
+              id="topic" name="topic" rows="5" required=true
               placeholder="Enter session description..."
             }}
            {{/components/ui/admin/form/form-field}}
@@ -95,7 +98,7 @@
           {{!-- Button Row --}}
           <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-start sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
-            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" width="154"}}
+            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" disabled='!formValid' width="154"}}
           </div>
         </div>
 

@@ -62,6 +62,7 @@
 
           {{> components/ui/super_admin/form/button
             type='submit'
+            disabled='!canSubmit() || loading'
             variant='primary'
             label='Create Flow'
             loading=true

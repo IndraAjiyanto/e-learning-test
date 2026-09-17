@@ -30,7 +30,10 @@
         action='/category-partner/{{category.id}}?_method=PATCH'
         method='post'
         novalidate
-        x-data='editCategoryPartnerForm({{json (default category.category "")}})'
+        x-data='{ ...editCategoryPartnerForm({{json (default category.category "")}}), ...formDirtyGate() }'
+        x-init='$nextTick(() => captureBaseline())'
+        @input='recomputeDirty()'
+        @change='recomputeDirty()'
         @submit.prevent='submitForm($event)'
         class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
       >
@@ -67,7 +70,7 @@
                 variant='primary'
                 label='Save Changes'
                 loading=true
-                disabled='!canSubmit() || loading'
+                disabled='!canSubmit() || !isDirty || loading'
               }}
             </div>
           </div>
@@ -77,47 +80,51 @@
 
     {{!-- Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
          confirmDelete milik partial sweetalert global yang menimpa fungsi senama. --}}
-    <div
-      class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
-    >
-      <div class='flex items-start gap-4 sm:min-h-[72px]'>
-        <span
-          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
-        >
-          {{!-- lucide: alert-circle --}}
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
-            <circle cx='12' cy='12' r='10' />
-            <path d='M12 8v4' />
-            <path d='M12 16h.01' />
-          </svg>
-        </span>
-
-        <div class='flex flex-col gap-1'>
-          {{> components/ui/super_admin/description/index
-            text='Delete Partner Category'
-            class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
-          }}
-
-          {{> components/ui/super_admin/description/index
-            text='Permanently remove this category from Kesatria Academy. This action cannot be undone.'
-            class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
-          }}
-        </div>
-      </div>
-
-      <form
-        action='/category-partner/{{category.id}}?_method=DELETE'
-        method='post'
-        class='shrink-0'
+    {{!-- Kartu hapus digating `showDelete` dan mati secara default. Kirim
+     showDelete=true dari controller bila perlu ditampilkan lagi. --}}
+    {{#if showDelete}}
+      <div
+        class='flex flex-col gap-4 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-end sm:justify-between sm:gap-11 sm:px-[31px] sm:py-[19px]'
       >
-        {{> components/ui/super_admin/form/button
-          variant='danger'
-          label='Delete Category'
-          onclick='openDeleteModal(this)'
-          class='w-full sm:w-auto'
-        }}
-      </form>
-    </div>
+        <div class='flex items-start gap-4 sm:min-h-[72px]'>
+          <span
+            class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2]'
+          >
+            {{!-- lucide: alert-circle --}}
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-5 w-5'>
+              <circle cx='12' cy='12' r='10' />
+              <path d='M12 8v4' />
+              <path d='M12 16h.01' />
+            </svg>
+          </span>
+
+          <div class='flex flex-col gap-1'>
+            {{> components/ui/super_admin/description/index
+              text='Delete Partner Category'
+              class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+            }}
+
+            {{> components/ui/super_admin/description/index
+              text='Permanently remove this category from Kesatria Academy. This action cannot be undone.'
+              class='font-montserrat text-sm font-medium leading-5 text-[#718096]'
+            }}
+          </div>
+        </div>
+
+        <form
+          action='/category-partner/{{category.id}}?_method=DELETE'
+          method='post'
+          class='shrink-0'
+        >
+          {{> components/ui/super_admin/form/button
+            variant='danger'
+            label='Delete Category'
+            onclick='openDeleteModal(this)'
+            class='w-full sm:w-auto'
+          }}
+        </form>
+      </div>
+    {{/if}}
   </div>
 </div>
 

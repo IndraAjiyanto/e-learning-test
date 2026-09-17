@@ -3,7 +3,7 @@
   Lokasi: src/views/partials/components/ui/sections/program/index.hbs
   Satu pohon markup, base + lg. Data: category[] (jsonb name/text + icon), social.[0].number.
 --}}
-<section class="relative z-10 w-full bg-[#F8F9FA] py-14 font-montserrat lg:pt-[50px] lg:pb-[120px]" id="courses-section">
+<section class="relative z-10 w-full bg-[#F8F9FA] py-14 font-inter lg:pt-[50px] lg:pb-[120px]" id="courses-section">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
     {{!-- section header --}}
@@ -14,8 +14,8 @@
       class="flex flex-col items-center gap-4 text-center transition-all duration-700 ease-out"
     >
       {{> components/ui/text/eyebrow/index text=(t 'test.home.programSection.ourProgram') }}
-      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">{{t 'test.home.programSection.title'}}</h2>
-      <p class="{{sizeClass 'lead'}} max-w-[542px] font-open-sans text-[#4A5568]">{{t 'test.home.programSection.description'}}</p>
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{t 'test.home.programSection.title'}}</h2>
+      <p class="{{sizeClass 'lead'}} max-w-[542px] font-inter text-[#4A5568]">{{t 'test.home.programSection.description'}}</p>
       <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
@@ -38,14 +38,14 @@
 
       {{!-- program banner (Figma 286:3598) --}}
       <div class="flex flex-col justify-center gap-4 rounded-2xl bg-[#003060] p-7 lg:p-8">
-        <h3 class="text-lg font-montserrat font-bold leading-snug text-white">{{t 'test.home.programSection.bannerTitle'}}</h3>
-        <p class="{{sizeClass 'body-sm'}} font-open-sans text-[#E0F2F9]">{{t 'test.home.programSection.bannerDescription'}}</p>
+        <h3 class="text-lg font-inter font-bold leading-snug text-white">{{t 'test.home.programSection.bannerTitle'}}</h3>
+        <p class="{{sizeClass 'body-sm'}} font-inter text-[#E0F2F9]">{{t 'test.home.programSection.bannerDescription'}}</p>
         {{> components/ui/button/consultation/index
             phone=social.[0].number
             variant="solid"
             roundedClass="rounded-lg"
             text=(t 'test.home.programSection.bannerCta')
-            class="self-start px-6 py-3 font-montserrat text-sm" }}
+            class="self-start px-6 py-3 font-inter text-sm" }}
       </div>
     </div>
   </div>
