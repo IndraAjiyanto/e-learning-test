@@ -274,7 +274,8 @@ const SCREENS = [
       // Join Group tetap aksi, bukan tab.
       const tabs = (await page.locator('[role="tab"]').allInnerTexts()).map((t) => t.trim());
       check(s, 'six program tabs', tabs.length === 6, tabs.join(' | '));
-      for (const label of ['Sessions', 'Presentation', 'Assignment', 'Quiz', 'My Logbook', 'Certificate']) {
+      // Tab kedua dulu berlabel "Presentation" padahal isinya formulir absensi.
+      for (const label of ['Sessions', 'Attendance', 'Assignment', 'Quiz', 'My Logbook', 'Certificate']) {
         check(s, `tab "${label}"`, tabs.some((t) => t.includes(label)));
       }
       check(s, 'Detail Program stays an action',

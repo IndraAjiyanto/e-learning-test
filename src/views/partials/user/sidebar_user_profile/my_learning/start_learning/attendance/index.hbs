@@ -130,12 +130,10 @@
   }"
 >
 
-  <!-- HEADER SECTION -->
-  <div class="space-y-[15px]">
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
-      Attendance Form
-    </h1>
-    <p class="font-open-sans font-normal text-sm sm:text-base text-[#003060] leading-relaxed">
+  {{!-- Judul dihapus: label tab sudah menyebut bagian ini. Keterangannya
+       dipertahankan karena menjelaskan kenapa absensi harus diisi. --}}
+  <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+    <p class="font-inter text-sm text-[#525252]">
       Record your attendance to access each session's learning materials.
     </p>
   </div>
@@ -143,24 +141,34 @@
   {{#if course.weeks.length}}
     {{! The first week is always unlocked; any later week unlocks only when a WeekProgress row exists for it and the current user }}
     {{#each course.weeks}}
-    <div class="{{#if @first}}mt-[40px]{{else}}mt-[48px]{{/if}}">
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
 
       {{#if (or (weekUnlocked weekProgresses) @first)}}
-      <!-- Unlocked Week -->
+      {{!-- Judulnya dulu "Week 1 : week 1" - nomor lalu deskripsi yang sering
+           hanya mengulang nomornya. Bentuknya kini sama dengan baris minggu di
+           tab Sessions: lencana nomor, judul, lalu panah. --}}
       <button
         type="button"
         @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; loadSessions('{{id}}') }"
-        class="w-full flex items-center justify-between cursor-pointer"
+        class="group flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA] cursor-pointer"
       >
-        <h2 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] text-left">
-          Week {{weekNumber}} : {{description}}
-        </h2>
-        <div class="w-9 h-9 flex items-center justify-center flex-shrink-0">
-          <i
-            class="fa-solid fa-chevron-up text-[#003060] text-sm transition-transform duration-200"
-            :class="openWeek === {{weekNumber}} ? '' : 'rotate-180'"
-          ></i>
-        </div>
+        <span class="flex min-w-0 items-center gap-3">
+          <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">
+            {{weekNumber}}
+          </span>
+          <span class="min-w-0">
+            <span class="block truncate font-montserrat text-base font-bold text-[#171717]">
+              {{t 'test.startLearning.week'}} {{weekNumber}}
+            </span>
+            {{#if description}}
+              <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">{{description}}</span>
+            {{/if}}
+          </span>
+        </span>
+        <i
+          class="fa-solid fa-chevron-down shrink-0 text-sm text-[#a3a3a3] transition-transform duration-200 group-hover:text-[#003060]"
+          :class="openWeek === {{weekNumber}} ? 'rotate-180' : ''"
+        ></i>
       </button>
 
       <div x-show="openWeek === {{weekNumber}}" x-transition class="mt-[31px] space-y-0" style="display: none;">

@@ -3,9 +3,10 @@
   <!-- ==================== VIEW: LIST (DEFAULT) ==================== -->
   <div x-show="view === 'list'" x-transition class="w-full p-4 sm:px-[34px] sm:py-[42px]">
 
-    <div class="flex flex-col gap-1">
-      {{!-- Judul dihapus: label tab sudah menyebut bagian ini. --}}
-      {{> components/ui/super_admin/description/index text='Your tasks will be displayed here.' }}
+    {{!-- Judul dihapus: label tab sudah menyebut bagian ini. Keterangannya
+         dibungkus kartu supaya sebentuk dengan tab lain. --}}
+    <div class="mb-6 rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+      <p class="font-inter text-sm text-[#525252]">{{t 'test.startLearning.assignmentIntro'}}</p>
     </div>
 
     <!-- Week Sections (Dynamic with Alpine.js): one collapsible block per real week -->
@@ -39,14 +40,22 @@
       }"
     >
 
-      <!-- Week Header -->
-      <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')">
-        <h3 class="font-montserrat text-xl font-bold leading-tight text-[#003060]">
-          Week {{weekNumber}} : {{description}}
-        </h3>
-        <div class="w-9 h-9 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
-          <i class="fas fa-chevron-up text-sm transition-transform duration-300" :class="openWeek ? '' : 'rotate-180'"></i>
-        </div>
+      {{!-- Baris minggu disamakan bentuknya dengan tab Sessions: kartu putih,
+           lencana nomor, dan judul tanpa pengulangan deskripsi. --}}
+      <div
+        class="mb-4 flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#E5E5E5] bg-white px-5 py-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#FAFAFA]"
+        @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')"
+      >
+        <span class="flex min-w-0 items-center gap-3">
+          <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">{{weekNumber}}</span>
+          <span class="min-w-0">
+            <span class="block truncate font-montserrat text-base font-bold text-[#171717]">{{t 'test.startLearning.week'}} {{weekNumber}}</span>
+            {{#if description}}
+              <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">{{description}}</span>
+            {{/if}}
+          </span>
+        </span>
+        <i class="fa-solid fa-chevron-down shrink-0 text-sm text-[#a3a3a3] transition-transform duration-300" :class="openWeek ? 'rotate-180' : ''"></i>
       </div>
 
       <!-- Week Content (Collapsible, sessions fetched from GET /program/session/:weeksId) -->

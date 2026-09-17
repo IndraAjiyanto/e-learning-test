@@ -489,9 +489,12 @@
               <div class="sticky top-0 z-20 border-t border-[#E5E5E5] bg-white">
                 <div class="overflow-x-auto no-scrollbar">
                   <nav class="flex min-w-max items-stretch gap-1 px-3" role="tablist" aria-label="{{t 'test.startLearning.programTabs'}}">
+                    {{!-- Kunci 'presentation' dipertahankan karena dipakai rute
+                         fragment dan URL ?tab=, meski isinya formulir absensi;
+                         yang diperbaiki hanya labelnya. --}}
                     {{#each (array
                       (obj 'key' 'uiux' 'label' 'tabSessions' 'icon' 'fa-list-check')
-                      (obj 'key' 'presentation' 'label' 'presentation' 'icon' 'fa-display')
+                      (obj 'key' 'presentation' 'label' 'tabAttendance' 'icon' 'fa-user-check')
                       (obj 'key' 'assignment' 'label' 'assignment' 'icon' 'fa-file-pen')
                       (obj 'key' 'quiz' 'label' 'quiz' 'icon' 'fa-circle-question')
                       (obj 'key' 'logbook' 'label' 'myLogbook' 'icon' 'fa-clipboard')
@@ -594,19 +597,63 @@
         </div>
 
         <!-- Certificate Tab Content -->
-        <div x-show="activeSection === 'certificate'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-[#E5E5E5] text-center space-y-4 m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
-          <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
-            <i class="fas fa-award text-2xl"></i>
-          </div>
-          {{!-- Judul dihapus: label tab sudah menyebut bagian ini. --}}
-          <template x-if="activeCourseId">
-            <a :href="'/certificates/' + activeCourseId" target="_blank" class="inline-flex items-center justify-center px-6 py-3 bg-[#003060] text-white rounded-[6px] font-montserrat font-medium hover:bg-[#001F3F] transition-colors cursor-pointer">
-              Download Certificate
-            </a>
-          </template>
+        {{!--
+          Panel ini dulu hanya ikon dan satu tombol unduh, tanpa menyebutkan
+          apakah sertifikatnya memang sudah bisa diambil. Sekarang keadaannya
+          disebut: kalau program sudah tuntas, tombolnya muncul; kalau belum,
+          dijelaskan syaratnya - bukan tombol unduh yang menjanjikan sesuatu
+          yang belum tentu ada.
+        --}}
+        <div x-show="activeSection === 'certificate'" class="mx-4 my-6 rounded-xl border border-[#E5E5E5] bg-white p-8 text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:mx-8 sm:p-12">
           <template x-if="!activeCourseId">
-            <p class="text-slate-600 font-medium max-w-sm mx-auto">Select a course to download its certificate.</p>
+            <div>
+              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+                <i class="fas fa-award text-2xl"></i>
+              </span>
+              <p class="mx-auto max-w-sm font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateNoCourse'}}</p>
+            </div>
           </template>
+
+          {{#if activeCourseCompleted}}
+          <template x-if="activeCourseId">
+            <div>
+              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#f0fdf4] text-[#15803d]">
+                <i class="fas fa-award text-2xl"></i>
+              </span>
+              <h3 class="font-montserrat text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateReadyTitle'}}</h3>
+              <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
+              <a
+                :href="'/certificates/' + activeCourseId"
+                target="_blank"
+                rel="noopener"
+                class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+              >
+                <i class="fa-solid fa-download text-xs"></i>
+                {{t 'test.startLearning.downloadCertificate'}}
+              </a>
+            </div>
+          </template>
+
+          {{/if}}
+          {{#unless activeCourseCompleted}}
+          <template x-if="activeCourseId">
+            <div>
+              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+                <i class="fas fa-lock text-xl"></i>
+              </span>
+              <h3 class="font-montserrat text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateLockedTitle'}}</h3>
+              <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateLockedBody'}}</p>
+              <button
+                type="button"
+                @click="toggleActiveSection('uiux')"
+                class="mt-5 inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-[18px] font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
+              >
+                {{t 'test.startLearning.tabSessions'}}
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+          </template>
+          {{/unless}}
         </div>
 
         <!-- Other Tabs Placeholder Content -->

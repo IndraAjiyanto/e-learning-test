@@ -270,6 +270,13 @@ export class UsersController {
     const requestedCourseId = String(req.query.courseId || '');
     const activeCourse =
       course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
+    // Apakah program ini sudah tuntas. Dikirim dari server, bukan dibaca dari
+    // window.userCourses: kolom `progress` tidak ikut terserialisasi ke sisi
+    // klien, jadi panel Certificate sempat menyatakan program yang sudah selesai
+    // sebagai belum selesai.
+    const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
+      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+    );
 
     return res.render('user/user_profile/index', {
       user: user,
@@ -283,6 +290,7 @@ export class UsersController {
       ongoingCourses,
       initialSection,
       activeCourse,
+      activeCourseCompleted,
       bareShell: true,
     });
   }

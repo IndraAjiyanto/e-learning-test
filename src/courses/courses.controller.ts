@@ -473,6 +473,17 @@ await this.coursesService.addUserToCourse(userId, courseId);
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
     const initialSection = String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+    // Apakah program ini sudah tuntas.
+    //
+    // `userWithCourses` di atas bukan baris pendaftaran sungguhan - ia dirakit
+    // dari daftar course (`course.map((c) => ({ course: c }))`), jadi kolom
+    // `progress` memang tidak pernah ada di dalamnya. Itu sebabnya panel
+    // Certificate sempat menyatakan program yang sudah selesai sebagai belum
+    // selesai. Di sini dibaca dari baris user_courses yang sebenarnya.
+    const enrolments = await this.usersService.findWithCourses(id);
+    const activeCourseCompleted = !!enrolments?.userCourses?.find(
+      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+    );
 
     res.render('user/user_profile/index', {
       course,
@@ -484,6 +495,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
       initialSection,
+      activeCourseCompleted,
       portfolio,
       dashboardStats,
       ongoingCourses,
