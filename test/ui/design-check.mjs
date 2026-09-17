@@ -168,6 +168,41 @@ const SCREENS = [
       check(s, 'copy is about passwords, not deletion', !(await page.content()).includes('Permanently remove this user'));
     },
   },
+  {
+    name: 'my-learning-submenu',
+    urlFrom: (ids) => `/program/myProgram/${ids.uid}?courseId=${ids.cid}`,
+    design: null,
+    async assert(page, s) {
+      // Panel tab harus bersaudara dengan #start-learning-container, bukan
+      // tersarang di dalamnya. Pernah tersarang karena satu <div> tidak ditutup,
+      // dan begitu fragment dimuat seluruh panel lain ikut terhapus sehingga
+      // setiap sub-menu My Learning menampilkan halaman kosong.
+      const nested = await page.evaluate(() => {
+        const sl = document.getElementById('start-learning-container');
+        if (!sl) return ['no start-learning-container'];
+        return [...document.querySelectorAll('[x-show^="activeSection ==="]')]
+          .filter((el) => el !== sl && sl.contains(el))
+          .map((el) => el.getAttribute('x-show'));
+      });
+      check(s, 'tab panels are siblings, not nested in the fragment container',
+        nested.length === 0, nested.slice(0, 3).join(' | '));
+
+      await page.locator('aside, nav').getByRole('button', { name: /Full Stack/ }).first()
+        .click().catch(() => {});
+      await page.waitForTimeout(500);
+
+      for (const label of ['Presentation', 'My Logbook', 'Assignment', 'Quiz', 'Certificate', 'Join Group Class']) {
+        await page.getByRole('button', { name: label, exact: true }).last().click({ timeout: 5000 }).catch(() => {});
+        await page.waitForTimeout(1500);
+        const chars = await page.evaluate(() => {
+          const shown = [...document.querySelectorAll('[x-show^="activeSection ==="]')]
+            .filter((el) => getComputedStyle(el).display !== 'none');
+          return shown.map((el) => el.innerText.trim()).join(' ').length;
+        });
+        check(s, `submenu "${label}" renders content`, chars > 20, `${chars} chars`);
+      }
+    },
+  },
 ];
 
 const browser = await chromium.launch();
