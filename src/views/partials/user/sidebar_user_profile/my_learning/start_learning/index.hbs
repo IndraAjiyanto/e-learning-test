@@ -401,7 +401,10 @@
         <button type="button" @click="toggleActiveSection('logbook')" class="w-full h-11 rounded-lg border border-[#0369A1] text-[#0369A1] hover:bg-[#E0F2F9] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
           <i class="fa-regular fa-clipboard"></i> My Logbook
         </button>
-        <a href="/program/detail/{{course.id}}" class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer no-underline">
+        {{!-- Controller courses dipasang di prefix "program" DAN rutenya sendiri
+             bernama "program/detail/:courseId", jadi path lengkapnya berulang.
+             Tautan lama /program/detail/:id selalu 404. --}}
+        <a href="/program/program/detail/{{course.id}}" class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer no-underline">
           <i class="fa-regular fa-file-lines"></i> Detail Program
         </a>
       </div>

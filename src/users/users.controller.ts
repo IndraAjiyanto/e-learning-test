@@ -265,7 +265,13 @@ export class UsersController {
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/password')
   async editPassword(@Res() res: Response, @Req() req: Request) {
-    return res.render('user/user_profile/password', { user: req.user });
+    // bareShell mematikan navbar dan footer publik di layouts/main.hbs. Tanpa ini
+    // student yang membuka halaman ini langsung mendapat chrome landing di tengah
+    // area login, sementara admin tetap memakai sidebar CMS-nya sendiri.
+    return res.render('user/user_profile/password', {
+      user: req.user,
+      bareShell: true,
+    });
   }
 
   @Roles('user', 'admin', 'super_admin')

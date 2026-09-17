@@ -77,6 +77,15 @@ const SCREENS = [
       check(s, 'title "My Learning"', await page.getByRole('heading', { name: 'My Learning' }).count() > 0);
       check(s, 'filter row', await page.locator('text=/All Category|All Type|All Method/').count() >= 1);
       check(s, 'programs counter', await page.getByText(/programs? available/i).count() > 0);
+
+      // Kartu program harus membuka Start Learning DI DALAM shell. Sebelumnya
+      // menuju /program/:id yang dirender tanpa bareShell, sehingga student
+      // mendapat navbar dan footer landing di tengah area backoffice.
+      const cardHrefs = await page.locator('[x-show*="learning"] a[href^="/program"]')
+        .evaluateAll((els) => els.map((el) => el.getAttribute('href')));
+      check(s, 'program cards stay inside the shell',
+        cardHrefs.length > 0 && cardHrefs.every((h) => h.includes('/program/myProgram/')),
+        cardHrefs.filter((h) => !h.includes('/program/myProgram/')).slice(0, 2).join(' | '));
     },
   },
   {
@@ -129,6 +138,11 @@ const SCREENS = [
       check(s, 'Join Group button', await page.getByText(/Join Group/).count() > 0);
       check(s, 'My Logbook button', await page.getByText(/My Logbook/).count() > 0);
       check(s, 'week pagination (frame has one)', await page.getByText(/Showing \d+-\d+ of \d+ weeks/).count() > 0, 'known gap: needs unlock PRD');
+
+      // Tombol Detail Program pernah menunjuk /program/detail/:id yang selalu 404;
+      // path sebenarnya mengulang prefix controller.
+      const detailHref = await page.locator('a[href*="detail"]').first().getAttribute('href').catch(() => null);
+      check(s, 'Detail Program link resolves', !detailHref || detailHref.includes('/program/program/detail/'), String(detailHref));
     },
   },
   {

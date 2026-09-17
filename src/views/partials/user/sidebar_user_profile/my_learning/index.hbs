@@ -146,7 +146,12 @@
           </div>
           <!-- Button -->
           <a
-            href="/program/{{this.id}}"
+            {{!-- Tujuan Start Learning DI DALAM shell, bukan halaman program publik.
+                 Sebelumnya /program/{{this.id}}, yang dirender tanpa bareShell sehingga
+                 student mendapat navbar dan footer landing di tengah area backoffice.
+                 Breadcrumb "My Learning / Start Learning" pada frame desain memang
+                 menunjukkan tujuannya tetap di dalam shell. --}}
+            href="/program/myProgram/{{../user.id}}?courseId={{this.id}}"
             class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
           >
             <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
