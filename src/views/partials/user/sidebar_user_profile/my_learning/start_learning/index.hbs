@@ -69,24 +69,55 @@
     </div>
 
     {{#if progress.totalWeeks}}
-      <div class="mt-5">
-        <div class="mb-2 flex items-center justify-between gap-3 font-inter text-sm">
-          <span class="text-[#525252]">
-            {{progress.completedWeeks}} {{t 'test.startLearning.of'}} {{progress.totalWeeks}}
-            {{#if (eq progress.totalWeeks 1)}}{{default (t 'test.startLearning.week') 'week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
-            {{t 'test.startLearning.completedLower'}}
-          </span>
-          <span class="font-semibold text-[#003060]">{{progress.percent}}%</span>
-        </div>
+      {{!--
+        Ringkasan kemajuan. Idenya diambil dari blok ringkasan silabus pada
+        halaman belajar bisa.ai - cincin persentase di kiri, hitungan di
+        kanannya - tetapi digambar dengan token warna kita sendiri dan memakai
+        satuan yang kita punya (minggu). Bukan salinan tampilannya.
+
+        Cincinnya SVG biasa: satu lingkaran latar dan satu lagi yang panjang
+        goresannya diatur stroke-dasharray, jadi tidak perlu pustaka tambahan.
+      --}}
+      <div class="mt-5 flex flex-col gap-5 rounded-lg bg-[#FAFAFA] p-5 sm:flex-row sm:items-center">
+        {{!-- Cincin ini menggantikan bar linier, jadi ia juga yang membawa
+             peran progressbar-nya - kalau tidak, kemajuannya tidak lagi
+             terbaca pembaca layar. --}}
         <div
-          class="h-2 w-full overflow-hidden rounded-full bg-[#E5E5E5]"
+          class="relative grid size-24 shrink-0 place-items-center"
           role="progressbar"
           aria-label="{{t 'test.startLearning.programProgress'}}"
           aria-valuenow="{{progress.percent}}"
           aria-valuemin="0"
           aria-valuemax="100"
         >
-          <div class="h-full rounded-full bg-[#22C55E] transition-all duration-500" style="width: {{progress.percent}}%"></div>
+          <svg viewBox="0 0 36 36" class="size-24 -rotate-90" aria-hidden="true">
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="#E5E5E5" stroke-width="3"></circle>
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-dasharray="{{progress.percent}} 100"></circle>
+          </svg>
+          <span class="absolute font-montserrat text-lg font-bold text-[#003060]">{{progress.percent}}%</span>
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <p class="font-montserrat text-base font-bold text-[#171717]">
+            {{progress.completedWeeks}} {{t 'test.startLearning.of'}} {{progress.totalWeeks}}
+            {{#if (eq progress.totalWeeks 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
+            {{t 'test.startLearning.completedLower'}}
+          </p>
+
+          <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <span class="inline-flex items-center gap-2">
+              <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]"><i class="fa-regular fa-calendar text-xs"></i></span>
+              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.totalWeeks'}}<span class="block font-montserrat text-sm font-bold text-[#171717]">{{progress.totalWeeks}}</span></span>
+            </span>
+            <span class="inline-flex items-center gap-2">
+              <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f0fdf4] text-[#15803d]"><i class="fa-solid fa-circle-check text-xs"></i></span>
+              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.completedCount'}}<span class="block font-montserrat text-sm font-bold text-[#171717]">{{progress.completedWeeks}}</span></span>
+            </span>
+            <span class="inline-flex items-center gap-2">
+              <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#FEFCE8] text-[#A16207]"><i class="fa-regular fa-clock text-xs"></i></span>
+              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.remaining'}}<span class="block font-montserrat text-sm font-bold text-[#171717]">{{subtract progress.totalWeeks progress.completedWeeks}}</span></span>
+            </span>
+          </div>
         </div>
       </div>
     {{/if}}

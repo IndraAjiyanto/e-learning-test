@@ -460,6 +460,40 @@
                   {{/if}}
                   <h1 class="font-montserrat text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{activeCourse.name}}</h1>
                   <p class="mt-1 line-clamp-2 font-inter text-sm text-[#737373]">{{getByLang activeCourse.description lang}}</p>
+
+                  {{!--
+                    Keterangan ringkas program. Idenya diambil dari baris chip
+                    pada halaman belajar bisa.ai (level, jumlah modul, poin,
+                    rating), tetapi isinya memakai data yang benar-benar ada di
+                    sini - tipe kelas, jumlah minggu, metode, dan lokasi - dan
+                    memakai token warna kita sendiri, bukan meniru warnanya.
+                  --}}
+                  <div class="mt-3 flex flex-wrap items-center gap-2">
+                    {{#if activeCourse.courseType.nameClassesType}}
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                        <i class="fa-solid fa-signal text-[0.65rem] text-[#718096]"></i>
+                        {{activeCourse.courseType.nameClassesType}}
+                      </span>
+                    {{/if}}
+                    {{#if activeCourse.weeks.length}}
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                        <i class="fa-regular fa-calendar text-[0.65rem] text-[#718096]"></i>
+                        {{activeCourse.weeks.length}} {{#if (eq activeCourse.weeks.length 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
+                      </span>
+                    {{/if}}
+                    {{#if activeCourse.method}}
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium capitalize text-[#525252]">
+                        <i class="fa-solid fa-location-dot text-[0.65rem] text-[#718096]"></i>
+                        {{activeCourse.method}}
+                      </span>
+                    {{/if}}
+                    {{#if activeCourse.locations}}
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                        <i class="fa-solid fa-building text-[0.65rem] text-[#718096]"></i>
+                        {{getByLang activeCourse.locations lang}}
+                      </span>
+                    {{/if}}
+                  </div>
                 </div>
 
                 {{!-- Dua aksi ini bukan tab: yang satu pergi ke halaman lain,
