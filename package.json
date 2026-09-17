@@ -31,7 +31,9 @@
     "migrate:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
     "seed": "node dist/database/seeds/user.seed.js",
     "seed:content": "node dist/database/seeds/content.seed.js",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/data-source.ts"
+    "seed:student": "node dist/database/seeds/student.seed.js",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/data-source.ts",
+    "test:ui": "node test/ui/design-check.mjs"
   },
   "dependencies": {
     "@alpinejs/collapse": "^3.15.12",
@@ -151,6 +153,7 @@
     "globals": "^16.0.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
+    "playwright": "^1.63.0",
     "postcss": "^8.4.31",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",

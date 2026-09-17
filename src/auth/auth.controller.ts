@@ -82,10 +82,12 @@ export class AuthController {
             req.flash('error', 'Email not verified');
             return res.redirect('/login');
           }
-          this.userActivityService
-            .markActive(user!.id, req.sessionID)
-            .catch(() => undefined);
-          res.redirect('/dashboard');
+          this.userActivityService.markActive(user!.id, req.sessionID).catch(() => undefined);
+          if (user!.role === 'user') {
+            res.redirect('/users/profile');
+          } else {
+            res.redirect('/dashboard');
+          }
         });
       }
     } catch (error: any) {
@@ -98,9 +100,7 @@ export class AuthController {
   async logout(@Req() req: any, @Res() res: Response) {
     const userId = req.user?.id;
     if (userId) {
-      await this.userActivityService
-        .markInactive(userId)
-        .catch(() => undefined);
+      await this.userActivityService.markInactive(userId).catch(() => undefined);
     }
     req.logout((err) => {
       if (err) {
