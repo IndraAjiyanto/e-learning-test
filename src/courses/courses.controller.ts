@@ -31,7 +31,6 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -716,7 +715,7 @@ export class CoursesController {
       }
       if (isUserInKelas) {
         // res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
-          const mingguUpdated = await this.coursesService.findWeeks(
+        const mingguUpdated = await this.coursesService.findWeeks(
           id,
           req.user.id,
         );

@@ -53,6 +53,5 @@ export class Mentors {
 
   @ManyToOne(() => Course, (course) => course.mentors, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'courseId' })
-  @Exclude()
   course: Course;
 }

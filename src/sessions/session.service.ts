@@ -168,7 +168,7 @@ export class SessionService {
         userCourses: { course: { id: courseId } },
         absent: { session: { id: sessionId } },
       },
-      relations: ['absent'],
+      relations: ['absent', 'biodata'],
     });
   }
 
@@ -182,14 +182,26 @@ export class SessionService {
   async findLogBook(sessionId: string) {
     return await this.logBookRepository.find({
       where: { session: { id: sessionId } },
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: [
+        'user',
+        'user.biodata',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+      ],
     });
   }
 
   async findLogBookMentor(sessionId: string) {
     return await this.mentorLogbookRepository.find({
       where: { session: { id: sessionId } },
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: [
+        'user',
+        'user.biodata',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+      ],
     });
   }
 

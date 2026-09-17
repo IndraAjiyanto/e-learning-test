@@ -1,0 +1,48 @@
+{{!--
+  Component: Logbook Mentor Form Fields (Admin) — molecule, prefix logbook-
+  Path: components/ui/admin/logbook/logbook-mentor-form-fields.hbs
+  Dipakai: {{> components/ui/admin/logbook/logbook-mentor-form-fields}}
+           di admin/mentor_logbook/create.hbs & edit.hbs (di dalam form-card).
+  Props: {{activityValue}} (optional, prefill edit — mis. mentor_logbook.activity),
+         {{activityDetailValue}} (optional, prefill edit),
+         {{obstacleValue}} (optional, prefill edit),
+         {{showOldPhoto}} (optional bool — true di edit agar foto lama tampil),
+         {{currentFile}} (optional — URL foto lama di edit),
+         {{photoRequired}} (optional bool — true di create; di edit JANGAN diisi
+         agar submit tanpa ganti foto tetap lolos validasi HTML).
+  Composes (reuse): form/form-field, form/text-input, form/textarea-input,
+           logbook/logbook-photo-upload (inputId/Name documentation).
+  Design (Container - Logbook Form Create iapom / Edit Hwecx):
+  Row h72: Activity* (Enter activity) + Obstacle* (Enter obstacle);
+  Activity Details* textarea 128; Photo Documentation* h200.
+  Catatan: entity MentorLogbook TIDAK punya userId-input (BE: userId = admin
+  login via req.user.id) & TIDAK punya otherDocumentation — karena itu tidak ada
+  field User & Documentation Link (beda dari form logbook user).
+  BE: multipart { activity, activityDetail, obstacle, documentation (file) }.
+  Alpine scope (parent form): previewUrl, hasFile, isValid, errorMessage,
+           fileName, fileSize, validateFile(file), clearFile(), $refs.fileInput
+           (+ oldPhoto di mode edit).
+--}}
+{{!-- Row 1: Activity + Obstacle --}}
+<div class='flex flex-col md:flex-row gap-[12px] w-full'>
+  <div class='flex-1 min-w-0'>
+    {{#> components/ui/admin/form/form-field label="Activity*" for="activity"}}
+      {{> components/ui/admin/form/text-input id="activity" name="activity" required=true placeholder="Enter activity" value=activityValue}}
+    {{/components/ui/admin/form/form-field}}
+  </div>
+  <div class='flex-1 min-w-0'>
+    {{#> components/ui/admin/form/form-field label="Obstacle*" for="obstacle"}}
+      {{> components/ui/admin/form/text-input id="obstacle" name="obstacle" required=true placeholder="Enter obstacle" value=obstacleValue}}
+    {{/components/ui/admin/form/form-field}}
+  </div>
+</div>
+
+{{!-- Activity Details --}}
+<div class='flex flex-col gap-[8px] w-full'>
+  {{#> components/ui/admin/form/form-field label="Activity Details*" for="activityDetail"}}
+    {{> components/ui/admin/form/textarea-input id="activityDetail" name="activityDetail" placeholder="Describe the activity in detail..." rows="4" value=activityDetailValue}}
+  {{/components/ui/admin/form/form-field}}
+</div>
+
+{{!-- Photo Documentation --}}
+{{> components/ui/admin/logbook/logbook-photo-upload inputId="documentation" inputName="documentation" required=photoRequired showOldPhoto=showOldPhoto currentFile=currentFile}}
