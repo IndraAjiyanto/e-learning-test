@@ -259,6 +259,12 @@ export class UsersController {
     ];
     const { dashboardStats, ongoingCourses } =
       await this.usersService.getDashboardData(user.id);
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    const initialSection = String(req.query.tab || '') || 'dashboard';
+
     return res.render('user/user_profile/index', {
       user: user,
       portfolio,
@@ -269,6 +275,7 @@ export class UsersController {
       courseType,
       dashboardStats,
       ongoingCourses,
+      initialSection,
       bareShell: true,
     });
   }

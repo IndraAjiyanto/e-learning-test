@@ -468,6 +468,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const { dashboardStats, ongoingCourses } =
       await this.usersService.getDashboardData(req.user!.id);
 
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    const initialSection = String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+
     res.render('user/user_profile/index', {
       course,
       activeCourse,
@@ -477,6 +483,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
       userWithCourses,
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
+      initialSection,
       portfolio,
       dashboardStats,
       ongoingCourses,

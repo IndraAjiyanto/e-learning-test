@@ -266,11 +266,25 @@
       {{! --- SKELETON SAAT MEMUAT --- }}
       <div x-show="loading" class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
         <template x-for="i in 3" :key="i">
-          <div class="animate-pulse rounded-xl border border-[#E5E7EB] bg-white p-3">
-            <div class="h-[150px] w-full rounded-xl bg-[#EEF2F6]"></div>
-            <div class="mt-4 h-4 w-2/3 rounded bg-[#EEF2F6]"></div>
-            <div class="mt-3 h-3 w-full rounded bg-[#EEF2F6]"></div>
-            <div class="mt-6 h-11 w-full rounded-lg bg-[#EEF2F6]"></div>
+          {{!-- Bentuknya meniru kartu sungguhan baris demi baris. Versi lama jauh
+               lebih pendek, sehingga saat kartunya datang seluruh halaman
+               bergeser turun - itu yang membuat My Learning punya CLS 0.65. --}}
+          <div class="animate-pulse overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+            <div class="h-[160px] w-full bg-[#EEF2F6]"></div>
+            <div class="flex flex-col gap-3 p-3">
+              <div class="flex gap-2">
+                <div class="h-6 w-20 rounded-full bg-[#EEF2F6]"></div>
+                <div class="h-6 w-28 rounded-full bg-[#EEF2F6]"></div>
+              </div>
+              <div class="flex gap-2">
+                <div class="h-6 w-16 rounded-full bg-[#EEF2F6]"></div>
+                <div class="h-6 w-24 rounded-full bg-[#EEF2F6]"></div>
+              </div>
+              <div class="h-5 w-3/4 rounded bg-[#EEF2F6]"></div>
+              <div class="h-3 w-full rounded bg-[#EEF2F6]"></div>
+              <div class="h-[52px] w-full rounded-lg bg-[#EEF2F6]"></div>
+              <div class="h-11 w-full rounded-lg bg-[#EEF2F6]"></div>
+            </div>
           </div>
         </template>
       </div>

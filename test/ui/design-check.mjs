@@ -442,6 +442,18 @@ const SCREENS = [
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 1728, height: 1200 } });
 await context.addCookies([{ name: 'lang', value: 'en', domain: 'localhost', path: '/' }]);
+// Pergeseran tata letak diamati di setiap layar. Halaman area student dulu
+// menggambar isinya lebih dulu lalu mengoreksinya setelah Alpine berjalan;
+// My Learning sempat mencatat CLS 0.76 dan area belajar 0.84, yang terasa
+// sebagai halaman melompat. Ambang 0.1 adalah batas "baik" menurut Web Vitals.
+await context.addInitScript(() => {
+  window.__cls = 0;
+  try {
+    new PerformanceObserver((l) => {
+      for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value;
+    }).observe({ type: 'layout-shift', buffered: true });
+  } catch (e) {}
+});
 const page = await context.newPage();
 page.on('pageerror', (e) => consoleErrors.push(String(e)));
 
@@ -528,6 +540,9 @@ for (const screen of SCREENS) {
       pageScrolls: doc.scrollHeight > doc.clientHeight + 2 || document.body.scrollHeight > document.body.clientHeight + 2,
     };
   });
+  const cls = await page.evaluate(() => +(window.__cls || 0).toFixed(4)).catch(() => 0);
+  check(screen.name, 'layout stays put while loading (CLS < 0.1)', cls < 0.1, `CLS=${cls}`);
+
   check(screen.name, 'window itself does not scroll (only the content column does)',
     !chrome.pageScrolls);
   check(screen.name, 'app bar stays pinned while content scrolls',

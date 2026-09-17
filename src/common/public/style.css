@@ -242,6 +242,40 @@
    yang perlu dikoreksi. Alpine hanya mengurus penekanan tombolnya.
    --------------------------------------------------------------------------- */
 
+/* Geometri yang berubah saat menciut/membentang dianimasikan dengan durasi yang
+   sama seperti lebar kotaknya (300ms). Tanpa ini, kotak sidebar melebar mulus
+   sementara isinya - terutama tombol Log Out merah - melompat ke ukuran barunya
+   dalam satu frame.
+
+   Warna dipisah dan dibuat lebih cepat supaya sorotan tetap terasa tanggap. */
+.js-user-sidebar,
+.js-user-sidebar-nav,
+.js-user-sidebar-item,
+.js-user-sidebar-logout {
+  transition-property: width, height, padding, gap, margin;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.js-user-sidebar-item {
+  transition-property: width, height, padding, gap, margin, background-color, color;
+}
+.js-user-sidebar-logout-link {
+  transition-property: width, height, padding, gap, margin, background-color, color;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hormati setelan pengguna yang meminimalkan animasi. */
+@media (prefers-reduced-motion: reduce) {
+  .js-user-sidebar,
+  .js-user-sidebar-nav,
+  .js-user-sidebar-item,
+  .js-user-sidebar-logout,
+  .js-user-sidebar-logout-link {
+    transition-duration: 0ms;
+  }
+}
+
 .js-user-sidebar { width: 16rem; }
 html[data-user-sidebar='collapsed'] .js-user-sidebar { width: 5rem; }
 
