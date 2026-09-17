@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateCommitmentDto {
   // Dikirim form sebagai title[id]/[en]/[ja] dan description[id]/[en]/[ja].

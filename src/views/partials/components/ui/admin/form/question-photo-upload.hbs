@@ -1,0 +1,58 @@
+{{!--
+  Component: Question Photo Upload (Admin) — molecule, prefix question-
+  Path: components/ui/admin/form/question-photo-upload.hbs
+  Dipakai: {{> components/ui/admin/form/question-photo-upload}} di questions/create.hbs
+           {{> components/ui/admin/form/question-photo-upload showOldPhoto=true}} di questions/edit.hbs
+  Props: {{inputId}} (default 'image'), {{inputName}} (default 'image'),
+         {{showOldPhoto}} (optional — set true di edit agar foto lama tampil)
+  Alpine scope (parent): questionPreviewUrl, questionOldPhoto (optional, hanya edit),
+         questionClearFile(), $refs.questionFile.
+  Design (slicing.pen "Container - Quiz Question Form" → Upload Container):
+         label Upload Gambar (optional) 14 #404040; Upload area h200 fill #F8F9FA,
+         radius 8, stroke #D9D9D9; Icon lucide image 40x40 #718096;
+         Drop text Montserrat 12/500 #718096;
+         Format hint Montserrat 10/500 #ADB7C5 ("JPEG, JPG, PNG . Max 5 MB").
+  Catatan: Image optional, validasi BE max 5MB, tipe jpeg/jpg/png.
+--}}
+<div class='flex flex-col gap-[8px]'>
+  {{> components/ui/admin/form/form-label text="Upload Gambar (optional)"}}
+  <input type='file' id='{{default inputId 'image'}}' name='{{default inputName 'image'}}' accept='image/jpeg,image/jpg,image/png'
+    x-ref='questionFile' class='hidden' @change='questionPreviewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null' />
+  <label for='{{default inputId 'image'}}'
+    class='box-border w-full h-[200px] flex flex-col justify-center items-center p-[8px_16px] gap-[10px] bg-[#F8F9FA] border border-[#D9D9D9] rounded-[8px] cursor-pointer transition-colors hover:bg-[#EFF3F6] overflow-hidden'>
+    <template x-if="!questionPreviewUrl{{#if showOldPhoto}} && !questionOldPhoto{{/if}}">
+      <div class='flex flex-col items-center gap-[10px]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none'>
+          <path d='M21.667 6.667H11.667C10.783 6.667 9.93375 7.01786 9.30863 7.64298C8.68352 8.2681 8.33333 9.11739 8.33333 10V30C8.33333 30.8826 8.68352 31.7319 9.30863 32.357C9.93375 32.9821 10.783 33.333 11.667 33.333H28.3337C29.2177 33.333 30.0669 32.9821 30.6921 32.357C31.3172 31.7319 31.6673 30.8826 31.6673 30V13.333L21.667 6.667Z' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+          <path d='M21.6667 6.667V13.333H28.3333' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+          <path d='M25 21.667L20 26.667L15 21.667' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+          <path d='M20 26.667V18.333' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+        </svg>
+        <p class='text-[12px]/[16px] font-montserrat font-medium text-[#718096] text-center'>Drag &amp; Drop your Image here or click to browse</p>
+        <p class='text-[10px]/[12px] font-montserrat font-medium text-[#ADB7C5] text-center'>JPEG, JPG, PNG · Max 5 MB</p>
+      </div>
+    </template>
+    <template x-if="questionPreviewUrl">
+      <img :src="questionPreviewUrl" alt="Preview" class='w-full h-full object-cover rounded-[8px]' />
+    </template>
+    {{#if showOldPhoto}}
+    <template x-if="!questionPreviewUrl && questionOldPhoto">
+      <img :src="questionOldPhoto" alt="Current" class='w-full h-full object-cover rounded-[8px]' />
+    </template>
+    {{/if}}
+  </label>
+  {{#if showOldPhoto}}
+  <template x-if="!questionPreviewUrl && questionOldPhoto">
+    <p class='text-[11px]/[normal] font-montserrat text-[#A3A3A3]'>Current image — click to change</p>
+  </template>
+  {{/if}}
+  <template x-if="questionPreviewUrl">
+    <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
+      <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
+      <span class='text-[12px]/[normal] font-montserrat text-[#16A34A]'>Image selected</span>
+      <button type='button' @click="questionClearFile()" class='ml-auto text-[#DC2626] hover:text-[#B91C1C]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
+      </button>
+    </div>
+  </template>
+</div>

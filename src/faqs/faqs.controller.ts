@@ -93,11 +93,7 @@ export class FaqsController {
   ) {
     try {
       await this.faqsService.update(faqsId, updateFaqDto);
-      flashToast(
-        req,
-        'Changes Saved',
-        'The FAQ has been updated.',
-      );
+      flashToast(req, 'Changes Saved', 'The FAQ has been updated.');
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to update');
@@ -115,11 +111,7 @@ export class FaqsController {
   ) {
     try {
       await this.faqsService.remove(faqsId);
-      flashToast(
-        req,
-        'FAQ Deleted',
-        'The FAQ has been permanently removed.',
-      );
+      flashToast(req, 'FAQ Deleted', 'The FAQ has been permanently removed.');
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to delete');

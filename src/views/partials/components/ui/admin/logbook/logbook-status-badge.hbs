@@ -1,0 +1,28 @@
+{{!--
+  Component: Logbook Status Badge (Admin) — atomic, prefix logbook-
+  Path: components/ui/admin/logbook/logbook-status-badge.hbs
+  Props: {{statusVar}} (Alpine expression, e.g. 'log.process' or 'selectedLogbook.process')
+  Dipakai: {{> components/ui/admin/logbook/logbook-status-badge statusVar='log.process'}} di dalam x-for
+  Pencil (Container - Logbook Review → Status pill): w fit h fit r16 gap6 p2 8 2 6,
+  bg F0FDF4 dot 22C55E text 15803D untuk approved; FEFCE8 dot EAB308 text A16207 process;
+  FEF2F2 dot EF4444 text B91C1C rejected.
+  Clean-code: single responsibility, no magic — warna dimap dari enum ProcessStatus.
+--}}
+<template x-if="{{statusVar}} === 'approved'">
+  <div class='box-border w-fit h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-start items-center bg-[#F0FDF4] rounded-[16px]'>
+    <div class='box-border w-[8px] h-[8px] rounded-full bg-[#22C55E]'></div>
+    <div class='text-[12px]/[normal] font-inter font-medium text-[#15803D] whitespace-nowrap'>Approved</div>
+  </div>
+</template>
+<template x-if="{{statusVar}} === 'rejected'">
+  <div class='box-border w-fit h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-start items-center bg-[#FEF2F2] rounded-[16px]'>
+    <div class='box-border w-[8px] h-[8px] rounded-full bg-[#EF4444]'></div>
+    <div class='text-[12px]/[normal] font-inter font-medium text-[#B91C1C] whitespace-nowrap'>Rejected</div>
+  </div>
+</template>
+<template x-if="{{statusVar}} !== 'approved' && {{statusVar}} !== 'rejected'">
+  <div class='box-border w-fit h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-start items-center bg-[#FEFCE8] rounded-[16px]'>
+    <div class='box-border w-[8px] h-[8px] rounded-full bg-[#EAB308]'></div>
+    <div class='text-[12px]/[normal] font-inter font-medium text-[#A16207] whitespace-nowrap'>Under Review</div>
+  </div>
+</template>

@@ -1,0 +1,41 @@
+{{!--
+  Component: View Button (Admin) — atomic
+  Path: components/ui/admin/button/view-button.hbs
+  Props: {{click}} (optional, Alpine expression misalnya 'openModal(log.id)'),
+         {{href}} (optional, jika digunakan sebagai link),
+         {{text}} (optional, default 'View'),
+         {{title}} (optional, default 'View')
+
+  Pencil (CSS Spec — Table Columns Demo / Column - Details / _Button base View):
+  w75 h44, bg #003060, stroke 1px #003060, radius 8, shadow 0px 1px 2px rgba(0,0,0,0.05)
+  Text: Inter 16/600 white
+--}}
+{{#if click}}
+<button
+  type='button'
+  @click='{{click}}'
+  class='box-border w-[75px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#002040] transition-colors cursor-pointer'
+  title='{{default title "View"}}'
+  aria-label='{{default title "View"}}'
+>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{default text "View"}}</span>
+</button>
+{{else if href}}
+<a
+  href='{{href}}'
+  class='box-border w-[75px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#002040] transition-colors'
+  title='{{default title "View"}}'
+  aria-label='{{default title "View"}}'
+>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{default text "View"}}</span>
+</a>
+{{else}}
+<button
+  type='button'
+  class='box-border w-[75px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#002040] transition-colors cursor-pointer'
+  title='{{default title "View"}}'
+  aria-label='{{default title "View"}}'
+>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{default text "View"}}</span>
+</button>
+{{/if}}

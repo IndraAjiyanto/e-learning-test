@@ -79,7 +79,11 @@ export class FaqController {
   ) {
     try {
       await this.faqService.update(faqId, updateFaqDto);
-      flashToast(req, 'Changes Saved', 'The FAQ has been updated successfully.');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The FAQ has been updated successfully.',
+      );
       res.redirect('/faq');
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to update');

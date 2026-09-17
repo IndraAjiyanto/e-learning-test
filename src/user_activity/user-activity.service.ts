@@ -4,7 +4,15 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, In, LessThan, Repository } from 'typeorm';
 import { Request } from 'express';
-import { from, fromEvent, interval, merge, switchMap, debounceTime, map } from 'rxjs';
+import {
+  from,
+  fromEvent,
+  interval,
+  merge,
+  switchMap,
+  debounceTime,
+  map,
+} from 'rxjs';
 import { UserActivity } from 'src/entities/user_activity.entity';
 import { ActivityLog } from 'src/entities/activity_log.entity';
 import { DailyStatistics } from 'src/entities/daily_statistics.entity';
@@ -18,15 +26,7 @@ import { Material } from 'src/entities/materials.entity';
 import { format, startOfDay, subDays } from 'date-fns';
 import { isAssetPath, isNavigationRequest, matchLearningScope, ScopeContext } from './learning-scope';
 
-const DAY_LABELS = [
-  'Min',
-  'Sen',
-  'Sel',
-  'Rab',
-  'Kam',
-  'Jum',
-  'Sab',
-];
+const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 const EVENT_LEARNING_UPDATED = 'learning.updated';
 
@@ -149,7 +149,8 @@ export class UserActivityService {
       });
     } else {
       const isStale =
-        !activity.lastSeenAt || activity.lastSeenAt.getTime() < staleCutoff.getTime();
+        !activity.lastSeenAt ||
+        activity.lastSeenAt.getTime() < staleCutoff.getTime();
       activity.sessionId = sessionId ?? activity.sessionId;
       activity.lastSeenAt = now;
       if (isStale) {
@@ -163,7 +164,10 @@ export class UserActivityService {
 
   async touch(userId: string) {
     if (!userId) return;
-    await this.activityRepository.update({ userId }, { lastSeenAt: new Date() });
+    await this.activityRepository.update(
+      { userId },
+      { lastSeenAt: new Date() },
+    );
   }
 
   async markInactive(userId: string) {
@@ -194,7 +198,11 @@ export class UserActivityService {
     await this.activityRepository.delete(staleIds);
   }
 
-  private async logActivity(userId: string, eventType: 'login' | 'logout' | 'expired', eventAt: Date) {
+  private async logActivity(
+    userId: string,
+    eventType: 'login' | 'logout' | 'expired',
+    eventAt: Date,
+  ) {
     await this.activityLogRepository.save(
       this.activityLogRepository.create({ userId, eventType, eventAt }),
     );
@@ -275,7 +283,9 @@ export class UserActivityService {
     label: string | null,
   ) {
     const now = new Date();
-    const activity = await this.activityRepository.findOne({ where: { userId } });
+    const activity = await this.activityRepository.findOne({
+      where: { userId },
+    });
 
     if (!activity) {
       await this.activityRepository.save(
@@ -326,7 +336,9 @@ export class UserActivityService {
   }
 
   /** User online (role user, lastSeenAt segar) + course yang sedang dipelajari. */
-  async getActiveParticipants(thresholdMinutes = 5): Promise<ActiveParticipant[]> {
+  async getActiveParticipants(
+    thresholdMinutes = 5,
+  ): Promise<ActiveParticipant[]> {
     const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
 
     const activities = await this.activityRepository
@@ -391,7 +403,9 @@ export class UserActivityService {
   }
 
   /** User yang saat ini sedang belajar = role user, lastSeenAt segar, dan currentCourseId terisi. */
-  async getCurrentlyLearning(thresholdMinutes = 5): Promise<LearningParticipant[]> {
+  async getCurrentlyLearning(
+    thresholdMinutes = 5,
+  ): Promise<LearningParticipant[]> {
     const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
 
     const activities = await this.activityRepository

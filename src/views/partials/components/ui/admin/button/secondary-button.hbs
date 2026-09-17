@@ -1,19 +1,21 @@
 {{!--
   Component: Secondary Button (Admin) — atomic
   Path: components/ui/admin/button/secondary-button.hbs
-  Props: {{text}}, {{href}} (optional), {{type}} (optional), {{class}} (optional)
+  Props: {{text}}, {{href}} (optional), {{type}} (optional), {{class}} (optional),
+         {{width}} (optional, default "90")
 
-  Design: w90, h44, p10 18, bg white, outline 1px #D4D4D4, radius 8
-  Text: Inter 16/normal, #003060, semibold
+  Design: w90, h44, p10 18, bg white, border 1px #D4D4D4, radius 8,
+          shadow 0px 1px 2px rgba(0,0,0,0.05)
+  Text: Inter 16/24, #003060, semibold
 --}}
 {{#if href}}
 <a href='{{href}}'
-   class='box-border shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
-  <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
+   class='box-border w-[{{default width "90"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
+  <span class='text-[16px]/[24px] text-[#003060] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
 </a>
 {{else}}
 <button type='{{default type "button"}}'
-   class='box-border shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
-  <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
+   class='box-border w-[{{default width "90"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
+  <span class='text-[16px]/[24px] text-[#003060] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
 </button>
 {{/if}}

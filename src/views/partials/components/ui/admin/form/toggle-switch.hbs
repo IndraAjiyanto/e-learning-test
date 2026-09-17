@@ -1,7 +1,9 @@
 {{!--
   Component: Toggle Switch (Admin)
   Path: components/ui/admin/form/toggle-switch.hbs
-  Props: {{checked}}, {{name}}, {{value}}
+  Props: {{checked}} (static), {{name}}, {{value}},
+         {{checkedBind}} (optional, Alpine :checked expression, e.g. "isFinal"),
+         {{onChange}} (optional, Alpine @change expression, e.g. "isFinal = $event.target.checked")
 
   Design: track 44x24, knob 20x20, ON green-500, OFF neutral-200
 --}}
@@ -10,8 +12,9 @@
     type='checkbox'
     class='peer sr-only'
     name='{{name}}'
-    {{#if checked}}checked{{/if}}
+    {{#if checkedBind}}:checked='{{{checkedBind}}}'{{else}}{{#if checked}}checked{{/if}}{{/if}}
     {{#if value}}value='{{value}}'{{/if}}
+    {{#if onChange}}@change='{{{onChange}}}'{{/if}}
   />
   <span class='block h-6 w-11 rounded-full bg-[#E5E5E5] transition-colors peer-checked:bg-[#22C55E]'></span>
   <span class='absolute left-0.5 top-0.5 block h-5 w-5 rounded-full bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-transform peer-checked:translate-x-5'></span>

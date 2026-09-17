@@ -1,0 +1,23 @@
+{{!--
+  Component: User Avatar (Admin) — atomic, prefix user-
+  Path: components/ui/admin/program/user-avatar.hbs
+  Dipakai: {{> components/ui/admin/program/user-avatar}} di dalam x-for `item` (UserCourse { user })
+  Props: {{userObj}} (optional, Alpine object path ke user — default 'item.user';
+         mis. 'logbookUser.user' untuk tabel logbook)
+  Alpine scope: `<userObj>.profile`, `<userObj>.username`
+
+  Pencil (Table Detail Program - User / User Row, Table Detail Program - Logbook User / Col User):
+  32x32, bg #F9F5FF, radius full, lucide user 20px #7F56D9.
+  Foto profil dipakai bila ada (BE: user.profile), fallback ikon user.
+--}}
+<template x-if='{{default userObj 'item.user'}} && {{default userObj 'item.user'}}.profile'>
+  <img :src='{{default userObj 'item.user'}}.profile' :alt='{{default userObj 'item.user'}}.username' class='box-border w-[32px] shrink-0 h-[32px] rounded-full object-cover' />
+</template>
+<template x-if='!({{default userObj 'item.user'}} && {{default userObj 'item.user'}}.profile)'>
+  <div class='box-border w-[32px] shrink-0 h-[32px] flex flex-row gap-0 justify-center items-center bg-[#F9F5FF] rounded-full overflow-hidden'>
+    <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#7F56D9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0' aria-hidden='true'>
+      <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' />
+      <circle cx='12' cy='7' r='4' />
+    </svg>
+  </div>
+</template>

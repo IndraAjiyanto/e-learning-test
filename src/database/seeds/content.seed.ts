@@ -30,7 +30,9 @@ async function bootstrap() {
 
   const benefitRepo = ds.getRepository(Benefit);
   if ((await benefitRepo.count()) > 0) {
-    console.log('content.seed: benefit table not empty, skipping. Clear the DB to re-seed.');
+    console.log(
+      'content.seed: benefit table not empty, skipping. Clear the DB to re-seed.',
+    );
     await app.close();
     return;
   }
@@ -415,12 +417,48 @@ async function bootstrap() {
   // --- About: Values ---
   await ds.getRepository(Value).save(
     [
-      ['curiosity.svg', 'Inovasi', 'Innovation', 'Selalu mencari cara baru yang lebih baik dalam belajar dan mengajar.', 'Always seeking better new ways to learn and teach.'],
-      ['resilience.svg', 'Kolaborasi', 'Collaboration', 'Tumbuh bersama melalui kerja sama dan saling berbagi.', 'Growing together through cooperation and sharing.'],
-      ['ability.svg', 'Keunggulan', 'Excellence', 'Menjaga standar mutu tinggi di setiap program.', 'Maintaining high quality standards in every program.'],
-      ['integrity.svg', 'Integritas', 'Integrity', 'Jujur, transparan, dan bertanggung jawab.', 'Honest, transparent, and accountable.'],
-      ['authenticity.svg', 'Inklusif', 'Inclusive', 'Kesempatan setara untuk semua pembelajar.', 'Equal opportunity for all learners.'],
-      ['impact.svg', 'Berdampak', 'Impact', 'Fokus pada hasil nyata bagi peserta dan industri.', 'Focused on real outcomes for learners and industry.'],
+      [
+        'curiosity.svg',
+        'Inovasi',
+        'Innovation',
+        'Selalu mencari cara baru yang lebih baik dalam belajar dan mengajar.',
+        'Always seeking better new ways to learn and teach.',
+      ],
+      [
+        'resilience.svg',
+        'Kolaborasi',
+        'Collaboration',
+        'Tumbuh bersama melalui kerja sama dan saling berbagi.',
+        'Growing together through cooperation and sharing.',
+      ],
+      [
+        'ability.svg',
+        'Keunggulan',
+        'Excellence',
+        'Menjaga standar mutu tinggi di setiap program.',
+        'Maintaining high quality standards in every program.',
+      ],
+      [
+        'integrity.svg',
+        'Integritas',
+        'Integrity',
+        'Jujur, transparan, dan bertanggung jawab.',
+        'Honest, transparent, and accountable.',
+      ],
+      [
+        'authenticity.svg',
+        'Inklusif',
+        'Inclusive',
+        'Kesempatan setara untuk semua pembelajar.',
+        'Equal opportunity for all learners.',
+      ],
+      [
+        'impact.svg',
+        'Berdampak',
+        'Impact',
+        'Fokus pada hasil nyata bagi peserta dan industri.',
+        'Focused on real outcomes for learners and industry.',
+      ],
     ].map(([icon, tId, tEn, dId, dEn], idx) => ({
       icon,
       valueOrder: idx + 1,
@@ -432,12 +470,48 @@ async function bootstrap() {
   // --- About: Commitment (Story tab cards) ---
   await ds.getRepository(Commitment).save(
     [
-      ['inclusive.svg', 'Pendidikan Inklusif & Terjangkau', 'Inclusive & Accessible Education', 'Memberi kesempatan setara lewat pengalaman belajar yang fleksibel dan terjangkau.', 'Providing equal opportunities through flexible and accessible learning experiences.'],
-      ['career.svg', 'Pertumbuhan Karier & Mentoring', 'Career Growth & Professional Mentoring', 'Mendampingi lewat mentoring, portofolio, sertifikasi, dan jalur penyaluran karier.', 'Supporting learners through mentoring, portfolio building, certifications, and career placement pathways.'],
-      ['real-world.svg', 'Pengalaman Industri Nyata', 'Real-World Industry Experience', 'Proyek langsung, studi kasus, dan kolaborasi dengan praktisi untuk menjembatani teori dan praktik.', 'Hands-on projects, case studies, and collaboration with experts to bridge theory and practice.'],
-      ['innovative.svg', 'Adopsi Teknologi Inovatif', 'Innovative Technology Adoption', 'Terus berkembang dengan tools mutakhir dan metodologi modern.', 'Continuously evolving with cutting-edge tools and modern methodologies.'],
-      ['empowering.svg', 'Komunitas Digital yang Memberdayakan', 'Empowering Digital Community', 'Membangun jejaring belajar kolaboratif yang tumbuh bersama.', 'Fostering collaborative learning networks that grow together.'],
-      ['excellence.svg', 'Keunggulan dalam Pembelajaran Digital', 'Excellence in Digital Learning', 'Pendidikan berkualitas tinggi dan berorientasi industri.', 'High-quality, industry-driven education.'],
+      [
+        'inclusive.svg',
+        'Pendidikan Inklusif & Terjangkau',
+        'Inclusive & Accessible Education',
+        'Memberi kesempatan setara lewat pengalaman belajar yang fleksibel dan terjangkau.',
+        'Providing equal opportunities through flexible and accessible learning experiences.',
+      ],
+      [
+        'career.svg',
+        'Pertumbuhan Karier & Mentoring',
+        'Career Growth & Professional Mentoring',
+        'Mendampingi lewat mentoring, portofolio, sertifikasi, dan jalur penyaluran karier.',
+        'Supporting learners through mentoring, portfolio building, certifications, and career placement pathways.',
+      ],
+      [
+        'real-world.svg',
+        'Pengalaman Industri Nyata',
+        'Real-World Industry Experience',
+        'Proyek langsung, studi kasus, dan kolaborasi dengan praktisi untuk menjembatani teori dan praktik.',
+        'Hands-on projects, case studies, and collaboration with experts to bridge theory and practice.',
+      ],
+      [
+        'innovative.svg',
+        'Adopsi Teknologi Inovatif',
+        'Innovative Technology Adoption',
+        'Terus berkembang dengan tools mutakhir dan metodologi modern.',
+        'Continuously evolving with cutting-edge tools and modern methodologies.',
+      ],
+      [
+        'empowering.svg',
+        'Komunitas Digital yang Memberdayakan',
+        'Empowering Digital Community',
+        'Membangun jejaring belajar kolaboratif yang tumbuh bersama.',
+        'Fostering collaborative learning networks that grow together.',
+      ],
+      [
+        'excellence.svg',
+        'Keunggulan dalam Pembelajaran Digital',
+        'Excellence in Digital Learning',
+        'Pendidikan berkualitas tinggi dan berorientasi industri.',
+        'High-quality, industry-driven education.',
+      ],
     ].map(([icon, tId, tEn, dId, dEn], idx) => ({
       icon,
       commitmentOrder: idx + 1,
@@ -471,7 +545,11 @@ async function bootstrap() {
   await ds.getRepository(TeamLead).save({
     profile: PHOTO,
     name: 'Faisal Wirakusuma, S.Kom., M.Sc.',
-    position: L('Chief Executive Officer', 'Chief Executive Officer', '最高経営責任者'),
+    position: L(
+      'Chief Executive Officer',
+      'Chief Executive Officer',
+      '最高経営責任者',
+    ),
     linkedin: 'https://www.linkedin.com/in/faisal-wirakusuma',
     instagram: 'https://www.instagram.com/faisalwira',
     description: L(
@@ -482,24 +560,71 @@ async function bootstrap() {
   });
   await ds.getRepository(Background).save(
     [
-      ['Bachelor of Science, Information Technology (S.Kom)', 'Indonesia Islamic University (2005 - 2010)'],
-      ['Master of Science, Advanced Computer Science (M.Sc)', 'The University of Manchester (2014 - 2015)'],
-    ].map(([c, d], idx) => ({ backgroundOrder: idx + 1, content: L(c, c, c), details: L(d, d, d) })),
+      [
+        'Bachelor of Science, Information Technology (S.Kom)',
+        'Indonesia Islamic University (2005 - 2010)',
+      ],
+      [
+        'Master of Science, Advanced Computer Science (M.Sc)',
+        'The University of Manchester (2014 - 2015)',
+      ],
+    ].map(([c, d], idx) => ({
+      backgroundOrder: idx + 1,
+      content: L(c, c, c),
+      details: L(d, d, d),
+    })),
   );
   await ds.getRepository(Experience).save(
     [
       ['CEO & Founder', 'PT Wiratek Solusi Asia (2015 - Present)'],
-      ['Senior IT & Data Consultant', 'Enterprise solutions for BUMN & private sectors (2011 - 2015)'],
-    ].map(([c, d], idx) => ({ experienceOrder: idx + 1, content: L(c, c, c), details: L(d, d, d) })),
+      [
+        'Senior IT & Data Consultant',
+        'Enterprise solutions for BUMN & private sectors (2011 - 2015)',
+      ],
+    ].map(([c, d], idx) => ({
+      experienceOrder: idx + 1,
+      content: L(c, c, c),
+      details: L(d, d, d),
+    })),
   );
   await ds.getRepository(Team).save(
     [
-      ['Rizal Rahadian Ramadhan, S.E', 'Chief Finance Officer', 'Mengawasi perencanaan keuangan, anggaran, dan strategi investasi perusahaan.', 'Oversees the company financial planning, budgeting, and investment strategies.'],
-      ['Adipura Arya Kangsadewa, S.Bns', 'Education & Culture Manager', 'Memimpin pengembangan program pelatihan dan kemitraan strategis.', 'Leads the development of training programs and strategic partnerships.'],
-      ['Zahra Andriani Mustika Fitri, S.M', 'Human Resource & Recruiter', 'Mengelola proses rekrutmen dan inisiatif pengembangan talenta.', 'Manages recruitment processes and talent development initiatives.'],
-      ['Gilang Priambodo, S.Bns', 'Operational & Creative Admin', 'Mengoordinasikan operasi harian dan proses administrasi.', 'Coordinates daily operations and administrative processes.'],
-      ['Feri Handoyo, S.Kom', 'Instructor', 'Instruktur pemrograman dan pengembangan aplikasi berbasis proyek.', 'Instructor specializing in project-based programming and application development.'],
-      ['Reno Agil Saputra, S.Kom', 'Web Development Mentor', 'Mentor web development dengan pengalaman membimbing proyek nyata.', 'Web development mentor experienced in guiding real-world projects.'],
+      [
+        'Rizal Rahadian Ramadhan, S.E',
+        'Chief Finance Officer',
+        'Mengawasi perencanaan keuangan, anggaran, dan strategi investasi perusahaan.',
+        'Oversees the company financial planning, budgeting, and investment strategies.',
+      ],
+      [
+        'Adipura Arya Kangsadewa, S.Bns',
+        'Education & Culture Manager',
+        'Memimpin pengembangan program pelatihan dan kemitraan strategis.',
+        'Leads the development of training programs and strategic partnerships.',
+      ],
+      [
+        'Zahra Andriani Mustika Fitri, S.M',
+        'Human Resource & Recruiter',
+        'Mengelola proses rekrutmen dan inisiatif pengembangan talenta.',
+        'Manages recruitment processes and talent development initiatives.',
+      ],
+      [
+        'Gilang Priambodo, S.Bns',
+        'Operational & Creative Admin',
+        'Mengoordinasikan operasi harian dan proses administrasi.',
+        'Coordinates daily operations and administrative processes.',
+      ],
+      [
+        'Feri Handoyo, S.Kom',
+        'Instructor',
+        'Instruktur pemrograman dan pengembangan aplikasi berbasis proyek.',
+        'Instructor specializing in project-based programming and application development.',
+      ],
+      [
+        'Reno Agil Saputra, S.Kom',
+        'Web Development Mentor',
+        'Mentor web development dengan pengalaman membimbing proyek nyata.',
+        'Web development mentor experienced in guiding real-world projects.',
+      ],
     ].map(([name, pos, dId, dEn], idx) => ({
       profile: PHOTO,
       name,

@@ -1,0 +1,67 @@
+{{!--
+  Component: Mentor Photo Upload (Admin) — molecule, prefix mentor-
+  Path: components/ui/admin/form/mentor-photo-upload.hbs
+  Dipakai: {{> components/ui/admin/form/mentor-photo-upload}} di create.hbs
+           {{> components/ui/admin/form/mentor-photo-upload showOldPhoto=true}} di edit.hbs
+  Props: {{inputId}} (default 'profile'), {{inputName}} (default 'profile'),
+         {{showOldPhoto}} (optional — set true di edit agar foto lama tampil)
+  Alpine scope (parent): previewUrl, oldPhoto (optional, hanya edit),
+         errorMessage, isValid, validateImage(file), clearFile(), $refs.profileFile.
+  Design (slicing.pen "Container - Mentor Form" → Photo picker):
+         label Profile Photo* 14 #404040; Upload button fill #F8F9FA ($lightBox),
+         p8 16, vertical gap 10, radius 8, border 1px solid #D9D9D9;
+         Upload icon 40x40 #718096; Drop text Montserrat 12/16 #718096;
+         Format hint Montserrat 10/12 #ADB7C5.
+  Catatan: teks hint mengikuti design. Validasi file mengikuti BE
+  (ValidateImage mentor: 300–2000px, max 5MB) agar upload selalu lolos BE.
+  Dibuat terpisah karena blok upload foto dipakai di create + edit
+  dengan scope Alpine yang identik.
+--}}
+<div class='flex flex-col gap-[8px]'>
+  {{> components/ui/admin/form/form-label text="Profile Photo*"}}
+  <input type='file' id='{{default inputId 'profile'}}' name='{{default inputName 'profile'}}' accept='image/jpeg,image/jpg,image/png'
+    x-ref='profileFile' class='hidden' @change='validateImage($event.target.files[0])' />
+  <label for='{{default inputId 'profile'}}'
+    class='box-border w-full flex flex-col justify-center items-center p-[8px_16px] gap-[10px] min-h-[265px] bg-[#F8F9FA] border border-[#D9D9D9] rounded-[8px] cursor-pointer transition-colors hover:bg-[#EFF3F6] overflow-hidden'>
+    <template x-if="!previewUrl{{#if showOldPhoto}} && !oldPhoto{{/if}}">
+      <div class='flex flex-col items-center gap-[10px]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none'>
+          <path d='M21.667 6.667H11.667C10.783 6.667 9.93375 7.01786 9.30863 7.64298C8.68352 8.2681 8.33333 9.11739 8.33333 10V30C8.33333 30.8826 8.68352 31.7319 9.30863 32.357C9.93375 32.9821 10.783 33.333 11.667 33.333H28.3337C29.2177 33.333 30.0669 32.9821 30.6921 32.357C31.3172 31.7319 31.6673 30.8826 31.6673 30V13.333L21.667 6.667Z' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+          <path d='M21.6667 6.667V13.333H28.3333' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+          <path d='M25 21.667L20 26.667L15 21.667' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+          <path d='M20 26.667V18.333' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
+        </svg>
+        <p class='text-[12px]/[16px] font-montserrat font-medium text-[#718096] text-center'>Drag &amp; Drop your Image here or click to browse</p>
+        <p class='text-[10px]/[12px] font-montserrat font-medium text-[#ADB7C5] text-center'>JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB</p>
+      </div>
+    </template>
+    <template x-if="previewUrl">
+      <img :src="previewUrl" alt="Preview" class='w-full h-[200px] object-cover rounded-[8px]' />
+    </template>
+    {{#if showOldPhoto}}
+    <template x-if="!previewUrl && oldPhoto">
+      <img :src="oldPhoto" alt="Current" class='w-full h-[200px] object-cover rounded-[8px]' />
+    </template>
+    {{/if}}
+  </label>
+  {{#if showOldPhoto}}
+  <template x-if="!previewUrl && oldPhoto">
+    <p class='text-[11px]/[normal] font-montserrat text-[#A3A3A3]'>Current photo — click to change</p>
+  </template>
+  {{/if}}
+  <template x-if="previewUrl && isValid">
+    <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
+      <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
+      <span class='text-[12px]/[normal] font-montserrat text-[#16A34A]'>Valid image</span>
+      <button type='button' @click="clearFile()" class='ml-auto text-[#DC2626] hover:text-[#B91C1C]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
+      </button>
+    </div>
+  </template>
+  <template x-if="!isValid && errorMessage">
+    <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
+      <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+      <span class='text-[12px]/[normal] font-montserrat text-[#DC2626]' x-text='errorMessage'></span>
+    </div>
+  </template>
+</div>

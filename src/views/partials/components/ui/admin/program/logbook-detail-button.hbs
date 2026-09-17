@@ -1,0 +1,19 @@
+{{!--
+  Component: Logbook Detail Button (Admin) — atomic, prefix logbook-
+  Path: components/ui/admin/program/logbook-detail-button.hbs
+  Dipakai: {{> components/ui/admin/program/logbook-detail-button}} di dalam x-for `logbookUser`
+  (butuh `viewDetail(logbookUser)` di scope — mis. logBookUserData; reusable untuk tab Logbook Mentor)
+
+  Pencil (Table Detail Program - Logbook User / Col Action / Detail Btn):
+  w75 h44, bg #003060, outline 1px #003060 offset -0.5px, radius 8,
+  text Inter 16/600 white.
+--}}
+<button
+  type='button'
+  @click='viewDetail(logbookUser)'
+  class='box-border w-[75px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#00254a] transition-colors'
+  title='Detail'
+  aria-label='Detail'
+>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Detail</span>
+</button>

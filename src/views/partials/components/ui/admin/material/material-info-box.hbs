@@ -1,0 +1,20 @@
+{{!--
+  Component: Material Info Box (Admin) — atomic, prefix material-
+  Path: components/ui/admin/material/material-info-box.hbs
+  Dipakai: {{> components/ui/admin/material/material-info-box}} di
+           admin/materi/create.hbs cabang ppt (create + editMode = 2x).
+  Props: {{text}} (optional, default langkah Publish to web Google Slides).
+
+  Pencil (Container - Material Form → Frame 2147229544):
+  box bg #E4F1F7 r10 stroke #E9E9E9 p12 gap6; ikon info 14 putih dalam
+  lingkaran 20 #003060; teks Montserrat 12/500 #003060.
+  Alasan komponen baru: dipakai di 2 tempat (create + edit) — satu sumber.
+--}}
+<div class='box-border w-full flex flex-col gap-[6px] p-[12px] justify-start items-stretch bg-[#E4F1F7] border border-[#E9E9E9] rounded-[10px]'>
+  <div class='flex flex-row gap-[6px] w-full justify-start items-center'>
+    <div class='box-border w-[20px] shrink-0 h-[20px] flex flex-row gap-[10px] p-[3px] justify-center items-center bg-[#003060] rounded-full'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[14px] h-[14px]'><circle cx='12' cy='12' r='10'/><path d='M12 16v-4'/><path d='M12 8h.01'/></svg>
+    </div>
+    <p class='text-[12px]/[1.33] flex-1 min-w-0 text-[#003060] font-montserrat font-medium'>{{default text 'Cara mendapatkan link: Buka Google Slides → File → Share → Publish to web → Embed → Copy URL dari src iframe.'}}</p>
+  </div>
+</div>

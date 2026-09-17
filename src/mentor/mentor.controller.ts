@@ -90,22 +90,6 @@ export class MentorController {
   }
 
   @Roles('super_admin', 'admin')
-  @Get(':mentorId')
-  async findOne(
-    @Param('mentorId') mentorId: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const mentor = await this.mentorService.findOne(mentorId);
-    const technologies = await this.mentorService.findTechnologies();
-    res.render('super_admin/mentor/detail', {
-      user: req.user,
-      mentor,
-      technologies,
-    });
-  }
-
-  @Roles('super_admin', 'admin')
   @Get('formEdit/:mentorId')
   async formEdit(
     @Param('mentorId') mentorId: string,
@@ -117,6 +101,24 @@ export class MentorController {
     res.render('super_admin/mentor/edit', {
       user: req.user,
       mentor,
+      courseId: mentor.course?.id,
+      technologies,
+    });
+  }
+
+  @Roles('super_admin', 'admin')
+  @Get(':mentorId')
+  async findOne(
+    @Param('mentorId') mentorId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const mentor = await this.mentorService.findOne(mentorId);
+    const technologies = await this.mentorService.findTechnologies();
+    res.render('super_admin/mentor/detail', {
+      user: req.user,
+      mentor,
+      courseId: mentor.course?.id,
       technologies,
     });
   }
@@ -172,10 +174,10 @@ export class MentorController {
   }
 
   @Roles('super_admin', 'admin')
-  @Delete(':mentorId/:courseId')
+  @Delete(':courseId/:mentorId')
   async remove(
-    @Param('mentorId') mentorId: string,
     @Param('courseId') courseId: string,
+    @Param('mentorId') mentorId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {

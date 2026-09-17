@@ -1,0 +1,58 @@
+{{!--
+  Component: Quiz Card (Admin) — atomic
+  Path: components/ui/admin/quiz/quiz-card.hbs
+  Props: (Alpine x-for context) quiz object with {id, quizName, duration, minScore}
+         {{deleteAction}} (optional, Alpine @click expression for delete button),
+         {{deleteFormAction}} (optional, form action URL for delete),
+         {{detailHref}} (optional, Alpine :href expression for detail link)
+
+  Design: min-h68 row, white, radius 8, stroke #D9D9D9, gap 6, p8 14
+  Texts: quizName Montserrat 14/600 #003060 + meta (timer + duration, award + minScore)
+  Delete: 44x44 white stroke #D9D9D9, trash-2 16px #C80606
+  Detail: 81x44 white stroke #003060 + shadow, Inter 16/600 #003060
+--}}
+<div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
+
+  {{!-- Texts + Meta --}}
+  <div class='flex flex-col gap-[6px] flex-1 min-w-0 justify-center items-start'>
+    <div class='text-[14px]/[normal] w-full text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='quiz.quizName' :title='quiz.quizName'></div>
+    <div class='flex flex-row flex-wrap gap-x-[16px] gap-y-[4px] w-full justify-start items-center'>
+      <div class='flex flex-row gap-[4px] justify-start items-center'>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>
+        <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-normal whitespace-nowrap' x-text='quiz.duration + " min"'></span>
+      </div>
+      <div class='flex flex-row gap-[4px] justify-start items-center'>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><circle cx='12' cy='8' r='6'/><path d='M15.477 12.89L17 22l-5-3-5 3 1.523-9.11'/></svg>
+        <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-normal whitespace-nowrap' x-text='"Min: " + quiz.minScore'></span>
+      </div>
+    </div>
+  </div>
+
+  {{!-- Delete --}}
+  {{#if deleteFormAction}}
+  <form :action="{{deleteFormAction}}" method='POST' class='box-border w-[44px] shrink-0 h-[44px]'>
+    <button type='button'
+      {{#if deleteAction}}@click='{{deleteAction}}'{{/if}}
+      class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
+      title='Delete Quiz' aria-label='Delete Quiz'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+        <path d='M3 6h18'/>
+        <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
+        <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
+        <line x1='10' x2='10' y1='11' y2='17'/>
+        <line x1='14' x2='14' y1='11' y2='17'/>
+      </svg>
+    </button>
+  </form>
+  {{/if}}
+
+  {{!-- Detail --}}
+  {{#if detailHref}}
+  <a :href="{{detailHref}}"
+    class='box-border w-[81px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'
+    title='Quiz Detail' aria-label='Quiz Detail'>
+    <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>Detail</span>
+  </a>
+  {{/if}}
+
+</div>

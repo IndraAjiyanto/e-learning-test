@@ -1,0 +1,128 @@
+{{!--
+  Component: Logbook Mentor Table (Admin) — SINGLE table component, prefix logbook-
+  Path: components/ui/admin/program/logbook-mentor-table.hbs
+  Dipakai: {{> components/ui/admin/program/logbook-mentor-table}} di dalam scope logBookMentorData()
+  Composes: program/user-avatar (userObj logbookMentors.user), program/logbook-pill
+
+  Pencil (Table Detail Program - Logbook Mentor / c7ZTeh — mirror Logbook User, 12 kolom):
+  card white, outline 1px #E5E5E5 offset -0.5px, radius 12, overflow hidden, shadow.
+  Header h44 bg #FAFAFA + border-bottom, text Inter 12/500 #525252, p12 (sama program/table).
+  Row h72 + border-bottom, text Inter 14/normal #525252, p16 12 (sama program/table).
+  Kolom (entity MentorLogbook): User(268) DateCreated(190) NoMeeting(128) NoWeek(128)
+         ProgramName(180) Category(180) ProgramType(180) Mentor(180) Activity(180)
+         ActivityDetails(180) Documentation(138) Issues(180) — total min-w 2112px.
+  Catatan: kolom frame "Status" & "Additional Documentation" & "Action" DIBUANG —
+         entity MentorLogbook tidak punya field `process` / `otherDocumentation`,
+         dan tidak ada halaman detail (admin/mentor_logbook/detail.hbs tidak ada).
+         Kolom "User" = MentorLogbook.user (mentor penulis logbook).
+  Anti-rusak: shrink-0 per kolom + truncate + min-w-0 di flex-1 + :title tooltip.
+
+  Alpine (parent scope): loading, filteredData, formatDate(), padOrder()
+--}}
+<style>
+  .logbook-mentor-scroll::-webkit-scrollbar { height: 6px; }
+  .logbook-mentor-scroll::-webkit-scrollbar-track { background: transparent; }
+  .logbook-mentor-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 999px; }
+  .logbook-mentor-scroll::-webkit-scrollbar-thumb:hover { background: #A3A3A3; }
+</style>
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] overflow-hidden shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
+
+  {{!-- Loading --}}
+  <div x-show='loading' class='w-full py-16 text-center font-inter text-sm text-[#A3A3A3]'>
+    <i class='fas fa-spinner fa-spin text-xl'></i>
+  </div>
+
+  <div x-show='!loading && filteredData.length > 0' class='logbook-mentor-scroll w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
+
+    {{!-- Header Row --}}
+    <div class='w-full min-w-[2112px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+      <div class='box-border w-[268px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>User</div></div>
+      <div class='box-border w-[190px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Date Created</div></div>
+      <div class='box-border w-[128px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>No Meeting</div></div>
+      <div class='box-border w-[128px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>No Week</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Program Name</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Category</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Program Type</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Mentor</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Activity</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Activity Details</div></div>
+      <div class='box-border w-[138px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Documentation</div></div>
+      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Issues</div></div>
+    </div>
+
+    {{!-- Body Rows --}}
+    <template x-for='(logbookMentors, index) in filteredData' :key='logbookMentors.id'>
+      <div class='w-full min-w-[2112px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+
+        {{!-- User: avatar + nama/email (MentorLogbook.user = mentor) --}}
+        <div class='box-border w-[268px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='box-border flex-1 min-w-0 flex flex-row gap-[10px] justify-start items-center'>
+            {{> components/ui/admin/program/user-avatar userObj='logbookMentors.user'}}
+            <div class='flex-1 min-w-0 flex flex-col gap-0 justify-center items-start'>
+              <div class='text-[14px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#404040] font-inter font-semibold text-left' x-text="logbookMentors.user?.username ?? '-'" :title="logbookMentors.user?.username ?? ''"></div>
+              <div class='text-[12px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.user?.email ?? '-'" :title="logbookMentors.user?.email ?? ''"></div>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Date Created --}}
+        <div class='box-border w-[190px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text='formatDate(logbookMentors.createdAt)' :title='formatDate(logbookMentors.createdAt)'></div>
+        </div>
+
+        {{!-- No Meeting / No Week pills --}}
+        <div class='box-border w-[128px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          {{> components/ui/admin/program/logbook-pill text='padOrder(logbookMentors.session?.sessionOrder)'}}
+        </div>
+        <div class='box-border w-[128px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          {{> components/ui/admin/program/logbook-pill text='padOrder(logbookMentors.session?.weeks?.weekNumber)'}}
+        </div>
+
+        {{!-- Program Name / Category / Program Type / Mentor --}}
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.session?.weeks?.course?.name ?? '-'" :title="logbookMentors.session?.weeks?.course?.name ?? ''"></div>
+        </div>
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.session?.weeks?.course?.category?.name ?? '-'" :title="logbookMentors.session?.weeks?.course?.category?.name ?? ''"></div>
+        </div>
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.session?.weeks?.course?.courseType?.nameClassesType ?? '-'" :title="logbookMentors.session?.weeks?.course?.courseType?.nameClassesType ?? ''"></div>
+        </div>
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.session?.weeks?.course?.mentors?.[0]?.name ?? '-'" :title="logbookMentors.session?.weeks?.course?.mentors?.[0]?.name ?? ''"></div>
+        </div>
+
+        {{!-- Activity / Activity Details --}}
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.activity ?? '-'" :title="logbookMentors.activity ?? ''"></div>
+        </div>
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.activityDetail ?? '-'" :title="logbookMentors.activityDetail ?? ''"></div>
+        </div>
+
+        {{!-- Documentation: thumbnail box 90x52 --}}
+        <div class='box-border w-[138px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='box-border w-[90px] shrink-0 h-[52px] flex flex-row gap-0 justify-center items-center bg-[#F9F5FF] [outline:1px_solid_#E9D7FE] [outline-offset:-0.5px] rounded-[12px] overflow-hidden'>
+            <template x-if='logbookMentors.documentation'>
+              <a :href='logbookMentors.documentation' target='_blank' class='h-full w-full block'>
+                <img :src='logbookMentors.documentation' alt='Doc' class='h-full w-full object-cover' />
+              </a>
+            </template>
+          </div>
+        </div>
+
+        {{!-- Issues --}}
+        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookMentors.obstacle || '-'" :title="logbookMentors.obstacle || ''"></div>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  {{!-- Empty State --}}
+  <div x-show='!loading && filteredData.length === 0' class='w-full h-[72px] flex items-center justify-center'>
+    <span class='font-inter text-sm text-[#A3A3A3]'>No mentor logbook found.</span>
+  </div>
+
+</div>

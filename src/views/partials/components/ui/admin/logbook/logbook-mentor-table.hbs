@@ -1,0 +1,147 @@
+{{!--
+  Component: Logbook Mentor Table (Admin) — organism, prefix logbook-mentor-
+  Path: components/ui/admin/logbook/logbook-mentor-table.hbs
+  Source: slicing.pen (Logbook Mentor in Detail Session — Section, id: lDvy3)
+  Dipakai: {{> components/ui/admin/logbook/logbook-mentor-table sessionId=session.id}} di dalam scope logBookMentorData() pada admin/session/detail → tab logbook mentor.
+  Composes: program/user-avatar (userObj), button/view-button
+
+  Pencil (Logbook Mentor in Detail Session — Section, lDvy3):
+  Card: white r12 stroke #E5E5E5 shadow outer 0 1 blur2 #0000000F
+  Header h44 bg #FAFAFA Inter 12/500 #525252 p12 24 + border-bottom; Row h72 Inter 14/normal #525252 p16 24 + border-bottom + hover #fafafa
+  7 Kolom (total 1593px):
+    User 268 | Activity 240 | Activity Details 240 | Obstacle 200 | Documentation 138 | Program Name 280 | Details(Action) 227
+  Details: Edit (square-pen #525252 20) + Delete (trash-2 #DC2626 20) + View (75x44 #003060 text white)
+  BE: GET /session/logbooks-mentor/:sessionId → Logbook[] { id, activity, activityDetail, obstacle, documentation, user { id, username, email }, session.weeks.course.name }
+      DELETE /logbooks-mentor/:sessionId/:id, GET /logbooks-mentor/formEdit/:id, GET /logbooks-mentor/formCreate/:sessionId
+  Alpine parent: filteredData, pageNumber, size, formatDate(), openModal(), exportExcel(), searchInput/search, pageCount(), pages(), viewPage(), prevPage(), nextPage()
+--}}
+<style>
+  .logbook-mentor-scroll::-webkit-scrollbar { height: 6px; }
+  .logbook-mentor-scroll::-webkit-scrollbar-track { background: transparent; }
+  .logbook-mentor-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 999px; }
+  .logbook-mentor-scroll::-webkit-scrollbar-thumb:hover { background: #A3A3A3; }
+</style>
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] overflow-hidden shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
+
+  {{!-- Toolbar --}}
+  <div class='box-border w-full p-[16px_24px] flex flex-col md:flex-row gap-[12px] justify-between items-center [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+    {{!-- Search Input --}}
+    <div class='box-border w-full md:flex-1 md:max-w-[684px] h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+      <input type='text' placeholder='Search logbook...' x-model='searchInput' @input='search = searchInput; pageNumber=0'
+        class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
+    </div>
+
+    {{!-- Actions --}}
+    <div class='flex flex-row gap-[12px] items-center w-full md:w-auto justify-end'>
+      {{!-- Create Logbook --}}
+      <a href='/logbooks-mentor/formCreate/{{sessionId}}'
+        class='box-border w-[180px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#002040] transition-colors'>
+        <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Create Logbook</span>
+      </a>
+      {{!-- Export --}}
+      <button type='button' @click='exportExcel()'
+        class='box-border w-[122px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#16A34A] border border-[#86EFAC] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#15803D] transition-colors cursor-pointer'>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/><polyline points='7 10 12 15 17 10'/><line x1='12' x2='12' y1='15' y2='3'/></svg>
+        <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Export</span>
+      </button>
+    </div>
+  </div>
+
+  {{!-- Table --}}
+  <div x-show='filteredData && filteredData.length > 0' class='logbook-mentor-scroll w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
+    {{!-- Header Row (Total 1593px) --}}
+    <div class='w-full min-w-[1593px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+      <div class='box-border w-[268px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>User</div></div>
+      <div class='box-border w-[240px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Activity</div></div>
+      <div class='box-border w-[240px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Activity Details</div></div>
+      <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Obstacle</div></div>
+      <div class='box-border w-[138px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Documentation</div></div>
+      <div class='box-border w-[280px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Program Name</div></div>
+      <div class='box-border w-[227px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-center items-center'><div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>Details</div></div>
+    </div>
+
+    {{!-- Body Rows --}}
+    <template x-for='(logbook, index) in filteredData' :key='logbook.id'>
+      <div class='w-full min-w-[1593px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+
+        {{!-- User (268px) --}}
+        <div class='box-border w-[268px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='box-border flex-1 min-w-0 flex flex-row gap-[10px] justify-start items-center'>
+            {{> components/ui/admin/program/user-avatar userObj='logbook.user'}}
+            <div class='flex-1 min-w-0 flex flex-col gap-0 justify-center items-start'>
+              <div class='text-[14px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#404040] font-inter font-semibold text-left' x-text="logbook.user?.username ?? '-'" :title="logbook.user?.username ?? ''"></div>
+              <div class='text-[12px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbook.user?.email ?? '-'" :title="logbook.user?.email ?? ''"></div>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Activity (240px) --}}
+        <div class='box-border w-[240px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbook.activity ?? '-'" :title="logbook.activity ?? ''"></div>
+        </div>
+
+        {{!-- Activity Details (240px) --}}
+        <div class='box-border w-[240px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbook.activityDetail ?? logbook.activityDetails ?? '-'" :title="logbook.activityDetail ?? logbook.activityDetails ?? ''"></div>
+        </div>
+
+        {{!-- Obstacle (200px) --}}
+        <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbook.obstacle ?? logbook.obstacles ?? '-'" :title="logbook.obstacle ?? logbook.obstacles ?? ''"></div>
+        </div>
+
+        {{!-- Documentation thumbnail 90x52 (138px) --}}
+        <div class='box-border w-[138px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='box-border w-[90px] shrink-0 h-[52px] flex flex-row gap-0 justify-center items-center bg-[#F9F5FF] [outline:1px_solid_#E9D7FE] [outline-offset:-0.5px] rounded-[12px] overflow-hidden cursor-pointer' @click='openModal(logbook.id)'>
+            <template x-if='logbook.documentation'>
+              <img :src='logbook.documentation' alt='Doc' class='h-full w-full object-cover' />
+            </template>
+            <template x-if='!logbook.documentation'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#7F56D9' stroke-width='2'><rect width='18' height='18' x='3' y='3' rx='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3-3-3 3'/></svg>
+            </template>
+          </div>
+        </div>
+
+        {{!-- Program Name (280px) --}}
+        <div class='box-border w-[280px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbook.session?.weeks?.course?.name ?? '-'" :title="logbook.session?.weeks?.course?.name ?? ''"></div>
+        </div>
+
+        {{!-- Details / Action (227px): Edit + Delete + View --}}
+        <div class='box-border w-[227px] shrink-0 h-full flex flex-row gap-[4px] p-[16px] justify-center items-center'>
+          {{!-- Edit Button --}}
+          <a :href="`/logbooks-mentor/formEdit/${logbook.id}`"
+            class='box-border w-[40px] h-[40px] flex justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#F5F5F5] transition-colors' title='Edit' aria-label='Edit'>
+            <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/><path d='m15 5 4 4'/></svg>
+          </a>
+          {{!-- Delete Button --}}
+          <form :action="`/logbooks-mentor/{{sessionId}}/${logbook.id}?_method=DELETE`" method='post' class='inline'>
+            <button type='button' onclick='confirmDelete(this)'
+              class='box-border w-[40px] h-[40px] flex justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#FEF2F2] transition-colors cursor-pointer' title='Delete' aria-label='Delete'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+            </button>
+          </form>
+          {{!-- View Button --}}
+          {{> components/ui/admin/button/view-button click='openModal(logbook.id)'}}
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  {{!-- Empty State --}}
+  <div x-show='!filteredData || filteredData.length === 0' class='w-full h-[72px] flex items-center justify-center'>
+    <span class='font-inter text-sm text-[#A3A3A3]'>No mentor logbook found.</span>
+  </div>
+
+  {{!-- Pagination --}}
+  <div class='w-full flex justify-center gap-2 items-center py-4 [border-width:1px_0px_0px_0px] [border-style:solid] [border-color:#E5E5E5]' x-show='pageCount() > 1'>
+    <button @click='prevPage' :disabled='pageNumber==0' class='px-3 py-1 rounded border border-gray-900 text-gray-900 transition-colors' :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button @click='viewPage(index)' class='px-3 py-1 rounded transition-colors' :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }" x-text='index+1'></button>
+    </template>
+    <button @click='nextPage' :disabled='pageNumber >= pageCount()-1' class='px-3 py-1 rounded border border-gray-900 text-gray-900 transition-colors' :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+  </div>
+
+</div>

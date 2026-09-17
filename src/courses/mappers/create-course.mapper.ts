@@ -192,6 +192,7 @@ export function mapCreateProgram(
     dto.process = 'approved';
   } else if (role === 'admin') {
     dto.process = 'process';
+    dto.launch = false; // default launch false untuk admin
   }
 
   const launch = toBool(body.launch);
