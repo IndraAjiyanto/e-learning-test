@@ -1,5 +1,5 @@
       <div
-        class='bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden sticky top-24'
+        class='bg-white rounded-xl shadow-md border border-[#E5E5E5] overflow-hidden sticky top-24'
       >
         <div class='p-5'>
           <!-- Gambar Kelas -->
@@ -8,7 +8,7 @@
               <img
                 src="{{course.image}}"
                 alt='{{course.name}}'
-                class='w-full h-40 object-cover hover:scale-110 transition-transform duration-500'
+                class='w-full h-40 object-cover transition-transform duration-500'
               />
             </div>
           </div>
@@ -16,12 +16,12 @@
           <!-- Badges -->
           <div class='flex flex-wrap gap-2 mb-3'>
             <span
-              class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-md border border-slate-200'
+              class='bg-slate-100 text-[#404040] px-3 py-1 text-xs font-semibold rounded-md border border-[#E5E5E5]'
             >
               {{course.category.name}}
             </span>
             <span
-              class='badge bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-md'
+              class='bg-[#003060] text-white px-3 py-1 text-xs font-semibold rounded-md'
             >
               {{course.courseType.nameClassesType}}
             </span>
@@ -30,36 +30,36 @@
           <!-- Content -->
           <div class='mb-3'>
             <h1
-              class='text-xl font-bold text-slate-900 mb-2 leading-tight font-montserrat'
+              class='text-xl font-bold text-[#171717] mb-2 leading-tight font-montserrat'
             >
               {{course.name}}
             </h1>
-            <p class='text-sm text-justify text-slate-600 leading-relaxed'>
+            <p class='text-sm text-justify text-[#525252] leading-relaxed'>
               {{getByLang course.description lang}}
             </p>
           </div>
 
           <!-- Actions -->
-          <div class='card-actions'>
+          <div class=''>
             <a
               href='{{course.group}}'
               target='_blank'
               rel='noopener noreferrer'
-              class='btn bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-3'
+              class='bg-[#003060] hover:bg-[#00254a] text-white text-lg px-8 py-3 w-full border-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 mb-3'
             >
               <i class='fa-solid fa-users'></i>
               {{t 'test.startLearning.joinGroup'}}
             </a>
             <a
               href='/logbooks/user/{{course.id}}'
-              class='btn bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-3'
+              class='bg-[#15803d] hover:bg-[#166534] text-white text-lg px-8 py-3 w-full border-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 mb-3'
             >
               <i class='fa-solid fa-book'></i>
               {{t 'test.startLearning.myLogbook'}}
             </a>
             <a
               href='/program/program/detail/{{course.id}}'
-              class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+              class='bg-[#003060] hover:bg-[#00254a] text-white text-lg px-8 py-3 w-full border-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300'
             >
               <i class='fa-solid fa-circle-info'></i>
               {{t 'test.startLearning.detailProgram'}}

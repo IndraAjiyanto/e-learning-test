@@ -28,14 +28,69 @@
 --}}
 <div class="p-4 sm:px-[34px] sm:py-[42px]">
 
-  <div class="mb-6 flex flex-col gap-1">
-    {{> components/ui/super_admin/page_header/index
-      titleTag='h2'
-      title=(default (t 'test.startLearning.startLearning') 'Start Learning')
-    }}
-    {{> components/ui/super_admin/description/index
-      text=(default (t 'test.startLearning.spanStartLearning') 'Complete each week to unlock the next')
-    }}
+  {{!--
+    Kepala panel. Sebelumnya hanya judul dan satu kalimat ajakan, sehingga
+    student tidak punya cara tahu sudah sampai mana tanpa membuka satu per satu
+    minggu. Sekarang memuat kemajuan program dan satu tombol menuju minggu yang
+    sedang berjalan. Angkanya dihitung di controller (lihat myCourseFragment).
+  --}}
+  <div class="mb-6 rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="min-w-0">
+        {{> components/ui/super_admin/page_header/index
+          titleTag='h2'
+          title=(default (t 'test.startLearning.startLearning') 'Start Learning')
+        }}
+        <p class="mt-1 font-inter text-sm text-[#737373]">
+          {{#if progress.allDone}}
+            {{t 'test.startLearning.allWeeksDone'}}
+          {{else if progress.currentWeekNumber}}
+            {{default (t 'test.startLearning.week') 'Week'}} {{progress.currentWeekNumber}} {{t 'test.startLearning.inProgress'}}
+          {{else}}
+            {{default (t 'test.startLearning.spanStartLearning') 'Complete each week to unlock the next'}}
+          {{/if}}
+        </p>
+      </div>
+
+      {{#if progress.currentWeekId}}
+        {{!-- Satu aksi utama: bawa student ke minggu yang sedang berjalan dan
+             buka kartunya. Kunci localStorage-nya sama dengan yang dibaca
+             x-data tiap minggu, jadi kartunya benar-benar terbuka. --}}
+        <button
+          type="button"
+          @click="localStorage.setItem('open-minggu-{{progress.currentWeekId}}', 'true');
+                  const el = document.getElementById('week-{{progress.currentWeekId}}');
+                  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.dispatchEvent(new CustomEvent('open-week')); }"
+          class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white transition-colors hover:bg-[#00254a]"
+        >
+          {{t 'test.startLearning.continue'}}
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      {{/if}}
+    </div>
+
+    {{#if progress.totalWeeks}}
+      <div class="mt-5">
+        <div class="mb-2 flex items-center justify-between gap-3 font-inter text-sm">
+          <span class="text-[#525252]">
+            {{progress.completedWeeks}} {{t 'test.startLearning.of'}} {{progress.totalWeeks}}
+            {{#if (eq progress.totalWeeks 1)}}{{default (t 'test.startLearning.week') 'week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
+            {{t 'test.startLearning.completedLower'}}
+          </span>
+          <span class="font-semibold text-[#003060]">{{progress.percent}}%</span>
+        </div>
+        <div
+          class="h-2 w-full overflow-hidden rounded-full bg-[#E5E5E5]"
+          role="progressbar"
+          aria-label="{{t 'test.startLearning.programProgress'}}"
+          aria-valuenow="{{progress.percent}}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="h-full rounded-full bg-[#22C55E] transition-all duration-500" style="width: {{progress.percent}}%"></div>
+        </div>
+      </div>
+    {{/if}}
   </div>
 
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
@@ -46,7 +101,13 @@
             <!-- Week Design (Completed or In Progress) -->
             <div
               x-data="{
-                openMinggu: localStorage.getItem(`open-minggu-{{this.id}}`) === 'true',
+                {{!-- Minggu yang sedang berjalan terbuka sendiri pada kunjungan
+                     pertama. Sebelumnya semuanya tertutup, sehingga student harus
+                     menebak sudah sampai mana. Pilihan manual student tetap
+                     menang karena localStorage diperiksa lebih dulu. --}}
+                openMinggu: localStorage.getItem(`open-minggu-{{this.id}}`) !== null
+                  ? localStorage.getItem(`open-minggu-{{this.id}}`) === 'true'
+                  : {{#if (eq ../progress.currentWeekId this.id)}}true{{else}}false{{/if}},
                 sessions: localStorage.getItem(`sessions-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`sessions-data-{{this.id}}`)) : [],
                 quizData: localStorage.getItem(`quiz-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`quiz-data-{{this.id}}`)) : [],
                 loading: false,
@@ -103,7 +164,9 @@
                   }
                 }
               }"
-              class='border border-[#E5E5E5] rounded-xl shadow-md bg-white overflow-hidden transition-all duration-300'
+              id='week-{{this.id}}'
+              @open-week="openMinggu = true; if (!dataLoaded) fetchData()"
+              class='overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-shadow hover:shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.10)]'
               x-init='init()'
             >
 {{> program_detail/right_content/week/button_week}}
@@ -242,53 +305,79 @@
       {{/unless}}
     </div>
 
-    <aside class="lg:order-2 mt-8 lg:mt-0 lg:sticky lg:top-[88px] w-full bg-white rounded-xl border border-[#E5E7EB] overflow-hidden shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)]">
-        <img
-          src="{{course.image}}"
-          alt="{{course.name}}"
-          class="w-full h-[160px] object-cover"
-        >
-        <div class="p-5 space-y-3">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="bg-[#CFE6F5] rounded-[6px] font-montserrat font-medium text-xs text-[#003060] px-2.5 py-1 inline-flex items-center leading-none">
+    {{!--
+      Kartu program di kolom kanan.
+
+      Perubahan terhadap versi lama:
+      - Gambarnya tidak punya penanganan gagal-muat, sehingga program tanpa
+        gambar menyisakan kotak kosong 160px berisi teks alt. Kini memakai
+        fallback yang sama dengan kartu di My Learning.
+      - Tujuh tombol sebelumnya berderet rata tanpa kelompok, dan warnanya
+        menyiratkan tingkat kepentingan yang tidak sesuai isinya: Join Group
+        ungu terang (di luar palet), Detail Program navy, sisanya outline.
+        Sekarang dikelompokkan menurut gunanya dan memakai palet sistem.
+    --}}
+    <aside class="lg:order-2 mt-8 lg:mt-0 lg:sticky lg:top-[88px] w-full overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        <div class="h-[160px] w-full overflow-hidden bg-[#EEF2F6]">
+          <img
+            src="{{course.image}}"
+            alt="{{course.name}}"
+            onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+            class="h-full w-full object-cover"
+          >
+        </div>
+        <div class="space-y-3 p-5">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center rounded-[6px] bg-[#CFE6F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#003060]">
               {{course.category.name}}
             </span>
           </div>
-          <h2 class="font-montserrat font-semibold text-lg text-[#003060] leading-snug">
+          <h2 class="font-montserrat text-lg font-semibold leading-snug text-[#003060]">
             {{course.name}}
           </h2>
-          <p class="font-sans font-normal text-xs leading-relaxed text-[#6B7280] line-clamp-4">
+          <p class="line-clamp-3 font-inter text-xs leading-relaxed text-[#737373]">
             {{getByLang course.description lang}}
           </p>
-          {{!-- Titik masuk per-course. Sebelumnya tersebar di pohon sidebar, yang
-               tidak ada pada frame desain; kartu inilah tempat navigasi per-course
-               menurut desain. Handler-nya sama persis dengan yang dipakai pohon
+
+          {{!-- Kelompok 1: bahan belajar. Handler-nya sama persis dengan versi
                lama, jadi logika fragment dan buka-kunci sesi tidak berubah. --}}
-          <div class="flex flex-col gap-2 pt-2">
-            <button type="button" @click="toggleActiveSection('presentation')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-              <i class="fa-solid fa-display"></i> Presentation
+          <div class="space-y-2 pt-1">
+            <p class="font-inter text-xs font-semibold uppercase tracking-wide text-[#a3a3a3]">
+              {{t 'test.startLearning.materials'}}
+            </p>
+            <button type="button" @click="toggleActiveSection('presentation')" class="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-medium text-[#404040] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]">
+              <i class="fa-solid fa-display w-4 text-[#718096]"></i> {{t 'test.startLearning.presentation'}}
             </button>
-            <button type="button" @click="toggleActiveSection('assignment')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-              <i class="fa-solid fa-list-check"></i> Assignment
+            <button type="button" @click="toggleActiveSection('assignment')" class="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-medium text-[#404040] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]">
+              <i class="fa-solid fa-list-check w-4 text-[#718096]"></i> {{t 'test.startLearning.assignment'}}
             </button>
-            <button type="button" @click="toggleActiveSection('quiz')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-              <i class="fa-solid fa-circle-question"></i> Quiz
+            <button type="button" @click="toggleActiveSection('quiz')" class="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-medium text-[#404040] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]">
+              <i class="fa-solid fa-circle-question w-4 text-[#718096]"></i> {{t 'test.startLearning.quiz'}}
             </button>
-            <button type="button" @click="toggleActiveSection('certificate')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-              <i class="fa-solid fa-award"></i> Certificate
+          </div>
+
+          {{!-- Kelompok 2: catatan dan hasil milik student sendiri. --}}
+          <div class="space-y-2 border-t border-[#E5E5E5] pt-4">
+            <p class="font-inter text-xs font-semibold uppercase tracking-wide text-[#a3a3a3]">
+              {{t 'test.startLearning.yourRecord'}}
+            </p>
+            <button type="button" @click="toggleActiveSection('logbook')" class="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-medium text-[#404040] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]">
+              <i class="fa-regular fa-clipboard w-4 text-[#718096]"></i> {{t 'test.startLearning.myLogbook'}}
             </button>
-            <button type="button" @click="toggleActiveSection('group-class')" class="w-full h-11 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-              <i class="fa-solid fa-users"></i> Join Group
+            <button type="button" @click="toggleActiveSection('certificate')" class="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-medium text-[#404040] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]">
+              <i class="fa-solid fa-award w-4 text-[#718096]"></i> {{t 'test.startLearning.certificate'}}
             </button>
-            <button type="button" @click="toggleActiveSection('logbook')" class="w-full h-11 rounded-lg border border-[#0369A1] text-[#0369A1] hover:bg-[#E0F2F9] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-              <i class="fa-regular fa-clipboard"></i> My Logbook
-            </button>
-            {{!-- Controller courses dipasang di prefix "program" DAN rutenya sendiri
-                 bernama "program/detail/:courseId", jadi path lengkapnya berulang.
-                 Tautan lama /program/detail/:id selalu 404. --}}
-            <a href="/program/program/detail/{{course.id}}" class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer no-underline">
-              <i class="fa-regular fa-file-lines"></i> Detail Program
+          </div>
+
+          {{!-- Kelompok 3: keluar dari alur belajar. Detail Program tetap aksi
+               utama kartu ini, Join Group menemaninya sebagai aksi sekunder. --}}
+          <div class="space-y-2 border-t border-[#E5E5E5] pt-4">
+            <a href="/program/program/detail/{{course.id}}" class="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-3.5 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]">
+              <i class="fa-regular fa-file-lines"></i> {{t 'test.startLearning.detailProgram'}}
             </a>
+            <button type="button" @click="toggleActiveSection('group-class')" class="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#E4F1F7]">
+              <i class="fa-solid fa-users"></i> {{t 'test.startLearning.joinGroup'}}
+            </button>
           </div>
         </div>
       </aside>

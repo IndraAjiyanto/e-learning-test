@@ -185,15 +185,33 @@ const SCREENS = [
     waitFor: '#start-learning-container h2',
     async assert(page, s) {
       check(s, 'title "Start Learning"', await page.getByRole('heading', { name: 'Start Learning' }).count() > 0);
-      check(s, 'subtitle about unlocking', await page.getByText(/Complete each week/i).count() > 0);
+      // Sub-judulnya kini mengikuti keadaan: nama minggu yang sedang berjalan,
+      // kalimat selesai, atau ajakan awal saat belum ada minggu sama sekali.
+      const header = await page.locator('#start-learning-container').innerText();
+      check(s, 'header states where the student is',
+        /Week \d+ In progress|finished every week|Complete each week/i.test(header),
+        header.slice(0, 80).replace(/\n/g, ' '));
+
+      // Kepala panel baru: kemajuan program terbaca tanpa membuka minggu satu
+      // per satu. Dulu tidak ada penanda kemajuan sama sekali.
+      check(s, 'program progress bar',
+        await page.locator('#start-learning-container [role="progressbar"]').count() > 0);
+      check(s, 'weeks completed counter',
+        /\d+ of \d+ weeks? completed/i.test(header), header.slice(0, 120).replace(/\n/g, ' '));
+
+      // Setiap minggu menyebut isinya di kepala kartu, jadi student tahu ada apa
+      // di dalam tanpa membukanya. Dulu barisnya hanya "Click to Review Content".
+      check(s, 'week header previews its contents',
+        /\d+ sessions?/i.test(header), header.slice(0, 120).replace(/\n/g, ' '));
+      check(s, 'no "click to review" filler',
+        !/Click to (Review|Expand)/i.test(header));
       // Pemilik meminta breadcrumb dihapus dari seluruh area student, termasuk
       // Start Learning, meskipun frame desainnya menggambarkannya.
       check(s, 'no breadcrumb anywhere in the student area',
         await page.getByRole('navigation', { name: 'Breadcrumb' }).count() === 0);
       // Diperiksa lewat innerText kontainer: isinya datang dari fragment, dan
       // getByText tidak menjangkaunya dengan andal.
-      const learning = await page.locator('#start-learning-container').innerText();
-      check(s, 'week list', /Week \d/.test(learning), learning.slice(0, 60).replace(/\n/g, ' '));
+      check(s, 'week list', /Week \d/.test(header), header.slice(0, 60).replace(/\n/g, ' '));
       check(s, 'sticky program card', await page.getByRole('link', { name: /Detail Program/ }).count() + await page.getByRole('button', { name: /Detail Program/ }).count() > 0);
       check(s, 'Join Group button', await page.getByText(/Join Group/).count() > 0);
       check(s, 'My Logbook button', await page.getByText(/My Logbook/).count() > 0);

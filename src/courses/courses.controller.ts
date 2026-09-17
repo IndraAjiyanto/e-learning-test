@@ -513,11 +513,40 @@ await this.coursesService.addUserToCourse(userId, courseId);
         : Promise.resolve(null),
     ]);
 
+    // Ringkasan kemajuan untuk kepala panel. Dihitung di sini, bukan di
+    // template: Handlebars tidak punya penjumlahan bersyarat, dan status
+    // minggu sudah ada di `minggu` sehingga tidak perlu query tambahan.
+    // Sumber kebenarannya sama dengan yang dipakai button_week.hbs:
+    //   terbuka  = weekProgresses[0].process
+    //   selesai  = weekProgresses[0].quiz
+    const weekState = (w: (typeof minggu)[number]) => {
+      const p = w.weekProgresses?.[0];
+      return { unlocked: p?.process === true, done: p?.quiz === true };
+    };
+    const totalWeeks = minggu.length;
+    const completedWeeks = minggu.filter((w) => weekState(w).done).length;
+    // Minggu berjalan = minggu terbuka pertama yang belum selesai. Kalau
+    // semuanya sudah selesai, tidak ada minggu berjalan.
+    const currentWeek =
+      minggu.find((w) => {
+        const st = weekState(w);
+        return st.unlocked && !st.done;
+      }) ?? null;
+    const progress = {
+      totalWeeks,
+      completedWeeks,
+      percent: totalWeeks ? Math.round((completedWeeks / totalWeeks) * 100) : 0,
+      currentWeekId: currentWeek?.id ?? null,
+      currentWeekNumber: currentWeek?.weekNumber ?? null,
+      allDone: totalWeeks > 0 && completedWeeks === totalWeeks,
+    };
+
     return res.render(
       'partials/user/sidebar_user_profile/my_learning/start_learning/index',
       {
         course: activeCourse,
         minggu,
+        progress,
         user_kelas,
         portfolio,
         user: req.user,
