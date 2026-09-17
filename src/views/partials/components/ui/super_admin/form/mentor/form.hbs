@@ -15,10 +15,11 @@
   Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
   technologyOptions, initialTechnologies (form/multi_select_field); previewUrl,
   errorMessage, isValid, hasFile, fileName, validateImage(), clearFile()
-  (form/photo_upload); loading (form/button); lang (tabs/language).
+  (form/image_dropzone); loading (form/button); positionLang & descriptionLang
+  (tabs/language lewat prop `state`).
 
-  `lang` ikut di factory ini agar submit yang gagal bisa memindahkan tab ke
-  bahasa yang error — kalau tidak, pesan errornya tersembunyi di tab lain.
+  Kedua state tab ikut di factory ini agar submit yang gagal bisa memindahkan
+  tab ke bahasa yang error — kalau tidak, pesan errornya tersembunyi di tab lain.
 
   Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
 --}}
@@ -26,7 +27,9 @@
   (() => {
     const LANGS = ['id', 'en', 'ja'];
     const LANG_FIELDS = ['position', 'description'];
-    const PLAIN_FIELDS = ['name', 'linkedin'];
+    // Field satu nilai (tanpa varian bahasa). technologyId ikut di sini meski
+    // isinya array: alur validasinya sama, hanya pesan errornya yang beda.
+    const PLAIN_FIELDS = ['name', 'linkedin', 'technologyId'];
     const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
@@ -47,6 +50,10 @@
 
         case 'linkedin':
           if (!val) return 'LinkedIn link is required.';
+          return '';
+
+        case 'technologyId':
+          if (!Array.isArray(value) || !value.length) return 'Select at least one tool.';
           return '';
 
         case 'position': {
@@ -74,7 +81,12 @@
 
       return {
         loading: false,
-        lang: 'id',
+        positionLang: 'id',
+        descriptionLang: 'id',
+
+        // Di Edit foto lama tetap dipakai bila tidak diganti, jadi hanya Create
+        // yang mewajibkan unggahan.
+        requirePhoto: !mentor,
 
         technologyOptions: (technologies || []).map(asOption),
         initialTechnologies: (mentor?.technologies || []).map(asOption),
@@ -91,12 +103,14 @@
         formData: {
           name: mentor?.name ?? '',
           linkedin: mentor?.linkedin ?? '',
+          technologyId: (mentor?.technologies || []).map((tech) => tech.id),
           position: saved('position'),
           description: saved('description'),
         },
         formErrors: {
           name: '',
           linkedin: '',
+          technologyId: '',
           position: byLang(() => ''),
           description: byLang(() => ''),
         },
@@ -104,6 +118,7 @@
         touched: {
           name: false,
           linkedin: false,
+          technologyId: false,
           position: byLang(() => false),
           description: byLang(() => false),
         },
@@ -199,7 +214,7 @@
           this.clearPreview();
           this.errorMessage = message;
           this.isValid = false;
-          if (this.$refs.fileInput) this.$refs.fileInput.value = null;
+          if (this.$refs.dropInput) this.$refs.dropInput.value = null;
         },
 
         clearPreview() {
@@ -214,7 +229,7 @@
 
         clearFile() {
           this.clearPreview();
-          this.$refs.fileInput.value = null;
+          this.$refs.dropInput.value = null;
         },
 
         validateAll() {
@@ -229,10 +244,12 @@
               this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
             }),
           );
+
+          if (this.requirePhoto && !this.hasFile) {
+            this.setImageError('Profile photo is required.');
+          }
         },
 
-        // Foto tidak wajib di sini, sama seperti form lama: yang dicek hanya
-        // berkas yang dipilih tapi ditolak (isValid=false).
         // Dihitung ulang dari nilai formData, bukan dari formErrors: formErrors
         // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
         // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
@@ -244,28 +261,29 @@
             LANGS.every((lang) => errorFor(field, lang, this.formData[field][lang]) === ''),
           );
 
-          return this.isValid && plainOk && langOk;
+          return this.isValid && (!this.requirePhoto || this.hasFile) && plainOk && langOk;
         },
 
-        // Urutan mengikuti tampilan: foto, name, linkedin, lalu field per bahasa.
-        // Id `${field}-${lang}` harus sama dengan yang dibentuk form/mentor/fields.
+        // Urutan mengikuti tampilan: foto, Full Name, LinkedIn, Position,
+        // Description, lalu Tools. Id `${field}-${lang}` harus sama dengan yang
+        // dibentuk form/mentor/fields.
         revealFirstInvalid() {
-          if (!this.isValid) {
-            this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
+          if (!this.isValid || (this.requirePhoto && !this.hasFile)) {
+            this.$refs.dropInput.parentElement.scrollIntoView({ block: 'center' });
             return;
           }
 
-          for (const field of PLAIN_FIELDS) {
+          for (const field of ['name', 'linkedin']) {
             if (!this.formErrors[field]) continue;
             document.getElementById(field)?.focus();
             return;
           }
 
-          for (const lang of LANGS) {
-            for (const field of LANG_FIELDS) {
+          for (const field of LANG_FIELDS) {
+            for (const lang of LANGS) {
               if (!this.formErrors[field][lang]) continue;
 
-              this.lang = lang;
+              this[field + 'Lang'] = lang;
               this.$nextTick(() => {
                 const el = document.getElementById(`${field}-${lang}`);
                 if (!el) {
@@ -277,6 +295,8 @@
               return;
             }
           }
+
+          if (this.formErrors.technologyId) document.getElementById('technologyId')?.focus();
         },
 
         submitForm(event) {
