@@ -8,7 +8,7 @@
   {{!-- Berkas yang langsung terbuka: yang ditautkan dari halaman sesi lewat
        ?materialId=, kalau tidak ada ya yang pertama. Sebelumnya penampil ini
        selalu mulai kosong, bahkan ketika hanya ada satu berkas. --}}
-  x-data="{ pdfSrc: {{json selected.file}}, materiJudul: {{json selected.title}} }"
+  x-data="{ pdfSrc: {{json selected.file}}, materiJudul: {{json selected.title}}, missing: {{#if selectedMissing}}true{{else}}false{{/if}} }"
 >
 
   <div class='mb-8'>
@@ -20,13 +20,42 @@
       <div
         class='bg-white border border-[#E5E5E5] rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] overflow-hidden'
       >
-        <!-- PDF Viewer ketika sudah dipilih -->
-        <div x-show='pdfSrc'>
-          <iframe
-            class='h-[600px] w-full'
-            x-bind:src='pdfSrc'
-            type='application/pdf'
-          ></iframe>
+        <!-- PDF Viewer ketika sudah dipilih dan berkasnya memang ada -->
+        {{!-- template x-if, bukan x-show: dengan x-show elemennya tetap ada di
+             DOM dan tetap memuat berkasnya (atau halaman 404-nya) di latar. --}}
+        <template x-if='pdfSrc && !missing'>
+          <div>
+            <iframe
+              class='h-[600px] w-full'
+              x-bind:src='pdfSrc'
+              type='application/pdf'
+            ></iframe>
+          </div>
+        </template>
+
+        {{!--
+          Berkas yang diunggah bisa hilang dari disk sementara barisnya masih
+          ada di basis data. Tanpa penjagaan ini, permintaannya dijawab halaman
+          404 aplikasi dan <iframe> menampilkan halaman 404 itu di dalam kotak
+          materi - lengkap dengan navbar dan tombol WhatsApp-nya. Sekarang
+          keadaannya disebut apa adanya.
+        --}}
+        <div
+          x-show='pdfSrc && missing'
+          style='display:none'
+          class='flex h-[600px] items-center justify-center bg-[#FAFAFA] px-6'
+        >
+          <div class='max-w-md text-center'>
+            <span class='mx-auto mb-4 grid size-14 place-items-center rounded-full bg-[#FEF2F2] text-[#B42318]'>
+              <i class='fa-solid fa-file-circle-exclamation text-xl'></i>
+            </span>
+            <h3 class='font-montserrat text-lg font-bold text-[#171717]'>
+              {{t 'test.material.unavailableTitle'}}
+            </h3>
+            <p class='mt-1.5 font-inter text-sm text-[#737373]'>
+              {{t 'test.material.unavailableBody'}}
+            </p>
+          </div>
         </div>
 
         <!-- Tampilan default ketika belum ada PDF yang dipilih -->
@@ -107,7 +136,7 @@
             {{#each materi}}
               <div
                 class='w-full text-left px-4 py-4 rounded-lg border border-[#E5E5E5] hover:border-[#D4D4D4] bg-white hover:bg-[#FAFAFA] transition-all duration-200 shadow-sm group cursor-pointer'
-                @click="pdfSrc = '{{file}}'; materiJudul = '{{title}}'"
+                @click="pdfSrc = {{json file}}; materiJudul = {{json title}}; missing = {{#if missing}}true{{else}}false{{/if}}"
               >
                 <div class='flex items-center justify-between'>
                   <div class='flex items-center flex-1'>

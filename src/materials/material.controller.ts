@@ -14,6 +14,8 @@ import {
   Query,
   UseFilters,
 } from '@nestjs/common';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { MaterialService } from './material.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
@@ -181,6 +183,31 @@ export class MaterialController {
   ) {
     const session = await this.materialService.findSession(sessionId);
 
+    // Berkas yang diunggah bisa hilang dari disk - misalnya dipindahkan antar
+    // mesin sementara barisnya masih ada di basis data. Permintaannya lalu
+    // dijawab halaman 404 aplikasi, dan <iframe> penampil dengan patuh
+    // menampilkan halaman 404 itu LENGKAP dengan navbar dan tombol WhatsApp-nya
+    // di dalam kotak materi. Karena itu keberadaan berkas lokal diperiksa lebih
+    // dulu, dan penampil menampilkan keterangan yang jujur.
+    //
+    // Hanya berkas lokal yang bisa diperiksa; tautan luar (YouTube, Google
+    // Slides) dibiarkan apa adanya.
+    const STATIC_ROOTS: Record<string, string> = {
+      '/asset/': join(process.cwd(), 'public', 'asset'),
+      '/uploads/': join(process.cwd(), 'uploads'),
+      '/public/': join(process.cwd(), 'src', 'common', 'public'),
+    };
+    const isMissing = (file?: string) => {
+      if (!file || /^https?:\/\//i.test(file)) return false;
+      for (const [prefix, root] of Object.entries(STATIC_ROOTS)) {
+        if (file.startsWith(prefix)) {
+          const rel = decodeURIComponent(file.slice(prefix.length).split('?')[0]);
+          return !existsSync(join(root, rel));
+        }
+      }
+      return false;
+    };
+
     // Berkas mana yang langsung dibuka.
     //
     // Penampil ini dulu selalu terbuka kosong dengan tulisan "Select a PDF from
@@ -188,36 +215,31 @@ export class MaterialController {
     // memilih meski tidak ada pilihan lain. Sekarang: berkas yang disebut
     // `materialId` (ditautkan dari halaman sesi), kalau tidak ada ya yang
     // pertama.
-    const pick = (list: { id: string }[]) =>
+    const pick = <T extends { id: string }>(list: T[]): T | null =>
       (materialId && list.find((m) => m.id === materialId)) || list[0] || null;
 
+    const decorate = <T extends { id: string; file: string }>(list: T[]) =>
+      list.map((m) => ({ ...m, missing: isMissing(m.file) }));
+
+    const render = <T extends { id: string; file: string }>(view: string, list: T[]) => {
+      const items = decorate(list);
+      const selected = pick(items);
+      return res.render(view, {
+        user: req.user,
+        materi: items,
+        selected,
+        selectedMissing: selected ? isMissing(selected.file) : false,
+        session,
+        bareShell: true,
+      });
+    };
+
     if (fileType === 'video') {
-      const materi = await this.materialService.findMaterialVideo(sessionId);
-      res.render('materi/video', {
-        user: req.user,
-        materi,
-        selected: pick(materi),
-        session,
-        bareShell: true,
-      });
+      return render('materi/video', await this.materialService.findMaterialVideo(sessionId));
     } else if (fileType === 'pdf') {
-      const materi = await this.materialService.findMaterialPdf(sessionId);
-      res.render('materi/pdf', {
-        user: req.user,
-        materi,
-        selected: pick(materi),
-        session,
-        bareShell: true,
-      });
+      return render('materi/pdf', await this.materialService.findMaterialPdf(sessionId));
     } else if (fileType === 'ppt') {
-      const materi = await this.materialService.findMaterialPpt(sessionId);
-      res.render('materi/ppt', {
-        user: req.user,
-        materi,
-        selected: pick(materi),
-        session,
-        bareShell: true,
-      });
+      return render('materi/ppt', await this.materialService.findMaterialPpt(sessionId));
     }
   }
 

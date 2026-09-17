@@ -11,6 +11,7 @@
   x-data='{
     slideTitle: "",
     pptFile: "",
+    missing: {{#if selectedMissing}}true{{else}}false{{/if}},
 
     async selectMaterial(title, file) {
       this.slideTitle = title;
@@ -42,7 +43,7 @@
       >
 
         <!-- PPT Display Container -->
-        <template x-if='pptFile'>
+        <template x-if='pptFile && !missing'>
           <div class='relative h-[600px] bg-white'>
             <!-- Iframe untuk tampilkan PPT langsung -->
 <iframe :src="pptFile" class="w-full h-full border-none"   allowfullscreen="true"
@@ -52,6 +53,22 @@
         </template>
 
         <!-- Empty State -->
+        {{!-- Berkas unggahan bisa hilang dari disk; tanpa penjagaan ini penampil
+             menampilkan halaman 404 aplikasi di dalam kotak materi. --}}
+        <div
+          x-show='missing'
+          style='display:none'
+          class='flex h-[600px] items-center justify-center bg-[#FAFAFA] px-6'
+        >
+          <div class='max-w-md text-center'>
+            <span class='mx-auto mb-4 grid size-14 place-items-center rounded-full bg-[#FEF2F2] text-[#B42318]'>
+              <i class='fa-solid fa-file-circle-exclamation text-xl'></i>
+            </span>
+            <h3 class='font-montserrat text-lg font-bold text-[#171717]'>{{t 'test.material.unavailableTitle'}}</h3>
+            <p class='mt-1.5 font-inter text-sm text-[#737373]'>{{t 'test.material.unavailableBody'}}</p>
+          </div>
+        </div>
+
         <template x-if='!pptFile'>
           <div
             class='h-[600px] flex items-center justify-center bg-[#FAFAFA]'
@@ -128,7 +145,7 @@
             {{#each materi}}
 <div
   class='w-full text-left px-4 py-4 rounded-lg border border-[#E5E5E5] hover:border-[#D4D4D4] bg-white hover:bg-[#FAFAFA] transition-all duration-200 shadow-sm group cursor-pointer'
-  @click='selectMaterial("{{title}}", "{{file}}")'
+  @click='selectMaterial({{json title}}, {{json file}}); missing = {{#if missing}}true{{else}}false{{/if}}'
 >
   <div class='flex items-center justify-between'>
     <div class='flex items-center flex-1'>

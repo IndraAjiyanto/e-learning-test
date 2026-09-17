@@ -8,7 +8,7 @@
   {{!-- Berkas yang langsung terbuka: yang ditautkan dari halaman sesi lewat
        ?materialId=, kalau tidak ada ya yang pertama. Sebelumnya penampil ini
        selalu mulai kosong, bahkan ketika hanya ada satu berkas. --}}
-  x-data="{ videoSrc: {{json selected.file}}, videoTitle: {{json selected.title}} }"
+  x-data="{ videoSrc: {{json selected.file}}, videoTitle: {{json selected.title}}, missing: {{#if selectedMissing}}true{{else}}false{{/if}} }"
 >
 
   <div class='mb-8'>
@@ -21,7 +21,8 @@
         class='bg-white border border-[#E5E5E5] rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] overflow-hidden'
       >
         <!-- Video Player ketika sudah dipilih -->
-        <div x-show='videoSrc'>
+        <template x-if='videoSrc && !missing'>
+          <div>
           <template
             x-if="videoSrc.includes('youtube.com') || videoSrc.includes('youtu.be')"
           >
@@ -46,6 +47,23 @@
               x-bind:src='videoSrc'
             ></video>
           </template>
+          </div>
+        </template>
+
+        {{!-- Berkas unggahan bisa hilang dari disk; tanpa penjagaan ini penampil
+             menampilkan halaman 404 aplikasi di dalam kotak materi. --}}
+        <div
+          x-show='missing'
+          style='display:none'
+          class='flex h-[600px] items-center justify-center bg-[#FAFAFA] px-6'
+        >
+          <div class='max-w-md text-center'>
+            <span class='mx-auto mb-4 grid size-14 place-items-center rounded-full bg-[#FEF2F2] text-[#B42318]'>
+              <i class='fa-solid fa-file-circle-exclamation text-xl'></i>
+            </span>
+            <h3 class='font-montserrat text-lg font-bold text-[#171717]'>{{t 'test.material.unavailableTitle'}}</h3>
+            <p class='mt-1.5 font-inter text-sm text-[#737373]'>{{t 'test.material.unavailableBody'}}</p>
+          </div>
         </div>
 
         <!-- Tampilan default ketika belum ada video yang dipilih -->

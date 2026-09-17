@@ -432,6 +432,18 @@ const SCREENS = [
         const emptyVisible = await page.getByText(/No PDF Selected|Select a PDF|No Video Selected/i)
           .first().isVisible().catch(() => false);
         check(s, 'material viewer opens with the file already selected', !emptyVisible);
+
+        // Berkas unggahan yang hilang dari disk dulu dijawab halaman 404
+        // aplikasi, dan <iframe> menampilkannya di dalam kotak materi lengkap
+        // dengan navbar dan tombol WhatsApp-nya. Yang benar: penampil menyebut
+        // keadaannya, dan tidak ada iframe yang dirender.
+        const unavailable = await page.getByText(/unavailable/i).first().isVisible().catch(() => false);
+        const frameVisible = await page.locator('iframe').first().isVisible().catch(() => false);
+        check(s, 'viewer never embeds the app 404 page',
+          unavailable !== frameVisible, `unavailable=${unavailable} iframe=${frameVisible}`);
+        const embedded404 = await page.frameLocator('iframe').getByText(/Page Not Found/i)
+          .count().catch(() => 0);
+        check(s, 'no 404 page inside the viewer frame', embedded404 === 0);
         await page.goBack({ waitUntil: 'networkidle' });
         await page.waitForTimeout(500);
       }
