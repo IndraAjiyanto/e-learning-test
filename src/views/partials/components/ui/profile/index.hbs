@@ -175,9 +175,6 @@
             label='Studi Program'
             iconLeft='book'
             placeholder='Input Your Studi Program'
-            multiline=true
-            heightClass='h-24'
-            rows=3
           }}
         </div>
 
@@ -199,9 +196,6 @@
             type='tel'
             iconLeft='phone'
             placeholder='Input Your WhatsApp Number'
-            multiline=true
-            heightClass='h-24'
-            rows=3
           }}
         </div>
       </div>
@@ -290,6 +284,20 @@
           if (!val) return 'Full name is required.';
           if (val.length < 3) return 'Full name must be at least 3 characters.';
           return '';
+        case 'no': {
+          // Nomor WhatsApp boleh dikosongkan - biodata memang tidak mewajibkannya.
+          // Tapi kalau diisi, bentuknya diperiksa: sebelumnya field ini menerima
+          // apa pun, termasuk huruf.
+          if (!val) return '';
+          if (!/^\+?[0-9 ()-]+$/.test(val)) {
+            return 'Use digits only, with an optional leading + and spaces.';
+          }
+          const digits = val.replace(/\D/g, '');
+          if (digits.length < 8 || digits.length > 15) {
+            return 'Phone number should be 8 to 15 digits.';
+          }
+          return '';
+        }
         default:
           return '';
       }
@@ -344,7 +352,7 @@
 
       canSubmitBiodata() {
         const fields = ['fullName', 'city', 'education', 'studyProgram', 'gender', 'no'];
-        return this.dirty(fields) && this.valid(['fullName']);
+        return this.dirty(fields) && this.valid(['fullName', 'no']);
       },
 
       async send(url, method, body) {

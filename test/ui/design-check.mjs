@@ -115,6 +115,33 @@ const SCREENS = [
       const disabled = await page.getByRole('button', { name: 'Save Changes' }).first().isDisabled();
       check(s, 'Save disabled until something changes', disabled);
       check(s, 'left icon inside every input', await page.locator('svg.h-4.w-4').count() >= 6);
+
+      // Studi Program dan WhatsApp Number sempat dirender sebagai textarea tiga
+      // baris, sehingga tingginya tiga kali lipat pasangannya di kolom kiri.
+      const h = async (sel) => await page.locator(sel)
+        .evaluate((e) => ({ tag: e.tagName, h: Math.round(e.getBoundingClientRect().height) }))
+        .catch(() => null);
+      const edu = await h('#biodata-education-trigger');
+      const sp = await h('#biodata-studyprogram');
+      const wa = await h('#biodata-no');
+      check(s, 'Studi Program is a single-line input',
+        sp && sp.tag === 'INPUT' && sp.h === edu.h, JSON.stringify(sp));
+      check(s, 'WhatsApp Number is a single-line input',
+        wa && wa.tag === 'INPUT' && wa.h === edu.h, JSON.stringify(wa));
+      check(s, 'WhatsApp Number uses the tel keyboard',
+        await page.locator('#biodata-no[type="tel"]').count() > 0);
+
+      // Nomor telepon dulu menerima apa pun, termasuk huruf.
+      await page.locator('#biodata-no').fill('abc');
+      await page.locator('#biodata-no').blur();
+      await page.waitForTimeout(250);
+      check(s, 'WhatsApp Number rejects letters',
+        await page.getByText(/digits only/i).count() > 0);
+      await page.locator('#biodata-no').fill('+62 812-3456-7890');
+      await page.locator('#biodata-no').blur();
+      await page.waitForTimeout(250);
+      check(s, 'WhatsApp Number accepts an international number',
+        await page.getByText(/digits only|8 to 15 digits/i).count() === 0);
     },
   },
   {
