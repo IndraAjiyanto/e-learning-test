@@ -41,6 +41,7 @@
     no: "{{user.biodata.no}}",
     hasPhoto: {{#if user.profile}}true{{else}}false{{/if}}
   })'
+  x-init='flagStoredErrors()'
 >
   <div class='flex flex-col gap-7'>
 
@@ -112,7 +113,7 @@
           {{> components/ui/super_admin/form/button
             label='Change Photo'
             variant='secondary'
-            onclick='$refs.fileInput.click()'
+            atClick='$refs.fileInput.click()'
           }}
           <p class='text-center font-inter text-xs leading-relaxed text-[#737373]'>JPG or PNG, up to 5 MB.</p>
 
@@ -170,7 +171,7 @@
             <div>
               {{> components/ui/super_admin/form/button
                 label='Save Changes'
-                onclick='saveAccount()'
+                atClick='saveAccount()'
                 loading=true
                 disabled='!canSubmitAccount() || loading'
               }}
@@ -335,7 +336,7 @@
           <div>
             {{> components/ui/super_admin/form/button
               label='Save Changes'
-              onclick='saveBiodata()'
+              atClick='saveBiodata()'
               loading=true
               disabled='!canSubmitBiodata() || loading'
             }}
@@ -363,7 +364,7 @@
           {{#if (eq user.role 'user')}}
             {{> components/ui/super_admin/form/button
               label='Change Password'
-              onclick="toggleActiveSection('password')"
+              atClick="toggleActiveSection('password')"
             }}
           {{else}}
             {{> components/ui/super_admin/form/button
@@ -542,6 +543,26 @@
       touch(field) {
         this.touched[field] = true;
         this.validateField(field, this.formData[field]);
+      },
+
+      // Nilai yang datang dari database bisa saja melanggar aturan yang baru
+      // dipasang belakangan - nomor WhatsApp tujuh digit pada baris lama,
+      // misalnya. Tanpa ini errornya tidak pernah kelihatan (pesan hanya muncul
+      // untuk field yang sudah disentuh) sementara tombol Save-nya mati: yang
+      // dilihat student cuma tombol mati tanpa satu pun keterangan, dan itulah
+      // yang dilaporkan sebagai "tidak bisa menyimpan".
+      //
+      // Yang ditandai HANYA field yang ada isinya tapi tidak sah. Field kosong
+      // tetap diam sampai disentuh, supaya profil yang memang belum diisi tidak
+      // langsung dipenuhi pesan merah begitu dibuka.
+      flagStoredErrors() {
+        Object.keys(original).forEach((field) => {
+          const message = errorFor(field, original[field]);
+          if (trim(original[field]) && message) {
+            this.touched[field] = true;
+            this.formErrors[field] = message;
+          }
+        });
       },
 
       dirty(fields) {
