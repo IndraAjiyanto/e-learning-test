@@ -60,6 +60,38 @@
           placeholder=(default (t 'test.profile.editPassword.placeholderNewPassword') 'Enter your new password')
         }}
 
+        {{!--
+          Daftar syarat password.
+
+          Halaman daftar dan lupa-password sudah memakainya (regis.hbs,
+          reset-password.hbs, super_admin/user/create) dengan kunci i18n yang
+          sama, sementara halaman ini dulu hanya menuntut 8 karakter tanpa
+          memberi tahu syarat lainnya - padahal server menolak dengan aturan
+          yang jauh lebih ketat. Kelimanya sama persis dengan
+          assertStrongPassword di src/common/utils/password.util.ts.
+        --}}
+        <ul class='-mt-2 flex flex-col gap-1.5' aria-label='Password requirements'>
+          {{#each (array
+            (array 'length' 'rules.length')
+            (array 'uppercase' 'rules.uppercase')
+            (array 'lowercase' 'rules.lowercase')
+            (array 'number' 'rules.number')
+            (array 'special' 'rules.special')
+          )}}
+            <li
+              class='flex items-center gap-1.5 font-inter text-xs'
+              :class="{{lookup this 1}} ? 'text-[#15803d]' : 'text-[#737373]'"
+            >
+              <i
+                class='text-[10px]'
+                :class="{{lookup this 1}} ? 'fas fa-check-circle' : 'far fa-circle'"
+                aria-hidden='true'
+              ></i>
+              {{t (concat 'test.passwordChecklist.' (lookup this 0))}}
+            </li>
+          {{/each}}
+        </ul>
+
         {{> components/ui/super_admin/form/text_field
           id=(concat 'confirm-password-' (default idSuffix 'tab'))
           name='confirmPassword'
@@ -68,7 +100,7 @@
           type='password'
           toggle=true
           required=true
-          placeholder='Confirm your new password'
+          placeholder=(default (t 'test.profile.editPassword.placeholderConfirmNewPassword') 'Confirm your new password')
         }}
 
         <p
@@ -115,6 +147,18 @@
   function changePasswordForm() {
     const trim = (v) => String(v ?? '');
 
+    // Salinan assertStrongPassword (src/common/utils/password.util.ts). Kalau
+    // aturan di sana berubah, keduanya harus ikut berubah - itu sebabnya
+    // bentuknya dibuat semirip mungkin.
+    const RULES = {
+      length: (v) => v.length >= 8,
+      uppercase: (v) => /[A-Z]/.test(v),
+      lowercase: (v) => /[a-z]/.test(v),
+      number: (v) => /[0-9]/.test(v),
+      special: (v) => /[^A-Za-z0-9]/.test(v),
+    };
+    const strongEnough = (v) => Object.values(RULES).every((ok) => ok(v));
+
     const errorFor = (field, value, all) => {
       const val = trim(value);
       switch (field) {
@@ -122,7 +166,14 @@
           return val ? '' : 'Current password is required.';
         case 'newPassword':
           if (!val) return 'New password is required.';
-          if (val.length < 8) return 'New password must be at least 8 characters.';
+          // Sengaja tidak mengulang kelima syaratnya di sini: daftarnya sudah
+          // tercetak di bawah field dan ikut bergerak saat diketik. Aturannya
+          // sendiri dijaga `rules` di bawah, yang menyalin assertStrongPassword
+          // di server - dulu klien hanya meminta 8 karakter, server meminta 6,
+          // dan yang dipakai saat mendaftar justru lima syarat ini.
+          if (!strongEnough(val)) {
+            return 'Your new password does not meet the requirements listed below.';
+          }
           return '';
         case 'confirmPassword':
           if (!val) return 'Please confirm your new password.';
@@ -138,6 +189,17 @@
       formData: { currentPassword: '', newPassword: '', confirmPassword: '' },
       formErrors: {},
       touched: {},
+
+      get rules() {
+        const value = trim(this.formData.newPassword);
+        return {
+          length: RULES.length(value),
+          uppercase: RULES.uppercase(value),
+          lowercase: RULES.lowercase(value),
+          number: RULES.number(value),
+          special: RULES.special(value),
+        };
+      },
 
       get matches() {
         return (

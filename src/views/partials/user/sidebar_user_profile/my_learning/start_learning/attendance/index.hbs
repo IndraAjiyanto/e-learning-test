@@ -96,7 +96,7 @@
         // No user-role update endpoint exists yet (only an admin-only
         // PATCH /attendance/:attendanceId/:sessionId) — editing an
         // already-submitted attendance record is not wired up.
-        alert('Editing an existing attendance record is not available yet.');
+        showErrorToast('Attendance not updated', 'Editing an existing attendance record is not available yet.');
         return;
       }
       try {
@@ -121,10 +121,10 @@
             this.loadSessions(this.loadedWeekId);
           }
         } else {
-          alert(data.message || 'Failed to update attendance');
+          showErrorToast('Attendance not updated', data.message || 'Please try again in a moment.');
         }
       } catch (error) {
-        alert('An error occurred while updating attendance');
+        showErrorToast('Attendance not updated', 'The request did not go through. Check your connection and try again.');
       }
     }
   }"

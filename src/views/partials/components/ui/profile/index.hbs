@@ -606,7 +606,7 @@
           if (error) throw new Error(error);
           window.location.href = '/users/profile';
         } catch (err) {
-          alert(err.message || 'Failed to update account');
+          showErrorToast('Account not saved', err.message || 'Please try again in a moment.');
         } finally {
           this.loading = false;
         }
@@ -632,7 +632,7 @@
           if (error) throw new Error(error);
           window.location.href = '/users/profile';
         } catch (err) {
-          alert(err.message || 'Failed to update biodata');
+          showErrorToast('Biodata not saved', err.message || 'Please try again in a moment.');
         } finally {
           this.loading = false;
         }

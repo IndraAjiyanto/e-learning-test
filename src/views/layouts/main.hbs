@@ -140,6 +140,14 @@
 
   {{> sweetalert}}
 
+  {{!-- Toast gagal dipasang di sini, bukan per halaman, supaya setiap layar
+       punya kanal kabar buruk yang seragam: kegagalan sisi klien tinggal
+       mengirim event `toast:error`, dan kegagalan sisi server memakai
+       flashToastError(). Toast sukses tetap dipasang per halaman seperti
+       sebelumnya - memindahkannya ke sini akan membuat halaman yang sudah
+       memasangnya menampilkan dua toast sekaligus. --}}
+  {{> components/ui/super_admin/toast/error/index toast=toastError }}
+
     <script>
       document.addEventListener('DOMContentLoaded', function() {
       const scrollAnimator = new ScrollAnimator();

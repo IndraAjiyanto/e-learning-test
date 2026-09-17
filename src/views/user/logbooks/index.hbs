@@ -132,7 +132,7 @@
             `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`
           );
         } catch (err) {
-          alert("Failed to export data to Excel");
+          showErrorToast('Export failed', 'The logbook could not be exported to Excel.');
           console.error(err);
         }
       },

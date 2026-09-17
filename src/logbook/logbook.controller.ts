@@ -23,7 +23,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { Request, Response } from 'express';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('logbooks')
@@ -83,7 +83,11 @@ export class LogbookController {
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);
       const errorMessage = error.message || 'Failed to add log book';
-      req.flash('error', errorMessage);
+      flashToastError(
+        req,
+        'Logbook not saved',
+        errorMessage,
+      );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
@@ -217,7 +221,11 @@ export class LogbookController {
       console.error(error.response || error.message || error);
 
       const logbooks = await this.logbookService.findOne(logbookId);
-      req.flash('error', error.message || 'logbooks failed to update');
+      flashToastError(
+        req,
+        'Logbook not saved',
+        error.message || 'Please try again in a moment.',
+      );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {

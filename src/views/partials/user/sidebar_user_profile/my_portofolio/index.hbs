@@ -210,7 +210,7 @@
     },
     async submitPortfolio() {
       if (!this.newForm.title.trim()) {
-        alert('Portfolio title is required!');
+        showErrorToast('Portfolio not saved', 'Give your portfolio a title first.');
         return;
       }
 
@@ -239,13 +239,13 @@
       });
       
       if (!hasImage) {
-        alert('Please upload at least one image.');
+        showErrorToast('Portfolio not saved', 'Upload at least one image first.');
         return;
       }
 
       const courseId = this.newForm.courseId;
       if (!courseId) {
-        alert('Please select a valid Program/Course first.');
+        showErrorToast('Portfolio not saved', 'Choose which program this portfolio belongs to.');
         return;
       }
 
@@ -265,11 +265,11 @@
         if (response.ok) {
           window.location.href = window.location.pathname + '?tab=portfolio';
         } else {
-          alert('Failed to save portfolio: ' + (result.message || 'Unknown error occurred.'));
+          showErrorToast('Portfolio not saved', result.message || 'Please try again in a moment.');
         }
       } catch (err) {
         console.error('Error saving portfolio:', err);
-        alert('An error occurred while saving portfolio.');
+        showErrorToast('Portfolio not saved', 'The request did not go through. Check your connection and try again.');
       }
     },
   }"

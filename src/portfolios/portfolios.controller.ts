@@ -13,6 +13,7 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
+import { flashToastError } from 'src/common/utils/toast.util';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -49,7 +50,11 @@ export class PortfoliosController {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolios failed to create');
+      flashToastError(
+        req,
+        'Portfolio not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/portfolios');
     }
   }
@@ -116,7 +121,11 @@ export class PortfoliosController {
         });
       }
 
-      req.flash('error', error.message || 'Failed to upload portofolios');
+      flashToastError(
+        req,
+        'Upload failed',
+        error.message || 'The image could not be uploaded. Please try again.',
+      );
       res.redirect(`/program/${createPortfolioDto.courseId || ''}`);
     }
   }
@@ -245,7 +254,11 @@ export class PortfoliosController {
       req.flash('success', 'Portfolios successfully updated');
       return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolios failed to update');
+      flashToastError(
+        req,
+        'Portfolio not saved',
+        error.message || 'Please try again in a moment.',
+      );
       return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
     }
   }
@@ -269,7 +282,11 @@ export class PortfoliosController {
       req.flash('success', 'Portfolios successfully deleted');
       res.redirect(`/program/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete portfolio');
+      flashToastError(
+        req,
+        'Portfolio not deleted',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect(`/program/${courseId}`);
     }
   }

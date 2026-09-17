@@ -30,7 +30,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -467,12 +467,21 @@ export class UsersController {
         );
         res.redirect('/users/profile');
       } else {
-        req.flash('error', 'Unauthorized access');
+        flashToastError(
+          req,
+          'Password not changed',
+          'You can only change the password of your own account.',
+        );
         res.redirect('/users/profile');
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to update password';
-      req.flash('error', errorMessage);
+      // Pesan dari assertStrongPassword dan dari pemeriksaan password lama
+      // sudah menjelaskan dirinya sendiri, jadi diteruskan apa adanya.
+      flashToastError(
+        req,
+        'Password not changed',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }
