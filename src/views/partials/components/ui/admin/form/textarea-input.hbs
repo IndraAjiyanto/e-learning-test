@@ -1,9 +1,11 @@
 {{!--
-  Component: Textarea Input (Admin) â€” atomic
+  Component: Textarea Input (Admin) — atomic
   Path: components/ui/admin/form/textarea-input.hbs
   Props: {{id}}, {{name}}, {{placeholder}}, {{xModel}} (optional Alpine),
          {{rows}} (default 4), {{class}} (optional), {{onBlur}} (optional Alpine expression),
-         {{validateKey}} (optional, key for parent borderClass() validation outline)
+         {{validateKey}} (optional, key for parent borderClass() validation outline),
+         {{value}} (optional, pre-filled value for edit forms)
+         {{required}} (optional, renders HTML required — dipakai gating tombol submit)
 
   Design: w fill_container, h128, p10 14, gap 8, bg white,
   outline 1px #D4D4D4, radius 8, text Inter 16/normal #404040
@@ -18,5 +20,6 @@
     placeholder='{{default placeholder ""}}'
     {{#if xModel}}x-model='{{xModel}}'{{/if}}
     {{#if onBlur}}@blur='{{onBlur}}'{{/if}}
-  ></textarea>
+    {{#if required}}required{{/if}}
+  >{{default value ""}}</textarea>
 </div>

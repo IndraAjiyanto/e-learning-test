@@ -195,7 +195,7 @@
             !this.selectedKelas ||
             log.session?.weeks?.course?.id?.toString() === this.selectedKelas;
 
-          const searchText = `${log.activity} ${log.activiy_detail} ${log.obstacle}`.toLowerCase();
+          const searchText = `${log.activity} ${log.activityDetail} ${log.obstacle}`.toLowerCase();
           const searchMatch = searchText.includes(this.search.toLowerCase());
 
           return kelasMatch && searchMatch;
@@ -215,7 +215,7 @@
               !this.selectedKelas ||
               log.session?.weeks?.course?.id?.toString() === this.selectedKelas;
 
-            const searchText = `${log.activity} ${log.activiy_detail} ${log.obstacle}`.toLowerCase();
+            const searchText = `${log.activity} ${log.activityDetail} ${log.obstacle}`.toLowerCase();
             const searchMatch = searchText.includes(this.search.toLowerCase());
 
             return kelasMatch && searchMatch;

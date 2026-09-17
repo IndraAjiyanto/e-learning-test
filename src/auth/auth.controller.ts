@@ -83,9 +83,6 @@ export class AuthController {
             return res.redirect('/login');
           }
           this.userActivityService.markActive(user!.id, req.sessionID).catch(() => undefined);
-          // /dashboard still branches admin/super_admin correctly (dashboard.controller.ts) -
-          // only 'user' needs to land on their own dashboard instead of the marketing homepage.
-          // "Home" in the navbar still points at /dashboard and is untouched by this.
           if (user!.role === 'user') {
             res.redirect('/users/profile');
           } else {

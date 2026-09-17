@@ -1,0 +1,48 @@
+{{!--
+  Component: Logbook Detail Card (Admin) — molecule, prefix logbook-
+  Path: components/ui/admin/logbook/logbook-detail-card.hbs
+  Dipakai: {{> components/ui/admin/logbook/logbook-detail-card icon='zap' title='Activity' contentVar='selectedLogbook?.activity'}}
+  Props: {{icon}} (lucide name, default 'zap'), {{title}} (static label),
+         {{contentVar}} (Alpine expression ke teks, mis. 'selectedLogbook?.activity'),
+         {{isLink}} (optional bool — true render <a> biru #2563EB untuk Documentation Link)
+  Pencil (Container - User Property → _Badge base Sky):
+  w fill (560 kiri / 348 kanan via parent), fill #F0F9FF r10 stroke #BAE6FD,
+  p20 14 gap10 vertical; header row h24 gap4 icon 24 #171717 + title
+  Montserrat 16/600 #171717; desc Montserrat 14/500 #737373 (link: #2563EB).
+  Clean-code: SRP — satu kartu info; semua varian Activity/Key Activities/
+  Obstacle/Documentation Link reuse komponen ini.
+--}}
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-[10px] p-[20px_14px] justify-start items-stretch bg-[#F0F9FF] [outline:1px_solid_#BAE6FD] [outline-offset:-0.5px] rounded-[10px]'>
+  <div class='w-full h-[24px] shrink-0 flex flex-row gap-[4px] justify-start items-center'>
+    {{#if (eq icon 'link')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>
+    {{else if (eq icon 'list-checks')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='m3 17 2 2 4-4'/><path d='m3 7 2 2 4-4'/><path d='M13 6h8'/><path d='M13 12h8'/><path d='M13 18h8'/></svg>
+    {{else if (eq icon 'triangle-alert')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>
+    {{else if (eq icon 'user')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
+    {{else if (eq icon 'calendar')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='M8 2v4'/><path d='M16 2v4'/><rect width='18' height='18' x='3' y='4' rx='2'/><path d='M3 10h18'/></svg>
+    {{else if (eq icon 'image')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><rect width='18' height='18' x='3' y='3' rx='2' ry='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/></svg>
+    {{else if (eq icon 'book-open')}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/></svg>
+    {{else}}
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>
+    {{/if}}
+    <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-montserrat font-semibold text-left'>{{title}}</div>
+  </div>
+  {{#if isLink}}
+    <template x-if='{{contentVar}}'>
+      <a :href='{{contentVar}}' target='_blank' rel='noopener noreferrer'
+        class='text-[14px]/[1.21] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#2563EB] font-montserrat font-medium text-left hover:underline break-all'
+        x-text='{{contentVar}}' :title='{{contentVar}}'></a>
+    </template>
+    <template x-if='!({{contentVar}})'>
+      <div class='text-[14px]/[1.21] w-full text-[#737373] font-montserrat font-medium text-left'>-</div>
+    </template>
+  {{else}}
+    <div class='text-[14px]/[1.21] w-full text-[#737373] font-montserrat font-medium text-left break-words' x-text='{{contentVar}} || "-"'></div>
+  {{/if}}
+</div>

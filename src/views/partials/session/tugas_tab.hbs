@@ -1,50 +1,22 @@
+{{!--
+  Partial: Session Assignment Tab (Admin) — Container - Session Assignment (slicing.pen A2pWwW)
+  Path: partials/session/tugas_tab.hbs
+  Dipakai: {{> session/tugas_tab}} di admin/session/detail.hbs (tab assignment).
+  Composes: assignment/assignment-row (title + delete + Detail).
+  Design: rows h68 (judul Montserrat 16/600 #003060, delete 44 outline #D9D9D9,
+  Detail w81 outline #003060) + Add Assignment full-width h48 outline #3B82F6.
+  BE: tugasData().fetchTugas → GET /session/task/:sessionId (Assignment[]).
+      Detail GET /answer-assigment/:id; delete POST /task/:id/:sessionId.
+  Logika Alpine dipertahankan verbatim dari implementasi lama.
+--}}
   <!-- Assignment List Section -->
   <template x-if="data && data.length > 0">
-    <ul class="space-y-3 mb-6">
+    <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
       <template x-for="assigment in data" :key="assigment.id">
-        <li class="flex justify-between items-center bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
-          <!-- Title -->
-          <span class="text-gray-800 font-semibold text-lg" x-text="assigment.title"></span>
-
-          <!-- Actions -->
-          <div class="flex items-center gap-2">
-
-    <form :action="`/answer-assigment/${assigment.id}`" method="get">
-    <button type="submit" 
-            class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
-            title="Edit">
-      <!-- Pencil Icon -->
-                                                <svg xmlns="http://www.w3.org/2000/svg" 
-           fill="none" viewBox="0 0 24 24" 
-           stroke-width="1.5" stroke="currentColor" 
-           class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" 
-              d="M12 6.75c-4.5 0-8.25 2.25-10.5 6 
-                 2.25 3.75 6 6 10.5 6s8.25-2.25 
-                 10.5-6c-2.25-3.75-6-6-10.5-6z" />
-        <path stroke-linecap="round" stroke-linejoin="round" 
-              d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-      </svg>
-    </button>
-  </form>
-
-
-              <form :action="`/task/${assigment.id}/{{session.id}}?_method=DELETE`" method="post" class="inline">
-                <button type="button" 
-            onclick="confirmDelete(this)" 
-            class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
-            title="Delete">      <svg xmlns="http://www.w3.org/2000/svg" 
-           fill="none" viewBox="0 0 24 24" 
-           stroke-width="1.5" stroke="currentColor" 
-           class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" 
-              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></button>
-              </form>
-          </div>
-        </li>
-        </template>
-    </ul>
-    </template>
+        {{> components/ui/admin/assignment/assignment-row}}
+      </template>
+    </div>
+  </template>
     <!-- Empty State -->
     <template x-if="!data || data.length === 0">
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
@@ -62,15 +34,9 @@
     </template>
 
   <!-- Add Assignment -->
-  <a href="/task/formCreate/{{session.id}}" 
-     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-12 w-12 text-gray-400 mb-3" 
-         fill="none" viewBox="0 0 24 24" 
-         stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-    </svg>
-    <span class="text-gray-700 font-medium">Add Assignment</span>
+  <a href="/task/formCreate/{{session.id}}"
+     class='box-border w-full shrink-0 h-[48px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
+    <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Assignment</span>
   </a>
 
 

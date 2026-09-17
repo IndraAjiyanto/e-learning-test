@@ -1,0 +1,27 @@
+{{!--
+  Component: Attendance Status Select (Admin) — molecule, prefix attendance-
+  Path: components/ui/admin/attendance/attendance-status-select.hbs
+  Dipakai: {{> components/ui/admin/attendance/attendance-status-select}}
+           di admin/attendance/create.hbs dan admin/attendance/edit.hbs
+           (dengan initialStatus=attendance.status di edit).
+  Props: {{initialStatus}} (optional, preselect — contoh 'present').
+  Composes: form/searchable_select (hidden input name="status", display "label").
+
+  Alasan komponen baru (bukan inline): daftar 5 status BE dipakai di 2 form
+  (create + edit) — reusable, satu sumber kebenaran.
+  BE (entity Attendance.status enum): permission|present|sick|absent|no_information.
+  Hidden input mengirim id (= value enum) ke DTO Create/UpdateAttendanceDto.status.
+  Pencil (Container - Attendance Form → Container Status*): label Inter 14/500
+  #404040, input h44 white r8 stroke #D4D4D4 shadow, placeholder Inter 16
+  #737373 "Select status", chevron-down 20 #737373.
+--}}
+{{> components/ui/admin/form/searchable_select/index
+  label="Status*"
+  forId="status"
+  errorId="status_error"
+  name="status"
+  displayField="label"
+  placeholder="Select status"
+  initialId=initialStatus
+  itemsJson='[{"id":"present","label":"Present"},{"id":"permission","label":"Permission"},{"id":"sick","label":"Sick"},{"id":"absent","label":"Absent"},{"id":"no_information","label":"No Information"}]'
+}}

@@ -27,7 +27,12 @@ export class AboutService {
 
   async findAll() {
     try {
-      return await this.aboutRepository.find();
+      // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+      // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+      // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+      return await this.aboutRepository.find({
+        order: { createdAt: 'ASC' },
+      });
     } catch (error) {
       throw new InternalServerErrorException(
         'Gagal mengambil data about',

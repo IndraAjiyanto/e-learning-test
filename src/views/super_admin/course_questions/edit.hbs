@@ -31,7 +31,10 @@
       action='/question-program/{{courseQuestion.id}}/{{courseQuestion.course.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='faqForm({ question: {{json courseQuestion.questions}}, answer: {{json courseQuestion.answers}} })'
+      x-data='{ ...faqForm({ question: {{json courseQuestion.questions}}, answer: {{json courseQuestion.answers}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'
     >
@@ -55,6 +58,7 @@
 
           {{> components/ui/super_admin/form/button
             type='submit'
+            disabled='!canSubmit() || !isDirty || loading'
             variant='primary'
             label='Save Changes'
             loading=true

@@ -1,94 +1,77 @@
-<div class="pt-28 py-20">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Question</h2>
+{{!--
+  Page: Admin — Edit Question (Container - Quiz Question Form, slicing.pen CRmv1)
+  Path: admin/questions/edit.hbs
+  Route: GET /question/FormEdit/:questionId -> PATCH /question/:questionId/:quizId
+  Data: { user, question }
+  Design: mirror Container - Quiz Question Form (same layout as create, pre-filled).
+  Komponen (reuse): text/page-header, form/form-card (noNumber), form/form-field,
+          form/form-label, form/textarea-input, form/question-photo-upload (showOldPhoto),
+          form/answer-option-row, button/primary-button, button/secondary-button.
+--}}
+<div class='py-10 px-6'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px]'
+    x-data="{
+      ...adminFormGate(),
+      questionPreviewUrl: null,
+      questionOldPhoto: {{#if question.image}}'{{question.image}}'{{else}}null{{/if}},
+      loading: false,
 
-    <form action="/question/{{questions.id}}/{{questions.quiz.id}}?_method=PATCH" method="POST" class="space-y-6" enctype="multipart/form-data" x-data="{loading:false}" @submit="loading = true;">
-      
-      <div 
-  x-data="{ 
-    previewUrl: null, 
-    oldPhoto: '{{#if questions.image}}{{questions.image}}{{else}}/images/default-avatar.png{{/if}}' 
-  }" 
-  class="space-y-3"
->
-  <label for="image" class="block text-sm font-semibold text-gray-700 mb-1">
-    Photos gambar
-  </label>
+      questionClearFile() {
+        this.questionPreviewUrl = null;
+        this.$refs.questionFile.value = null;
+      }
+    }"
+    x-init="initGate()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
-  <!-- Input file -->
-  <input 
-    type="file" 
-    id="image" 
-    name="image" 
-    accept="image/*" 
-    x-ref="fileInput"
-    class="w-full border file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 rou border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-    @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-  >
+    {{!-- Title --}}
+    {{> components/ui/admin/text/page-header title="Edit Question" subtitle="Update the question and answer options below"}}
 
-  <!-- Tampilkan foto lama atau preview baru -->
-  <div class="relative w-32 h-32">
-    <img 
-      :src="previewUrl ? previewUrl : oldPhoto" 
-      alt="Preview Photo" 
-      class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-    >
+    {{!-- Form --}}
+    <form method='POST' action='/question/{{question.id}}/{{question.quiz.id}}?_method=PATCH' enctype='multipart/form-data'
+      class='flex flex-col gap-[16px] w-full'
+      @submit='loading = true'>
+      <input type='hidden' name='_method' value='PUT'>
 
-    <!-- Tombol hapus foto baru -->
-    <template x-if="previewUrl">
-      <button 
-        type="button" 
-        class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-        @click="previewUrl = null; $refs.fileInput.value = null;">
-        &times;
-      </button>
-    </template>
-  </div>
-</div>
+      {{!-- Feature Card --}}
+      {{#> components/ui/admin/form/form-card noNumber=true}}
 
-      <!-- Pertanyaan -->
-      <div>
-        <label for="questionText" class="block text-sm font-medium text-gray-700 mb-1">
-          Pertanyaan
-        </label>
-        <textarea id="questionText" name="questionText" rows="4"
-          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700"
-          placeholder="Tulis pertanyaan di sini..." required>{{questions.questionText}}</textarea>
-      </div>
+        {{!-- Upload Gambar (optional) --}}
+        {{> components/ui/admin/form/question-photo-upload showOldPhoto=true}}
 
-      <!-- Pilihan Jawaban -->
-      <div class="space-y-4">
-        {{#each questions.answers}}
-        <div class="flex items-center gap-3">
-          <input type="radio" name="answers" value="{{@index}}" required
-            class="h-5 w-5 border-gray-400 text-gray-900 focus:ring-gray-900"
-            {{#if this.isCorrect}}checked{{/if}} />
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Pilihan {{lookup "ABCD" @index}}</label>
-            <input type="text" name="answer" value="{{this.answer}}"
-              class="w-full border bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 text-gray-700"
-              placeholder="Tulis pilihan {{lookup "ABCD" @index}}" required />
-          </div>
+        {{!-- Question --}}
+        {{#> components/ui/admin/form/form-field label="Question*" for="questionText"}}
+          {{> components/ui/admin/form/textarea-input
+            id="questionText" name="questionText" rows="4" required=true
+            placeholder="Enter your question here"
+            value=question.questionText
+          }}
+        {{/components/ui/admin/form/form-field}}
+
+        {{!-- Answer Options --}}
+        <div class='flex flex-col gap-[12px] w-full'>
+          {{#each question.answers}}
+          {{> components/ui/admin/form/answer-option-row
+            label=(lookup "ABCD" @index)
+            value=@index
+            inputName="answer"
+            inputValue=this.answer
+            checked=this.isCorrect
+          }}
+          {{/each}}
         </div>
-        {{/each}}
-      </div>
 
-      <!-- Tombol -->
-      <div class="flex justify-start gap-3 pt-4">
-        <button type="submit"
-        :disabled="loading"
-        :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class="text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2">
-          <span x-show='loading' class="loading loading-spinner loading-sm"></span>
-          <span x-show='!loading'>Update Question</span>
-        </button>
-          <a href="/quiz/{{questions.quiz.id}}"
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
+      {{/components/ui/admin/form/form-card}}
+
+      {{!-- Action row --}}
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+        <div class='flex flex-row justify-between items-center w-full'>
+          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/quiz/' question.quiz.id) width='90'}}
+          {{> components/ui/admin/button/primary-button text='Update Question' type='submit' loading='loading' disabled='!formValid || !isDirty' width='163'}}
+        </div>
+      {{/components/ui/admin/form/form-card}}
+
     </form>
   </div>
 </div>

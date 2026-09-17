@@ -1,0 +1,12 @@
+{{!--
+  Component: Logbook Pill (Admin) — atomic, prefix logbook-
+  Path: components/ui/admin/program/logbook-pill.hbs
+  Props: {{text}} (Alpine expression untuk x-text — mis. 'padOrder(logbookUser.session?.sessionOrder)')
+  Dipakai di dalam x-for logbook (No Meeting / No Week)
+
+  Pencil (Table Detail Program - Logbook User / Pill):
+  w41 h28, bg #F3F4F6, radius 24, p6 14, text Montserrat 12/600 #474747 center.
+--}}
+<div class='box-border w-[41px] shrink-0 h-[28px] flex flex-row gap-0 p-[6px_14px] justify-center items-center bg-[#F3F4F6] rounded-[24px]'>
+  <div class='text-[12px]/[normal] text-[#474747] font-montserrat font-semibold text-center whitespace-nowrap' x-text='{{{text}}}'>-</div>
+</div>

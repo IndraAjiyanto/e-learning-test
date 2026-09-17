@@ -142,8 +142,8 @@ export class CoursesController {
     @Body('userId') userId: string,
   ) {
     try {
-      await this.coursesService.addUserToCourse(userId, courseId);
-      req.flash('success', 'user successfuly add to program');
+await this.coursesService.addUserToCourse(userId, courseId);
+      flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'user failed add to program');
@@ -975,8 +975,8 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     try {
-      await this.coursesService.removeCourseUser(userId, courseId);
-      req.flash('success', 'User successfully removed from program');
+await this.coursesService.removeCourseUser(userId, courseId);
+      flashToast(req, 'User Removed', 'User successfully removed from program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove user from program');

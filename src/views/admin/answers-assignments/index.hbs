@@ -1,202 +1,151 @@
-<div class="px-6 py-10 bg-gray-50 min-h-screen">
-  <div class="w-full mx-auto" x-data="answerTabData()" x-init="init()">
-    
-    <!-- Back Button -->
-    <div class="mb-6">
-      <a href="/session/{{assignment.session.id}}" 
-         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 transition-all duration-200">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        Back to Session
-      </a>
+{{!--
+  Page: Admin — Assignment Review / Logbook Review (Container - Logbook Detail 1022, slicing.pen iLK5a)
+  Path: admin/answers-assignments/index.hbs
+  Route: GET /answer-assigment/:assignmentId (admin)
+  Data: { user, assignment (Assignment + session.weeks.course), assignment_answer[] }
+  Design: Container w1052 gap28 → Frame 2147229618 (Back + Title 34/brand, subtitle 16/medium)
+          → Frame 2147229619 (2 Kolom gap 16):
+          - Kiri: Table Detail Session (w554, fill #FFF, r12, stroke #D9D9D9, p12 20 20 20, gap20):
+            Tabs All/Under Review/Approved/Rejected + Button Wrapper cards (answer-review-card.hbs).
+          - Kanan: View Logbook (w482, r12, stroke #D9D9D9, overflow hidden, header navy #003060 h93
+            dengan Title "Assigment File" + assignment.title, body white p24 28 canvas #282828).
+  Komponen:
+    - components/ui/admin/assignment/answer-review-card (molekul card jawaban siswa)
+    - components/ui/admin/assignment/assignment-file-preview (organism panel kanan View Logbook)
+--}}
+<div class='py-10 px-4 sm:px-6'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'
+    x-data='answerTabData()' x-init='init()'
+    @review-select.window='selectedUserId = $event.detail.userId; selectedUsername = $event.detail.username; selectedFile = $event.detail.file; activePreviewMode = "student"'>
+
+    {{!-- Frame 2147229618: Back + Title --}}
+    <div class='flex flex-col gap-[12px] w-full'>
+      {{!-- Frame 2147229598: Back (z4xUMn: SVG Hiwbb + Back pFeHu) --}}
+      <div class='flex flex-row gap-[24px] justify-between items-center w-full'>
+        <a href='/session/{{assignment.session.id}}'
+          class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
+          title='Back' aria-label='Back'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'>
+            <path d='m15 18-6-6 6-6'/>
+          </svg>
+          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+        </a>
+      </div>
+
+      {{!-- Title (ZPyni: Heading B0EYt + Sub heading gwOFm) --}}
+      <div class='flex flex-col gap-[4px] w-full'>
+        <h1 class='text-[34px]/[1.06] w-full text-[#003060] font-montserrat font-bold tracking-[-1px] text-left'>
+          {{#if assignment.session.sessionOrder}}Session {{assignment.session.sessionOrder}} - Logbook Review{{else}}{{default assignment.title 'Assignment Review'}}{{/if}}
+        </h1>
+        <p class='text-[16px]/[1.25] w-full text-[#718096] font-montserrat font-medium text-left'>
+          Review submitted logbooks for this session
+        </p>
+      </div>
     </div>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Left Column: Assignment File -->
-      <div>
-    {{#if assignment.file}}
-    <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-      <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+
+    {{!-- Frame 2147229619: Main 2-Column Layout (gap 16px) --}}
+    <div class='flex flex-col lg:flex-row gap-[16px] w-full items-start justify-between'>
+
+      {{!-- Left Column: Table Detail Session (N7EC40: w554 fill, r12, stroke #D9D9D9, p12 20 20 20, gap20) --}}
+      <div class='box-border w-full lg:w-[554px] flex-1 min-w-0 flex flex-col gap-[20px] p-[12px_20px_20px_20px] justify-start items-stretch bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
+
+        {{!-- Tabs Row (oE90a: w512, h41, strokeBottom 1px #D9D9D9) --}}
+        <div class='flex flex-row w-full [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#D9D9D9] overflow-x-auto'>
+          {{!-- All Tab (As9Bq: w83, h40, p10 32, font 14/600 #003060) --}}
+          <button type='button' @click="setTab('all')"
+            :class="activeTab === 'all' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[28px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            All
+          </button>
+
+          {{!-- Under Review Tab (vUAGT: w166, h40, p10 32, font 14/600 #003060) --}}
+          <button type='button' @click="setTab('process')"
+            :class="activeTab === 'process' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            Under Review
+          </button>
+
+          {{!-- Approved Tab (f2Fi6: w135, h40, p10 32, font 14/600 #003060) --}}
+          <button type='button' @click="setTab('approved')"
+            :class="activeTab === 'approved' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            Approved
+          </button>
+
+          {{!-- Rejected Tab (B6Oy0: w128, h40, p10 32, font 14/600 #003060) --}}
+          <button type='button' @click="setTab('rejected')"
+            :class="activeTab === 'rejected' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            Rejected
+          </button>
+        </div>
+
+        {{!-- Accordion Answer Review Cards List (klUCl) --}}
+        {{#if assignment_answer.length}}
+        <div class='flex flex-col gap-[12px] w-full'>
+          {{#each assignment_answer}}
+            {{> components/ui/admin/assignment/answer-review-card assignmentId=../assignment.id}}
+          {{/each}}
+        </div>
+        {{else}}
+        <div class='w-full py-16 flex flex-col items-center justify-center text-center'>
+          <div class='w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3'>
+            <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'/>
             </svg>
           </div>
-          <div>
-            <h4 class="text-white font-bold text-lg">Assignment File</h4>
-            <p class="text-gray-300 text-sm">{{assignment.title}}</p>
-          </div>
+          <p class='text-[16px]/[normal] text-[#404040] font-inter font-semibold'>No Answers Yet</p>
+          <p class='text-[14px]/[normal] text-[#A3A3A3] font-inter mt-1'>No user has submitted an answer for this assignment yet.</p>
         </div>
+        {{/if}}
+
       </div>
 
+      {{!-- Right Column: View Logbook (TkXtP: w482, h820, r12, stroke #D9D9D9, fill #FFF) --}}
+      {{> components/ui/admin/assignment/assignment-file-preview assignment=assignment}}
 
-      <div class="p-6 bg-gray-50">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-gray-200">
-          <iframe 
-              src="{{assignment.file}}"
-            class="w-full h-[600px]" 
-            type="application/pdf"
-          ></iframe>
-        </div>
-      </div>
     </div>
-    {{/if}}
-      </div>
-
-      <!-- Right Column: User Answers -->
-      <div>
-
-    <!-- Header Section -->
-    <div class="mb-8">
-      <h3 class="text-4xl font-bold text-gray-900 mb-2">User Answers</h3>
-      <p class="text-gray-600">Review and give feedback on each submitted answer</p>
-    </div>
-
-    <!-- Tabs -->
-    <div class="mb-6">
-      <div class="flex space-x-4">
-        <button @click="setTab('all')" :class="activeTab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">All</button>
-        <button @click="setTab('process')" :class="activeTab === 'process' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">Under Review</button>
-        <button @click="setTab('approved')" :class="activeTab === 'approved' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">Approved</button>
-        
-        <button @click="setTab('rejected')" :class="activeTab === 'rejected' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">Rejected</button>
-      </div>
-    </div>
-
-    {{#if assignment_answer.length}}
-      <div class="space-y-6">
-        {{#each assignment_answer}}
-          <div data-status="{{this.process}}" x-data="cardData()" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300">
-            
-            <!-- Card Header -->
-            <div @click="isOpen = !isOpen" class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4 cursor-pointer">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 class="text-white font-semibold">{{this.user.username}}</h4>
-                    <p class="text-gray-300 text-xs">{{this.user.email}}</p>
-                  </div>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                  <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full
-                    {{#if (roles this.process 'approved')}} bg-green-100 text-green-700
-                    {{else if (roles this.process 'rejected')}} bg-red-100 text-red-700
-                    {{else}} bg-yellow-100 text-yellow-700 {{/if}}">
-                    <span class="w-2 h-2 rounded-full mr-2
-                      {{#if (roles this.process 'approved')}} bg-green-500
-                      {{else if (roles this.process 'rejected')}} bg-red-500
-                      {{else}} bg-yellow-500 {{/if}}">
-                    </span>
-                    {{this.process}}
-                  </span>
-                  <svg :class="isOpen ? 'rotate-180' : ''" class="w-5 h-5 text-white transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card Body -->
-            <div x-show="isOpen" x-transition class="p-6 space-y-5">
-              
-              <!-- Uploaded File Info -->
-              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div class="flex flex-col w-full">
-                  <a href="{{this.file}}" target="_blank" class="text-gray-900 font-medium hover:text-blue-600 break-words">
-                    {{this.file}}
-                  </a>
-                  <p class="text-xs text-gray-500 mt-1">
-                    Submitted on: {{formatDate this.createdAt}}
-                  </p>
-                </div>
-
-              </div>
-
-              <!-- Comment Form -->
-              <form action="/answer-assigment/{{../assignment.id}}/{{this.id}}?_method=PATCH" method="POST" class="space-y-4">
-              <input type="hidden" name="process" id="prosesValue">
-
-                <div>
-                  <label class="block text-sm font-semibold text-gray-900 mb-2">
-                    Leave a Comment
-                  </label>
-                  <textarea 
-                    name="comment"
-                    rows="3" 
-                    class="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 text-gray-900 focus:ring-gray-900 focus:border-gray-900 transition-all bg-white"
-                    placeholder="Write feedback or comments for this answer..."
-                  ></textarea>
-                </div>
-
-                <div class="flex items-center gap-3">
-                  <button type="button" onclick="confirmAction(this, 'Are you sure approve this answer?', 'Confirmation', 'approved')"
-                    class="flex-1 px-6 py-3 text-sm font-semibold rounded-xl bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Approve
-                  </button>
-                  <button type="button" onclick="confirmAction(this, 'Are you sure reject this answer?', 'Confirmation', 'rejected')"
-                    class="flex-1 px-6 py-3 text-sm font-semibold rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path>
-                    </svg>
-                    Reject
-                  </button>
-                </div>
-              </form>
-
-              <!-- Comment History -->
-              {{#if this.comment}}
-                <div class="space-y-3 pt-4 border-t-2 border-gray-100">
-                  <div class="flex items-center gap-2 mb-3">
-                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                    </svg>
-                    <h5 class="text-sm font-semibold text-gray-900">Comment History</h5>
-                  </div>
-                  {{#each this.comment}}
-                    <div class="p-4 bg-gradient-to-r from-gray-50 to-white border-l-4 border-gray-900 rounded-lg">
-                      <p class="text-sm text-gray-800 leading-relaxed">{{this.comment}}</p>
-                    </div>
-                  {{/each}}
-                </div>
-              {{/if}}
-            </div>
-          </div>
-        {{/each}}
-      </div>
-    {{else}}
-      <!-- Empty State -->
-      <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
-        <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-        </div>
-        <h4 class="text-xl font-bold text-gray-900 mb-2">No Answers Yet</h4>
-        <p class="text-gray-600">No user has submitted an answer for this assignment yet.</p>
-      </div>
-    {{/if}}
 
   </div>
 </div>
 
 <script>
+function previewEmbedUrl(url) {
+  if (!url) return '';
+  var u = String(url).trim();
+  var driveFile = u.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+  if (driveFile) return 'https://drive.google.com/file/d/' + driveFile[1] + '/preview';
+  if (/drive\.google\.com/.test(u)) {
+    var driveId = u.match(/[?&]id=([^&]+)/);
+    if (driveId) return 'https://drive.google.com/file/d/' + driveId[1] + '/preview';
+  }
+  if (/docs\.google\.com\/presentation\/.+\/embed/.test(u)) return u;
+  if (/\.pdf$/i.test(u.split(/[?#]/)[0])) return u;
+  return '';
+}
+
 function answerTabData() {
   return {
     activeTab: localStorage.getItem('answerTab') || 'all',
+    selectedUserId: '{{#with (lookup assignment_answer 0)}}{{this.user.id}}{{/with}}',
+    selectedUsername: '{{#with (lookup assignment_answer 0)}}{{this.user.username}}{{/with}}',
+    selectedFile: '{{#with (lookup assignment_answer 0)}}{{this.file}}{{/with}}',
+    activePreviewMode: 'assignment',
+    masterFile: '{{assignment.file}}',
 
     init() {
       this.filterCards();
+    },
+
+    currentPreviewRawUrl() {
+      if (this.activePreviewMode === 'student' && this.selectedFile) {
+        return this.selectedFile;
+      }
+      return this.masterFile;
+    },
+
+    currentPreviewEmbedUrl() {
+      return previewEmbedUrl(this.currentPreviewRawUrl());
     },
 
     setTab(status) {
@@ -215,12 +164,12 @@ function answerTabData() {
         }
       });
     }
-  }
+  };
 }
 
 function cardData() {
   return {
     isOpen: false
-  }
+  };
 }
 </script>

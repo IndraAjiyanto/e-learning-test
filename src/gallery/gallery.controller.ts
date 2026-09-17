@@ -170,11 +170,7 @@ export class GalleryController {
 
       const gallery = await this.galleryService.update(id, data);
 
-      flashToast(
-        req,
-        'Changes Saved',
-        'The gallery item has been updated.',
-      );
+      flashToast(req, 'Changes Saved', 'The gallery item has been updated.');
 
       res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {

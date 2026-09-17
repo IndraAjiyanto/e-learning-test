@@ -67,7 +67,13 @@ export class LogbookService {
         user: { id: userId },
         session: { weeks: { course: { id: courseId } } },
       },
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: [
+        'user',
+        'user.biodata',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+      ],
     });
   }
 
@@ -86,7 +92,13 @@ export class LogbookService {
 
   async findAll() {
     return await this.logBookRepository.find({
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: [
+        'user',
+        'user.biodata',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+      ],
     });
   }
 
@@ -103,7 +115,12 @@ export class LogbookService {
           course: { weeks: { session: { id: sessionId } } },
         },
       },
-      relations: ['userCourses', 'userCourses.user', 'userCourses.course'],
+      relations: [
+        'userCourses',
+        'userCourses.user',
+        'userCourses.course',
+        'biodata',
+      ],
     });
   }
 
@@ -131,7 +148,13 @@ export class LogbookService {
   async findOne(logbookId: string) {
     const logbooks = await this.logBookRepository.findOne({
       where: { id: logbookId },
-      relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
+      relations: [
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+        'user',
+        'user.biodata',
+      ],
     });
     if (!logbooks) {
       throw new NotFoundException('log book not found');

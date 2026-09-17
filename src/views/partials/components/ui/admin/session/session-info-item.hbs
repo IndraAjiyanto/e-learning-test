@@ -1,0 +1,17 @@
+{{!--
+  Component: Session Info Item (Admin) — atomic, prefix session-
+  Path: components/ui/admin/session/session-info-item.hbs
+  Dipakai: {{> components/ui/admin/session/session-info-item label="Location" value=session.location}}
+           di dalam session/session-hero (4x: Location, Topic, Date, Time).
+  Props: {{label}} (required), {{value}} (required, pre-rendered string — pakai
+         helper formatDate/formatTime di parent bila perlu).
+
+  Pencil (Container - Session Detail → Frame 2147229575/6):
+  label Montserrat 14/600 #171717 ($neutral900),
+  value Montserrat 14/500 #737373 ($neutral500), vertical gap 8.
+  Reusable: dipakai juga untuk info grid lain (week/program detail).
+--}}
+<div class='flex flex-col gap-[8px] w-full min-w-0'>
+  <div class='text-[14px]/[normal] w-full text-[#171717] font-montserrat font-semibold'>{{label}}</div>
+  <div class='text-[14px]/[normal] w-full text-[#737373] font-montserrat font-medium break-words'>{{value}}</div>
+</div>

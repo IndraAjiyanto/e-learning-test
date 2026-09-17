@@ -33,7 +33,10 @@
       action='/mission/{{missions.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='missionForm({ content: {{json missions.content}}, items: {{json missions.items}} })'
+      x-data='{ ...missionForm({ content: {{json missions.content}}, items: {{json missions.items}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
     >
       {{#> components/ui/super_admin/form/mission/fields }}
@@ -51,7 +54,7 @@
             variant='primary'
             label='Save Changes'
             loading=true
-            disabled='!canSubmit() || loading'
+            disabled='!canSubmit() || !isDirty || loading'
           }}
         </div>
       {{/components/ui/super_admin/form/mission/fields}}

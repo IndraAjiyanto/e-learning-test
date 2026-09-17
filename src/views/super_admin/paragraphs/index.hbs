@@ -13,12 +13,18 @@
   <div class='flex flex-col gap-7'>
 
     <div class='flex flex-col gap-1'>
+      {{!-- Judul halaman memakai nama fiturnya, "Story" — sama dengan label di
+           sidebar dan dengan komponen publiknya (ui/sections/story). Sebelumnya
+           berjudul "Paragraf", yaitu nama satuan isinya, sehingga tidak nyambung
+           dengan menu yang mengantar ke sini (TC-045). Istilah "Paragraph" tetap
+           dipakai di tempat yang memang menunjuk satu baris: tombol Create,
+           kolom tabel, dan konfirmasi hapus. --}}
       {{> components/ui/super_admin/page_header/index
-        title='Paragraf'
+        title='Story'
       }}
 
       {{> components/ui/super_admin/description/index
-        text='Manage the paragraphs displayed on the About page of Kesatria Academy.'
+        text='Manage the paragraphs that make up the Story section on the About page of Kesatria Academy.'
       }}
     </div>
 

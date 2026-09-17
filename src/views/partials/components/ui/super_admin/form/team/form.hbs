@@ -212,6 +212,16 @@
         // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
         // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
         // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
+        // Team.profile adalah kolom NOT NULL, jadi create tanpa foto pasti gagal
+        // di database — dulu tombolnya tetap bisa diklik dan user hanya melihat
+        // toast error (TC-049). Di halaman edit foto lama tetap dipakai bila
+        // tidak diunggah ulang, jadi syaratnya dilonggarkan di sana.
+        photoOk() {
+          return this.originalUrl
+            ? !this.hasFile || this.isValid
+            : this.hasFile && this.isValid;
+        },
+
         canSubmit() {
           const plainOk = ['name', 'linkedin'].every(
             (field) => errorFor(field, null, this.formData[field]) === '',
@@ -220,7 +230,7 @@
             LANGS.every((lang) => errorFor(field, lang, this.formData[field][lang]) === ''),
           );
 
-          return this.isValid && plainOk && langOk;
+          return this.photoOk() && plainOk && langOk;
         },
 
         // Urutan mengikuti tampilan: foto, name, linkedin, lalu field per bahasa.

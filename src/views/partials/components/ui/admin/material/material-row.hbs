@@ -1,0 +1,72 @@
+{{!--
+  Component: Material Row (Admin) — molecule, prefix material-
+  Path: components/ui/admin/material/material-row.hbs
+  Dipakai: {{> components/ui/admin/material/material-row}} di dalam x-for `materi`
+           pada sub_partials/session/materi_tab/{pdf,video,ppt}.hbs (3x).
+  Props: {{showFileLink}} (optional — tampilkan link file di bawah judul,
+         dipakai ppt/video), {{detailLink}} (optional — bila set, tombol Detail
+         menjadi <a target=_blank>; bila tidak, dispatch open-materi-modal).
+  Alpine scope (parent): `materi` { id, title, file, fileType }, `session` id
+         server-side ({{session.id}}) untuk URL delete.
+
+  Pencil (Container - Session Materi → Button <title>):
+  row h68 white r8 stroke #D9D9D9 p8 14 gap6; judul Montserrat 16/600 #003060;
+  edit 44x44 outline #D9D9D9 (square-pen 20 #525252); delete 44x44 outline
+  #D9D9D9 (trash-2 16 #C80606); Detail w81 h44 outline #003060 shadow teks
+  #003060 Inter 16/600.
+  BE: edit GET /learning-material/formEdit/:id; delete POST
+  /learning-material/:id/:sessionId?_method=DELETE + confirmDelete (perilaku
+  lama dipertahankan).
+--}}
+<div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
+
+  {{!-- Title (+ optional file link) --}}
+  <div class='flex-1 min-w-0 flex flex-col gap-[2px] justify-center items-start'>
+    <div class='text-[16px]/[normal] w-full text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='materi.title' :title='materi.title'></div>
+    {{#if showFileLink}}
+    <template x-if='materi.file'>
+      <a :href='materi.file' target='_blank' rel='noopener noreferrer'
+        class='text-[14px]/[normal] w-full text-[#3B82F6] font-inter font-normal whitespace-nowrap overflow-hidden text-ellipsis hover:underline'
+        x-text='materi.file' :title='materi.file'></a>
+    </template>
+    {{/if}}
+  </div>
+
+  {{!-- Edit --}}
+  <a :href="'/learning-material/formEdit/' + materi.id"
+    class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#f5f5f5] transition-colors'
+    title='Edit Material' aria-label='Edit Material'>
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+      <path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/>
+      <path d='m15 5 4 4'/>
+    </svg>
+  </a>
+
+  {{!-- Delete --}}
+  <form :action="'/learning-material/' + materi.id + '/{{session.id}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
+    <button type='button'
+      onclick='confirmDelete(this)'
+      class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
+      title='Delete Material' aria-label='Delete Material'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+        <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+      </svg>
+    </button>
+  </form>
+
+  {{!-- Detail --}}
+  {{#if detailLink}}
+  <a :href='materi.file' target='_blank' rel='noopener noreferrer'
+    class='box-border w-[81px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'
+    title='Material Detail' aria-label='Material Detail'>
+    <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>Detail</span>
+  </a>
+  {{else}}
+  <button type='button'
+    @click="$dispatch('open-materi-modal', { id: materi.id, title: materi.title, fileType: materi.fileType, file: materi.file })"
+    class='box-border w-[81px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'
+    title='Material Detail' aria-label='Material Detail'>
+    <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>Detail</span>
+  </button>
+  {{/if}}
+</div>

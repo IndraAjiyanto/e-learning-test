@@ -1,47 +1,62 @@
-<div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <div class='mb-6'>
-      <h2 class='text-2xl font-bold text-gray-900'>Create New Assignment</h2>
-    </div>
+{{!--
+  Page: Admin — Create Assignment (Container - Create Assignment, slicing.pen bin7R)
+  Path: admin/assignments/create.hbs
+  Route: GET /task/formCreate/:sessionId -> POST /task/:sessionId (create)
+  Data: { user, sessionId }
+  Design: Container w1052 gap28 → Title 34/brand ("Create Assignment" /
+          "Fill in the information below to create a assignment.") → Form Card
+          (white r12 stroke #D9D9D9 p20 gap20): Assignment Title* + Upload
+          Assignment File* (dropzone h265) → Footer h86 justify end
+          (Cancel w90 + Create Assignment w185).
+  Komponen (reuse semua, tanpa komponen baru — form assignment hanya dipakai
+  1x, tidak ada edit view): text/page-header, form/form-card, form/form-field,
+          form/text-input, material/material-file-upload (label override),
+          button/primary-button, button/secondary-button.
+  BE: POST /task/:sessionId multipart { title, file } → CreateAssignmentsDto;
+      FileInterceptor('file') + ValidateFile (PDF only, 10MB, folder
+      assignments). Cancel → /session/:sessionId.
+  Logika validasi Alpine dipertahankan verbatim dari implementasi lama.
+--}}
+<div class='py-10 px-6'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'>
 
-    <form
-      action='/task/{{sessionId}}'
-      method='POST'
-      enctype='multipart/form-data'
-      class='space-y-6'
+    {{> components/ui/admin/text/page-header
+      title="Create Assignment"
+      subtitle="Fill in the information below to create a assignment."}}
+
+    <form action='/task/{{sessionId}}' method='POST' enctype='multipart/form-data'
+      class='flex flex-col gap-[16px] w-full'
       x-data="{
-      loading: false,
+        ...adminFormGate(),
+        loading: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
         fileSize: 0,
         hasFile: false,
         maxSize: 10 * 1024 * 1024,
-        allowedTypes: ['application/pdf'],
         allowedExtensions: ['.pdf'],
         validateFile(file) {
           if (!file) {
             this.hasFile = false;
             return;
           }
-          
+
           this.hasFile = true;
           this.fileName = file.name;
           this.fileSize = file.size;
           this.errorMessage = '';
           this.isValid = true;
-          
-          // Validasi ukuran file
+
           if (file.size > this.maxSize) {
             this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum ${(this.maxSize / 1024 / 1024).toFixed(0)}MB`;
             this.isValid = false;
             return;
           }
-          
-          // Validasi extension
+
           const fileName = file.name.toLowerCase();
           const hasValidExtension = this.allowedExtensions.some(ext => fileName.endsWith(ext));
-          
+
           if (!hasValidExtension) {
             this.errorMessage = `File type not allowed. Allowed: ${this.allowedExtensions.join(', ')}`;
             this.isValid = false;
@@ -57,126 +72,49 @@
           $refs.fileInput.value = null;
         },
         canSubmit() {
+          if (!this.formValid) return false;
           if (this.hasFile) {
             return this.isValid;
           }
           return false;
         }
       }"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please select a valid file before submitting.'); }"
+      x-init="recomputeFormValid()"
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
     >
 
-      <!-- Assignment Title -->
-      <div>
-        <label
-          for='title'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Assignment Title</label>
-        <input
-          type='text'
-          id='title'
-          name="title"
-          placeholder='Enter assignment title...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          required
-        />
-      </div>
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+        {{#> components/ui/admin/form/form-field label="Assignment Title*" for="title"}}
+          {{> components/ui/admin/form/text-input
+            id="title" name="title" required=true
+            placeholder="Enter material title"
+          }}
+        {{/components/ui/admin/form/form-field}}
 
-      <!-- Upload File -->
-      <div class='space-y-3'>
-        <label
-          for='file'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
-          Upload Assignment File
-          <span class='text-xs text-gray-500 font-normal'>(max 10MB, PDF only)</span>
-        </label>
+        {{> components/ui/admin/material/material-file-upload
+          label="Upload Assignment File*"
+          required=true
+        }}
+      {{/components/ui/admin/form/form-card}}
 
-        <input
-          type='file'
-          id='file'
-          name='file'
-          accept='.pdf'
-          required
-          x-ref='fileInput'
-          :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
-          @change='validateFile($event.target.files[0])'
-        />
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
+          {{> components/ui/admin/button/primary-button text='Create Assignment' type='submit' loading='loading' disabled='!canSubmit()' width='185'}}
+        </div>
+      {{/components/ui/admin/form/form-card}}
 
-        <!-- Error Message -->
-        <template x-if='!isValid && errorMessage'>
-          <div
-            class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <div>
-              <p class='text-sm font-semibold text-red-800'>Invalid File</p>
-              <p class='text-xs text-red-700' x-text='errorMessage'></p>
-            </div>
-          </div>
-        </template>
-
-        <!-- Success Message with File Info -->
-        <template x-if='hasFile && isValid'>
-          <div class='space-y-2'>
-            <div
-              class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
-            >
-              <div class='flex items-center gap-2'>
-                <i class='fas fa-check-circle text-green-500'></i>
-                <div class='text-xs text-green-700'>
-                  <span class='font-semibold'>Valid file:</span>
-                  <span
-                    x-text='`${fileName} (${(fileSize / 1024).toFixed(1)}KB)`'
-                  ></span>
-                </div>
-              </div>
-              <button
-                type='button'
-                class='text-red-500 hover:text-red-700 transition-colors'
-                @click='clearFile()'
-                title='Remove file'
-              >
-                <i class='fas fa-times-circle'></i>
-              </button>
-            </div>
-          </div>
-        </template>
-      </div>
-
-      <!-- Buttons -->
-      <div class='flex justify-start gap-3 pt-4'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Create Assignment</span>
-        </button>
-        <a
-          href='/session/{{sessionId}}'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
-
-      <!-- Submit Warning -->
       <template x-if='hasFile && !isValid'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix the file validation errors above.
+        <div class='flex items-center gap-[8px] p-[12px] bg-[#FEF2F2] [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix the file validation errors above.
           </p>
         </div>
       </template>
+
     </form>
   </div>
 </div>

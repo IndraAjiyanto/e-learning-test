@@ -2,8 +2,21 @@
   Table Pagination (Super Admin) — label halaman + tombol Previous/Next.
 
   Alpine yang disediakan pemanggil: currentPage, totalPages, changePage()
+
+  Disembunyikan saat totalPages <= 1: dengan satu halaman, label selalu berbunyi
+  "Page 1 of 1" dan kedua tombol permanen mati — kontrol yang tidak pernah bisa
+  dipakai, dan sempat dilaporkan sebagai pagination rusak di halaman Benefits
+  yang datanya hanya empat baris.
+
+  Props:
+  - paddingClass : padding pembungkus, default 'pb-4 pl-6 pr-6 pt-3' (inset kartu
+                   tabel). Dipakai literal oleh pemanggil yang memasangnya di luar
+                   kartu, mis. daftar kartu di tab User.
 --}}
-<div class='flex flex-col gap-3 pb-4 pl-6 pr-6 pt-3 sm:flex-row sm:items-center sm:justify-between'>
+<div
+  x-show='totalPages > 1'
+  x-cloak
+  class='{{default paddingClass "pb-4 pl-6 pr-6 pt-3"}} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
   <p class='font-inter text-sm font-medium leading-5 text-[#404040]'>
     Page <span x-text='currentPage'></span> of <span x-text='totalPages'></span>
   </p>

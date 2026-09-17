@@ -48,13 +48,19 @@
         </a>
 
         <div class='flex justify-end gap-3'>
-          <form action='/category/{{category.id}}?_method=DELETE' method='post'>
-            {{> components/ui/super_admin/form/button
-              variant='danger-soft'
-              label='Delete'
-              onclick='openDeleteModal(this)'
-            }}
-          </form>
+          {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
+     default — hapus dilakukan dari halaman list/edit. Kirim showDelete=true
+     dari controller bila suatu saat perlu ditampilkan lagi. Tombol hapus
+     pada tabel/daftar di halaman ini sengaja TIDAK ikut digating. --}}
+          {{#if showDelete}}
+            <form action='/category/{{category.id}}?_method=DELETE' method='post'>
+              {{> components/ui/super_admin/form/button
+                variant='danger-soft'
+                label='Delete'
+                onclick='openDeleteModal(this)'
+              }}
+            </form>
+          {{/if}}
 
           {{> components/ui/super_admin/form/button
             as='link'

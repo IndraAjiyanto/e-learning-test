@@ -1,133 +1,108 @@
-<div class='py-10'>
-  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-8 text-gray-900 text-center'>Create New
-      Session</h2>
+{{!--
+  Page: Admin - Create Session
+  Path: admin/session/create.hbs
+  Design: slicing.pen "Container - Add Session" (1052, gap 28)
+  Route: GET /session/formCreate/:weeksId -> POST /session/:weeksId (create)
+  Composed from components/ui/admin atomics: text/page-header, form/form-field,
+  form/text-input, form/textarea-input, form/toggle-switch, button/secondary-button.
+  Backend contract kept: location, date, startTime, endTime, topic (pen "Description"),
+  isFinalCheck ('true'/'false'). Pen "Start End*" label read as "Time Start*".
+--}}
+<div class='py-10 px-6'>
+  <div class='max-w-[1052px] mx-auto'
+    x-data='{ ...adminFormGate(), loading: false, isFinal: false }'
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
-    <form method='POST' action='/session/{{weeksId}}' class='space-y-8' x-data='{
-  loading: false}' @submit="loading = true;">
+    {{!-- Title: Create Session + subtitle --}}
+    <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
+      {{> components/ui/admin/text/page-header title="Create Session" subtitle="Fill in the information below to create a session."}}
 
-      <!-- Grid 2 Kolom -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      {{!-- Form --}}
+      <form method='POST' action='/session/{{weeksId}}' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
+        @submit='loading = true'>
 
-        <!-- Lokasi -->
-        <div>
-          <label
-            for="location"
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Location</label>
-          <input
-            type='text'
-            id="location"
-            name="location"
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          />
+        {{!-- Feature Card - Fields --}}
+        {{#> components/ui/admin/form/form-card noNumber=true}}
+
+          {{!-- Field Row: Location + Date --}}
+          <div class='flex flex-row gap-[12px] w-full'>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Location*" for="location" errorId="location_error"}}
+                {{> components/ui/admin/form/text-input
+                  id="location" name="location"
+                  placeholder="Enter location..."
+                  required=true
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Date*" for="date" errorId="date_error"}}
+                {{> components/ui/admin/form/text-input
+                  type="date" id="date" name="date"
+                  placeholder="Select date..."
+                  required=true
+                  icon="calendar"
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+          </div>
+
+          {{!-- Field Row: Time Start + Time End --}}
+          <div class='flex flex-row gap-[12px] w-full'>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Time Start*" for="startTime" errorId="startTime_error"}}
+                {{> components/ui/admin/form/text-input
+                  type="time" id="startTime" name="startTime"
+                  placeholder="Select start time..."
+                  required=true
+                  icon="timer"
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Time End*" for="endTime" errorId="endTime_error"}}
+                {{> components/ui/admin/form/text-input
+                  type="time" id="endTime" name="endTime"
+                  placeholder="Select end time..."
+                  required=true
+                  icon="timer"
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+          </div>
+
+          {{!-- Field Description (posts to `topic`) --}}
+          {{#> components/ui/admin/form/form-field label="Description*" for="topic" errorId="topic_error"}}
+            {{> components/ui/admin/form/textarea-input
+              id="topic" name="topic" rows="5" required=true
+              placeholder="Enter session description..."
+            }}
+           {{/components/ui/admin/form/form-field}}
+
+        {{/components/ui/admin/form/form-card}}
+
+        {{!-- Feature Card - Actions --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[20px] justify-between items-center bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+          {{!-- Toggle Row --}}
+          <div class='flex flex-row gap-[10px] justify-start items-center'>
+            {{> components/ui/admin/form/toggle-switch
+              checkedBind="isFinal"
+              onChange="isFinal = $event.target.checked"
+            }}
+            <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold whitespace-nowrap'>Jadikan session terakhir</span>
+            <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
+          </div>
+
+          {{!-- Button Row --}}
+          <div class='flex flex-row gap-[12px] justify-start items-center'>
+            {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
+            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" disabled='!formValid' width="154"}}
+          </div>
         </div>
 
-        <!-- Tanggal -->
-        <div>
-          <label
-            for="date"
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Date</label>
-          <input
-            type='date'
-            id="date"
-            name="date"
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-            style='color-scheme: light;'
-          />
-        </div>
-
-        <!-- Waktu Awal -->
-        <div>
-          <label
-            for="startTime"
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Time Start</label>
-          <input
-            type='time'
-            id="startTime"
-            name="startTime"
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-            style='color-scheme: light;'
-          />
-        </div>
-
-        <!-- Waktu Akhir -->
-        <div>
-          <label
-            for="endTime"
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Time End</label>
-          <input
-            type='time'
-            id="endTime"
-            name="endTime"
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-            style='color-scheme: light;'
-          />
-        </div>
-      </div>
-
-      <!-- Topik -->
-      <div>
-        <label
-          for="topic"
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Topic</label>
-        <textarea
-          id="topic"
-          name="topic"
-          rows='3'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        ></textarea>
-      </div>
-
-      <div x-data='{ launch: false }' class='flex items-center gap-3'>
-        <label class='relative inline-flex items-center cursor-pointer'>
-          <input type='checkbox' x-model='launch' class='sr-only' />
-
-          <div
-            :class="launch ? 'bg-green-500' : 'bg-gray-300'"
-            class='w-11 h-6 rounded-full transition-colors'
-          ></div>
-
-          <div
-            :class="launch ? 'translate-x-5' : 'translate-x-0'"
-            class='absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform'
-          ></div>
-        </label>
-
-        <span class='text-sm text-gray-700'>Click toggle if it’s the last week</span>
-
-        <input type='hidden' name='isFinalCheck' :value='launch' />
-      </div>
-
-      <!-- Tombol Aksi di Kiri -->
-      <div class='flex justify-start gap-3'>
-        <button
-          type='submit'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition'
-        >
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a
-          href='/week/{{weeksId}}'
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-
-      </div>
-
-    </form>
+      </form>
+    </div>
   </div>
 </div>

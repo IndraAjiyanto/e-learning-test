@@ -1,46 +1,71 @@
-<div class="py-10">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold mb-6 text-gray-900">Create new quiz</h2>
+{{!--
+  Page: Admin - Create Quiz
+  Path: admin/quiz/create.hbs
+  Design: pen design language (matching session/create.hbs pattern)
+  Route: GET /quiz/formCreate/:weeksId -> POST /quiz/:weeksId (create)
+  Composed from components/ui/admin atomics: text/page-header, form/form-field,
+  form/text-input, form/textarea-input, button/primary-button, button/secondary-button.
+--}}
+<div class='py-10 px-6'>
+  <div class='max-w-[1052px] mx-auto'
+    x-data='{ ...adminFormGate(), loading: false }'
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
-    <form method="POST" action="/quiz/{{weeksId}}" class="space-y-6" x-data="{ loading: false }" @submit="loading = true;">
+    {{!-- Title --}}
+    <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
+      {{> components/ui/admin/text/page-header title="Create Quiz" subtitle="Fill in the information below to create a quiz."}}
 
-      <div>
-        <label for="quizName" class="block text-sm font-semibold text-gray-700 mb-1">Quiz</label>
-        <textarea id="quizName" name="quizName" rows="3"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-      </div>
+      {{!-- Form --}}
+      <form method='POST' action='/quiz/{{weeksId}}' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
+        @submit='loading = true'>
 
-            <div>
-        <label for="minScore" class="block text-sm font-medium text-gray-700 mb-1">
-          Minimum Score
-        </label>
-        <input type="number" id="minScore" name="minScore" rows="4"
-          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
+        {{!-- Feature Card - Fields --}}
+        {{#> components/ui/admin/form/form-card noNumber=true}}
 
-            <div>
-        <label for="minimum_score" class="block text-sm font-medium text-gray-700 mb-1">
-          Duration (minutes)
-        </label>
-        <input type="number" id="duration" name="duration" rows="4"
-          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
+          {{!-- Quiz Name --}}
+          {{#> components/ui/admin/form/form-field label="Quiz Name*" for="quizName" errorId="quizName_error"}}
+            {{> components/ui/admin/form/textarea-input
+              id="quizName" name="quizName" rows="3" required=true
+              placeholder="Enter quiz name..."
+            }}
+          {{/components/ui/admin/form/form-field}}
 
-      <div class="flex gap-3">
-        <button type="submit"
-        :disabled="loading"
-        :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a href="/week/{{weeksId}}"
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
-    </form>
+          {{!-- Min Score + Duration --}}
+          <div class='flex flex-row gap-[12px] w-full'>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Minimum Score*" for="minScore" errorId="minScore_error"}}
+                {{> components/ui/admin/form/text-input
+                  type="number" id="minScore" name="minScore"
+                  placeholder="Enter minimum score..."
+                  required=true
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Duration (minutes)*" for="duration" errorId="duration_error"}}
+                {{> components/ui/admin/form/text-input
+                  type="number" id="duration" name="duration"
+                  placeholder="Enter duration in minutes..."
+                  required=true
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+          </div>
+
+        {{/components/ui/admin/form/form-card}}
+
+        {{!-- Actions --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[20px] justify-between items-center bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+          <div></div>
+          <div class='flex flex-row gap-[12px] justify-start items-center'>
+            {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
+            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" disabled='!formValid' width="136"}}
+          </div>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>

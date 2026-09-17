@@ -107,14 +107,13 @@ async function bootstrap() {
       if (!req.session) return redirect(...args);
 
       req.session.save((err) => {
-        if (err) console.error("Gagal menyimpan sesi sebelum redirect:", err);
+        if (err) console.error('Gagal menyimpan sesi sebelum redirect:', err);
         redirect(...args);
       });
-    }) as Response["redirect"];
+    }) as Response['redirect'];
 
     next();
   });
-
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.success = req.flash('success');

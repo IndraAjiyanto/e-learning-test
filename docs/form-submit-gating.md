@@ -1,4 +1,4 @@
-# Gating tombol simpan pada form super admin
+# Gating tombol simpan pada form admin & super admin
 
 Tombol **Save / Create / Update** baru aktif setelah form layak dikirim. Dokumen
 ini mencatat aturannya, form mana yang memakai aturan default, form mana yang
@@ -104,3 +104,153 @@ dari default. Ia juga tidak memakai `form/button`, melainkan `:disabled` langsun
 3. Untuk field berkas, tambahkan syaratnya di `canSubmit()` — dan pastikan
    halaman **edit** tidak ikut terkunci ketika berkas lama tidak diunggah ulang
    (pola yang dipakai: `isEdit ? (!hasFile || isValid) : (hasFile && isValid)`).
+
+---
+
+# Bagian admin
+
+Halaman `src/views/admin/**` memakai aturan yang sama — tombol baru aktif bila
+form layak dikirim — tetapi mekanismenya berbeda karena form di sini tidak
+memakai factory `formData` + `errorFor()` seperti super admin. Sebagian besar
+field-nya input biasa tanpa `x-model`, jadi kelayakan dibaca dari **constraint
+validation bawaan browser**.
+
+## Helper `adminFormGate()`
+
+Didefinisikan di `components/ui/admin/form/gate.hbs` dan dimuat sekali lewat
+`layouts/main.hbs`, jadi tersedia di semua halaman.
+
+```hbs
+x-data="{ ...adminFormGate(), loading: false }"
+x-init="recomputeFormValid()"
+@input="recomputeFormValid()"
+@change="recomputeFormValid()"
+```
+
+lalu tombolnya:
+
+```hbs
+{{> components/ui/admin/button/primary-button
+  text='Save' type='submit' loading='loading' disabled='!formValid' }}
+```
+
+Bila form juga punya berkas wajib, gabungkan di `canSubmit()` milik halaman dan
+kirim `disabled='!canSubmit()'`.
+
+## Jebakan: `checkValidity()` melewati input hidden
+
+`searchable_select` menaruh nilainya di `<input type="hidden">`, dan constraint
+validation bawaan browser **tidak memeriksa field hidden** — select wajib yang
+masih kosong tetap terbaca valid. Karena itu:
+
+- `searchable_select` menerima prop `required` yang merender `data-required`
+  pada hidden input-nya;
+- `recomputeFormValid()` memeriksa hidden input ber-`data-required` secara
+  terpisah, sesudah `checkValidity()`.
+
+Konsekuensinya: **field wajib harus benar-benar menyandang atribut `required`.**
+Label bertanda `*` saja tidak cukup — gerbangnya tidak melihat label. Sudah
+pernah terjadi: `weeks/create` menyala di form kosong karena `Description*`
+tidak punya `required`.
+
+## Jebakan: dua atribut `:disabled` pada satu tombol
+
+`components/ui/admin/button/primary-button` dulu memancarkan `:disabled` sendiri
+untuk `loading` dan untuk `disabled`. Atribut duplikat dibuang parser HTML —
+yang pertama menang — sehingga salah satu syarat hilang diam-diam. Sekarang
+komponennya meng-OR keduanya menjadi satu binding, jadi `loading` **tidak perlu**
+ikut ditulis di ekspresi `disabled`.
+
+## Daftar form admin
+
+| Halaman | Syarat tombol aktif |
+|---|---|
+| `attendance` create, edit | seluruh field wajib (termasuk select user) |
+| `assignments/create` | field wajib **plus** berkas valid |
+| `course/formCreate` | `canSubmit()` milik `programCreateForm` — field aktif + cover |
+| `course/create`, `program/create`, `course/edit` | `formComplete` dari `program_form_script` (sudah ada sebelumnya) |
+| `course/addUser` | user terpilih (sudah ada sebelumnya) |
+| `logbooks` create, edit | field wajib **plus** gambar; edit memakai gambar tersimpan |
+| `materi/create` (pdf, ppt, video) | field wajib **plus** berkas/URL; edit boleh memakai yang tersimpan |
+| `mentor_logbook` create, edit | field wajib **plus** gambar |
+| `questions` create, edit | field wajib |
+| `quiz` create, edit | field wajib |
+| `session` create, edit | field wajib |
+| `weeks` create, edit | field wajib |
+
+## Menambahkan form admin baru
+
+1. Sebarkan `...adminFormGate()` ke `x-data`, pasang `x-init`/`@input`/`@change`.
+2. Tandai setiap field wajib dengan `required` — termasuk `required=true` pada
+   `searchable_select`.
+3. Kirim `disabled='!formValid'` (atau `'!canSubmit()'` bila ada syarat berkas).
+4. Uji halaman **create** (tombol harus mati saat dibuka) dan halaman **edit**
+   (tombol harus menyala dengan data — regresi paling berbahaya dari aturan ini).
+
+---
+
+# Halaman edit: harus ada perubahan dulu
+
+Berlaku untuk **semua** halaman edit, admin maupun super admin (40 halaman).
+Tombol Save baru aktif bila form valid **dan** isinya berbeda dari saat halaman
+dibuka. Aturan ini dulu hanya dipakai halaman edit profil.
+
+## Helper `formDirtyGate()`
+
+Ada di `components/ui/admin/form/gate.hbs`, bersebelahan dengan `adminFormGate()`
+(yang sudah menyertakannya, jadi halaman admin cukup memakai `initGate()`).
+
+```hbs
+x-data='{ ...someForm({ ... }), ...formDirtyGate() }'
+x-init='$nextTick(() => captureBaseline())'
+```
+
+```hbs
+disabled='!canSubmit() || !isDirty || loading'
+```
+
+Sengaja bekerja di level DOM, bukan di dalam factory: satu factory super admin
+dipakai halaman create dan edit sekaligus, sedangkan aturan ini hanya untuk
+edit. Menaruhnya di factory akan ikut mengunci halaman create yang punya nilai
+default — valid tapi belum "berubah".
+
+## Tiga jebakan yang sudah ditemui
+
+**1. Patokan terambil terlalu cepat.** Sebagian halaman edit mengisi nilai
+awalnya lewat binding Alpine (`x-init` prefill), yang baru diterapkan sesudah
+init. Karena itu `captureBaseline()` dipanggil di dalam `$nextTick`; tanpa itu
+form langsung terbaca berubah padahal belum disentuh.
+
+**2. Input berkas.** Objek `File` tidak bisa dibandingkan langsung, jadi
+diserialisasi sebagai `nama:ukuran`. Berkas lama yang tidak diunggah ulang tetap
+terbaca sama; memilih berkas baru menandai form berubah.
+
+**3. Hidden input yang diisi Alpine — ini yang paling berbahaya.** Dropdown
+kustom (mis. pemilih kategori di `partner/edit`) menaruh nilainya di
+`<input type="hidden">` lewat binding `:value`. Menyetel `.value` secara
+langsung **tidak memicu event apa pun**, jadi `@input`/`@change` di markup tidak
+pernah menyala. Di halaman yang seluruh field-nya berupa dropdown semacam itu,
+tombol Save macet permanen. Karena itu helper memasang listener sendiri untuk
+`input`, `change`, **dan `click`** pada elemen form, dengan `$nextTick` supaya
+Alpine sempat menuliskan nilainya lebih dulu.
+
+## Cakupan
+
+40 dari 40 halaman edit. Diverifikasi di browser pada tujuh halaman yang
+mewakili setiap bentuk `x-data` (satu baris, bertingkat, objek literal, factory
+admin) plus `partner/edit` yang hanya punya hidden input + berkas: semuanya
+terbuka dengan tombol mati, lalu menyala begitu satu nilai diubah. Halaman
+create dipastikan tidak ikut terpengaruh.
+
+## Celah yang sudah ditutup
+
+`course_benefits`, `course_flows`, `course_questions`, dan `participants`
+tadinya tidak digating sama sekali — halaman create-nya tidak mengirim prop
+`disabled`, dan halaman editnya sempat hanya memakai `isDirty`. Ternyata hanya
+`courseFlowForm` yang benar-benar belum punya `canSubmit()`; tiga lainnya
+memakai `benefitForm`, `faqForm`, dan `iconItemForm` yang sudah punya, hanya
+belum diteruskan ke tombol.
+
+Sekarang keempatnya: create memakai `!canSubmit() || loading`, edit memakai
+`!canSubmit() || !isDirty || loading`. `canSubmit()` di `courseFlowForm`
+menghitung ulang lewat `errorFor()` untuk ketiga bahasa plus pilihan program.
