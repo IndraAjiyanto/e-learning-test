@@ -100,13 +100,21 @@
     </div>
     {{/if}}
   {{else}}
+    {{#if bareShell}}
+    <main class="min-h-screen">
+      {{{ body }}}
+    </main>
+    {{else}}
     {{> navbar}}
     <main class="min-h-screen">
-      {{{ body }}}  
+      {{{ body }}}
     </main>
     {{> footer}}
-  {{/if}} 
+    {{/if}}
+  {{/if}}
 
+
+  {{> components/ui/admin/form/gate}}
 
   {{> sweetalert}}
 

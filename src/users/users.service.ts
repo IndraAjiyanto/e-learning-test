@@ -16,6 +16,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import { Logbook } from 'src/entities/logbook.entity';
+import { Certificates } from 'src/entities/certificate.entity';
 import { EmailService } from 'src/common/email/email.service';
 import * as fs from 'fs/promises';
 import { assertStrongPassword } from 'src/common/utils/password.util';
@@ -32,6 +33,9 @@ export class UsersService {
 
     @InjectRepository(Logbook)
     private readonly logbookRepository: Repository<Logbook>,
+
+    @InjectRepository(Certificates)
+    private readonly certificateRepository: Repository<Certificates>,
 
     private readonly emailService: EmailService,
   ) {}
@@ -144,6 +148,42 @@ export class UsersService {
     return await this.userRepository.find({
       where: { email: Not('super@gmail.com') },
     });
+  }
+
+  /**
+   * Statistik untuk tab Dashboard student.
+   *
+   * Dulu dihitung inline di GET /users/profile saja, sehingga dua rute lain yang
+   * merender shell yang sama (GET /program/myProgram/:id dan GET /quiz/start/:id)
+   * menampilkan angka nol begitu user menekan Dashboard di sidebar. Sekarang satu
+   * tempat, dipakai ketiganya.
+   *
+   * certificatesCount dihitung dari tabel certificates, bukan lagi disamakan
+   * dengan jumlah course yang selesai. Sertifikat baru ada setelah student
+   * benar-benar mengunduhnya, jadi angka lama bisa lebih besar dari kenyataan.
+   */
+  async getDashboardData(userId: string) {
+    const userWithCourses = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+    });
+
+    const userCourses = userWithCourses?.userCourses ?? [];
+    const ongoingCourses = userCourses.filter((uc) => !uc.progress);
+    const completedCourses = userCourses.filter((uc) => uc.progress);
+
+    const certificatesCount = await this.certificateRepository.count({
+      where: { user: { id: userId } },
+    });
+
+    return {
+      ongoingCourses,
+      dashboardStats: {
+        ongoingCount: ongoingCourses.length,
+        completedCount: completedCourses.length,
+        certificatesCount,
+      },
+    };
   }
 
   async findOne(userId: string) {

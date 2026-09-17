@@ -30,14 +30,17 @@
       action='/installment/{{installments.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='installmentForm({
+      x-data='{ ...installmentForm({
         month: {{json installments.month}},
         availableMonths: {{json availableMonths}},
         downPayment: {{json installments.downPayment}},
         price: {{json installments.price}},
         dueDates: {{json installments.dueDates}},
         lockMonth: true
-      })'
+      }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
     >
       {{#> components/ui/super_admin/form/installment/fields lockMonth=true }}
@@ -55,7 +58,7 @@
             variant='primary'
             label='Save Changes'
             loading=true
-            disabled='!canSubmit() || loading'
+            disabled='!canSubmit() || !isDirty || loading'
           }}
         </div>
       {{/components/ui/super_admin/form/installment/fields}}

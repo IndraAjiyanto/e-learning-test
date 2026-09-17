@@ -3,17 +3,17 @@
   Lokasi: src/views/partials/components/ui/sections/free_hero/index.hbs
   Props: category (.name, .hero_section_image), lang.
 --}}
-<section class="w-full bg-[#F8F9FA] font-montserrat">
+<section class="w-full bg-[#F8F9FA] font-inter">
   <div class="page-shell flex flex-col justify-center gap-10 py-16 lg:min-h-[520px] lg:flex-row lg:items-center lg:gap-[72px] lg:py-20">
 
     <div class="flex flex-1 flex-col items-start gap-6">
       {{> components/ui/text/eyebrow/index text=(t 'test.categoryFreeProgram.hero.eyebrow') }}
 
-      <h1 class="{{sizeClass 'display'}} max-w-[640px] font-montserrat font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
+      <h1 class="{{sizeClass 'display'}} max-w-[640px] font-inter font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
         {{t 'test.categoryFreeProgram.hero.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span> {{t 'test.categoryFreeProgram.hero.title1'}} {{t 'test.categoryFreeProgram.hero.title2'}} {{t 'test.categoryFreeProgram.hero.title3'}}
       </h1>
 
-      <p class="{{sizeClass 'lead'}} max-w-[560px] font-open-sans text-[#4A5568]">
+      <p class="{{sizeClass 'lead'}} max-w-[560px] font-inter text-[#4A5568]">
         {{t 'test.categoryFreeProgram.hero.description'}}
       </p>
 

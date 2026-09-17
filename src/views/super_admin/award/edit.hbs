@@ -1,7 +1,6 @@
 <div
   class='py-10'
-  x-data="{
-  // Form validation states
+  x-data="{ // Form validation states
   formData: {
     content: { id: `{{award.content.id}}`, en: `{{award.content.en}}`, ja: `{{award.content.ja}}` },
     isi: { id: `{{award.isi.id}}`, en: `{{award.isi.en}}`, ja: `{{award.isi.ja}}` }
@@ -47,8 +46,10 @@
 
   hasFormErrors() {
     return Object.values(this.formErrors.content).some(e => e !== '') || Object.values(this.formErrors.isi).some(e => e !== '');
-  }
-}"
+  }, ...formDirtyGate() }"
+  x-init='$nextTick(() => captureBaseline())'
+  @input='recomputeDirty()'
+  @change='recomputeDirty()'
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Award</h2>
@@ -68,7 +69,7 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='!canSubmit() || loading'
+          :disabled='!canSubmit() || !isDirty || loading'
           :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >

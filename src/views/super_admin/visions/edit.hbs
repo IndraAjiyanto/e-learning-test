@@ -30,7 +30,10 @@
       action='/vision/{{vision.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='visionForm({ visions: {{json vision.visions}} })'
+      x-data='{ ...visionForm({ visions: {{json vision.visions}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
     >
       {{#> components/ui/super_admin/form/vision/fields }}
@@ -48,7 +51,7 @@
             variant='primary'
             label='Save Changes'
             loading=true
-            disabled='!canSubmit() || loading'
+            disabled='!canSubmit() || !isDirty || loading'
           }}
         </div>
       {{/components/ui/super_admin/form/vision/fields}}

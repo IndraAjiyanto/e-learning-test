@@ -17,7 +17,7 @@
     <button
       type="button"
       @click="activeMateri = null"
-      class="w-[50px] h-[50px] rounded-full border border-[#003060] bg-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center text-[#003060] hover:bg-[#003060] hover:text-white transition-all duration-200 cursor-pointer group"
+      class="w-[50px] h-[50px] rounded-full border border-[#003060] bg-white hover:shadow-sm flex items-center justify-center text-[#003060] hover:bg-[#003060] hover:text-white transition-all duration-200 cursor-pointer group"
       aria-label="Back to Start Learning"
     >
       <i class="fa-solid fa-arrow-left text-lg group-hover:-translate-x-0.5 transition-transform duration-200"></i>
@@ -25,10 +25,10 @@
 
     <!-- Page Titles -->
     <div class="space-y-5">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-[36px] text-[#003060] leading-tight">
+      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
         Select a video from the list to start watching
       </h1>
-      <p class="font-sans font-normal text-base sm:text-lg md:text-[20px] text-[#003060] leading-normal">
+      <p class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-normal">
         Complete each week to unlock the next
       </p>
     </div>
@@ -40,7 +40,7 @@
     
     <!-- VIDEO PLAYER -->
     <div class="w-full xl:max-w-[726px] flex-1">
-      <div class="w-full h-[240px] sm:h-[320px] md:h-[402px] bg-black rounded-[11px] shadow-[0px_0px_7.44px_0px_rgba(0,0,0,0.25)] relative flex items-center justify-center overflow-hidden group">
+      <div class="w-full h-[240px] sm:h-[320px] md:h-[402px] bg-black rounded-[11px] border border-[#d9d9d9] relative flex items-center justify-center overflow-hidden group">
         
         <!-- Video Playing State -->
         <template x-if="isPlaying && currentVideo && currentVideo.file">
@@ -101,7 +101,7 @@
     </div>
 
     <!-- RIGHT PANEL (Course Materials Playlist) -->
-    <div class="w-full xl:w-[438px] h-[510px] min-h-[510px] bg-white rounded-[12px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col border border-slate-100 flex-shrink-0">
+    <div class="w-full xl:w-[438px] h-[510px] min-h-[510px] bg-white rounded-[12px] overflow-hidden flex flex-col border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex-shrink-0">
       
       <!-- Header bar -->
       <div class="h-[66px] bg-[#6EB6E5] rounded-t-[12px] px-6 flex items-center justify-start gap-3 flex-shrink-0">
@@ -131,7 +131,7 @@
           >
             <span
               :class="currentVideo && currentVideo.id === item.id ? 'font-semibold text-black' : 'font-medium text-black'"
-              class="font-montserrat text-base sm:text-[18px] truncate leading-none"
+              class="font-montserrat text-base sm:text-lg truncate leading-none"
               x-text="item.title"
             ></span>
           </div>

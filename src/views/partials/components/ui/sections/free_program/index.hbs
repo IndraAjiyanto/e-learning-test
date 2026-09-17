@@ -3,15 +3,15 @@
   Lokasi: src/views/partials/components/ui/sections/free_program/index.hbs
   Props: category (.name), courses[], lang.
 --}}
-<section id="programs" class="w-full bg-white py-14 font-montserrat lg:py-20">
+<section id="programs" class="w-full bg-white py-14 font-inter lg:py-20">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
     <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
       {{> components/ui/text/eyebrow/index text=(t 'test.categoryFreeProgram.program.eyebrow') }}
-      <h2 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#0B1F3B]">
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
         <span class="text-[#6EB6E5]">{{category.name}}</span> {{t 'test.categoryFreeProgram.program.title'}}
       </h2>
-      <p class="{{sizeClass 'lead'}} font-open-sans text-[#4A5568]">
+      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">
         {{t 'test.categoryFreeProgram.program.description1'}} {{category.name}} {{t 'test.categoryFreeProgram.program.description2'}}
       </p>
     </div>
@@ -33,8 +33,8 @@
         <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
           <i class="fas fa-clock text-lg"></i>
         </span>
-        <h3 class="{{sizeClass 'h3'}} font-montserrat font-bold text-[#111827]">{{t 'test.special_program.program.comingSoonTitle'}}</h3>
-        <p class="{{sizeClass 'body'}} font-open-sans leading-relaxed text-[#6B7280]">{{t 'test.special_program.program.comingSoonText'}}</p>
+        <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.special_program.program.comingSoonTitle'}}</h3>
+        <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{t 'test.special_program.program.comingSoonText'}}</p>
       </div>
     {{/if}}
   </div>

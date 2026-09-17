@@ -20,7 +20,7 @@
           <i class="fas {{icon}} text-lg" aria-hidden="true"></i>
         </span>
         <div class="flex flex-col gap-1">
-          <h3 class="text-lg font-montserrat font-bold text-[#111827] lg:text-xl">{{title}}</h3>
+          <h3 class="text-lg font-inter font-bold text-[#111827] lg:text-xl">{{title}}</h3>
           <p class="{{sizeClass 'body'}} font-inter font-semibold text-[#003060]">{{subtitle}}</p>
         </div>
       </div>
@@ -66,7 +66,7 @@
           class="size-24 shrink-0 rounded-full object-cover"
         />
         <div class="flex flex-col gap-1">
-          <h1 class="{{sizeClass 'h2'}} font-montserrat font-bold text-[#111827]">{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}</h1>
+          <h1 class="{{sizeClass 'h2'}} font-inter font-bold text-[#111827]">{{#if teamLead.[0]}}{{teamLead.[0].name}}{{else}}Faisal Wirakusuma, S.Kom., M.Sc.{{/if}}</h1>
           <p class="{{sizeClass 'h3'}} font-inter font-semibold text-[#003060]">{{#if teamLead.[0]}}{{getByLang teamLead.[0].position lang}}{{else}}Chief Executive Officer{{/if}}</p>
         </div>
       </div>
@@ -76,12 +76,12 @@
         <button
           @click="tab = 'education'"
           :class="tab === 'education' ? 'border-[#003060] text-[#003060]' : 'border-transparent text-[#6B7280]'"
-          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-montserrat font-semibold transition-colors"
+          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-inter font-semibold transition-colors"
         >{{t 'test.about.team.educationBackground'}}</button>
         <button
           @click="tab = 'portfolio'"
           :class="tab === 'portfolio' ? 'border-[#003060] text-[#003060]' : 'border-transparent text-[#6B7280]'"
-          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-montserrat font-semibold transition-colors"
+          class="-mb-0.5 border-b-[3px] pb-3 {{sizeClass 'body'}} font-inter font-semibold transition-colors"
         >{{t 'test.about.team.portfolioExperience'}}</button>
       </div>
 
@@ -131,7 +131,7 @@
 
         {{!-- Key Projects Portfolio (Figma 250:1774) --}}
         <div class="flex flex-col gap-6">
-          <h2 class="text-xl font-montserrat font-bold text-[#111827] lg:text-2xl">Key Projects Portfolio</h2>
+          <h2 class="text-xl font-inter font-bold text-[#111827] lg:text-2xl">Key Projects Portfolio</h2>
           <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             {{#each (array
               (array "Pertamina Digital Dashboard" "Pertamina" "Enterprise analytics dashboard for real-time monitoring of operational KPIs across 30+ refineries.")
@@ -145,7 +145,7 @@
                     <i class="fas fa-folder-open text-sm" aria-hidden="true"></i>
                   </span>
                   <div class="flex flex-col gap-0.5 min-w-0">
-                    <h3 class="text-[17px] font-montserrat font-bold leading-snug text-[#111827]">{{lookup this 0}}</h3>
+                    <h3 class="text-[17px] font-inter font-bold leading-snug text-[#111827]">{{lookup this 0}}</h3>
                     <p class="{{sizeClass 'body-sm'}} font-inter font-semibold text-[#003060]">{{lookup this 1}}</p>
                   </div>
                 </div>

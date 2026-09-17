@@ -6,6 +6,9 @@
   Data: GET /category → { category }.
   Search & pagination dijalankan di client lewat clientTable().
   Kolom Action: View (detail), Edit (formEdit), Delete (lewat modal konfirmasi).
+
+  `description` adalah kolom jsonb { id, en, ja } (entity masih menyebutnya
+  string[], form yang benar), jadi tabelnya memakai tab bahasa seperti Value.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
@@ -22,7 +25,7 @@
 
     <div
       class='flex flex-col gap-3.5'
-      x-data='clientTable({ items: {{json category}}, searchKeys: ["name"] })'
+      x-data='clientTable({ items: {{json category}}, searchKeys: ["name", "description.id", "description.en", "description.ja"] })'
     >
       {{> components/ui/super_admin/table/toolbar
         placeholder='Search category..'
@@ -31,71 +34,89 @@
         createLabel='Create Category'
       }}
 
-      {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
-        <thead>
-          <tr>
-            {{> components/ui/super_admin/table/header_cell label='No' }}
-            {{> components/ui/super_admin/table/header_cell label='Icon' }}
-            {{> components/ui/super_admin/table/header_cell label='Category Name' }}
-            {{> components/ui/super_admin/table/header_cell label='Description' }}
-            {{> components/ui/super_admin/table/header_cell label='Type' }}
-            {{> components/ui/super_admin/table/header_cell label='Action' }}
-          </tr>
-        </thead>
-        <tbody>
-          <template x-for='(row, index) in rows' :key='row.id'>
-            <tr class='transition-colors hover:bg-[#fafafa]'>
-              {{> components/ui/super_admin/table/cell
-                text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-              }}
+      <div
+        class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'
+        x-data="{ lang: 'id' }"
+      >
+        <div class='flex flex-col gap-4'>
 
-              {{#> components/ui/super_admin/table/cell}}
-                {{> components/ui/super_admin/table/avatar src='row.icon' name='row.name' }}
-              {{/components/ui/super_admin/table/cell}}
+          {{> components/ui/super_admin/tabs/language/index ariaLabel='Category language' }}
 
-              {{> components/ui/super_admin/table/cell text='row.name' }}
+          {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+            <colgroup>
+              <col class='w-[90px]' />
+              <col class='w-[260px]' />
+              <col class='w-[390px]' />
+              <col class='w-[160px]' />
+              <col class='w-[110px]' />
+            </colgroup>
+            <thead>
+              <tr>
+                {{> components/ui/super_admin/table/header_cell label='Icon' }}
+                {{> components/ui/super_admin/table/header_cell label='Category Name' }}
+                {{> components/ui/super_admin/table/header_cell label='Description' }}
+                {{> components/ui/super_admin/table/header_cell label='Type' }}
+                {{> components/ui/super_admin/table/header_cell label='Action' }}
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for='row in rows' :key='row.id'>
+                <tr class='transition-colors hover:bg-[#fafafa]'>
+                  {{#> components/ui/super_admin/table/cell}}
+                    {{> components/ui/super_admin/table/avatar src='row.icon' name='row.name' }}
+                  {{/components/ui/super_admin/table/cell}}
 
-              {{#> components/ui/super_admin/table/cell}}
-                <template x-for='(line, i) in (row.description || [])' :key='i'>
-                  <div class='truncate font-inter text-sm leading-5 text-[#525252]' x-text='line'></div>
-                </template>
-              {{/components/ui/super_admin/table/cell}}
+                  {{> components/ui/super_admin/table/cell text='row.name' }}
 
-              {{> components/ui/super_admin/table/cell text='row.type' }}
+                  {{#> components/ui/super_admin/table/cell}}
+                    <span
+                      class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                      x-text='(row.description && row.description[lang]) || "—"'
+                    ></span>
+                  {{/components/ui/super_admin/table/cell}}
 
-              {{#> components/ui/super_admin/table/cell variant='action'}}
-                <div class='flex items-center gap-1'>
-                  <a
-                  :href="'/category/' + row.id"
-                  title='View category'
-                  aria-label='View category'
-                  class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
-                >
-                  {{!-- lucide: eye --}}
-                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
-                    <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
-                    <circle cx='12' cy='12' r='3' />
-                  </svg>
-                  </a>
+                  {{#> components/ui/super_admin/table/cell}}
+                    {{> components/ui/super_admin/badge/index
+                      text='row.type'
+                      class='bg-[#f9f5ff] text-[#6941c6]'
+                    }}
+                  {{/components/ui/super_admin/table/cell}}
 
-                  {{!-- Edit + delete memakai komponen aksi baris yang sama dengan
-                       halaman super admin lain; tombol delete hanya membuka modal
-                       konfirmasi, form-nya baru dikirim setelah user menekan Delete. --}}
-                  {{> components/ui/super_admin/table/row_actions
-                    entity='category'
-                    editHref="'/category/formEdit/' + row.id"
-                    deleteAction="'/category/' + row.id + '?_method=DELETE'"
-                  }}
-                </div>
-              {{/components/ui/super_admin/table/cell}}
-            </tr>
-          </template>
+                  {{#> components/ui/super_admin/table/cell variant='action'}}
+                    <div class='flex items-center gap-1'>
+                      <a
+                      :href="'/category/' + row.id"
+                      title='View category'
+                      aria-label='View category'
+                      class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+                    >
+                      {{!-- lucide: eye --}}
+                      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                        <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
+                        <circle cx='12' cy='12' r='3' />
+                      </svg>
+                      </a>
 
-          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='6'}}
-            No categories found.
-          {{/components/ui/super_admin/table/message_row}}
-        </tbody>
-      {{/components/ui/super_admin/table/card}}
+                      {{!-- Edit + delete memakai komponen aksi baris yang sama dengan
+                           halaman super admin lain; tombol delete hanya membuka modal
+                           konfirmasi, form-nya baru dikirim setelah user menekan Delete. --}}
+                      {{> components/ui/super_admin/table/row_actions
+                        entity='category'
+                        editHref="'/category/formEdit/' + row.id"
+                        deleteAction="'/category/' + row.id + '?_method=DELETE'"
+                      }}
+                    </div>
+                  {{/components/ui/super_admin/table/cell}}
+                </tr>
+              </template>
+
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='5'}}
+                No categories found.
+              {{/components/ui/super_admin/table/message_row}}
+            </tbody>
+          {{/components/ui/super_admin/table/card}}
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -117,6 +117,16 @@
           return this.entries().some(([field, lang]) => this.read('formErrors', field, lang) !== '');
         },
 
+        // Dihitung ulang dari nilai lewat errorFor(), BUKAN dari formErrors:
+        // formErrors hanya terisi untuk field yang sudah disentuh, jadi form kosong
+        // akan terbaca "tanpa error" dan tombolnya menyala sejak awal.
+        // Lihat docs/form-submit-gating.md.
+        canSubmit() {
+          return this.entries().every(
+            ([field, lang]) => errorFor(field, lang, this.read('formData', field, lang)) === '',
+          );
+        },
+
         // Field yang error bisa berada di tab bahasa lain — pindahkan tab dulu, baru
         // fokuskan, supaya pesan errornya benar-benar terlihat.
         //

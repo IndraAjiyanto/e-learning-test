@@ -142,7 +142,7 @@ export class CoursesController {
     @Body('userId') userId: string,
   ) {
     try {
-      await this.coursesService.addUserToCourse(userId, courseId);
+await this.coursesService.addUserToCourse(userId, courseId);
       flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
@@ -458,6 +458,12 @@ export class CoursesController {
     // const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
     const portfolio = await this.coursesService.findPortfolio(req.user!.id);
 
+    // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
+    // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
+    // myProgram menampilkan angka nol di semua kartu statistik.
+    const { dashboardStats, ongoingCourses } =
+      await this.usersService.getDashboardData(req.user!.id);
+
     res.render('user/user_profile/index', {
       course,
       activeCourse,
@@ -467,8 +473,10 @@ export class CoursesController {
       userWithCourses,
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
-      // userWithCourses,
       portfolio,
+      dashboardStats,
+      ongoingCourses,
+      bareShell: true,
     });
   }
 
@@ -715,7 +723,7 @@ export class CoursesController {
       }
       if (isUserInKelas) {
         // res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
-        const mingguUpdated = await this.coursesService.findWeeks(
+          const mingguUpdated = await this.coursesService.findWeeks(
           id,
           req.user.id,
         );
@@ -967,7 +975,7 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     try {
-      await this.coursesService.removeCourseUser(userId, courseId);
+await this.coursesService.removeCourseUser(userId, courseId);
       flashToast(req, 'User Removed', 'User successfully removed from program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {

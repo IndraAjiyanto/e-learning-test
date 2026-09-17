@@ -247,6 +247,8 @@ export class UsersController {
           .map((c) => [c.category.id, c.category]),
       ).values(),
     ];
+    const { dashboardStats, ongoingCourses } =
+      await this.usersService.getDashboardData(user.id);
     return res.render('user/user_profile/index', {
       user: user,
       portfolio,
@@ -254,6 +256,9 @@ export class UsersController {
       logbooks,
       course,
       category,
+      dashboardStats,
+      ongoingCourses,
+      bareShell: true,
     });
   }
 

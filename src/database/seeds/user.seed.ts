@@ -21,6 +21,9 @@ async function bootstrap() {
   const technologiesRepository = dataSource.getRepository(Technology);
   const mentoringRepository = dataSource.getRepository(Mentorings);
 
+  // isVerified wajib true: AuthController memblokir login user yang belum terverifikasi
+  // dan mengalihkannya ke /users/send-verify-email. Tanpa ini setiap akun hasil seed
+  // tidak bisa dipakai login sama sekali, dan selama ini harus di-flip manual lewat SQL.
   const hashedPassword = await bcrypt.hash('12345678', 10);
 
   const users = await userRepository.save([
@@ -29,18 +32,21 @@ async function bootstrap() {
       email: 'super@gmail.com',
       password: hashedPassword,
       role: 'super_admin',
+      isVerified: true,
     },
     {
       username: 'mentor',
       email: 'mentor@gmail.com',
       password: hashedPassword,
       role: 'admin',
+      isVerified: true,
     },
     {
       username: 'indra',
       email: 'indra@gmail.com',
       password: hashedPassword,
       role: 'user',
+      isVerified: true,
     },
   ]);
 

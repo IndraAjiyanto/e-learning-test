@@ -31,7 +31,13 @@ export class ExperienceService {
   }
 
   async findAll(): Promise<Experience[]> {
-    return await this.experienceRepository.find();
+    // Tanpa klausa order, Postgres mengembalikan baris sesuai urutan fisiknya,
+    // dan sebuah UPDATE memindahkan baris itu ke belakang. Akibatnya daftar
+    // teracak setiap kali ada yang diedit — halaman list menomori baris dari
+    // posisinya, jadi nomor ikut berubah padahal experienceOrder tidak.
+    return await this.experienceRepository.find({
+      order: { experienceOrder: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Experience | null> {

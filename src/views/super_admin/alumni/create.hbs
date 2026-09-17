@@ -17,7 +17,7 @@
       }}
 
       {{> components/ui/super_admin/description/index
-        text='Add an alumni testimonial to this program.'
+        text='Create a new alumni profile for Kesatria Academy.'
       }}
     </div>
 
@@ -28,16 +28,27 @@
       novalidate
       x-data='alumniForm()'
       @submit.prevent='submitForm($event)'
-      class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'
     >
-      <div class='flex flex-col gap-6'>
+      <div class='flex flex-col gap-5'>
         {{> components/ui/super_admin/form/alumni/fields hideProgram=true }}
 
-        {{> components/ui/super_admin/form/button
-          row=true
-          cancelHref=(concat '/program/detail/program/admin/' courseId)
-          submitLabel='Create Alumni'
-        }}
+        <div class='flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end'>
+          {{> components/ui/super_admin/form/button
+            as='link'
+            variant='secondary'
+            href=(concat '/program/detail/program/admin/' courseId)
+            label='Cancel'
+            loading=true
+          }}
+
+          {{> components/ui/super_admin/form/button
+            type='submit'
+            variant='primary'
+            label='Create Alumni'
+            loading=true
+          }}
+        </div>
       </div>
     </form>
   </div>

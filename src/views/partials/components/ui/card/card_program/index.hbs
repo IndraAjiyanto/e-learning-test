@@ -14,8 +14,8 @@
   />
 
   <div class="flex flex-1 flex-col gap-2 p-5">
-    <h3 class="text-base font-montserrat font-bold text-[#0B1F3B]">{{name}}</h3>
-    <p class="{{sizeClass 'body-sm'}} font-open-sans font-normal text-[#4A5568] line-clamp-3">
+    <h3 class="text-base font-inter font-bold text-[#0B1F3B]">{{name}}</h3>
+    <p class="{{sizeClass 'body-sm'}} font-inter font-normal text-[#4A5568] line-clamp-3">
       {{default (getByLang text lang) text}}
     </p>
   </div>
@@ -24,7 +24,7 @@
     {{> components/ui/text/link/index
       text=(default learnMore 'Learn More')
       href=(default href (concat '/category/program/' name))
-      font="font-montserrat"
+      font="font-inter"
       weight="semibold"
       color="text-[#003060]"
       size="text-xs"

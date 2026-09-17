@@ -213,6 +213,21 @@ export class PaymentsController {
     return res.json({ data: payment });
   }
 
+  /**
+   * Sumber tunggal untuk tab Payment History. Sengaja TIDAK menerima :userId di
+   * path: id-nya diambil dari sesi, jadi endpoint ini tidak menambah lagi pola
+   * IDOR yang masih ada di rute-rute lama di file ini.
+   */
+  @Roles('user')
+  @Get('api/history')
+  async getPaymentHistory(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) {
+      return res.status(401).json({ data: [] });
+    }
+    const data = await this.paymentsService.findPaymentHistory(req.user.id);
+    return res.json({ data });
+  }
+
   @Roles('user')
   @Get('api/registration/:userId')
   async getRegistration(@Param('userId') userId: string, @Res() res: Response) {
@@ -248,17 +263,6 @@ export class PaymentsController {
       user: req.user,
       userId,
     });
-  }
-
-  @Roles('user')
-  @Get('detail/:courseId')
-  async detail(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const course = await this.paymentsService.findCourse(courseId);
-    res.render('user/payment', { user: req.user, course });
   }
 
   @Roles('user')

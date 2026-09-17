@@ -61,12 +61,14 @@
   }}
 
   <div class='flex flex-col gap-3.5'>
-    {{!-- Judul bagian ini memang berbunyi "Teknologi Name" di kedua frame Figma,
-         sama persis dengan label field di atasnya. Dipertahankan apa adanya agar
-         cocok dengan desain; kalau itu ternyata salah ketik, ubah di Figma dulu
-         supaya kode dan desain tidak berpisah diam-diam. --}}
+    {{!-- Figma menulis judul bagian ini "Teknologi Name", sama persis dengan
+         label field di atasnya. Sempat dipertahankan apa adanya sambil menunggu
+         kepastian, dan QA mengonfirmasinya sebagai salah ketik (TC-034/TC-035):
+         bagian ini berisi SVG/gambar, jadi yang benar "Teknologi Logo".
+         Fontnya ikut dibetulkan ke Inter, selaras dengan seluruh teks lain di
+         kartu ini. Perlu disamakan juga di Figma agar tidak berpisah lagi. --}}
     <div class='flex flex-col gap-1'>
-      <h2 class='font-montserrat text-xl font-semibold leading-7 text-[#171717]'>Teknologi Name</h2>
+      <h2 class='font-inter text-xl font-semibold leading-7 text-[#171717]'>Teknologi Logo</h2>
       <p class='font-inter text-base leading-5 text-[#718096]'>
         Wajib mengisi salah satu (SVG Code atau Upload Gambar)
       </p>

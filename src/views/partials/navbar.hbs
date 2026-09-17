@@ -1,9 +1,9 @@
 <header
   {{#if isAuthPage}}
-  class="sticky inset-x-0 top-0 z-50 font-montserrat text-[#4A5568] transition-all duration-300"
+  class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
   :class="scrolled ? 'border-b border-white/40 bg-white/20 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.10)]' : 'border-b border-transparent bg-transparent shadow-none'"
   {{else}}
-  class="sticky inset-x-0 top-0 z-50 bg-white font-montserrat text-[#4A5568] transition-shadow duration-200"
+  class="sticky inset-x-0 top-0 z-50 bg-white font-inter text-[#4A5568] transition-shadow duration-200"
   :class="scrolled ? 'border-b-[3px] border-[#F3F4F6] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]' : 'border-b border-transparent shadow-none'"
   {{/if}}
   x-data="{

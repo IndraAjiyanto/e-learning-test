@@ -30,7 +30,7 @@ const form = document.querySelector('#formSubmit');
 
     const timer = new easytimer.Timer();
 
-    timer.start({ countdown: true, startValues: { seconds: {{remainingTime}}  } });
+    timer.start({ countdown: true, startValues: { seconds: {{default remainingTime 0}} } });
 
     function updateTimer() {
         document.querySelector('#countdownExample .values').innerHTML =

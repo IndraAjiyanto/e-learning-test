@@ -18,7 +18,12 @@ export class CourseTypesService {
   }
 
   async findAll() {
-    return await this.courseTypeRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.courseTypeRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
   // Sumber data tabel /type-program (client-side fetch), sejajar dengan

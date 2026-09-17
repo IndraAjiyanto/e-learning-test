@@ -92,7 +92,9 @@
           </button>
         </template>
       </div>
-      <input type='hidden' name='{{name}}' :value='selected ? selected.id : ""' />
+      {{!-- data-required dibaca adminFormGate: hidden input dilewati oleh
+           constraint validation bawaan browser, jadi harus diperiksa terpisah. --}}
+      <input type='hidden' name='{{name}}'{{#if required}} data-required{{/if}} :value='selected ? selected.id : ""' />
     </div>
   {{/components/ui/admin/form/form-field}}
 </div>

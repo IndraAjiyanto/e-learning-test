@@ -48,7 +48,7 @@
   <!-- Quiz List View -->
   <div x-show="!activeWeekId" class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
     <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060]">Quiz</h1>
-    <p class="font-sans text-[20px] text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
+    <p class="font-sans text-sm text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
 
     <!-- Quiz List Section -->
     <div class="space-y-3">
@@ -56,14 +56,14 @@
       {{#if quiz.[0].id}}
       <div class="bg-white border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between px-5 py-3.5 gap-4">
-          <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
+          <span class="font-montserrat font-semibold text-lg text-[#003060] truncate">
             {{description}} : {{quiz.[0].quizName}}
           </span>
-          <a href="#"
-             @click.prevent="openQuiz('{{id}}')"
+          <button type="button"
+             @click="openQuiz('{{id}}')"
              :class="quizStatus['{{id}}'] && quizStatus['{{id}}'].unlocked ? 'bg-[#003060] hover:bg-[#001F3F] cursor-pointer' : 'bg-[#9CA3AF] cursor-not-allowed'"
-             class="inline-flex items-center justify-center px-4 py-2 text-white rounded-lg font-montserrat font-medium text-[20px] transition-colors whitespace-nowrap flex-shrink-0">Take Quiz
-          </a>
+             class="inline-flex items-center justify-center px-4 py-2 text-white rounded-lg font-montserrat font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0">Take Quiz
+          </button>
         </div>
       </div>
       {{/if}}

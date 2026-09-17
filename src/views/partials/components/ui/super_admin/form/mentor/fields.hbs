@@ -3,9 +3,12 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/mentor/fields.hbs
   Level: L2 Blok field (scoped super_admin)
 
-  Foto profil, lalu Name / LinkedIn / Technologies, lalu Position & Description
-  per bahasa. Tidak menerima props; pemanggil menyediakan state Alpine dari
-  form/mentor/form.
+  Baris atas dua kolom: foto profil di kiri, Full Name / LinkedIn / Position di
+  kanan. Di bawahnya Description selebar kartu, lalu Tools. Tidak menerima props;
+  pemanggil menyediakan state Alpine dari form/mentor/form.
+
+  Position dan Description punya tab bahasa masing-masing (positionLang dan
+  descriptionLang) sehingga bisa dipindah sendiri-sendiri.
 
   Field per bahasa dikirim sebagai position[id]/position[en]/position[ja]
   (idem description) — bentuk yang dibaca halaman publik lewat getByLang.
@@ -20,90 +23,101 @@
   dan MentorService — bukan `technologiesIds[]` seperti form lama, yang membuat
   pilihannya tidak pernah tersimpan.
 --}}
-{{#*inline 'mentorLangFields'}}
-  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
-    {{> components/ui/super_admin/form/text_field
-      id=(concat 'position-' code)
-      name=(concat 'position[' code ']')
-      field=(concat 'position.' code)
-      label='Position'
-      placeholder=positionHint
-      maxlength=255
-      required=true
-    }}
+{{#*inline 'mentorLangField'}}
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
 
-    {{> components/ui/super_admin/form/text_field
-      id=(concat 'description-' code)
-      name=(concat 'description[' code ']')
-      field=(concat 'description.' code)
-      label='Description'
-      multiline=true
-      placeholder=descriptionHint
-      maxlength=1000
-      required=true
-    }}
+    <div class='flex flex-col gap-4'>
+      {{> components/ui/super_admin/tabs/language/index
+        ariaLabel=(concat label ' language')
+        state=state
+        size='sm'
+      }}
+
+      {{#each langs}}
+        <div x-show="{{../state}} === '{{this}}'" x-cloak>
+          {{> components/ui/super_admin/form/text_field
+            id=(concat ../field '-' this)
+            name=(concat ../field '[' this ']')
+            field=(concat ../field '.' this)
+            label=../label
+            hideLabel=true
+            multiline=../multiline
+            placeholder=../placeholder
+            maxlength=../maxlength
+            required=true
+          }}
+        </div>
+      {{/each}}
+    </div>
   </div>
 {{/inline}}
 
 <div class='flex flex-col gap-5'>
-  {{> components/ui/super_admin/form/photo_upload
-    id='profile'
-    name='profile'
-    label='Profile Photo'
-    meta='JPG or PNG · 300×300 to 2000×2000 px · Max 5 MB'
-    action='Upload Photo'
-    crop=true
-  }}
-
   <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
-    {{> components/ui/super_admin/form/text_field
-      id='name'
-      name='name'
-      field='name'
-      label='Name'
-      placeholder='Full name'
+    {{!-- Batas di meta mengikuti @ValidateImage MentorController, bukan hint
+         Figma (1900×1000–1920×1080, 10 MB) yang akan ditolak backend. --}}
+    {{> components/ui/super_admin/form/image_dropzone
+      id='profile'
+      name='profile'
+      label='Profile Photo'
+      previewAlt='Profile photo preview'
       required=true
+      meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
+      boxClass='h-[265px]'
+      crop=true
     }}
 
-    {{> components/ui/super_admin/form/text_field
-      id='linkedin'
-      name='linkedin'
-      field='linkedin'
-      type='url'
-      icon='link'
-      label='LinkedIn URL'
-      placeholder='https://linkedin.com/in/username'
-      required=true
-    }}
+    <div class='flex flex-col gap-3'>
+      {{> components/ui/super_admin/form/text_field
+        id='name'
+        name='name'
+        field='name'
+        label='Full Name'
+        placeholder='Enter full name'
+        required=true
+      }}
+
+      {{> components/ui/super_admin/form/text_field
+        id='linkedin'
+        name='linkedin'
+        field='linkedin'
+        type='url'
+        icon='link'
+        label='LinkedIn'
+        placeholder='Enter linkedin link'
+        required=true
+      }}
+
+      {{> mentorLangField
+        label='Position'
+        field='position'
+        state='positionLang'
+        placeholder='Enter position'
+        maxlength=255
+        langs=(array 'id' 'en' 'ja')
+      }}
+    </div>
   </div>
+
+  {{> mentorLangField
+    label='Description'
+    field='description'
+    state='descriptionLang'
+    placeholder='Enter a description...'
+    maxlength=1000
+    multiline=true
+    langs=(array 'id' 'en' 'ja')
+  }}
 
   {{> components/ui/super_admin/form/multi_select_field
     id='technologyId'
     name='technologyId[]'
-    label='Technologies'
-    placeholder='Search and select technologies'
+    field='technologyId'
+    label='Tools'
+    placeholder='Search or select tools'
     options='technologyOptions'
     initial='initialTechnologies'
-    hint='Optional.'
-  }}
-
-  {{> components/ui/super_admin/tabs/language/index ariaLabel='Mentor language' }}
-
-  {{> mentorLangFields
-    code='id'
-    positionHint='Posisi (ID)'
-    descriptionHint='Deskripsi singkat (ID)...'
-  }}
-
-  {{> mentorLangFields
-    code='en'
-    positionHint='Position (EN)'
-    descriptionHint='Short description (EN)...'
-  }}
-
-  {{> mentorLangFields
-    code='ja'
-    positionHint='役職 (JA)'
-    descriptionHint='簡単な説明 (JA)...'
+    required=true
   }}
 </div>

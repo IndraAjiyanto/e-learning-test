@@ -25,11 +25,14 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='headerForm({
+      x-data='{ ...headerForm({
         title: {{json about.title}},
         text: {{json about.text}},
         image: {{json (default about.image "")}}
-      })'
+      }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'
     >
@@ -49,7 +52,7 @@
           variant='primary'
           label='Save Changes'
           loading=true
-          disabled='!canSubmit() || loading'
+          disabled='!canSubmit() || !isDirty || loading'
         }}
       </div>
     </form>

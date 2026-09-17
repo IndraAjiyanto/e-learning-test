@@ -1,10 +1,10 @@
 {{!--
   Section: Paid Program Hero (Bootcamp) (L2) - reskin ke standar internal (no Figma).
   Lokasi: src/views/partials/components/ui/sections/paid_hero/index.hbs
-  Satu pohon markup, base + lg. .page-shell, sizeClass, font-montserrat heading + open-sans body.
+  Satu pohon markup, base + lg. .page-shell, sizeClass, font-inter heading + body (unified 2026-09-10, yana WA).
   Props: category (.name, .description, .hero_section_image, .contact, .type), lang.
 --}}
-<section id="hero" class="w-full bg-[#F8F9FA] font-montserrat">
+<section id="hero" class="w-full bg-[#F8F9FA] font-inter">
   <div class="page-shell py-14 lg:py-20">
     <div class="relative overflow-hidden rounded-[28px] bg-[#003060] px-6 py-12 lg:px-14 lg:py-16">
       <img
@@ -16,11 +16,11 @@
       <div class="relative flex max-w-[640px] flex-col items-start gap-5">
         {{> components/ui/text/eyebrow/index text=(default (getByLang category.type lang) (default category.type (t 'test.categoryPaidProgram.hero.eyebrow'))) }}
 
-        <h1 class="{{sizeClass 'display'}} font-montserrat font-extrabold tracking-[-0.02em] text-white">
+        <h1 class="{{sizeClass 'display'}} font-inter font-extrabold tracking-[-0.02em] text-white">
           {{#if category.name}}{{category.name}}{{else}}Bootcamp{{/if}}
         </h1>
 
-        <p class="{{sizeClass 'lead'}} max-w-[560px] font-open-sans text-white/85">
+        <p class="{{sizeClass 'lead'}} max-w-[560px] font-inter text-white/85">
           {{default (getByLang category.description lang) (t 'test.categoryPaidProgram.hero.description')}}
         </p>
 

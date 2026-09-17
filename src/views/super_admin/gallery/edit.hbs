@@ -24,7 +24,10 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='galleryForm({ gallery: {{json gallery}} })'
+      x-data='{ ...galleryForm({ gallery: {{json gallery}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
     >
@@ -37,7 +40,7 @@
           row=true
           cancelHref=(concat '/category/' category.id)
           submitLabel='Save Changes'
-          disabled='!canSubmit() || loading'
+          disabled='!canSubmit() || !isDirty || loading'
         }}
       </div>
     </form>

@@ -3,8 +3,8 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/alumni/fields.hbs
   Level: L2 Blok field (scoped super_admin)
 
-  Program, foto profil, lalu Name / Current Position / Message per bahasa.
-  Pemanggil menyediakan state Alpine dari form/alumni/form.
+  Program, foto profil, lalu Name / Message / Current Position — masing-masing
+  dengan tab bahasa sendiri. Pemanggil menyediakan state Alpine dari form/alumni/form.
 
   Props:
   - hideProgram : boolean (opsional) — sembunyikan field Program, untuk halaman
@@ -17,38 +17,40 @@
   Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
   meski tab-nya tidak aktif.
 
-  Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `name-id`) — dipakai
-  form/alumni/form untuk memfokuskan field pertama yang error.
+  Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `name-id`) dan state tab
+  `{namaField}Lang` — keduanya dipakai form/alumni/form untuk membuka tab dan
+  memfokuskan field pertama yang error.
 --}}
-{{#*inline 'alumniLangFields'}}
-  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+{{#*inline 'alumniLangPanel'}}
+  <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
     {{> components/ui/super_admin/form/text_field
-      id=(concat 'name-' code)
-      name=(concat 'name[' code ']')
-      field=(concat 'name.' code)
-      label='Name'
-      placeholder=nameHint
-      required=true
-    }}
-
-    {{> components/ui/super_admin/form/text_field
-      id=(concat 'currentPosition-' code)
-      name=(concat 'currentPosition[' code ']')
-      field=(concat 'currentPosition.' code)
-      label='Current Position'
-      placeholder=positionHint
-      required=true
-    }}
-
-    {{> components/ui/super_admin/form/text_field
-      id=(concat 'message-' code)
-      name=(concat 'message[' code ']')
-      field=(concat 'message.' code)
-      label='Message'
+      id=(concat field '-' code)
+      name=(concat field '[' code ']')
+      field=(concat field '.' code)
+      label=(concat label ' (' langName ')')
+      hideLabel=true
       multiline=true
-      placeholder=messageHint
+      placeholder=placeholder
       required=true
     }}
+  </div>
+{{/inline}}
+
+{{#*inline 'alumniLangField'}}
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-col gap-4'>
+      {{> components/ui/super_admin/tabs/language/index
+        state=(concat field 'Lang')
+        size='sm'
+        ariaLabel=(concat label ' language')
+      }}
+
+      {{> alumniLangPanel code='id' langName='Indonesian' }}
+      {{> alumniLangPanel code='en' langName='English' }}
+      {{> alumniLangPanel code='ja' langName='Japanese' }}
+    </div>
   </div>
 {{/inline}}
 
@@ -60,41 +62,26 @@
       field='courseId'
       single=true
       label='Program'
-      placeholder='Search and select a program'
+      placeholder='Select a program'
       options='courseOptions'
       initial='initialCourse'
       required=true
     }}
   {{/unless}}
 
-  {{> components/ui/super_admin/form/photo_upload
+  {{> components/ui/super_admin/form/image_dropzone
     id='profile'
     name='profile'
-    label='Profile Photo'
+    label='Upload Image'
     meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
-    action='Upload Photo'
+    previewAlt='Profile photo preview'
+    boxClass='h-[200px]'
+    required=true
   }}
 
-  {{> components/ui/super_admin/tabs/language/index ariaLabel='Alumni language' }}
-
-  {{> alumniLangFields
-    code='id'
-    nameHint='Nama alumni'
-    positionHint='Posisi saat ini'
-    messageHint='Tulis pesan alumni dalam Bahasa Indonesia...'
-  }}
-
-  {{> alumniLangFields
-    code='en'
-    nameHint='Alumni name'
-    positionHint='Current position'
-    messageHint='Write the alumni message in English...'
-  }}
-
-  {{> alumniLangFields
-    code='ja'
-    nameHint='名前'
-    positionHint='現在のポジション'
-    messageHint='メッセージを日本語で入力してください...'
-  }}
+  <div class='flex flex-col gap-3'>
+    {{> alumniLangField field='name' label='Name' placeholder='Enter a name...' }}
+    {{> alumniLangField field='message' label='Message' placeholder='Enter a message...' }}
+    {{> alumniLangField field='currentPosition' label='Current Position' placeholder='Enter a current position...' }}
+  </div>
 </div>

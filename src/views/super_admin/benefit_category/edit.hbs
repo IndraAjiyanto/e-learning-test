@@ -28,7 +28,10 @@
       action='/benefit_category/formEdit/{{benefitCategory.id}}/{{benefitCategory.category.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='benefitForm({ icon: {{json benefitCategory.icon}}, title: {{json benefitCategory.title}}, description: {{json benefitCategory.description}}, withOrder: false })'
+      x-data='{ ...benefitForm({ icon: {{json benefitCategory.icon}}, title: {{json benefitCategory.title}}, description: {{json benefitCategory.description}}, withOrder: false }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-3.5'
     >
@@ -48,7 +51,7 @@
           variant='primary'
           label='Save Changes'
           loading=true
-          disabled='!canSubmit() || loading'
+          disabled='!canSubmit() || !isDirty || loading'
         }}
       </div>
     </form>

@@ -27,7 +27,10 @@
       action='/flow-program/{{course_flows.id}}/{{course_flows.course.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='courseFlowForm({ title: {{json course_flows.title}}, content: {{json course_flows.content}} })'
+      x-data='{ ...courseFlowForm({ title: {{json course_flows.title}}, content: {{json course_flows.content}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'
     >
@@ -47,6 +50,7 @@
 
           {{> components/ui/super_admin/form/button
             type='submit'
+            disabled='!canSubmit() || !isDirty || loading'
             variant='primary'
             label='Save Changes'
             loading=true

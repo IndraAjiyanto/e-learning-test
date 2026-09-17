@@ -16,9 +16,10 @@
   Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
   form/multi_select_field); courseOptions, initialCourse; previewUrl,
   errorMessage, isValid, hasFile, fileName, validateImage(), clearFile()
-  (form/photo_upload); loading (form/button); lang (tabs/language).
+  (form/image_dropzone); loading (form/button); nameLang, messageLang,
+  currentPositionLang (tabs/language per field).
 
-  `lang` ikut di factory ini agar submit yang gagal bisa memindahkan tab ke
+  State tab ikut di factory ini agar submit yang gagal bisa memindahkan tab ke
   bahasa yang error — kalau tidak, pesan errornya tersembunyi di tab lain.
 
   Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
@@ -26,7 +27,7 @@
 <script>
   (() => {
     const LANGS = ['id', 'en', 'ja'];
-    const FIELDS = ['name', 'currentPosition', 'message'];
+    const FIELDS = ['name', 'message', 'currentPosition'];
     const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
     const LABEL = { name: 'Name', message: 'Message', currentPosition: 'Current position' };
     const MIN = { name: 2, message: 10, currentPosition: 2 };
@@ -59,7 +60,9 @@
 
       return {
         loading: false,
-        lang: 'id',
+        nameLang: 'id',
+        messageLang: 'id',
+        currentPositionLang: 'id',
 
         courseOptions: (courses || []).map((c) => ({ value: c.id, label: c.name })),
         initialCourse: course ? [{ value: course.id, label: course.name }] : [],
@@ -175,7 +178,7 @@
           this.clearPreview();
           this.errorMessage = message;
           this.isValid = false;
-          if (this.$refs.fileInput) this.$refs.fileInput.value = null;
+          if (this.$refs.dropInput) this.$refs.dropInput.value = null;
         },
 
         clearPreview() {
@@ -190,7 +193,7 @@
 
         clearFile() {
           this.clearPreview();
-          this.$refs.fileInput.value = null;
+          this.$refs.dropInput.value = null;
         },
 
         hasPhoto() {
@@ -234,7 +237,7 @@
           return this.hasPhoto() && courseOk && langOk;
         },
 
-        // Urutan mengikuti tampilan: program, foto, lalu field per bahasa.
+        // Urutan mengikuti tampilan: program, foto, lalu tiap field per bahasa.
         // Id `${field}-${lang}` harus sama dengan yang dibentuk form/alumni/fields.
         revealFirstInvalid() {
           if (withCourse && this.formErrors.courseId) {
@@ -243,15 +246,15 @@
           }
 
           if (!this.hasPhoto()) {
-            this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
+            this.$refs.dropInput.parentElement.scrollIntoView({ block: 'center' });
             return;
           }
 
-          for (const lang of LANGS) {
-            for (const field of FIELDS) {
+          for (const field of FIELDS) {
+            for (const lang of LANGS) {
               if (!this.formErrors[field][lang]) continue;
 
-              this.lang = lang;
+              this[`${field}Lang`] = lang;
               this.$nextTick(() => {
                 const el = document.getElementById(`${field}-${lang}`);
                 if (!el) {

@@ -3,16 +3,20 @@
   Lokasi: src/views/partials/components/ui/super_admin/program/user_tab/index.hbs
   Level: L2 Section (scoped super_admin)
 
-  Panel tab "User" di halaman detail program: search + tabel peserta terdaftar
-  + pagination. Datanya diambil sendiri dari GET /program/userProgram/:courseId,
+  Panel tab "User" di halaman detail program: search + daftar kartu peserta
+  terdaftar. Datanya diambil sendiri dari GET /program/userProgram/:courseId,
   karena controller detail tidak ikut mengirimnya saat render.
 
   Baris yang dikembalikan endpoint adalah record relasi user-course, jadi datanya
   dibaca lewat row.user.* dan key x-for memakai row.user.id.
 
-  Tab ini read-only: pendaftaran dikelola dari sisi user, bukan dari sini. Karena
-  itu tanpa tombol create dan tanpa kolom aksi — toolbar dipanggil dengan
-  hideCreate, dan tanpa tabs/language karena tidak ada field multibahasa.
+  Beda dari tab lain di halaman ini: bukan tabel, melainkan daftar kartu satu
+  baris (avatar + nama + email) sesuai desain. Tidak ada kolom No/Profile dan
+  tidak ada kolom aksi — pendaftaran dikelola dari sisi user, bukan dari sini,
+  jadi toolbar dipanggil dengan hideCreate.
+
+  Pagination sengaja disembunyikan selama isinya muat satu halaman, supaya daftar
+  pendek tampil polos seperti desain tanpa mengorbankan program berpeserta banyak.
 
   Halaman pemanggil WAJIB memuat sekali:
   - components/ui/super_admin/table/client_table  (factory clientTable)
@@ -21,7 +25,7 @@
   - courseId : string (wajib) — dipakai untuk endpoint
 --}}
 <div
-  class='flex flex-col gap-3.5'
+  class='flex flex-col gap-3'
   x-data='clientTable({ url: "/program/userProgram/" + {{json courseId}}, searchKeys: ["user.username", "user.email"] })'
   x-init='load()'
 >
@@ -32,49 +36,36 @@
     fullWidth=true
   }}
 
-  {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
-    <colgroup>
-      <col class='w-[66px]' />
-      <col class='w-[73px]' />
-      <col class='w-[455px]' />
-      <col class='w-[416px]' />
-    </colgroup>
-    <thead>
-      <tr>
-        {{> components/ui/super_admin/table/header_cell label='No' }}
-        {{> components/ui/super_admin/table/header_cell label='Profile' }}
-        {{> components/ui/super_admin/table/header_cell label='Name' }}
-        {{> components/ui/super_admin/table/header_cell label='Email' }}
-      </tr>
-    </thead>
-    <tbody>
-      <template x-for='(row, index) in rows' :key='row.user.id'>
-        <tr class='transition-colors hover:bg-[#fafafa]'>
+  <div class='flex flex-col gap-1.5'>
+    <template x-for='row in rows' :key='row.user.id'>
+      <div class='flex h-16 items-center gap-2.5 rounded-lg border border-[#d9d9d9] bg-white px-3.5 py-2 transition-colors hover:bg-[#fafafa]'>
+        {{> components/ui/super_admin/table/avatar
+          src='row.user.profile'
+          name='row.user.username'
+          avatarClass='h-8 w-8'
+        }}
 
-          {{> components/ui/super_admin/table/cell
-            text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-          }}
+        <div class='flex min-w-0 flex-col'>
+          <span class='truncate font-inter text-sm font-semibold leading-5 text-[#404040]' x-text='row.user.username'></span>
+          <span class='truncate font-inter text-xs leading-[18px] text-[#525252]' x-text='row.user.email'></span>
+        </div>
+      </div>
+    </template>
 
-          {{#> components/ui/super_admin/table/cell variant='media'}}
-            {{> components/ui/super_admin/table/avatar
-              src='row.user.profile'
-              name='row.user.username'
-            }}
-          {{/components/ui/super_admin/table/cell}}
-
-          {{> components/ui/super_admin/table/cell text='row.user.username' }}
-
-          {{> components/ui/super_admin/table/cell text='row.user.email' }}
-        </tr>
-      </template>
-
-      {{#> components/ui/super_admin/table/message_row show='loading' colspan='4'}}
+    <template x-if='loading'>
+      <p class='rounded-lg border border-[#d9d9d9] bg-white px-3.5 py-5 text-center font-inter text-sm leading-5 text-[#737373]'>
         Loading users…
-      {{/components/ui/super_admin/table/message_row}}
+      </p>
+    </template>
 
-      {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='4'}}
+    <template x-if='!loading && rows.length === 0'>
+      <p class='rounded-lg border border-[#d9d9d9] bg-white px-3.5 py-5 text-center font-inter text-sm leading-5 text-[#737373]'>
         No users found.
-      {{/components/ui/super_admin/table/message_row}}
-    </tbody>
-  {{/components/ui/super_admin/table/card}}
+      </p>
+    </template>
+  </div>
+
+  <div x-show='totalPages > 1'>
+    {{> components/ui/super_admin/table/pagination paddingClass='pb-1 pt-1' }}
+  </div>
 </div>

@@ -114,29 +114,6 @@ export class QuestionsController {
     });
   }
 
-  @Roles('user')
-  @Get('quiz/user/:sessionId/:userId')
-  async findQuestionDetailsBySession(
-    @Param('sessionId') sessionId: string,
-    @Param('userId') userId: string,
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-    const session = await this.sessionService.findOne(sessionId);
-    const questions = await this.questionsService.findQuestions(sessionId);
-    const userAnswers = await this.userAnswersService.findAnswersByUser(userId);
-    const scores = await this.userAnswersService.calculateScore(
-      sessionId,
-      userId,
-    );
-    res.render('user/quiz/detail', {
-      user: req.user,
-      questions,
-      session,
-      userAnswers,
-      scores,
-    });
-  }
 
   @Roles('admin')
   @Patch(':questionId/:quizId')

@@ -56,6 +56,7 @@
             {{> components/ui/super_admin/table/header_cell label='YouTube Video' }}
             {{> components/ui/super_admin/table/header_cell label='Email' }}
             {{> components/ui/super_admin/table/header_cell label='Phone' }}
+            {{> components/ui/super_admin/table/header_cell label='Address' }}
             {{> components/ui/super_admin/table/header_cell label='Google Maps' }}
             {{> components/ui/super_admin/table/header_cell label='Link Form Job' }}
             {{> components/ui/super_admin/table/header_cell label='Action' }}
@@ -94,6 +95,18 @@
               {{/components/ui/super_admin/table/cell}}
 
               {{> components/ui/super_admin/table/cell text='row.number || "—"' }}
+
+              {{!-- Address adalah teks bebas dan bisa panjang, jadi dipotong dua
+                   baris dengan judul penuh di tooltip — bukan tautan seperti
+                   kolom di sebelahnya. Sebelumnya kolom ini tidak ada sama
+                   sekali padahal field-nya wajib diisi di form. --}}
+              {{#> components/ui/super_admin/table/cell}}
+                <span
+                  class='line-clamp-2 font-inter text-sm leading-5 text-[#525252]'
+                  :title='row.address'
+                  x-text='row.address || "—"'
+                ></span>
+              {{/components/ui/super_admin/table/cell}}
 
               {{#> components/ui/super_admin/table/cell}}
                 {{> components/ui/super_admin/table/link href='row.linkAddress' }}

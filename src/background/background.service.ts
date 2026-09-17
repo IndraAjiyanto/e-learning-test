@@ -31,7 +31,13 @@ export class BackgroundService {
   }
 
   async findAll(): Promise<Background[]> {
-    return await this.backgroundRepository.find();
+    // Tanpa klausa order, Postgres mengembalikan baris sesuai urutan fisiknya,
+    // dan sebuah UPDATE memindahkan baris itu ke belakang. Akibatnya daftar
+    // teracak setiap kali ada yang diedit — halaman list menomori baris dari
+    // posisinya, jadi nomor ikut berubah padahal backgroundOrder tidak.
+    return await this.backgroundRepository.find({
+      order: { backgroundOrder: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Background | null> {

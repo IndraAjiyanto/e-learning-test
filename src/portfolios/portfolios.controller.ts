@@ -121,19 +121,6 @@ export class PortfoliosController {
     }
   }
 
-  @Get()
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    const portfolio = await this.portfoliosService.findAll();
-    const category = await this.portfoliosService.findCategory();
-    const courseType = await this.portfoliosService.findCourseTypes();
-    res.render('portfolio', {
-      user: req.user,
-      portfolio,
-      category,
-      courseType,
-    });
-  }
-
   @Roles('user')
   @Get('myportfolio/:userId')
   async myPortfolio(

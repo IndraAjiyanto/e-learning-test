@@ -13,9 +13,12 @@
   name & linkedin string biasa; position & description objek { id, en, ja }
   sesuai yang dikirim form mentor. Entity Mentor menuliskannya string[], usang.
 
-  Kolom Tech merender svg mentah dari tabel technology lewat x-html — sama
-  seperti yang sudah dilakukan kartu Learning Details di halaman detail. Isinya
-  dikelola super admin, bukan input peserta.
+  Foto mentor menempel di kolom Name, bukan kolom sendiri. Entity Mentors tidak
+  punya email, jadi baris kedua avatar (supporting text) tidak dirender.
+
+  Kolom Tech memakai tiga logo pertama + badge sisa; `svg` menang atas `imgUrl`
+  sama seperti halaman Technology, dan dirender mentah lewat x-html karena
+  isinya dikelola super admin, bukan input peserta.
 
   Halaman pemanggil WAJIB memuat sekali:
   - components/ui/super_admin/table/client_table  (factory clientTable)
@@ -25,7 +28,7 @@
   - courseId : string (wajib) — dipakai untuk endpoint, tombol create, dan aksi delete
 --}}
 <div
-  class='flex flex-col gap-3.5'
+  class='flex flex-col gap-3'
   x-data='clientTable({ url: "/program/mentorProgram/" + {{json courseId}}, searchKeys: ["name", "linkedin", "position.id", "position.en", "position.ja", "description.id", "description.en", "description.ja"] })'
   x-init='load()'
 >
@@ -42,74 +45,88 @@
   <div class='flex flex-col gap-5' x-data='{ lang: "id", courseId: {{json courseId}} }'>
     {{> components/ui/super_admin/tabs/language/index ariaLabel='Program mentor language' }}
 
-    {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+    {{#> components/ui/super_admin/table/card tableClass='min-w-[1264px]'}}
       <colgroup>
-        <col class='w-[66px]' />
-        <col class='w-[73px]' />
-        <col class='w-[140px]' />
-        <col class='w-[140px]' />
+        <col class='w-[268px]' />
+        <col class='w-[240px]' />
+        <col class='w-[240px]' />
         <col class='w-[200px]' />
-        <col class='w-[100px]' />
-        <col class='w-[175px]' />
+        <col class='w-[200px]' />
         <col class='w-[116px]' />
       </colgroup>
       <thead>
         <tr>
-          {{> components/ui/super_admin/table/header_cell label='No' }}
-          {{> components/ui/super_admin/table/header_cell label='Profile' }}
           {{> components/ui/super_admin/table/header_cell label='Name' }}
           {{> components/ui/super_admin/table/header_cell label='Position' }}
           {{> components/ui/super_admin/table/header_cell label='Description' }}
           {{> components/ui/super_admin/table/header_cell label='Tech' }}
           {{> components/ui/super_admin/table/header_cell label='LinkedIn' }}
-          {{> components/ui/super_admin/table/header_cell label='Action' }}
+          {{> components/ui/super_admin/table/header_cell label='Action' align='center' }}
         </tr>
       </thead>
       <tbody>
-        <template x-for='(row, index) in rows' :key='row.id'>
+        <template x-for='row in rows' :key='row.id'>
           <tr class='transition-colors hover:bg-[#fafafa]'>
 
-            {{> components/ui/super_admin/table/cell
-              text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-            }}
-
-            {{#> components/ui/super_admin/table/cell variant='media'}}
-              {{> components/ui/super_admin/table/avatar
-                src='row.profile'
-                name='row.name'
-              }}
+            {{#> components/ui/super_admin/table/cell}}
+              <div class='flex items-center gap-2.5'>
+                {{> components/ui/super_admin/table/avatar
+                  src='row.profile'
+                  name='row.name'
+                  avatarClass='h-8 w-8'
+                }}
+                <span
+                  class='min-w-0 truncate font-inter text-sm font-semibold leading-5 text-[#404040]'
+                  x-text='row.name || "—"'
+                ></span>
+              </div>
             {{/components/ui/super_admin/table/cell}}
-
-            {{> components/ui/super_admin/table/cell text='row.name || "—"' }}
 
             {{#> components/ui/super_admin/table/cell}}
               <span
-                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                class='line-clamp-2 font-inter text-sm leading-5 text-[#525252]'
                 x-text="(row.position && row.position[lang]) || '—'"
               ></span>
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell}}
               <span
-                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                class='line-clamp-2 font-inter text-sm leading-5 text-[#525252]'
                 x-text="(row.description && row.description[lang]) || '—'"
               ></span>
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell}}
-              <div class='flex flex-wrap items-center gap-1'>
-                <template x-for='tech in (row.technologies || [])' :key='tech.id'>
+              <div class='flex items-center gap-1'>
+                <template x-for='tech in (row.technologies || []).slice(0, 3)' :key='tech.id'>
                   <span
-                    class='flex h-4 w-4 shrink-0 items-center justify-center overflow-hidden [&>svg]:h-full [&>svg]:w-full'
+                    class='flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#e5e5e5] bg-white'
                     :title='tech.name'
-                    x-html='tech.svg'
+                  >
+                    <template x-if='tech.svg'>
+                      <span class='flex h-full w-full items-center justify-center [&>svg]:h-full [&>svg]:w-full' x-html='tech.svg'></span>
+                    </template>
+                    <template x-if='!tech.svg && tech.imgUrl'>
+                      <img :src='tech.imgUrl' :alt='tech.name' class='h-full w-full object-contain' />
+                    </template>
+                  </span>
+                </template>
+
+                <template x-if='(row.technologies || []).length > 3'>
+                  <span
+                    class='flex h-7 shrink-0 items-center rounded-2xl bg-[#f5f5f5] px-3 font-inter text-sm font-medium leading-5 text-[#404040]'
+                    x-text='"+" + ((row.technologies || []).length - 3)'
                   ></span>
+                </template>
+
+                <template x-if='!(row.technologies || []).length'>
+                  <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>&mdash;</span>
                 </template>
               </div>
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell}}
-              {{> components/ui/super_admin/table/link href='row.linkedin' }}
+              {{> components/ui/super_admin/table/link href='row.linkedin' colorClass='text-[#3b82f6]' }}
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell variant='action'}}
@@ -122,11 +139,11 @@
           </tr>
         </template>
 
-        {{#> components/ui/super_admin/table/message_row show='loading' colspan='8'}}
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
           Loading mentors…
         {{/components/ui/super_admin/table/message_row}}
 
-        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='8'}}
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
           No mentors found.
         {{/components/ui/super_admin/table/message_row}}
       </tbody>
