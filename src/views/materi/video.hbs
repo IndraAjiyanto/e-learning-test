@@ -5,7 +5,10 @@
 {{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.videoLeassons') back=(concat '/program/' session.weeks.course.id)}}
 <div
   class='max-w-7xl mx-auto px-4 py-8'
-  x-data="{ videoSrc: '', videoTitle: '' }"
+  {{!-- Berkas yang langsung terbuka: yang ditautkan dari halaman sesi lewat
+       ?materialId=, kalau tidak ada ya yang pertama. Sebelumnya penampil ini
+       selalu mulai kosong, bahkan ketika hanya ada satu berkas. --}}
+  x-data="{ videoSrc: {{json selected.file}}, videoTitle: {{json selected.title}} }"
 >
 
   <div class='mb-8'>

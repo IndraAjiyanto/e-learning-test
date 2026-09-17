@@ -5,6 +5,9 @@
 {{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.presentation') back=(concat '/program/' session.weeks.course.id)}}
 <div
   class='max-w-7xl mx-auto px-4 py-8'
+  {{!-- Berkas yang langsung terbuka: yang ditautkan dari halaman sesi lewat
+       ?materialId=, kalau tidak ada ya yang pertama. Sebelumnya penampil ini
+       selalu mulai kosong, bahkan ketika hanya ada satu berkas. --}}
   x-data='{
     slideTitle: "",
     pptFile: "",
@@ -24,6 +27,7 @@
 
     
   }'
+  {{#if selected}}x-init='selectMaterial({{json selected.title}}, {{json selected.file}})'{{/if}}
 >
 
   <div class='mb-8'>

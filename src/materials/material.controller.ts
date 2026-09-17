@@ -11,6 +11,7 @@ import {
   UseGuards,
   Res,
   Req,
+  Query,
   UseFilters,
 } from '@nestjs/common';
 import { MaterialService } from './material.service';
@@ -176,17 +177,47 @@ export class MaterialController {
     @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
+    @Query('materialId') materialId?: string,
   ) {
     const session = await this.materialService.findSession(sessionId);
+
+    // Berkas mana yang langsung dibuka.
+    //
+    // Penampil ini dulu selalu terbuka kosong dengan tulisan "Select a PDF from
+    // the list", bahkan ketika sesinya hanya punya SATU berkas - student harus
+    // memilih meski tidak ada pilihan lain. Sekarang: berkas yang disebut
+    // `materialId` (ditautkan dari halaman sesi), kalau tidak ada ya yang
+    // pertama.
+    const pick = (list: { id: string }[]) =>
+      (materialId && list.find((m) => m.id === materialId)) || list[0] || null;
+
     if (fileType === 'video') {
       const materi = await this.materialService.findMaterialVideo(sessionId);
-      res.render('materi/video', { user: req.user, materi, session, bareShell: true });
+      res.render('materi/video', {
+        user: req.user,
+        materi,
+        selected: pick(materi),
+        session,
+        bareShell: true,
+      });
     } else if (fileType === 'pdf') {
       const materi = await this.materialService.findMaterialPdf(sessionId);
-      res.render('materi/pdf', { user: req.user, materi, session, bareShell: true });
+      res.render('materi/pdf', {
+        user: req.user,
+        materi,
+        selected: pick(materi),
+        session,
+        bareShell: true,
+      });
     } else if (fileType === 'ppt') {
       const materi = await this.materialService.findMaterialPpt(sessionId);
-      res.render('materi/ppt', { user: req.user, materi, session, bareShell: true });
+      res.render('materi/ppt', {
+        user: req.user,
+        materi,
+        selected: pick(materi),
+        session,
+        bareShell: true,
+      });
     }
   }
 

@@ -128,31 +128,52 @@
           </div>
         {{/unless}}
 
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {{#if materials.pdf.length}}
-            {{> components/ui/learning/material_tile/index
-                href=(concat '/learning-material/pdf/' session.id)
-                icon='fa-file-pdf'
-                label=(t 'test.startLearning.pdfMaterial')
-                count=materials.pdf.length
-                locked=materialsLocked}}
-          {{/if}}
-          {{#if materials.ppt.length}}
-            {{> components/ui/learning/material_tile/index
-                href=(concat '/learning-material/ppt/' session.id)
-                icon='fa-file-powerpoint'
-                label=(t 'test.startLearning.presentation')
-                count=materials.ppt.length
-                locked=materialsLocked}}
-          {{/if}}
-          {{#if materials.video.length}}
-            {{> components/ui/learning/material_tile/index
-                href=(concat '/learning-material/video/' session.id)
-                icon='fa-circle-play'
-                label=(t 'test.startLearning.videoLeassons')
-                count=materials.video.length
-                locked=materialsLocked}}
-          {{/if}}
+        {{!--
+          Materi disebut satu per satu, bukan diringkas jadi ubin "PDF Material 3".
+          Satu sesi bisa punya beberapa berkas sejenis, dan angka saja tidak
+          memberi tahu apa isinya. Tiap baris menuju penampil dengan berkas itu
+          sudah terpilih, jadi student tidak perlu memilih dua kali.
+        --}}
+        <div class="space-y-5">
+          {{#each materialGroups}}
+            <div>
+              <p class="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-[#a3a3a3]">
+                {{#if (eq this.type 'pdf')}}{{t 'test.startLearning.pdfMaterial'}}{{/if}}
+                {{#if (eq this.type 'ppt')}}{{t 'test.startLearning.presentation'}}{{/if}}
+                {{#if (eq this.type 'video')}}{{t 'test.startLearning.videoLeassons'}}{{/if}}
+                <span class="text-[#d4d4d4]">&middot;</span> {{this.items.length}}
+              </p>
+
+              <ul class="flex flex-col gap-2">
+                {{#each this.items}}
+                  <li>
+                    {{#if ../../materialsLocked}}
+                      <span
+                        class="flex cursor-not-allowed items-center gap-3 rounded-lg border border-dashed border-[#D4D4D4] bg-[#FAFAFA] px-4 py-3"
+                        aria-disabled="true"
+                      >
+                        <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E5E5E5] text-[#a3a3a3]">
+                          <i class="fa-solid fa-lock text-xs"></i>
+                        </span>
+                        <span class="min-w-0 flex-1 truncate font-inter text-sm font-medium text-[#a3a3a3]">{{this.title}}</span>
+                      </span>
+                    {{else}}
+                      <a
+                        href="/learning-material/{{../this.type}}/{{../../session.id}}?materialId={{this.id}}"
+                        class="group flex items-center gap-3 rounded-lg border border-[#D4D4D4] bg-white px-4 py-3 no-underline shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:border-[#003060] hover:bg-[#F5F5F5]"
+                      >
+                        <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+                          <i class="fa-solid {{../this.icon}} text-sm"></i>
+                        </span>
+                        <span class="min-w-0 flex-1 truncate font-inter text-sm font-medium text-[#003060]">{{this.title}}</span>
+                        <i class="fa-solid fa-arrow-right shrink-0 text-xs text-[#718096] transition-transform group-hover:translate-x-0.5"></i>
+                      </a>
+                    {{/if}}
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
+          {{/each}}
         </div>
       {{else}}
         <p class="font-inter text-sm text-[#737373]">{{t 'test.startLearning.noMaterials'}}</p>
@@ -179,22 +200,37 @@
             <li class="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
               <div class="min-w-0">
                 <p class="truncate font-inter text-sm font-semibold text-[#171717]">{{this.title}}</p>
-                {{#if this.submitted}}
+                {{!-- Empat keadaan, bukan dua. Sebelumnya jawaban yang DITOLAK
+                     pun tertulis "Assignment Completed", sehingga student
+                     mengira tugasnya beres padahal harus dikirim ulang. --}}
+                {{#if (eq this.status 'approved')}}
                   <span class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#f0fdf4] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#15803d]">
                     <i class="fa-solid fa-circle-check text-[0.65rem]"></i>
                     {{t 'test.startLearning.assignmentCompleted'}}
                   </span>
-                {{else}}
+                {{else if (eq this.status 'rejected')}}
+                  <span class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#FEF2F2] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#B42318]">
+                    <i class="fa-solid fa-circle-xmark text-[0.65rem]"></i>
+                    {{t 'test.startLearning.assignmentRejected'}}
+                  </span>
+                {{else if (eq this.status 'in_review')}}
                   <span class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#FEFCE8] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#A16207]">
+                    <i class="fa-regular fa-clock text-[0.65rem]"></i>
+                    {{t 'test.startLearning.assignmentInReview'}}
+                  </span>
+                {{else}}
+                  <span class="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#525252]">
                     {{t 'test.startLearning.notSubmitted'}}
                   </span>
                 {{/if}}
               </div>
               <a
                 href="/answer-assigment/{{../session.id}}/{{this.id}}"
-                class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-4 font-inter text-sm font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] no-underline transition-colors hover:bg-[#F5F5F5]"
+                class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[8px] px-4 font-inter text-sm font-semibold no-underline transition-colors {{#if (eq this.status 'rejected')}}bg-[#003060] text-white hover:bg-[#00254a]{{else}}border border-[#D4D4D4] bg-white text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:bg-[#F5F5F5]{{/if}}"
               >
-                {{#if this.submitted}}{{t 'test.startLearning.viewSubmission'}}{{else}}{{t 'test.startLearning.startAssignment'}}{{/if}}
+                {{#if (eq this.status 'rejected')}}{{t 'test.startLearning.resubmitAssignment'}}
+                {{else if this.submitted}}{{t 'test.startLearning.viewSubmission'}}
+                {{else}}{{t 'test.startLearning.startAssignment'}}{{/if}}
                 <i class="fa-solid fa-arrow-right text-xs"></i>
               </a>
             </li>

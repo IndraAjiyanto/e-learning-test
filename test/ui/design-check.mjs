@@ -415,6 +415,36 @@ const SCREENS = [
       check(s, 'back link returns to the learning area',
         await page.locator('a[href*="/program/myProgram/"]').count() > 0);
 
+      // Materi disebut satu per satu. Dulu diringkas jadi ubin per jenis dengan
+      // angka saja ("PDF Material 3"), yang tidak memberi tahu isinya.
+      const mats = await page.locator('a[href*="/learning-material/"]')
+        .evaluateAll((els) => els.map((e) => ({ text: e.innerText.trim(), href: e.getAttribute('href') })));
+      check(s, 'each material is listed by name', mats.length > 0 && mats.every((m) => m.text.length > 0),
+        `${mats.length} links`);
+      check(s, 'material links open a specific file',
+        mats.length > 0 && mats.every((m) => m.href.includes('materialId=')),
+        mats.filter((m) => !m.href.includes('materialId=')).length + ' without materialId');
+
+      // Penampil materi dulu selalu terbuka kosong, bahkan untuk satu berkas.
+      if (mats.length) {
+        await page.goto(`${BASE}${mats[0].href}`, { waitUntil: 'networkidle' });
+        await page.waitForTimeout(700);
+        const emptyVisible = await page.getByText(/No PDF Selected|Select a PDF|No Video Selected/i)
+          .first().isVisible().catch(() => false);
+        check(s, 'material viewer opens with the file already selected', !emptyVisible);
+        await page.goBack({ waitUntil: 'networkidle' });
+        await page.waitForTimeout(500);
+      }
+
+      // Jawaban yang masih ditinjau atau ditolak tidak boleh tertulis selesai.
+      const assignText = await page.locator('section')
+        .filter({ has: page.getByRole('heading', { name: /Assignment/ }) })
+        .first().innerText().catch(() => '');
+      const claimsDone = /Assignment Completed/i.test(assignText);
+      const reallyDone = !/Under review|Needs revision|Not submitted/i.test(assignText);
+      check(s, 'assignment status is not falsely "completed"', !claimsDone || reallyDone,
+        assignText.replace(/\n/g, ' ').slice(0, 90));
+
       // Tiap halaman backoffice punya baris yang sama: tombol kembali lalu remah.
       const crumbs = await page.getByRole('navigation', { name: /Breadcrumb/i })
         .first().locator('li').allInnerTexts().catch(() => []);

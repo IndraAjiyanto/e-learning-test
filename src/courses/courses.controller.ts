@@ -1086,16 +1086,34 @@ await this.coursesService.addUserToCourse(userId, courseId);
     // Bentuk data dirapikan di sini, bukan di template: Handlebars tidak punya
     // filter, jadi mengelompokkan materi per jenis di view berarti tiga kali
     // perulangan penuh beserta {{#if}} di dalamnya.
-    const materials = {
-      pdf: detail.session.materials.filter((m) => m.fileType === 'pdf'),
-      ppt: detail.session.materials.filter((m) => m.fileType === 'ppt'),
-      video: detail.session.materials.filter((m) => m.fileType === 'video'),
-    };
-    const assignments = detail.session.assignments.map((a) => ({
-      ...a,
-      answer: a.taskAnswers?.[0] ?? null,
-      submitted: (a.taskAnswers?.length ?? 0) > 0,
-    }));
+    // Dikelompokkan per jenis, tetapi daftar isinya ikut dibawa: halaman
+    // menyebut judul tiap materi, bukan hanya jumlahnya. Satu sesi bisa punya
+    // beberapa PDF, dan "PDF Material 3" tidak memberi tahu apa pun tentang
+    // ketiganya.
+    const byType = (t: string) =>
+      detail.session.materials.filter((m) => m.fileType === t);
+    const materialGroups = [
+      { type: 'pdf', icon: 'fa-file-pdf', items: byType('pdf') },
+      { type: 'ppt', icon: 'fa-file-powerpoint', items: byType('ppt') },
+      { type: 'video', icon: 'fa-circle-play', items: byType('video') },
+    ].filter((g) => g.items.length > 0);
+    // Status tugas dipisah dari sekadar "sudah mengirim atau belum".
+    // Sebelumnya `submitted` bernilai true begitu ada baris jawaban, dan
+    // tampilannya menulis "Assignment Completed" - termasuk untuk jawaban yang
+    // DITOLAK mentor. Student jadi mengira tugasnya beres padahal harus
+    // dikirim ulang.
+    const assignments = detail.session.assignments.map((a) => {
+      const answer = a.taskAnswers?.[0] ?? null;
+      const status: 'not_submitted' | 'in_review' | 'approved' | 'rejected' =
+        !answer
+          ? 'not_submitted'
+          : answer.process === 'approved'
+            ? 'approved'
+            : answer.process === 'rejected'
+              ? 'rejected'
+              : 'in_review';
+      return { ...a, answer, status, submitted: !!answer };
+    });
     const logbook = detail.session.logbooks?.[0] ?? null;
 
     // Empat langkah yang membentuk satu sesi. Dipakai untuk penanda kemajuan di
@@ -1109,7 +1127,11 @@ await this.coursesService.addUserToCourse(userId, courseId);
       },
       {
         key: 'assignment',
-        done: assignments.length > 0 && assignments.every((a) => a.submitted),
+        // Dihitung dari jawaban yang DISETUJUI, bukan sekadar terkirim - kalau
+        // tidak, tugas yang ditolak tetap menghitung sesi ini sebagai beres.
+        done:
+          assignments.length > 0 &&
+          assignments.every((a) => a.status === 'approved'),
         available: assignments.length > 0,
       },
       { key: 'logbook', done: detail.logbookDone, available: true },
@@ -1120,7 +1142,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
     return res.render('user/learning/session', {
       user: req.user,
       ...detail,
-      materials,
+      materialGroups,
       materialsCount: detail.session.materials.length,
       // Materi baru terbuka setelah student absen pada sesi ini.
       materialsLocked: !detail.attended,
