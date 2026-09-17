@@ -21,7 +21,7 @@
 
       {{!-- Form --}}
       <form method='POST' action='/session/{{weeksId}}' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
-        @submit='loading = true'>
+        novalidate @focusout="markField($event.target)" @submit='submitGate($event)'>
 
         {{!-- Feature Card - Fields --}}
         {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -98,7 +98,7 @@
           {{!-- Button Row --}}
           <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-start sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
-            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" disabled='!formValid' width="154"}}
+            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" width="154"}}
           </div>
         </div>
 

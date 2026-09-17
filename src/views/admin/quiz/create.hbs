@@ -9,6 +9,7 @@
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto'
     x-data='{
+      ...adminFormGate(),
       loading: false,
       quizName: "",
       minScore: "",
@@ -24,7 +25,11 @@
 
       {{!-- Form --}}
       <form method='POST' action='/quiz/{{weeksId}}' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
-        @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }">
+        novalidate
+        @input="recomputeFormValid()"
+        @change="recomputeFormValid()"
+        @focusout="markField($event.target)"
+        @submit="submitGate($event, () => canSubmit())">
 
         {{!-- Feature Card - Fields --}}
         {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -72,7 +77,7 @@
           <div class='hidden sm:block'></div>
           <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
-            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" width="136" disabled="!canSubmit() || loading"}}
+            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" width="136"}}
           </div>
         </div>
 

@@ -202,6 +202,8 @@
               this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
             }),
           );
+
+          if (!this.originalUrl && !this.hasFile) this.setImageError('Please upload a photo.');
         },
 
         hasFormErrors() {
@@ -242,7 +244,7 @@
         // Urutan mengikuti tampilan: foto, name, linkedin, instagram, lalu field per bahasa.
         // Id `${field}-${lang}` harus sama dengan yang dibentuk form/team/fields.
         revealFirstInvalid() {
-          if (!this.isValid) {
+          if (!this.photoOk()) {
             this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
             return;
           }

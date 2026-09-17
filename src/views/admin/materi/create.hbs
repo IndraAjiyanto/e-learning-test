@@ -88,7 +88,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -109,7 +109,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='185'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='185'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -182,7 +182,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -223,7 +223,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='142'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -291,7 +291,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -329,7 +329,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='142'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
