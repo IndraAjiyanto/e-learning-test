@@ -15,6 +15,7 @@
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px]'
     x-data="{
+      ...adminFormGate(),
       questionPreviewUrl: null,
       loading: false,
 
@@ -22,7 +23,10 @@
         this.questionPreviewUrl = null;
         this.$refs.questionFile.value = null;
       }
-    }">
+    }"
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
     {{!-- Title --}}
     {{> components/ui/admin/text/page-header title="Create Question" subtitle="Add a new question to the logbook and mark the correct answer"}}
@@ -41,7 +45,7 @@
         {{!-- Question --}}
         {{#> components/ui/admin/form/form-field label="Question*" for="questionText"}}
           {{> components/ui/admin/form/textarea-input
-            id="questionText" name="questionText" rows="4"
+            id="questionText" name="questionText" rows="4" required=true
             placeholder="Enter your question here"
           }}
         {{/components/ui/admin/form/form-field}}
@@ -60,7 +64,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-between items-center w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/quiz/' quiz.id) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Question' type='submit' loading='loading' width='163'}}
+          {{> components/ui/admin/button/primary-button text='Save Question' type='submit' loading='loading' disabled='!formValid' width='163'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

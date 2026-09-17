@@ -1,4 +1,4 @@
-# Gating tombol simpan pada form super admin
+# Gating tombol simpan pada form admin & super admin
 
 Tombol **Save / Create / Update** baru aktif setelah form layak dikirim. Dokumen
 ini mencatat aturannya, form mana yang memakai aturan default, form mana yang
@@ -104,3 +104,85 @@ dari default. Ia juga tidak memakai `form/button`, melainkan `:disabled` langsun
 3. Untuk field berkas, tambahkan syaratnya di `canSubmit()` — dan pastikan
    halaman **edit** tidak ikut terkunci ketika berkas lama tidak diunggah ulang
    (pola yang dipakai: `isEdit ? (!hasFile || isValid) : (hasFile && isValid)`).
+
+---
+
+# Bagian admin
+
+Halaman `src/views/admin/**` memakai aturan yang sama — tombol baru aktif bila
+form layak dikirim — tetapi mekanismenya berbeda karena form di sini tidak
+memakai factory `formData` + `errorFor()` seperti super admin. Sebagian besar
+field-nya input biasa tanpa `x-model`, jadi kelayakan dibaca dari **constraint
+validation bawaan browser**.
+
+## Helper `adminFormGate()`
+
+Didefinisikan di `components/ui/admin/form/gate.hbs` dan dimuat sekali lewat
+`layouts/main.hbs`, jadi tersedia di semua halaman.
+
+```hbs
+x-data="{ ...adminFormGate(), loading: false }"
+x-init="recomputeFormValid()"
+@input="recomputeFormValid()"
+@change="recomputeFormValid()"
+```
+
+lalu tombolnya:
+
+```hbs
+{{> components/ui/admin/button/primary-button
+  text='Save' type='submit' loading='loading' disabled='!formValid' }}
+```
+
+Bila form juga punya berkas wajib, gabungkan di `canSubmit()` milik halaman dan
+kirim `disabled='!canSubmit()'`.
+
+## Jebakan: `checkValidity()` melewati input hidden
+
+`searchable_select` menaruh nilainya di `<input type="hidden">`, dan constraint
+validation bawaan browser **tidak memeriksa field hidden** — select wajib yang
+masih kosong tetap terbaca valid. Karena itu:
+
+- `searchable_select` menerima prop `required` yang merender `data-required`
+  pada hidden input-nya;
+- `recomputeFormValid()` memeriksa hidden input ber-`data-required` secara
+  terpisah, sesudah `checkValidity()`.
+
+Konsekuensinya: **field wajib harus benar-benar menyandang atribut `required`.**
+Label bertanda `*` saja tidak cukup — gerbangnya tidak melihat label. Sudah
+pernah terjadi: `weeks/create` menyala di form kosong karena `Description*`
+tidak punya `required`.
+
+## Jebakan: dua atribut `:disabled` pada satu tombol
+
+`components/ui/admin/button/primary-button` dulu memancarkan `:disabled` sendiri
+untuk `loading` dan untuk `disabled`. Atribut duplikat dibuang parser HTML —
+yang pertama menang — sehingga salah satu syarat hilang diam-diam. Sekarang
+komponennya meng-OR keduanya menjadi satu binding, jadi `loading` **tidak perlu**
+ikut ditulis di ekspresi `disabled`.
+
+## Daftar form admin
+
+| Halaman | Syarat tombol aktif |
+|---|---|
+| `attendance` create, edit | seluruh field wajib (termasuk select user) |
+| `assignments/create` | field wajib **plus** berkas valid |
+| `course/formCreate` | `canSubmit()` milik `programCreateForm` — field aktif + cover |
+| `course/create`, `program/create`, `course/edit` | `formComplete` dari `program_form_script` (sudah ada sebelumnya) |
+| `course/addUser` | user terpilih (sudah ada sebelumnya) |
+| `logbooks` create, edit | field wajib **plus** gambar; edit memakai gambar tersimpan |
+| `materi/create` (pdf, ppt, video) | field wajib **plus** berkas/URL; edit boleh memakai yang tersimpan |
+| `mentor_logbook` create, edit | field wajib **plus** gambar |
+| `questions` create, edit | field wajib |
+| `quiz` create, edit | field wajib |
+| `session` create, edit | field wajib |
+| `weeks` create, edit | field wajib |
+
+## Menambahkan form admin baru
+
+1. Sebarkan `...adminFormGate()` ke `x-data`, pasang `x-init`/`@input`/`@change`.
+2. Tandai setiap field wajib dengan `required` — termasuk `required=true` pada
+   `searchable_select`.
+3. Kirim `disabled='!formValid'` (atau `'!canSubmit()'` bila ada syarat berkas).
+4. Uji halaman **create** (tombol harus mati saat dibuka) dan halaman **edit**
+   (tombol harus menyala dengan data — regresi paling berbahaya dari aturan ini).

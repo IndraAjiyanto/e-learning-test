@@ -8,7 +8,10 @@
 --}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto'
-    x-data='{ loading: false }'>
+    x-data='{ ...adminFormGate(), loading: false }'
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()">
 
     {{!-- Title --}}
     <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
@@ -24,7 +27,7 @@
           {{!-- Quiz Name --}}
           {{#> components/ui/admin/form/form-field label="Quiz Name*" for="quizName" errorId="quizName_error"}}
             {{> components/ui/admin/form/textarea-input
-              id="quizName" name="quizName" rows="3"
+              id="quizName" name="quizName" rows="3" required=true
               placeholder="Enter quiz name..."
             }}
           {{/components/ui/admin/form/form-field}}
@@ -58,7 +61,7 @@
           <div></div>
           <div class='flex flex-row gap-[12px] justify-start items-center'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
-            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" width="136"}}
+            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" disabled='!formValid' width="136"}}
           </div>
         </div>
 

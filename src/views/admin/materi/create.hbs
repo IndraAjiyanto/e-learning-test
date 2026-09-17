@@ -34,6 +34,7 @@
       enctype='multipart/form-data'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
+        ...adminFormGate(),
         loading: false,
         errorMessage: '',
         isValid: true,
@@ -77,13 +78,17 @@
           $refs.fileInput.value = null;
         },
         canSubmit() {
+          if (!this.formValid) return false;
           if (this.hasFile) {
             return this.isValid;
           }
           return this.editMode;
         }
       }"
-      @submit.prevent="if(canSubmit()) { loading = true;  $el.submit(); } else { alert('Please select a valid PDF file before submitting.'); }"
+      x-init="recomputeFormValid()"
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -104,7 +109,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='185'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='185'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -134,6 +139,7 @@
       method='POST'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
+        ...adminFormGate(),
         loading: false,
         errorMessage: '',
         isValid: false,
@@ -166,13 +172,17 @@
           this.isValid = true;
         },
         canSubmit() {
+          if (!this.formValid) return false;
           if (this.hasInput) {
             return this.isValid;
           }
           return this.editMode;
         }
       }"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid Google Slides URL before submitting.'); }"
+      x-init="recomputeFormValid()"
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -186,7 +196,7 @@
 
         {{#> components/ui/admin/form/form-field label="Google Slides Link (Google Slides)*" for="file"}}
           {{> components/ui/admin/form/text-input
-            type="url" id="file" name="file"
+            type="url" id="file" name="file" required=true
             placeholder="https://docs.google.com/presentation/d/.../embed"
             value=material.file
             onInput="validateLink($event.target.value)"
@@ -213,7 +223,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -243,6 +253,7 @@
       method='POST'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
+        ...adminFormGate(),
         loading: false,
         errorMessage: '',
         isValid: false,
@@ -270,13 +281,17 @@
           this.isValid = true;
         },
         canSubmit() {
+          if (!this.formValid) return false;
           if (this.hasInput) {
             return this.isValid;
           }
           return this.editMode;
         }
       }"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid URL before submitting.'); }"
+      x-init="recomputeFormValid()"
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -290,7 +305,7 @@
 
         {{#> components/ui/admin/form/form-field label="Video Link (YouTube)*" for="file"}}
           {{> components/ui/admin/form/text-input
-            type="url" id="file" name="file"
+            type="url" id="file" name="file" required=true
             placeholder="https://www.example.com"
             value=material.file
             onInput="validateLink($event.target.value)"
@@ -314,7 +329,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

@@ -99,45 +99,49 @@
 
     {{!-- 4. DANGER ZONE CARD (Account Deletion)
          Kontrak backend (tidak diubah): DELETE /users/:id (lewat method-override). --}}
-    <div
-      class='flex flex-col gap-6 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-[19px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-center sm:justify-between sm:gap-11 sm:px-[31px]'
-    >
-      <div class='flex items-start gap-4'>
-        <span
-          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2] text-[#dc2626]'
-        >
-          {{!-- lucide: alert-circle --}}
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6'>
-            <circle cx='12' cy='12' r='10' />
-            <path d='M12 8v4' />
-            <path d='M12 16h.01' />
-          </svg>
-        </span>
+    {{!-- Kartu hapus digating `showDelete` dan mati secara default. Kirim
+     showDelete=true dari controller bila perlu ditampilkan lagi. --}}
+    {{#if showDelete}}
+      <div
+        class='flex flex-col gap-6 rounded-2xl border border-[#d9d9d9] bg-white px-4 py-[19px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:flex-row sm:items-center sm:justify-between sm:gap-11 sm:px-[31px]'
+      >
+        <div class='flex items-start gap-4'>
+          <span
+            class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#fef2f2] bg-[#fee2e2] text-[#dc2626]'
+          >
+            {{!-- lucide: alert-circle --}}
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6'>
+              <circle cx='12' cy='12' r='10' />
+              <path d='M12 8v4' />
+              <path d='M12 16h.01' />
+            </svg>
+          </span>
 
-        {{!-- Judul & deskripsi memakai ui/super_admin/description dengan override
-             `class`, karena gaya default komponen berbeda dari yang dibutuhkan di sini. --}}
-        <div class='flex flex-col gap-1'>
-          {{> components/ui/super_admin/description/index
-            text='Delete User Account'
-            class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
-          }}
+          {{!-- Judul & deskripsi memakai ui/super_admin/description dengan override
+               `class`, karena gaya default komponen berbeda dari yang dibutuhkan di sini. --}}
+          <div class='flex flex-col gap-1'>
+            {{> components/ui/super_admin/description/index
+              text='Delete User Account'
+              class='font-montserrat text-base font-semibold leading-5 text-[#003060]'
+            }}
 
-          {{> components/ui/super_admin/description/index
-            text='Permanently remove this user and revoke access to Kesatria Academy. This action cannot be undone.'
-            class='font-montserrat font-medium text-sm leading-5 text-[#718096]'
-          }}
+            {{> components/ui/super_admin/description/index
+              text='Permanently remove this user and revoke access to Kesatria Academy. This action cannot be undone.'
+              class='font-montserrat font-medium text-sm leading-5 text-[#718096]'
+            }}
+          </div>
         </div>
-      </div>
 
-      <form action='/users/{{users.id}}?_method=DELETE' method='post' class='shrink-0'>
-        {{> components/ui/super_admin/form/button
-          label='Delete User'
-          variant='danger'
-          onclick='openDeleteModal(this)'
-          class='w-full sm:w-auto'
-        }}
-      </form>
-    </div>
+        <form action='/users/{{users.id}}?_method=DELETE' method='post' class='shrink-0'>
+          {{> components/ui/super_admin/form/button
+            label='Delete User'
+            variant='danger'
+            onclick='openDeleteModal(this)'
+            class='w-full sm:w-auto'
+          }}
+        </form>
+      </div>
+    {{/if}}
   </div>
 </div>
 

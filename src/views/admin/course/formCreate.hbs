@@ -372,6 +372,7 @@
               label='Create Program'
               loadingLabel='Creating...'
               loading=true
+              disabled='!canSubmit() || loading'
             }}
           </div>
         </div>
@@ -680,7 +681,18 @@
           });
         },
 
-        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        // Dihitung ulang dari nilai terkini lewat errorFor(), bukan dari
+        // formErrors — formErrors hanya terisi untuk field yang sudah disentuh,
+        // jadi form kosong akan terbaca "tanpa error" dan tombolnya menyala.
+        // Jebakan yang sama didokumentasikan di docs/form-submit-gating.md.
+        canSubmit() {
+          return (
+            this.hasFile &&
+            this.isValid &&
+            this.activePaths().every((p) => this.errorFor(p) === '')
+          );
+        },
+
         submitForm(event) {
           this.validateAll();
           const valid = this.hasFile && this.isValid && this.activePaths().every((p) => !readPath(this.formErrors, p));
