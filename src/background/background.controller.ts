@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -43,7 +44,9 @@ export class BackgroundController {
     } catch (error: unknown) {
       req.flash(
         'error',
-        error instanceof Error ? error.message : 'background failed to create',
+        error instanceof BadRequestException
+          ? error.message
+          : 'background failed to create',
       );
       res.redirect('/background/formCreate');
     }
@@ -86,7 +89,9 @@ export class BackgroundController {
     } catch (error: unknown) {
       req.flash(
         'error',
-        error instanceof Error ? error.message : 'background failed to update',
+        error instanceof BadRequestException
+          ? error.message
+          : 'background failed to update',
       );
       res.redirect(`/background/formEdit/${id}`);
     }

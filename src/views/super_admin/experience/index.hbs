@@ -6,6 +6,9 @@
   - Shell kartu + pagination dari table/card
   - Header kolom dari table/header_cell
   - Tombol aksi dari table/row_actions terintegrasi dengan modal delete_confirm
+
+  `lang` hidup di scope Alpine bersarang: getter `rows` dan `totalPages`
+  milik clientTable() akan hilang bila state digabung.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
@@ -31,65 +34,72 @@
         createLabel='Create Experience'
       }}
 
-      <!-- Table Card -->
-      {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
-        <colgroup>
-          <col class='w-[80px]' />
-          <col class='w-[450px]' />
-          <col class='w-[450px]' />
-          <col class='w-[116px]' />
-        </colgroup>
-        <thead>
-          <tr>
-            {{> components/ui/super_admin/table/header_cell label='No' }}
-            {{> components/ui/super_admin/table/header_cell label='Content' }}
-            {{> components/ui/super_admin/table/header_cell label='Text' }}
-            {{> components/ui/super_admin/table/header_cell label='Action' }}
-          </tr>
-        </thead>
-        <tbody>
-          <template x-for='(row, index) in rows' :key='row.id'>
-            <tr class='transition-colors hover:bg-[#fafafa]'>
-              {{> components/ui/super_admin/table/cell
-                text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-              }}
+      <div
+        class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'
+        x-data="{ lang: 'id' }"
+      >
+        <div class='flex flex-col gap-5'>
 
-              {{#> components/ui/super_admin/table/cell}}
-                <div class='flex flex-col gap-1'>
-                  <template x-for='(item, idx) in (Array.isArray(row.content) ? row.content : Object.values(row.content || {}))' :key='idx'>
-                    <div class='line-clamp-3 font-inter text-sm leading-5 text-[#525252]' x-text='item'></div>
-                  </template>
-                </div>
-              {{/components/ui/super_admin/table/cell}}
+          {{> components/ui/super_admin/tabs/language/index ariaLabel='Experience language' }}
 
-              {{#> components/ui/super_admin/table/cell}}
-                <div class='flex flex-col gap-1'>
-                  <template x-for='(item, idx) in (Array.isArray(row.details) ? row.details : Object.values(row.details || {}))' :key='idx'>
-                    <div class='line-clamp-3 font-inter text-sm leading-5 text-[#525252]' x-text='item'></div>
-                  </template>
-                </div>
-              {{/components/ui/super_admin/table/cell}}
+          {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+            <colgroup>
+              <col class='w-[66px]' />
+              <col class='w-[340px]' />
+              <col />
+              <col class='w-[116px]' />
+            </colgroup>
+            <thead>
+              <tr>
+                {{> components/ui/super_admin/table/header_cell label='No' }}
+                {{> components/ui/super_admin/table/header_cell label='Content' }}
+                {{> components/ui/super_admin/table/header_cell label='Text' }}
+                {{> components/ui/super_admin/table/header_cell label='Action' }}
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for='(row, index) in rows' :key='row.id'>
+                <tr class='transition-colors hover:bg-[#fafafa]'>
 
-              {{#> components/ui/super_admin/table/cell variant='action'}}
-                {{> components/ui/super_admin/table/row_actions
-                  entity='experience'
-                  deleteAction="'/experience/' + row.id + '?_method=DELETE'"
-                  editHref="'/experience/formEdit/' + row.id"
-                }}
-              {{/components/ui/super_admin/table/cell}}
-            </tr>
-          </template>
+                  {{> components/ui/super_admin/table/cell
+                    text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+                  }}
 
-          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='4'}}
-            No experiences found.
-          {{/components/ui/super_admin/table/message_row}}
-        </tbody>
-      {{/components/ui/super_admin/table/card}}
+                  {{#> components/ui/super_admin/table/cell}}
+                    <span
+                      class='line-clamp-2 font-inter text-sm font-medium leading-5 text-[#171717]'
+                      x-text='(row.content && row.content[lang]) || "—"'
+                    ></span>
+                  {{/components/ui/super_admin/table/cell}}
+
+                  {{#> components/ui/super_admin/table/cell}}
+                    <span
+                      class='line-clamp-2 font-inter text-sm leading-5 text-[#525252]'
+                      x-text='(row.details && row.details[lang]) || "—"'
+                    ></span>
+                  {{/components/ui/super_admin/table/cell}}
+
+                  {{#> components/ui/super_admin/table/cell variant='action'}}
+                    {{> components/ui/super_admin/table/row_actions
+                      entity='experience'
+                      deleteAction="'/experience/' + row.id + '?_method=DELETE'"
+                      editHref="'/experience/formEdit/' + row.id"
+                    }}
+                  {{/components/ui/super_admin/table/cell}}
+                </tr>
+              </template>
+
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='4'}}
+                No experiences found.
+              {{/components/ui/super_admin/table/message_row}}
+            </tbody>
+          {{/components/ui/super_admin/table/card}}
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-{{!-- Modal konfirmasi delete --}}
 {{> components/ui/super_admin/modal/delete_confirm/index
   title='Delete Experience?'
   description='Are you sure you want to delete this experience? This action will permanently remove it and cannot be undone.'

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -40,9 +41,14 @@ export class ExperienceController {
         'The experience has been added successfully.',
       );
       res.redirect('/experience');
-    } catch (error: any) {
-      req.flash('error', 'experience failed to create');
-      res.redirect('/experience');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'experience failed to create',
+      );
+      res.redirect('/experience/formCreate');
     }
   }
 
@@ -80,9 +86,14 @@ export class ExperienceController {
         'The experience has been updated successfully.',
       );
       res.redirect('/experience');
-    } catch (error: any) {
-      req.flash('error', 'experience failed to update');
-      res.redirect('/experience');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'experience failed to update',
+      );
+      res.redirect(`/experience/formEdit/${id}`);
     }
   }
 
