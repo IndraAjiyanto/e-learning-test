@@ -1,0 +1,55 @@
+{{!--
+  Komponen: Form Gate (Admin) — helper gating tombol submit
+  Lokasi: src/views/partials/components/ui/admin/form/gate.hbs
+  Level: L0 — hanya mendefinisikan fungsi global, tidak merender apa pun.
+
+  MASALAH YANG DISELESAIKAN
+  Tombol submit di halaman admin tetap menyala pada form kosong; validasi baru
+  terasa setelah diklik (beberapa halaman bahkan memakai alert()). Helper ini
+  menyediakan satu sumber kebenaran "form ini layak dikirim" supaya tombolnya
+  bisa dimatikan sejak awal, sama seperti aturan di halaman super admin
+  (lihat docs/form-submit-gating.md).
+
+  KENAPA TIDAK checkValidity() SAJA
+  searchable_select menaruh nilainya di <input type="hidden">, dan constraint
+  validation bawaan browser MELEWATI field hidden — form dengan select wajib
+  yang masih kosong tetap terbaca valid. Karena itu hidden input yang wajib
+  ditandai `data-required` dan diperiksa terpisah.
+
+  CARA PAKAI
+    x-data="{ ...adminFormGate(), loading: false }"
+    x-init="recomputeFormValid()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()"
+
+  lalu kirim ke tombolnya:
+    disabled='!formValid'            (atau '!formValid || !hasFile' bila ada berkas wajib)
+
+  `loading` tidak perlu ikut ditulis di sini — primary-button meng-OR-kannya
+  sendiri ke :disabled.
+--}}
+<script>
+  function adminFormGate() {
+    return {
+      formValid: false,
+
+      // Dihitung ulang dari nilai terkini, bukan dari pesan error yang kebetulan
+      // sudah tampil — jebakan yang sama sudah didokumentasikan untuk super admin.
+      recomputeFormValid() {
+        // x-data kadang di <form> itu sendiri, kadang di div pembungkus di
+        // luarnya — jadi dicari ke atas dulu, baru ke bawah.
+        const form =
+          this.$el.tagName === 'FORM'
+            ? this.$el
+            : this.$el.closest('form') || this.$el.querySelector('form');
+        if (!form) { this.formValid = false; return; }
+
+        if (!form.checkValidity()) { this.formValid = false; return; }
+
+        // Hidden input tidak ikut checkValidity(), jadi diperiksa sendiri.
+        const hidden = form.querySelectorAll('input[type="hidden"][data-required]');
+        this.formValid = Array.from(hidden).every((i) => (i.value || '').trim() !== '');
+      },
+    };
+  }
+</script>

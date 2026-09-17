@@ -21,6 +21,7 @@
     <form action='/logbooks/{{sessionId}}' method='POST' enctype='multipart/form-data'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
+        ...adminFormGate(),
         loading: false,
         errorMessage: '',
         isValid: true,
@@ -41,16 +42,19 @@
           this.previewUrl = URL.createObjectURL(file);
         },
         clearFile() { this.errorMessage=''; this.isValid=true; this.fileName=''; this.fileSize=0; this.hasFile=false; this.previewUrl=null; $refs.fileInput.value=null; },
-        canSubmit() { return this.hasFile && this.isValid; }
+        canSubmit() { return this.formValid && this.hasFile && this.isValid; }
       }"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please select a valid image before submitting.'); }"
+      x-init="recomputeFormValid()"
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
         {{!-- Row 1: User + Obstacle --}}
         <div class='flex flex-col md:flex-row gap-[12px] w-full'>
           <div class='flex-1 min-w-0'>
-            {{> components/ui/admin/form/searchable_select/index label="User*" forId="userId" errorId="userId_error" name="userId" itemsJson=(json users) displayField="username" placeholder="Select user"}}
+            {{> components/ui/admin/form/searchable_select/index required=true label="User*" forId="userId" errorId="userId_error" name="userId" itemsJson=(json users) displayField="username" placeholder="Select user"}}
           </div>
           <div class='flex-1 min-w-0'>
             {{#> components/ui/admin/form/form-field label="Obstacle*" for="obstacles"}}
@@ -87,7 +91,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Logbook' type='submit' loading='loading' width='200'}}
+          {{> components/ui/admin/button/primary-button text='Save Logbook' type='submit' loading='loading' disabled='!canSubmit()' width='200'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

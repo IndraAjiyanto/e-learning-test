@@ -18,9 +18,12 @@
 </a>
 {{else}}
 <button type='{{default type "submit"}}'
-  {{#if disabled}}:disabled='{{{disabled}}}'{{/if}}
-  {{#if loading}}:disabled='{{{loading}}}'{{/if}}
-  {{#if loading}}:class="{{{loading}}} ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"{{else}}{{#if disabled}}:class="{{{disabled}}} ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"{{else}}class='bg-[#003060] hover:bg-[#00254a]'{{/if}}{{/if}}
+  {{!-- Satu :disabled saja. Dulu `disabled` dan `loading` masing-masing
+       memancarkan atribut sendiri, dan atribut duplikat dibuang parser HTML —
+       yang pertama menang, syarat satunya hilang diam-diam. --}}
+  {{#if disabled}}:disabled='({{{disabled}}}){{#if loading}} || ({{{loading}}}){{/if}}'
+  {{else}}{{#if loading}}:disabled='{{{loading}}}'{{/if}}{{/if}}
+  {{#if disabled}}:class="(({{{disabled}}}){{#if loading}} || ({{{loading}}}){{/if}}) ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"{{else}}{{#if loading}}:class="{{{loading}}} ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"{{else}}class='bg-[#003060] hover:bg-[#00254a]'{{/if}}{{/if}}
    class='box-border w-full sm:w-[{{default width "158"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#00254a] transition-colors'>
   {{#if loading}}<span x-show='{{{loading}}}' class='loading loading-spinner loading-sm'></span><span x-show='!({{{loading}}})' class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>{{else}}<span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>{{/if}}
 </button>
