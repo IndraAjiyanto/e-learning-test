@@ -28,7 +28,8 @@
   }" @click.away='showDropdown = false'>
     {{#> components/ui/admin/form/form-field label="Tools*" for="technologies" errorId="technologies_error"}}
       <div class='relative'>
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('technologies')">
           <input type='text' x-model='search' @focus='showDropdown = true' @input='showDropdown = true'
             placeholder='Search tools...'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#737373] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
@@ -61,7 +62,7 @@
     <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Lessons*</label>
 
     {{!-- Lesson Tabs --}}
-    {{> components/ui/admin/form/language-tabs alpineVar="lessonTab"}}
+    {{> components/ui/admin/form/language-tabs alpineVar="lessonTab" errId="materis_id" errEn="materis_en" errJa="materis_ja"}}
 
     {{!-- Lesson Lists --}}
     <div x-show='lessonTab === "id"' x-data="{ items: {{#if course}}({{json course.materialsId}} || ['']){{else}}['']{{/if}} }">
@@ -70,7 +71,8 @@
           <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px]'>
             <span class='text-[14px]/[normal] text-[#525252] font-inter font-medium' x-text='index + 1'></span>
           </div>
-          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+            :class="borderClass('materis_id')">
             <input type='text' :name="'materialsId[]'" x-model='items[index]' placeholder='Enter lesson...'
               class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
           </div>
@@ -90,7 +92,8 @@
           <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px]'>
             <span class='text-[14px]/[normal] text-[#525252] font-inter font-medium' x-text='index + 1'></span>
           </div>
-          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+            :class="borderClass('materis_en')">
             <input type='text' :name="'materialsEn[]'" x-model='items[index]' placeholder='Enter lesson...'
               class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
           </div>
@@ -110,7 +113,8 @@
           <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px]'>
             <span class='text-[14px]/[normal] text-[#525252] font-inter font-medium' x-text='index + 1'></span>
           </div>
-          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+          <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+            :class="borderClass('materis_ja')">
             <input type='text' :name="'materialsJa[]'" x-model='items[index]' placeholder='Enter lesson...'
               class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
           </div>

@@ -2,34 +2,50 @@
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-bold mb-6 text-gray-900">Edit quiz</h2>
 
-    <form method="POST" action="/quiz/{{quiz.id}}?_method=PATCH" class="space-y-6" x-data="{ loading: false }" @submit="loading = true;">
+    <form method="POST" action="/quiz/{{quiz.id}}?_method=PATCH" class="space-y-6"
+      x-data="{
+        loading: false,
+        quizName: {{json quiz.quizName}},
+        minScore: {{json quiz.minScore}},
+        duration: {{json quiz.duration}},
+        canSubmit() {
+          return String(this.quizName).trim() !== '' && String(this.minScore).trim() !== '' && String(this.duration).trim() !== '' && !isNaN(Number(this.minScore)) && !isNaN(Number(this.duration));
+        }
+      }"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }">
 
       <div>
-        <label for="quizName" class="block text-sm font-semibold text-gray-700 mb-1">Quiz</label>
-        <textarea id="quizName" name="quizName" rows="3"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{quiz.quizName}}</textarea>
+        <label for="quizName" class="block text-sm font-semibold text-gray-700 mb-1">Quiz Name*</label>
+        <textarea id="quizName" name="quizName" rows="3" x-model="quizName" required
+          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
+          placeholder="Enter quiz name..."></textarea>
+        <p x-show="String(quizName).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626]">Quiz name is required and cannot be empty.</p>
       </div>
 
             <div>
         <label for="minScore" class="block text-sm font-medium text-gray-700 mb-1">
-          Minimum Score
+          Minimum Score*
         </label>
-        <input type="number" id="minScore" name="minScore" rows="4" value="{{quiz.minScore}}"
-          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700">
+        <input type="number" id="minScore" name="minScore" x-model="minScore" required
+          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700"
+          placeholder="Enter minimum score...">
+        <p x-show="String(minScore).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626]">Minimum score is required.</p>
       </div>
       
             <div>
         <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">
-          Duration (minutes)
+          Duration (minutes)*
         </label>
-        <input type="number" id="duration" name="duration" rows="4" value="{{quiz.duration}}"
-          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700">
+        <input type="number" id="duration" name="duration" x-model="duration" required
+          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700"
+          placeholder="Enter duration in minutes...">
+        <p x-show="String(duration).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626]">Duration is required.</p>
       </div>
 
-      <div class="flex gap-3">
+      <div class="flex flex-wrap gap-3">
         <button type="submit"
-        :disabled='loading'
-        :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+        :disabled='!canSubmit() || loading'
+        :class="(!canSubmit() || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
           class="text-white px-6 py-2 rounded-lg shadow transition">
           <span x-show='loading' class='loading loading-spinner loading-sm'></span>
           <span x-show='!loading'>Update</span>

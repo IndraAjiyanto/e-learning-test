@@ -1,7 +1,7 @@
 {{!--
-  Komponen: Success Toast (Super Admin)
-  Lokasi: src/views/partials/components/ui/super_admin/toast/success/index.hbs
-  Level: L1 Atomik (scoped super_admin)
+  Komponen: Success Toast (Admin)
+  Lokasi: src/views/partials/components/ui/admin/toast/success/index.hbs
+  Level: L1 Atomik (scoped admin)
 
   KONTRAK PEMAKAIAN
   Panggil sekali di page, di luar x-data lain. Dua cara memunculkannya:
@@ -44,7 +44,7 @@
   role='status'
   aria-live='polite'
   :style="`--toast-duration: ${duration}ms`"
-  class='fixed right-4 top-20 z-50 flex w-[calc(100%-2rem)] max-w-[544px] items-start gap-6 overflow-hidden rounded-xl bg-white p-6 shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)] sm:right-[34px] sm:top-[115px]'
+  class='fixed right-4 top-[var(--app-toast-top)] z-50 flex w-[calc(100%-2rem)] max-w-[544px] items-start gap-6 overflow-hidden rounded-xl bg-white p-6 shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)] sm:right-[34px]'
 >
   <span
     class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#f0fdf4] bg-[#dcfce7]'

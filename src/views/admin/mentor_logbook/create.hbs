@@ -27,6 +27,7 @@
       class='flex flex-col gap-[16px] w-full'
       x-data="{
         loading: false,
+        showFull: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -56,7 +57,7 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
           {{> components/ui/admin/button/primary-button text='Save Logbook' type='submit' loading='loading' width='200'}}
         </div>

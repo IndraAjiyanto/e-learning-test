@@ -29,19 +29,19 @@
         {{/components/ui/admin/form/form-card}}
 
         {{!-- Feature Card - Session Action --}}
-        <div class='box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[20px] justify-between items-center bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+        <div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[16px] sm:gap-[24px] p-[20px] justify-between sm:items-center items-stretch bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
           {{!-- Toggle Row --}}
-          <div class='flex flex-row gap-[10px] justify-start items-center'>
+          <div class='flex flex-row gap-[10px] justify-start items-center min-w-0'>
             {{> components/ui/admin/form/toggle-switch
               checkedBind="isFinal"
               onChange="isFinal = $event.target.checked"
             }}
-            <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold whitespace-nowrap'>Jadikan pertemuan terakhir</span>
+            <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold sm:whitespace-nowrap'>Jadikan pertemuan terakhir</span>
             <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
           </div>
 
           {{!-- Button Row --}}
-          <div class='flex flex-row gap-[12px] justify-start items-center'>
+          <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-start sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/program/detail/program/admin/' id)}}
             {{> components/ui/admin/button/primary-button text="Create Week" loading="loading" width="136"}}
           </div>

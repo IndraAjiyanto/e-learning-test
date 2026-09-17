@@ -32,7 +32,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
 
         {{!-- Row: User* + Status* --}}
-        <div class='flex flex-row gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           {{> components/ui/admin/form/searchable_select/index
             label="User*"
             forId="userId"
@@ -46,7 +46,7 @@
         </div>
 
         {{!-- Row: Date* + Note* --}}
-        <div class='flex flex-row gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           <div class='flex-1 min-w-0'>
             {{#> components/ui/admin/form/form-field label="Date*" for="attendanceTime" errorId="attendanceTime_error"}}
               {{> components/ui/admin/form/text-input
@@ -69,7 +69,7 @@
 
       {{!-- Footer: Cancel + Save Attendance --}}
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
           {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' width='183'}}
         </div>

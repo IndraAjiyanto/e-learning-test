@@ -9,7 +9,8 @@
   <div class='flex flex-row gap-[16px] w-full'>
     <div class='flex-1' x-show='!paidClass'>
       {{#> components/ui/admin/form/form-field label="Time Start*" for="time_start" errorId="time_start_error"}}
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('time_start')">
           <input type='time' id='time_start' name='time_start' value='{{#if course}}{{formatTime course.time_start}}{{/if}}'
             :disabled='paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
@@ -19,7 +20,8 @@
     </div>
     <div class='flex-1' x-show='!paidClass'>
       {{#> components/ui/admin/form/form-field label="Time End*" for="time_end" errorId="time_end_error"}}
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('time_end')">
           <input type='time' id='time_end' name='time_end' value='{{#if course}}{{formatTime course.time_end}}{{/if}}'
             :disabled='paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
@@ -29,7 +31,8 @@
     </div>
 
     {{#> components/ui/admin/form/form-field label="Registration Date*" for="date_registration" errorId="date_registration_error" class="flex-1"}}
-      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+        :class="borderClass('date_registration')">
         <input type='date' id='date_registration' name='date_registration' value='{{formDate course.date_registration}}'
           class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer'
           @blur='validateDateField("date_registration", "Date Registration")' />
@@ -41,27 +44,32 @@
   <div class='flex flex-row gap-[16px] w-full'>
     <div class='flex-1' x-show='paidClass'>
       {{#> components/ui/admin/form/form-field label="Month*" for="month" errorId="month_error"}}
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
-          <input type='number' id='month' name='month' placeholder='1-12' value='{{#if course}}{{course.month}}{{/if}}'
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('month')">
+          <input type='number' id='month' name='month' placeholder='1-12' min='0' value='{{#if course}}{{course.month}}{{/if}}'
             :disabled='!paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]'
+            @input='$event.target.value = $event.target.value.replace(/[^0-9]/g, "")'
             @blur='validateNumberField("month", "Month", 1, 12)' />
         </div>
       {{/components/ui/admin/form/form-field}}
     </div>
     <div class='flex-1' x-show='!paidClass'>
       {{#> components/ui/admin/form/form-field label="Day*" for="day" errorId="day_error"}}
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
-          <input type='number' id='day' name='day' placeholder='1-31' value='{{#if course}}{{course.day}}{{/if}}'
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('day')">
+          <input type='number' id='day' name='day' placeholder='1-31' min='0' value='{{#if course}}{{course.day}}{{/if}}'
             :disabled='paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]'
+            @input='$event.target.value = $event.target.value.replace(/[^0-9]/g, "")'
             @blur='validateNumberField("day", "Day", 1, 31)' />
         </div>
       {{/components/ui/admin/form/form-field}}
     </div>
 
     {{#> components/ui/admin/form/form-field label="Start Date*" for="startDate" errorId="startDate_error" class="flex-1"}}
-      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+        :class="borderClass('startDate')">
         <input type='date' id='startDate' name='startDate' value='{{formDate course.startDate}}'
           class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer'
           @blur='validateDateField("startDate", "Start Date")' />
@@ -69,7 +77,8 @@
     {{/components/ui/admin/form/form-field}}
 
     {{#> components/ui/admin/form/form-field label="End Date*" for="endDate" errorId="endDate_error" class="flex-1"}}
-      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+        :class="borderClass('endDate')">
         <input type='date' id='endDate' name='endDate' value='{{formDate course.startEnd}}'
           class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer'
           @blur='validateDateField("endDate", "End Date", "startDate", "Start Date")' />
@@ -82,13 +91,14 @@
     x-data="{ locTab: 'id' }">
 
     {{!-- Location Tabs --}}
-    {{> components/ui/admin/form/language-tabs alpineVar="locTab" variant="compact"}}
+    {{> components/ui/admin/form/language-tabs alpineVar="locTab" variant="compact" errId="lokasi_id" errEn="lokasi_en" errJa="lokasi_ja"}}
 
     {{!-- Location Inputs --}}
     <div class='flex flex-col gap-[6px] w-full'>
       <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Location*</label>
       <div x-show='locTab === "id"'>
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('lokasi_id')">
           <input type='text' id='lokasi_id' name='lokasi_id' placeholder='Enter location...'
             x-model='formData.location.id'
             @blur='validateField("location", "id")'
@@ -97,7 +107,8 @@
         <div id='lokasi_id_error' class='hidden text-red-500 text-xs mt-1'></div>
       </div>
       <div x-show='locTab === "en"'>
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('lokasi_en')">
           <input type='text' id='lokasi_en' name='lokasi_en' placeholder='Enter location...'
             x-model='formData.location.en'
             @blur='validateField("location", "en")'
@@ -106,7 +117,8 @@
         <div id='lokasi_en_error' class='hidden text-red-500 text-xs mt-1'></div>
       </div>
       <div x-show='locTab === "ja"'>
-        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+          :class="borderClass('lokasi_ja')">
           <input type='text' id='lokasi_ja' name='lokasi_ja' placeholder='Enter location...'
             x-model='formData.location.ja'
             @blur='validateField("location", "ja")'
@@ -121,7 +133,7 @@
   {{!-- Link Location --}}
   {{#> components/ui/admin/form/form-field label="Link Location*" for="locationLink" errorId="locationLink_error"}}
     <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
-      :class="formErrors.locationLink ? '[outline-color:#DC2626]' : (formValid.locationLink ? '[outline-color:#22C55E]' : '')">
+      :class="formErrors.locationLink ? '![outline-color:#DC2626]' : (formValid.locationLink ? '![outline-color:#22C55E]' : '')">
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>
       <input type='url' id='locationLink' name='locationLink' placeholder='https://...'
         x-model='formData.locationLink'

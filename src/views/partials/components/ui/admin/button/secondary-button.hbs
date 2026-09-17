@@ -10,12 +10,12 @@
 --}}
 {{#if href}}
 <a href='{{href}}'
-   class='box-border w-[{{default width "90"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
+   class='box-border w-full sm:w-[{{default width "90"}}px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
   <span class='text-[16px]/[24px] text-[#003060] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
 </a>
 {{else}}
 <button type='{{default type "button"}}'
-   class='box-border w-[{{default width "90"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
+   class='box-border w-full sm:w-[{{default width "90"}}px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F5F5F5] transition-colors {{class}}'>
   <span class='text-[16px]/[24px] text-[#003060] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
 </button>
 {{/if}}

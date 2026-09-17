@@ -27,18 +27,18 @@
   </div>
 
   {{!-- Title + actions --}}
-  <div class='flex flex-row gap-[12px] justify-between items-start w-full flex-wrap'>
+  <div class='flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start w-full'>
     <div class='flex flex-col gap-[10px] justify-start items-start min-w-0'>
       <div class='text-[34px]/[1.12] w-full text-[#003060] font-montserrat font-bold tracking-[-0.85px]'>Session {{session.sessionOrder}}</div>
       <div class='box-border w-fit shrink-0 h-[22px] flex flex-row gap-[8px] p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
         <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium whitespace-nowrap'>Mentoring Batch #{{session.weeks.weekNumber}}</span>
       </div>
     </div>
-    <div class='flex flex-row gap-[12px] justify-start items-center shrink-0'>
-      <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post'>
-        <button type='submit'
+    <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto shrink-0'>
+      <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post' class='w-full sm:w-auto'>
+        <button type='button'
           onclick='confirmDelete(this)'
-          class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'
+          class='box-border w-full sm:w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'
           title='Delete Session' aria-label='Delete Session'>
           <span class='text-[16px]/[24px] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
         </button>
@@ -49,7 +49,7 @@
 
   {{!-- Info grid --}}
   <div class='flex flex-col gap-[12px] w-full'>
-    <div class='flex flex-row gap-[14px] w-full'>
+    <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>
       <div class='flex-1 min-w-0'>
         {{> components/ui/admin/session/session-info-item label='Location' value=session.location}}
       </div>
@@ -57,7 +57,7 @@
         {{> components/ui/admin/session/session-info-item label='Topic' value=session.topic}}
       </div>
     </div>
-    <div class='flex flex-row gap-[14px] w-full'>
+    <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>
       <div class='flex-1 min-w-0'>
         {{> components/ui/admin/session/session-info-item label='Date' value=(formatDate session.date)}}
       </div>

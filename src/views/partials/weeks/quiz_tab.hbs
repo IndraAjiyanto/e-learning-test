@@ -15,7 +15,7 @@
     <template x-for="quiz in data" :key="quiz.id">
       {{> components/ui/admin/quiz/quiz-card
         deleteAction="confirmQuizDelete($el)"
-        deleteFormAction="'/quiz/' + quiz.id + '/{{weeks.id}}?_method=DELETE'"
+        deleteFormAction=(concat "'/quiz/' + quiz.id + '/" weeks.id "?_method=DELETE'")
         detailHref="'/quiz/' + quiz.id"
       }}
     </template>
@@ -30,10 +30,12 @@
 </template>
 
 <!-- Add Quiz Button -->
+{{#if weeks.id}}
 <a href='/quiz/formCreate/{{weeks.id}}'
   class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
   <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Quiz</span>
 </a>
+{{/if}}
 
 <script>
 function confirmQuizDelete(el) {
