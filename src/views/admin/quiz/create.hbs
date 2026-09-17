@@ -8,10 +8,15 @@
 --}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto'
-    x-data='{ ...adminFormGate(), loading: false }'
-    x-init="recomputeFormValid()"
-    @input="recomputeFormValid()"
-    @change="recomputeFormValid()">
+    x-data='{
+      loading: false,
+      quizName: "",
+      minScore: "",
+      duration: "",
+      canSubmit() {
+        return this.quizName.trim() !== "" && String(this.minScore).trim() !== "" && String(this.duration).trim() !== "" && !isNaN(Number(this.minScore)) && !isNaN(Number(this.duration));
+      }
+    }'>
 
     {{!-- Title --}}
     <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
@@ -19,7 +24,7 @@
 
       {{!-- Form --}}
       <form method='POST' action='/quiz/{{weeksId}}' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
-        @submit='loading = true'>
+        @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }">
 
         {{!-- Feature Card - Fields --}}
         {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -29,19 +34,23 @@
             {{> components/ui/admin/form/textarea-input
               id="quizName" name="quizName" rows="3" required=true
               placeholder="Enter quiz name..."
+              xModel="quizName"
             }}
           {{/components/ui/admin/form/form-field}}
+          <p x-show="quizName.trim() === &quot;&quot;" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Quiz name is required and cannot be empty or whitespace only.</p>
 
           {{!-- Min Score + Duration --}}
-          <div class='flex flex-row gap-[12px] w-full'>
+          <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
             <div class='flex-1 min-w-0'>
               {{#> components/ui/admin/form/form-field label="Minimum Score*" for="minScore" errorId="minScore_error"}}
                 {{> components/ui/admin/form/text-input
                   type="number" id="minScore" name="minScore"
                   placeholder="Enter minimum score..."
                   required=true
+                  xModel="minScore"
                 }}
               {{/components/ui/admin/form/form-field}}
+              <p x-show="String(minScore).trim() === &quot;&quot;" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Minimum score is required.</p>
             </div>
             <div class='flex-1 min-w-0'>
               {{#> components/ui/admin/form/form-field label="Duration (minutes)*" for="duration" errorId="duration_error"}}
@@ -49,19 +58,21 @@
                   type="number" id="duration" name="duration"
                   placeholder="Enter duration in minutes..."
                   required=true
+                  xModel="duration"
                 }}
               {{/components/ui/admin/form/form-field}}
+              <p x-show="String(duration).trim() === &quot;&quot;" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Duration is required.</p>
             </div>
           </div>
 
         {{/components/ui/admin/form/form-card}}
 
         {{!-- Actions --}}
-        <div class='box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[20px] justify-between items-center bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
-          <div></div>
-          <div class='flex flex-row gap-[12px] justify-start items-center'>
+        <div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[16px] sm:gap-[24px] p-[20px] justify-between sm:items-center items-stretch bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+          <div class='hidden sm:block'></div>
+          <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
-            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" disabled='!formValid' width="136"}}
+            {{> components/ui/admin/button/primary-button text="Create Quiz" loading="loading" width="136" disabled="!canSubmit() || loading"}}
           </div>
         </div>
 

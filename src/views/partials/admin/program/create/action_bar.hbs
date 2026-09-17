@@ -7,29 +7,20 @@
                  formCreate dibuka dari sebuah kategori, jadi ia mengembalikan
                  user ke kategori itu, bukan ke daftar program.
 --}}
-<div class='box-border w-full h-fit shrink-0 flex flex-row gap-[12px] p-[16px_24px] justify-between items-center bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px]'>
+<div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[12px] p-[16px_24px] justify-between items-stretch sm:items-center bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px]'>
 
   {{!-- Cancel --}}
   {{> components/ui/admin/button/secondary-button text="Cancel" href=(default cancelHref "/program")}}
 
   {{!-- Right buttons --}}
-  <div class='flex flex-row gap-[12px]'>
-    {{!-- Save as Draft --}}
-    <button type='submit' name='launch' value='false'
-      :disabled='!formComplete || loading'
-      :class="!formComplete || loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#F5F5F5]'"
-      class='box-border shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] transition-colors'>
-      <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-      <span x-show='!loading' class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>Save as Draft</span>
-    </button>
-
+  <div class='flex flex-col sm:flex-row gap-[12px] w-full sm:w-auto items-stretch sm:items-center'>
     {{!-- Create Program --}}
     <button type='submit' name='launch' value='true'
       :disabled='!formComplete || loading'
       :class="!formComplete || loading ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"
-      class='box-border w-[178px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] transition-colors'>
+      class='box-border w-full sm:w-[158px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] border border-[#003060] rounded-[8px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors'>
       <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-      <span x-show='!loading' class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Create Program</span>
+      <span x-show='!loading' class='text-[16px]/[24px] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Create Program</span>
     </button>
   </div>
 

@@ -24,7 +24,7 @@
       </div>
 
       {{!-- Title Row --}}
-      <div class='w-full flex flex-row gap-[12px] justify-between items-start'>
+      <div class='w-full flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start'>
         <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
           <div class='flex flex-col gap-[4px] w-full'>
             <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Pertemuan {{weeks.week_number}}</div>
@@ -36,21 +36,15 @@
         </div>
 
         {{!-- Actions --}}
-        <div class='flex flex-row gap-[12px] shrink-0 justify-start items-center'>
-          {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
-     default — hapus dilakukan dari halaman list. Kirim showDelete=true dari
-     controller bila perlu ditampilkan lagi. Tombol hapus pada tabel/daftar
-     di halaman ini sengaja TIDAK ikut digating. --}}
-          {{#if showDelete}}
-            <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
-              <button type='button'
-                @click='confirmMeetingDelete($el)'
-                class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
-                title='Delete Week' aria-label='Delete Week'>
-                <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
-              </button>
-            </form>
-          {{/if}}
+        <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
+          <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
+            <button type='button'
+              onclick='confirmMeetingDelete(this)'
+              class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
+              title='Delete Week' aria-label='Delete Week'>
+              <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
+            </button>
+          </form>
           <a href='/week/formEdit/{{weeks.id}}'
             class='box-border w-[114px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
             title='Edit Week' aria-label='Edit Week'>
@@ -67,21 +61,29 @@
       {{!-- Tab Bar: underline-tabs component --}}
       <div x-data="{ tabs: [
         {name:'session',label:'Session',url:'/week/session/{{weeks.id}}'},
+        {{#if lastSession}}
         {name:'quiz',label:'Quiz',url:'/week/quiz/{{weeks.id}}'}
+        {{/if}}
       ] }">
         {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
       </div>
 
       {{!-- Session Rows --}}
-      <div x-show="tab === 'session'" class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
+      <div x-show="tab === 'session'" x-cloak class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
 
       {{!-- Quiz (frozen) --}}
-      <div x-show="tab === 'quiz'" class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+      {{#if lastSession}}
+      <div x-show="tab === 'quiz'" x-cloak class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+      {{/if}}
 
     </div>
 
   </div>
 </div>
+
+{{!-- Toast sukses untuk proses week/session (create, update, delete) yang
+     redirect balik ke sini. Dipicu via flashToast() di weeks & session controller. --}}
+{{> components/ui/admin/toast/success/index toast=toast }}
 
 <script>
 function confirmMeetingDelete(el) {

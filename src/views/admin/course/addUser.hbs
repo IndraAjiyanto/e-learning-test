@@ -17,12 +17,12 @@
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-start'>
 
       {{!-- Row 2: Search + Add User Toolbar --}}
-      <div class='box-border w-full h-[44px] shrink-0 flex flex-row gap-[14px] justify-end items-center'>
+      <div class='box-border w-full h-auto sm:h-[44px] shrink-0 flex flex-col sm:flex-row gap-[14px] justify-end items-stretch sm:items-center'>
         <form action='/program/addStudent/{{course.id}}' method='POST'
               x-data='{ loading: false }'
               @submit='loading = true'
-              class='box-border flex flex-row gap-[14px] justify-end items-center'>
-          <div class='relative w-[400px] max-w-full'
+              class='box-border flex flex-col sm:flex-row gap-[14px] justify-end items-stretch sm:items-center w-full sm:w-auto'>
+          <div class='relative w-full sm:w-[400px] max-w-full'
                @click.away='open = false'>
             <input type='hidden' name='userId' x-model='selected' required>
             <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05),0px_0px_0px_4px_#EBEFFF]'
@@ -80,7 +80,7 @@
           {{!-- Add User Button --}}
           <button type='submit'
                   :disabled='selected === "" || loading'
-                  class='box-border w-[108px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors'
+                  class='box-border w-full sm:w-[108px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors'
                   :class="selected === '' || loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#00254a]'">
             <i x-show='loading' class='fas fa-spinner fa-spin text-white'></i>
             <span x-show='!loading' class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Add User</span>
@@ -89,10 +89,10 @@
       </div>
 
       {{!-- Table --}}
-      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] overflow-hidden'>
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] overflow-x-auto'>
 
         {{!-- Header Row --}}
-        <div class='w-full h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+        <div class='w-full min-w-[620px] h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5]'>
           <div class='box-border w-[88px] min-w-[88px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'>
             <div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-left whitespace-nowrap'>User</div>
           </div>
@@ -119,7 +119,7 @@
 
         {{!-- Body Rows --}}
         <template x-for='(stu, index) in paginatedStudents' :key='stu.id'>
-          <div class='w-full h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] hover:bg-[#fafafa] transition-colors'>
+          <div class='w-full min-w-[620px] h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] hover:bg-[#fafafa] transition-colors'>
 
             {{!-- Avatar --}}
             <div class='box-border w-[88px] min-w-[88px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>

@@ -26,6 +26,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -58,7 +59,11 @@ export class MaterialController {
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'pdf';
       await this.materialService.create(createMaterialDto);
-      req.flash('success', 'Successfully created PDF material');
+      flashToast(
+        req,
+        'Material Created',
+        'The new PDF material has been added to this session.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create PDF material');
@@ -79,7 +84,11 @@ export class MaterialController {
       createMaterialDto.fileType = 'ppt';
 
       await this.materialService.create(createMaterialDto);
-      req.flash('success', 'Successfully created PPT material');
+      flashToast(
+        req,
+        'Material Created',
+        'The new PPT material has been added to this session.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       console.error('Error creating PPT material:', error);
@@ -100,7 +109,11 @@ export class MaterialController {
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'video';
       await this.materialService.create(createMaterialDto);
-      req.flash('success', 'Successfully created video material');
+      flashToast(
+        req,
+        'Material Created',
+        'The new video material has been added to this session.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create video material');
@@ -221,7 +234,7 @@ export class MaterialController {
       }
 
       await this.materialService.update(id, updateMaterialDto);
-      req.flash('success', 'Successfully updated PDF material');
+      flashToast(req, 'Changes Saved', 'The PDF material has been updated.');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update PDF material');
@@ -242,7 +255,7 @@ export class MaterialController {
 
     try {
       await this.materialService.update(id, updateMaterialDto);
-      req.flash('success', 'Successfully updated PPT material');
+      flashToast(req, 'Changes Saved', 'The PPT material has been updated.');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update PPT material');
@@ -263,7 +276,7 @@ export class MaterialController {
 
     try {
       await this.materialService.update(id, updateMaterialDto);
-      req.flash('success', 'Successfully updated video material');
+      flashToast(req, 'Changes Saved', 'The video material has been updated.');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update video material');
@@ -281,7 +294,11 @@ export class MaterialController {
   ) {
     try {
       await this.materialService.remove(materialId);
-      req.flash('success', 'successfully delete materi');
+      flashToast(
+        req,
+        'Material Deleted',
+        'The material has been permanently removed.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'failed delete materi');

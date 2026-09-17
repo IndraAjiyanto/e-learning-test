@@ -23,7 +23,7 @@
       </div>
 
       {{!-- Title Row --}}
-      <div class='w-full flex flex-row gap-[12px] justify-between items-start'>
+      <div class='w-full flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start'>
         <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
           <div class='flex flex-col gap-[4px] w-full'>
             <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Quiz {{quiz.quizName}}</div>
@@ -44,21 +44,15 @@
         </div>
 
         {{!-- Actions --}}
-        <div class='flex flex-row gap-[12px] shrink-0 justify-start items-center'>
-          {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
-     default — hapus dilakukan dari halaman list. Kirim showDelete=true dari
-     controller bila perlu ditampilkan lagi. Tombol hapus pada tabel/daftar
-     di halaman ini sengaja TIDAK ikut digating. --}}
-          {{#if showDelete}}
-            <form action='/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE' method='POST'>
-              <button type='button'
-                @click='confirmQuizDetailDelete($el)'
-                class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
-                title='Delete Quiz' aria-label='Delete Quiz'>
-                <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
-              </button>
-            </form>
-          {{/if}}
+        <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
+          <form action='/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE' method='POST'>
+            <button type='button'
+              onclick='confirmQuizDetailDelete(this)'
+              class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
+              title='Delete Quiz' aria-label='Delete Quiz'>
+              <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
+            </button>
+          </form>
           <a href='/quiz/formEdit/{{quiz.id}}'
             class='box-border w-[114px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
             title='Edit Quiz' aria-label='Edit Quiz'>
@@ -81,7 +75,7 @@
       </div>
 
       {{!-- Question Tab --}}
-      <div x-show="tab === 'question'" class='w-full'>
+      <div x-show="tab === 'question'" x-cloak class='w-full'>
         {{#if questions.length}}
         <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
           {{#each questions}}
@@ -149,7 +143,7 @@
       </div>
 
       {{!-- Answer Tab --}}
-      <div x-show="tab === 'answer'" class='w-full'>
+      <div x-show="tab === 'answer'" x-cloak class='w-full'>
         {{#if scores.length}}
         <div class='flex flex-col gap-[10px] w-full'>
           {{#each scores}}
@@ -177,6 +171,10 @@
 
   </div>
 </div>
+
+{{!-- Toast sukses untuk proses quiz (create, update, delete) yang
+     redirect ke sini. Dipicu via flashToast() di quiz controller. --}}
+{{> components/ui/admin/toast/success/index toast=toast }}
 
 <script>
 function confirmQuizDetailDelete(el) {
