@@ -3,8 +3,12 @@
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
 {{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.myLogbook')}}
-<div class='min-h-full bg-white py-8' x-data='logbookApp()'>
-  <div class='container mx-auto px-4 pb-16'>
+{{!-- Latar putih setinggi halaman dibuang: filter dan tabelnya sudah berupa
+     kartu putih sendiri, jadi slab itu hanya menimpa latar abu shell - satu-
+     satunya layar student yang begitu, dan itu pula yang membuat isinya mulai
+     8px di bawah remah sementara layar lain 32px. --}}
+<div class='min-h-full px-4 py-4 sm:px-8 sm:py-6' x-data='logbookApp()'>
+  <div class='container mx-auto pb-16'>
 
 {{> user/logbook/index/header}}
 
