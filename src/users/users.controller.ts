@@ -264,6 +264,12 @@ export class UsersController {
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
     const initialSection = String(req.query.tab || '') || 'dashboard';
+    // Course yang dipakai kepala program. Dirender di server, bukan dirakit
+    // Alpine sesudah halaman tampil: kepala setinggi ~370px yang baru muncul
+    // setelah gambar pertama akan mendorong seluruh halaman turun.
+    const requestedCourseId = String(req.query.courseId || '');
+    const activeCourse =
+      course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
 
     return res.render('user/user_profile/index', {
       user: user,
@@ -276,6 +282,7 @@ export class UsersController {
       dashboardStats,
       ongoingCourses,
       initialSection,
+      activeCourse,
       bareShell: true,
     });
   }

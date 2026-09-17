@@ -230,9 +230,13 @@ const SCREENS = [
     name: 'start-learning',
     urlFrom: (ids) => `/program/myProgram/${ids.uid}?courseId=${ids.cid}`,
     design: 'start-learning.png',
-    waitFor: '#start-learning-container h2',
+    waitFor: '#start-learning-container [id^="week-"], #start-learning-container p',
     async assert(page, s) {
-      check(s, 'title "Start Learning"', await page.getByRole('heading', { name: 'Start Learning' }).count() > 0);
+      // Judul halaman kini nama program, bukan "Start Learning": nama bagian
+      // sudah disebut label tab, jadi menuliskannya lagi membuat kata yang sama
+      // muncul dua kali berturut-turut.
+      check(s, 'program name is the page title',
+        await page.locator('h1').first().innerText().catch(() => '') !== '');
       // Sub-judulnya kini mengikuti keadaan: nama minggu yang sedang berjalan,
       // kalimat selesai, atau ajakan awal saat belum ada minggu sama sekali.
       const header = await page.locator('#start-learning-container').innerText();
@@ -265,9 +269,29 @@ const SCREENS = [
       // Diperiksa lewat innerText kontainer: isinya datang dari fragment, dan
       // getByText tidak menjangkaunya dengan andal.
       check(s, 'week list', /Week \d/.test(header), header.slice(0, 60).replace(/\n/g, ' '));
-      check(s, 'sticky program card', await page.getByRole('link', { name: /Detail Program/ }).count() + await page.getByRole('button', { name: /Detail Program/ }).count() > 0);
-      check(s, 'Join Group button', await page.getByText(/Join Group/).count() > 0);
-      check(s, 'My Logbook button', await page.getByText(/My Logbook/).count() > 0);
+      // Kartu program di kolom kanan dibubarkan: gambar dan judulnya pindah ke
+      // kepala program, dan ketujuh tombolnya jadi baris tab. Detail Program dan
+      // Join Group tetap aksi, bukan tab.
+      const tabs = (await page.locator('[role="tab"]').allInnerTexts()).map((t) => t.trim());
+      check(s, 'six program tabs', tabs.length === 6, tabs.join(' | '));
+      for (const label of ['Sessions', 'Presentation', 'Assignment', 'Quiz', 'My Logbook', 'Certificate']) {
+        check(s, `tab "${label}"`, tabs.some((t) => t.includes(label)));
+      }
+      check(s, 'Detail Program stays an action',
+        await page.getByRole('link', { name: /Detail Program/ }).count() > 0);
+      check(s, 'Join Group stays an action',
+        await page.getByRole('button', { name: /Join Group/ }).count() > 0);
+
+      // Inti perubahannya: kepala program tidak lagi hilang saat pindah bagian.
+      const programName = await page.locator('h1').first().innerText();
+      await page.getByRole('tab', { name: 'Assignment' }).click();
+      await page.waitForTimeout(1200);
+      check(s, 'program header survives a tab switch',
+        (await page.locator('h1').first().innerText().catch(() => '')) === programName);
+      check(s, 'switched tab is marked selected',
+        (await page.getByRole('tab', { name: 'Assignment' }).getAttribute('aria-selected')) === 'true');
+      await page.getByRole('tab', { name: 'Sessions' }).click();
+      await page.waitForTimeout(900);
       check(s, 'week pagination (frame has one)', await page.getByText(/Showing \d+-\d+ of \d+ weeks/).count() > 0, 'known gap: needs unlock PRD');
 
       // Tombol Detail Program pernah menunjuk /program/detail/:id yang selalu 404;
@@ -282,7 +306,9 @@ const SCREENS = [
     url: '/users/profile?tab=logbook',
     design: null,
     async assert(page, s) {
-      check(s, 'title "My Logbook"', await page.getByRole('heading', { name: 'My Logbook' }).count() > 0);
+      // Judul panel dihapus karena kini dobel dengan label tab.
+      check(s, 'logbook section reachable by its tab',
+        await page.getByText(/My Logbook/).count() > 0);
       check(s, 'search box', await page.getByPlaceholder(/Search activities/).count() > 0);
       check(s, 'Export Excel button', await page.getByRole('button', { name: /Export Excel/ }).count() > 0);
       check(s, 'table header', await page.getByRole('columnheader', { name: 'Activity' }).count() > 0);
