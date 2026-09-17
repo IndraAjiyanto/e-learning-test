@@ -17,6 +17,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { MaterialService } from 'src/materials/material.service';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('session')
@@ -38,7 +39,11 @@ export class SessionController {
         CreateSessionDto.weeksId,
       );
       await this.sessionService.create(CreateSessionDto);
-      req.flash('success', 'session succesfuly create');
+      flashToast(
+        req,
+        'Session Created',
+        'The new session has been added to this week.',
+      );
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
@@ -59,7 +64,11 @@ export class SessionController {
       createPertemuanDto.sessionOrder =
         await this.sessionService.getNextOrder(weeksId);
       await this.sessionService.create(createPertemuanDto);
-      req.flash('success', 'session succesfuly create');
+      flashToast(
+        req,
+        'Session Created',
+        'The new session has been added to this week.',
+      );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
@@ -202,7 +211,11 @@ export class SessionController {
   ) {
     try {
       await this.sessionService.update(sessionId, updateSessionDto);
-      req.flash('success', 'Session successfuly update');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The session information has been updated.',
+      );
       const session = await this.sessionService.findOne(sessionId);
       res.redirect(`/week/${session.weeks.id}`);
     } catch (error: any) {
@@ -222,7 +235,11 @@ export class SessionController {
   ) {
     try {
       await this.sessionService.remove(id, weeksId);
-      req.flash('success', 'session successfuly delete');
+      flashToast(
+        req,
+        'Session Deleted',
+        'The session has been permanently removed.',
+      );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces delete');

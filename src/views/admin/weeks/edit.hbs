@@ -1,54 +1,61 @@
-<div class="pt-28 py-20">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold mb-6 text-gray-900">Edit Week</h2>
+{{!--
+  Page: Admin - Edit Week (Session Form)
+  Path: admin/weeks/edit.hbs
+  Design: sama dengan admin/weeks/create.hbs (slicing.pen "Container - Session Form" 1052, gap 28)
+  Route: GET /week/formEdit/:weeksId -> PATCH /week/update/:weeksId (update)
+  Data: { user, weeks, lastWeek, maxWeek } — toggle "pertemuan terakhir" hanya
+        tampil bila week yang diedit adalah week terakhir (weeks.weekNumber == maxWeek),
+        mengikuti perilaku lama. Service memaksa isFinal=false untuk week lain.
+  Composed from components/ui/admin atomics: text/page-header, form/form-field,
+  form/text-input, form/toggle-switch, button/secondary-button, button/primary-button.
+--}}
+<div class='py-10 px-6'>
+  <div class='max-w-[1052px] mx-auto'
+    x-data='{ loading: false, isFinal: {{#if weeks.isFinal}}true{{else}}false{{/if}} }'>
 
-    <form method="POST" action="/week/update/{{weeks.id}}?_method=PATCH" class="space-y-6" x-data="{ ...adminFormGate(), loading: false }"
-      x-init="initGate()"
-      @input="recomputeFormValid()"
-      @change="recomputeFormValid()" @submit="loading = true;">
+    {{!-- Title: Edit Week + subtitle --}}
+    <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-start'>
+      {{> components/ui/admin/text/page-header title="Edit Week" subtitle="Update the information below to edit this week."}}
 
-      <div>
-        <label for="description" class="block text-sm font-semibold text-gray-700 mb-1">Keterangan</label>
-        <textarea id="description" name="description" rows="3"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{weeks.description}}</textarea>
-      </div>
+      {{!-- Form --}}
+      <form method='POST' action='/week/update/{{weeks.id}}?_method=PATCH' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
+        @submit='loading = true'>
 
-      {{#if (eq weeks.weekNumber maxWeek)}}
-        <div
-          x-data="{ launch: {{ weeks.isFinal }}  }"
-          class="flex items-center gap-3">
+        {{!-- Feature Card - Description --}}
+        {{#> components/ui/admin/form/form-card noNumber=true}}
+          {{#> components/ui/admin/form/form-field label="Description*" for="description" errorId="description_error"}}
+            {{> components/ui/admin/form/text-input
+              id="description" name="description"
+              placeholder="Enter description week"
+              value=weeks.description
+            }}
+          {{/components/ui/admin/form/form-field}}
+        {{/components/ui/admin/form/form-card}}
 
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" x-model="launch" class="sr-only">
+        {{!-- Feature Card - Session Action --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[16px] sm:gap-[24px] p-[20px] justify-between sm:items-center items-stretch bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+          {{!-- Toggle Row (hanya untuk week terakhir) --}}
+          {{#if (eq weeks.weekNumber maxWeek)}}
+            <div class='flex flex-row gap-[10px] justify-start items-center min-w-0'>
+              {{> components/ui/admin/form/toggle-switch
+                checkedBind="isFinal"
+                onChange="isFinal = $event.target.checked"
+              }}
+              <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold sm:whitespace-nowrap'>Jadikan pertemuan terakhir</span>
+              <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
+            </div>
+          {{else}}
+            <div class='hidden sm:block'></div>
+          {{/if}}
 
-            <div :class="launch ? 'bg-green-500' : 'bg-gray-300'"
-                class="w-11 h-6 rounded-full transition-colors"></div>
-
-            <div :class="launch ? 'translate-x-5' : 'translate-x-0'"
-                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
-          </label>
-
-          <span class="text-sm text-gray-700">Klik toggle jika session terakhir</span>
-
-          <input type="hidden" name="isFinalCheck" :value="launch ? 'true' : 'false'">
+          {{!-- Button Row --}}
+          <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-start sm:items-center w-full sm:w-auto'>
+            {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeks.id)}}
+            {{> components/ui/admin/button/primary-button text="Update Week" loading="loading" width="136"}}
+          </div>
         </div>
-      {{/if}}
 
-      <div class="flex gap-3">
-        <button type="submit"
-        :disabled="!formValid || !isDirty || loading"
-        :class="(!formValid || !isDirty || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
-          class="text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2">
-          <span x-show='loading' class="loading loading-spinner loading-sm"></span>
-          <span x-show='!loading'>Update</span>
-        </button>
-        <a href="/week/{{weeks.id}}"
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>

@@ -14,7 +14,7 @@
   x-data="{ criteriaTab: 'id' }">
 
   {{!-- Language Tabs --}}
-  {{> components/ui/admin/form/language-tabs alpineVar="criteriaTab" variant="underline"}}
+  {{> components/ui/admin/form/language-tabs alpineVar="criteriaTab" variant="underline" errId="criterias_id" errEn="criterias_en" errJa="criterias_ja"}}
 
   {{!-- Criteria Lists --}}
   <div x-show='criteriaTab === "id"' x-data="{ items: {{#if course}}({{json course.criteriaId}} || ['']){{else}}['']{{/if}} }">
@@ -23,7 +23,8 @@
         <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
           <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
         </div>
-        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+          :class="borderClass('criterias_id')">
           <input type='text' :name="'criteriaId[]'" x-model='items[index]' placeholder='Enter participant criteria...'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]' />
         </div>
@@ -47,7 +48,8 @@
         <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
           <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
         </div>
-        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+          :class="borderClass('criterias_en')">
           <input type='text' :name="'criteriaEn[]'" x-model='items[index]' placeholder='Enter participant criteria...'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]' />
         </div>
@@ -71,7 +73,8 @@
         <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
           <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
         </div>
-        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+        <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+          :class="borderClass('criterias_ja')">
           <input type='text' :name="'criteriaJa[]'" x-model='items[index]' placeholder='Enter participant criteria...'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]' />
         </div>

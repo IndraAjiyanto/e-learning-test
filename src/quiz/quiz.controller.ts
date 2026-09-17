@@ -9,6 +9,9 @@ import {
   UseGuards,
   Res,
   Req,
+  UsePipes,
+  ValidationPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
@@ -17,6 +20,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { UsersService } from 'src/users/users.service';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('quiz')
@@ -28,8 +32,9 @@ export class QuizController {
 
   @Roles('admin')
   @Post(':weeksId')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async create(
-    @Param('weeksId') weeksId: string,
+    @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
     @Body() createQuizDto: CreateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -37,7 +42,11 @@ export class QuizController {
     try {
       createQuizDto.weeksId = weeksId;
       await this.quizService.create(createQuizDto);
-      req.flash('success', 'Quiz created successfully');
+      flashToast(
+        req,
+        'Quiz Created',
+        'The new quiz has been added to this week.',
+      );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create quiz');
@@ -48,7 +57,7 @@ export class QuizController {
   @Roles('admin')
   @Get('formCreate/:weeksId')
   async formCreate(
-    @Param('weeksId') weeksId: string,
+    @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -168,6 +177,7 @@ export class QuizController {
 
   @Roles('admin')
   @Patch(':quizId')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async update(
     @Param('quizId') quizId: string,
     @Body() updateQuizDto: UpdateQuizDto,
@@ -176,7 +186,11 @@ export class QuizController {
   ) {
     try {
       await this.quizService.update(quizId, updateQuizDto);
-      req.flash('success', 'Quiz updated successfully');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The quiz information has been updated.',
+      );
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Quiz failed to updated ');
@@ -187,14 +201,14 @@ export class QuizController {
   @Roles('admin')
   @Delete(':quizId/:weeksId')
   async remove(
-    @Param('weeksId') weeksId: string,
-    @Param('quizId') quizId: string,
+    @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
+    @Param('quizId', new ParseUUIDPipe()) quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.quizService.remove(quizId);
-      req.flash('success', 'Quiz deleted successfully');
+      flashToast(req, 'Quiz Deleted', 'The quiz has been permanently removed.');
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Quiz Failed to deleted');

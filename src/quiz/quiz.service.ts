@@ -3,10 +3,11 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quiz } from 'src/entities/quiz.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Score } from 'src/entities/score.entity';
 import { User } from 'src/entities/user.entity';
+import { Answer } from 'src/entities/answer.entity';
 import { Question } from 'src/entities/question.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
@@ -199,6 +200,26 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
-    await this.quizRepository.remove(quiz);
+    // Hapus manual berurutan dalam transaksi: FK di DB tidak punya
+    // ON DELETE CASCADE (skema lama, synchronize:false), dan
+    // repository.remove() hanya cascade ke relasi yang ter-load.
+    // Tanpa ini, hapus quiz yang sudah ada questions/scores-nya -> 500.
+    await this.quizRepository.manager.transaction(async (em) => {
+      const questions = await em.find(Question, {
+        where: { quiz: { id: quizId } },
+        select: ['id'],
+      });
+      const questionIds = questions.map((q) => q.id);
+      if (questionIds.length > 0) {
+        await em.delete(UserAnswer, {
+          question: { id: In(questionIds) },
+        });
+        await em.delete(Answer, { question: { id: In(questionIds) } });
+        await em.delete(Question, { id: In(questionIds) });
+      }
+      await em.delete(Score, { quiz: { id: quizId } });
+      await em.delete(QuizProgress, { quiz: { id: quizId } });
+      await em.delete(Quiz, { id: quizId });
+    });
   }
 }
