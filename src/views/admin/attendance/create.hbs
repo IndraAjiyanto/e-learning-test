@@ -29,7 +29,7 @@
     {{!-- Form --}}
     <form method='POST' action='/attendance/{{sessionId}}'
       class='flex flex-col gap-[16px] w-full'
-      @submit='loading = true'>
+      novalidate @focusout="markField($event.target)" @submit='submitGate($event)'>
 
       {{!-- Feature Card --}}
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -75,7 +75,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' disabled='!formValid' width='183'}}
+          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' width='183'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
