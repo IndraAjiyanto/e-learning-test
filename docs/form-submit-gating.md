@@ -242,9 +242,15 @@ admin) plus `partner/edit` yang hanya punya hidden input + berkas: semuanya
 terbuka dengan tombol mati, lalu menyala begitu satu nilai diubah. Halaman
 create dipastikan tidak ikut terpengaruh.
 
-## Celah yang masih terbuka
+## Celah yang sudah ditutup
 
-`course_benefits`, `course_flows`, `course_questions`, dan `participants` hanya
-digating oleh `isDirty` — factory-nya (`courseFlowForm` dkk.) belum punya
-`canSubmit()`, jadi validitas isinya belum ikut diperiksa. Menambahkan
-`canSubmit()` di keempat factory itu akan melengkapinya.
+`course_benefits`, `course_flows`, `course_questions`, dan `participants`
+tadinya tidak digating sama sekali — halaman create-nya tidak mengirim prop
+`disabled`, dan halaman editnya sempat hanya memakai `isDirty`. Ternyata hanya
+`courseFlowForm` yang benar-benar belum punya `canSubmit()`; tiga lainnya
+memakai `benefitForm`, `faqForm`, dan `iconItemForm` yang sudah punya, hanya
+belum diteruskan ke tombol.
+
+Sekarang keempatnya: create memakai `!canSubmit() || loading`, edit memakai
+`!canSubmit() || !isDirty || loading`. `canSubmit()` di `courseFlowForm`
+menghitung ulang lewat `errorFor()` untuk ketiga bahasa plus pilihan program.
