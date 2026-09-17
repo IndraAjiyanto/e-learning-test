@@ -278,15 +278,27 @@
       {{! --- GRID KARTU PROGRAM --- }}
       <div x-show="!loading" style="display:none" class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
         <template x-for="course in kelasItems" :key="course.id">
-          <div class="group flex h-full flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-3 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition-shadow hover:shadow-[0px_6px_16px_-4px_rgba(11,31,59,0.12)]">
-            <div class="h-[150px] w-full overflow-hidden rounded-xl bg-[#EEF2F6]">
+          {{!--
+            Gambar dibuat menyatu dengan tepi kartu, sama seperti kartu program
+            di panel Start Learning: tinggi 160px, tanpa sudut membulat sendiri,
+            dan kartunya yang memotong sudutnya lewat overflow-hidden.
+            Sebelumnya gambar duduk di dalam padding kartu dengan sudut membulat
+            sendiri, sehingga dua kartu yang menampilkan program yang sama
+            terlihat berbeda antar halaman.
+          --}}
+          <div class="group flex h-full flex-col overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition-shadow hover:shadow-[0px_6px_16px_-4px_rgba(11,31,59,0.12)]">
+            <div class="h-[160px] w-full shrink-0 overflow-hidden bg-[#EEF2F6]">
               <img
                 :src="course.image"
                 :alt="course.name"
                 onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
-                class="h-full w-full object-cover transition-transform duration-300 group-"
+                class="h-full w-full object-cover transition-transform duration-300"
               />
             </div>
+
+            {{!-- Isi kartu memakai padding sendiri karena kartunya tidak lagi
+                 punya padding luar. --}}
+            <div class="flex flex-1 flex-col gap-3 p-3">
 
             {{! Chip kategori dan tipe kelas }}
             <div class="flex flex-wrap items-center gap-2">
@@ -353,6 +365,7 @@
               <span>{{t "test.home.programSection.buttonViewProgram"}}</span>
               <i class="fa-solid fa-arrow-right text-xs"></i>
             </a>
+            </div>
           </div>
         </template>
       </div>

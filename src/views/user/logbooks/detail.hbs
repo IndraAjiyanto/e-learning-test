@@ -93,7 +93,7 @@
         {{#if logbook.documentation}}
           <div @click="full=true" class="flex justify-center bg-white p-2 rounded-xl border border-[#E5E5E5] cursor-zoom-in group hover:border-[#93c5fd] transition-colors">
             <img src="{{logbook.documentation}}" alt="Dokumentasi" 
-                 class="w-full max-h-[560px] min-h-[320px] object-contain rounded-lg border border-[#D4D4D4] shadow-sm group- transition-all duration-300">
+                 class="w-full max-h-[560px] min-h-[320px] object-contain rounded-lg border border-[#D4D4D4] shadow-sm transition-all duration-300">
           </div>
           <p class="mt-2 text-center text-xs text-[#737373]">Klik gambar untuk fullscreen</p>
           <div x-show="full" x-transition.opacity x-cloak @click.self="full=false" @keydown.escape.window="full=false" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 sm:p-8">
