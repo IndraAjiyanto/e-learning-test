@@ -102,7 +102,7 @@ export class AttendanceController {
     @Req() req: Request,
   ) {
     const session = await this.attendanceService.findSession(id);
-    res.render('user/attendance/create', { session, user: req.user });
+    res.render('user/attendance/create', { session, user: req.user, bareShell: true });
   }
 
   @Roles('admin')

@@ -167,13 +167,13 @@ export class MaterialController {
     const session = await this.materialService.findSession(sessionId);
     if (fileType === 'video') {
       const materi = await this.materialService.findMaterialVideo(sessionId);
-      res.render('materi/video', { user: req.user, materi, session });
+      res.render('materi/video', { user: req.user, materi, session, bareShell: true });
     } else if (fileType === 'pdf') {
       const materi = await this.materialService.findMaterialPdf(sessionId);
-      res.render('materi/pdf', { user: req.user, materi, session });
+      res.render('materi/pdf', { user: req.user, materi, session, bareShell: true });
     } else if (fileType === 'ppt') {
       const materi = await this.materialService.findMaterialPpt(sessionId);
-      res.render('materi/ppt', { user: req.user, materi, session });
+      res.render('materi/ppt', { user: req.user, materi, session, bareShell: true });
     }
   }
 

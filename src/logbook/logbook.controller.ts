@@ -99,8 +99,7 @@ export class LogbookController {
       user: req.user,
       logbooks,
       logbook: logbooks,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
   @Roles('user')
@@ -114,8 +113,7 @@ export class LogbookController {
     res.render('user/logbooks/createLog', {
       user: req.user,
       sessionId,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
   @Roles('user', 'admin')
@@ -129,7 +127,7 @@ export class LogbookController {
     if (req.user!.role === 'admin') {
       res.render('admin/logbooks/edit', { user: req.user, logbook: logbooks });
     } else {
-      res.render('user/logbooks/edit', { user: req.user, logbook: logbooks });
+      res.render('user/logbooks/edit', { user: req.user, logbook: logbooks, bareShell: true });
     }
   }
 
@@ -141,7 +139,7 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
-    res.render('user/logbooks/detail', { user: req.user, logbook: logbooks });
+    res.render('user/logbooks/detail', { user: req.user, logbook: logbooks, bareShell: true });
   }
 
   @Roles('admin')

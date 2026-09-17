@@ -1,0 +1,98 @@
+{{!--
+  Komponen: Shell Frame (area student)
+  Lokasi: src/views/partials/user/shell_frame/index.hbs
+  Level: L2 Section
+
+  Membungkus halaman student BERDIRI SENDIRI dengan chrome backoffice yang sama
+  seperti shell: app bar di atas, sidebar lima item di kiri, Log Out di bawah.
+
+  Dipakai halaman yang ditautkan dari dalam area belajar tetapi punya rute
+  sendiri (logbook, portfolio, tugas, materi, absensi, kuis). Sebelumnya
+  halaman-halaman itu memakai navbar publik dan footer, sehingga student
+  mendapat chrome landing di tengah alur belajarnya.
+
+  Sidebar di sini sengaja berupa tautan biasa, bukan tombol Alpine: halaman
+  berdiri sendiri tidak punya state tab shell. Setiap item menuju tab yang
+  bersangkutan di /users/profile.
+
+  Pemanggil WAJIB dirender dengan `bareShell: true` supaya layouts/main.hbs
+  tidak ikut memasang navbar publik dan footer.
+
+  Props:
+  - user   : object (wajib)
+  - active : 'dashboard' | 'profile' | 'learning' | 'portfolio' | 'history-payment'
+             menandai item sidebar yang sedang aktif
+  - back   : string (opsional) — href tombol kembali di atas konten
+
+  Isi halaman dikirim lewat block:
+    {{#> user/shell_frame/index user=user active='learning'}}
+      ...isi...
+    {{/user/shell_frame/index}}
+--}}
+{{!-- lang disediakan di sini karena komponen lang_switcher membacanya dari scope
+     Alpine induk. Shell mendefinisikannya di x-data miliknya; halaman berdiri
+     sendiri tidak punya itu, sehingga pemilih bahasanya dulu terender kosong. --}}
+<div class="relative flex min-h-screen flex-col bg-[#F2F2F3] font-montserrat" x-data="{ lang: '{{lang}}' }">
+  {{> user/app_bar/index user=user }}
+
+  <div class="flex w-full flex-1 items-stretch">
+    <div class="hidden w-64 shrink-0 self-stretch border-r border-[#D9D9D9] bg-white lg:flex">
+      <nav class="w-full space-y-2.5 p-5 pb-24">
+        <a
+          href="/users/profile?tab=dashboard"
+          class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'dashboard')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-gauge-high text-base"></i></span>
+          <span class="whitespace-nowrap">Dashboard</span>
+        </a>
+        <a
+          href="/users/profile?tab=profile"
+          class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'profile')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-user text-base"></i></span>
+          <span class="whitespace-nowrap">Profile</span>
+        </a>
+        <a
+          href="/users/profile?tab=learning"
+          class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'learning')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-book-open text-base"></i></span>
+          <span class="whitespace-nowrap">My Learning</span>
+        </a>
+        <a
+          href="/users/profile?tab=portfolio"
+          class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'portfolio')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-folder-open text-base"></i></span>
+          <span class="whitespace-nowrap">My Portfolio</span>
+        </a>
+        <a
+          href="/users/profile?tab=history-payment"
+          class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'history-payment')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-clock-rotate-left text-base"></i></span>
+          <span class="whitespace-nowrap">Payment History</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="hidden lg:flex fixed bottom-0 left-0 z-30 w-64 shrink-0 border-r border-t border-[#D9D9D9] bg-white p-5">
+      <a href="/logout" class="flex h-11 w-full items-center gap-3 rounded-lg bg-[#C0392B] px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none text-white transition-colors hover:bg-[#a5311f]">
+        <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-arrow-right-from-bracket text-base"></i></span>
+        <span class="whitespace-nowrap">Log Out</span>
+      </a>
+    </div>
+
+    <main class="min-w-0 flex-1">
+      {{#if back}}
+        <div class="px-4 pt-4 sm:px-[34px] sm:pt-[42px]">
+          <a href="{{back}}" class="inline-flex h-11 items-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#f9fafb]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Back
+          </a>
+        </div>
+      {{/if}}
+      {{> @partial-block}}
+    </main>
+  </div>
+</div>

@@ -1,3 +1,8 @@
+{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
+     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
+     dan footer. Controller-nya merender dengan bareShell: true.
+     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{#> user/shell_frame/index user=user active='learning'}}
 <div class="max-w-3xl mx-auto px-6 py-10 pt-28">
   <!-- Header Quiz -->
   <div class="mb-8 text-center">
@@ -110,3 +115,4 @@
     {{/if}}
   </div>
 </div>
+{{/user/shell_frame/index}}

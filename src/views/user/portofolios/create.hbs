@@ -1,3 +1,8 @@
+{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
+     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
+     dan footer. Controller-nya merender dengan bareShell: true.
+     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{#> user/shell_frame/index user=user active='portfolio'}}
 <div
   class='bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20'
 >
@@ -51,3 +56,4 @@
     font-weight: 500;
   }
 </style>
+{{/user/shell_frame/index}}

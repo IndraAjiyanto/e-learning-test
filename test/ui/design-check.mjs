@@ -129,11 +129,15 @@ const SCREENS = [
     name: 'start-learning',
     urlFrom: (ids) => `/program/myProgram/${ids.uid}?courseId=${ids.cid}`,
     design: 'start-learning.png',
+    waitFor: '#start-learning-container h2',
     async assert(page, s) {
       check(s, 'title "Start Learning"', await page.getByRole('heading', { name: 'Start Learning' }).count() > 0);
       check(s, 'subtitle about unlocking', await page.getByText(/Complete each week/i).count() > 0);
       check(s, 'breadcrumb "My Learning / Start Learning"', await page.getByRole('navigation', { name: 'Breadcrumb' }).count() > 0);
-      check(s, 'week list', await page.getByText(/Week \d/).count() > 0);
+      // Diperiksa lewat innerText kontainer: isinya datang dari fragment, dan
+      // getByText tidak menjangkaunya dengan andal.
+      const learning = await page.locator('#start-learning-container').innerText();
+      check(s, 'week list', /Week \d/.test(learning), learning.slice(0, 60).replace(/\n/g, ' '));
       check(s, 'sticky program card', await page.getByRole('link', { name: /Detail Program/ }).count() + await page.getByRole('button', { name: /Detail Program/ }).count() > 0);
       check(s, 'Join Group button', await page.getByText(/Join Group/).count() > 0);
       check(s, 'My Logbook button', await page.getByText(/My Logbook/).count() > 0);
@@ -230,6 +234,39 @@ const SCREENS = [
       }
     },
   },
+  {
+    name: 'standalone-learning-pages',
+    url: '/users/profile?tab=learning',
+    design: null,
+    async assert(page, s) {
+      // Setiap halaman belajar yang punya rute sendiri harus memakai chrome
+      // backoffice, bukan navbar publik dan footer landing.
+      const ids = JSON.parse(process.env.IDS || '{}');
+      const extra = JSON.parse(process.env.EXTRA_IDS || '{}');
+      const paths = [
+        ['logbook list', `/logbooks/user/${ids.cid}`],
+        ['attendance form', extra.sid ? `/attendance/form/${extra.sid}` : null],
+        ['material pdf', extra.sid ? `/learning-material/pdf/${extra.sid}` : null],
+        ['quiz form', extra.qid ? `/quiz/form/${extra.qid}` : null],
+        ['portfolio create', `/portfolio/formCreate/${ids.cid}`],
+      ].filter(([, p]) => p);
+
+      for (const [label, path] of paths) {
+        await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle' });
+        await page.waitForTimeout(600);
+        const html = await page.content();
+        const landing = /Corporate Training/.test(html);
+        const frame = /Payment History/.test(html);
+        check(s, `${label} uses the backoffice chrome`, !landing && frame,
+          landing ? 'landing navbar present' : 'no sidebar found');
+      }
+
+      // Program yang sudah diikuti tidak boleh lagi mendarat di halaman landing.
+      await page.goto(`${BASE}/program/${ids.cid}`, { waitUntil: 'networkidle' });
+      check(s, 'enrolled program redirects into the shell',
+        new URL(page.url()).pathname.startsWith('/program/myProgram/'), page.url());
+    },
+  },
 ];
 
 const browser = await chromium.launch();
@@ -281,9 +318,16 @@ for (const screen of SCREENS) {
         if (n === 'x-cloak' || n === 'x-ref' || n.startsWith('x-transition')) continue;
         const v = a.value;
         if (!v.trim()) continue;
-        const body = n === 'x-data' ? 'return(' + v + ')' : v;
-        try { new AsyncFunction(['s'], 'with(s){' + body + '}'); }
-        catch { out.push(n + ' :: ' + v.replace(/\s+/g, ' ').slice(0, 90)); }
+        // Alpine memakai dua bentuk: sebagian atribut dikompilasi sebagai
+        // ekspresi (return ...), sebagian lagi sebagai pernyataan. Alih-alih
+        // menebak per atribut, keduanya dicoba; dilaporkan hanya bila DUA-DUANYA
+        // gagal, yang berarti ekspresinya memang bukan JavaScript yang sah.
+        const forms = ['return (' + v + ')', v];
+        const ok = forms.some((body) => {
+          try { new AsyncFunction(['s'], 'with(s){' + body + '}'); return true; }
+          catch { return false; }
+        });
+        if (!ok) out.push(n + ' :: ' + v.replace(/\s+/g, ' ').slice(0, 90));
       }
     }
     return [...new Set(out)];

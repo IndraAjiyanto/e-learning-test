@@ -148,7 +148,7 @@ export class PortfoliosController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    res.render('user/portofolios/create', { user: req.user, courseId });
+    res.render('user/portofolios/create', { user: req.user, courseId, bareShell: true });
   }
 
   @Roles('user')
@@ -163,8 +163,7 @@ export class PortfoliosController {
     res.render('user/portofolios/detail', {
       user: req.user,
       portfolio,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
   @Roles('user')
@@ -179,8 +178,7 @@ export class PortfoliosController {
     res.render('user/portofolios/edit', {
       user: req.user,
       portfolio,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
   @Roles('user')

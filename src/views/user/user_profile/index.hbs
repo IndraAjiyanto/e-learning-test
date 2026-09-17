@@ -113,7 +113,7 @@
       await this.selectCourseSection(courseId, 'uiux');
     }
   }"
-  x-init="if (activeSection !== 'uiux' && sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }"
+  x-init="if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }"
 >
   {{!-- Application bar (Figma 830:9156). Markup ada di partial supaya halaman student
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
@@ -347,11 +347,12 @@
         </div>
 
         <!-- Start Learning Tab Content -->
-        <div x-show="activeSection === 'uiux'" id="start-learning-container">
-          {{#if activeCourse}}
-          {{> user/sidebar_user_profile/my_learning/start_learning/index course=activeCourse}}
-          {{/if}}
-        </div>
+        {{!-- Sengaja kosong: isinya SELALU dimuat lewat loadCourseFragment.
+             Panel ini butuh `minggu`, `user_kelas`, dan `portfolio` yang hanya
+             disiapkan controller fragment; merendernya di server dari sini akan
+             selalu menghasilkan keadaan kosong karena data itu tidak ada di
+             sini. Lihat docs/user-area-learning-consolidation-plan.md tahap 3. --}}
+        <div x-show="activeSection === 'uiux'" id="start-learning-container"></div>
 
         <!-- My Portfolio Tab Content -->
         <div x-show="activeSection === 'portfolio'">

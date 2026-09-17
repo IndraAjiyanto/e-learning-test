@@ -485,6 +485,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
   async myCourseFragment(
     @Param('id') id: string,
     @Res() res: Response,
+    @Req() req: Request,
     @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
@@ -492,10 +493,30 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    // Panel ini kini merender komposisi program_detail yang dipindahkan dari
+    // halaman landing, jadi datanya harus sama persis dengan yang dulu disiapkan
+    // untuk kelas/detail.hbs: status buka-kunci per minggu dari findWeeks(),
+    // baris user_courses, dan portfolio student pada course ini.
+    const [minggu, user_kelas, portfolio] = await Promise.all([
+      activeCourse
+        ? this.coursesService.findWeeks(activeCourse.id, id)
+        : Promise.resolve([]),
+      activeCourse
+        ? this.coursesService.findOneUserCourse(activeCourse.id)
+        : Promise.resolve(null),
+      activeCourse
+        ? this.coursesService.findOnePortfolio(id, activeCourse.id)
+        : Promise.resolve(null),
+    ]);
+
     return res.render(
       'partials/user/sidebar_user_profile/my_learning/start_learning/index',
       {
         course: activeCourse,
+        minggu,
+        user_kelas,
+        portfolio,
+        user: req.user,
         layout: false,
       },
     );
@@ -722,26 +743,15 @@ await this.coursesService.addUserToCourse(userId, courseId);
         }
       }
       if (isUserInKelas) {
-        // res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
-          const mingguUpdated = await this.coursesService.findWeeks(
-          id,
-          req.user.id,
+        // Student yang SUDAH terdaftar dibawa ke Start Learning di backoffice.
+        // Sebelumnya di sini dirender kelas/detail.hbs, yang memakai navbar publik
+        // dan footer, sehingga student mendapat chrome landing di tengah alur
+        // belajarnya. Barisnya memang sudah pernah ditulis lalu dikomentari.
+        // Pengunjung yang belum terdaftar tetap melihat halaman pemasaran di
+        // cabang else.
+        return res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${course.id}`,
         );
-        const user_kelas = await this.coursesService.findOneUserCourse(
-          // req.user.id,
-          course.id,
-        );
-        const portfolio = await this.coursesService.findOnePortfolio(
-          req.user.id,
-          course.id,
-        );
-        res.render('kelas/detail', {
-          user_kelas,
-          portfolio,
-          user: req.user,
-          course,
-          minggu: mingguUpdated,
-        });
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
         const courseQuestions =

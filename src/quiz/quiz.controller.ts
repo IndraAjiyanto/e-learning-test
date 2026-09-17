@@ -94,7 +94,7 @@ export class QuizController {
     const quiz = await this.quizService.findOne(quizId);
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
-    res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions });
+    res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions, bareShell: true });
   }
 
   @Roles('user')
