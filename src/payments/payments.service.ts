@@ -289,6 +289,80 @@ export class PaymentsService {
     return payments || [];
   }
 
+  /**
+   * Satu daftar riwayat pembayaran untuk area student.
+   *
+   * Desainnya (docs/design/user-area/payment-history.png) memperlihatkan SATU
+   * daftar, bukan tiga sub-tab, jadi tiga sumber di bawah digabung dan
+   * dinormalkan di sini supaya template tidak perlu tahu bentuk aslinya:
+   *   - pembayaran lunas   (payments tanpa installment)
+   *   - pembayaran cicilan (payments dengan installment)
+   *   - pendaftaran        (registrations)
+   *
+   * Status memakai tiga nilai yang memang ada di database. Desain juga
+   * menggambarkan "Pending", tetapi tidak ada padanannya di enum ProcessStatus,
+   * jadi tidak diada-adakan.
+   */
+  async findPaymentHistory(userId: string) {
+    await this.reconcileUserPayments(userId).catch(() => undefined);
+
+    const [payments, registrations] = await Promise.all([
+      this.paymentRepository.find({
+        where: { user: { id: userId } },
+        relations: ['course', 'course.category', 'installment', 'invoice'],
+      }),
+      this.registrationRepository.find({
+        where: { user: { id: userId } },
+        relations: ['course', 'course.category'],
+      }),
+    ]);
+
+    const statusOf = (process: string) =>
+      process === 'approved'
+        ? { status: 'paid', statusLabel: 'Paid' }
+        : process === 'process'
+          ? { status: 'processing', statusLabel: 'Processing' }
+          : { status: 'failed', statusLabel: 'Failed' };
+
+    const rows = [
+      ...payments.map((payment) => {
+        const isInstallment = !!payment.installment;
+        return {
+          id: payment.id,
+          kind: isInstallment ? 'installment' : 'full',
+          courseId: payment.course?.id ?? null,
+          courseName: payment.course?.name ?? 'Program',
+          categoryName: payment.course?.category?.name ?? null,
+          date: payment.invoice?.paid_at ?? payment.createdAt,
+          method:
+            payment.invoice?.payment_method ||
+            (isInstallment ? 'Installment' : 'Full Payment'),
+          amount: payment.invoice?.final_total ?? null,
+          proof: payment.file ?? null,
+          no: payment.no ?? null,
+          ...statusOf(payment.process),
+        };
+      }),
+      ...registrations.map((registration) => ({
+        id: registration.id,
+        kind: 'registration',
+        courseId: registration.course?.id ?? null,
+        courseName: registration.course?.name ?? 'Program',
+        categoryName: registration.course?.category?.name ?? null,
+        date: registration.createdAt,
+        method: 'Registration',
+        amount: null,
+        proof: registration.file ?? null,
+        no: null,
+        ...statusOf(registration.process),
+      })),
+    ];
+
+    return rows.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  }
+
   async findInstallments(userId: string) {
     return await this.paymentRepository.find({
       where: {

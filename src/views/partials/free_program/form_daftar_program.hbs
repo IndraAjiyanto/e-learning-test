@@ -30,7 +30,7 @@
             Full Name<span class="text-red-500">*</span>
           </label>
           <input type="text" name="user_fullname" value="{{user.username}}" required placeholder="Input Your Full Name" 
-            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
 
         <!-- Email (Otomatis Terisi & Bisa Diedit) -->
@@ -38,15 +38,15 @@
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Email<span class="text-red-500">*</span>
           </label>
-          <input type="email" name="user_email" value="{{user.email}}" required placeholder="Input Your Email" 
-            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+          <input type="email" name="user_email" value="{{user.email}}" required placeholder="Input Your Email"
+            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
         <!-- WhatsApp Number -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             WhatsApp Number<span class="text-red-500">*</span>
           </label>
-          <input type="tel" name="user_no" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+          <input type="tel" name="user_no" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
 
         <!-- Current Status -->
@@ -57,7 +57,7 @@
           </label>
           <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-status">
             <input type="hidden" id="status-input" name="current_status" required value="">
-            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
+            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
               <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">Select your current status</span>
               <div class="size-[35px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
@@ -84,7 +84,7 @@
           </label>
           <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-source">
             <input type="hidden" id="source-input" name="referal_source" required value="">
-            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
+            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
               <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">Select Option</span>
               <div class="size-[35px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>

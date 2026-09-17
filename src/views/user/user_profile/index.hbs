@@ -17,10 +17,11 @@
   window.userCourses = {{{json userWithCourses.userCourses}}};
 </script>
 <div 
-  class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#F2F2F3] font-montserrat overflow-x-hidden"
+  class="relative min-h-screen flex flex-col justify-between bg-[#F2F2F3] font-montserrat overflow-x-hidden"
   x-data="{
     sidebarOpen: true,
-    activeSection: new URLSearchParams(window.location.search).get('tab') || '{{activeSection}}' || 'profile',
+    lang: '{{lang}}',
+    activeSection: new URLSearchParams(window.location.search).get('tab') || '{{activeSection}}' || '{{#if (or (eq user.role "admin") (eq user.role "super_admin"))}}profile{{else}}dashboard{{/if}}',
     openMyLearning: true,
     openRoblox: false,
     openedCourses: {},
@@ -32,7 +33,7 @@
     logbookItemsPerPage: 10,
     logbookImageErrors: {},
     handledSections: [
-      'profile', 'password', 'learning', 'uiux', 'portfolio', 'history-payment',
+      'dashboard', 'profile', 'password', 'learning', 'uiux', 'portfolio', 'history-payment',
       'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
       'group-class', 'presentation'
     ],
@@ -83,7 +84,18 @@
       container.innerHTML = '<div class=\'p-12 text-center text-slate-500\'>Loading...</div>';
       try {
         const res = await fetch(config.url + '?courseId=' + courseId);
+
+        // Sesi berumur satu jam. Begitu kedaluwarsa, AuthMiddleware mengalihkan
+        // permintaan fragment ke /login, dan fetch MENGIKUTI pengalihan itu
+        // secara diam-diam. Tanpa penjagaan ini seluruh halaman login ikut
+        // disuntikkan ke dalam panel, lengkap dengan navbar publiknya, sementara
+        // shell di sekelilingnya masih tampak seperti sudah login.
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
         if (!res.ok) throw new Error('Request failed');
+
         const html = await res.text();
         container.innerHTML = html;
         Alpine.initTree(container);
@@ -103,31 +115,45 @@
   }"
   x-init="if (activeSection !== 'uiux' && sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }"
 >
-  <div class="relative z-10 max-w-full flex-1 flex flex-col mt-[62px] mb-0">
+  {{!-- Application bar (Figma 830:9156). Markup ada di partial supaya halaman student
+       standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
+  {{> user/app_bar/index user=user sidebarToggle=true }}
+
+  <div class="relative z-10 max-w-full flex-1 flex flex-col mb-0">
 
     {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
     <!-- Mobile Horizontal Scroll Navigation -->
     <div class="lg:hidden mb-6 -mx-4 sm:mx-0 px-4 sm:px-0">
       <div class="overflow-x-auto no-scrollbar">
         <nav class="flex space-x-3 min-w-max sm:min-w-0 pb-4">
-          
+
+          <!-- Dashboard Button -->
+          <button
+            @click="toggleActiveSection('dashboard');"
+            :class="activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
+          >
+            <i class="fas fa-gauge-high w-5 text-center"></i>
+            <span>Dashboard</span>
+          </button>
+
           <!-- Profile Button -->
           <button
             @click="toggleActiveSection('profile');"
-            :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
-            class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
+            :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
           >
-            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain transition-all" :class="(activeSection === 'profile' || activeSection === 'password') ? 'brightness-0 invert' : 'brightness-0'">
+            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain brightness-0">
             <span>Profile</span>
           </button>
 
           <!-- My Learning Button -->
           <button
             @click="openMyLearning = !openMyLearning; toggleActiveSection('learning');"
-            :class="activeSection === 'learning' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
-            class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
+            :class="activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
           >
-            <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'learning' ? 'brightness-0 invert' : 'brightness-0'">
+            <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain brightness-0">
             <span>My Learning</span>
             <i class="fas fa-chevron-down text-sm transition-transform duration-200" :class="openMyLearning ? 'rotate-180' : ''"></i>
           </button>
@@ -135,27 +161,27 @@
           <!-- My Portfolio Button -->
           <button
             @click="toggleActiveSection('portfolio');"
-            :class="activeSection === 'portfolio' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
-            class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
+            :class="activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
           >
-            <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'portfolio' ? 'brightness-0 invert' : 'brightness-0'">
+            <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-5 h-5 object-contain brightness-0">
             <span>My Portfolio</span>
           </button>
 
           <!-- History Payment Button -->
           <button
             @click="toggleActiveSection('history-payment');"
-            :class="activeSection === 'history-payment' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
-            class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
+            :class="activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
           >
-            <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : 'brightness-0'">
-            <span>History Payment</span>
+            <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain brightness-0">
+            <span>Payment History</span>
           </button>
 
           <!-- Logout Button -->
           <a
             href='/logout'
-            class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none text-white bg-[#CC2B2B] hover:bg-red-700 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+            class="h-11 px-4 gap-2.5 rounded-lg transition-colors duration-150 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none text-white bg-[#C0392B] hover:bg-[#a5311f] cursor-pointer"
           >
             <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
             <span>Log Out</span>
@@ -163,131 +189,296 @@
 
         </nav>
       </div>
+
+      <!-- My Learning Sub-Items (mobile mirror of the desktop UI/UX accordion) -->`
+      <div x-show="openMyLearning" x-transition class="overflow-x-auto no-scrollbar">
+        <nav class="flex space-x-3 min-w-max pb-4">
+
+          <button
+            @click="toggleActiveSection('uiux');"
+            :class="activeSection === 'uiux' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/uiUxDesigner.svg" alt="{{activeCourse.name}}" class="w-4 h-4 object-contain brightness-0">
+            <span x-text="activeCourseName"></span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('presentation');"
+            :class="activeSection === 'presentation' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain brightness-0">
+            <span>Presentation</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('logbook');"
+            :class="activeSection === 'logbook' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain brightness-0">
+            <span>My Logbook</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('assignment');"
+            :class="activeSection === 'assignment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain brightness-0">
+            <span>Assignment</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('quiz');"
+            :class="activeSection === 'quiz' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain brightness-0">
+            <span>Quiz</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('certificate');"
+            :class="activeSection === 'certificate' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain brightness-0">
+            <span>Certificate</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('group-class');"
+            :class="activeSection === 'group-class' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
+            class="h-11 px-4 gap-2.5 rounded-lg font-montserrat font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
+          >
+            <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain brightness-0">
+            <span>Join Group Class</span>
+          </button>
+
+        </nav>
+      </div>
     </div>
     {{/unless}}
 
     <!-- Flex Main Layout (Flex-1 Full Height to Footer) -->
-    <div class="flex flex-col lg:flex-row gap-[30px] items-stretch w-full flex-1 min-h-[calc(100vh-62px)]">
+    <div class="flex flex-col lg:flex-row items-stretch w-full flex-1 min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-72px)]">
 
       {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
-      <!-- Desktop Sidebar Navigation (Full Height self-stretch touching footer) -->
+      <!-- Desktop Sidebar Navigation: the outer box self-stretches to match the taller
+           content column (so the white background + border never "cuts off" early). Nav
+           is its own sticky-scrolling region within that box. Log Out is a genuinely
+           separate `fixed` element pinned to the viewport bottom - not flex-distributed
+           with nav - so it never moves regardless of how tall the nav content gets. -->
       <div
-        class="hidden lg:flex flex-col justify-between flex-shrink-0 self-stretch min-h-full bg-white/80 backdrop-blur-[6.6px] border-r border-t border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] rounded-tr-[12px] rounded-br-[12px] transition-all duration-300 pb-12 mb-0"
-        :class="sidebarOpen ? 'w-[324px] p-7 pt-6' : 'w-[88px] px-3 pt-6'"
+        class="hidden lg:flex flex-shrink-0 self-stretch bg-white border-r border-[#D9D9D9] transition-all duration-300 mb-0"
+        :class="sidebarOpen ? 'w-64' : 'w-20'"
       >
-        <nav class="space-y-[24px]">
+        <nav
+          class="w-full lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-72px)] overflow-y-auto space-y-2.5 pr-1 pb-24"
+          :class="sidebarOpen ? 'p-5 pt-5' : 'px-2.5 pt-5'"
+        >
 
-          <!-- Hamburger Toggle Button -->
-          <div class="mb-4 flex" :class="!sidebarOpen ? 'justify-center' : 'justify-start'">
-            <button 
-              @click="sidebarOpen = !sidebarOpen" 
-              type="button" 
-              class="w-10 h-10 rounded-[10px] bg-white border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)] flex items-center justify-center text-[#003060] hover:bg-slate-50 transition-all cursor-pointer flex-shrink-0"
-              aria-label="Toggle Sidebar"
-            >
-              <i class="fa-solid fa-bars text-lg"></i>
-            </button>
-          </div>
+          <!-- 1. Dashboard Button - flat per Figma 830:9186: active = #E4F1F7 bg + #003060 text,
+               inactive = transparent + #718096, no border/shadow/blur anywhere -->
+          <button
+            @click="toggleActiveSection('dashboard');"
+            :class="[
+              activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
+              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
+            ]"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
+          >
+            <div class="w-5 flex justify-center items-center flex-shrink-0">
+              <i class="fas fa-gauge-high text-base"></i>
+            </div>
+            <span x-show="sidebarOpen" class="whitespace-nowrap">Dashboard</span>
+          </button>
 
-          <!-- 1. Profile Button -->
+          <!-- 2. Profile Button -->
           <button
             @click="toggleActiveSection('profile');"
             :class="[
-              (activeSection === 'profile' || activeSection === 'password')
-                ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
-                : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] hover:border-[#003060]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-[10px]' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px]'
+              (activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
+              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer group"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
           >
-            <div class="w-7 flex justify-center items-center flex-shrink-0">
-              <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-6 h-6 object-contain transition-all" :class="(activeSection === 'profile' || activeSection === 'password') ? 'brightness-0 invert' : 'brightness-0'">
+            <div class="w-5 flex justify-center items-center flex-shrink-0">
+              <span class="block size-5" :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span>
             </div>
             <span x-show="sidebarOpen" class="whitespace-nowrap">Profile</span>
           </button>
 
-          <!-- 2. My Learning Accordion Button -->
-          <div class="space-y-[20px]">
+          <!-- 3. My Learning Accordion Button -->
+          <div class="space-y-2">
             <button
               @click="openMyLearning = !openMyLearning; toggleActiveSection('learning');"
               :class="[
-                activeSection === 'learning' 
-                  ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
-                  : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] hover:border-[#003060]',
-                !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-[10px]' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px]'
+                activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
+                !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
               ]"
-              class="text-left transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer"
+              class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
             >
-              <div class="flex items-center gap-[18px]">
-                <div class="w-7 flex justify-center items-center flex-shrink-0">
-                  <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'learning' ? 'brightness-0 invert' : 'brightness-0'">
+              <div class="flex items-center gap-3">
+                <div class="w-5 flex justify-center items-center flex-shrink-0">
+                  <span class="block size-5" :class="activeSection === 'learning' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span>
                 </div>
                 <span x-show="sidebarOpen" class="whitespace-nowrap">My Learning</span>
               </div>
               <i x-show="sidebarOpen" class="fas fa-chevron-down text-sm transition-transform duration-200" :class="openMyLearning ? 'rotate-180' : ''"></i>
             </button>
 
-            
+            <!-- My Learning Sub-Items Container - remade 2026-09-15: was styled identically to the
+                 top-level nav buttons (same white card + border + shadow), so a course inside "My
+                 Learning" looked like another main item instead of a child of it. Now a real
+                 tree: indent + connecting rule per level, weight drops the deeper you go. -->
+            <div x-show="openMyLearning && sidebarOpen" x-transition class="ml-[18px] space-y-0.5 border-l border-[#E5E7EB] pl-3">
+
+              <!-- Dynamic Courses Loop -->
+              {{#each userWithCourses.userCourses}}
+                <div>
+                  <button
+                    type="button"
+                    @click="selectCourse('{{this.course.id}}')"
+                    aria-label="Open {{this.course.name}}"
+                    :aria-expanded="openedCourses['{{this.course.id}}'] ? 'true' : 'false'"
+                    class="flex w-full items-center gap-2 rounded-md py-2 px-2 text-left font-montserrat text-sm font-medium transition-colors cursor-pointer"
+                    :class="openedCourses['{{this.course.id}}'] ? 'text-[#003060] bg-[#E4F1F7]' : 'text-slate-600 hover:bg-slate-50'"
+                  >
+                    <i class="fas fa-graduation-cap shrink-0 text-xs" :class="openedCourses['{{this.course.id}}'] ? 'text-[#003060]' : 'text-slate-400'"></i>
+                    <span class="min-w-0 flex-1 truncate whitespace-nowrap">{{this.course.name}}</span>
+                    <i class="fas fa-chevron-down shrink-0 text-xs transition-transform duration-200" :class="openedCourses['{{this.course.id}}'] ? 'rotate-180' : ''"></i>
+                  </button>
+
+                  <!-- Nested Items -->
+                  <div x-show="openedCourses['{{this.course.id}}']" x-transition class="ml-[13px] space-y-0.5 border-l border-[#E5E7EB] py-1 pl-3">
+
+                    <button
+                      @click="selectCourseSection('{{this.course.id}}', 'presentation');"
+                      :class="(activeSection === 'presentation' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
+                    >
+                      <i class="fas fa-display shrink-0 text-xs"></i>
+                      <span class="truncate whitespace-nowrap">Presentation</span>
+                    </button>
+
+                    <button
+                      @click="selectCourseSection('{{this.course.id}}', 'logbook');"
+                      :class="(activeSection === 'logbook' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
+                    >
+                      <i class="fas fa-clipboard-list shrink-0 text-xs"></i>
+                      <span class="truncate whitespace-nowrap">My Logbook</span>
+                    </button>
+
+                    <button
+                      @click="selectCourseSection('{{this.course.id}}', 'assignment');"
+                      :class="(activeSection === 'assignment' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
+                    >
+                      <i class="fas fa-list-check shrink-0 text-xs"></i>
+                      <span class="truncate whitespace-nowrap">Assignment</span>
+                    </button>
+
+                    <button
+                      @click="selectCourseSection('{{this.course.id}}', 'quiz');"
+                      :class="(activeSection === 'quiz' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
+                    >
+                      <i class="fas fa-circle-question shrink-0 text-xs"></i>
+                      <span class="truncate whitespace-nowrap">Quiz</span>
+                    </button>
+
+                    <button
+                      @click="selectCourseSection('{{this.course.id}}', 'certificate');"
+                      :class="(activeSection === 'certificate' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
+                    >
+                      <i class="fas fa-award shrink-0 text-xs"></i>
+                      <span class="truncate whitespace-nowrap">Certificate</span>
+                    </button>
+
+                    <button
+                      @click="toggleActiveSection('group-class');"
+                      :class="activeSection === 'group-class' ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
+                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-montserrat text-sm transition-colors cursor-pointer"
+                    >
+                      <i class="fas fa-users shrink-0 text-xs"></i>
+                      <span class="truncate whitespace-nowrap">Join Group Class</span>
+                    </button>
+
+                  </div>
+                </div>
+              {{/each}}
+            </div>
           </div>
 
-          <!-- 3. My Portfolio Button -->
+          <!-- 4. My Portfolio Button -->
           <button
             @click="toggleActiveSection('portfolio');"
             :class="[
-              activeSection === 'portfolio' 
-                ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
-                : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] hover:border-[#003060]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-[10px]' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px]'
+              activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
+              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
           >
-            <div class="w-7 flex justify-center items-center flex-shrink-0">
-              <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'portfolio' ? 'brightness-0 invert' : 'brightness-0'">
+            <div class="w-5 flex justify-center items-center flex-shrink-0">
+              <span class="block size-5" :class="activeSection === 'portfolio' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
             </div>
             <span x-show="sidebarOpen" class="whitespace-nowrap">My Portfolio</span>
           </button>
 
-          <!-- 4. History Payment Button -->
+          <!-- 5. History Payment Button -->
           <button
             @click="toggleActiveSection('history-payment');"
             :class="[
-              activeSection === 'history-payment' 
-                ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
-                : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] hover:border-[#003060]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-[10px]' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px]'
+              activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
+              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
             ]"
-            class="text-left transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer"
+            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
           >
-            <div class="w-7 flex justify-center items-center flex-shrink-0">
-              <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : 'brightness-0'">
+            <div class="w-5 flex justify-center items-center flex-shrink-0">
+              <span class="block size-5" :class="activeSection === 'history-payment' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
             </div>
-            <span x-show="sidebarOpen" class="whitespace-nowrap">History Payment</span>
+            <span x-show="sidebarOpen" class="whitespace-nowrap">Payment History</span>
           </button>
 
         </nav>
+      </div>
 
-        <!-- Sidebar Bottom: Logout Button -->
-        <div class="w-full mt-auto pt-6">
-          <hr class="border-t border-[#D9D9D9] mb-[24px]">
-          <a
-            href='/logout'
-            :class="[
-              'transition-all duration-200 flex items-center font-inter font-medium leading-none cursor-pointer',
-              !sidebarOpen ? 'w-10 h-10 justify-center mx-auto rounded-[10px] bg-transparent text-[#CC2B2B] hover:bg-red-50' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px] text-white bg-[#CC2B2B] hover:bg-red-700 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'
-            ]"
-          >
-            <div class="w-7 flex justify-center items-center flex-shrink-0">
-              <i class="fa-solid fa-arrow-right-from-bracket text-lg" :class="!sidebarOpen ? 'text-[#CC2B2B]' : 'text-white'"></i>
-            </div>
-            <span x-show="sidebarOpen" class="whitespace-nowrap text-[20px]">Log Out</span>
-          </a>
-        </div>
+      <!-- Log Out: genuinely `fixed` to the viewport bottom-left - a completely separate
+           element from the scrolling <nav> above, so it can never be pushed around by
+           however many menu items end up in the sidebar. -->
+      <div
+        class="hidden lg:flex flex-shrink-0 fixed bottom-0 left-0 z-30 bg-white border-r border-t border-[#D9D9D9] transition-all duration-300"
+        :class="sidebarOpen ? 'w-64 p-5' : 'w-20 px-2.5 py-5'"
+      >
+        <a
+          href='/logout'
+          class="w-full"
+          :class="[
+            'transition-colors duration-150 flex items-center font-montserrat font-medium leading-none cursor-pointer',
+            !sidebarOpen ? 'w-10 h-10 justify-center mx-auto rounded-lg bg-transparent text-[#C0392B] hover:bg-red-50' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg text-white bg-[#C0392B] hover:bg-[#a5311f]'
+          ]"
+        >
+          <div class="w-5 flex justify-center items-center flex-shrink-0">
+            <i class="fa-solid fa-arrow-right-from-bracket text-base" :class="!sidebarOpen ? 'text-[#C0392B]' : 'text-white'"></i>
+          </div>
+          <span x-show="sidebarOpen" class="whitespace-nowrap text-sm">Log Out</span>
+        </a>
       </div>
       {{/unless}}
 
       <!-- Right Content Section -->
       <div class="flex-1 w-full min-w-0">
         
+        <!-- Dashboard Tab Content -->
+        <div x-show="activeSection === 'dashboard'">
+          {{> user/sidebar_user_profile/dashboard/index }}
+        </div>
+
         <!-- Profile Tab Content -->
         <div x-show="activeSection === 'profile'">
           {{> user/sidebar_user_profile/profile/index }}
@@ -338,14 +529,14 @@
 
         <!-- Join Group Class Tab Content -->
         <div x-show="activeSection === 'group-class'">
-          {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index }}
+          {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index course=activeCourse }}
         </div>
 
         <!-- Presentation Tab Content (loaded per course via loadCourseFragment) -->
         <div x-show="activeSection === 'presentation'" id="presentation-container"></div>
 
         <!-- Certificate Tab Content -->
-        <div x-show="activeSection === 'certificate'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="activeSection === 'certificate'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 text-center space-y-4 m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-award text-2xl"></i>
           </div>
@@ -361,7 +552,7 @@
         </div>
 
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 text-center space-y-4 m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>

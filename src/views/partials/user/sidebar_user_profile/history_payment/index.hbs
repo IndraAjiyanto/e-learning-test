@@ -1,234 +1,401 @@
-<!-- HISTORY PAYMENT PARTIAL -->
-<div 
-  class="space-y-6 sm:space-y-8 md:space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 mb-28"
-  x-data="{ 
-    paymentType: 'full', 
-    statusFilter: 'all',
-    searchQuery: '',
-    sortBy: 'Newest',
-    sortOpen: false,
-    payments: [],
-    init() {
-      if (window.location.hash === '#pendaftaran') {
-        this.paymentType = 'registration';
-      } else if (window.location.hash === '#installment') {
-        this.paymentType = 'installment';
-      }
-    }
-  }"
+{{!--
+  Halaman: Payment History (tab area student)
+  Lokasi: src/views/partials/user/sidebar_user_profile/history_payment/index.hbs
+  Level: L3 Tab
+
+  Mengikuti docs/design/user-area/payment-history.png: SATU daftar untuk semua
+  jenis transaksi, bukan tiga sub-tab. Sumbernya GET /payment/api/history, yang
+  sudah menggabungkan pembayaran lunas, pembayaran cicilan, dan pendaftaran
+  menjadi satu bentuk baris (lihat PaymentsService.findPaymentHistory).
+
+  Pencarian dan pagination memakai factory clientTable super admin; lapisan
+  filter di atasnya menyaring `source` sebelum diserahkan ke clientTable.
+
+  Status memakai tiga nilai yang memang ada di database: Paid, Processing,
+  Failed. Frame desain juga menggambarkan "Pending", tetapi tidak ada padanannya
+  di enum ProcessStatus sehingga tidak diada-adakan.
+--}}
+<div
+  class='p-4 sm:px-[34px] sm:py-[42px]'
+  x-data='paymentHistory()'
+  x-init='load()'
 >
-  
-  {{! --- HEADER SECTION --- }}
-    <div>
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
-        History Payment
-      </h1>
-      <p class="font-sans font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
-        Track and manage all your payments and registrations.
-      </p>
+  <div class='flex flex-col gap-7'>
+
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        titleTag='h2'
+        title='Payment History'
+      }}
+      {{> components/ui/super_admin/description/index
+        text='View and manage your payment history.'
+      }}
     </div>
 
-  {{! --- STATS CARDS SECTION --- }}
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 lg:gap-4 xl:gap-12">
-    
-    <!-- Stats 1: Total Payment -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#E1EAFD] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-receipt text-[20px] xl:text-[24px] text-[#003060]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight" x-text="payments.length">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Total Payment</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">All Time</span>
-      </div>
-    </div>
-
-    <!-- Stats 2: Accepted -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#DEF5E9] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-circle-check text-[20px] xl:text-[24px] text-[#01B065]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Accepted</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">Successful Payments</span>
-      </div>
-    </div>
-
-    <!-- Stats 3: Processing -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#FEEFD6] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-clock text-[20px] xl:text-[24px] text-[#FDA40B]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Processing</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">In Progress</span>
-      </div>
-    </div>
-
-    <!-- Stats 4: Rejected -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#FEE7E7] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-circle-xmark text-[20px] xl:text-[24px] text-[#F13639]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Rejected</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">Failed Payments</span>
-      </div>
-    </div>
-
-  </div>
-
-  {{! --- FILTERS & SEARCH CONTROLS GROUP --- }}
-  <div class="space-y-4 sm:space-y-6">
-    
-    <!-- Filters Section (Payment Type & Status) -->
-    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-      
-      <!-- Payment Type Filter Pills -->
-      <div>
-        <h3 class="font-montserrat font-semibold text-base sm:text-lg md:text-2xl text-[#003060] mb-2">
-          Payment Type
-        </h3>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button 
-            type="button" 
-            @click="paymentType = 'full'"
-            :class="paymentType === 'full' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Full Payment
-          </button>
-          <button 
-            type="button" 
-            @click="paymentType = 'registration'"
-            :class="paymentType === 'registration' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Registration
-          </button>
-          <button 
-            type="button" 
-            @click="paymentType = 'installment'"
-            :class="paymentType === 'installment' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Installment
-          </button>
+    {{!-- Kartu filter --}}
+    <div class='flex flex-col gap-4 rounded-xl border border-[#d9d9d9] bg-white p-5'>
+      <div class='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5'>
+        <div class='flex flex-col gap-1.5 xl:col-span-2'>
+          <label class='font-inter text-sm font-medium leading-5 text-[#404040]'>Date Range</label>
+          <div class='flex items-center gap-2'>
+            <input
+              type='date'
+              x-model='draft.from'
+              aria-label='From date'
+              class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+            />
+            <span class='shrink-0 font-inter text-sm text-[#737373]'>–</span>
+            <input
+              type='date'
+              x-model='draft.to'
+              aria-label='To date'
+              class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+            />
+          </div>
         </div>
+
+        {{> components/ui/super_admin/form/select_field
+          id='history-status'
+          name='status'
+          field='status'
+          label='Payment Status'
+          options='statusOptions'
+          variant='dropdown'
+          placeholder='All Status'
+        }}
+
+        {{> components/ui/super_admin/form/select_field
+          id='history-method'
+          name='method'
+          field='method'
+          label='Payment Method'
+          options='methodOptions'
+          placeholder='All Methods'
+        }}
+
+        {{> components/ui/super_admin/form/select_field
+          id='history-program'
+          name='program'
+          field='program'
+          label='Program / Course'
+          options='programOptions'
+          placeholder='All Programs'
+        }}
       </div>
 
-      <!-- Status Filter Pills -->
-      <div>
-        <h3 class="font-montserrat font-semibold text-base sm:text-lg md:text-2xl text-[#003060] mb-2">
-          Status
-        </h3>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button 
-            type="button" 
-            @click="statusFilter = 'all'"
-            :class="statusFilter === 'all' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer min-w-[60px] text-center"
-          >
-            All
-          </button>
-          <button 
-            type="button" 
-            @click="statusFilter = 'accepted'"
-            :class="statusFilter === 'accepted' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Accepted
-          </button>
-          <button 
-            type="button" 
-            @click="statusFilter = 'processing'"
-            :class="statusFilter === 'processing' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Processing
-          </button>
-          <button 
-            type="button" 
-            @click="statusFilter = 'rejected'"
-            :class="statusFilter === 'rejected' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Rejected
-          </button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Search & Sort Bar Section -->
-    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-      
-      <!-- Search Bar Input -->
-      <div class="flex-1 max-w-[839px] h-[42px] bg-[#E0F1F9] rounded-md flex items-center gap-3 px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
-        <i class="fa-solid fa-magnifying-glass text-[#003060] text-base sm:text-lg flex-shrink-0"></i>
-        <input 
-          type="text" 
-          x-model="searchQuery"
-          placeholder="Search Transaction" 
-          class="w-full bg-transparent font-montserrat font-medium text-base sm:text-lg xl:text-xl text-black placeholder:text-[#676767] focus:outline-none"
+      <div class='flex flex-wrap items-center gap-3'>
+        {{> components/ui/super_admin/form/button
+          label='Apply Filter'
+          onclick='applyFilters()'
+        }}
+        <button
+          type='button'
+          @click='resetFilters()'
+          class='inline-flex items-center gap-2 font-inter text-sm font-medium text-[#003060] transition-colors hover:text-[#00254a]'
         >
-      </div>
-
-      <!-- Sort Dropdown -->
-      <div class="relative w-full md:w-[220px]">
-        <button 
-          type="button" 
-          @click="sortOpen = !sortOpen"
-          @click.outside="sortOpen = false"
-          class="w-full h-[43px] bg-white/50 backdrop-blur-[6.6px] rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
-        >
-          <span class="font-montserrat font-medium text-sm sm:text-base text-[#666666] truncate pr-2" x-text="'Sort by: ' + sortBy">Sort by: Newest</span>
-          <i class="fa-solid fa-chevron-down text-[#003060] text-xs transition-transform duration-200 flex-shrink-0" :class="sortOpen ? 'rotate-180' : ''"></i>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/><path d='M3 3v5h5'/></svg>
+          Reset Filter
         </button>
-        <ul 
-          x-show="sortOpen" 
-          x-transition
-          class="absolute right-0 top-full mt-2 w-full bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat"
-          style="display: none;"
-        >
-          <template x-for="option in ['Newest', 'Oldest', 'Highest Amount', 'Lowest Amount']" :key="option">
-            <li 
-              @click="sortBy = option; sortOpen = false" 
-              class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-              :class="sortBy === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
-            >
-              <span x-text="option"></span>
-              <i x-show="sortBy === option" class="fa-solid fa-check text-xs text-[#003060]"></i>
-            </li>
-          </template>
-        </ul>
       </div>
-
     </div>
+
+    {{!-- Pencarian --}}
+    <div class='relative'>
+      <span class='pointer-events-none absolute left-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-[#737373]'>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
+      </span>
+      <input
+        type='search'
+        x-model='searchInput'
+        @input='handleSearch()'
+        aria-label='Search transactions'
+        placeholder='Search transactions by program name or invoice...'
+        class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-10 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+      />
+    </div>
+
+    {{!-- Daftar transaksi --}}
+    <div class='flex flex-col gap-3'>
+      <template x-if='loading'>
+        <div class='rounded-xl border border-[#d9d9d9] bg-white p-8 text-center font-inter text-sm text-[#737373]'>
+          Loading your payment history...
+        </div>
+      </template>
+
+      <template x-for='row in rows' :key='row.kind + row.id'>
+        <div class='flex flex-col gap-4 rounded-xl border border-[#d9d9d9] bg-white p-4 lg:flex-row lg:items-center lg:gap-6 lg:p-5'>
+
+          <div class='flex min-w-0 flex-1 items-center gap-4'>
+            <span
+              class='grid size-12 shrink-0 place-items-center rounded-lg'
+              :class="row.kind === 'registration' ? 'bg-[#eef4ff] text-[#3538cd]' : 'bg-[#f4f3ff] text-[#5925dc]'"
+            >
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/></svg>
+            </span>
+            <div class='flex min-w-0 flex-col gap-1.5'>
+              <span class='truncate font-inter text-sm font-semibold text-[#171717]' x-text='row.courseName'></span>
+              <template x-if='row.categoryName'>
+                <span class='w-fit rounded-2xl bg-[#f9f5ff] px-2 py-0.5 font-inter text-xs font-medium text-[#6941c6]' x-text='row.categoryName'></span>
+              </template>
+            </div>
+          </div>
+
+          <div class='grid grid-cols-2 gap-4 lg:flex lg:shrink-0 lg:items-center lg:gap-8'>
+            <div class='flex flex-col gap-1 lg:w-36'>
+              <span class='font-inter text-xs text-[#737373]'>Payment date</span>
+              <span class='font-inter text-sm text-[#171717]' x-text='formatDate(row.date)'></span>
+            </div>
+            <div class='flex flex-col gap-1 lg:w-36'>
+              <span class='font-inter text-xs text-[#737373]'>Payment Method</span>
+              <span class='font-inter text-sm text-[#171717]' x-text='row.method'></span>
+            </div>
+            <div class='flex flex-col gap-1 lg:w-28'>
+              <span class='font-inter text-xs text-[#737373]'>Status</span>
+              {{> components/ui/super_admin/badge/index
+                text='row.statusLabel'
+                dot=true
+                classExpr="row.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (row.status === 'processing' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')"
+                dotClassExpr="row.status === 'paid' ? 'bg-[#22c55e]' : (row.status === 'processing' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"
+              }}
+            </div>
+          </div>
+
+          <div class='flex shrink-0 flex-wrap items-center gap-3'>
+            <template x-if='row.proof'>
+              <button
+                type='button'
+                @click="openDetailModal('payment-proof', row)"
+                class='inline-flex h-11 items-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f9fafb]'
+              >
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4'/></svg>
+                View proof
+              </button>
+            </template>
+            <button
+              type='button'
+              @click="openDetailModal('payment-detail', row)"
+              class='inline-flex h-11 items-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-4 font-inter text-sm font-semibold text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#00254a]'
+            >
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M5 12h14'/><path d='m12 5 7 7-7 7'/></svg>
+              View Detail
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <template x-if='!loading && filtered.length === 0'>
+        <div class='flex flex-col items-center gap-3 rounded-xl border border-[#d9d9d9] bg-white p-12 text-center'>
+          <span class='grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
+          </span>
+          <h3 class='font-montserrat text-xl font-bold text-[#003060]'>No transactions found</h3>
+          <p class='font-inter text-sm text-[#737373]'>Try adjusting your filters or search keyword.</p>
+          <button
+            type='button'
+            @click='resetFilters()'
+            class='mt-1 inline-flex h-11 items-center rounded-lg bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]'
+          >Reset Filters</button>
+        </div>
+      </template>
+    </div>
+
+    {{!-- Pagination --}}
+    <template x-if='filtered.length > 0'>
+      <div class='flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#d9d9d9] bg-white px-5 py-4'>
+        <span class='font-inter text-sm text-[#737373]' x-text='rangeLabel'></span>
+        <div class='flex items-center gap-2'>
+          <template x-for='page in totalPages' :key='page'>
+            <button
+              type='button'
+              @click='changePage(page)'
+              :class="page === currentPage ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white text-[#344054] border-[#d4d4d4] hover:bg-[#f9fafb]'"
+              class='grid size-9 place-items-center rounded-lg border font-inter text-sm font-medium transition-colors'
+              x-text='page'
+            ></button>
+          </template>
+        </div>
+      </div>
+    </template>
 
   </div>
 
-  {{! --- DYNAMIC CONTENT AREA / SUB-PARTIALS --- }}
-  <div>
-    
-    <!-- Full Payment Sub-Partial -->
-    <div x-show="paymentType === 'full'">
-      {{> user/sidebar_user_profile/history_payment/full_payment/index }}
+  {{#> components/ui/super_admin/modal/detail/index name='payment-proof' title='Payment Proof' maxWidth='max-w-[640px]'}}
+    <template x-if='row.proof'>
+      <div class='flex flex-col gap-4'>
+        <img
+          :src='row.proof'
+          alt='Payment proof'
+          class='w-full rounded-lg border border-[#e5e5e5] object-contain'
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        />
+        <a
+          :href='row.proof'
+          target='_blank'
+          rel='noopener'
+          class='hidden items-center justify-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 py-3 font-inter text-sm font-semibold text-[#344054] hover:bg-[#f9fafb]'
+        >Open the uploaded file</a>
+      </div>
+    </template>
+  {{/components/ui/super_admin/modal/detail/index}}
+
+  {{#> components/ui/super_admin/modal/detail/index name='payment-detail' title='Transaction Detail' maxWidth='max-w-[640px]'}}
+    <div class='flex flex-col gap-5'>
+      <dl class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Program</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text='row.courseName'></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Category</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text="row.categoryName || '—'"></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Transaction type</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text='kindLabel(row.kind)'></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Invoice number</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text="row.no || '—'"></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Payment date</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text='formatDate(row.date)'></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Payment method</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text='row.method'></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Amount</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text="row.amount ? formatAmount(row.amount) : '—'"></dd>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>Status</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text='row.statusLabel'></dd>
+        </div>
+      </dl>
     </div>
-
-    <!-- Registration Sub-Partial -->
-    <div x-show="paymentType === 'registration'">
-      {{> user/sidebar_user_profile/history_payment/registration/index }}
-    </div>
-
-    <!-- Installment Sub-Partial -->
-    <div x-show="paymentType === 'installment'">
-      {{> user/sidebar_user_profile/history_payment/installment/index }}
-    </div>
-
-  </div>
-
+  {{/components/ui/super_admin/modal/detail/index}}
 </div>
+
+{{> components/ui/super_admin/table/client_table }}
+
+<script>
+  function paymentHistory() {
+    const base = clientTable({
+      url: '/payment/api/history',
+      dataKey: 'data',
+      size: 5,
+      searchKeys: ['courseName', 'no', 'method'],
+    });
+
+    // defineProperties di bawah MENIMPA base.load dengan load() milik extension,
+    // jadi referensi aslinya harus dipegang lebih dulu — kalau tidak, load()
+    // memanggil dirinya sendiri dan daftar berhenti di keadaan loading.
+    const baseLoad = base.load;
+
+    const emptyDraft = () => ({ from: '', to: '', status: '', method: '', program: '' });
+
+    const extension = {
+      // Semua baris apa adanya dari server. `items` milik clientTable adalah
+      // hasil filter yang sedang aktif, jadi sumbernya harus disimpan terpisah.
+      source: [],
+
+      // select_field super admin membaca formData/formErrors dan memanggil
+      // validateField/touch. Filter tidak punya validasi, jadi keduanya no-op.
+      formData: emptyDraft(),
+      formErrors: {},
+      validateField() {},
+      touch() {},
+
+      // Nilai yang sudah ditekan Apply. Dipisah dari formData supaya memilih
+      // dropdown belum langsung mengubah daftar, sesuai tombol Apply di desain.
+      applied: emptyDraft(),
+
+      get draft() {
+        return this.formData;
+      },
+
+      statusOptions: [
+        { value: '', label: 'All Status' },
+        { value: 'paid', label: 'Paid', dot: 'bg-[#22c55e]' },
+        { value: 'processing', label: 'Processing', dot: 'bg-[#f59e0b]' },
+        { value: 'failed', label: 'Failed', dot: 'bg-[#ef4444]' },
+      ],
+
+      get methodOptions() {
+        const methods = [...new Set(this.source.map((r) => r.method).filter(Boolean))];
+        return [{ value: '', label: 'All Methods' }, ...methods.map((m) => ({ value: m, label: m }))];
+      },
+
+      get programOptions() {
+        const programs = [...new Set(this.source.map((r) => r.courseName).filter(Boolean))];
+        return [{ value: '', label: 'All Programs' }, ...programs.map((p) => ({ value: p, label: p }))];
+      },
+
+      get rangeLabel() {
+        const total = this.filtered.length;
+        if (total === 0) return 'No history';
+        const start = (this.currentPage - 1) * this.size + 1;
+        const end = Math.min(start + this.size - 1, total);
+        return `Showing ${start}-${end} of ${total} history`;
+      },
+
+      async load() {
+        await baseLoad.call(this);
+        this.source = this.items;
+        this.applyFilters();
+      },
+
+      applyFilters() {
+        this.applied = { ...this.formData };
+        const { from, to, status, method, program } = this.applied;
+
+        this.items = this.source.filter((row) => {
+          if (status && row.status !== status) return false;
+          if (method && row.method !== method) return false;
+          if (program && row.courseName !== program) return false;
+          if (from && new Date(row.date) < new Date(from)) return false;
+          // `to` mencakup seluruh hari itu, bukan berhenti di tengah malamnya.
+          if (to && new Date(row.date) > new Date(to + 'T23:59:59')) return false;
+          return true;
+        });
+
+        this.currentPage = 1;
+        this.applySearch(this.searchInput);
+      },
+
+      resetFilters() {
+        this.formData = emptyDraft();
+        this.searchInput = '';
+        this.applyFilters();
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '—';
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      },
+
+      formatAmount(value) {
+        const number = Number(value);
+        if (Number.isNaN(number)) return '—';
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+      },
+
+      kindLabel(kind) {
+        return kind === 'registration'
+          ? 'Registration'
+          : kind === 'installment'
+            ? 'Installment payment'
+            : 'Full payment';
+      },
+    };
+
+    // defineProperties, bukan spread: spread mengevaluasi getter menjadi nilai
+    // statis, sehingga `rows`, `totalPages`, `methodOptions`, dan `programOptions`
+    // tidak akan pernah ikut berubah.
+    return Object.defineProperties(base, Object.getOwnPropertyDescriptors(extension));
+  }
+</script>

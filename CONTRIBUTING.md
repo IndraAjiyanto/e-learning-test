@@ -81,6 +81,78 @@ background lives on the `<section>` and breaks out there, never by widening the 
 The landing page (`dashboard.hbs`) is the exception - it is a stack of full-bleed
 sections, each of whose inner container should use the `.page-shell` values.
 
+## User area (role `user`)
+
+Everything a logged-in student sees. The full plan, the gap per tab and the
+ticket-sized work packages live in
+[`docs/user-area-design-alignment-plan.md`](docs/user-area-design-alignment-plan.md).
+Two rules decide how a student page is built:
+
+1. **Where a Figma frame exists, Figma decides the layout.** Dashboard, Profile,
+   the My Learning list and the program detail screens have frames; their node
+   IDs are in the plan.
+2. **Everywhere else, follow the matching super admin page.** Reuse the
+   components under `src/views/partials/components/ui/super_admin/` as they are.
+   They are plain partials with no role gating. Never change a component's
+   defaults to suit a student page: pass `class` or an existing prop instead. If
+   a new prop is genuinely needed, that is its own PR, reviewed by whoever owns
+   the super admin page.
+
+The shared tokens, in short:
+
+| Element | Use |
+|---|---|
+| Page container | `p-4 sm:px-[34px] sm:py-[42px]`, inner `flex flex-col gap-7` |
+| Title + intro | `super_admin/page_header/index` (`titleTag='h2'` inside the shell) + `super_admin/description/index` |
+| Card | `rounded-xl border border-[#d9d9d9] bg-white p-5`, via `detail/section_card` or `form/section_card` |
+| Read-only field | `super_admin/detail/field/index` |
+| Inputs | `super_admin/form/text_field`, `super_admin/form/select_field` |
+| Buttons | `super_admin/form/button`, gated per [`docs/form-submit-gating.md`](docs/form-submit-gating.md) |
+| Lists | `super_admin/table/client_table` + `table/toolbar` + `table/card` |
+| Status | `super_admin/badge/index` |
+| Modals | `super_admin/modal/{detail,delete_confirm}/index` |
+| Feedback | `super_admin/toast/success/index` (already mounted once in the shell) |
+| Empty state | `components/ui/empty_state/index` |
+
+No hard-coded `text-[NNpx]` and no `shadow-[0px_0px_...]` in this tree. Headings
+come from the components; body copy is `font-inter`.
+
+Before opening a PR that touches this area, run the gate on the paths you
+changed:
+
+```bash
+scripts/check-user-area.sh src/views/partials/user/<what-you-touched>
+```
+
+It fails on hard-coded sizes, old heavy shadows, `href="#"`, and on any
+admin/super_admin file showing up in `git status`. It also prints the remaining
+per-element font count, which is tracked, not blocking.
+
+**Never touch** `src/views/admin/`, `src/views/partials/super_admin/`, or any
+controller path gated to `admin`/`super_admin`.
+
+Local data: `npm run seed` (accounts, all verified), `npm run seed:content`
+(marketing content), `npm run seed:student` (three programs, five weeks, ten
+sessions, materials, attendance, logbooks in every status, assignments with and
+without submissions, five quizzes, progress, three portfolio items, and sixteen
+payment rows across every status and payment method). Log in as
+`indra@gmail.com` / `12345678`. Without the third seed every student tab renders
+its empty state and nothing can be reviewed. Scale it down with
+`SEED_WEEKS=2 SEED_PAYMENTS=4 npm run seed:student`.
+
+Before asking for review, run the screens in a real browser:
+
+```bash
+npx playwright install chromium   # once
+npm run test:ui
+```
+
+It walks nine student screens at the design frame width, screenshots each into
+`test/ui/shots/`, and checks titles, the elements the frames show, console
+errors, and whether every Alpine expression on the page actually compiles. That
+last check is the one that catches an attribute cut short by a component's
+quoting rule, which neither grep nor a 200 response will show you.
+
 ## Docs
 
 - Page refactor hand-off notes: `docs/<page>-handover.md`
