@@ -1,10 +1,7 @@
-{{> sub_partials/session/logbook_tab/header}}
-
-{{> sub_partials/session/logbook_tab/table}}
+{{!-- Logbook Review — Container - Logbook Review (e85DZk) slice-accurate, prefix logbook- --}}
+{{> components/ui/admin/logbook/logbook-table}}
 
 {{> sub_partials/session/logbook_tab/modal_information}}
-
-{{> sub_partials/session/logbook_tab/pagination}}
 
 <script>
   // Alpine.js Component: Logbook Table
@@ -30,7 +27,7 @@
       get filteredData() {
         let filtered = this.data.filter(l =>
           (
-            `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username}`
+            `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
           ).toLowerCase()
           .includes(this.search.toLowerCase())
         );
@@ -48,7 +45,7 @@
         try {
           const filtered = this.data.filter(l =>
             (
-              `${l.activity} ${l.activityDetails} ${l.obstacles}`
+              `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
             )
               .toLowerCase()
               .includes(this.search.toLowerCase())
@@ -63,12 +60,14 @@
             AdditionalDocumentation: log.otherDocumentation || "-",
             Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
+            Email: log.user?.email || "-",
+            LinkedIn: log.user?.linkedin || log.user?.biodata?.linkedin || "-",
             Status:
-              log.process === "acc"
+              log.process === "approved"
                 ? "Approved"
-                : log.process === "proces"
-                ? "Process"
-                : "Rejected",
+                : log.process === "rejected"
+                ? "Rejected"
+                : "Under Review",
             Date: this.formatDate(log.createdAt)
           }));
 
@@ -80,10 +79,13 @@
             { wch: 30 },
             { wch: 50 },
             { wch: 40 },
+            { wch: 40 },
             { wch: 60 },
             { wch: 25 },
             { wch: 20 },
-            { wch: 12 },
+            { wch: 25 },
+            { wch: 30 },
+            { wch: 14 },
             { wch: 20 }
           ];
 

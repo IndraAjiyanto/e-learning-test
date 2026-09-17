@@ -1,0 +1,17 @@
+{{!--
+  Component: Mentor LinkedIn Link (Admin) — atomic, prefix mentor-link-
+  Path: components/ui/admin/text/mentor-link.hbs
+  Dipakai: {{> components/ui/admin/text/mentor-link}} di dalam x-for `mentor` (Mentors { linkedin })
+  Alpine scope: `mentor.linkedin`
+  Pencil H6vxaE Col LinkedIn: text Inter 14 normal #3B82F6, hover underline, truncate, w200
+  Fallback "-" bila kosong, truncate + title tooltip (sama mentor-table).
+  Reusable: bisa dipakai di detail mentor page lain.
+--}}
+<template x-if='mentor.linkedin'>
+  <a :href='mentor.linkedin' target='_blank' rel='noopener noreferrer'
+     class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#3B82F6] font-inter font-normal text-left hover:underline'
+     x-text='mentor.linkedin' :title='mentor.linkedin'></a>
+</template>
+<template x-if='!mentor.linkedin'>
+  <div class='text-[14px]/[normal] flex-1 text-[#525252] font-inter font-normal text-left'>-</div>
+</template>
