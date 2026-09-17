@@ -166,7 +166,14 @@ export class UsersService {
   async getDashboardData(userId: string) {
     const userWithCourses = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+      relations: [
+        'userCourses',
+        'userCourses.course',
+        'userCourses.course.category',
+        // Baris Continue Learning pada frame dashboard memakai dua keterangan
+        // di bawah judul; yang kedua diambil dari tipe kelas.
+        'userCourses.course.courseType',
+      ],
     });
 
     const userCourses = userWithCourses?.userCourses ?? [];

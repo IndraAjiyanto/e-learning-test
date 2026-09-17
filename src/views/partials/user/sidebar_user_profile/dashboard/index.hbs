@@ -22,22 +22,38 @@
       history). The graduation-cap illustration below is a hand-built inline SVG
       stand-in, not the real Figma vector.
     --}}
-    <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#6B84A6] via-[#2E4A73] to-[#0A2647] px-6 py-8 sm:px-10 sm:py-10">
-      <span aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/10"></span>
-      <span aria-hidden="true" class="pointer-events-none absolute -bottom-20 right-10 size-48 rounded-full bg-white/5"></span>
+    {{!--
+      Welcome banner mengikuti frame dashboard: gradien terang di kiri menuju navy
+      pekat di kanan, teks navy di atas bagian terang, dan ilustrasi kartu wisuda
+      di dalam elips. Sebelumnya gradien mulai dari #6B84A6 sehingga teks navy
+      duduk di atas warna menengah dan nyaris tak terbaca.
+      Ilustrasinya SVG inline, bukan ekspor aset Figma.
+    --}}
+    <div class="relative overflow-hidden rounded-xl bg-[linear-gradient(105deg,#EEF2F7_0%,#C7D3E2_22%,#6E88A8_52%,#1E3A5F_80%,#0A2647_100%)] px-6 py-8 sm:px-10 sm:py-10">
       <div class="relative flex items-center justify-between gap-6">
         <div class="flex flex-col gap-2">
           <span class="text-xs font-bold uppercase tracking-[0.15em] text-[#0B1F3B]">Welcome back,</span>
           <h1 class="text-2xl font-bold text-[#0B1F3B] sm:text-3xl">{{user.username}}</h1>
           <p class="max-w-lg text-sm text-[#0B1F3B]/70">Keep learning, keep growing. Your next achievement is just one step away!</p>
         </div>
-        <div class="relative hidden shrink-0 sm:block">
-          <span aria-hidden="true" class="grid size-32 place-items-center rounded-full bg-white/15">
-            <span class="grid size-16 place-items-center rounded-[10px] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              <i class="fas fa-graduation-cap text-2xl text-[#0A2647]"></i>
-            </span>
-          </span>
-        </div>
+
+        {{!-- Ilustrasi: elips lembut, kartu putih miring berisi topi wisuda, dan
+             garis pohon tipis di kanan - menirukan susunan pada frame. --}}
+        <svg aria-hidden="true" class="pointer-events-none hidden h-[150px] w-[320px] shrink-0 sm:block" viewBox="0 0 320 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="150" cy="75" rx="150" ry="72" fill="#FFFFFF" fill-opacity="0.13" />
+          <g transform="rotate(-7 128 74)">
+            <rect x="60" y="28" width="136" height="92" rx="12" fill="#FFFFFF" />
+            <rect x="60.75" y="28.75" width="134.5" height="90.5" rx="11.25" stroke="#0A2647" stroke-width="1.5" />
+            <path d="M128 58 L160 72 L128 86 L96 72 Z" stroke="#0A2647" stroke-width="3.2" stroke-linejoin="round" fill="none" />
+            <path d="M108 78 V92 C108 97 117 101 128 101 C139 101 148 97 148 92 V78" stroke="#0A2647" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            <path d="M160 72 V88" stroke="#0A2647" stroke-width="3.2" stroke-linecap="round" />
+          </g>
+          <g stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="1.6" fill="none" stroke-linecap="round">
+            <path d="M260 124 V74" />
+            <path d="M260 92 C244 88 236 74 240 58 C256 60 264 74 260 92 Z" />
+            <path d="M260 84 C276 80 284 66 280 50 C264 52 256 66 260 84 Z" />
+          </g>
+        </svg>
       </div>
     </div>
 
@@ -53,20 +69,39 @@
           @click="toggleActiveSection('{{lookup this 5}}')"
           class="flex items-center gap-4 rounded-xl border border-[#E5E7EB] bg-white p-6 text-left shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] cursor-pointer"
         >
-          <span class="grid size-12 shrink-0 place-items-center rounded-[10px]" style="background-color:{{lookup this 3}};color:{{lookup this 4}};">
+          {{!-- Frame memakai lingkaran penuh, bukan kotak membulat. --}}
+          <span class="grid size-12 shrink-0 place-items-center rounded-full" style="background-color:{{lookup this 3}};color:{{lookup this 4}};">
             <i class="fas {{lookup this 0}} text-lg"></i>
           </span>
           <div class="flex flex-1 flex-col min-w-0">
             <span class="text-2xl font-bold text-[#111827]">{{lookup this 1}}</span>
             <span class="text-sm text-[#6B7280]">{{lookup this 2}}</span>
           </div>
-          <i class="fas fa-chevron-right shrink-0 text-sm text-[#94A3B8]"></i>
+          {{!-- Frame memakai panah biru, bukan chevron abu-abu. --}}
+          <i class="fas fa-arrow-right shrink-0 text-sm text-[#0369A1]"></i>
         </button>
       {{/each}}
     </div>
 
-    {{!-- Continue Learning --}}
-    <div class="rounded-xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
+    {{!--
+      Continue Learning mengikuti frame: thumbnail pastel besar berisi ikon,
+      dua keterangan di bawah judul (kategori + tipe kelas), pemisah antar baris,
+      lalu penghitung dan paginasi di kaki kartu.
+
+      Paginasinya di sisi klien: daftar course yang sedang berjalan selalu pendek,
+      jadi tidak perlu rute baru. perPage 3 mengikuti jumlah baris pada frame.
+
+      Warna thumbnail berputar tiga langkah seperti pada frame (biru, ungu, hijau);
+      itu murni hiasan, tidak menyandikan arti apa pun.
+    --}}
+    <div
+      class="rounded-xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition"
+      x-data="{ page: 1, perPage: 3, total: {{ongoingCourses.length}},
+                get pages() { return Math.max(1, Math.ceil(this.total / this.perPage)); },
+                get from() { return this.total === 0 ? 0 : (this.page - 1) * this.perPage + 1; },
+                get to() { return Math.min(this.page * this.perPage, this.total); },
+                shows(i) { return i > (this.page - 1) * this.perPage && i <= this.page * this.perPage; } }"
+    >
       <div class="mb-5 flex items-center justify-between">
         <h2 class="text-lg font-bold text-[#111827]">Continue Learning</h2>
         <button type="button" @click="toggleActiveSection('learning')" class="text-sm font-semibold text-[#0369A1] hover:underline cursor-pointer">View All Programs <i class="fas fa-arrow-right text-xs"></i></button>
@@ -74,16 +109,18 @@
       {{#if ongoingCourses.length}}
         <div class="flex flex-col divide-y divide-[#E5E7EB]">
           {{#each ongoingCourses}}
-            <div class="flex flex-col gap-3 items-center py-4 first:pt-0 last:pb-0 sm:flex-row sm:justify-between">
-              <div class="flex items-center gap-3.5 min-w-0 w-full sm:w-auto">
-                <span class="grid size-14 shrink-0 place-items-center rounded-[10px] bg-[#E0F2F9] text-[#0369A1]">
-                  <i class="fas fa-laptop-code text-2xl"></i>
+            <div x-show="shows({{addOne @index}})" class="flex flex-col gap-3 items-center py-4 first:pt-0 last:pb-0 sm:flex-row sm:justify-between">
+              <div class="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+                <span class="grid size-20 shrink-0 place-items-center rounded-xl {{#if (eq (mod @index 3) 0)}}bg-[#DBEAFE]{{else if (eq (mod @index 3) 1)}}bg-[#EDE9FE]{{else}}bg-[#DCFCE7]{{/if}}">
+                  <span class="grid size-12 place-items-center rounded-lg {{#if (eq (mod @index 3) 0)}}bg-[#60A5FA]{{else if (eq (mod @index 3) 1)}}bg-[#A78BFA]{{else}}bg-[#4ADE80]{{/if}}">
+                    <i class="fas {{#if (eq (mod @index 3) 0)}}fa-desktop{{else if (eq (mod @index 3) 1)}}fa-table-columns{{else}}fa-user{{/if}} text-lg text-white"></i>
+                  </span>
                 </span>
-                <div class="flex flex-col gap-0.5 min-w-0">
+                <div class="flex flex-col gap-1 min-w-0">
                   <span class="truncate font-semibold text-[#111827]">{{this.course.name}}</span>
-                  {{#if this.course.category.name}}
-                    <span class="text-xs font-medium text-[#6B7280]">{{this.course.category.name}}</span>
-                  {{/if}}
+                  <span class="text-xs font-medium text-[#6B7280]">
+                    {{#if this.course.category.name}}{{this.course.category.name}}{{/if}}{{#if this.course.courseType.nameClassesType}}{{#if this.course.category.name}} &middot; {{/if}}{{this.course.courseType.nameClassesType}}{{/if}}
+                  </span>
                 </div>
               </div>
               <button
@@ -96,18 +133,45 @@
             </div>
           {{/each}}
         </div>
+
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#E5E7EB] pt-5">
+          <span class="text-sm text-[#6B7280]">
+            Showing <span x-text="from"></span>-<span x-text="to"></span> of <span x-text="total"></span> course<template x-if="total !== 1"><span>s</span></template>
+          </span>
+          <div class="flex items-center gap-2" x-show="pages > 1">
+            <template x-for="p in pages" :key="p">
+              <button
+                type="button"
+                @click="page = p"
+                x-text="p"
+                class="size-9 rounded-lg border text-sm font-semibold transition-colors cursor-pointer"
+                :class="page === p ? 'border-[#003060] bg-[#003060] text-white' : 'border-[#E5E7EB] bg-white text-[#475569] hover:bg-[#F4F7FC]'"
+              ></button>
+            </template>
+          </div>
+        </div>
       {{else}}
         <p class="text-sm text-[#6B7280]">No courses in progress right now - nice work keeping up, or time to start a new one from "My Learning".</p>
       {{/if}}
     </div>
 
-    {{!-- Activity summary --}}
+    {{!--
+      Ringkasan aktivitas mengikuti frame: judul panjang, tautan di kanan, dan
+      butir-butir berupa kalimat. Frame juga menggambarkan kelompok kedua berisi
+      kejadian terbaru ("tugas Matematika dikumpulkan hari ini 9.30"), tetapi
+      datanya belum ada di aplikasi; menuliskannya berarti mengarang angka,
+      persis yang dulu dibersihkan dari partial ini. Jadi yang ditampilkan hanya
+      hitungan yang benar-benar berasal dari database.
+    --}}
     <div class="rounded-xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
-      <h2 class="mb-5 text-lg font-bold text-[#111827]">Student Activity Summary</h2>
-      <ul class="flex flex-col gap-3 text-sm text-[#374151]">
-        <li class="flex items-center gap-2.5"><i class="fas fa-graduation-cap w-4 text-[#003060]"></i>Enrolled in {{userWithCourses.userCourses.length}} program{{#unless (eq userWithCourses.userCourses.length 1)}}s{{/unless}} total</li>
-        <li class="flex items-center gap-2.5"><i class="fas fa-clipboard-list w-4 text-[#003060]"></i>{{logbooks.length}} logbook entr{{#if (eq logbooks.length 1)}}y{{else}}ies{{/if}} logged</li>
-        <li class="flex items-center gap-2.5"><i class="fas fa-folder-open w-4 text-[#003060]"></i>{{portfolio.length}} portfolio item{{#unless (eq portfolio.length 1)}}s{{/unless}} submitted</li>
+      <div class="mb-5 flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-[#111827]">Student Activity Dashboard Summary</h2>
+        <button type="button" @click="toggleActiveSection('learning')" class="shrink-0 text-sm font-semibold text-[#0369A1] hover:underline cursor-pointer">View All Courses <i class="fas fa-arrow-right text-xs"></i></button>
+      </div>
+      <ul class="flex flex-col gap-3 text-sm font-semibold text-[#374151]">
+        <li class="flex gap-2"><span aria-hidden="true" class="text-[#374151]">&bull;</span>Enrolled in {{userWithCourses.userCourses.length}} program{{#unless (eq userWithCourses.userCourses.length 1)}}s{{/unless}} total.</li>
+        <li class="flex gap-2"><span aria-hidden="true" class="text-[#374151]">&bull;</span>{{logbooks.length}} logbook entr{{#if (eq logbooks.length 1)}}y{{else}}ies{{/if}} logged.</li>
+        <li class="flex gap-2"><span aria-hidden="true" class="text-[#374151]">&bull;</span>{{portfolio.length}} portfolio item{{#unless (eq portfolio.length 1)}}s{{/unless}} submitted.</li>
       </ul>
     </div>
   </div>

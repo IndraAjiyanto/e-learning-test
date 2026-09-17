@@ -46,35 +46,35 @@
           href="/users/profile?tab=dashboard"
           class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'dashboard')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
-          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-gauge-high text-base"></i></span>
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-table-cells-large text-base"></i></span>
           <span class="whitespace-nowrap">Dashboard</span>
         </a>
         <a
           href="/users/profile?tab=profile"
           class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'profile')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
-          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-user text-base"></i></span>
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'profile')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span></span>
           <span class="whitespace-nowrap">Profile</span>
         </a>
         <a
           href="/users/profile?tab=learning"
           class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'learning')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
-          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-book-open text-base"></i></span>
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'learning')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span></span>
           <span class="whitespace-nowrap">My Learning</span>
         </a>
         <a
           href="/users/profile?tab=portfolio"
           class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'portfolio')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
-          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-folder-open text-base"></i></span>
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'portfolio')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span></span>
           <span class="whitespace-nowrap">My Portfolio</span>
         </a>
         <a
           href="/users/profile?tab=history-payment"
           class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'history-payment')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
-          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-clock-rotate-left text-base"></i></span>
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'history-payment')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span></span>
           <span class="whitespace-nowrap">Payment History</span>
         </a>
       </nav>

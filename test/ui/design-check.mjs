@@ -42,8 +42,35 @@ const SCREENS = [
       check(s, 'page title "Welcome back" banner', await page.getByText('WELCOME BACK', { exact: false }).count() > 0);
       check(s, '3 stat cards', await page.locator('text=/Ongoing Courses|Completed Courses|Portfolio Published/').count() >= 3);
       check(s, 'Continue Learning section', await page.getByText('Continue Learning').count() > 0);
-      check(s, 'Student Activity Summary', await page.getByText(/Student Activity/i).count() > 0);
-      check(s, 'banner illustration (frame has one)', await page.locator('main img[alt*="illustration" i]').count() > 0, 'known gap: no asset');
+      check(s, 'Student Activity Dashboard Summary', await page.getByText(/Student Activity Dashboard Summary/i).count() > 0);
+      check(s, '"View All Courses" link', await page.getByRole('button', { name: /View All Courses/i }).count() > 0);
+
+      // Ilustrasi banner dulu tercatat sebagai gap karena menunggu aset. Kini
+      // digambar sebagai SVG inline (elips + kartu wisuda + pohon), jadi yang
+      // diperiksa elemen svg-nya, bukan <img>.
+      check(s, 'banner illustration present',
+        await page.locator('div[x-show="activeSection === \'dashboard\'"] svg ellipse').count() > 0);
+
+      // Frame memakai gradien terang-ke-gelap dari kiri ke kanan, dengan teks navy
+      // di bagian terang. Sebelumnya gradien mulai dari warna menengah sehingga
+      // teks navy nyaris tak terbaca.
+      const bannerBg = await page.getByText('WELCOME BACK', { exact: false })
+        .evaluate((el) => {
+          const banner = el.closest('div[class*="gradient"], div[class*="linear-gradient"]');
+          return banner ? getComputedStyle(banner).backgroundImage : '';
+        });
+      check(s, 'banner runs light on the left', /EEF2F7|238,\s*242,\s*247/i.test(bannerBg), bannerBg.slice(0, 60));
+
+      // Kartu statistik: frame memakai lingkaran penuh dan panah, bukan kotak
+      // membulat dan chevron.
+      check(s, 'stat icons are circles',
+        await page.locator('button:has-text("Ongoing Courses") span.rounded-full').count() > 0);
+      check(s, 'stat cards end with an arrow',
+        await page.locator('button:has-text("Ongoing Courses") i.fa-arrow-right').count() > 0);
+
+      // Baris Continue Learning: thumbnail besar + penghitung di kaki kartu.
+      check(s, 'Continue Learning thumbnails', await page.locator('.size-20').count() > 0);
+      check(s, 'Continue Learning counter', await page.getByText(/Showing .* of .* course/i).count() > 0);
     },
   },
   {
