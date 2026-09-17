@@ -148,6 +148,10 @@ export class Course {
   @Exclude()
   userCourses: UserCourse[];
 
+  // Diisi hanya oleh query yang memakai loadRelationCountAndMap('course.enrolledCount').
+  // Bukan kolom tabel, jadi tidak ada @Column di sini.
+  enrolledCount?: number;
+
   @OneToMany(() => Mentorings, (mentoring) => mentoring.course, {
     cascade: true,
     onDelete: 'CASCADE',

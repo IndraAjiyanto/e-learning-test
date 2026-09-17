@@ -247,6 +247,16 @@ export class UsersController {
           .map((c) => [c.category.id, c.category]),
       ).values(),
     ];
+    // Dropdown "All Type" pada frame My Learning. Sama seperti `category`,
+    // isinya diturunkan dari program yang benar-benar diikuti student, jadi
+    // filter tidak pernah menawarkan tipe yang tak punya hasil.
+    const courseType = [
+      ...new Map(
+        course
+          .filter((c) => c.courseType)
+          .map((c) => [c.courseType.id, c.courseType]),
+      ).values(),
+    ];
     const { dashboardStats, ongoingCourses } =
       await this.usersService.getDashboardData(user.id);
     return res.render('user/user_profile/index', {
@@ -256,6 +266,7 @@ export class UsersController {
       logbooks,
       course,
       category,
+      courseType,
       dashboardStats,
       ongoingCourses,
       bareShell: true,

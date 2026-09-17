@@ -18,6 +18,10 @@
   Pemanggil WAJIB dirender dengan `bareShell: true` supaya layouts/main.hbs
   tidak ikut memasang navbar publik dan footer.
 
+  Chrome-nya terkunci: frame ini setinggi viewport dan tidak ikut menggulung.
+  App bar dan sidebar tetap di tempatnya, hanya <main> yang punya scroll sendiri.
+  Jadi isi halaman TIDAK boleh memasang `min-h-screen` lagi.
+
   Props:
   - user   : object (wajib)
   - active : 'dashboard' | 'profile' | 'learning' | 'portfolio' | 'history-payment'
@@ -32,12 +36,12 @@
 {{!-- lang disediakan di sini karena komponen lang_switcher membacanya dari scope
      Alpine induk. Shell mendefinisikannya di x-data miliknya; halaman berdiri
      sendiri tidak punya itu, sehingga pemilih bahasanya dulu terender kosong. --}}
-<div class="relative flex min-h-screen flex-col bg-[#F2F2F3] font-montserrat" x-data="{ lang: '{{lang}}' }">
+<div class="relative flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col overflow-hidden bg-[#F2F2F3] font-montserrat" x-data="{ lang: '{{lang}}' }">
   {{> user/app_bar/index user=user }}
 
-  <div class="flex w-full flex-1 items-stretch">
+  <div class="flex w-full flex-1 min-h-0 items-stretch">
     <div class="hidden w-64 shrink-0 self-stretch border-r border-[#D9D9D9] bg-white lg:flex">
-      <nav class="w-full space-y-2.5 p-5 pb-24">
+      <nav class="w-full h-full overflow-y-auto space-y-2.5 p-5 pb-24">
         <a
           href="/users/profile?tab=dashboard"
           class="flex h-11 w-full items-center gap-3 rounded-lg px-3.5 py-2.5 font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'dashboard')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
@@ -83,7 +87,7 @@
       </a>
     </div>
 
-    <main class="min-w-0 flex-1">
+    <main class="min-w-0 flex-1 min-h-0 overflow-y-auto">
       {{#if back}}
         <div class="px-4 pt-4 sm:px-[34px] sm:pt-[42px]">
           <a href="{{back}}" class="inline-flex h-11 items-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#f9fafb]">

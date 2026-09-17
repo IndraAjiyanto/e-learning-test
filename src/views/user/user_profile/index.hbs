@@ -17,7 +17,7 @@
   window.userCourses = {{{json userWithCourses.userCourses}}};
 </script>
 <div 
-  class="relative min-h-screen flex flex-col justify-between bg-[#F2F2F3] font-montserrat overflow-x-hidden"
+  class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-montserrat overflow-hidden"
   x-data="{
     sidebarOpen: true,
     lang: '{{lang}}',
@@ -119,11 +119,11 @@
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
   {{> user/app_bar/index user=user sidebarToggle=true }}
 
-  <div class="relative z-10 max-w-full flex-1 flex flex-col mb-0">
+  <div class="relative z-10 max-w-full flex-1 min-h-0 flex flex-col mb-0">
 
     {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
     <!-- Mobile Horizontal Scroll Navigation -->
-    <div class="lg:hidden mb-6 -mx-4 sm:mx-0 px-4 sm:px-0">
+    <div class="lg:hidden shrink-0 mb-6 -mx-4 sm:mx-0 px-4 sm:px-0">
       <div class="overflow-x-auto no-scrollbar">
         <nav class="flex space-x-3 min-w-max sm:min-w-0 pb-4">
 
@@ -197,12 +197,12 @@
     {{/unless}}
 
     <!-- Flex Main Layout (Flex-1 Full Height to Footer) -->
-    <div class="flex flex-col lg:flex-row items-stretch w-full flex-1 min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-72px)]">
+    <div class="flex flex-col lg:flex-row items-stretch w-full flex-1 min-h-0">
 
       {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
       <!-- Desktop Sidebar Navigation: the outer box self-stretches to match the taller
            content column (so the white background + border never "cuts off" early). Nav
-           is its own sticky-scrolling region within that box. Log Out is a genuinely
+           is its own scrolling region within that box. Log Out is a genuinely
            separate `fixed` element pinned to the viewport bottom - not flex-distributed
            with nav - so it never moves regardless of how tall the nav content gets. -->
       <div
@@ -210,7 +210,7 @@
         :class="sidebarOpen ? 'w-64' : 'w-20'"
       >
         <nav
-          class="w-full lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-72px)] overflow-y-auto space-y-2.5 pr-1 pb-24"
+          class="w-full h-full overflow-y-auto space-y-2.5 pr-1 pb-24"
           :class="sidebarOpen ? 'p-5 pt-5' : 'px-2.5 pt-5'"
         >
 
@@ -324,7 +324,7 @@
       {{/unless}}
 
       <!-- Right Content Section -->
-      <div class="flex-1 w-full min-w-0">
+      <div class="flex-1 w-full min-w-0 min-h-0 overflow-y-auto">
         
         <!-- Dashboard Tab Content -->
         <div x-show="activeSection === 'dashboard'">

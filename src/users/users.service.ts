@@ -96,6 +96,7 @@ export class UsersService {
         userCourses: {
           course: {
             category: true,
+            courseType: true,
             weeks: true,
           },
         },

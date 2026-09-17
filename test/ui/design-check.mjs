@@ -75,17 +75,43 @@ const SCREENS = [
     design: 'my-learning.png',
     async assert(page, s) {
       check(s, 'title "My Learning"', await page.getByRole('heading', { name: 'My Learning' }).count() > 0);
-      check(s, 'filter row', await page.locator('text=/All Category|All Type|All Method/').count() >= 1);
+      check(s, 'subtitle from the frame', await page.getByText(/Explore our premium classes/i).count() > 0);
+
+      // Bilah filter frame: Filter + tiga dropdown + pencarian di kanan.
+      check(s, 'Filter label', await page.getByText('Filter', { exact: true }).count() > 0);
+      check(s, '"All Categories" dropdown', await page.getByText(/All Categories/i).count() > 0);
+      check(s, '"All Types" dropdown', await page.getByText(/All Types/i).count() > 0);
+      check(s, '"All Methods" dropdown', await page.getByText(/All Methods/i).count() > 0);
+      check(s, 'search for class name', await page.locator('input[placeholder*="class name" i]').count() > 0);
+
       check(s, 'programs counter', await page.getByText(/programs? available/i).count() > 0);
 
-      // Kartu program harus membuka Start Learning DI DALAM shell. Sebelumnya
-      // menuju /program/:id yang dirender tanpa bareShell, sehingga student
-      // mendapat navbar dan footer landing di tengah area backoffice.
-      const cardHrefs = await page.locator('[x-show*="learning"] a[href^="/program"]')
-        .evaluateAll((els) => els.map((el) => el.getAttribute('href')));
-      check(s, 'program cards stay inside the shell',
-        cardHrefs.length > 0 && cardHrefs.every((h) => h.includes('/program/myProgram/')),
-        cardHrefs.filter((h) => !h.includes('/program/myProgram/')).slice(0, 2).join(' | '));
+      // Kartu program pada frame: chip, kuota dengan bar, tombol View Program.
+      const cards = page.locator('a:has-text("View Program")');
+      const cardCount = await cards.count();
+      check(s, 'program cards render', cardCount > 0, `found ${cardCount}`);
+      check(s, 'quota bar on every card',
+        await page.locator('[role="progressbar"]').count() === cardCount,
+        `${await page.locator('[role="progressbar"]').count()} bars for ${cardCount} cards`);
+      check(s, 'quota label resolves (not a raw i18n key)',
+        await page.getByText(/programSection\./).count() === 0);
+
+      // Kuota harus memakai jumlah peserta sebenarnya. Query filter menyaring
+      // join userCourses pada user yang login, jadi tanpa hitungan terpisah
+      // setiap kartu akan selalu menampilkan "1 / N".
+      const quotas = await page.locator('[role="progressbar"]').evaluateAll(
+        (els) => els.map((el) => Number(el.getAttribute('aria-valuenow'))));
+      check(s, 'quota reflects real enrollment, not always 1',
+        quotas.length > 0 && quotas.some((q) => q > 0), quotas.join(','));
+
+      // Tombol kartu menuju /program/:id; untuk program yang sudah diikuti rute
+      // itu mengalihkan student kembali ke area belajar di dalam shell.
+      const first = await cards.first().getAttribute('href');
+      await page.goto(`${BASE}${first}`, { waitUntil: 'networkidle' });
+      check(s, 'card lands inside the backoffice shell',
+        new URL(page.url()).pathname.startsWith('/program/myProgram/'), page.url());
+      await page.goto(`${BASE}/users/profile?tab=learning`, { waitUntil: 'networkidle' });
+      await page.waitForTimeout(800);
     },
   },
   {
@@ -133,7 +159,10 @@ const SCREENS = [
     async assert(page, s) {
       check(s, 'title "Start Learning"', await page.getByRole('heading', { name: 'Start Learning' }).count() > 0);
       check(s, 'subtitle about unlocking', await page.getByText(/Complete each week/i).count() > 0);
-      check(s, 'breadcrumb "My Learning / Start Learning"', await page.getByRole('navigation', { name: 'Breadcrumb' }).count() > 0);
+      // Pemilik meminta breadcrumb dihapus dari seluruh area student, termasuk
+      // Start Learning, meskipun frame desainnya menggambarkannya.
+      check(s, 'no breadcrumb anywhere in the student area',
+        await page.getByRole('navigation', { name: 'Breadcrumb' }).count() === 0);
       // Diperiksa lewat innerText kontainer: isinya datang dari fragment, dan
       // getByText tidak menjangkaunya dengan andal.
       const learning = await page.locator('#start-learning-container').innerText();
@@ -333,6 +362,37 @@ for (const screen of SCREENS) {
     return [...new Set(out)];
   });
   check(screen.name, 'every Alpine expression compiles', badExpr.length === 0, badExpr.slice(0, 2).join(' | '));
+
+  // Chrome area student harus terkunci: app bar dan sidebar tidak ikut bergulir,
+  // hanya kolom konten yang punya scroll sendiri. Dulu root shell memakai
+  // `min-h-screen` + `overflow-x-hidden`, yang diam-diam membuatnya jadi scroll
+  // container sehingga `sticky` pada app bar tidak pernah aktif.
+  const chrome = await page.evaluate(() => {
+    const header = document.querySelector('header');
+    const sidebar = document.querySelector('nav.overflow-y-auto');
+    // kolom konten = elemen yang benar-benar bisa digulung
+    const scroller = [...document.querySelectorAll('main, div')].find(
+      (el) => el.scrollHeight > el.clientHeight + 8 && getComputedStyle(el).overflowY === 'auto',
+    );
+    const topOf = (el) => (el ? Math.round(el.getBoundingClientRect().top) : null);
+    const before = { header: topOf(header), sidebar: topOf(sidebar) };
+    if (scroller) scroller.scrollTop = Math.min(400, scroller.scrollHeight - scroller.clientHeight);
+    const after = { header: topOf(header), sidebar: topOf(sidebar) };
+    const doc = document.documentElement;
+    return {
+      hasHeader: !!header,
+      scrolled: scroller ? scroller.scrollTop : 0,
+      headerMoved: before.header !== null && before.header !== after.header,
+      sidebarMoved: before.sidebar !== null && before.sidebar !== after.sidebar,
+      pageScrolls: doc.scrollHeight > doc.clientHeight + 2 || document.body.scrollHeight > document.body.clientHeight + 2,
+    };
+  });
+  check(screen.name, 'window itself does not scroll (only the content column does)',
+    !chrome.pageScrolls);
+  check(screen.name, 'app bar stays pinned while content scrolls',
+    chrome.hasHeader && !chrome.headerMoved, `scrolled ${chrome.scrolled}px`);
+  check(screen.name, 'sidebar stays pinned while content scrolls',
+    !chrome.sidebarMoved, `scrolled ${chrome.scrolled}px`);
 }
 
 await browser.close();
