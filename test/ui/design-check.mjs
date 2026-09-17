@@ -597,6 +597,29 @@ for (const screen of SCREENS) {
       pageScrolls: doc.scrollHeight > doc.clientHeight + 2 || document.body.scrollHeight > document.body.clientHeight + 2,
     };
   });
+  // Halaman yang memakai shell_frame sempat melukis latarnya sendiri (#FAFAFA)
+  // di atas latar shell (#F2F2F3), sehingga muncul pita lebih terang tepat di
+  // bawah baris remah - dan sembilan halaman memakainya sementara enam lainnya
+  // tidak. Latar remah dan latar isi harus sama.
+  const bg = await page.evaluate(() => {
+    const eff = (el) => {
+      while (el) {
+        const c = getComputedStyle(el).backgroundColor;
+        if (c && c !== 'rgba(0, 0, 0, 0)') return c;
+        el = el.parentElement;
+      }
+      return 'none';
+    };
+    const crumb = document.querySelector('nav[aria-label="Breadcrumb"]');
+    const main = document.querySelector('main');
+    const inner = main && main.querySelector(':scope > div:last-child');
+    return crumb && inner ? { crumb: eff(crumb), content: eff(inner) } : null;
+  });
+  if (bg) {
+    check(screen.name, 'page background matches the breadcrumb strip',
+      bg.crumb === bg.content, `${bg.crumb} vs ${bg.content}`);
+  }
+
   const cls = await page.evaluate(() => +(window.__cls || 0).toFixed(4)).catch(() => 0);
   check(screen.name, 'layout stays put while loading (CLS < 0.1)', cls < 0.1, `CLS=${cls}`);
 
