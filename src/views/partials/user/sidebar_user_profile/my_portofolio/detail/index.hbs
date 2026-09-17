@@ -15,10 +15,10 @@
 
   <!-- HEADER SECTION -->
     <div class="text-center max-w-4xl mx-auto space-y-5">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl xl:text-[36px] text-[#003060] leading-none mb-[15px]">
+      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none mb-2">
         My Portofolio
       </h1>
-      <p class="font-montserrat font-normal text-base sm:text-lg xl:text-[20px] text-[#003060] leading-[30px] max-w-4xl mx-auto">
+      <p class="font-montserrat font-normal text-sm sm:text-base text-[#003060] leading-relaxed max-w-4xl mx-auto">
         Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
       </p>
     </div>
@@ -80,7 +80,7 @@
 
     <!-- Portfolio Title -->
     <h2 
-      class="font-montserrat font-semibold text-2xl sm:text-3xl xl:text-[36px] text-[#003060] leading-none text-center"
+      class="font-montserrat font-semibold text-xl sm:text-2xl text-[#003060] leading-none text-center"
       x-text="selectedPortfolio ? selectedPortfolio.title : 'Judul Portofolio'"
     >
       Judul Portofolio
@@ -224,7 +224,7 @@
       <a 
         :href="selectedPortfolio && selectedPortfolio.link ? selectedPortfolio.link : '#'" 
         target="_blank"
-        class="w-full h-[54px] rounded-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
+        class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-sm flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
       >
         View Portofolio
       </a>

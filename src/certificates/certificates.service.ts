@@ -51,11 +51,16 @@ export class CertificatesService {
       relations: ['course'],
     });
     if (!certificates) {
+      // Berkasnya ada di src/common/assets/sertifikat.pdf. Path lama menunjuk
+      // <cwd>/common/assets/certificates.pdf — salah folder DAN salah nama, jadi
+      // pembuatan sertifikat selalu gagal ENOENT di environment mana pun.
+      // Dua font di bawah sudah memakai pola 'src/common/...' yang benar.
       const templatePath = path.join(
         process.cwd(),
+        'src',
         'common',
         'assets',
-        'certificates.pdf',
+        'sertifikat.pdf',
       );
       const templateBytes = fs.readFileSync(templatePath);
 
