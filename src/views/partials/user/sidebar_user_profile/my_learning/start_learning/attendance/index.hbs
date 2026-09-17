@@ -130,13 +130,14 @@
   }"
 >
 
-  {{!-- Judul dihapus: label tab sudah menyebut bagian ini. Keterangannya
-       dipertahankan karena menjelaskan kenapa absensi harus diisi. --}}
-  <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
-    <p class="font-inter text-sm text-[#525252]">
-      Record your attendance to access each session's learning materials.
-    </p>
-  </div>
+  {{> components/ui/learning/tab_summary/index
+      percent=stats.sessions.percent
+      label=(concat stats.sessions.attended ' ' (t 'test.startLearning.of') ' ' stats.sessions.total ' ' (t 'test.startLearning.sessionsAttendedSuffix'))
+      hint=(t 'test.startLearning.attendanceHint')
+      items=(array
+        (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.sessions.total 'tone' 'navy')
+        (obj 'label' (t 'test.startLearning.attended') 'value' stats.sessions.attended 'tone' 'green')
+      ) }}
 
   {{#if course.weeks.length}}
     {{! The first week is always unlocked; any later week unlocks only when a WeekProgress row exists for it and the current user }}

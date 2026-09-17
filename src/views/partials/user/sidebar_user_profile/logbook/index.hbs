@@ -17,8 +17,18 @@
   <div class='flex flex-col gap-7'>
 
     <div class='flex flex-col gap-1'>
-      {{!-- Judul dihapus: label tab sudah menyebut bagian ini. Keterangan di
-           bawahnya dipertahankan karena benar-benar menambah informasi. --}}
+      {{!-- Judul dihapus: label tab sudah menyebut bagian ini. --}}
+      {{#if stats}}
+        {{> components/ui/learning/tab_summary/index
+            percent=stats.logbooks.percent
+            label=(concat stats.logbooks.approved ' ' (t 'test.startLearning.of') ' ' stats.logbooks.total ' ' (t 'test.startLearning.logbookApprovedSuffix'))
+            items=(array
+              (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.logbooks.total 'tone' 'navy')
+              (obj 'label' (t 'test.startLearning.completedCount') 'value' stats.logbooks.approved 'tone' 'green')
+              (obj 'label' (t 'test.startLearning.inReviewCount') 'value' stats.logbooks.inReview 'tone' 'amber')
+              (obj 'label' (t 'test.startLearning.rejectedCount') 'value' stats.logbooks.rejected 'tone' 'red')
+            ) }}
+      {{/if}}
       {{> components/ui/super_admin/description/index
         text='View and monitor your submitted logbook entries throughout the program.'
       }}

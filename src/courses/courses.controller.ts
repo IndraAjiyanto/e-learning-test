@@ -465,7 +465,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
     // myProgram menampilkan angka nol di semua kartu statistik.
-    const { dashboardStats, ongoingCourses } =
+    const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(req.user!.id);
 
     // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
@@ -480,6 +480,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
     // `progress` memang tidak pernah ada di dalamnya. Itu sebabnya panel
     // Certificate sempat menyatakan program yang sudah selesai sebagai belum
     // selesai. Di sini dibaca dari baris user_courses yang sebenarnya.
+    // Hitungan untuk ringkasan tab My Logbook di dalam shell.
+    const stats = activeCourse
+      ? await this.coursesService.findLearningStats(activeCourse.id, id)
+      : null;
     const enrolments = await this.usersService.findWithCourses(id);
     const activeCourseCompleted = !!enrolments?.userCourses?.find(
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
@@ -495,10 +499,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
       initialSection,
+      stats,
       activeCourseCompleted,
       portfolio,
       dashboardStats,
       ongoingCourses,
+      programComposition,
       bareShell: true,
     });
   }
@@ -586,8 +592,15 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render('partials/user/sidebar_user_profile/assignment/index', {
       course: activeCourse,
+      stats,
       layout: false,
     });
   }
@@ -605,11 +618,18 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render(
       'partials/user/sidebar_user_profile/my_learning/start_learning/attendance/index',
       {
         course: activeCourse,
         user: req.user,
+        stats,
         layout: false,
       },
     );
@@ -627,13 +647,17 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
-    return res.render(
-      'partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index',
-      {
-        course: activeCourse,
-        layout: false,
-      },
+        // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
     );
+
+    return res.render('partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index', {
+      course: activeCourse,
+      stats,
+      layout: false,
+    });
   }
 
   @Roles('user')

@@ -20,6 +20,10 @@ import { Payment } from 'src/entities/payment.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Mentors } from 'src/entities/mentor.entity';
 import { Logbook } from 'src/entities/logbook.entity';
+import { Attendance } from 'src/entities/attendance.entity';
+import { Assignment } from 'src/entities/assignment.entity';
+import { AnswerTask } from 'src/entities/answer_task.entity';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { Technology } from 'src/entities/technology.entity';
 import { Mentorings } from 'src/entities/mentoring.entity';
 import { Registration } from 'src/entities/registration.entity';
@@ -612,6 +616,175 @@ export class CoursesService {
       unlocked,
       attended,
       logbookDone,
+    };
+  }
+
+  /**
+   * Hitungan ringkas untuk kepala tiap tab program.
+   *
+   * Idenya diambil dari blok ringkasan pada halaman belajar bisa.ai: sebelum
+   * daftar panjangnya, student melihat dulu berapa yang sudah beres dan berapa
+   * yang belum. Sebelum ini tiap tab langsung menyodorkan daftar minggu tanpa
+   * memberi gambaran keseluruhan.
+   *
+   * Semuanya COUNT, bukan pengambilan baris: yang ditampilkan memang hanya
+   * angkanya, dan daftar isinya tetap diambil per minggu seperti sebelumnya.
+   */
+  async findLearningStats(courseId: string, userId: string) {
+    const em = this.sessionRepository.manager;
+
+    // CATATAN PENTING soal query builder TypeORM:
+    // `.where()` MENGGANTI seluruh kondisi yang sudah dirangkai sebelumnya,
+    // bukan menambah. Versi pertama fungsi ini memanggil `.where(course)` di
+    // akhir rantai, sehingga semua `.andWhere(user/status)` terhapus dan tiap
+    // hitungan "disetujui" maupun "ditolak" mengembalikan angka yang sama:
+    // jumlah seluruh baris pada program itu. Terlihat langsung begitu
+    // ringkasannya ditampilkan - 6 disetujui DAN 6 ditolak dari total 6.
+    // Karena itu kondisi program dipasang sebagai `.where()` PERTAMA.
+    const forCourse = (qb: any, alias: string) =>
+      qb.where(`${alias}.courseId = :courseId`, { courseId });
+
+    // Hitungan "sudah beres" memakai DISTINCT pada induknya: satu sesi bisa
+    // punya lebih dari satu baris absensi, dan satu tugas lebih dari satu
+    // jawaban. Tanpa DISTINCT, angkanya bisa melebihi totalnya - kuis sempat
+    // tampil "2 dari 1 lulus".
+    const countDistinct = async (qb: any, expr: string) => {
+      const row = await qb.select(`COUNT(DISTINCT ${expr})`, 'c').getRawOne();
+      return Number(row?.c ?? 0);
+    };
+
+    const [
+      sessionsTotal,
+      sessionsAttended,
+      assignmentsTotal,
+      assignmentsSubmitted,
+      assignmentsApproved,
+      quizzesTotal,
+      quizzesPassed,
+      logbooksTotal,
+      logbooksApproved,
+      logbooksRejected,
+    ] = await Promise.all([
+      forCourse(
+        em.createQueryBuilder(Session, 's').innerJoin('s.weeks', 'w'),
+        'w',
+      ).getCount(),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(Attendance, 'a')
+            .innerJoin('a.session', 's')
+            .innerJoin('s.weeks', 'w'),
+          'w',
+        ).andWhere('a.userId = :userId', { userId }),
+        's.id',
+      ),
+      forCourse(
+        em
+          .createQueryBuilder(Assignment, 'asg')
+          .innerJoin('asg.session', 's')
+          .innerJoin('s.weeks', 'w'),
+        'w',
+      ).getCount(),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(AnswerTask, 'at')
+            .innerJoin('at.task', 'asg')
+            .innerJoin('asg.session', 's')
+            .innerJoin('s.weeks', 'w'),
+          'w',
+        ).andWhere('at.userId = :userId', { userId }),
+        'asg.id',
+      ),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(AnswerTask, 'at')
+            .innerJoin('at.task', 'asg')
+            .innerJoin('asg.session', 's')
+            .innerJoin('s.weeks', 'w'),
+          'w',
+        )
+          .andWhere('at.userId = :userId', { userId })
+          .andWhere("at.process = 'approved'"),
+        'asg.id',
+      ),
+      forCourse(
+        em.createQueryBuilder(Quiz, 'q').innerJoin('q.weeks', 'w'),
+        'w',
+      ).getCount(),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(QuizProgress, 'qp')
+            .innerJoin('qp.quiz', 'q')
+            .innerJoin('q.weeks', 'w'),
+          'w',
+        )
+          .andWhere('qp.userId = :userId', { userId })
+          .andWhere('qp.process = true'),
+        'q.id',
+      ),
+      forCourse(
+        em
+          .createQueryBuilder(Logbook, 'l')
+          .innerJoin('l.session', 's')
+          .innerJoin('s.weeks', 'w'),
+        'w',
+      )
+        .andWhere('l.userId = :userId', { userId })
+        .getCount(),
+      forCourse(
+        em
+          .createQueryBuilder(Logbook, 'l')
+          .innerJoin('l.session', 's')
+          .innerJoin('s.weeks', 'w'),
+        'w',
+      )
+        .andWhere('l.userId = :userId', { userId })
+        .andWhere("l.process = 'approved'")
+        .getCount(),
+      forCourse(
+        em
+          .createQueryBuilder(Logbook, 'l')
+          .innerJoin('l.session', 's')
+          .innerJoin('s.weeks', 'w'),
+        'w',
+      )
+        .andWhere('l.userId = :userId', { userId })
+        .andWhere("l.process = 'rejected'")
+        .getCount(),
+    ]);
+
+    const pct = (done: number, total: number) =>
+      total > 0 ? Math.round((done / total) * 100) : 0;
+
+    return {
+      sessions: {
+        total: sessionsTotal,
+        attended: sessionsAttended,
+        percent: pct(sessionsAttended, sessionsTotal),
+      },
+      assignments: {
+        total: assignmentsTotal,
+        submitted: assignmentsSubmitted,
+        approved: assignmentsApproved,
+        pending: Math.max(0, assignmentsTotal - assignmentsSubmitted),
+        percent: pct(assignmentsApproved, assignmentsTotal),
+      },
+      quizzes: {
+        total: quizzesTotal,
+        passed: quizzesPassed,
+        percent: pct(quizzesPassed, quizzesTotal),
+      },
+      logbooks: {
+        total: logbooksTotal,
+        approved: logbooksApproved,
+        rejected: logbooksRejected,
+        inReview: Math.max(0, logbooksTotal - logbooksApproved - logbooksRejected),
+        percent: pct(logbooksApproved, logbooksTotal),
+      },
     };
   }
 

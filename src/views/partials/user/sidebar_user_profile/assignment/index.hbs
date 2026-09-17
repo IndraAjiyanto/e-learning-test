@@ -3,11 +3,15 @@
   <!-- ==================== VIEW: LIST (DEFAULT) ==================== -->
   <div x-show="view === 'list'" x-transition class="w-full p-4 sm:px-[34px] sm:py-[42px]">
 
-    {{!-- Judul dihapus: label tab sudah menyebut bagian ini. Keterangannya
-         dibungkus kartu supaya sebentuk dengan tab lain. --}}
-    <div class="mb-6 rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
-      <p class="font-inter text-sm text-[#525252]">{{t 'test.startLearning.assignmentIntro'}}</p>
-    </div>
+    {{> components/ui/learning/tab_summary/index
+        percent=stats.assignments.percent
+        label=(concat stats.assignments.approved ' ' (t 'test.startLearning.of') ' ' stats.assignments.total ' ' (t 'test.startLearning.assignmentsApprovedSuffix'))
+        hint=(t 'test.startLearning.assignmentIntro')
+        items=(array
+          (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.assignments.total 'tone' 'navy')
+          (obj 'label' (t 'test.startLearning.submitted') 'value' stats.assignments.submitted 'tone' 'green')
+          (obj 'label' (t 'test.startLearning.notSubmittedCount') 'value' stats.assignments.pending 'tone' 'amber')
+        ) }}
 
     <!-- Week Sections (Dynamic with Alpine.js): one collapsible block per real week -->
     {{#each course.weeks}}

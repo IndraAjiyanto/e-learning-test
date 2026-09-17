@@ -165,9 +165,13 @@ const SCREENS = [
       const cards = page.locator('a:has-text("View Program")');
       const cardCount = await cards.count();
       check(s, 'program cards render', cardCount > 0, `found ${cardCount}`);
-      check(s, 'quota bar on every card',
-        await page.locator('[role="progressbar"]').count() === cardCount,
-        `${await page.locator('[role="progressbar"]').count()} bars for ${cardCount} cards`);
+      // Dibatasi pada panel My Learning yang sedang tampak: panel lain di shell
+      // (mis. ringkasan My Logbook) juga punya progressbar dan tetap ada di DOM
+      // meski tersembunyi, jadi menghitung seluruh halaman akan kelebihan.
+      const quotaBars = page.locator('[x-show*="learning"] [role="progressbar"]');
+      const barCount = await quotaBars.count();
+      check(s, 'quota bar on every card', barCount === cardCount,
+        `${barCount} bars for ${cardCount} cards`);
       check(s, 'quota label resolves (not a raw i18n key)',
         await page.getByText(/programSection\./).count() === 0);
 

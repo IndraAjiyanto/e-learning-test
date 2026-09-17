@@ -48,6 +48,13 @@
   <!-- Quiz List View -->
   <div x-show="!activeWeekId" class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
     {{!-- Judul dihapus: label tab sudah menyebut bagian ini. --}}
+    {{> components/ui/learning/tab_summary/index
+        percent=stats.quizzes.percent
+        label=(concat stats.quizzes.passed ' ' (t 'test.startLearning.of') ' ' stats.quizzes.total ' ' (t 'test.startLearning.quizzesPassedSuffix'))
+        items=(array
+          (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.quizzes.total 'tone' 'navy')
+          (obj 'label' (t 'test.startLearning.passed') 'value' stats.quizzes.passed 'tone' 'green')
+        ) }}
     <p class="font-sans text-sm text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
 
     <!-- Quiz List Section -->

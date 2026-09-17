@@ -257,7 +257,7 @@ export class UsersController {
           .map((c) => [c.courseType.id, c.courseType]),
       ).values(),
     ];
-    const { dashboardStats, ongoingCourses } =
+    const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
     // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
@@ -274,6 +274,12 @@ export class UsersController {
     // window.userCourses: kolom `progress` tidak ikut terserialisasi ke sisi
     // klien, jadi panel Certificate sempat menyatakan program yang sudah selesai
     // sebagai belum selesai.
+    // Ringkasan tab My Logbook sengaja TIDAK dihitung di rute ini.
+    // findLearningStats ada di CoursesService, dan menyuntikkannya ke sini hanya
+    // demi satu blok ringkasan berarti menambah ketergantungan antar modul.
+    // Rute /program/myProgram - satu-satunya jalan masuk ke tab program - sudah
+    // mengirimkannya; di sini ringkasannya cukup tidak ditampilkan.
+    const stats = null;
     const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
     );
@@ -288,7 +294,9 @@ export class UsersController {
       courseType,
       dashboardStats,
       ongoingCourses,
+      programComposition,
       initialSection,
+      stats,
       activeCourse,
       activeCourseCompleted,
       bareShell: true,
