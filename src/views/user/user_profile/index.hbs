@@ -84,7 +84,18 @@
       container.innerHTML = '<div class=\'p-12 text-center text-slate-500\'>Loading...</div>';
       try {
         const res = await fetch(config.url + '?courseId=' + courseId);
+
+        // Sesi berumur satu jam. Begitu kedaluwarsa, AuthMiddleware mengalihkan
+        // permintaan fragment ke /login, dan fetch MENGIKUTI pengalihan itu
+        // secara diam-diam. Tanpa penjagaan ini seluruh halaman login ikut
+        // disuntikkan ke dalam panel, lengkap dengan navbar publiknya, sementara
+        // shell di sekelilingnya masih tampak seperti sudah login.
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
         if (!res.ok) throw new Error('Request failed');
+
         const html = await res.text();
         container.innerHTML = html;
         Alpine.initTree(container);

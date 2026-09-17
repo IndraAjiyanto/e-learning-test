@@ -152,6 +152,7 @@ const SCREENS = [
       check(s, 'fragment loaded with its heading', /Assignment/.test(fragment) && fragment.length > 1000,
         `${fragment.length} chars`);
       check(s, 'week sections render', /Week \d/.test(fragment));
+      check(s, 'fragment is not a whole login page', !/Log In to System|Corporate Training/.test(fragment));
       check(s, 'no fabricated score', !(await page.content()).includes('Poin: 90/100'));
       check(s, 'no fabricated deadline', !(await page.content()).includes('Deadline time:23:59'));
     },
