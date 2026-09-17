@@ -30,7 +30,13 @@ export class AwardService {
   }
 
   async findAll(): Promise<Award[]> {
-    return await this.awardRepository.find();
+    // Tanpa klausa order, Postgres mengembalikan baris sesuai urutan fisiknya,
+    // dan sebuah UPDATE memindahkan baris itu ke belakang. Akibatnya daftar
+    // teracak setiap kali ada yang diedit — halaman list menomori baris dari
+    // posisinya, jadi nomor ikut berubah padahal awardOrder tidak.
+    return await this.awardRepository.find({
+      order: { awardOrder: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Award | null> {

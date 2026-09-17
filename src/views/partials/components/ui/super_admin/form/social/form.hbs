@@ -33,6 +33,12 @@
 
     const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // Angka, boleh diawali +, dan pemisah umum (spasi, tanda hubung, kurung).
+    const PHONE_PATTERN = /^\+?[\d\s().-]+$/;
+
+    // Bentuk tautan Google Maps yang lazim dibagikan.
+    const MAPS_HOSTS = ['google.com/maps', 'maps.google.', 'goo.gl/maps', 'maps.app.goo.gl'];
+
     const isUrl = (value) => {
       try {
         new URL(value);
@@ -81,9 +87,17 @@
           if (!EMAIL_PATTERN.test(val)) return 'Please enter a valid email address';
           return '';
 
+        // Aturan lama hanya "minimal 10 karakter", sehingga nilai seperti
+        // "98u2988989u" lolos — persis yang tersimpan di basis data saat
+        // TC dilaporkan. Sekarang bentuknya ikut diperiksa.
         case 'number':
           if (!val) return 'Phone number is required';
-          if (val.length < 10) return 'Phone number must be at least 10 characters';
+          if (!PHONE_PATTERN.test(val)) {
+            return 'Please enter a valid phone number (digits, may start with +)';
+          }
+          if (val.replace(/\D/g, '').length < 10) {
+            return 'Phone number must have at least 10 digits';
+          }
           return '';
 
         case 'address':
@@ -91,11 +105,19 @@
           if (val.length < 10) return 'Address must be at least 10 characters';
           return '';
 
-        // Sengaja hanya dicek "wajib diisi", sama seperti form lama: baris lama
-        // bisa menyimpan potongan embed HTML, bukan hanya URL, dan menolaknya
-        // di sini akan mengunci admin dari halaman Edit-nya sendiri.
+        // Dulu hanya dicek "wajib diisi" karena dikhawatirkan ada baris lama yang
+        // menyimpan potongan embed HTML — menolaknya akan mengunci admin dari
+        // halaman Edit-nya sendiri. Isi basis data sudah diperiksa saat menangani
+        // TC ini: yang tersimpan URL biasa (maps.app.goo.gl), jadi kekhawatiran
+        // itu tidak terbukti dan field ini bisa diperlakukan sesuai namanya.
         case 'linkAddress':
-          if (!val) return 'Link address is required';
+          if (!val) return 'Google Maps link is required';
+          if (!isUrl(val)) {
+            return 'Please enter a valid URL (paste the link, not the embed code)';
+          }
+          if (!MAPS_HOSTS.some((host) => val.includes(host))) {
+            return 'Please enter a valid Google Maps link';
+          }
           return '';
 
         case 'linkForm':

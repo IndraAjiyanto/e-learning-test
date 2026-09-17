@@ -29,7 +29,13 @@ export class ValueService {
   }
 
   async findAll() {
-    return await this.valueRepository.find();
+    // Tanpa klausa order, Postgres mengembalikan baris sesuai urutan fisiknya,
+    // dan sebuah UPDATE memindahkan baris itu ke belakang. Akibatnya daftar
+    // teracak setiap kali ada yang diedit — halaman list menomori baris dari
+    // posisinya, jadi nomor ikut berubah padahal valueOrder tidak.
+    return await this.valueRepository.find({
+      order: { valueOrder: 'ASC' },
+    });
   }
 
   async findOne(id: string) {

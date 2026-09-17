@@ -9,6 +9,9 @@
   - isi bebas lewat partial-block bila `text` tidak dipakai.
 --}}
 <td
-  class='h-[72px] border-b border-[#e5e5e5] align-middle {{#if (eq variant 'action')}}p-4{{else if (eq variant 'media')}}px-6 py-2.5{{else}}px-6 py-4{{/if}}{{#if text}} font-inter text-sm leading-5 text-[#525252]{{/if}}'
+  {{!-- break-words: nilai panjang tanpa spasi (mis. nama 30+ karakter) dulu
+       meluber ke sel sebelahnya. Hanya memenggal saat terpaksa, jadi teks
+       normal tetap berpindah baris di spasi seperti biasa (TC-049). --}}
+  class='h-[72px] break-words border-b border-[#e5e5e5] align-middle {{#if (eq variant 'action')}}p-4{{else if (eq variant 'media')}}px-6 py-2.5{{else}}px-6 py-4{{/if}}{{#if text}} font-inter text-sm leading-5 text-[#525252]{{/if}}'
   {{#if text}}x-text='{{{text}}}'{{/if}}
 >{{#unless text}}{{#if @partial-block}}{{> @partial-block}}{{/if}}{{/unless}}</td>

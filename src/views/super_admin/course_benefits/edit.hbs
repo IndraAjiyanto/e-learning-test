@@ -28,7 +28,10 @@
       action='/benefit-program/{{program_benefit.id}}/{{program_benefit.course.id}}?_method=PATCH'
       method='post'
       novalidate
-      x-data='benefitForm({ withOrder: false, icon: {{json program_benefit.icon}}, title: {{json program_benefit.benefit}}, description: {{json program_benefit.description}} })'
+      x-data='{ ...benefitForm({ withOrder: false, icon: {{json program_benefit.icon}}, title: {{json program_benefit.benefit}}, description: {{json program_benefit.description}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-3.5'
     >
@@ -48,6 +51,7 @@
 
         {{> components/ui/super_admin/form/button
           type='submit'
+            disabled='!canSubmit() || !isDirty || loading'
           variant='primary'
           label='Save Changes'
           loading=true

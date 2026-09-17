@@ -31,7 +31,10 @@
         action='/type-program/{{courseType.id}}?_method=PATCH'
         method='post'
         novalidate
-        x-data='programTypeForm({ icon: {{json courseType.icon}}, nameClassesType: {{json courseType.nameClassesType}}, description: {{json courseType.description}} })'
+        x-data='{ ...programTypeForm({ icon: {{json courseType.icon}}, nameClassesType: {{json courseType.nameClassesType}}, description: {{json courseType.description}} }), ...formDirtyGate() }'
+        x-init='$nextTick(() => captureBaseline())'
+        @input='recomputeDirty()'
+        @change='recomputeDirty()'
         @submit.prevent='submitForm($event)'
       >
         {{#> components/ui/super_admin/form/program_type/fields }}
@@ -49,7 +52,7 @@
               variant='primary'
               label='Save Changes'
               loading=true
-              disabled='!canSubmit() || loading'
+              disabled='!canSubmit() || !isDirty || loading'
             }}
           </div>
         {{/components/ui/super_admin/form/program_type/fields}}

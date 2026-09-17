@@ -21,7 +21,7 @@
         this.$refs.questionFile.value = null;
       }
     }"
-    x-init="recomputeFormValid()"
+    x-init="initGate()"
     @input="recomputeFormValid()"
     @change="recomputeFormValid()">
 
@@ -68,7 +68,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-between items-center w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/quiz/' question.quiz.id) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Update Question' type='submit' loading='loading' disabled='!formValid' width='163'}}
+          {{> components/ui/admin/button/primary-button text='Update Question' type='submit' loading='loading' disabled='!formValid || !isDirty' width='163'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

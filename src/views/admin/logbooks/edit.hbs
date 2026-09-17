@@ -52,7 +52,7 @@
         clearFile() { this.errorMessage=''; this.isValid=true; this.fileName='Existing Image'; this.fileSize=0; this.previewUrl=null; this.hasFile={{#if logbook.documentation}}true{{else}}false{{/if}}; $refs.fileInput.value=null; },
         canSubmit() { return this.formValid && this.hasFile && this.isValid; }
       }"
-      x-init="recomputeFormValid()"
+      x-init="initGate()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
       @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
@@ -103,7 +103,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' logbook.session.id) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Update Logbook' type='submit' loading='loading' disabled='!canSubmit()' width='200'}}
+          {{> components/ui/admin/button/primary-button text='Update Logbook' type='submit' loading='loading' disabled='!canSubmit() || !isDirty' width='200'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

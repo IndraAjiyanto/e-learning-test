@@ -23,7 +23,10 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='teamLeadForm({ teamLead: {{json teamLead}} })'
+      x-data='{ ...teamLeadForm({ teamLead: {{json teamLead}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'
     >
@@ -44,7 +47,7 @@
             variant='primary'
             label='Save Changes'
             loading=true
-            disabled='!canSubmit() || loading'
+            disabled='!canSubmit() || !isDirty || loading'
           }}
         </div>
       </div>

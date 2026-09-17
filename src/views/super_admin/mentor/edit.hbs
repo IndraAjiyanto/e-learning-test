@@ -25,7 +25,10 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='mentorForm({ mentor: {{json mentor}}, technologies: {{json technologies}} })'
+      x-data='{ ...mentorForm({ mentor: {{json mentor}}, technologies: {{json technologies}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-4'
     >
@@ -38,7 +41,7 @@
         card=true
         cancelHref=(concat '/program/detail/program/admin/' mentor.course.id)
         submitLabel='Save Changes'
-        disabled='!canSubmit() || loading'
+        disabled='!canSubmit() || !isDirty || loading'
       }}
     </form>
   </div>

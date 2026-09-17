@@ -32,12 +32,15 @@
         method='post'
         enctype='multipart/form-data'
         novalidate
-        x-data='editPartnerForm({
+        x-data='{ ...editPartnerForm({
           categories: {{json categories}},
           categoryPartnerId: {{json (default partner.categoryPartner.id "")}},
           image: {{json (default partner.image "")}},
           imageName: {{json (default partner.categoryPartner.category "Partner logo")}}
-        })'
+        }), ...formDirtyGate() }'
+        x-init='$nextTick(() => captureBaseline())'
+        @input='recomputeDirty()'
+        @change='recomputeDirty()'
         @submit.prevent='submitForm($event)'
         class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
       >
@@ -163,7 +166,7 @@
                 variant='primary'
                 label='Save Changes'
                 loading=true
-                disabled='!canSubmit() || loading'
+                disabled='!canSubmit() || !isDirty || loading'
               }}
             </div>
           </div>
