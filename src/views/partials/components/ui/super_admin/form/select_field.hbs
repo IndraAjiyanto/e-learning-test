@@ -65,9 +65,13 @@
       :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
       aria-haspopup='listbox'
       aria-labelledby='{{id}}-label'
+      x-data='{ seen: false }'
+      x-init="$el.form?.addEventListener('submit', () => seen = true); $watch('formData.{{field}}', () => seen = true)"
       :class="formErrors.{{field}}
         ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-        : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+        : seen
+          ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+          : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
       class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border bg-white py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2'
     >
       <span class='flex min-w-0 items-center gap-2'>

@@ -21,13 +21,13 @@
 
       {{!-- Form --}}
       <form method='POST' action='/session/{{weeksId}}' class='box-border w-full h-fit flex flex-col gap-[16px] justify-start items-start'
-        @submit='loading = true'>
+        novalidate @focusout="markField($event.target)" @submit='submitGate($event)'>
 
         {{!-- Feature Card - Fields --}}
         {{#> components/ui/admin/form/form-card noNumber=true}}
 
           {{!-- Field Row: Location + Date --}}
-          <div class='flex flex-row gap-[12px] w-full'>
+          <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
             <div class='flex-1 min-w-0'>
               {{#> components/ui/admin/form/form-field label="Location*" for="location" errorId="location_error"}}
                 {{> components/ui/admin/form/text-input
@@ -50,7 +50,7 @@
           </div>
 
           {{!-- Field Row: Time Start + Time End --}}
-          <div class='flex flex-row gap-[12px] w-full'>
+          <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
             <div class='flex-1 min-w-0'>
               {{#> components/ui/admin/form/form-field label="Time Start*" for="startTime" errorId="startTime_error"}}
                 {{> components/ui/admin/form/text-input
@@ -84,21 +84,21 @@
         {{/components/ui/admin/form/form-card}}
 
         {{!-- Feature Card - Actions --}}
-        <div class='box-border w-full h-fit shrink-0 flex flex-row gap-[24px] p-[20px] justify-between items-center bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+        <div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[16px] sm:gap-[24px] p-[20px] justify-between sm:items-center items-stretch bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
           {{!-- Toggle Row --}}
-          <div class='flex flex-row gap-[10px] justify-start items-center'>
+          <div class='flex flex-row gap-[10px] justify-start items-center min-w-0'>
             {{> components/ui/admin/form/toggle-switch
               checkedBind="isFinal"
               onChange="isFinal = $event.target.checked"
             }}
-            <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold whitespace-nowrap'>Jadikan session terakhir</span>
+            <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold sm:whitespace-nowrap'>Jadikan session terakhir</span>
             <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
           </div>
 
           {{!-- Button Row --}}
-          <div class='flex flex-row gap-[12px] justify-start items-center'>
+          <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-start sm:items-center w-full sm:w-auto'>
             {{> components/ui/admin/button/secondary-button text="Cancel" href=(concat '/week/' weeksId)}}
-            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" disabled='!formValid' width="154"}}
+            {{> components/ui/admin/button/primary-button text="Create Session" loading="loading" width="154"}}
           </div>
         </div>
 

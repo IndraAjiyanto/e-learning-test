@@ -14,6 +14,12 @@
   Pemanggil menyediakan state Alpine: formData, formErrors, validateField(),
   dan touch().
 
+  WARNA BORDER
+  Merah bila formErrors berisi, hijau bila field sudah dilewati (blur) atau
+  form pernah di-submit dan tidak ada error, abu-abu bila belum disentuh.
+  `seen` disimpan lokal di elemen agar tidak bergantung bentuk `touched`
+  yang berbeda-beda antar factory.
+
   Props:
   - id          : string (wajib) — id field sekaligus target label
   - name        : string (wajib) — name yang dikirim ke backend
@@ -71,9 +77,13 @@
         @input='validateField("{{field}}", $event.target.value)'
         @blur='touch("{{field}}")'
         :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
+        x-data='{ seen: false }'
+        x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
         :class="formErrors.{{field}}
           ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-          : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+          : seen
+            ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+            : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
         {{!-- slot ikon error: inline style agar tidak kalah urutan dari utility pr-3.5 --}}
         :style="formErrors.{{field}} && 'padding-right: 44px'"
         {{!-- block: textarea inline menyisakan ruang baseline ~7px di bawahnya --}}
@@ -101,9 +111,13 @@
         @input='validateField("{{field}}", $event.target.value)'
         @blur='touch("{{field}}")'
         :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
+        x-data='{ seen: false }'
+        x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
         :class="formErrors.{{field}}
           ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-          : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+          : seen
+            ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+            : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
         {{#unless (or toggle (eq icon 'calendar') (eq icon 'clock'))}}
           {{!-- slot ikon error: pakai inline style agar tidak kalah urutan dari utility pr-3.5 --}}
           :style="formErrors.{{field}} && 'padding-right: 44px'"

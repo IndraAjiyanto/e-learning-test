@@ -67,30 +67,14 @@
   <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
     {{> benefitCardHeader number='01' title='Icon Information' }}
 
-    <div class='flex items-center gap-1'>
-      <div class='min-w-0 flex-1'>
-        {{> components/ui/super_admin/form/text_field
-          id='icon'
-          name='icon'
-          field='icon'
-          label='Icon'
-          placeholder='fa-home, fa-layer-group, etc'
-          hint='Enter a Font Awesome class, such as fa-code or fas fa-code.'
-          required=true
-        }}
-      </div>
-
-      {{!-- Pratinjau langsung dari kelas yang diketik --}}
-      <div class='flex shrink-0 items-center' aria-hidden='true'>
-        <span class='flex h-8 w-8 box-content items-center justify-center px-3 py-4 text-[26px] text-[#525252]'>
-          <i :class='iconClass'></i>
-        </span>
-        <span
-          class='hidden max-w-[160px] break-all px-2 py-4 font-inter text-sm leading-5 text-[#525252] sm:block'
-          x-text='formData.icon.trim()'
-        ></span>
-      </div>
-    </div>
+    {{> components/ui/super_admin/form/icon_picker
+      id='icon'
+      name='icon'
+      field='icon'
+      label='Icon'
+      hint='Type an icon name like code or fa-code. It will preview using Font Awesome 6 (e.g. fa-solid fa-code).'
+      required=true
+    }}
   </section>
 
   <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>

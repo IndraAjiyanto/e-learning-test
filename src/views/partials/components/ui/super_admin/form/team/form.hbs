@@ -27,8 +27,9 @@
     const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
 
     // Hanya LinkedIn dan position yang wajib; instagram dan description opsional,
-    // sama seperti form lama.
+    // sama seperti form lama. Instagram yang diisi tetap harus berupa URL valid.
     const LINKEDIN_PATTERN = /^https?:\/\/(www\.)?linkedin\.com\/.+/;
+    const INSTAGRAM_PATTERN = /^https?:\/\/(www\.)?instagram\.com\/[A-Za-z0-9._]+\/?(\?.*)?$/;
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
 
@@ -57,6 +58,10 @@
         case 'linkedin':
           if (!val) return 'LinkedIn URL is required.';
           if (!LINKEDIN_PATTERN.test(val)) return 'Please enter a valid LinkedIn URL.';
+          return '';
+
+        case 'instagram':
+          if (val && !INSTAGRAM_PATTERN.test(val)) return 'Please enter a valid Instagram URL.';
           return '';
 
         default:
@@ -186,7 +191,7 @@
         },
 
         validateAll() {
-          ['name', 'linkedin'].forEach((field) => {
+          ['name', 'linkedin', 'instagram'].forEach((field) => {
             this.touched[field] = true;
             this.formErrors[field] = errorFor(field, null, this.formData[field]);
           });
@@ -197,12 +202,15 @@
               this.formErrors[field][lang] = errorFor(field, lang, this.formData[field][lang]);
             }),
           );
+
+          if (!this.originalUrl && !this.hasFile) this.setImageError('Please upload a photo.');
         },
 
         hasFormErrors() {
           return (
             this.formErrors.name !== '' ||
             this.formErrors.linkedin !== '' ||
+            this.formErrors.instagram !== '' ||
             LANG_FIELDS.some((field) => LANGS.some((lang) => this.formErrors[field][lang] !== ''))
           );
         },
@@ -223,7 +231,7 @@
         },
 
         canSubmit() {
-          const plainOk = ['name', 'linkedin'].every(
+          const plainOk = ['name', 'linkedin', 'instagram'].every(
             (field) => errorFor(field, null, this.formData[field]) === '',
           );
           const langOk = LANG_FIELDS.every((field) =>
@@ -233,15 +241,15 @@
           return this.photoOk() && plainOk && langOk;
         },
 
-        // Urutan mengikuti tampilan: foto, name, linkedin, lalu field per bahasa.
+        // Urutan mengikuti tampilan: foto, name, linkedin, instagram, lalu field per bahasa.
         // Id `${field}-${lang}` harus sama dengan yang dibentuk form/team/fields.
         revealFirstInvalid() {
-          if (!this.isValid) {
+          if (!this.photoOk()) {
             this.$refs.fileInput.parentElement.scrollIntoView({ block: 'center' });
             return;
           }
 
-          for (const field of ['name', 'linkedin']) {
+          for (const field of ['name', 'linkedin', 'instagram']) {
             if (!this.formErrors[field]) continue;
             document.getElementById(field)?.focus();
             return;

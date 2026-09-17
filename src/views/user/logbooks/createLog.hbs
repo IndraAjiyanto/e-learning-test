@@ -80,39 +80,45 @@
               />
             </div>
 
-            <!-- Photo Documentation -->
-            <div x-data='{ previewUrl: null }' class='space-y-4'>
+            <!-- Photo Documentation — dengan crop agar tidak terlalu zoom -->
+            <div x-data='{ previewUrl: null, showFull:false }' class='space-y-4'
+              @crop-done-documentation.window="previewUrl = URL.createObjectURL($event.detail.file)"
+              @crop-cancel-documentation.window="previewUrl = null; $refs.fileInput && ($refs.fileInput.value = null)"
+            >
               <label
                 for='documentation'
                 class='block text-lg font-semibold text-[#404040] mb-3'
               >
                 {{t 'test.logbook.createLogBook.photoDocumentation'}}
               </label>
+              <p class='-mt-2 text-xs text-[#737373]'>Pilih foto lalu atur crop — preview memakai <span class='font-semibold'>object-contain</span> agar tidak terpotong/zoom.</p>
               <input
                 type='file'
                 id='documentation'
                 name='documentation'
-                accept='image/*'
+                accept='image/jpeg,image/jpg,image/png,.jpg,.jpeg,.png'
                 x-ref='fileInput'
                 class='w-full border border-[#D4D4D4] rounded-xl px-5 py-4 bg-white/70 hover:bg-white focus:outline-none focus:border-[#003060] focus:border-[#D4D4D4] transition-all duration-300 text-[#404040] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-[#404040] hover:file:bg-slate-200'
-                @change='previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null'
+                @change="$dispatch('crop-open-documentation', { file: $event.target.files[0] })"
               />
 
-              <!-- Image Preview -->
+              <!-- Image Preview — diperbesar memenuhi layar, object-contain -->
               <template x-if='previewUrl'>
                 <div class='relative'>
                   <div
-                    class='p-4 bg-[#FAFAFA] rounded-xl border border-[#E5E5E5]'
+                    class='p-2 sm:p-4 bg-white rounded-xl border border-[#E5E5E5] flex justify-center cursor-zoom-in group'
+                    @click='showFull=true'
                   >
                     <img
                       :src='previewUrl'
                       alt='Photo Preview'
-                      class='w-full max-w-xs h-48 object-cover rounded-lg border-2 border-[#D4D4D4] shadow-sm mx-auto'
+                      class='w-full max-h-[520px] min-h-[320px] object-contain rounded-lg border border-[#E5E5E5] bg-white p-1 shadow-sm mx-auto group-hover:border-[#93c5fd]'
                     />
+                    <div class='absolute left-4 top-4 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white'>Klik untuk fullscreen</div>
                     <button
                       type='button'
                       class='absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-red-600 transition-all duration-300'
-                      @click='previewUrl = null; $refs.fileInput.value = null;'
+                      @click.stop='previewUrl = null; $refs.fileInput.value = null;'
                     >
                       <svg
                         class='w-4 h-4'
@@ -131,6 +137,13 @@
                   </div>
                 </div>
               </template>
+              <div x-show='showFull && previewUrl' x-transition.opacity x-cloak @click.self='showFull=false' @keydown.escape.window='showFull=false' class='fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 sm:p-8'>
+                <button @click='showFull=false' class='absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[#0f172a] hover:bg-white'>
+                  <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
+                </button>
+                <img :src='previewUrl' alt='Fullscreen' class='max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl bg-white p-1 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]' />
+              </div>
+              {{> components/ui/admin/logbook/logbook-crop-modal inputId='documentation' size=1200 }}
             </div>
 
             <div>

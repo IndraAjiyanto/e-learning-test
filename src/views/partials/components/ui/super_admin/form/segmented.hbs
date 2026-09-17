@@ -25,7 +25,9 @@
   <div
     role='radiogroup'
     aria-labelledby='{{id}}-label'
-    :class="formErrors.{{field}} ? 'border-[#fca5a5]' : 'border-[#d4d4d4]'"
+    x-data='{ seen: false }'
+    x-init="$el.closest('form')?.addEventListener('submit', () => seen = true); $watch('formData.{{field}}', () => seen = true)"
+    :class="formErrors.{{field}} ? 'border-[#fca5a5]' : seen ? 'border-[#22c55e]' : 'border-[#d4d4d4]'"
     class='flex h-11 w-full gap-0.5 rounded-lg border bg-white p-0.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
   >
     <template x-for='option in {{options}}' :key='String(option.value)'>

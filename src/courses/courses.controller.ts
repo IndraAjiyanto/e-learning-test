@@ -82,7 +82,11 @@ export class CoursesController {
       if (req.user!.role === 'admin') {
         await this.coursesService.createMentoring(req.user!.id, course.id);
       }
-      req.flash('success', 'program successfully created');
+      flashToast(
+        req,
+        'Program Created',
+        'The new program has been added successfully.',
+      );
       res.redirect('/program');
     } catch (error: any) {
       req.flash('error', error.message || 'program failed created');
@@ -890,7 +894,11 @@ await this.coursesService.addUserToCourse(userId, courseId);
       }
 
       await this.coursesService.update(courseId, dto);
-      req.flash('success', 'Successfully update program');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The program information has been updated.',
+      );
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -909,7 +917,11 @@ await this.coursesService.addUserToCourse(userId, courseId);
   ) {
     try {
       await this.coursesService.updateLaunch(courseId, updateCourseDto);
-      req.flash('success', 'program successfuly switch launch');
+      flashToast(
+        req,
+        'Program Updated',
+        'The program launch status has been changed.',
+      );
       res.redirect('/program');
     } catch (error: any) {
       req.flash('error', error.message || 'program failed to launch');
@@ -944,7 +956,11 @@ await this.coursesService.addUserToCourse(userId, courseId);
   ) {
     try {
       await this.coursesService.updateLaunch(courseId, updateCourseDto);
-      req.flash('success', 'program successfuly switch status');
+      flashToast(
+        req,
+        'Program Updated',
+        'The program status has been changed.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'program failed to switch status');
@@ -968,7 +984,11 @@ await this.coursesService.addUserToCourse(userId, courseId);
       }
       await this.coursesService.deleteFile(course.image);
       await this.coursesService.remove(courseId);
-      req.flash('success', 'Program successfully removed');
+      flashToast(
+        req,
+        'Program Deleted',
+        'The program has been permanently removed.',
+      );
       return res.redirect(previous || '/program');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove program');
@@ -985,8 +1005,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Req() req: Request,
   ) {
     try {
-await this.coursesService.removeCourseUser(userId, courseId);
-      flashToast(req, 'User Removed', 'User successfully removed from program');
+      await this.coursesService.removeCourseUser(userId, courseId);
+      flashToast(
+        req,
+        'User Removed',
+        'The user has been permanently removed from the program.',
+      );
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove user from program');

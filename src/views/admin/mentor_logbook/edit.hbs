@@ -30,6 +30,7 @@
       x-data="{
         ...adminFormGate(),
         loading: false,
+        showFull: false,
         errorMessage: '',
         isValid: true,
         fileName: 'Existing Image',
@@ -63,7 +64,7 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' mentor_logbook.session.id) width='90'}}
           {{> components/ui/admin/button/primary-button text='Update Logbook' type='submit' loading='loading' disabled='!canSubmit() || !isDirty' width='200'}}
         </div>

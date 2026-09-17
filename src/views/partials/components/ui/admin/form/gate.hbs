@@ -22,9 +22,9 @@
     @input="recomputeFormValid()"
     @change="recomputeFormValid()"
 
-  lalu kirim ke tombolnya:
-    disabled='!formValid'                     -> halaman create
-    disabled='!formValid || !isDirty'          -> halaman edit
+  Halaman create: tombol tidak disabled, form diberi
+    novalidate @focusout="markField($event.target)" @submit="submitGate($event)"
+  Halaman edit: kirim ke tombolnya disabled='!formValid || !isDirty'
 
   `loading` tidak perlu ikut ditulis di sini — primary-button meng-OR-kannya
   sendiri ke :disabled.
@@ -134,6 +134,118 @@
         // Hidden input tidak ikut checkValidity(), jadi diperiksa sendiri.
         const hidden = form.querySelectorAll('input[type="hidden"][data-required]');
         this.formValid = Array.from(hidden).every((i) => (i.value || '').trim() !== '');
+
+        this._paintSeen(form);
+      },
+
+      // Tombol submit halaman create tidak lagi disabled. Form dipasangi
+      // `novalidate` supaya event submit tetap sampai ke sini (tanpa itu browser
+      // menolak diam-diam dengan tooltip satu field saja), lalu semua field
+      // diwarnai: merah + pesan bila belum valid, hijau bila sudah.
+      // `extraOk` (boolean/fungsi) untuk syarat di luar constraint HTML, mis. berkas.
+      submitGate(event, extraOk = true) {
+        const form = this._form();
+        this.recomputeFormValid();
+        if (this.formValid && (typeof extraOk === 'function' ? extraOk() : extraOk)) {
+          this.loading = true;
+          return true;
+        }
+
+        event.preventDefault();
+        this._controls(form).forEach((el) => this._gateSeen.add(el));
+        this._paintSeen(form);
+        const first = this._controls(form).find((el) => !this._isValid(el));
+        const box = first && this._box(first);
+        if (box) {
+          box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          (first.type === 'hidden' || first.type === 'file' ? box.querySelector('input:not([type=hidden])') : first)?.focus({ preventScroll: true });
+        }
+        return false;
+      },
+
+      // Dipanggil dari @focusout: field baru diwarnai setelah ditinggalkan.
+      // $nextTick karena searchable_select baru mengisi hidden input-nya
+      // setelah klik opsi, sesudah fokus pindah.
+      markField(target) {
+        const form = this._form();
+        const el = this._controlFor(target);
+        if (!form || !el) return;
+        this._gateSeen.add(el);
+        this.$nextTick(() => this._paintSeen(form));
+      },
+
+      _gateSeen: new WeakSet(),
+
+      _controls(form) {
+        return Array.from(form.querySelectorAll('input, textarea, select')).filter(
+          (el) => el.name && !el.disabled && (el.type === 'hidden' ? el.hasAttribute('data-required') : el.willValidate),
+        );
+      },
+
+      _controlFor(target) {
+        if (!target || !target.closest) return null;
+        if (target.name && target.type !== 'hidden') return target;
+        return target.closest('.relative')?.querySelector('input[type=hidden][data-required]') || null;
+      },
+
+      _isValid(el) {
+        if (el.type === 'hidden') return (el.value || '').trim() !== '';
+        return el.checkValidity();
+      },
+
+      _box(el) {
+        if (el.type === 'file') return el.parentElement.querySelector(`label[for="${el.id}"]`) || el.parentElement;
+        if (el.type === 'hidden') return el.parentElement.querySelector('[class*="outline:1px"]');
+        return el.closest('[class*="outline:1px"]') || el;
+      },
+
+      // Bukan el.validationMessage: teks itu mengikuti bahasa browser, sehingga
+      // bisa tercampur dengan label form yang berbahasa Inggris.
+      _message(el) {
+        if (el.type === 'hidden') return 'This field is required.';
+        const v = el.validity;
+        if (v.valueMissing) {
+          if (el.type === 'file') return 'Please choose a file.';
+          if (el.type === 'radio' || el.type === 'checkbox') return 'Please select an option.';
+          return 'This field is required.';
+        }
+        if (v.typeMismatch) return el.type === 'email' ? 'Please enter a valid email address.' : 'Please enter a valid URL.';
+        if (v.badInput) return 'Please enter a valid value.';
+        if (v.tooShort) return `Please enter at least ${el.minLength} characters.`;
+        if (v.tooLong) return `Please enter no more than ${el.maxLength} characters.`;
+        if (v.rangeUnderflow) return `Value must be at least ${el.min}.`;
+        if (v.rangeOverflow) return `Value must be at most ${el.max}.`;
+        if (v.stepMismatch) return 'Please enter a valid value.';
+        if (v.patternMismatch) return el.title || 'Please match the requested format.';
+        return 'Please enter a valid value.';
+      },
+
+      _paintSeen(form) {
+        if (!form) return;
+        this._controls(form).forEach((el) => {
+          if (!this._gateSeen.has(el)) return;
+          const valid = this._isValid(el);
+          const color = valid ? '#16A34A' : '#DC2626';
+          const box = this._box(el);
+          if (box) {
+            if (box.className.includes('outline:1px')) box.style.outline = `1px solid ${color}`;
+            else box.style.borderColor = color;
+          }
+          el.setAttribute('aria-invalid', valid ? 'false' : 'true');
+
+          const message = valid ? '' : this._message(el);
+          let slot = document.getElementById(`${el.id || el.name}_error`);
+          if (!slot && box && !valid) {
+            slot = document.createElement('p');
+            slot.id = `${el.id || el.name}_error`;
+            slot.className = 'text-red-500 text-xs mt-1';
+            box.insertAdjacentElement('afterend', slot);
+          }
+          if (slot) {
+            slot.textContent = message;
+            slot.classList.toggle('hidden', valid);
+          }
+        });
       },
     };
   }

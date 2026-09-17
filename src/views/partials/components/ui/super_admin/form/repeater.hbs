@@ -33,9 +33,13 @@
         :aria-label="'{{label}} ' + (index + 1)"
         x-model='{{state}}[index]'
         @input='touch("{{field}}")'
+        x-data='{ seen: false }'
+        x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
         :class="formErrors.{{field}} && !{{state}}[index].trim()
           ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-          : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+          : seen
+            ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+            : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
         class='h-11 min-w-0 flex-1 rounded-lg border bg-white px-3.5 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2'
       />
 

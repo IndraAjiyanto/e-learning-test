@@ -23,6 +23,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { Request, Response } from 'express';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('logbooks')
@@ -61,10 +62,19 @@ export class LogbookController {
       createLogbookDto.sessionId = sessionId;
       await this.logbookService.create(createLogbookDto);
       const session = await this.logbookService.findSession(sessionId);
-      req.flash('success', 'Log book added successfully');
       if (req.user?.role === 'admin') {
+        flashToast(
+          req,
+          'Logbook Created',
+          'The new logbook entry has been added to this session.',
+        );
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
+        flashToast(
+          req,
+          'Logbook Created',
+          'Your logbook has been submitted and is under review.',
+        );
         // res.redirect(
         //   `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
         // );
@@ -99,7 +109,9 @@ export class LogbookController {
       user: req.user,
       logbooks,
       logbook: logbooks,
-      courseId, bareShell: true });
+      courseId,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
@@ -113,7 +125,9 @@ export class LogbookController {
     res.render('user/logbooks/createLog', {
       user: req.user,
       sessionId,
-      courseId, bareShell: true });
+      courseId,
+      bareShell: true,
+    });
   }
 
   @Roles('user', 'admin')
@@ -127,7 +141,11 @@ export class LogbookController {
     if (req.user!.role === 'admin') {
       res.render('admin/logbooks/edit', { user: req.user, logbook: logbooks });
     } else {
-      res.render('user/logbooks/edit', { user: req.user, logbook: logbooks, bareShell: true });
+      res.render('user/logbooks/edit', {
+        user: req.user,
+        logbook: logbooks,
+        bareShell: true,
+      });
     }
   }
 
@@ -139,7 +157,11 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
-    res.render('user/logbooks/detail', { user: req.user, logbook: logbooks, bareShell: true });
+    res.render('user/logbooks/detail', {
+      user: req.user,
+      logbook: logbooks,
+      bareShell: true,
+    });
   }
 
   @Roles('admin')
@@ -182,7 +204,7 @@ export class LogbookController {
       }
       updateLogbookDto.process = 'process';
       await this.logbookService.update(logbookId, updateLogbookDto);
-      req.flash('success', 'logbooks successfully updated');
+      flashToast(req, 'Changes Saved', 'The logbook has been updated.');
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
@@ -219,7 +241,7 @@ export class LogbookController {
       const logbooks = await this.logbookService.findOne(logbookId);
       updateLogbookDto.process = proses;
       await this.logbookService.update(logbookId, updateLogbookDto);
-      req.flash('success', 'logbooks successfully update proses');
+      flashToast(req, 'Status Updated', 'The logbook status has been updated.');
       res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
       const logbooks = await this.logbookService.findOne(logbookId);
@@ -242,7 +264,11 @@ export class LogbookController {
         await this.logbookService.deleteFile(logbooks.documentation);
       }
       await this.logbookService.remove(logbookId);
-      req.flash('success', 'logbooks successfully deleted');
+      flashToast(
+        req,
+        'Logbook Deleted',
+        'The logbook has been permanently removed.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'logbooks failed to delete');

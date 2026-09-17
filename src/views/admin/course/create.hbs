@@ -31,7 +31,7 @@
       @focusin.capture="activateSection($event.target)"
       @focusout.capture="onBlurCapture($event)"
     >
-      <div class='flex flex-row gap-[16px] justify-start items-start'>
+      <div class='flex flex-col lg:flex-row gap-[16px] justify-start items-stretch lg:items-start'>
 
         {{!-- Left Column - Cards --}}
         <div class='flex-1 min-w-0 flex flex-col gap-[16px]'>
@@ -40,7 +40,7 @@
           {{> admin/program/create/card_03_schedule}}
           {{> admin/program/create/card_04_tools}}
           {{!-- Section 05 + 06: one row, two columns (slicing.pen Frame 2147229585) --}}
-          <div class='flex flex-row gap-[16px] w-full justify-start items-start'>
+          <div class='flex flex-col sm:flex-row gap-[16px] w-full justify-start items-stretch sm:items-start'>
             <div class='flex-1 min-w-0'>
               {{> admin/program/create/card_05_learning}}
             </div>

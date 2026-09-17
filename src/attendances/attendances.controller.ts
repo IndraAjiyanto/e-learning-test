@@ -16,6 +16,7 @@ import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('attendance')
@@ -83,7 +84,11 @@ export class AttendanceController {
     try {
       createAttendanceDto.sessionId = sessionId;
       await this.attendanceService.create(createAttendanceDto);
-      req.flash('success', 'Successfully added attendance');
+      flashToast(
+        req,
+        'Attendance Added',
+        'The attendance record has been added to this session.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash(
@@ -102,7 +107,11 @@ export class AttendanceController {
     @Req() req: Request,
   ) {
     const session = await this.attendanceService.findSession(id);
-    res.render('user/attendance/create', { session, user: req.user, bareShell: true });
+    res.render('user/attendance/create', {
+      session,
+      user: req.user,
+      bareShell: true,
+    });
   }
 
   @Roles('admin')
@@ -156,7 +165,11 @@ export class AttendanceController {
   ) {
     try {
       await this.attendanceService.update(attendanceId, updateAttendanceDto);
-      req.flash('success', 'Successfully updated attendance');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The attendance record has been updated.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update attendance');
@@ -174,7 +187,11 @@ export class AttendanceController {
   ) {
     try {
       await this.attendanceService.remove(attendanceId, sessionId);
-      req.flash('success', 'Successfully delete attendace');
+      flashToast(
+        req,
+        'Attendance Deleted',
+        'The attendance record has been permanently removed.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete attendance');

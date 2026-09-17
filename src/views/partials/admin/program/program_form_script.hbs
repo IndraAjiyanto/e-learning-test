@@ -70,13 +70,20 @@ function programData(mode) {
 
     borderClass(elId) {
       const s = this.fieldStatus[elId];
-      if (s === 'error') return '[outline-color:#DC2626]';
-      if (s === 'valid') return '[outline-color:#22C55E]';
+      // Pakai !important: rule [outline:1px_solid_#D4D4D4] di base element
+      // selalu muncul belakangan di CSS hasil build (sort alfabetis
+      // "outline" < "outline-color"), sehingga tanpa !important warna
+      // validasi tidak pernah terlihat.
+      if (s === 'error') return '![outline-color:#DC2626]';
+      if (s === 'valid') return '![outline-color:#22C55E]';
       return '';
     },
 
-    validateTextField(elId, label) {
-      const msg = this.nonEmpty(this.val(elId), label);
+    validateTextField(elId, label, maxLength = 255) {
+      let msg = this.nonEmpty(this.val(elId), label);
+      if (!msg && this.val(elId).length > maxLength) {
+        msg = `Input melebihi batas maksimal ${maxLength} karakter`;
+      }
       this.setFieldError(elId, msg);
       this.setFieldStatus(elId, !msg);
       return !msg;
@@ -162,18 +169,21 @@ function programData(mode) {
       return true;
     },
 
-    validateMultiLang(objKey, prefix, labels) {
+    validateMultiLang(objKey, prefix, labels, maxLength = 255) {
       const langs = ['id', 'en', 'ja'];
       const self = this;
+      let allValid = true;
       langs.forEach(function (lang) {
         const value = self.formData[objKey][lang] || '';
-        const msg = self.nonEmpty(value, labels[lang]);
+        let msg = self.nonEmpty(value, labels[lang]);
+        if (!msg && value.length > maxLength) {
+          msg = `Input melebihi batas maksimal ${maxLength} karakter`;
+        }
         self.setFieldError(prefix + '_' + lang, msg);
         self.setFieldStatus(prefix + '_' + lang, !msg);
+        if (msg) allValid = false;
       });
-      return langs.every(function (lang) {
-        return (self.formData[objKey][lang] || '').trim() !== '';
-      });
+      return allValid;
     },
 
     validateLocationLink() {
@@ -229,7 +239,9 @@ function programData(mode) {
       if (t.id) this.touched[t.id] = true;
       const gid = this.groupElId(t.name);
       if (gid) this.touched[gid] = true;
-      this.updateCompleteness();
+      // Tandai sentuh langsung, validasi di-debounce 400ms agar tidak
+      // berjalan di setiap keystroke saat user sedang mengetik.
+      this.scheduleUpdate(400);
     },
 
     groupElId(nameAttr) {
@@ -258,10 +270,10 @@ function programData(mode) {
       });
     },
 
-    scheduleUpdate() {
+    scheduleUpdate(delay) {
       clearTimeout(this._scheduleTimer);
       const self = this;
-      this._scheduleTimer = setTimeout(function () { self.updateCompleteness(); }, 50);
+      this._scheduleTimer = setTimeout(function () { self.updateCompleteness(); }, delay || 50);
     },
 
     initScrollObserver() {
@@ -347,8 +359,8 @@ function programData(mode) {
           results.push(this.validateMoneyInput('promo', 'promo1', 'Promo', true));
         } else { this.clearField('promo1'); }
       }
-      if (document.getElementById('kuota1')) {
-        results.push(this.validateMoneyInput('quota', 'kuota1', 'Program Quota', false));
+      if (document.getElementById('quota')) {
+        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false));
       }
 
       if (this.paidClass) {
@@ -366,12 +378,16 @@ function programData(mode) {
 
       if (document.getElementById('form')) {
         const formVal = this.val('form');
+        let formMsg = '';
         if (formVal) {
           try { new URL(formVal); } catch (e) {
-            this.setFieldError('form', 'Registration Form Link must be a valid URL');
-            results.push(false);
+            formMsg = 'Registration Form Link must be a valid URL';
           }
         }
+        this.setFieldError('form', formMsg);
+        // Opsional: kosong = netral, terisi valid = hijau, terisi salah = merah.
+        if (formVal) { this.setFieldStatus('form', !formMsg); } else { this.fieldStatus['form'] = ''; }
+        if (formMsg) results.push(false);
       }
 
       results.push(this.validateLocationLink());
