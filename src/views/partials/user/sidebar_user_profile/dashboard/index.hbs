@@ -222,7 +222,7 @@
                 <div class="flex flex-col gap-1">
                   <span class="text-2xl font-bold text-[#111827]">{{dashboardStats.ongoingCount}}</span>
                   <span class="inline-flex items-center gap-2 text-xs font-medium text-[#6B7280]">
-                    <span aria-hidden="true" class="size-2.5 rounded-sm bg-[#E5E7EB]"></span>In progress
+                    <span aria-hidden="true" class="size-2.5 rounded-sm bg-[#9CA3AF]"></span>In progress
                   </span>
                 </div>
               </div>
@@ -296,6 +296,26 @@
           {{else}}
             <p class="mt-6 text-sm text-[#6B7280]">No class type recorded on your programs yet.</p>
           {{/if}}
+
+          {{!-- Kaki kartu menyamakan tingginya dengan kartu kemajuan di
+               sebelahnya; angkanya dua hitungan yang tidak disebut batang mana
+               pun. --}}
+          <div class="mt-auto flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-[#E5E7EB] pt-5 sm:mt-6">
+            <span class="inline-flex items-center gap-3">
+              <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-[#E0F2F9] text-[#0369A1]"><i class="fas fa-layer-group text-xs"></i></span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold text-[#111827]">{{programComposition.length}}</span>
+                <span class="text-xs text-[#6B7280]">Class type{{#unless (eq programComposition.length 1)}}s{{/unless}}</span>
+              </span>
+            </span>
+            <span class="inline-flex items-center gap-3">
+              <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-[#DBEAFE] text-[#1D4ED8]"><i class="fas fa-graduation-cap text-xs"></i></span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold text-[#111827]">{{dashboardStats.totalCount}}</span>
+                <span class="text-xs text-[#6B7280]">Program{{#unless (eq dashboardStats.totalCount 1)}}s{{/unless}} joined</span>
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     </div>
