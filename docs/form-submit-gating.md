@@ -186,3 +186,65 @@ ikut ditulis di ekspresi `disabled`.
 3. Kirim `disabled='!formValid'` (atau `'!canSubmit()'` bila ada syarat berkas).
 4. Uji halaman **create** (tombol harus mati saat dibuka) dan halaman **edit**
    (tombol harus menyala dengan data — regresi paling berbahaya dari aturan ini).
+
+---
+
+# Halaman edit: harus ada perubahan dulu
+
+Berlaku untuk **semua** halaman edit, admin maupun super admin (40 halaman).
+Tombol Save baru aktif bila form valid **dan** isinya berbeda dari saat halaman
+dibuka. Aturan ini dulu hanya dipakai halaman edit profil.
+
+## Helper `formDirtyGate()`
+
+Ada di `components/ui/admin/form/gate.hbs`, bersebelahan dengan `adminFormGate()`
+(yang sudah menyertakannya, jadi halaman admin cukup memakai `initGate()`).
+
+```hbs
+x-data='{ ...someForm({ ... }), ...formDirtyGate() }'
+x-init='$nextTick(() => captureBaseline())'
+```
+
+```hbs
+disabled='!canSubmit() || !isDirty || loading'
+```
+
+Sengaja bekerja di level DOM, bukan di dalam factory: satu factory super admin
+dipakai halaman create dan edit sekaligus, sedangkan aturan ini hanya untuk
+edit. Menaruhnya di factory akan ikut mengunci halaman create yang punya nilai
+default — valid tapi belum "berubah".
+
+## Tiga jebakan yang sudah ditemui
+
+**1. Patokan terambil terlalu cepat.** Sebagian halaman edit mengisi nilai
+awalnya lewat binding Alpine (`x-init` prefill), yang baru diterapkan sesudah
+init. Karena itu `captureBaseline()` dipanggil di dalam `$nextTick`; tanpa itu
+form langsung terbaca berubah padahal belum disentuh.
+
+**2. Input berkas.** Objek `File` tidak bisa dibandingkan langsung, jadi
+diserialisasi sebagai `nama:ukuran`. Berkas lama yang tidak diunggah ulang tetap
+terbaca sama; memilih berkas baru menandai form berubah.
+
+**3. Hidden input yang diisi Alpine — ini yang paling berbahaya.** Dropdown
+kustom (mis. pemilih kategori di `partner/edit`) menaruh nilainya di
+`<input type="hidden">` lewat binding `:value`. Menyetel `.value` secara
+langsung **tidak memicu event apa pun**, jadi `@input`/`@change` di markup tidak
+pernah menyala. Di halaman yang seluruh field-nya berupa dropdown semacam itu,
+tombol Save macet permanen. Karena itu helper memasang listener sendiri untuk
+`input`, `change`, **dan `click`** pada elemen form, dengan `$nextTick` supaya
+Alpine sempat menuliskan nilainya lebih dulu.
+
+## Cakupan
+
+40 dari 40 halaman edit. Diverifikasi di browser pada tujuh halaman yang
+mewakili setiap bentuk `x-data` (satu baris, bertingkat, objek literal, factory
+admin) plus `partner/edit` yang hanya punya hidden input + berkas: semuanya
+terbuka dengan tombol mati, lalu menyala begitu satu nilai diubah. Halaman
+create dipastikan tidak ikut terpengaruh.
+
+## Celah yang masih terbuka
+
+`course_benefits`, `course_flows`, `course_questions`, dan `participants` hanya
+digating oleh `isDirty` — factory-nya (`courseFlowForm` dkk.) belum punya
+`canSubmit()`, jadi validitas isinya belum ikut diperiksa. Menambahkan
+`canSubmit()` di keempat factory itu akan melengkapinya.

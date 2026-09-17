@@ -32,7 +32,7 @@
         action='/voucher/{{voucher.id}}?_method=PATCH'
         method='post'
         novalidate
-        x-data='voucherForm({
+        x-data='{ ...voucherForm({
           code_voucher: {{json voucher.code_voucher}},
           type: {{json voucher.type}},
           percent: {{json voucher.percent}},
@@ -41,7 +41,10 @@
           users: {{json users}},
           selectedCourseIds: {{json voucher.courses}},
           selectedUserIds: {{json voucher.allowed_user_ids}}
-        })'
+        }), ...formDirtyGate() }'
+        x-init='$nextTick(() => captureBaseline())'
+        @input='recomputeDirty()'
+        @change='recomputeDirty()'
         @submit.prevent='submitForm($event)'
       >
         {{#> components/ui/super_admin/form/voucher/fields }}
@@ -59,7 +62,7 @@
               variant='primary'
               label='Save Changes'
               loading=true
-              disabled='!canSubmit() || loading'
+              disabled='!canSubmit() || !isDirty || loading'
             }}
           </div>
         {{/components/ui/super_admin/form/voucher/fields}}

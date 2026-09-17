@@ -3,7 +3,7 @@
     <h2 class="text-2xl font-bold mb-6 text-gray-900">Edit quiz</h2>
 
     <form method="POST" action="/quiz/{{quiz.id}}?_method=PATCH" class="space-y-6" x-data="{ ...adminFormGate(), loading: false }"
-      x-init="recomputeFormValid()"
+      x-init="initGate()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
       @submit="loading = true;">
@@ -32,8 +32,8 @@
 
       <div class="flex gap-3">
         <button type="submit"
-        :disabled='!formValid || loading'
-        :class="(!formValid || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+        :disabled='!formValid || !isDirty || loading'
+        :class="(!formValid || !isDirty || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
           class="text-white px-6 py-2 rounded-lg shadow transition">
           <span x-show='loading' class='loading loading-spinner loading-sm'></span>
           <span x-show='!loading'>Update</span>

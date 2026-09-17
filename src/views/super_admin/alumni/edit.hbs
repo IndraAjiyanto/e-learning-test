@@ -26,7 +26,10 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='alumniForm({ alumni: {{json alumni}} })'
+      x-data='{ ...alumniForm({ alumni: {{json alumni}} }), ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       @submit.prevent='submitForm($event)'
       class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
     >
@@ -35,6 +38,7 @@
 
         {{> components/ui/super_admin/form/button
           row=true
+          disabled='!canSubmit() || !isDirty || loading'
           cancelHref=(concat '/program/detail/program/admin/' alumni.course.id)
           submitLabel='Save Changes'
         }}

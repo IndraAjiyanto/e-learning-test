@@ -38,7 +38,10 @@
         method='post'
         enctype='multipart/form-data'
         novalidate
-        x-data='technologyForm({ name: {{json technologies.name}}, svg: {{json technologies.svg}}, imgUrl: {{json technologies.imgUrl}} })'
+        x-data='{ ...technologyForm({ name: {{json technologies.name}}, svg: {{json technologies.svg}}, imgUrl: {{json technologies.imgUrl}} }), ...formDirtyGate() }'
+        x-init='$nextTick(() => captureBaseline())'
+        @input='recomputeDirty()'
+        @change='recomputeDirty()'
         @submit.prevent='submitForm($event)'
       >
         {{#> components/ui/super_admin/form/technology/fields showPreview=true }}
@@ -56,7 +59,7 @@
               variant='primary'
               label='Save Changes'
               loading=true
-              disabled='!canSubmit() || loading'
+              disabled='!canSubmit() || !isDirty || loading'
             }}
           </div>
         {{/components/ui/super_admin/form/technology/fields}}
