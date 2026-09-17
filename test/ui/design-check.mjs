@@ -71,6 +71,27 @@ const SCREENS = [
       // Baris Continue Learning: thumbnail besar + penghitung di kaki kartu.
       check(s, 'Continue Learning thumbnails', await page.locator('.size-20').count() > 0);
       check(s, 'Continue Learning counter', await page.getByText(/Showing .* of .* course/i).count() > 0);
+
+      // Sidebar menciut: setiap item harus punya geometri yang sama dan duduk di
+      // sumbu tengah sidebar. Pernah meleset karena tiga tombol tidak kebagian
+      // kelas hook-nya, sehingga ikonnya bergeser ke kiri sendiri.
+      const bar = await page.locator('.js-user-sidebar')
+        .evaluate((e) => { const r = e.getBoundingClientRect(); return { left: r.left, width: r.width }; });
+      const items = await page.locator('.js-user-sidebar-item').evaluateAll((els) => els.map((el) => {
+        const r = el.getBoundingClientRect();
+        const ic = el.querySelector('i, span.block, svg, img');
+        return {
+          w: Math.round(r.width),
+          c: ic ? Math.round(ic.getBoundingClientRect().left + ic.getBoundingClientRect().width / 2) : null,
+        };
+      }));
+      check(s, 'every sidebar item carries the layout hook', items.length >= 6, `${items.length} items`);
+      check(s, 'sidebar items share one width',
+        new Set(items.map((x) => x.w)).size === 1, [...new Set(items.map((x) => x.w))].join(','));
+      check(s, 'sidebar icons sit on the centre line',
+        new Set(items.map((x) => x.c)).size === 1 &&
+        Math.abs(items[0].c - (bar.left + bar.width / 2)) <= 1,
+        `centres=${[...new Set(items.map((x) => x.c))].join(',')} axis=${Math.round(bar.left + bar.width / 2)}`);
     },
   },
   {

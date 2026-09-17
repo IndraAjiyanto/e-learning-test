@@ -228,7 +228,7 @@
             :class="[
               (activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
+            aria-label="{{t 'test.userSidebar.profile'}}" title="{{t 'test.userSidebar.profile'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span>
@@ -243,7 +243,7 @@
               :class="[
                 activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
               ]"
-              class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
+              aria-label="{{t 'test.userSidebar.myLearning'}}" title="{{t 'test.userSidebar.myLearning'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
             >
               <div class="flex items-center gap-3">
                 <div class="w-5 flex justify-center items-center flex-shrink-0">
@@ -263,7 +263,7 @@
             :class="[
               activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.userSidebar.myPortfolio'}}" title="{{t 'test.userSidebar.myPortfolio'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'portfolio' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
@@ -277,7 +277,7 @@
             :class="[
               activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.userSidebar.paymentHistory'}}" title="{{t 'test.userSidebar.paymentHistory'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'history-payment' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
