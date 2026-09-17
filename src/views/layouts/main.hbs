@@ -41,6 +41,28 @@
       <link rel="stylesheet" href="/public/css/quil.css">
 <script src="/public/js/cropper.min.js"></script>
 
+  {{!--
+    Keadaan sidebar student ditulis SEBELUM gambar pertama.
+
+    Tanpa ini, sidebar tergambar dulu dalam keadaan bawaan lalu dikoreksi Alpine
+    setelah halaman tampil - terlihat sebagai lompatan setiap kali halaman
+    dimuat ulang. Skrip ini sengaja blocking dan diletakkan di <head>: isinya
+    hanya satu pembacaan localStorage, dan harus selesai sebelum <body> digambar.
+
+    Nilai bawaannya 'collapsed' untuk student, sesuai permintaan pemilik.
+    Geometri yang mengikuti atribut ini ada di common/public/style.css.
+  --}}
+  <script>
+    (function () {
+      try {
+        var v = localStorage.getItem('user-sidebar-open');
+        document.documentElement.dataset.userSidebar =
+          v === 'true' ? 'expanded' : 'collapsed';
+      } catch (e) {
+        document.documentElement.dataset.userSidebar = 'collapsed';
+      }
+    })();
+  </script>
 </head>
 <body data-shell="{{#if (roles user.role 'admin' 'super_admin')}}admin{{else}}public{{/if}}" class="{{#if isAuthPage}}bg-[linear-gradient(0deg,#FFFFFF_0%,rgba(255,255,255,0.7)_45%,rgba(255,255,255,0.2)_75%,rgba(255,255,255,0)_100%),url('/public/image/dashboard/login_bg.png')] bg-cover bg-center bg-fixed bg-no-repeat{{else}}bg-slate-50{{/if}} text-base-content font-montserrat">
   <div id="route-progress"></div>

@@ -209,10 +209,11 @@ const SCREENS = [
       // Sesi kini membuka halamannya sendiri, bukan akordeon di dalam akordeon.
       check(s, 'sessions link to their own page',
         await page.locator('#start-learning-container a[href*="/program/session/detail/"]').count() > 0);
-      // Pemilik meminta breadcrumb dihapus dari seluruh area student, termasuk
-      // Start Learning, meskipun frame desainnya menggambarkannya.
-      check(s, 'no breadcrumb anywhere in the student area',
-        await page.getByRole('navigation', { name: 'Breadcrumb' }).count() === 0);
+      // Riwayat keputusan: remah sempat dihapus dari area student, lalu diminta
+      // kembali untuk SELURUH halaman backoffice. Yang diperiksa sekarang
+      // kebalikan dari sebelumnya.
+      check(s, 'breadcrumb present',
+        await page.getByRole('navigation', { name: /Breadcrumb/i }).count() > 0);
       // Diperiksa lewat innerText kontainer: isinya datang dari fragment, dan
       // getByText tidak menjangkaunya dengan andal.
       check(s, 'week list', /Week \d/.test(header), header.slice(0, 60).replace(/\n/g, ' '));
@@ -365,6 +366,21 @@ const SCREENS = [
 
       check(s, 'back link returns to the learning area',
         await page.locator('a[href*="/program/myProgram/"]').count() > 0);
+
+      // Tiap halaman backoffice punya baris yang sama: tombol kembali lalu remah.
+      const crumbs = await page.getByRole('navigation', { name: /Breadcrumb/i })
+        .first().locator('li').allInnerTexts().catch(() => []);
+      check(s, 'breadcrumb trail is complete', crumbs.length >= 3 && crumbs.every((x) => x.trim()),
+        crumbs.join(' > '));
+      check(s, 'breadcrumb ends on the current page',
+        await page.locator('[aria-current="page"]').count() > 0);
+      check(s, 'back button present',
+        await page.getByRole('link', { name: /^Back$/ }).count() > 0);
+
+      // Sidebar student menciut secara bawaan, dan halaman berdiri sendiri ikut
+      // keadaan yang sama seperti shell.
+      const w = await page.locator('.js-user-sidebar').evaluate((e) => Math.round(e.getBoundingClientRect().width));
+      check(s, 'sidebar starts collapsed', w === 80, `${w}px`);
     },
   },
   {

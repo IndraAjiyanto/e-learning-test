@@ -2,18 +2,11 @@
      belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
-{{#> user/shell_frame/index user=user active='learning'}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.myLogbook') back=(concat '/program/myProgram/' user.id '?courseId=' logbook.session.weeks.course.id)}}
 <div class="min-h-full bg-[#FAFAFA] py-8">
   <div class="max-w-4xl mx-auto px-6">
     <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6">
       <div class="flex justify-start mb-8">
-  <a href="/program/myProgram/{{user.id}}?courseId={{logbook.session.weeks.course.id}}"
-     class="inline-flex h-[44px] items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-[18px] font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-    </svg>
-    {{t "test.logbook.detailLogBook.backToProgram"}}
-  </a>
 </div>
       <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center font-montserrat">{{t "test.logbook.detailLogBook.logbookDetail"}}</h2>
 

@@ -2,7 +2,7 @@
      belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
-{{#> user/shell_frame/index user=user active='learning'}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.attendance') back=(concat '/program/' session.weeks.course.id)}}
 <div
   class='min-h-full bg-[#FAFAFA] py-8'
 >

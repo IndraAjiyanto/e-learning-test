@@ -15,9 +15,10 @@
   Props:
   - user           : object (wajib) — user yang sedang login
   - sidebarToggle  : boolean (opsional, default false) — tampilkan tombol hamburger.
-                     HANYA untuk pemanggil yang punya `sidebarOpen` di scope Alpine
-                     induk (yaitu shell `user_profile/index.hbs`). Halaman standalone
-                     tidak punya sidebar, jadi biarkan kosong.
+                     Tombolnya tidak butuh state Alpine: ia menulis atribut
+                     `data-user-sidebar` pada <html>, dan CSS yang memindahkan
+                     geometrinya. Jadi aman dipakai shell maupun halaman berdiri
+                     sendiri.
   - homeHref       : string (opsional, default '/users/profile') — tujuan klik logo.
 
   Contoh (shell):
@@ -30,7 +31,15 @@
   <div class="flex items-center gap-3">
     <a href="{{default homeHref '/users/profile'}}"><img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-6 w-auto object-contain lg:h-7" /></a>
     {{#if sidebarToggle}}
-    <button type="button" @click="sidebarOpen = !sidebarOpen; localStorage.setItem('user-sidebar-open', sidebarOpen)" class="grid size-9 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#F4F7FC]" aria-label="Toggle sidebar">
+    <button
+      type="button"
+      @click="const el = document.documentElement;
+              const next = el.dataset.userSidebar === 'expanded' ? 'collapsed' : 'expanded';
+              el.dataset.userSidebar = next;
+              try { localStorage.setItem('user-sidebar-open', next === 'expanded'); } catch (e) {}"
+      class="grid size-9 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#F4F7FC]"
+      aria-label="Toggle sidebar"
+    >
       <i class="fas fa-bars text-sm"></i>
     </button>
     {{/if}}
