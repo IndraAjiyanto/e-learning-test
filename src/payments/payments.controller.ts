@@ -12,6 +12,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 import { InvoiceService } from 'src/invoice/invoice.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
@@ -145,8 +146,15 @@ export class PaymentsController {
       );
 
       if (orderData.process === 'approved') {
-        req.flash('success', 'Pendaftaran berhasil!');
-        return res.redirect(`/payment/history/${userId}`);
+        flashToast(
+          req,
+          'Registration complete',
+          'Your place is confirmed - the program is open in My Learning.',
+        );
+        // Dulu mengarah ke /payment/history/:userId - halaman lama yang memakai
+        // navbar publik dan tiga sub-tab, bukan tab Payment History yang kini
+        // dipakai area student. Semua pengalihan di berkas ini ikut dipindah.
+        return res.redirect('/users/profile?tab=history-payment');
       }
 
       return res.redirect(orderData.invoice.xendit_invoice_url);
@@ -184,21 +192,27 @@ export class PaymentsController {
       const payment = await this.paymentsService.create(createPaymentDto);
       if (payment == false) {
         await this.paymentsService.deleteFile(createPaymentDto.file);
-        req.flash(
-          'info',
-          'You have already submitted the payment proof, please wait for further information from the admin.',
+        flashToastError(
+          req,
+          'Proof already submitted',
+          'You have already sent proof for this payment. Please wait for the admin to review it.',
         );
-        res.redirect(`/payment/history/${userId}`);
+        res.redirect('/users/profile?tab=history-payment');
       } else {
-        req.flash(
-          'success',
-          'Payment proof has been successfully submitted, please wait for the admin',
+        flashToast(
+          req,
+          'Proof submitted',
+          'Your payment proof is being reviewed by the admin.',
         );
-        res.redirect(`/payment/history/${userId}`);
+        res.redirect('/users/profile?tab=history-payment');
       }
     } catch (error: any) {
-      req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect(`/payment/history/${userId}`);
+      flashToastError(
+        req,
+        'Proof not submitted',
+        error.message || 'Please try again in a moment.',
+      );
+      res.redirect('/users/profile?tab=history-payment');
     }
   }
 

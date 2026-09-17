@@ -16,7 +16,7 @@
   di enum ProcessStatus sehingga tidak diada-adakan.
 --}}
 <div
-  class='p-4 sm:px-[34px] sm:py-[42px]'
+  class='px-4 py-4 sm:px-8 sm:py-6'
   x-data='paymentHistory()'
   x-init='load()'
 >
@@ -151,8 +151,12 @@
             </div>
             <div class='flex flex-col gap-1 lg:w-28'>
               <span class='font-inter text-xs text-[#737373]'>Status</span>
+              {{!-- w-fit: pill-nya anak dari flex-col, jadi tanpa ini ia
+                   melar selebar kolom dan tidak lagi terbaca sebagai pill
+                   seperti pada frame desain. --}}
               {{> components/ui/super_admin/badge/index
                 text='row.statusLabel'
+                class='w-fit'
                 dot=true
                 classExpr="row.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (row.status === 'processing' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')"
                 dotClassExpr="row.status === 'paid' ? 'bg-[#22c55e]' : (row.status === 'processing' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"
