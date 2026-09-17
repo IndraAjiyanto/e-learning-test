@@ -1,189 +1,45 @@
 {{!--
-  Page: Admin — Add Mentor (Container - Mentor Form, slicing.pen eG3kh)
-  Path: super_admin/mentor/create.hbs
-  Route: GET /mentor/formCreate/:courseId
-  Data: { user, courseId, technologies }
-  Design: Container w1052 vertical gap28 → Title (Add Mentor 34 #003060 /
-          "Complete the form below to add a new mentor to the program" 16 #718096)
-          → Create program form vertical gap16 → SATU Feature Card (pad20 gap20 white,
-          tanpa nomor/judul) berisi Photo+Identity row gap20, Description block gap8,
-          Tools field gap8 → Action row card putih pad20: Cancel w90 + Save Draft w116
-          + Create Mentor w148.
-  Komponen (reuse dulu): text/page-header, form/form-card (noNumber), form/form-field,
-          form/form-label, form/text-input, form/textarea-input, form/language-tabs
-          (varian FULL w128 — sesuai design, BUKAN underline), button/primary-button,
-          button/secondary-button. Baru (prefix mentor-): form/mentor-photo-upload,
-          form/mentor-error-box, form/mentor-tool-select.
-  Catatan: Save Draft submit ke endpoint yang sama (entity Mentors tidak punya
-          status draft di BE) — kedua tombol menyimpan langsung.
+  Halaman: Create Mentor — Super Admin
+  Lokasi: src/views/super_admin/mentor/create.hbs
+  Level: L4 Page
+
+  Route: GET /mentor/formCreate/:courseId -> POST /mentor/:courseId (multipart:
+  profile + field teks, position[id|en|ja], description[id|en|ja], technologyId[]).
 --}}
-<div class='py-10 px-6'>
-  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px]'
-    x-data="{
-      previewUrl: null,
-      errorMessage: '',
-      isValid: true,
-      hasFile: false,
-      posTab: 'id',
-      descTab: 'id',
-      submitAttempted: false,
-      loading: false,
-      name: '',
-      position: { id: '', en: '', ja: '' },
-      description: { id: '', en: '', ja: '' },
-      linkedin: '',
-      nameError: '',
-      positionError: { id: '', en: '', ja: '' },
-      descriptionError: { id: '', en: '', ja: '' },
-      linkedinError: '',
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-      validateName(v) { this.name = v; this.nameError = !v.trim() ? 'Mentor name is required' : ''; },
-      validatePosition(v, lang) { this.position[lang] = v; this.positionError[lang] = !v.trim() ? 'Position is required' : ''; },
-      validateDescription(v, lang) { this.description[lang] = v; this.descriptionError[lang] = !v.trim() ? 'Description is required' : ''; },
-      validateLinkedin(v) { this.linkedin = v; this.linkedinError = !v.trim() ? 'LinkedIn link is required' : ''; },
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Mentor'
+      }}
 
-      get posValid() { return Object.values(this.position).every(v => v.trim()); },
-      get descValid() { return Object.values(this.description).every(v => v.trim()); },
-      get nameValid() { return this.name.trim() !== ''; },
-      get linkedinValid() { return this.linkedin.trim() !== ''; },
-      get imageValid() { return !this.hasFile || this.isValid; },
-      get canSubmit() { return this.imageValid && this.nameValid && this.posValid && this.descValid && this.linkedinValid; },
-      get hasErrors() {
-        return this.nameError !== '' ||
-               Object.values(this.positionError).some(e => e !== '') ||
-               Object.values(this.descriptionError).some(e => e !== '') ||
-               this.linkedinError !== '';
-      },
+      {{> components/ui/super_admin/description/index
+        text='Add a mentor to this program of Kesatria Academy.'
+      }}
+    </div>
 
-      validateImage(file) {
-        if (!file) { this.hasFile = false; return; }
-        this.hasFile = true; this.errorMessage = ''; this.isValid = true;
-        if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
-          this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed'; this.isValid = false; this.previewUrl = null; return;
-        }
-        if (file.size > 5 * 1024 * 1024) {
-          this.errorMessage = 'File too large (' + (file.size / 1024 / 1024).toFixed(1) + 'MB). Max 5MB'; this.isValid = false; this.previewUrl = null; return;
-        }
-        const img = new Image(); const url = URL.createObjectURL(file);
-        img.onload = () => {
-          if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
-            this.errorMessage = img.width + 'x' + img.height + 'px. Required: 300–2000px'; this.isValid = false; this.previewUrl = null;
-          } else { this.previewUrl = url; this.isValid = true; }
-        };
-        img.onerror = () => { this.errorMessage = 'Failed to load image'; this.isValid = false; this.previewUrl = null; };
-        img.src = url;
-      },
+    <form
+      action='/mentor/{{courseId}}'
+      method='post'
+      enctype='multipart/form-data'
+      novalidate
+      x-data='mentorForm({ technologies: {{json technologies}} })'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-5'
+    >
+      <div class='flex flex-col gap-5'>
+        {{> components/ui/super_admin/form/mentor/fields }}
 
-      clearFile() {
-        this.previewUrl = null; this.errorMessage = ''; this.isValid = true; this.hasFile = false;
-        this.$refs.profileFile.value = null;
-      }
-    }"
-  >
-
-    {{!-- Title --}}
-    {{> components/ui/admin/text/page-header title="Add Mentor" subtitle="Complete the form below to add a new mentor to the program"}}
-
-    {{!-- Create program form --}}
-    <form method='POST' action='/mentor/{{courseId}}' enctype='multipart/form-data'
-      class='flex flex-col gap-[16px] w-full'
-      @submit.prevent="if (canSubmit) { loading = true; $el.submit(); } else { submitAttempted = true; }">
-
-      {{!-- Feature Card 1 (SATU card, tanpa nomor/judul) --}}
-      {{#> components/ui/admin/form/form-card noNumber=true}}
-        {{!-- Photo + Identity --}}
-        <div class='flex flex-row gap-[20px] w-full'>
-
-          {{!-- Photo picker --}}
-          <div class='flex-1 min-w-0'>
-            {{> components/ui/admin/form/mentor-photo-upload}}
-          </div>
-
-          {{!-- Identity fields --}}
-          <div class='flex-1 min-w-0 flex flex-col gap-[12px]'>
-
-            {{!-- Full Name* --}}
-            {{#> components/ui/admin/form/form-field label="Full Name*" for="name"}}
-              {{> components/ui/admin/form/text-input id="name" name="name" placeholder="Enter full name" required=true xModel="name" onInput="validateName($event.target.value)"}}
-              <template x-if='nameError'>
-                {{> components/ui/admin/form/mentor-error-box message="nameError"}}
-              </template>
-            {{/components/ui/admin/form/form-field}}
-
-            {{!-- LinkedIn* --}}
-            {{#> components/ui/admin/form/form-field label="LinkedIn*" for="linkedin"}}
-              {{> components/ui/admin/form/text-input id="linkedin" name="linkedin" placeholder="Paste LinkedIn profile URL" required=true xModel="linkedin" onInput="validateLinkedin($event.target.value)"}}
-              <template x-if='linkedinError'>
-                {{> components/ui/admin/form/mentor-error-box message="linkedinError"}}
-              </template>
-            {{/components/ui/admin/form/form-field}}
-
-            {{!-- Position* --}}
-            {{#> components/ui/admin/form/form-field label="Position*"}}
-              {{> components/ui/admin/form/language-tabs alpineVar="posTab"}}
-              <div x-show="posTab === 'id'" class='flex flex-col gap-[6px]'>
-                {{> components/ui/admin/form/text-input name="position[id]" placeholder="Enter position title" xRequired="posTab === 'id'" xModel="position.id" onInput="validatePosition($event.target.value, 'id')"}}
-                <template x-if='positionError.id'>{{> components/ui/admin/form/mentor-error-box message="positionError.id"}}</template>
-              </div>
-              <div x-show="posTab === 'en'" class='flex flex-col gap-[6px]'>
-                {{> components/ui/admin/form/text-input name="position[en]" placeholder="Enter position title" xRequired="posTab === 'en'" xModel="position.en" onInput="validatePosition($event.target.value, 'en')"}}
-                <template x-if='positionError.en'>{{> components/ui/admin/form/mentor-error-box message="positionError.en"}}</template>
-              </div>
-              <div x-show="posTab === 'ja'" class='flex flex-col gap-[6px]'>
-                {{> components/ui/admin/form/text-input name="position[ja]" placeholder="Enter position title" xRequired="posTab === 'ja'" xModel="position.ja" onInput="validatePosition($event.target.value, 'ja')"}}
-                <template x-if='positionError.ja'>{{> components/ui/admin/form/mentor-error-box message="positionError.ja"}}</template>
-              </div>
-            {{/components/ui/admin/form/form-field}}
-
-          </div>
-        </div>
-
-        {{!-- Description* block --}}
-        <div class='flex flex-col gap-[8px] w-full'>
-          {{#> components/ui/admin/form/form-field label="Description*"}}
-            {{> components/ui/admin/form/language-tabs alpineVar="descTab"}}
-            <div x-show="descTab === 'id'" class='flex flex-col gap-[6px]'>
-              {{> components/ui/admin/form/textarea-input name="description[id]" placeholder="Write a short description of the mentor's background and expertise" rows="4" xModel="description.id" onBlur="validateDescription($event.target.value, 'id')"}}
-              <template x-if='descriptionError.id'>{{> components/ui/admin/form/mentor-error-box message="descriptionError.id"}}</template>
-            </div>
-            <div x-show="descTab === 'en'" class='flex flex-col gap-[6px]'>
-              {{> components/ui/admin/form/textarea-input name="description[en]" placeholder="Write a short description of the mentor's background and expertise" rows="4" xModel="description.en" onBlur="validateDescription($event.target.value, 'en')"}}
-              <template x-if='descriptionError.en'>{{> components/ui/admin/form/mentor-error-box message="descriptionError.en"}}</template>
-            </div>
-            <div x-show="descTab === 'ja'" class='flex flex-col gap-[6px]'>
-              {{> components/ui/admin/form/textarea-input name="description[ja]" placeholder="Write a short description of the mentor's background and expertise" rows="4" xModel="description.ja" onBlur="validateDescription($event.target.value, 'ja')"}}
-              <template x-if='descriptionError.ja'>{{> components/ui/admin/form/mentor-error-box message="descriptionError.ja"}}</template>
-            </div>
-          {{/components/ui/admin/form/form-field}}
-        </div>
-
-        {{!-- Tools* field --}}
-        <div class='flex flex-col gap-[8px] w-full'>
-          {{> components/ui/admin/form/mentor-tool-select availableJson=(json technologies)}}
-        </div>
-      {{/components/ui/admin/form/form-card}}
-
-      {{!-- Action row --}}
-      {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-between items-center w-full'>
-          {{> components/ui/admin/button/secondary-button text='Cancel' href='/program/detail/program/admin/{{courseId}}' width='90'}}
-          <div class='flex flex-row gap-[12px] items-center'>
-            {{> components/ui/admin/button/secondary-button text='Save Draft' type='submit' width='116'}}
-            {{> components/ui/admin/button/primary-button text='Create Mentor' type='submit' loading='loading' width='148'}}
-          </div>
-        </div>
-      {{/components/ui/admin/form/form-card}}
-
-      {{!-- Submit Warning --}}
-      <template x-if='submitAttempted && (hasErrors || !imageValid)'>
-        <div class='flex items-center gap-[8px] p-[12px] bg-[#FEF2F2] [outline:1px_solid_#DC2626] rounded-[8px]'>
-          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>
-          <p class='text-[14px] text-[#DC2626] font-inter'>
-            <span class='font-semibold'>Cannot submit:</span> Please fix all validation errors above.
-          </p>
-        </div>
-      </template>
-
+        {{> components/ui/super_admin/form/button
+          row=true
+          cancelHref=(concat '/program/detail/program/admin/' courseId)
+          submitLabel='Create Mentor'
+          disabled='!canSubmit() || loading'
+        }}
+      </div>
     </form>
   </div>
 </div>
+
+{{> components/ui/super_admin/form/mentor/form }}

@@ -1,0 +1,21 @@
+{{!--
+  Komponen: Font Awesome Icon Class (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/table/fa_icon.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Menyediakan global `faIconClass(value)`: padanan sisi-klien dari helper
+  `computeIcon`. Helper Handlebars berjalan di server, jadi tidak bisa dipakai
+  pada baris yang dirender <template x-for>.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  function faIconClass(value) {
+    const icon = String(value || '').trim();
+    if (!icon) return 'fa-solid fa-circle-question';
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(icon)
+      || icon.split(/\s+/).some((part) => /^fa-/i.test(part));
+    if (hasFaPrefix) return /^fa-\w+/i.test(icon) && !/\s/.test(icon) ? 'fa-solid ' + icon : icon;
+    return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
+  }
+</script>

@@ -3,9 +3,15 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/alumni/form.hbs
   Level: L0 Skrip pendamping (scoped super_admin)
 
-  Factory Alpine `alumniForm({ courses, alumni })` untuk
-  super_admin/alumni/{createAlumni,editAlumni}.hbs. `alumni` hanya diisi di Edit:
-  field terisi dari data tersimpan dan foto baru jadi opsional.
+  Factory Alpine `alumniForm({ courses, alumni })` untuk keempat halaman form
+  alumni di super_admin/alumni/. Kedua argumen opsional:
+
+  - `alumni` hanya diisi di Edit: field terisi dari data tersimpan dan foto baru
+    jadi opsional.
+  - `courses` hanya diisi varian per kategori ({createAlumni,editAlumni}.hbs) yang
+    memang memilih program lewat form. Varian per program ({create,edit}.hbs)
+    mengambil courseId dari URL, jadi memanggil tanpa `courses` dan field Program
+    ikut dilewati validasinya (pasangannya: prop `hideProgram` di form/alumni/fields).
 
   Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
   form/multi_select_field); courseOptions, initialCourse; previewUrl,
@@ -49,6 +55,7 @@
     window.alumniForm = function alumniForm({ courses, alumni } = {}) {
       const saved = (field) => byLang((l) => alumni?.[field]?.[l] ?? '');
       const course = alumni?.course;
+      const withCourse = Array.isArray(courses);
 
       return {
         loading: false,
@@ -191,8 +198,10 @@
         },
 
         validateAll() {
-          this.touched.courseId = true;
-          this.formErrors.courseId = errorFor('courseId', null, this.formData.courseId);
+          if (withCourse) {
+            this.touched.courseId = true;
+            this.formErrors.courseId = errorFor('courseId', null, this.formData.courseId);
+          }
 
           FIELDS.forEach((field) =>
             LANGS.forEach((lang) => {
@@ -207,7 +216,7 @@
 
         hasFormErrors() {
           return (
-            this.formErrors.courseId !== '' ||
+            (withCourse && this.formErrors.courseId !== '') ||
             FIELDS.some((field) => LANGS.some((lang) => this.formErrors[field][lang] !== ''))
           );
         },
@@ -228,7 +237,7 @@
         // Urutan mengikuti tampilan: program, foto, lalu field per bahasa.
         // Id `${field}-${lang}` harus sama dengan yang dibentuk form/alumni/fields.
         revealFirstInvalid() {
-          if (this.formErrors.courseId) {
+          if (withCourse && this.formErrors.courseId) {
             document.getElementById('courseId')?.focus();
             return;
           }

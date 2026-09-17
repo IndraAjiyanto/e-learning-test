@@ -4,23 +4,24 @@
   Props: {{text}}, {{href}} (optional), {{type}} (optional),
          {{loading}} (optional, Alpine expression for loading state — adds spinner + disabled),
          {{disabled}} (optional, Alpine expression for disabled state),
-         {{width}} (optional, default "148")
+         {{width}} (optional, default "158" responsive)
 
-  Design: w148, h44, p10 18, bg #003060, border 1px #003060, radius 8,
-          shadow 0px 1px 2px rgba(0,0,0,0.05)
-  Text: Inter 16/24, white, semibold
+  Design: hybrid — responsive w-full sm:w-158 (from test-back-office 873331df)
+          + loading/disabled spinner logic (from sayyid-test HEAD)
+          bg #003060, outline 1px #003060 offset -0.5px, radius 8,
+          Text: Inter 16/normal, white, semibold
 --}}
 {{#if href}}
 <a href='{{href}}'
-   class='box-border w-[{{default width "148"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#00254a] transition-colors'>
-  <span class='text-[16px]/[24px] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
+   class='box-border w-full sm:w-[{{default width "158"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#00254a] transition-colors'>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>
 </a>
 {{else}}
 <button type='{{default type "submit"}}'
   {{#if disabled}}:disabled='{{{disabled}}}'{{/if}}
   {{#if loading}}:disabled='{{{loading}}}'{{/if}}
   {{#if loading}}:class="{{{loading}}} ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"{{else}}{{#if disabled}}:class="{{{disabled}}} ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"{{else}}class='bg-[#003060] hover:bg-[#00254a]'{{/if}}{{/if}}
-   class='box-border w-[{{default width "148"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] transition-colors'>
-  {{#if loading}}<span x-show='{{{loading}}}' class='loading loading-spinner loading-sm'></span><span x-show='!({{{loading}}})' class='text-[16px]/[24px] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>{{else}}<span class='text-[16px]/[24px] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>{{/if}}
+   class='box-border w-full sm:w-[{{default width "158"}}px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#00254a] transition-colors'>
+  {{#if loading}}<span x-show='{{{loading}}}' class='loading loading-spinner loading-sm'></span><span x-show='!({{{loading}}})' class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>{{else}}<span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>{{text}}</span>{{/if}}
 </button>
 {{/if}}
