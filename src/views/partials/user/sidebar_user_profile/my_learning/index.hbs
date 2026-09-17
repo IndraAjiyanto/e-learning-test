@@ -99,9 +99,16 @@
 
   {{! --- PROGRAM CARDS SECTION --- }}
   <div>
-    <h2 class="font-montserrat font-semibold text-xl sm:text-2xl text-[#003060] mb-5">
-      Learning Path
-    </h2>
+    <div class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+      <h2 class="font-montserrat text-xl font-bold text-[#003060] sm:text-2xl">
+        Learning Path
+      </h2>
+      {{!-- Penghitung program, sesuai frame desain. Angkanya dari jumlah course
+           yang benar-benar diikuti, bukan angka tetap. --}}
+      <span class="font-inter text-sm text-[#737373]">
+        Showing {{course.length}} of {{course.length}} programs available.
+      </span>
+    </div>
 
     {{#if course.length}}
       <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-[29px]">

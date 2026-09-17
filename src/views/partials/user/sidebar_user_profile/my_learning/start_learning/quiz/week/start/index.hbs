@@ -281,7 +281,8 @@ window.addEventListener("load", function(){
                     <div class="values font-semibold text-slate-700"></div>
                 </div>
 
-                <script>
+                {{#if remainingTime}}
+<script>
                 document.addEventListener("DOMContentLoaded", function () {
 
                     const form = document.querySelector('#formSubmit');
@@ -290,7 +291,7 @@ window.addEventListener("load", function(){
                     timer.start({
                         countdown: true,
                         startValues: {
-                            seconds: {{remainingTime}}
+                            seconds: {{default remainingTime 0}}
                         }
                     });
 
@@ -310,6 +311,7 @@ window.addEventListener("load", function(){
 
                 });
                 </script>
+{{/if}}
 
             {{/if}}
 

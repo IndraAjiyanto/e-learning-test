@@ -129,7 +129,7 @@
                  to sit directly on top of the chevron toggle button below, causing a visible overlap. -->
             <div x-show="status === 'review' || status === 'approved'" x-cloak class="flex justify-end">
               {{> components/ui/super_admin/badge/index
-                text="status === 'approved' ? 'Approved' : 'Under review'"
+                text='status === "approved" ? "Approved" : "Under review"'
                 dot=true
                 classExpr="status === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#fffbeb] text-[#b45309]'"
                 dotClassExpr="status === 'approved' ? 'bg-[#22c55e]' : 'bg-[#f59e0b]'"

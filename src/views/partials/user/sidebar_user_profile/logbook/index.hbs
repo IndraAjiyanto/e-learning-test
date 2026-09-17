@@ -100,13 +100,13 @@
                   </td>
                   <td class='px-5 py-4'>
                     {{> components/ui/super_admin/badge/index
-                      text="logbook.session?.weeks?.course?.name || '—'"
+                      text='logbook.session?.weeks?.course?.name || "—"'
                       class='bg-[#eef4ff] text-[#3538cd]'
                     }}
                   </td>
                   <td class='px-5 py-4'>
                     {{> components/ui/super_admin/badge/index
-                      text="logbook.process === 'approved' ? 'Approved' : (logbook.process === 'process' ? 'In review' : 'Rejected')"
+                      text='logbook.process === "approved" ? "Approved" : (logbook.process === "process" ? "In review" : "Rejected")'
                       dot=true
                       classExpr="logbook.process === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : (logbook.process === 'process' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')"
                       dotClassExpr="logbook.process === 'approved' ? 'bg-[#22c55e]' : (logbook.process === 'process' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"
