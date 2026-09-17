@@ -394,7 +394,23 @@
       <p class="font-sans font-normal text-xs leading-relaxed text-[#6B7280] line-clamp-4">
         {{getByLang course.description lang}}
       </p>
+      {{!-- Titik masuk per-course. Sebelumnya tersebar di pohon sidebar, yang
+           tidak ada pada frame desain; kartu inilah tempat navigasi per-course
+           menurut desain. Handler-nya sama persis dengan yang dipakai pohon
+           lama, jadi logika fragment dan buka-kunci sesi tidak berubah. --}}
       <div class="flex flex-col gap-2 pt-2">
+        <button type="button" @click="toggleActiveSection('presentation')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+          <i class="fa-solid fa-display"></i> Presentation
+        </button>
+        <button type="button" @click="toggleActiveSection('assignment')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+          <i class="fa-solid fa-list-check"></i> Assignment
+        </button>
+        <button type="button" @click="toggleActiveSection('quiz')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+          <i class="fa-solid fa-circle-question"></i> Quiz
+        </button>
+        <button type="button" @click="toggleActiveSection('certificate')" class="w-full h-11 rounded-lg border border-[#d4d4d4] bg-white text-[#344054] hover:bg-[#f9fafb] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+          <i class="fa-solid fa-award"></i> Certificate
+        </button>
         <button type="button" @click="toggleActiveSection('group-class')" class="w-full h-11 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
           <i class="fa-solid fa-users"></i> Join Group
         </button>

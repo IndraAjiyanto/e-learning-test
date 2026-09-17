@@ -183,14 +183,26 @@ const SCREENS = [
     },
   },
   {
-    name: 'my-learning-submenu',
+    name: 'course-navigation',
     urlFrom: (ids) => `/program/myProgram/${ids.uid}?courseId=${ids.cid}`,
-    design: null,
+    design: 'start-learning.png',
     async assert(page, s) {
-      // Panel tab harus bersaudara dengan #start-learning-container, bukan
-      // tersarang di dalamnya. Pernah tersarang karena satu <div> tidak ditutup,
-      // dan begitu fragment dimuat seluruh panel lain ikut terhapus sehingga
-      // setiap sub-menu My Learning menampilkan halaman kosong.
+      // Frame desain menampilkan lima item datar di sidebar, tanpa pohon course.
+      const navLabels = await page.evaluate(() => {
+        const nav = [...document.querySelectorAll('nav')]
+          .find((n) => n.innerText.includes('Dashboard') && n.innerText.includes('Profile'));
+        if (!nav) return [];
+        return [...nav.querySelectorAll('button, a')]
+          .map((el) => el.innerText.trim())
+          .filter(Boolean)
+          .filter((l) => l !== 'Log Out');   // Log Out berdiri sendiri di bawah, bukan item nav
+      });
+      check(s, 'sidebar has exactly the five design items', navLabels.length === 5,
+        navLabels.join(' | '));
+      check(s, 'no course tree in the sidebar',
+        !navLabels.some((l) => /Presentation|Certificate|Join Group/.test(l)), navLabels.join(' | '));
+
+      // Panel tab harus tetap bersaudara dengan kontainer fragment.
       const nested = await page.evaluate(() => {
         const sl = document.getElementById('start-learning-container');
         if (!sl) return ['no start-learning-container'];
@@ -201,19 +213,20 @@ const SCREENS = [
       check(s, 'tab panels are siblings, not nested in the fragment container',
         nested.length === 0, nested.slice(0, 3).join(' | '));
 
-      await page.locator('aside, nav').getByRole('button', { name: /Full Stack/ }).first()
-        .click().catch(() => {});
-      await page.waitForTimeout(500);
-
-      for (const label of ['Presentation', 'My Logbook', 'Assignment', 'Quiz', 'Certificate', 'Join Group Class']) {
-        await page.getByRole('button', { name: label, exact: true }).last().click({ timeout: 5000 }).catch(() => {});
+      // Setiap bagian per-course harus terjangkau dari kartu program.
+      for (const label of ['Presentation', 'Assignment', 'Quiz', 'Certificate', 'My Logbook', 'Join Group']) {
+        const btn = page.getByRole('button', { name: new RegExp(`^${label}$`) }).last();
+        await btn.click({ timeout: 5000 }).catch(() => {});
         await page.waitForTimeout(1500);
         const chars = await page.evaluate(() => {
           const shown = [...document.querySelectorAll('[x-show^="activeSection ==="]')]
             .filter((el) => getComputedStyle(el).display !== 'none');
           return shown.map((el) => el.innerText.trim()).join(' ').length;
         });
-        check(s, `submenu "${label}" renders content`, chars > 20, `${chars} chars`);
+        check(s, `"${label}" reachable from the program card`, chars > 20, `${chars} chars`);
+        await page.goBack().catch(() => {});
+        await page.goto(`${BASE}${screenUrl}`, { waitUntil: 'networkidle' }).catch(() => {});
+        await page.waitForTimeout(1200);
       }
     },
   },
@@ -237,9 +250,11 @@ await Promise.all([
 console.log('logged in, landed on', new URL(page.url()).pathname);
 
 const ids = JSON.parse(process.env.IDS || '{}');
+let screenUrl = '';
 
 for (const screen of SCREENS) {
   const url = screen.url || screen.urlFrom(ids);
+  screenUrl = url;
   const before = consoleErrors.length;
   await page.goto(`${BASE}${url}`, { waitUntil: 'networkidle' });
   if (screen.waitFor) {
