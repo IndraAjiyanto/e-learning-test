@@ -132,10 +132,26 @@ per-element font count, which is tracked, not blocking.
 controller path gated to `admin`/`super_admin`.
 
 Local data: `npm run seed` (accounts, all verified), `npm run seed:content`
-(marketing content), `npm run seed:student` (one student with weeks, sessions,
-materials, logbooks, assignments, a quiz, progress, attendance, a portfolio item
-and payments). Log in as `indra@gmail.com` / `12345678`. Without the third seed
-every student tab renders its empty state and nothing can be reviewed.
+(marketing content), `npm run seed:student` (three programs, five weeks, ten
+sessions, materials, attendance, logbooks in every status, assignments with and
+without submissions, five quizzes, progress, three portfolio items, and sixteen
+payment rows across every status and payment method). Log in as
+`indra@gmail.com` / `12345678`. Without the third seed every student tab renders
+its empty state and nothing can be reviewed. Scale it down with
+`SEED_WEEKS=2 SEED_PAYMENTS=4 npm run seed:student`.
+
+Before asking for review, run the screens in a real browser:
+
+```bash
+npx playwright install chromium   # once
+npm run test:ui
+```
+
+It walks nine student screens at the design frame width, screenshots each into
+`test/ui/shots/`, and checks titles, the elements the frames show, console
+errors, and whether every Alpine expression on the page actually compiles. That
+last check is the one that catches an attribute cut short by a component's
+quoting rule, which neither grep nor a 200 response will show you.
 
 ## Docs
 

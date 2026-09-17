@@ -23,6 +23,9 @@ import { Portofolios } from 'src/entities/portofolios.entity';
 import { Registration } from 'src/entities/registration.entity';
 import { Payment } from 'src/entities/payment.entity';
 import { Installment } from 'src/entities/installment.entity';
+import { Invoice } from 'src/entities/invoice.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
+import { Category } from 'src/entities/category.entity';
 
 /**
  * Seed data belajar untuk SATU student, supaya setiap tab di area student
@@ -43,9 +46,16 @@ import { Installment } from 'src/entities/installment.entity';
  * Idempoten per blok: setiap bagian memeriksa datanya sendiri dan melewati bila
  * sudah ada, jadi aman dijalankan berulang, termasuk di atas database hasil
  * restore dump yang sebagian tabelnya sudah terisi.
+ *
+ * Banyaknya baris sengaja cukup untuk menguji layar seperti yang digambar frame
+ * desain: daftar berhalaman, filter yang benar-benar menyaring, dan badge status
+ * dalam semua variannya. Atur lewat env bila perlu lebih kecil:
+ *   SEED_WEEKS=5 SEED_PAYMENTS=12 npm run seed:student
  */
 
 const STUDENT_EMAIL = process.env.STUDENT_EMAIL || 'indra@gmail.com';
+const WEEK_COUNT = Number(process.env.SEED_WEEKS || 5);
+const PAYMENT_COUNT = Number(process.env.SEED_PAYMENTS || 12);
 
 // Tanggal relatif terhadap hari ini supaya data tidak pernah terlihat basi.
 const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000);
@@ -97,6 +107,60 @@ async function bootstrap() {
   }
   log(`student ${STUDENT_EMAIL}, course "${course.name}"`);
 
+  // --- Program tambahan -------------------------------------------------------
+  // Satu program saja membuat My Learning, Continue Learning, dan filter
+  // "Program / Course" di Payment History tidak bisa diuji dengan sungguhan.
+  // Dua program berikut ditambahkan bila belum ada, lalu student didaftarkan:
+  // satu masih berjalan, satu ditandai selesai supaya kartu statistik Dashboard
+  // menunjukkan angka yang berbeda-beda.
+  const categoryRepo = ds.getRepository(Category);
+  const extraPlans = [
+    { name: 'UI/UX Design Fundamentals', description: 'Dasar riset, wireframe, dan prototipe.', progress: true },
+    { name: 'Digital Marketing Essentials', description: 'Strategi konten, SEO dasar, dan analitik.', progress: false },
+  ];
+
+  let addedCourses = 0;
+  for (const plan of extraPlans) {
+    let extra = await courseRepo.findOne({ where: { name: plan.name } });
+    if (!extra) {
+      const category = await categoryRepo.findOne({ where: {}, order: { name: 'ASC' } });
+      extra = await courseRepo.save(
+        courseRepo.create({
+          name: plan.name,
+          description: { id: plan.description, en: plan.description, ja: plan.description } as any,
+          image: 'logo.png',
+          quota: 20,
+          price: 1500000,
+          promo: 0,
+          group: 'https://chat.whatsapp.com/example',
+          locations: { id: 'Online', en: 'Online', ja: 'Online' } as any,
+          locationLink: 'https://meet.google.com/example',
+          method: 'online',
+          process: 'approved',
+          launch: true,
+          checkPaid: true,
+          day: 2,
+          startDate: daysAgo(60),
+          startEnd: daysAhead(30),
+          ...(category ? { category } : {}),
+        }),
+      );
+      addedCourses += 1;
+    }
+
+    const enrolled = await userCourseRepo.findOne({
+      where: { user: { id: student.id }, course: { id: extra.id } },
+    });
+    if (!enrolled) {
+      await userCourseRepo.save(
+        userCourseRepo.create({ user: student, course: extra, progress: plan.progress }),
+      );
+    }
+  }
+  const enrolledCount = await userCourseRepo.count({ where: { user: { id: student.id } } });
+  log(`program: ${addedCourses} dibuat, student terdaftar di ${enrolledCount} program`);
+
+
   // --- Struktur belajar: 2 minggu, 3 sesi, 3 materi ---------------------------
   const weekRepo = ds.getRepository(Weeks);
   const sessionRepo = ds.getRepository(Session);
@@ -108,20 +172,24 @@ async function bootstrap() {
   });
 
   if (weeks.length === 0) {
-    weeks = await weekRepo.save([
-      weekRepo.create({
-        weekNumber: 1,
-        description: 'Fondasi: lingkungan kerja, version control, dasar HTML & CSS.',
-        isFinal: false,
-        course,
-      }),
-      weekRepo.create({
-        weekNumber: 2,
-        description: 'Membangun antarmuka: komponen, state, dan konsumsi API.',
-        isFinal: true,
-        course,
-      }),
-    ]);
+    const topics = [
+      'Fondasi: lingkungan kerja, version control, dasar HTML & CSS.',
+      'Membangun antarmuka: komponen, state, dan konsumsi API.',
+      'Data dan penyimpanan: model, relasi, dan query.',
+      'Autentikasi, otorisasi, dan keamanan dasar.',
+      'Pengujian, build, dan rilis ke produksi.',
+      'Proyek akhir: menggabungkan seluruh materi.',
+    ];
+    weeks = await weekRepo.save(
+      Array.from({ length: WEEK_COUNT }, (_, i) =>
+        weekRepo.create({
+          weekNumber: i + 1,
+          description: topics[i % topics.length],
+          isFinal: i === WEEK_COUNT - 1,
+          course,
+        }),
+      ),
+    );
     log(`membuat ${weeks.length} minggu`);
   } else {
     log(`minggu sudah ada (${weeks.length}), dilewati`);
@@ -133,38 +201,26 @@ async function bootstrap() {
   });
 
   if (sessions.length === 0) {
-    sessions = await sessionRepo.save([
-      sessionRepo.create({
-        topic: 'Menyiapkan lingkungan kerja',
-        sessionOrder: 1,
-        date: daysAgo(14),
-        location: 'Zoom',
-        startTime: '19:00',
-        endTime: '21:00',
-        isFinal: false,
-        weeks: weeks[0],
-      }),
-      sessionRepo.create({
-        topic: 'HTML semantik dan dasar CSS',
-        sessionOrder: 2,
-        date: daysAgo(7),
-        location: 'Zoom',
-        startTime: '19:00',
-        endTime: '21:00',
-        isFinal: true,
-        weeks: weeks[0],
-      }),
-      sessionRepo.create({
-        topic: 'Komponen dan state',
-        sessionOrder: 3,
-        date: daysAhead(3),
-        location: 'Zoom',
-        startTime: '19:00',
-        endTime: '21:00',
-        isFinal: false,
-        weeks: weeks[1],
-      }),
-    ]);
+    const rows: Session[] = [];
+    weeks.forEach((week, wi) => {
+      for (let si = 0; si < 2; si += 1) {
+        const order = wi * 2 + si + 1;
+        const offset = (weeks.length * 2 - order) * 3;
+        rows.push(
+          sessionRepo.create({
+            topic: `Sesi ${order}: ${week.description.split(':')[0]} bagian ${si + 1}`,
+            sessionOrder: order,
+            date: offset > 0 ? daysAgo(offset) : daysAhead(-offset + 3),
+            location: si % 2 === 0 ? 'Zoom' : 'Kelas Purwokerto',
+            startTime: '19:00',
+            endTime: '21:00',
+            isFinal: si === 1,
+            weeks: week,
+          }),
+        );
+      }
+    });
+    sessions = await sessionRepo.save(rows);
     log(`membuat ${sessions.length} sesi`);
   } else {
     log(`sesi sudah ada (${sessions.length}), dilewati`);
@@ -174,27 +230,39 @@ async function bootstrap() {
     where: sessions.map((s) => ({ session: { id: s.id } })),
   });
   if (materialCount === 0) {
-    await materialRepo.save([
-      materialRepo.create({
-        title: 'Panduan menyiapkan lingkungan kerja',
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        fileType: 'pdf',
-        session: sessions[0],
-      }),
-      materialRepo.create({
-        title: 'Rekaman sesi: HTML semantik',
-        file: 'https://www.youtube.com/embed/UB1O30fR-EE',
-        fileType: 'video',
-        session: sessions[1],
-      }),
-      materialRepo.create({
-        title: 'Slide: dasar CSS layout',
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        fileType: 'ppt',
-        session: sessions[1],
-      }),
-    ]);
-    log('membuat 3 materi (pdf / video / ppt)');
+    const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    const rows: Material[] = [];
+    sessions.slice(0, Math.min(6, sessions.length)).forEach((session, i) => {
+      rows.push(
+        materialRepo.create({
+          title: `Panduan tertulis — ${session.topic}`,
+          file: PDF,
+          fileType: 'pdf',
+          session,
+        }),
+      );
+      if (i % 2 === 0) {
+        rows.push(
+          materialRepo.create({
+            title: `Rekaman sesi — ${session.topic}`,
+            file: 'https://www.youtube.com/embed/UB1O30fR-EE',
+            fileType: 'video',
+            session,
+          }),
+        );
+      } else {
+        rows.push(
+          materialRepo.create({
+            title: `Slide — ${session.topic}`,
+            file: PDF,
+            fileType: 'ppt',
+            session,
+          }),
+        );
+      }
+    });
+    await materialRepo.save(rows);
+    log(`membuat ${rows.length} materi (pdf / video / ppt)`);
   } else {
     log(`materi sudah ada (${materialCount}), dilewati`);
   }
@@ -205,23 +273,25 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (attendanceCount === 0) {
-    await attendanceRepo.save([
-      attendanceRepo.create({
-        status: 'present',
-        attendanceTime: daysAgo(14),
-        notes: 'Hadir tepat waktu.',
-        user: student,
-        session: sessions[0],
-      }),
-      attendanceRepo.create({
-        status: 'permission',
-        attendanceTime: daysAgo(7),
-        notes: 'Izin, ada jadwal kuliah yang bentrok.',
-        user: student,
-        session: sessions[1],
-      }),
-    ]);
-    log('membuat 2 baris absensi');
+    const past = sessions.filter((x) => new Date(x.date) < new Date());
+    const statuses: Array<'present' | 'permission' | 'sick' | 'absent'> = [
+      'present', 'present', 'permission', 'present', 'sick', 'present', 'absent',
+    ];
+    await attendanceRepo.save(
+      past.map((session, i) =>
+        attendanceRepo.create({
+          status: statuses[i % statuses.length],
+          attendanceTime: session.date,
+          notes:
+            statuses[i % statuses.length] === 'present'
+              ? 'Hadir tepat waktu.'
+              : 'Berhalangan hadir, sudah izin ke mentor.',
+          user: student,
+          session,
+        }),
+      ),
+    );
+    log(`membuat ${past.length} baris absensi`);
   } else {
     log(`absensi sudah ada (${attendanceCount}), dilewati`);
   }
@@ -232,31 +302,28 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (logbookCount === 0) {
-    await logbookRepo.save([
-      logbookRepo.create({
-        activity: 'Menyiapkan lingkungan kerja',
-        activityDetails:
-          'Memasang Node.js, pnpm, dan VS Code. Menjalankan proyek contoh sampai tampil di browser.',
-        obstacles: 'Sempat salah versi Node, diperbaiki dengan nvm.',
-        process: 'approved',
-        documentation: null,
-        otherDocumentation: '',
-        user: student,
-        session: sessions[0],
-      }),
-      logbookRepo.create({
-        activity: 'Latihan HTML semantik',
-        activityDetails:
-          'Menulis ulang satu halaman landing memakai tag semantik dan memeriksa strukturnya.',
-        obstacles: 'Masih ragu memilih antara section dan article.',
-        process: 'process',
-        documentation: null,
-        otherDocumentation: '',
-        user: student,
-        session: sessions[1],
-      }),
-    ]);
-    log('membuat 2 entri logbook (1 approved, 1 process)');
+    const past = sessions.filter((x) => new Date(x.date) < new Date());
+    const flow: ProcessStatus[] = ['approved', 'approved', 'process', 'rejected'];
+    await logbookRepo.save(
+      past.map((session, i) =>
+        logbookRepo.create({
+          activity: `Latihan mandiri — ${session.topic}`,
+          activityDetails:
+            'Mengulang materi sesi, mengerjakan latihan, dan mencatat bagian yang masih ' +
+            'perlu didalami. Hasilnya disimpan di repositori pribadi.',
+          obstacles:
+            i % 3 === 0
+              ? 'Tidak ada kendala berarti.'
+              : 'Sempat tersendat di bagian konfigurasi, selesai setelah membaca dokumentasi.',
+          process: flow[i % flow.length],
+          documentation: null,
+          otherDocumentation: '',
+          user: student,
+          session,
+        }),
+      ),
+    );
+    log(`membuat ${past.length} entri logbook (approved / process / rejected)`);
   } else {
     log(`logbook sudah ada (${logbookCount}), dilewati`);
   }
@@ -269,18 +336,16 @@ async function bootstrap() {
     where: sessions.map((s) => ({ session: { id: s.id } })),
   });
   if (assignments.length === 0) {
-    assignments = await assignmentRepo.save([
-      assignmentRepo.create({
-        title: 'Tugas 1: halaman profil statis',
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        session: sessions[0],
-      }),
-      assignmentRepo.create({
-        title: 'Tugas 2: ulang layout dengan flexbox',
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        session: sessions[1],
-      }),
-    ]);
+    const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    assignments = await assignmentRepo.save(
+      sessions.slice(0, Math.min(8, sessions.length)).map((session, i) =>
+        assignmentRepo.create({
+          title: `Tugas ${i + 1}: ${session.topic.replace(/^Sesi \d+: /, '')}`,
+          file: PDF,
+          session,
+        }),
+      ),
+    );
     log(`membuat ${assignments.length} tugas`);
   } else {
     log(`tugas sudah ada (${assignments.length}), dilewati`);
@@ -290,21 +355,20 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (answerTaskCount === 0) {
-    await answerTaskRepo.save([
-      answerTaskRepo.create({
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        process: 'approved',
-        user: student,
-        task: assignments[0],
-      }),
-      answerTaskRepo.create({
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        process: 'process',
-        user: student,
-        task: assignments[1],
-      }),
-    ]);
-    log('membuat 2 pengumpulan tugas (1 approved, 1 process)');
+    const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    const flow: ProcessStatus[] = ['approved', 'process', 'approved', 'rejected'];
+    const submitted = assignments.slice(0, Math.max(1, assignments.length - 2));
+    await answerTaskRepo.save(
+      submitted.map((task, i) =>
+        answerTaskRepo.create({
+          file: PDF,
+          process: flow[i % flow.length],
+          user: student,
+          task,
+        }),
+      ),
+    );
+    log(`membuat ${submitted.length} pengumpulan tugas, sisanya sengaja belum dikumpulkan`);
   } else {
     log(`pengumpulan tugas sudah ada (${answerTaskCount}), dilewati`);
   }
@@ -319,49 +383,38 @@ async function bootstrap() {
     where: weeks.map((w) => ({ weeks: { id: w.id } })),
   });
   if (!quiz) {
-    quiz = await quizRepo.save(
-      quizRepo.create({
-        quizName: 'Kuis minggu 1: dasar web',
-        minScore: 70,
-        duration: 15,
-        weeks: weeks[0],
-      }),
-    );
-
-    const soal: Array<[string, string[], number]> = [
-      [
-        'Tag mana yang dipakai untuk judul terpenting sebuah halaman?',
-        ['<h1>', '<head>', '<title>', '<header>'],
-        0,
-      ],
-      [
-        'Properti CSS mana yang mengatur jarak DI DALAM sebuah elemen?',
-        ['margin', 'padding', 'border', 'gap'],
-        1,
-      ],
-      [
-        'Apa fungsi utama version control seperti Git?',
-        [
-          'Mempercepat website',
-          'Mengompres gambar',
-          'Melacak perubahan kode',
-          'Menyusun basis data',
-        ],
-        2,
-      ],
+    const bank: Array<[string, string[], number]> = [
+      ['Tag mana yang dipakai untuk judul terpenting sebuah halaman?', ['<h1>', '<head>', '<title>', '<header>'], 0],
+      ['Properti CSS mana yang mengatur jarak DI DALAM sebuah elemen?', ['margin', 'padding', 'border', 'gap'], 1],
+      ['Apa fungsi utama version control seperti Git?', ['Mempercepat website', 'Mengompres gambar', 'Melacak perubahan kode', 'Menyusun basis data'], 2],
+      ['Manakah yang BUKAN metode HTTP?', ['GET', 'POST', 'SEND', 'DELETE'], 2],
+      ['Apa keluaran dari typeof [] di JavaScript?', ['array', 'object', 'list', 'undefined'], 1],
+      ['Status HTTP mana yang berarti "tidak ditemukan"?', ['200', '301', '404', '500'], 2],
     ];
 
-    for (const [questionText, options, correctIndex] of soal) {
-      const question = await questionRepo.save(
-        questionRepo.create({ questionText, quiz }),
+    const created: Quiz[] = [];
+    for (const [i, week] of weeks.entries()) {
+      const q = await quizRepo.save(
+        quizRepo.create({
+          quizName: `Kuis minggu ${week.weekNumber}`,
+          minScore: 70,
+          duration: 15,
+          weeks: week,
+        }),
       );
-      await answerRepo.save(
-        options.map((answer, i) =>
-          answerRepo.create({ answer, isCorrect: i === correctIndex, question }),
-        ),
-      );
+      created.push(q);
+      for (let n = 0; n < 3; n += 1) {
+        const [questionText, options, correctIndex] = bank[(i * 3 + n) % bank.length];
+        const question = await questionRepo.save(questionRepo.create({ questionText, quiz: q }));
+        await answerRepo.save(
+          options.map((answer, oi) =>
+            answerRepo.create({ answer, isCorrect: oi === correctIndex, question }),
+          ),
+        );
+      }
     }
-    log('membuat 1 kuis + 3 soal + 12 pilihan jawaban');
+    quiz = created[0];
+    log(`membuat ${created.length} kuis, masing-masing 3 soal dan 4 pilihan`);
   } else {
     log('kuis sudah ada, dilewati');
   }
@@ -370,8 +423,13 @@ async function bootstrap() {
     where: { user: { id: student.id }, quiz: { id: quiz.id } },
   });
   if (scoreCount === 0) {
-    await scoreRepo.save(scoreRepo.create({ score: 80, user: student, quiz }));
-    log('membuat 1 nilai kuis (80)');
+    const quizzes = await quizRepo.find({ where: weeks.map((w) => ({ weeks: { id: w.id } })) });
+    const marks = [80, 92, 68];
+    const scored = quizzes.slice(0, Math.min(marks.length, quizzes.length));
+    await scoreRepo.save(
+      scored.map((q, i) => scoreRepo.create({ score: marks[i], user: student, quiz: q })),
+    );
+    log(`membuat ${scored.length} nilai kuis (${marks.slice(0, scored.length).join(', ')})`);
   } else {
     log(`nilai kuis sudah ada (${scoreCount}), dilewati`);
   }
@@ -385,38 +443,30 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (weekProgressCount === 0) {
-    await weekProgressRepo.save([
-      weekProgressRepo.create({
-        user: student,
-        week: weeks[0],
-        quiz: true,
-        process: true,
-      }),
-      weekProgressRepo.create({
-        user: student,
-        week: weeks[1],
-        quiz: false,
-        process: false,
-      }),
-    ]);
-    await sessionProgressRepo.save([
-      sessionProgressRepo.create({
-        user: student,
-        session: sessions[0],
-        logbook: true,
-        isAttended: true,
-      }),
-      sessionProgressRepo.create({
-        user: student,
-        session: sessions[1],
-        logbook: true,
-        isAttended: true,
-      }),
-    ]);
-    await quizProgressRepo.save(
-      quizProgressRepo.create({ user: student, quiz, process: true }),
+    const doneWeeks = Math.max(1, Math.ceil(weeks.length / 2));
+    await weekProgressRepo.save(
+      weeks.map((week, i) =>
+        weekProgressRepo.create({
+          user: student,
+          week,
+          quiz: i < doneWeeks,
+          process: i < doneWeeks,
+        }),
+      ),
     );
-    log('membuat progres minggu/sesi/kuis (minggu 1 selesai, minggu 2 terbuka)');
+    const past = sessions.filter((x) => new Date(x.date) < new Date());
+    await sessionProgressRepo.save(
+      past.map((session) =>
+        sessionProgressRepo.create({ user: student, session, logbook: true, isAttended: true }),
+      ),
+    );
+    const quizzes = await quizRepo.find({ where: weeks.map((w) => ({ weeks: { id: w.id } })) });
+    await quizProgressRepo.save(
+      quizzes.slice(0, doneWeeks).map((q) =>
+        quizProgressRepo.create({ user: student, quiz: q, process: true }),
+      ),
+    );
+    log(`membuat progres: ${doneWeeks} dari ${weeks.length} minggu selesai, ${past.length} sesi terhadiri`);
   } else {
     log(`progres sudah ada (${weekProgressCount}), dilewati`);
   }
@@ -427,23 +477,31 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (portfolioCount === 0) {
+    const items = [
+      ['Halaman profil responsif', 'Halaman profil satu kolom, responsif sampai lebar ponsel.',
+       'Dibuat dengan HTML semantik dan CSS flexbox, tanpa framework.'],
+      ['Dasbor cuaca sederhana', 'Menampilkan prakiraan tujuh hari dari sebuah API publik.',
+       'Konsumsi API dengan fetch, state ditangani tanpa pustaka tambahan.'],
+      ['Aplikasi catatan offline', 'Catatan tersimpan di perangkat dan tetap terbaca tanpa internet.',
+       'Menyimpan data di IndexedDB dan memakai service worker untuk mode luring.'],
+    ];
     await portfolioRepo.save(
-      portfolioRepo.create({
-        title: 'Halaman profil responsif',
-        description:
-          'Halaman profil satu kolom yang dibuat di minggu pertama, responsif sampai lebar ponsel.',
-        content: 'Dibuat dengan HTML semantik dan CSS flexbox, tanpa framework.',
-        contentHtml:
-          '<p>Dibuat dengan HTML semantik dan CSS flexbox, tanpa framework.</p>',
-        image: ['/public/image/dashboard/login_bg.png'],
-        link: 'https://example.com/portfolio-profil',
-        views: 0,
-        likes: 0,
-        user: student,
-        course,
-      }),
+      items.map(([title, description, content]) =>
+        portfolioRepo.create({
+          title,
+          description,
+          content,
+          contentHtml: `<p>${content}</p>`,
+          image: ['/public/image/dashboard/login_bg.png'],
+          link: 'https://example.com/portfolio',
+          views: 0,
+          likes: 0,
+          user: student,
+          course,
+        }),
+      ),
     );
-    log('membuat 1 item portfolio');
+    log(`membuat ${items.length} item portfolio`);
   } else {
     log(`portfolio sudah ada (${portfolioCount}), dilewati`);
   }
@@ -452,26 +510,37 @@ async function bootstrap() {
   const registrationRepo = ds.getRepository(Registration);
   const paymentRepo = ds.getRepository(Payment);
   const installmentRepo = ds.getRepository(Installment);
+  const invoiceRepo = ds.getRepository(Invoice);
+  const courseRepo2 = ds.getRepository(Course);
+
+  const PROOF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+  const identity = {
+    user_fullname: student.username,
+    user_email: student.email,
+    user_no: '+62 812 0000 0001',
+    current_status: 'University Student' as const,
+    attend_program: true,
+  };
 
   const registrationCount = await registrationRepo.count({
     where: { user: { id: student.id } },
   });
   if (registrationCount === 0) {
+    const flow: ProcessStatus[] = ['approved', 'process', 'rejected'];
+    const sources = ['Instagram', 'TikTok', 'Friends'];
     await registrationRepo.save(
-      registrationRepo.create({
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        process: 'approved',
-        user_fullname: student.username,
-        user_email: student.email,
-        user_no: '+62 812 0000 0001',
-        current_status: 'University Student',
-        attend_program: true,
-        referal_source: 'Instagram',
-        user: student,
-        course,
-      }),
+      flow.map((process, i) =>
+        registrationRepo.create({
+          ...identity,
+          file: PROOF,
+          process,
+          referal_source: sources[i],
+          user: student,
+          course,
+        }),
+      ),
     );
-    log('membuat 1 pendaftaran (approved)');
+    log(`membuat ${flow.length} pendaftaran (approved / process / rejected)`);
   } else {
     log(`pendaftaran sudah ada (${registrationCount}), dilewati`);
   }
@@ -480,23 +549,75 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (paymentCount === 0) {
-    // Pembayaran lunas.
-    await paymentRepo.save(
-      paymentRepo.create({
-        no: `INV-SEED-${Date.now()}`,
-        file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-        process: 'approved',
-        current_status: 'University Student',
-        user_fullname: student.username,
-        user_email: student.email,
-        user_no: '+62 812 0000 0001',
-        attend_program: true,
-        user: student,
-        course,
-      }),
-    );
+    // Course lain dipakai supaya filter "Program / Course" di tab Payment History
+    // punya lebih dari satu pilihan dan benar-benar bisa diuji.
+    const others = await courseRepo2.find({ take: 3, order: { name: 'ASC' } });
+    const pool = [course, ...others.filter((c) => c.id !== course.id)];
 
-    // Rencana cicilan 3 termin dengan tenggat nyata, plus satu pembayaran DP.
+    // Varian metode pembayaran mengikuti frame desain. Nilainya disimpan di
+    // invoice.payment_method, sama seperti yang diisi webhook Xendit.
+    const plan: Array<[ProcessStatus, string | null, number]> = [
+      ['approved', 'Bank Transfer', 1_500_000],
+      ['approved', 'Virtual Account', 2_000_000],
+      ['process', 'Virtual Account', 1_250_000],
+      ['approved', 'E-Wallet', 750_000],
+      ['rejected', 'Bank Transfer', 1_500_000],
+      ['approved', 'Credit Card', 3_000_000],
+      ['process', 'E-Wallet', 900_000],
+      ['approved', null, 1_100_000],
+      ['approved', 'Bank Transfer', 2_400_000],
+      ['rejected', 'Credit Card', 1_800_000],
+      ['approved', 'Virtual Account', 1_650_000],
+      ['process', 'Bank Transfer', 2_100_000],
+    ].slice(0, PAYMENT_COUNT) as Array<[ProcessStatus, string | null, number]>;
+
+    for (const [i, [process, method, amount]] of plan.entries()) {
+      const payment = await paymentRepo.save(
+        paymentRepo.create({
+          ...identity,
+          no: `INV-SEED-${Date.now()}-${i}`,
+          file: i % 3 === 0 ? PROOF : (null as unknown as string),
+          process,
+          user: student,
+          course: pool[i % pool.length],
+        }),
+      );
+
+      // Invoice hanya dibuat bila metodenya diketahui; satu baris sengaja tanpa
+      // invoice supaya tampilan "Full Payment" (nilai cadangan) ikut teruji.
+      if (method) {
+        await invoiceRepo.save(
+          invoiceRepo.create({
+            payment,
+            subtotal: amount,
+            discount_amount: 0,
+            final_total: amount,
+            payment_method: method,
+            paid_at: process === 'approved' ? daysAgo(plan.length - i) : (null as unknown as Date),
+          }),
+        );
+      }
+    }
+    // createdAt diisi otomatis oleh @CreateDateColumn, jadi semua baris akan
+    // bertanggal hari ini dan filter rentang tanggal tidak bisa diuji. Tanggalnya
+    // disebar mundur lewat UPDATE setelah insert; ini pembentukan data seed,
+    // bukan perilaku aplikasi.
+    const seeded = await paymentRepo.find({
+      where: { user: { id: student.id } },
+      order: { no: 'ASC' },
+    });
+    for (const [i, row] of seeded.entries()) {
+      const when = daysAgo(14 * (seeded.length - i));
+      await paymentRepo.query('UPDATE payments SET "createdAt" = $1 WHERE id = $2', [when, row.id]);
+      await invoiceRepo.query(
+        'UPDATE invoice SET paid_at = $1 WHERE "paymentId" = $2 AND paid_at IS NOT NULL',
+        [when, row.id],
+      );
+    }
+
+    log(`membuat ${plan.length} pembayaran lunas dengan metode, status, dan tanggal beragam`);
+
+    // Satu rencana cicilan beserta pembayaran DP-nya.
     let installment = await installmentRepo.findOne({
       where: { course: { id: course.id } },
     });
@@ -506,44 +627,34 @@ async function bootstrap() {
           downPayment: 500000,
           price: [1000000, 1000000, 1000000],
           month: 3,
-          dueDates: [
-            isoDate(daysAhead(7)),
-            isoDate(daysAhead(37)),
-            isoDate(daysAhead(67)),
-          ],
+          dueDates: [isoDate(daysAhead(7)), isoDate(daysAhead(37)), isoDate(daysAhead(67))],
           course,
         }),
       );
     }
-    // Sebagian database (mis. hasil restore dump lama) masih punya constraint UNIQUE
-    // pada payments.installmentId, padahal entity memodelkannya many-to-one. Di sana
-    // satu rencana cicilan hanya boleh dirujuk satu pembayaran, jadi jangan memaksa.
+
+    // Sebagian database hasil restore masih punya constraint UNIQUE pada
+    // payments.installmentId, padahal entity memodelkannya many-to-one. Di sana
+    // satu rencana hanya boleh dirujuk satu pembayaran, jadi jangan memaksa.
     const installmentTaken = await paymentRepo.count({
       where: { installment: { id: installment.id } },
     });
     if (installmentTaken === 0) {
       await paymentRepo.save(
         paymentRepo.create({
+          ...identity,
           no: `INV-SEED-CICILAN-${Date.now()}`,
-          file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          file: PROOF,
           process: 'process',
-          current_status: 'University Student',
-          user_fullname: student.username,
-          user_email: student.email,
-          user_no: '+62 812 0000 0001',
-          attend_program: true,
           dpPaidAt: daysAgo(20),
           user: student,
           course,
           installment,
         }),
       );
-      log('membuat 2 pembayaran (1 lunas approved, 1 cicilan process) + 1 rencana cicilan');
+      log('membuat 1 pembayaran cicilan + 1 rencana cicilan 3 termin');
     } else {
-      log(
-        'membuat 1 pembayaran lunas; rencana cicilan sudah dipakai pembayaran lain, ' +
-          'baris cicilan dilewati',
-      );
+      log('rencana cicilan sudah dipakai pembayaran lain, baris cicilan dilewati');
     }
   } else {
     log(`pembayaran sudah ada (${paymentCount}), dilewati`);
