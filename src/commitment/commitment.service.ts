@@ -30,8 +30,13 @@ export class CommitmentService {
   }
 
   async findAll(): Promise<Commitment[]> {
+    // commitmentOrder, bukan createdAt: kolom itu yang benar-benar dipelihara —
+    // diisi getNextOrder() saat create dan diindeks ulang saat ada yang dihapus —
+    // jadi dialah urutan yang dimaksud, dan menaik supaya nomor baris di halaman
+    // list cocok dengan nilainya. Sebelumnya createdAt DESC membuat daftar
+    // tampil terbalik (TC-064).
     return await this.commitmentRepository.find({
-      order: { createdAt: 'DESC' },
+      order: { commitmentOrder: 'ASC' },
     });
   }
 
