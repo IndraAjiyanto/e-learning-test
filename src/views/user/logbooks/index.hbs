@@ -3,7 +3,7 @@
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
 {{#> user/shell_frame/index user=user active='learning'}}
-<div class='py-20 min-h-full bg-white' x-data='logbookApp()'>
+<div class='min-h-full bg-white py-8' x-data='logbookApp()'>
   <div class='container mx-auto px-4 pb-16'>
 
 {{> user/logbook/index/header}}
@@ -102,9 +102,9 @@
             Issues: log.obstacles || "-",
             Class: log.session?.weeks?.course?.name || "-",
             Status:
-              log.process === "acc"
+              log.process === "approved"
                 ? "Approved"
-                : log.process === "proces"
+                : log.process === "process"
                 ? "Process"
                 : "Rejected",
             Date: this.formatDate(log.createdAt),

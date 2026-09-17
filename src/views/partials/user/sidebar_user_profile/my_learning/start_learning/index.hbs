@@ -103,7 +103,7 @@
                   }
                 }
               }"
-              class='border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300'
+              class='border border-[#E5E5E5] rounded-xl shadow-md bg-white overflow-hidden transition-all duration-300'
               x-init='init()'
             >
 {{> program_detail/right_content/week/button_week}}
@@ -120,7 +120,7 @@
                 >
                   <div class='flex items-center space-x-2'>
                     <svg
-                      class='animate-spin h-5 w-5 text-slate-600'
+                      class='animate-spin h-5 w-5 text-[#525252]'
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
                       viewBox='0 0 24 24'
@@ -139,7 +139,7 @@
                         d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
                       ></path>
                     </svg>
-                    <span class='text-slate-600 text-sm font-medium'>Loading
+                    <span class='text-[#525252] text-sm font-medium'>Loading
                       data...</span>
                   </div>
                 </div>
@@ -187,7 +187,7 @@
     open: localStorage.getItem(`open-session-${session.id}`) === 'true'
   }"
                           @click.away='open = false; localStorage.setItem(`open-session-${session.id}`, false)'
-                          class='border border-gray-200 rounded-lg shadow-md bg-white overflow-hidden'
+                          class='border border-[#E5E5E5] rounded-lg shadow-md bg-white overflow-hidden'
                         >
 
 {{> program_detail/right_content/week/session/button_session}}
@@ -195,7 +195,7 @@
                           <div
                             x-show='open'
                             x-collapse
-                            class='px-4 pb-4 bg-gradient-to-b from-white to-gray-50/50'
+                            class='px-4 pb-4 bg-white'
                           >
                             <!-- Attendance Check -->
                             <template x-if='session.attendances.length > 0'>

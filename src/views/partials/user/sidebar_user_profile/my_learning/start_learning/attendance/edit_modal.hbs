@@ -5,7 +5,7 @@
   class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
 >
   <div
-    class="bg-white rounded-[12px] w-[615px] shadow-2xl relative"
+    class="bg-white rounded-[12px] w-[615px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] relative"
     style="padding: 64px 56px;"
   >
     <div class="flex flex-col gap-[30px] items-start w-[503px]">
@@ -21,7 +21,7 @@
           <button
             type="button"
             @click="statusDropdownOpen = !statusDropdownOpen"
-            class="bg-white content-stretch shadow-lg flex gap-[15px] h-[60px] items-center justify-between p-[10px] relative rounded-[12px] shrink-0 w-[503px] cursor-pointer"
+            class="bg-white content-stretch shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex gap-[15px] h-[60px] items-center justify-between p-[10px] relative rounded-[12px] shrink-0 w-[503px] cursor-pointer"
           >
             <p
               class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[27px] leading-[normal] relative shrink-0 text-lg text-left"
@@ -41,7 +41,7 @@
           <div
             x-show="statusDropdownOpen"
             x-transition
-            class="absolute mt-[70px] bg-white rounded-[12px] shadow-lg w-[503px] py-[10px] z-10"
+            class="absolute mt-[70px] bg-white rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[503px] py-[10px] z-10"
             style="display: none;"
           >
             <template x-for="key in Object.keys(statusLabels)" :key="key">
@@ -69,7 +69,7 @@
             x-model="editNotes"
             placeholder="Enter attendance notes..."
             rows="2"
-            class="bg-white content-stretch shadow-lg flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-['Montserrat:Medium'] font-medium leading-[normal] text-lg text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
+            class="bg-white content-stretch shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-['Montserrat:Medium'] font-medium leading-[normal] text-lg text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
           ></textarea>
         </div>
       </div>
@@ -116,7 +116,7 @@
 >
   <div
     @click.stop
-    class="bg-white rounded-[12px] shadow-2xl p-8 w-[270px] transform scale-90 transition-all duration-300 ease-out flex flex-col items-center text-center space-y-4 relative"
+    class="bg-white rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-8 w-[270px] scale-90 transition-all duration-300 ease-out flex flex-col items-center text-center space-y-4 relative"
   >
     <!-- Success Icon -->
     <div class="mb-2">

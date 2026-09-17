@@ -9,18 +9,18 @@ window.addEventListener("load", function(){
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-6">
+                <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-sm p-6 sticky top-6">
 
                 <div class="flex items-center justify-between mb-4">
 
-                    <h3 class="text-lg font-semibold text-slate-900 font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
+                    <h3 class="text-lg font-semibold text-[#171717] font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
 {{#if check}}
         <span class="text-red-500 font-semibold">
             {{t "test.quiz.start.timeIsOver"}}
         </span>
 {{else}}
                                        <div id="countdownExample">
-    <div class="values font-semibold text-slate-700"></div>
+    <div class="values font-semibold text-[#404040]"></div>
 </div>
 
 <script>
@@ -58,13 +58,13 @@ timer.addEventListener('targetAchieved', function () {
                             class="w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-center gap-3"
                             :class="{
                                 ' bg-secondary text-white': currentQuestion === {{@index}},
-                                'border-slate-200 hover:border-slate-300 hover:bg-slate-50': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
+                                'border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#FAFAFA]': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
                                 'border-green-200 bg-green-50 text-green-800': currentQuestion !== {{@index}} && isAnswered({{@index}})
                             }"
                         >
                             <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
                                 :class="{
-                                    'bg-white text-slate-900': currentQuestion === {{@index}},
+                                    'bg-white text-[#171717]': currentQuestion === {{@index}},
                                     'bg-secondary text-white': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
                                     'bg-green-500 text-white': currentQuestion !== {{@index}} && isAnswered({{@index}})
                                 }">
@@ -81,10 +81,10 @@ timer.addEventListener('targetAchieved', function () {
                     </div>
 
                     <!-- Progress -->
-                    <div class="mt-6 pt-6 border-t border-slate-200">
+                    <div class="mt-6 pt-6 border-t border-[#E5E5E5]">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-medium text-slate-600">{{t "test.quiz.start.progress"}}</span>
-                            <span class="text-sm text-slate-600" x-text="`${answeredCount}/{{pertanyaan.length}}`"></span>
+                            <span class="text-sm font-medium text-[#525252]">{{t "test.quiz.start.progress"}}</span>
+                            <span class="text-sm text-[#525252]" x-text="`${answeredCount}/{{pertanyaan.length}}`"></span>
                         </div>
                         <div class="w-full bg-slate-200 rounded-full h-2">
                             <div 
@@ -98,11 +98,11 @@ timer.addEventListener('targetAchieved', function () {
 
             <!-- Main Content - Question & Answers -->
             <div class="lg:col-span-3">
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-sm overflow-hidden">
                     <!-- Question Navigation -->
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-[#E5E5E5] bg-slate-50">
                         <div class="flex items-center gap-4">
-                            <span class="text-sm font-medium text-slate-600">
+                            <span class="text-sm font-medium text-[#525252]">
                                 {{t "test.quiz.start.question"}} <span x-text="currentQuestion + 1"></span> {{t "test.quiz.start.of"}} {{pertanyaan.length}}
                             </span>
                         </div>
@@ -111,7 +111,7 @@ timer.addEventListener('targetAchieved', function () {
                             <button 
                                 type="button"
                                 @click="prevQuestion()"
-                                class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="currentQuestion === 0"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@ timer.addEventListener('targetAchieved', function () {
                             <button 
                                 type="button"
                                 @click="nextQuestion()"
-                                class="btn  bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="currentQuestion === {{pertanyaan.length}} - 1"
                             >
                                 {{t "test.quiz.start.next"}}
@@ -150,29 +150,29 @@ timer.addEventListener('targetAchieved', function () {
                                             <img 
                                                 src="{{image}}" 
                                                 alt="Question Image" 
-                                                class="max-h-64 rounded-xl border border-slate-200 shadow-sm object-contain"
+                                                class="max-h-64 rounded-xl border border-[#E5E5E5] shadow-sm object-contain"
                                             >
                                         </div>
                                     </div>
                                     {{/if}}
 
                                     <!-- Question Text -->
-                                    <p class="font-semibold text-slate-900 text-lg leading-relaxed">{{questionText}}</p>
+                                    <p class="font-semibold text-[#171717] text-lg leading-relaxed">{{questionText}}</p>
                                 </div>
                             </div>
 
                             <!-- Answer Options -->
                             <div class="space-y-3 ml-12">
                                 {{#each answers}}
-                                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option">
+                                <label class="flex items-center p-4 border border-[#E5E5E5] rounded-xl cursor-pointer hover:bg-[#FAFAFA] hover:border-[#D4D4D4] transition-all duration-200 group/option">
                                     <input 
                                         type="radio" 
                                         name="q-{{../id}}"
                                         value="{{id}}"
                                         
-                                        class="w-5 h-5 radio border-gray-700 checked:text-gray-700 checked:bg-white"
+                                        class="w-5 h-5 radio border-[#D4D4D4] checked:text-[#404040] checked:bg-white"
                                     >
-                                    <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
+                                    <span class="ml-4 text-slate-800 font-medium group-hover/option:text-[#171717] transition-colors">
                                         {{answer}}
                                     </span>
                                 </label>
@@ -183,12 +183,12 @@ timer.addEventListener('targetAchieved', function () {
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="flex justify-end p-6 border-t border-slate-200 bg-slate-50">
+                    <div class="flex justify-end p-6 border-t border-[#E5E5E5] bg-slate-50">
                         <button 
                             type='button'  onclick="confirmQuizSubmit()"
                             :disabled="answeredCount !== {{pertanyaan.length}}"
                             :class="answeredCount !== {{pertanyaan.length}} ? 'opacity-40 cursor-not-allowed'"
-                            class="btn border-0 group  bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-lg"
+                            class="border-0 group bg-[#003060] hover:bg-[#00254a] text-white rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 font-semibold text-lg"
                         >
                             <span class="flex items-center gap-2">
                                 {{t "test.quiz.start.submitAnswers"}}

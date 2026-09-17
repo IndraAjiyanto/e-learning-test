@@ -187,6 +187,26 @@ const SCREENS = [
       check(s, 'search box', await page.getByPlaceholder(/Search activities/).count() > 0);
       check(s, 'Export Excel button', await page.getByRole('button', { name: /Export Excel/ }).count() > 0);
       check(s, 'table header', await page.getByRole('columnheader', { name: 'Activity' }).count() > 0);
+
+      // Tab shell sudah memakai komponen badge super_admin. Halaman logbook yang
+      // berdiri sendiri punya markup sendiri: enum-nya 'approved' | 'process' |
+      // 'rejected', tetapi template memeriksa 'acc' dan 'proces' yang tidak
+      // pernah ada, sehingga logbook approved tampil "Rejected" tanpa pil warna.
+      const ids = JSON.parse(process.env.IDS || '{}');
+      await page.goto(`${BASE}/logbooks/user/${ids.cid}`, { waitUntil: 'networkidle' });
+      await page.waitForTimeout(600);
+      const badges = await page.locator('td span.rounded-full.uppercase').evaluateAll(
+        (els) => els.map((el) => ({
+          // `uppercase` hanya transform CSS, textContent tetap huruf aslinya.
+          text: (el.textContent || '').trim().toUpperCase(),
+          bg: getComputedStyle(el).backgroundColor,
+        })));
+      check(s, 'standalone logbook: status pill renders for every row',
+        badges.length > 0 && badges.every((b) => b.bg !== 'rgba(0, 0, 0, 0)'),
+        `${badges.length} rows`);
+      check(s, 'standalone logbook: status label matches the stored value',
+        badges.length > 0 && badges.every((b) => ['APPROVED', 'PROCESS', 'REJECTED'].includes(b.text)),
+        [...new Set(badges.map((b) => b.text))].slice(0, 3).join(','));
     },
   },
   {
