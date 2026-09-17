@@ -26,6 +26,8 @@
   - cropSize : number lebar piksel hasil crop (default 1000; tinggi mengikuti
                cropAspect). Nilai tetap dipakai supaya hasilnya selalu lolos
                batas dimensi backend berapa pun ukuran aslinya.
+  - previewAlt : string (default 'Cover preview') — alt pratinjau; isi bila yang
+                 diunggah bukan cover (mis. 'Profile photo preview')
   - hidePreview : boolean (opsional) — ajakan unggah selalu tampil; pratinjau
                   dirender pemanggil di luar dropzone (mis. about/edit)
   - boxClass : string (default 'h-[220px] sm:h-[303px]') — tinggi area unggah
@@ -94,7 +96,7 @@
     {{#unless hidePreview}}
     <template x-if='previewUrl'>
       <div class='absolute inset-0 flex items-center justify-center bg-[#f8f9fa]'>
-        <img :src='previewUrl' alt='Cover preview' class='h-full w-full object-contain' />
+        <img :src='previewUrl' alt='{{default previewAlt "Cover preview"}}' class='h-full w-full object-contain' />
 
         <div class='absolute bottom-3 right-3 flex items-center gap-2'>
           <button
