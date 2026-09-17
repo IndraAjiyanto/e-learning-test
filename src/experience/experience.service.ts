@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Experience } from '../entities/experience.entity';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
+
+// Tidak ada ValidationPipe global, jadi DTO tidak memvalidasi isi form.
+const LANGS = ['id', 'en', 'ja'] as const;
+const MAX_LENGTH = 255;
+const FIELD_LABEL = { content: 'Content', details: 'Text' } as const;
+
+type LocalizedText = Record<(typeof LANGS)[number], string>;
 
 @Injectable()
 export class ExperienceService {
@@ -12,9 +19,39 @@ export class ExperienceService {
     private experienceRepository: Repository<Experience>,
   ) {}
 
+  // Hanya { id, en, ja } yang disimpan; key lain dari body dibuang.
+  private parseLocalized(
+    field: keyof typeof FIELD_LABEL,
+    value: unknown,
+  ): LocalizedText {
+    const label = FIELD_LABEL[field];
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new BadRequestException(`${label} is required.`);
+    }
+
+    const source = value as Record<string, unknown>;
+    return LANGS.reduce((result, lang) => {
+      const text = typeof source[lang] === 'string' ? source[lang].trim() : '';
+      const langLabel = lang === 'ja' ? 'JP' : lang.toUpperCase();
+      if (!text) {
+        throw new BadRequestException(`${label} (${langLabel}) is required.`);
+      }
+      if (text.length > MAX_LENGTH) {
+        throw new BadRequestException(
+          `${label} (${langLabel}) must be at most ${MAX_LENGTH} characters.`,
+        );
+      }
+      result[lang] = text;
+      return result;
+    }, {} as LocalizedText);
+  }
+
   async create(createExperienceDto: CreateExperienceDto): Promise<Experience> {
-    const experience =
-      await this.experienceRepository.create(createExperienceDto);
+    const experience = this.experienceRepository.create({
+      experienceOrder: createExperienceDto.experienceOrder,
+      content: this.parseLocalized('content', createExperienceDto.content),
+      details: this.parseLocalized('details', createExperienceDto.details),
+    } as unknown as Partial<Experience>);
     return await this.experienceRepository.save(experience);
   }
 
@@ -48,7 +85,11 @@ export class ExperienceService {
     id: string,
     updateExperienceDto: UpdateExperienceDto,
   ): Promise<Experience | null> {
-    await this.experienceRepository.update(id, updateExperienceDto);
+    // experienceOrder sengaja tidak ikut: urutan hanya diatur create/remove.
+    await this.experienceRepository.update(id, {
+      content: this.parseLocalized('content', updateExperienceDto.content),
+      details: this.parseLocalized('details', updateExperienceDto.details),
+    } as unknown as Partial<Experience>);
     return this.findOne(id);
   }
 
