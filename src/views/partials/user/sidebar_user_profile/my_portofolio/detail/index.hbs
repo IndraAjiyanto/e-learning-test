@@ -15,12 +15,13 @@
 
   <!-- HEADER SECTION -->
     <div class="text-center max-w-4xl mx-auto space-y-5">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none mb-2">
-        My Portofolio
-      </h1>
-      <p class="font-montserrat font-normal text-sm sm:text-base text-[#003060] leading-relaxed max-w-4xl mx-auto">
-        Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
-      </p>
+      {{!-- Judulnya dulu "My Portofolio" dengan kalimat milik galeri publik
+           ("koleksi karya alumni bootcamp"), padahal yang dibuka satu karya
+           milik student sendiri. Sekarang judulnya karya itu. --}}
+      <h1
+        class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight mb-2"
+        x-text="selectedPortfolio ? selectedPortfolio.title : 'Portfolio'"
+      ></h1>
     </div>
 
   <!-- Hero Image Showcase Carousel -->
@@ -31,10 +32,19 @@
       x-effect="if (selectedPortfolio) currentDetailImg = 0"
     >
       <!-- Images -->
-      <template x-for="(imgSrc, imgIdx) in (selectedPortfolio && selectedPortfolio.images && selectedPortfolio.images.length ? selectedPortfolio.images : [selectedPortfolio ? selectedPortfolio.image : 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80'])" :key="imgIdx">
+      {{!-- Sama seperti di kartu: tanpa gambar, yang muncul keterangan kosong,
+           bukan foto stok Unsplash. --}}
+      <template x-if="!selectedPortfolio || !selectedPortfolio.images || selectedPortfolio.images.length === 0">
+        <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#94A3B8]">
+          <i class="fa-regular fa-image text-3xl"></i>
+          <span class="font-montserrat text-sm">No image uploaded</span>
+        </div>
+      </template>
+      <template x-for="(imgSrc, imgIdx) in (selectedPortfolio && selectedPortfolio.images ? selectedPortfolio.images : [])" :key="imgIdx">
         <img 
           :src="imgSrc" 
-          :alt="selectedPortfolio ? selectedPortfolio.title : 'Judul Portofolio'" 
+          :alt="selectedPortfolio ? selectedPortfolio.title : ''" 
+          onerror="this.remove()"
           x-show="currentDetailImg === imgIdx" 
           x-transition:enter="transition ease-out duration-300"
           x-transition:enter-start="opacity-0 scale-95"
@@ -78,14 +88,8 @@
       </template>
     </div>
 
-    <!-- Portfolio Title -->
-    <h2 
-      class="font-montserrat font-semibold text-xl sm:text-2xl text-[#003060] leading-none text-center"
-      x-text="selectedPortfolio ? selectedPortfolio.title : 'Judul Portofolio'"
-    >
-      Judul Portofolio
-    </h2>
-
+    {{!-- Judul karya sudah menjadi judul halaman di atas; yang tersisa di sini
+         hanya penanda tipe kelasnya. --}}
     <!-- Class Type Badge -->
     <div class="text-center">
       <span 
@@ -165,13 +169,16 @@
         <!-- Author Profile Row -->
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-[#E0F1F9] flex items-center justify-center flex-shrink-0 text-[#003060] font-semibold text-sm overflow-hidden">
+            {{!-- Cadangannya dulu sebuah gambar dari CDN Roblox. Sekarang
+                 huruf awal nama student, seperti avatar di tempat lain. --}}
             <img 
-              :src="selectedPortfolio ? selectedPortfolio.avatar : 'https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp'" 
-              alt="Author Avatar" 
+              x-show="selectedPortfolio && selectedPortfolio.avatar"
+              :src="selectedPortfolio ? selectedPortfolio.avatar : ''" 
+              alt="" 
               class="w-full h-full object-cover" 
               onerror="this.style.display='none'"
             >
-            <span x-text="selectedPortfolio ? selectedPortfolio.author.charAt(0) : 'T'">T</span>
+            <span x-show="!selectedPortfolio || !selectedPortfolio.avatar" x-text="selectedPortfolio && selectedPortfolio.author ? selectedPortfolio.author.charAt(0) : '?'">?</span>
           </div>
           <div class="flex flex-col min-w-0">
             <span class="font-montserrat font-semibold text-base text-black leading-tight truncate" x-text="selectedPortfolio ? selectedPortfolio.author : 'Trisna'">Trisna</span>
@@ -184,11 +191,12 @@
           <i class="fa-regular fa-circle-check text-base text-black mt-1 flex-shrink-0"></i>
           <div class="space-y-1">
             <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
-              Program Completed
+              Program
             </p>
-            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
-              Seminar - PYTHON FOR DATA ANALYST - From zero to insight
-            </p>
+            <p
+              class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]"
+              x-text="(selectedPortfolio && selectedPortfolio.program) || 'Not recorded'"
+            ></p>
           </div>
         </div>
 
@@ -197,36 +205,35 @@
           <i class="fa-regular fa-calendar text-base text-black mt-1 flex-shrink-0"></i>
           <div class="space-y-1">
             <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
-              Completion Date
+              Submitted
             </p>
-            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
-              Saturday 20 June 2026
-            </p>
+            <p
+              class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]"
+              x-text="selectedPortfolio && selectedPortfolio.createdAt
+                ? new Date(selectedPortfolio.createdAt).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                : 'Not recorded'"
+            ></p>
           </div>
         </div>
 
-        <!-- Detail Item 3: Project Duration -->
-        <div class="flex items-start gap-3">
-          <i class="fa-regular fa-clock text-base text-black mt-1 flex-shrink-0"></i>
-          <div class="space-y-1">
-            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
-              Project Duration
-            </p>
-            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
-              0 Months
-            </p>
-          </div>
-        </div>
+        {{!-- "Project Duration: 0 Months" dihapus: tidak ada kolom lama
+             pengerjaan di mana pun, jadi angkanya tidak pernah berasal dari
+             portfolio yang sedang dibuka. --}}
 
       </div>
 
-      <!-- View Portofolio Button -->
+      {{!-- Hanya muncul kalau portfolio-nya memang punya tautan. Dulu
+           href-nya jatuh ke '#', jadi tombolnya tetap ada tetapi tidak
+           membawa ke mana pun. --}}
       <a 
-        :href="selectedPortfolio && selectedPortfolio.link ? selectedPortfolio.link : '#'" 
+        x-show="selectedPortfolio && selectedPortfolio.link"
+        x-cloak
+        :href="selectedPortfolio ? selectedPortfolio.link : ''" 
         target="_blank"
+        rel="noopener"
         class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-sm flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
       >
-        View Portofolio
+        View Project
       </a>
 
       <!-- Share To Social Media Card -->

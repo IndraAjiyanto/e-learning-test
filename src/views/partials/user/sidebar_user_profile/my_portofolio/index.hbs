@@ -4,7 +4,7 @@
   window.userCoursesData = {{{json userWithCourses.userCourses}}};
 </script>
 <div 
-  class="p-4 sm:px-[34px] sm:py-[42px]"
+  class="px-4 py-4 sm:px-8 sm:py-6"
   x-data="{
     searchQuery: '',
     categoryFilter: 'all',
@@ -16,18 +16,23 @@
     classTypeOpen: false,
     sortOpen: false,
     createPortofolio: false,
+    savingPortfolio: false,
     modalProgramOpen: false,
     showDetail: false,
     selectedPortfolio: null,
-    imageUploads: [{ id: 1, file: null, name: 'No file chosen' }],
+    imageUploads: [{ id: 1, file: null, name: 'No file chosen', error: '' }],
     userCourses: window.userCoursesData || [],
     newForm: {
       title: '',
       description: '',
       link: '',
       overview: '',
-      program: 'Data Analyst',
-      courseId: 10
+      {{!-- Sengaja kosong. Sebelumnya terisi 'Data Analyst' dengan
+           courseId 10 - nama program karangan dan id yang bahkan bukan UUID,
+           jadi student yang tidak menyentuh dropdown mengirim program yang
+           tidak ada. --}}
+      program: '',
+      courseId: ''
     },
     overviewEditorInstance: null,
     portfolios: window.backendPortfolioData || [],
@@ -54,13 +59,15 @@
           description: p.description || '',
           link: p.link || '',
           overview: p.contentHtml || p.content || '',
+          program: (p.course && p.course.name) ? p.course.name : '',
+          createdAt: p.createdAt || '',
           classType: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : 'Class',
           category: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : (p.course && p.course.title) ? p.course.title : 'Program',
           technologies: (p.course && p.course.technologies) ? p.course.technologies : [],
           author: (p.user && p.user.username) ? p.user.username : 'Author',
           email: (p.user && p.user.email) ? p.user.email : '',
           avatar: (p.user && p.user.profile) ? p.user.profile : '',
-          image: p.image && p.image.length > 0 ? p.image : ['https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80'],
+          image: p.image && p.image.length > 0 ? p.image : [],
           images: p.image && Array.isArray(p.image) ? p.image : []
         }));
       }
@@ -84,17 +91,66 @@
       this.categoryFilter = 'all';
       this.classTypeFilter = 'all';
       this.sortBy = 'newest';
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen' }];
+      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
     },
     handleFile(event, idx) {
       const file = event.target.files[0];
-      if (file) {
-        this.imageUploads[idx].file = file;
-        this.imageUploads[idx].name = file.name;
+      if (!file) return;
+      this.imageUploads[idx].file = file;
+      this.imageUploads[idx].name = file.name;
+      this.imageUploads[idx].error = '';
+      this.checkImage(file, idx);
+    },
+
+    {{!-- Syarat berkas, disalin dari @ValidateImage pada POST /portfolio/create
+         (dimensi) dan dari keterangan di bawah kotak unggah. Diperiksa di sini
+         supaya student tahu sebelum menunggu unggahan gagal. --}}
+    checkImage(file, idx) {
+      const TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      const MAX = 5 * 1024 * 1024;
+      if (!TYPES.includes(file.type)) {
+        this.imageUploads[idx].error = 'use a JPG, PNG, or GIF file';
+        return;
       }
+      if (file.size > MAX) {
+        this.imageUploads[idx].error = 'file is larger than 5MB';
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const okW = img.naturalWidth >= 1900 && img.naturalWidth <= 1920;
+        const okH = img.naturalHeight >= 1000 && img.naturalHeight <= 1080;
+        this.imageUploads[idx].error = okW && okH
+          ? ''
+          : `${img.naturalWidth}x${img.naturalHeight}px - needs 1900-1920 x 1000-1080`;
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        this.imageUploads[idx].error = 'this file could not be read as an image';
+      };
+      img.src = url;
+    },
+
+    portfolioFormTouched() {
+      const f = this.newForm;
+      return !!(f.title || f.description || f.link || f.program ||
+        this.imageUploads.some((u) => u.file));
+    },
+
+    canSubmitPortfolio() {
+      const f = this.newForm;
+      if (!f.title.trim() || !f.courseId) return false;
+      if (!this.imageUploads.some((u) => u.file)) return false;
+      if (this.imageUploads.some((u) => u.error)) return false;
+      {{!-- Keterangan di bawah field link menjanjikan URL http/https; sebelum
+           ini tidak ada yang memeriksanya. --}}
+      if (f.link.trim() && !/^https?:\/\/\S+$/i.test(f.link.trim())) return false;
+      return true;
     },
     addImageRow() {
-      this.imageUploads.push({ id: Date.now(), file: null, name: 'No file chosen' });
+      this.imageUploads.push({ id: Date.now(), file: null, name: 'No file chosen', error: '' });
     },
     async initOverviewEditor() {
       // Destroy previous instance if exists (for re-open scenarios)
@@ -209,6 +265,7 @@
       holder.replaceWith(ta);
     },
     async submitPortfolio() {
+      if (this.savingPortfolio) return;
       if (!this.newForm.title.trim()) {
         showErrorToast('Portfolio not saved', 'Give your portfolio a title first.');
         return;
@@ -251,6 +308,7 @@
 
       formData.append('courseId', courseId);
 
+      this.savingPortfolio = true;
       try {
         const response = await fetch('/portfolio/create', {
           method: 'POST',
@@ -270,6 +328,8 @@
       } catch (err) {
         console.error('Error saving portfolio:', err);
         showErrorToast('Portfolio not saved', 'The request did not go through. Check your connection and try again.');
+      } finally {
+        this.savingPortfolio = false;
       }
     },
   }"
@@ -402,10 +462,20 @@
             <!-- Portfolio Image Slider Container -->
             <div class="mb-4 overflow-hidden rounded-[12px] h-[200px] 2xl:h-[262px] bg-slate-200 relative group" x-data="{ currentImg: 0 }">
               <!-- Images -->
-              <template x-for="(imgSrc, imgIdx) in (item.images && item.images.length ? item.images : [item.image])" :key="imgIdx">
+              {{!-- Portfolio tanpa gambar dulu diisi foto stok Unsplash -
+                   karya orang lain tampil seolah karya student. Sekarang
+                   keadaan kosongnya disebut apa adanya. --}}
+              <template x-if="!item.images || item.images.length === 0">
+                <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#94A3B8]">
+                  <i class="fa-regular fa-image text-2xl"></i>
+                  <span class="font-montserrat text-xs">No image uploaded</span>
+                </div>
+              </template>
+              <template x-for="(imgSrc, imgIdx) in (item.images || [])" :key="imgIdx">
                 <img 
                   :src="imgSrc" 
                   :alt="item.title" 
+                  onerror="this.remove()"
                   x-show="currentImg === imgIdx" 
                   x-transition:enter="transition ease-out duration-300"
                   x-transition:enter-start="opacity-0 scale-95"
@@ -519,17 +589,19 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    @keydown.escape.window="createPortofolio = false"
+    @keydown.escape.window="if (!portfolioFormTouched()) createPortofolio = false"
   >
     <div 
       id="overviewModal"
-      @click.away="createPortofolio = false"
+      {{!-- Hanya menutup selama isiannya masih kosong: dulu satu klik di
+           luar modal membuang formulir yang sudah terisi tanpa bertanya. --}}
+      @click.away="if (!portfolioFormTouched()) createPortofolio = false"
       class="bg-white rounded-[24px] p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] font-montserrat relative"
       style="color-scheme: light;"
     >
       <!-- Title Header -->
       <h2 class="font-montserrat font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8">
-        Create Your Portofolio
+        Create Your Portfolio
       </h2>
 
       <!-- Form Grid (2 Columns on Desktop) -->
@@ -541,12 +613,12 @@
             <!-- Portfolio Title -->
             <div class="space-y-3">
               <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Portfolio Title
+                Portfolio Title<span class="text-red-500">*</span>
               </label>
               <input 
                 type="text" 
                 x-model="newForm.title"
-                placeholder="Enter portofolio title"
+                placeholder="Enter portfolio title"
                 class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
               >
             </div>
@@ -597,7 +669,7 @@
             <!-- Link* -->
             <div>
               <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060] mb-3">
-                Link<span class="text-red-500">*</span>
+                Link
               </label>
               <input 
                 type="text" 
@@ -659,8 +731,17 @@
 
               <!-- Allowed format subtitle -->
               <p class="font-montserrat font-normal text-xs text-[#666666] pt-0.5">
-                Allowed: JPG, JPEG, PNG, GIF. Max size: 5MB per image
+                JPG, JPEG, PNG, or GIF &middot; max 5MB &middot; 1900-1920 &times; 1000-1080 px
               </p>
+              {{!-- Pesan ini muncul begitu berkas dipilih, bukan setelah
+                   unggahannya ditolak server. Syaratnya sama persis dengan
+                   @ValidateImage pada POST /portfolio/create. --}}
+              <template x-for="upload in imageUploads.filter(u => u.error)" :key="'err-' + upload.id">
+                <p class="flex items-start gap-1.5 font-montserrat text-xs text-[#dc2626]">
+                  <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                  <span x-text="upload.name + ': ' + upload.error"></span>
+                </p>
+              </template>
 
               <!-- Dotted Add Image Box -->
               <div 
@@ -679,9 +760,10 @@
         <div class="flex items-center justify-center gap-4 pt-6">
           <button 
             type="submit"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md"
+            :disabled="!canSubmitPortfolio() || savingPortfolio"
+            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md disabled:pointer-events-none disabled:opacity-50"
           >
-            Save
+            <span x-text="savingPortfolio ? 'Saving...' : 'Save'">Save</span>
           </button>
           <button 
             type="button"

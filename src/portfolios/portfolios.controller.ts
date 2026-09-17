@@ -70,6 +70,12 @@ export class PortfoliosController {
     maxWidth: 1920,
     minHeight: 1000,
     maxHeight: 1080,
+    // Tipe dan ukuran berkas sudah lama dijanjikan keterangan di bawah kotak
+    // unggah ("JPG, JPEG, PNG, or GIF - max 5MB"), tetapi rute ini tidak
+    // memeriksa satu pun: berkas 40MB atau .bmp tetap lolos selama dimensinya
+    // pas. Sekarang yang dijanjikan layar dan yang dijaga server sama.
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'],
     folder: 'portfolio',
   })
   async create(
