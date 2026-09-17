@@ -1,0 +1,222 @@
+{{!--
+  Komponen: Installment Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/installment/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `installmentForm()` untuk super_admin/installments/{create,edit}.hbs.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field,
+  form/select_field); loading (form/button); monthOptions (form/select_field);
+  rows(), validateRow(), touchRow() (baris per bulan di form/installment/fields).
+
+  ANGKA
+  formData.downPayment dan formData.price[] menyimpan nilai TAMPILAN berformat
+  id-ID; yang dikirim ke backend adalah digitnya saja lewat hidden input, sama
+  seperti mekanisme `numeric` di form/text_field.
+
+  PERIODE MENGATUR PANJANG ARRAY
+  Mengganti month mengubah jumlah baris harga & tanggal. Nilai yang sudah diisi
+  dipertahankan (versi lama mengisi ulang seluruh array dengan string kosong,
+  sehingga input yang sudah diketik hilang).
+
+  Tidak merender markup apa pun -- panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LABEL = {
+      month: 'Installment period',
+      downPayment: 'down payment amount',
+      price: 'payment amount',
+      dueDates: 'due date',
+    };
+
+    const digitsOf = (value) => String(value ?? '').replace(/\D/g, '');
+
+    const formatNumber = (value) => {
+      const digits = digitsOf(value);
+      return digits ? new Intl.NumberFormat('id-ID').format(Number(digits)) : '';
+    };
+
+    const errorFor = (field, value) => {
+      if (field === 'month') {
+        return String(value ?? '').trim() ? '' : `${LABEL.month} is required.`;
+      }
+
+      if (field === 'dueDates') {
+        return String(value ?? '').trim() ? '' : `Valid ${LABEL.dueDates} required.`;
+      }
+
+      // downPayment & price: nilainya berformat, jadi yang dinilai digitnya.
+      const digits = digitsOf(value);
+      if (!digits) return `Valid ${LABEL[field]} required.`;
+      // Hanya downPayment yang wajib > 0, mengikuti validasi versi lama.
+      if (field === 'downPayment' && Number(digits) <= 0) {
+        return `Valid ${LABEL.downPayment} required.`;
+      }
+      return '';
+    };
+
+    const resize = (list, length, fill) =>
+      Array.from({ length }, (_, i) => (list[i] === undefined ? fill : list[i]));
+
+    window.installmentForm = function installmentForm({
+      month,
+      availableMonths,
+      downPayment,
+      price,
+      dueDates,
+      lockMonth,
+    } = {}) {
+      const months = (availableMonths || []).map(Number);
+
+      // Di halaman edit durasi yang sedang dipakai tidak ikut `availableMonths`
+      // (findNo hanya mengembalikan durasi yang belum punya skema), jadi
+      // ditambahkan sendiri supaya field-nya punya nilai.
+      const options = month == null ? months : [Number(month), ...months];
+
+      const initialMonth = options.length ? String(options[0]) : '';
+      const rowCount = Number(initialMonth) || 0;
+
+      return {
+        loading: false,
+        lockMonth: !!lockMonth,
+
+        monthOptions: [...new Set(options)]
+          .sort((a, b) => a - b)
+          .map((value) => ({ value: String(value), label: `${value} Months` })),
+
+        formData: {
+          month: initialMonth,
+          downPayment: formatNumber(downPayment),
+          price: resize((price || []).map(formatNumber), rowCount, ''),
+          dueDates: resize(dueDates || [], rowCount, ''),
+        },
+        formErrors: {
+          month: '',
+          downPayment: '',
+          price: Array(rowCount).fill(''),
+          dueDates: Array(rowCount).fill(''),
+        },
+        touched: {
+          month: false,
+          downPayment: false,
+          price: Array(rowCount).fill(false),
+          dueDates: Array(rowCount).fill(false),
+        },
+
+        rows() {
+          return Array.from({ length: Number(this.formData.month) || 0 }, (_, i) => i);
+        },
+
+        validateField(path, value) {
+          this.formData[path] = path === 'downPayment' ? formatNumber(value) : value ?? '';
+          this.formErrors[path] = this.touched[path]
+            ? errorFor(path, this.formData[path])
+            : '';
+
+          if (path === 'month') this.syncRows();
+        },
+
+        touch(path) {
+          if (!(path in this.touched)) return;
+          this.touched[path] = true;
+          this.validateField(path, this.formData[path]);
+        },
+
+        validateRow(field, index, value) {
+          this.formData[field][index] = field === 'price' ? formatNumber(value) : value ?? '';
+          this.formErrors[field][index] = this.touched[field][index]
+            ? errorFor(field, this.formData[field][index])
+            : '';
+        },
+
+        touchRow(field, index) {
+          this.touched[field][index] = true;
+          this.validateRow(field, index, this.formData[field][index]);
+        },
+
+        // Panjang array harga & tanggal selalu mengikuti jumlah bulan terpilih.
+        syncRows() {
+          const length = Number(this.formData.month) || 0;
+          ['price', 'dueDates'].forEach((field) => {
+            this.formData[field] = resize(this.formData[field], length, '');
+            this.formErrors[field] = resize(this.formErrors[field], length, '');
+            this.touched[field] = resize(this.touched[field], length, false);
+          });
+        },
+
+        validateAll() {
+          this.touch('month');
+          this.touch('downPayment');
+          this.rows().forEach((index) => {
+            this.touchRow('price', index);
+            this.touchRow('dueDates', index);
+          });
+        },
+
+        // Gating tombol simpan: form siap bila semua field wajib lolos errorFor,
+        // terlepas dari sudah disentuh atau belum. Sengaja bukan hasFormErrors(),
+        // yang hanya melihat error yang sudah diungkap `touched` sehingga form
+        // kosong yang belum disentuh justru terbaca "tanpa error".
+        canSubmit() {
+          if (errorFor('month', this.formData.month)) return false;
+          if (errorFor('downPayment', this.formData.downPayment)) return false;
+          return this.rows().every(
+            (index) =>
+              !errorFor('price', this.formData.price[index]) &&
+              !errorFor('dueDates', this.formData.dueDates[index]),
+          );
+        },
+
+        hasFormErrors() {
+          return (
+            !!this.formErrors.month ||
+            !!this.formErrors.downPayment ||
+            this.formErrors.price.some(Boolean) ||
+            this.formErrors.dueDates.some(Boolean)
+          );
+        },
+
+        revealFirstInvalid() {
+          let id = '';
+          if (this.formErrors.month) {
+            // select_field memasang id berbeda pada trigger-nya; saat periode
+            // dikunci (edit) yang ada hanya hidden input, tidak bisa difokus.
+            id = this.lockMonth ? '' : 'month-trigger';
+          } else if (this.formErrors.downPayment) {
+            id = 'downPayment';
+          } else {
+            const index = this.rows().find(
+              (i) => this.formErrors.price[i] || this.formErrors.dueDates[i],
+            );
+            if (index !== undefined) {
+              id = this.formErrors.price[index] ? `price-${index}` : `dueDates-${index}`;
+            }
+          }
+          if (!id) return;
+
+          this.$nextTick(() => {
+            const el = document.getElementById(id);
+            if (!el) {
+              console.warn(`installmentForm: field "${id}" tidak ditemukan — id di form/installment/fields berubah?`);
+              return;
+            }
+            el.focus();
+          });
+        },
+
+        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

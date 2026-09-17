@@ -1,150 +1,105 @@
-<div class='px-6 w-full mx-auto py-10'>
-  <div class=' mx-auto'>
+{{!--
+  Page: Admin — Meeting Detail (Week)
+  Path: admin/weeks/detail.hbs
+  Design: slicing.pen "Container - Meeting Detail" (1052, gap 16)
+  Route: GET /week/:weeksId (findOne) — data: { weeks (course), lastSession }
+  Feature Card - Meeting: back link, "Pertemuan NN" 34 + description + badge, Delete (red text) + Edit Week (navy)
+  Table Detail Week: underline tabs (Session + Quiz if lastSession), session rows + Add Session
+  Quiz tab content frozen (partials/weeks/quiz_tab).
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='box-border w-full max-w-[1052px] mx-auto flex flex-col gap-[16px] justify-start items-start'>
 
-    <div class='mb-8 bg-white rounded-xl shadow-lg p-6'>
-      <div class='mb-4'>
-        <a
-          href='/program/detail/program/admin/{{weeks.course.id}}'
-          class='inline-flex items-center text-gray-700 text-base font-medium hover:underline'
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            class='h-5 w-5 mr-1'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M15 19l-7-7 7-7'
-            />
-          </svg>
-          Back
+    {{!-- Feature Card - Meeting --}}
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
+
+      {{!-- Back Row --}}
+      <div class='w-full flex flex-row justify-between items-center'>
+        <a href='/program/detail/program/admin/{{weeks.course.id}}'
+          class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
+          title='Back' aria-label='Back'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'><polyline points='15 18 9 12 15 6'/></svg>
+          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
         </a>
       </div>
 
-      <div class='flex items-start justify-between'>
-        <div>
-          <h1 class='text-2xl font-bold mb-2 text-gray-900'>Week
-            {{weeks.week_number}}</h1>
-
-          <p class='text-gray-600 mb-1'>
-            <span class='font-semibold'>Program :</span>
-            {{weeks.course.name}}
-          </p>
-          <p class='text-gray-600 mb-1'>
-            <span class='font-semibold'>Deskription :</span>
-            {{weeks.description}}
-          </p>
-
+      {{!-- Title Row --}}
+      <div class='w-full flex flex-row gap-[12px] justify-between items-start'>
+        <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
+          <div class='flex flex-col gap-[4px] w-full'>
+            <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Pertemuan {{weeks.week_number}}</div>
+            <div class='text-[14px]/[normal] w-full text-[#718096] font-montserrat font-medium text-left break-words'>{{weeks.description}}</div>
+          </div>
+          <div class='box-border w-[173px] flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
+            <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'><span class='capitalize'>{{weeks.course.method}}</span> · Session {{weeks.week_number}} · {{default weeks.course.quota '-'}} Seats</span>
+          </div>
         </div>
-        <div class='flex items-center gap-4'>
-          <!-- Tombol Edit -->
-          <a
-            href='/week/formEdit/{{weeks.id}}'
-            class='p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm'
-            title='Edit Minggu'
-          >
-            <!-- Icon Edit (Pencil) -->
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke-width='2'
-              stroke='currentColor'
-              class='w-7 h-7'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                d='M16.862 4.487l1.687-1.688a1.875 1.875 
-               0 112.652 2.652L10.582 16.07a4.5 
-               4.5 0 01-1.897 1.13l-2.685.805.805-2.685
-               a4.5 4.5 0 011.13-1.897l10.927-10.936z'
-              />
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                d='M19.5 7.125L16.875 4.5'
-              />
-            </svg>
-          </a>
 
+        {{!-- Actions --}}
+        <div class='flex flex-row gap-[12px] shrink-0 justify-start items-center'>
           {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
-     default — hapus dilakukan dari halaman list/edit. Kirim showDelete=true
-     dari controller bila suatu saat perlu ditampilkan lagi. Tombol hapus
-     pada tabel/daftar di halaman ini sengaja TIDAK ikut digating. --}}
+     default — hapus dilakukan dari halaman list. Kirim showDelete=true dari
+     controller bila perlu ditampilkan lagi. Tombol hapus pada tabel/daftar
+     di halaman ini sengaja TIDAK ikut digating. --}}
           {{#if showDelete}}
-            <!-- Tombol Delete -->
-            <form
-              action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE'
-              method='post'
-            >
-              <button
-                type='button'
-                onclick='confirmDelete(this)'
-                class='p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm'
-                title='Delete Minggu'
-              >
-                <!-- Icon Delete (Trash) -->
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke-width='2'
-                  stroke='currentColor'
-                  class='w-7 h-7'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'
-                  />
-                </svg>
+            <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
+              <button type='button'
+                @click='confirmMeetingDelete($el)'
+                class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
+                title='Delete Week' aria-label='Delete Week'>
+                <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
               </button>
             </form>
           {{/if}}
+          <a href='/week/formEdit/{{weeks.id}}'
+            class='box-border w-[114px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
+            title='Edit Week' aria-label='Edit Week'>
+            <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Week</span>
+          </a>
         </div>
-
       </div>
+
     </div>
+
+    {{!-- Table Detail Week --}}
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()">
+
+      {{!-- Tab Bar: underline-tabs component --}}
+      <div x-data="{ tabs: [
+        {name:'session',label:'Session',url:'/week/session/{{weeks.id}}'},
+        {name:'quiz',label:'Quiz',url:'/week/quiz/{{weeks.id}}'}
+      ] }">
+        {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
+      </div>
+
+      {{!-- Session Rows --}}
+      <div x-show="tab === 'session'" class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
+
+      {{!-- Quiz (frozen) --}}
+      <div x-show="tab === 'quiz'" class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+
+    </div>
+
   </div>
-
-<div class='mx-auto' x-data="tabData()">
-
-  <div class='flex space-x-4 mb-6'>
-    <button
-      @click="toggleFetch('/week/session/{{weeks.id}}', 'session')"
-      :class="tab === 'session' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-      class='px-4 py-2 rounded-lg shadow transition'
-    >
-      Session
-    </button>
-    {{#if lastSession}}
-      <button
-        @click="toggleFetch('/week/quiz/{{weeks.id}}', 'quiz')"
-        :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-        class='px-4 py-2 rounded-lg shadow transition'
-      >
-        Quiz
-      </button>
-    {{/if}}
-  </div>
-
-  <div x-show="tab === 'session'" x-data="sessionData()" x-init="fetchSessions()">
-    {{> weeks/session_tab}}
-  </div>
-
-  <div x-show="tab === 'quiz'" x-data="quizData()" x-init="fetchQuizzes()">
-    {{> weeks/quiz_tab}}
-  </div>
-
-</div>
 </div>
 
 <script>
+function confirmMeetingDelete(el) {
+  Swal.fire({
+    title: 'Delete Week',
+    text: 'Are you sure you want to delete this week? Sessions inside it will be removed too.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#C80606',
+    cancelButtonColor: '#525252',
+    confirmButtonText: 'Delete'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      el.closest('form').submit();
+    }
+  });
+}
+
 function tabData() {
   return {
     search: '',
@@ -160,11 +115,11 @@ function tabData() {
           localStorage.setItem('activeTabWeek', 'session');
       }
     },
-    
+
     async toggleFetch(url, tabName) {
       this.tab = tabName;
       localStorage.setItem('activeTabWeek', tabName);
-      
+
       try {
         if(url === '') {
           this.data = [];
@@ -173,7 +128,7 @@ function tabData() {
         }else{
           const response = await fetch(url);
         if (!response.ok) throw new Error('Network error');
-        
+
         this.data = await response.json();
         localStorage.setItem('activeData', JSON.stringify(this.data));
         }

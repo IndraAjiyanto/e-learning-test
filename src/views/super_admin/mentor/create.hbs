@@ -1,244 +1,45 @@
-<div class='py-10'>
-  <div
-    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data="{
-        // Image validation states
-        previewUrl: null,
-        errorMessage: '',
-        isValid: true,
-        fileName: '',
-        fileSize: 0,
-        imageWidth: 0,
-        imageHeight: 0,
-        hasFile: false,
-        
+{{!--
+  Halaman: Create Mentor — Super Admin
+  Lokasi: src/views/super_admin/mentor/create.hbs
+  Level: L4 Page
 
+  Route: GET /mentor/formCreate/:courseId -> POST /mentor/:courseId (multipart:
+  profile + field teks, position[id|en|ja], description[id|en|ja], technologyId[]).
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-        // Form validation states
-        formData: {
-          name: '',
-          position: { id: '', en: '', ja: '' },
-          description: { id: '', en: '', ja: '' },
-          linkedin: '',
-        },
-        formErrors: {
-          name: '',
-          position: { id: '', en: '', ja: '' },
-          description: { id: '', en: '', ja: '' },
-          linkedin: '',
-        },
-        formValid: {
-          name: false,
-          position: { id: false, en: false, ja: false },
-          description: { id: false, en: false, ja: false },
-          linkedin: false,
-        },
-        formTouched: {
-          name: false,
-          position: { id: false, en: false, ja: false },
-          description: { id: false, en: false, ja: false },
-          linkedin: false,
-        },
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Mentor'
+      }}
 
-        validateField(field, value, lang = null) {
-          if (lang) {
-            this.formData[field][lang] = value;
-            this.formTouched[field][lang] = true;
-          } else {
-            this.formData[field] = value;
-            this.formTouched[field] = true;
-          }
-          
-          switch(field) {
-            case 'name':
-              if (!value.trim()) {
-                this.formErrors.name = 'Mentor name is required';
-                this.formValid.name = false;
-              } else {
-                this.formErrors.name = '';
-                this.formValid.name = true;
-              }
-              break;
-              
-            case 'position':
-              if (!value.trim()) {
-                this.formErrors.position[lang] = 'Position is required';
-                this.formValid.position[lang] = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.position[lang] = 'Position must be at least 2 characters';
-                this.formValid.position[lang] = false;
-              } else {
-                this.formErrors.position[lang] = '';
-                this.formValid.position[lang] = true;
-              }
-              break;
-              
-            case 'description':
-              if (!value.trim()) {
-                this.formErrors.description[lang] = 'Description is required';
-                this.formValid.description[lang] = false;
-              } else if (value.trim().length < 10) {
-                this.formErrors.description[lang] = 'Description must be at least 10 characters';
-                this.formValid.description[lang] = false;
-              } else {
-                this.formErrors.description[lang] = '';
-                this.formValid.description[lang] = true;
-              }
-              break;
-              
-            case 'linkedin':
-              if (!value.trim()) {
-                this.formErrors.linkedin = 'LinkedIn link is required';
-                this.formValid.linkedin = false;
-              } else {
-                this.formErrors.linkedin = '';
-                this.formValid.linkedin = true;
-              }
-              break;
-              
-          }
-        },
+      {{> components/ui/super_admin/description/index
+        text='Add a mentor to this program of Kesatria Academy.'
+      }}
+    </div>
 
-        validateImage(file) {
-          if (!file) { this.hasFile = false; return; }
-          this.hasFile = true;
-          this.fileName = file.name;
-          this.fileSize = file.size;
-          this.errorMessage = '';
-          this.isValid = true;
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
-          const maxSize = 5 * 1024 * 1024;
-          if (file.size > maxSize) {
-            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-          img.onload = () => {
-            this.imageWidth = img.width;
-            this.imageHeight = img.height;
-            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
-              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
-              this.isValid = false;
-              this.previewUrl = null;
-              URL.revokeObjectURL(objectUrl);
-            } else {
-              this.previewUrl = objectUrl;
-              this.isValid = true;
-              this.errorMessage = '';
-            }
-          };
-          img.onerror = () => {
-            this.errorMessage = 'Failed to load image';
-            this.isValid = false;
-            this.previewUrl = null;
-            URL.revokeObjectURL(objectUrl);
-          };
-          img.src = objectUrl;
-        },
-
-        clearFile() {
-          this.previewUrl = null;
-          this.errorMessage = '';
-          this.isValid = true;
-          this.fileName = '';
-          this.fileSize = 0;
-          this.imageWidth = 0;
-          this.imageHeight = 0;
-          this.hasFile = false;
-          this.$refs.profileFile.value = null;
-        },
-        
-
-        canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
-          const posisiValid = Object.values(this.formValid.position).every(v => v);
-          const deskripsiValid = Object.values(this.formValid.description).every(v => v);
-          const formValid = this.formValid.name && posisiValid && deskripsiValid && this.formValid.linkedin;
-          return imageValid && formValid;
-        },
-
-        hasFormErrors() {
-          return this.formErrors.name !== '' || 
-                 Object.values(this.formErrors.position).some(e => e !== '') ||
-                 Object.values(this.formErrors.description).some(e => e !== '') ||
-                 this.formErrors.linkedin !== '' 
-        }
-      }"
-  >
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Mentor</h2>
     <form
-      method='POST'
       action='/mentor/{{courseId}}'
+      method='post'
       enctype='multipart/form-data'
-      class='space-y-6'
-      x-data='{ loading: false }'
-      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+      novalidate
+      x-data='mentorForm({ technologies: {{json technologies}} })'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-5'
     >
+      <div class='flex flex-col gap-5'>
+        {{> components/ui/super_admin/form/mentor/fields }}
 
-{{> super_admin/mentor/create/image_input}}
-
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <!-- LEFT COLUMN -->
-        <div class='space-y-6'>
-
-          {{> super_admin/mentor/create/left_column/name_input }}
-          {{> super_admin/mentor/create/left_column/position_input }}
-          {{> super_admin/mentor/create/left_column/technology_input }}
-
-        </div>
-
-        <!-- RIGHT COLUMN -->
-        <div class='space-y-6'>
-
-          {{> super_admin/mentor/create/right_column/description_input }}
-          {{> super_admin/mentor/create/right_column/linkedin_input }}
-
-        </div>
+        {{> components/ui/super_admin/form/button
+          row=true
+          cancelHref=(concat '/program/detail/program/admin/' courseId)
+          submitLabel='Create Mentor'
+          disabled='!canSubmit() || loading'
+        }}
       </div>
-
-      <!-- Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a
-          href='/program/detail/program/admin/{{courseId}}'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >Cancel</a>
-      </div>
-
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
-        </div>
-      </template>
     </form>
   </div>
 </div>
+
+{{> components/ui/super_admin/form/mentor/form }}

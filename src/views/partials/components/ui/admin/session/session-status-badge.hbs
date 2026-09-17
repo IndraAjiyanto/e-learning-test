@@ -1,0 +1,41 @@
+{{!--
+  Component: Session Status Badge (Admin) — atomic, prefix session-
+  Path: components/ui/admin/session/session-status-badge.hbs
+  Dipakai: {{> components/ui/admin/session/session-status-badge statusVar='pesertaAbsen.status'}}
+           di dalam x-for attendance (session-attendance-table).
+  Props: {{statusVar}} (required, Alpine expression ke status string).
+
+  Pencil (Container - Session Detail → Column Status):
+  pill r16, gap 6, p2 8 (+6 kiri dot), dot 8px, text Inter 12/500.
+  Present #F0FDF4/#15803D · Late #EFF6FF/#1D4ED8 · Absent #FFF7ED/#C2410C
+  Excused #FEF2F2/#B91C1C · Pending #FAFAFA/#404040.
+  Catatan BE: entity Attendance.status enum = permission|present|sick|absent|
+  no_information (tanpa late/excused/pending). Nilai di luar 5 badge desain
+  jatuh ke gaya netral Pending dengan label asli — tanpa mengarang data.
+--}}
+<div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-start items-center rounded-[16px]'
+  :class="{
+    'bg-[#F0FDF4]': ['present', 'Present'].includes({{statusVar}}),
+    'bg-[#EFF6FF]': ['late', 'Late'].includes({{statusVar}}),
+    'bg-[#FFF7ED]': ['absent', 'Absent'].includes({{statusVar}}),
+    'bg-[#FEF2F2]': ['excused', 'Excused'].includes({{statusVar}}),
+    'bg-[#FAFAFA]': !['present', 'Present', 'late', 'Late', 'absent', 'Absent', 'excused', 'Excused'].includes({{statusVar}})
+  }">
+  <div class='box-border w-[8px] shrink-0 h-[8px] rounded-full'
+    :class="{
+      'bg-[#22C55E]': ['present', 'Present'].includes({{statusVar}}),
+      'bg-[#3B82F6]': ['late', 'Late'].includes({{statusVar}}),
+      'bg-[#F97316]': ['absent', 'Absent'].includes({{statusVar}}),
+      'bg-[#EF4444]': ['excused', 'Excused'].includes({{statusVar}}),
+      'bg-[#A3A3A3]': !['present', 'Present', 'late', 'Late', 'absent', 'Absent', 'excused', 'Excused'].includes({{statusVar}})
+    }"></div>
+  <div class='text-[12px]/[normal] font-inter font-medium whitespace-nowrap'
+    :class="{
+      'text-[#15803D]': ['present', 'Present'].includes({{statusVar}}),
+      'text-[#1D4ED8]': ['late', 'Late'].includes({{statusVar}}),
+      'text-[#C2410C]': ['absent', 'Absent'].includes({{statusVar}}),
+      'text-[#B91C1C]': ['excused', 'Excused'].includes({{statusVar}}),
+      'text-[#404040]': !['present', 'Present', 'late', 'Late', 'absent', 'Absent', 'excused', 'Excused'].includes({{statusVar}})
+    }"
+    x-text='{{statusVar}} ?? "-"'></div>
+</div>

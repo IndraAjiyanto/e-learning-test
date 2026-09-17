@@ -1,0 +1,24 @@
+{{!--
+  Component: Logbook Export Button (Admin) — atomic, prefix logbook-
+  Path: components/ui/admin/program/logbook-export-button.hbs
+  Dipakai: {{> components/ui/admin/program/logbook-export-button}} di dalam scope yang punya `exportToExcel()`
+  (mis. logBookUserData, logBookMentorData)
+
+  Pencil (Table Detail Program - Logbook User / Export Btn):
+  w122 h44, bg #16A34A, outline 1px #86EFAC offset -0.5px, radius 8,
+  gap 8, p10 18, ikon Excel 20px, text Inter 16/600 white.
+  Ikon Excel dipertahankan dari implementasi lama (bukan ikon generik).
+--}}
+<button
+  type='button'
+  @click='exportToExcel()'
+  class='box-border w-[122px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#16A34A] [outline:1px_solid_#86EFAC] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#15803D] transition-colors whitespace-nowrap'
+>
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' class='w-[20px] h-[20px] shrink-0 rounded shadow' aria-hidden='true'>
+    <path fill='#185C37' d='M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z' />
+    <path fill='#21A366' d='M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z' />
+    <path fill='#107C41' d='M22 14H8v20h14V14z' />
+    <path fill='#fff' d='M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z' />
+  </svg>
+  <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Export</span>
+</button>

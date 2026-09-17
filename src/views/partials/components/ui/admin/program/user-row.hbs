@@ -1,0 +1,21 @@
+{{!--
+  Component: User Row (Admin) — molecule, prefix user-
+  Path: components/ui/admin/program/user-row.hbs
+  Dipakai: {{> components/ui/admin/program/user-row}} di dalam x-for `item` (UserCourse { user })
+  Composes: components/ui/admin/program/user-avatar (avatar 32px)
+
+  Pencil (Table Detail Program - User / User Row):
+  card white, outline 1px #D9D9D9 offset -0.5px, radius 8,
+  p 8 14, h64, gap 6, items-center.
+  Nama Inter 14/600 #404040, email Inter 12/normal #525252.
+  Anti-rusak: min-w-0 + truncate + :title tooltip (seperti program/table).
+--}}
+<div class='box-border w-full h-[64px] shrink-0 flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
+  <div class='box-border flex-1 min-w-0 flex flex-row gap-[10px] justify-start items-center'>
+    {{> components/ui/admin/program/user-avatar}}
+    <div class='flex-1 min-w-0 flex flex-col gap-0 justify-center items-start'>
+      <div class='text-[14px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#404040] font-inter font-semibold text-left' x-text="item.user?.username ?? '-'" :title="item.user?.username ?? ''"></div>
+      <div class='text-[12px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="item.user?.email ?? '-'" :title="item.user?.email ?? ''"></div>
+    </div>
+  </div>
+</div>

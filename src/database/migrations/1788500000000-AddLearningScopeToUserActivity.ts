@@ -13,9 +13,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * dijalankan berkali-kali dan di environment mana pun, termasuk yang kolomnya
  * terlanjur ada dari sinkronisasi skema otomatis di masa lalu.
  */
-export class AddLearningScopeToUserActivity1788500000000
-  implements MigrationInterface
-{
+export class AddLearningScopeToUserActivity1788500000000 implements MigrationInterface {
   name = 'AddLearningScopeToUserActivity1788500000000';
 
   public async up(q: QueryRunner): Promise<void> {
@@ -31,9 +29,7 @@ export class AddLearningScopeToUserActivity1788500000000
        WHERE table_name = 'user_activity' AND column_name = 'currentCourseId'`,
     );
     if (!currentCourseId) {
-      await q.query(
-        `ALTER TABLE "user_activity" ADD "currentCourseId" uuid`,
-      );
+      await q.query(`ALTER TABLE "user_activity" ADD "currentCourseId" uuid`);
     }
 
     const [activityLabel] = await q.query(
@@ -41,9 +37,7 @@ export class AddLearningScopeToUserActivity1788500000000
        WHERE table_name = 'user_activity' AND column_name = 'activityLabel'`,
     );
     if (!activityLabel) {
-      await q.query(
-        `ALTER TABLE "user_activity" ADD "activityLabel" varchar`,
-      );
+      await q.query(`ALTER TABLE "user_activity" ADD "activityLabel" varchar`);
     }
   }
 
@@ -59,7 +53,9 @@ export class AddLearningScopeToUserActivity1788500000000
        WHERE table_name = 'user_activity' AND column_name = 'currentCourseId'`,
     );
     if (currentCourseId) {
-      await q.query(`ALTER TABLE "user_activity" DROP COLUMN "currentCourseId"`);
+      await q.query(
+        `ALTER TABLE "user_activity" DROP COLUMN "currentCourseId"`,
+      );
     }
 
     const [activityLabel] = await q.query(

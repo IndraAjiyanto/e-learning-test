@@ -1,0 +1,117 @@
+{{!--
+  Komponen: Program Alumni Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/alumni_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Alumni" di halaman detail program: search + tabel alumni
+  + pagination. Datanya diambil sendiri dari GET /program/alumni/:courseId,
+  karena controller detail tidak ikut mengirimnya saat render.
+
+  `lang` hidup di scope Alpine bersarang: getter `rows` dan `totalPages` milik
+  clientTable() akan hilang bila state digabung.
+
+  name, message & currentPosition dibaca sebagai objek { id, en, ja } — sama
+  dengan yang dikirim form alumni (name[id]/name[en]/name[ja]). Entity Alumni
+  menuliskannya string[], tapi itu sudah usang.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+  - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
+
+  Props:
+  - courseId : string (wajib) — dipakai untuk endpoint, tombol create, dan aksi delete
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  x-data='clientTable({ url: "/program/alumni/" + {{json courseId}}, searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja"] })'
+  x-init='load()'
+>
+  {{> components/ui/super_admin/table/toolbar
+    placeholder='Search alumni..'
+    searchLabel='Search program alumni'
+    createHref=(concat '/alumni/formCreate/' courseId)
+    createLabel='Add Alumni'
+    fullWidth=true
+  }}
+
+  {{!-- courseId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
+       yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
+  <div class='flex flex-col gap-5' x-data='{ lang: "id", courseId: {{json courseId}} }'>
+    {{> components/ui/super_admin/tabs/language/index ariaLabel='Program alumni language' }}
+
+    {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+      <colgroup>
+        <col class='w-[66px]' />
+        <col class='w-[73px]' />
+        <col class='w-[250px]' />
+        <col class='w-[334px]' />
+        <col class='w-[171px]' />
+        <col class='w-[116px]' />
+      </colgroup>
+      <thead>
+        <tr>
+          {{> components/ui/super_admin/table/header_cell label='No' }}
+          {{> components/ui/super_admin/table/header_cell label='Profile' }}
+          {{> components/ui/super_admin/table/header_cell label='Name' }}
+          {{> components/ui/super_admin/table/header_cell label='Message' }}
+          {{> components/ui/super_admin/table/header_cell label='Current Position' }}
+          {{> components/ui/super_admin/table/header_cell label='Action' }}
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for='(row, index) in rows' :key='row.id'>
+          <tr class='transition-colors hover:bg-[#fafafa]'>
+
+            {{> components/ui/super_admin/table/cell
+              text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+            }}
+
+            {{#> components/ui/super_admin/table/cell variant='media'}}
+              {{> components/ui/super_admin/table/avatar
+                src='row.profile'
+                name='(row.name && row.name[lang]) || ""'
+              }}
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row.name && row.name[lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row.message && row.message[lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row.currentPosition && row.currentPosition[lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell variant='action'}}
+              {{> components/ui/super_admin/table/row_actions
+                entity='alumni'
+                deleteAction="'/alumni/' + row.id + '/' + courseId + '?_method=DELETE'"
+                editHref="'/alumni/formEdit/' + row.id"
+              }}
+            {{/components/ui/super_admin/table/cell}}
+          </tr>
+        </template>
+
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+          Loading alumni…
+        {{/components/ui/super_admin/table/message_row}}
+
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
+          No alumni found.
+        {{/components/ui/super_admin/table/message_row}}
+      </tbody>
+    {{/components/ui/super_admin/table/card}}
+  </div>
+</div>

@@ -51,7 +51,13 @@ export class MentorLogbookService {
   async findOne(mentor_logbookId: string) {
     const mentor_logbook = await this.mentorLogbookRepository.findOne({
       where: { id: mentor_logbookId },
-      relations: ['session', 'user'],
+      relations: [
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+        'user',
+        'user.biodata',
+      ],
     });
     if (!mentor_logbook) {
       throw new NotFoundException('logbooks not found');

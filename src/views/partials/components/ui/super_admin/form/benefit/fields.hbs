@@ -11,6 +11,9 @@
   Props:
   - hideOrder : boolean (opsional) — tanpa kartu 03; pasangkan dengan
                 benefitForm({ withOrder: false })
+  - titleName : string (default 'title') — nama field Title yang dikirim ke
+                backend; course_benefits menyimpannya sebagai `benefit[...]`.
+                Hanya mengubah atribut name, bukan key state Alpine.
 
   Partial block (opsional) dirender di akhir kartu 03 — Edit menaruh tombol
   aksinya di sana, sedangkan Create memakai kartu aksi terpisah.
@@ -31,7 +34,7 @@
   <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
     {{> components/ui/super_admin/form/text_field
       id=(concat field '-' code)
-      name=(concat field '[' code ']')
+      name=(concat (default nameField field) '[' code ']')
       field=(concat field '.' code)
       label=(concat label ' (' langName ')')
       hideLabel=true
@@ -93,7 +96,7 @@
   <section class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:p-5'>
     {{> benefitCardHeader number='02' title='Benefit Information' }}
 
-    {{> benefitLangField field='title' label='Title' placeholder='Enter a title...' }}
+    {{> benefitLangField field='title' nameField=(default titleName 'title') label='Title' placeholder='Enter a title...' }}
 
     {{> benefitLangField field='description' label='Description' placeholder='Enter a description...' }}
   </section>

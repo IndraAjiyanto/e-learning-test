@@ -624,9 +624,10 @@ export class CoursesService {
         'session',
         'session.weeks',
         'session.weeks.course',
-        'session.weeks.course.mentorings',
+        'session.weeks.course.mentors',
         'session.weeks.course.courseType',
         'session.weeks.course.category',
+        'user',
       ],
       select: {
         id: true,
@@ -635,6 +636,11 @@ export class CoursesService {
         documentation: true,
         obstacle: true,
         createdAt: true,
+        user: {
+          username: true,
+          email: true,
+          profile: true,
+        },
         session: {
           sessionOrder: true,
           weeks: {
@@ -665,7 +671,7 @@ export class CoursesService {
         'session',
         'session.weeks',
         'session.weeks.course',
-        'session.weeks.course.mentorings',
+        'session.weeks.course.mentors',
         'session.weeks.course.courseType',
         'session.weeks.course.category',
       ],
@@ -681,6 +687,7 @@ export class CoursesService {
         user: {
           username: true,
           email: true,
+          profile: true,
         },
         session: {
           sessionOrder: true,
