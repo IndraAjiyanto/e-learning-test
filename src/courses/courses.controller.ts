@@ -31,6 +31,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -143,7 +144,7 @@ export class CoursesController {
   ) {
     try {
       await this.coursesService.addUserToCourse(userId, courseId);
-      req.flash('success', 'user successfuly add to program');
+      flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'user failed add to program');
@@ -968,7 +969,7 @@ export class CoursesController {
   ) {
     try {
       await this.coursesService.removeCourseUser(userId, courseId);
-      req.flash('success', 'User successfully removed from program');
+      flashToast(req, 'User Removed', 'User successfully removed from program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove user from program');
