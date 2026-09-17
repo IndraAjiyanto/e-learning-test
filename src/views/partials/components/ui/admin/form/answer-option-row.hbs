@@ -1,0 +1,30 @@
+{{!--
+  Component: Answer Option Row (Admin) — molecule, prefix answer-option-
+  Path: components/ui/admin/form/answer-option-row.hbs
+  Dipakai: {{> components/ui/admin/form/answer-option-row label="A" value="0" ...}} di questions/create.hbs
+           {{> components/ui/admin/form/answer-option-row label="A" value="0" checked=true ...}} di questions/edit.hbs
+  Props: {{label}} (required, "A"/"B"/"C"/"D"), {{value}} (required, "0"/"1"/"2"/"3"),
+         {{inputName}} (default 'options'), {{placeholder}} (optional),
+         {{inputValue}} (optional, for edit pre-fill), {{checked}} (optional, for edit correct answer),
+         {{radioName}} (default 'answers')
+  Design (slicing.pen "Container - Quiz Question Form" → Answer Options):
+         Radio 20x20, radius 10, stroke #D4D4D4; Label Inter 14/500 #404040;
+         Input h44, fill white, radius 8, stroke #D4D4D4, shadow, p10 14;
+         Placeholder Inter 16, #737373.
+--}}
+<div class='flex flex-col gap-[6px] w-full'>
+  <div class='flex flex-row gap-[12px] items-center'>
+    <input type='radio' name='{{default radioName "answers"}}' value='{{value}}'
+      {{#if checked}}checked{{/if}} required
+      class='w-[20px] h-[20px] rounded-full border-2 border-[#D4D4D4] accent-[#003060] bg-white checked:bg-[#003060] checked:border-[#003060] cursor-pointer appearance-none relative checked:after:content-[""] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:translate-x-[-50%] checked:after:translate-y-[-50%] checked:after:w-[8px] checked:after:h-[8px] checked:after:rounded-full checked:after:bg-white' />
+    <div class='flex-1 min-w-0 flex flex-col gap-[6px]'>
+      {{> components/ui/admin/form/form-label text=(concat "Option " label "*")}}
+      <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+        <input type='text' name='{{default inputName "options"}}'
+          value='{{default inputValue ""}}'
+          class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#737373]'
+          placeholder='Enter option {{label}}' required />
+      </div>
+    </div>
+  </div>
+</div>

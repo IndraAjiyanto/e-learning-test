@@ -1,185 +1,79 @@
-<div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-bold mb-6 text-gray-900'>Create Attendance</h2>
+{{!--
+  Page: Admin — Add Attendance (Container - Attendance Form, slicing.pen Z8kPt)
+  Path: admin/attendance/create.hbs
+  Route: GET /attendance/create/:sessionId -> POST /attendance/:sessionId (createAttendance)
+  Data: { user, users, sessionId }
+  Design: Container w1052 vertical gap28 → Title (Add Attendance 34 #003060 /
+          "Record attendance for the session participants" 16 #718096)
+          → Form Card (white r12 stroke #D9D9D9 p20 gap20): row User*+Status*,
+          row Date*+Note* → Footer card h86 (Cancel w90 + Save Attendance w183,
+          justify end).
+  Komponen (reuse): text/page-header, form/form-card (noNumber),
+          form/searchable_select (User*), button/primary-button,
+          button/secondary-button, form/text-input (Date* icon calendar, Note*).
+          Baru (prefix attendance-): attendance/attendance-status-select.
+  BE: POST /attendance/:sessionId { userId, status, attendanceTime, notes }
+      → CreateAttendanceDto (status enum: permission|present|sick|absent|
+      no_information). Cancel → /session/:sessionId.
+--}}
+<div class='py-10 px-6'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'
+    x-data='{ loading: false }'>
 
-    <form
-      method='POST'
-      action='/attendance/{{sessionId}}'
-      class='space-y-6'
-      @submit="loading = true"
-      x-data="{
-      loading: false,
-      users: {{json users}},
-      searchUser: '',
-      showUserDropdown: false,
-      selectedUser: null,
-      statuses: [
-        { value: 'present', label: 'Present' },
-        { value: 'permission', label: 'Permission' },
-        { value: 'sick', label: 'Sick' },
-        { value: 'absent', label: 'Absent' },
-        { value: 'no_information', label: 'No Information' }
-      ],
-      searchStatus: '',
-      showStatusDropdown: false,
-      selectedStatus: null,
-      get filteredUsers() {
-        if (!this.searchUser) return this.users;
-        return this.users.filter(u => 
-          u.username.toLowerCase().includes(this.searchUser.toLowerCase())
-        );
-      },
-      get filteredStatuses() {
-        if (!this.searchStatus) return this.statuses;
-        return this.statuses.filter(s => 
-          s.label.toLowerCase().includes(this.searchStatus.toLowerCase())
-        );
-      },
-      selectUser(user) {
-        this.selectedUser = user;
-        this.searchUser = user.username;
-        this.showUserDropdown = false;
-      },
-      selectStatus(status) {
-        this.selectedStatus = status;
-        this.searchStatus = status.label;
-        this.showStatusDropdown = false;
-      }
-    }"
-    >
+    {{!-- Title --}}
+    {{> components/ui/admin/text/page-header title="Add Attendance" subtitle="Record attendance for the session participants"}}
 
-      <!-- User -->
-      <div class='relative'>
-        <label
-          for='userId'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Select User</label>
-        <input type='hidden' name='userId' :value='selectedUser?.id' required />
-        <input
-          type='text'
-          x-model='searchUser'
-          @focus='showUserDropdown = true'
-          @input='showUserDropdown = true'
-          placeholder='Search user...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          autocomplete='off'
-        />
-        <div
-          x-show='showUserDropdown'
-          @click.away='showUserDropdown = false'
-          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
-        >
-          <template x-for='user in filteredUsers' :key='user.id'>
-            <div
-              @click='selectUser(user)'
-              class='px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700'
-            >
-              <div class="font-medium text-gray-900" x-text="user.username"></div>
-              <div class="text-xs text-gray-500" x-text="user.email"></div>
-            </div>
-          </template>
-          <div
-            x-show='filteredUsers.length === 0'
-            class='px-4 py-2 text-gray-500 text-sm'
-          >
-            No user found
+    {{!-- Form --}}
+    <form method='POST' action='/attendance/{{sessionId}}'
+      class='flex flex-col gap-[16px] w-full'
+      @submit='loading = true'>
+
+      {{!-- Feature Card --}}
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+
+        {{!-- Row: User* + Status* --}}
+        <div class='flex flex-row gap-[12px] w-full'>
+          {{> components/ui/admin/form/searchable_select/index
+            label="User*"
+            forId="userId"
+            errorId="userId_error"
+            name="userId"
+            displayField="username"
+            placeholder="Select user"
+            itemsJson=(json users)
+          }}
+          {{> components/ui/admin/attendance/attendance-status-select}}
+        </div>
+
+        {{!-- Row: Date* + Note* --}}
+        <div class='flex flex-row gap-[12px] w-full'>
+          <div class='flex-1 min-w-0'>
+            {{#> components/ui/admin/form/form-field label="Date*" for="attendanceTime" errorId="attendanceTime_error"}}
+              {{> components/ui/admin/form/text-input
+                type="date" id="attendanceTime" name="attendanceTime"
+                icon="calendar" required=true
+              }}
+            {{/components/ui/admin/form/form-field}}
+          </div>
+          <div class='flex-1 min-w-0'>
+            {{#> components/ui/admin/form/form-field label="Note*" for="notes" errorId="notes_error"}}
+              {{> components/ui/admin/form/text-input
+                id="notes" name="notes"
+                placeholder="Enter note" required=true
+              }}
+            {{/components/ui/admin/form/form-field}}
           </div>
         </div>
-      </div>
 
-      <!-- Status -->
-      <div class='relative'>
-        <label
-          for='status'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Status</label>
-        <input
-          type='hidden'
-          name='status'
-          :value='selectedStatus?.value'
-          required
-        />
-        <input
-          type='text'
-          x-model='searchStatus'
-          @focus='showStatusDropdown = true'
-          @input='showStatusDropdown = true'
-          placeholder='Search status...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          autocomplete='off'
-        />
-        <div
-          x-show='showStatusDropdown'
-          @click.away='showStatusDropdown = false'
-          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
-        >
-          <template x-for='status in filteredStatuses' :key='status.value'>
-            <div
-              @click='selectStatus(status)'
-              class='px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700'
-              x-text='status.label'
-            >
-            </div>
-          </template>
-          <div
-            x-show='filteredStatuses.length === 0'
-            class='px-4 py-2 text-gray-500 text-sm'
-          >
-            No status found
-          </div>
+      {{/components/ui/admin/form/form-card}}
+
+      {{!-- Footer: Cancel + Save Attendance --}}
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
+          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' width='183'}}
         </div>
-      </div>
-
-      <!-- Date -->
-      <div>
-        <label
-          for='attendanceTime'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Attendance Date</label>
-        <input
-          type='date'
-          id='attendanceTime'
-          name='attendanceTime'
-          required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-          style='color-scheme: light;'
-        />
-      </div>
-
-      <!-- Note -->
-      <div>
-        <label
-          for="notes"
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Note</label>
-        <textarea
-          id="notes"
-          name="notes"
-          rows='3'
-          placeholder='Enter additional note...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        ></textarea>
-      </div>
-
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600 '"
-          class=' text-white px-6 py-2 rounded-lg shadow transition'
-        >
-        <span x-show="!loading">Create</span>
-        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          
-        </button>
-        <a
-          href='/session/{{sessionId}}'
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
+      {{/components/ui/admin/form/form-card}}
 
     </form>
   </div>

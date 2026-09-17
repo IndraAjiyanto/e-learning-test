@@ -20,43 +20,32 @@
     {{> components/ui/admin/detail/learning/index}}
 
     {{!-- Tab section — x-data di wrapper agar tab + content satu scope (fix: tab is not defined) --}}
-    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[16px]' x-data="tabData()" x-init="init()">
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()" x-init="init()">
 
-    {{!-- Tab Navigation (role-based, seperti sebelumnya) --}}
-    <div class='flex flex-wrap gap-2 mb-6'>
-      {{#if (eq user.role "admin")}}
-      <button @click="toggleFetch('/program/week/{{course.id}}', 'week')" :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Week</button>
-      <button @click="toggleFetch('/program/userProgram/{{course.id}}', 'user')" :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>User</button>
-      {{else if (eq user.role "super_admin")}}
-      <button @click="toggleFetch('/program/benefit/{{course.id}}', 'benefit')" :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Benefit</button>
-      <button @click="toggleFetch('/program/participants/{{course.id}}', 'participants')" :class="tab === 'participants' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Participants</button>
-      <button @click="toggleFetch('/program/flow/{{course.id}}', 'flow')" :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Flow</button>
-      <button @click="toggleFetch('/program/faq/{{course.id}}', 'faq')" :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>FAQ</button>
-      {{#if course.checkPaid}}
-      <button @click="toggleFetch('/program/installment/{{course.id}}', 'installment')" :class="tab === 'installment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Installment</button>
-      {{/if}}
-      <button @click="toggleFetch('', 'payment')" :class="tab === 'payment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Payment</button>
-      <button @click="toggleFetch('/program/alumni/{{course.id}}', 'alumni')" :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Alumni</button>
-      <button @click="toggleFetch('/program/userProgram/{{course.id}}', 'user')" :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>User</button>
-      {{/if}}
-      <button @click="toggleFetch('/program/logbookUser/{{course.id}}', 'log_book_user')" :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Log Book User</button>
-      <button @click="toggleFetch('/program/logbookMentor/{{course.id}}', 'log_book_mentor')" :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Log Book Mentor</button>
-      <button @click="toggleFetch('/program/mentorProgram/{{course.id}}', 'mentor')" :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class='px-4 py-2 rounded-lg shadow transition'>Mentor</button>
+    {{!-- Tab Navigation: underline-tabs component --}}
+    <div x-data="{ tabs: [
+      {name:'week',label:'Week',url:'/program/week/{{course.id}}'},
+      {name:'user',label:'User',url:'/program/userProgram/{{course.id}}'},
+      {name:'log_book_user',label:'Logbook User',url:'/program/logbookUser/{{course.id}}'},
+      {name:'log_book_mentor',label:'Logbook Mentor',url:'/program/logbookMentor/{{course.id}}'},
+      {name:'mentor',label:'Mentor',url:'/program/mentorProgram/{{course.id}}'}
+    ] }">
+      {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
     </div>
 
     {{!-- Tab Content Areas (frozen) --}}
-    <div x-show="tab === 'week'" x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
-    <div x-show="tab === 'mentor'" x-data="mentorData()" x-init="fetchMentors()">{{> course/mentor_tab}}</div>
-    <div x-show="tab === 'flow'" x-data="flowData()" x-init="fetchFlow()">{{> course/flow_tab}}</div>
-    <div x-show="tab === 'benefit'" x-data="benefitData()" x-init="fetchBenefit()">{{> course/benefit_tab}}</div>
-    <div x-show="tab === 'participants'" x-data="participantData()" x-init="fetchParticipants()">{{> course/participants_tab}}</div>
-    <div x-show="tab === 'faq'" x-data="faqData()" x-init="fetchFaqs()">{{> course/faq_tab}}</div>
-    <div x-show="tab === 'installment'" x-data="installmentData()" x-init="fetchInstallment()">{{> course/installment_tab}}</div>
-    <div x-show="tab === 'alumni'" x-data="alumniData()" x-init="fetchAlumni()">{{> course/alumni_tab}}</div>
-    <div x-show="tab === 'user'" x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
-    <div x-show="tab === 'log_book_user'" x-data="logBookUserData()" x-init="fetchLogBookUsers()">{{> course/log_book_user_tab}}</div>
-    <div x-show="tab === 'log_book_mentor'" x-data="logBookMentorData()" x-init="fetchLogBookMentors()">{{> course/log_book_mentor_tab}}</div>
-    <div x-show="tab === 'payment'">{{> course/payment_tab}}</div>
+    <div x-show="tab === 'week'" class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
+    <div x-show="tab === 'mentor'" class='w-full' x-data="mentorData()" x-init="fetchMentors()">{{> course/mentor_tab}}</div>
+    <div x-show="tab === 'flow'" class='w-full' x-data="flowData()" x-init="fetchFlow()">{{> course/flow_tab}}</div>
+    <div x-show="tab === 'benefit'" class='w-full' x-data="benefitData()" x-init="fetchBenefit()">{{> course/benefit_tab}}</div>
+    <div x-show="tab === 'participants'" class='w-full' x-data="participantData()" x-init="fetchParticipants()">{{> course/participants_tab}}</div>
+    <div x-show="tab === 'faq'" class='w-full' x-data="faqData()" x-init="fetchFaqs()">{{> course/faq_tab}}</div>
+    <div x-show="tab === 'installment'" class='w-full' x-data="installmentData()" x-init="fetchInstallment()">{{> course/installment_tab}}</div>
+    <div x-show="tab === 'alumni'" class='w-full' x-data="alumniData()" x-init="fetchAlumni()">{{> course/alumni_tab}}</div>
+    <div x-show="tab === 'user'" class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
+    <div x-show="tab === 'log_book_user'" class='w-full' x-data="logBookUserData()" x-init="fetchLogBookUsers()">{{> course/log_book_user_tab}}</div>
+    <div x-show="tab === 'log_book_mentor'" class='w-full' x-data="logBookMentorData()" x-init="fetchLogBookMentors()">{{> course/log_book_mentor_tab}}</div>
+    <div x-show="tab === 'payment'" class='w-full'>{{> course/payment_tab}}</div>
 
     </div>
 

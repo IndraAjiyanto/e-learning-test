@@ -1,249 +1,214 @@
-<div class="px-6 py-10 w-full mx-auto">
-<div class="mx-auto">
+{{!--
+  Page: Admin — Quiz Detail
+  Path: admin/quiz/detail.hbs
+  Design: pen design language (matching weeks/detail.hbs pattern)
+  Route: GET /quiz/:quizId — data: { quiz (weeks.course), scores (user), questions (answers) }}
+  Feature Card - Quiz: back link, quiz info, Delete (red text) + Edit (navy)
+  Table Detail Quiz: underline tabs (Question + Answer), question accordion + answer table
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='box-border w-full max-w-[1052px] mx-auto flex flex-col gap-[16px] justify-start items-start'>
 
-  <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
-    <div class="mb-4">
-      <a href="/week/{{quiz.weeks.id}}" 
-         class="inline-flex items-center text-gray-700 text-base font-medium hover:underline">
-        <svg xmlns="http://www.w3.org/2000/svg" 
-             class="h-5 w-5 mr-1" fill="none" 
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" 
-                stroke-linejoin="round" 
-                stroke-width="2" 
-                d="M15 19l-7-7 7-7" />
-        </svg>
-        Back
-      </a>
-    </div>  
+    {{!-- Feature Card - Quiz --}}
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
 
-    <div class="flex items-start justify-between">
-      <div>
-        <h1 class="text-2xl font-bold mb-2 text-gray-900">Quiz {{quiz.quizName}}</h1>
-
-        <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Minimum Score :</span> {{quiz.minScore}}
-        </p>
-        <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Duration :</span> {{quiz.duration}} minutes
-        </p>
-        <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Program :</span> {{quiz.weeks.course.name}}
-        </p>
-        <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Week :</span> {{quiz.weeks.week_number}}
-        </p>
-
+      {{!-- Back Row --}}
+      <div class='w-full flex flex-row justify-between items-center'>
+        <a href='/week/{{quiz.weeks.id}}'
+          class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
+          title='Back' aria-label='Back'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'><polyline points='15 18 9 12 15 6'/></svg>
+          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+        </a>
       </div>
 
-<div class="flex gap-3 pt-2">
-
-  <!-- Tombol Edit -->
-  <a href="/quiz/formEdit/{{quiz.id}}" 
-     class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
-     title="Edit">
-    <!-- Icon Pencil -->
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         fill="none" viewBox="0 0 24 24" 
-         stroke-width="1.8" stroke="currentColor" 
-         class="w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 
-               2.652L10.582 16.07a4.5 4.5 0 01-1.897 
-               1.13l-2.685.805.805-2.685a4.5 4.5 
-               0 011.13-1.897l10.927-10.936z" />
-      <path stroke-linecap="round" stroke-linejoin="round" 
-            d="M19.5 7.125L16.875 4.5" />
-    </svg>
-  </a>
-
-  <!-- Tombol Delete -->
-  <form action="/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE" method="post">
-    <button type="button" 
-            onclick="confirmDelete(this)"
-            class="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
-            title="Delete">
-      <!-- Icon Trash -->
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           fill="none" viewBox="0 0 24 24" 
-           stroke-width="1.8" stroke="currentColor" 
-           class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-      </svg>
-    </button>
-  </form>
-
-</div>
-
-    </div>
-  </div>
-</div>
-
-
-<div class="w-full mx-auto" x-data="{ 
-  tab: 'question',
-  async toggleFetch(url, tabName) {
-    this.tab = tabName;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-    } catch (error) {
-    }
-  }
-}">
-
-  <div class="flex space-x-4 mb-6">
-    <button @click="toggleFetch('/quiz/question/{{quiz.id}}', 'question')" 
-            :class="tab === 'question' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-            class="px-4 py-2 rounded-lg shadow transition">
-      Question
-    </button>
-
-    <button @click="toggleFetch('/quiz/answer/{{quiz.id}}', 'answer')" 
-            :class="tab === 'answer' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-            class="px-4 py-2 rounded-lg shadow transition">
-      Answer
-    </button>
-  </div>
-
-  <div x-show="tab === 'question'">
-    {{#if questions.length}}
-    <div class="space-y-4 mb-6">
-      {{#each questions}}
-      <div x-data="{ open: false }" class="bg-white border rounded-lg shadow">
-        
-        <button @click="open = !open"
-                class="w-full flex justify-between items-center px-6 py-4 text-left">
-          <span class="font-semibold text-gray-800">{{questionText}}</span>
-          <svg xmlns="http://www.w3.org/2000/svg"
-               :class="{'rotate-180': open}"
-               class="h-5 w-5 transform transition-transform"
-               fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        <div x-show="open" x-collapse class="px-6 pb-6 space-y-4">
-
-          {{#if image}}
-          <div class="flex justify-center">
-            <img src="{{image}}" alt="Gambar Soal"
-                 class="max-h-64 rounded-lg shadow border object-contain">
+      {{!-- Title Row --}}
+      <div class='w-full flex flex-row gap-[12px] justify-between items-start'>
+        <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
+          <div class='flex flex-col gap-[4px] w-full'>
+            <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Quiz {{quiz.quizName}}</div>
           </div>
-          {{/if}}
-
-          <ul class="space-y-2">
-            {{#each answers}}
-            <div class="px-4 py-2 rounded-lg border 
-                       {{#if this.isCorrect}}
-                         bg-green-50 border-green-400
-                       {{else}}
-                         bg-gray-50 border-gray-200
-                       {{/if}}">
-              <span class="text-gray-700">{{this.answer}}</span>
-              {{#if this.isCorrect}}
-                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-200 text-green-800">
-                  <i class="fas fa-check mr-1"></i> Benar
-                </span>
-              {{/if}}
+          <div class='flex flex-row flex-wrap gap-[8px] w-full justify-start items-center'>
+            <div class='box-border flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[14px] h-[14px] shrink-0 mr-[4px]'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>
+              <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>{{quiz.duration}} min</span>
             </div>
-            {{/each}}
-          </ul>
-
-          <div class="flex gap-3 pt-2">
-            <a href="/question/FormEdit/{{this.id}}"
-               class="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition">
-              Edit
-            </a>
-            <form action="/question/{{this.id}}/{{../quiz.id}}?_method=DELETE" method="post">
-              <button type="button" 
-                      onclick="confirmDelete(this)"
-                      class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-500 transition">
-                Delete
-              </button>
-            </form>
+            <div class='box-border flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[14px] h-[14px] shrink-0 mr-[4px]'><circle cx='12' cy='8' r='6'/><path d='M15.477 12.89L17 22l-5-3-5 3 1.523-9.11'/></svg>
+              <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>Min: {{quiz.minScore}}</span>
+            </div>
+            <div class='box-border flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
+              <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>{{quiz.weeks.course.name}} · Week {{quiz.weeks.week_number}}</span>
+            </div>
           </div>
         </div>
+
+        {{!-- Actions --}}
+        <div class='flex flex-row gap-[12px] shrink-0 justify-start items-center'>
+          <form action='/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE' method='POST'>
+            <button type='button'
+              @click='confirmQuizDetailDelete($el)'
+              class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
+              title='Delete Quiz' aria-label='Delete Quiz'>
+              <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
+            </button>
+          </form>
+          <a href='/quiz/formEdit/{{quiz.id}}'
+            class='box-border w-[114px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
+            title='Edit Quiz' aria-label='Edit Quiz'>
+            <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Quiz</span>
+          </a>
+        </div>
       </div>
-      {{/each}}
-    </div>
-    {{else}}
-    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 
-                 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      <p class="text-gray-700 font-medium text-lg">No Question yet</p>
-      <p class="text-gray-500 text-sm mt-1">
-        Click <span class="font-semibold">Add Question</span> to create a new one.
-      </p>
-    </div>
-    {{/if}}
 
-    <!-- Add Question -->
-    <a href="/question/formCreate/{{quiz.id}}" 
-       class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-12 w-12 text-gray-400 mb-3" 
-           fill="none" viewBox="0 0 24 24" 
-           stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-      <span class="text-gray-700 font-medium">Add Question</span>
-    </a>
-  </div>
+    </div>
 
-  <div x-show="tab === 'answer'">
-    {{#if scores.length}}
-    <div class="overflow-hidden bg-white rounded-xl shadow-lg">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">User</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Score</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          {{#each scores}}
-          <tr>
-            <td class="px-6 py-4 text-gray-900 font-medium">{{this.user.username}}</td>
-            <td class="px-6 py-4">
-              <span class="px-3 py-1 rounded-lg text-sm font-semibold
-                {{#if (gte this.score ../quiz.minScore)}}
-                  bg-green-100 text-green-700
-                {{else}}
-                  bg-red-100 text-red-700
-                {{/if}}">
-                {{this.score}}
-              </span>
-            </td>
-          </tr>
+    {{!-- Table Detail Quiz --}}
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="quizTabData()">
+
+      {{!-- Tab Bar --}}
+      <div x-data="{ tabs: [
+        {name:'question',label:'Question',url:''},
+        {name:'answer',label:'Answer',url:''}
+      ] }">
+        {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="noop"}}
+      </div>
+
+      {{!-- Question Tab --}}
+      <div x-show="tab === 'question'" class='w-full'>
+        {{#if questions.length}}
+        <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
+          {{#each questions}}
+          <div x-data="{ open: false }" class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-col gap-0 p-[8px_14px] justify-start items-start bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
+
+            {{!-- Question Header --}}
+            <button @click="open = !open" class='w-full flex flex-row justify-between items-center py-[6px]'>
+              <span class='text-[14px]/[normal] text-[#003060] font-montserrat font-semibold text-left flex-1 min-w-0'>{{this.questionText}}</span>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' :class="open ? 'rotate-180' : ''" class='w-[16px] h-[16px] shrink-0 transition-transform ml-[8px]'><polyline points='6 9 12 15 18 9'/></svg>
+            </button>
+
+            {{!-- Question Body (collapsed) --}}
+            <div x-show="open" x-collapse class='w-full pt-[8px] pb-[4px] flex flex-col gap-[12px]'>
+
+              {{#if this.image}}
+              <div class='flex justify-center'>
+                <img src="{{this.image}}" alt="Question image" class='max-h-64 rounded-lg shadow border object-contain' />
+              </div>
+              {{/if}}
+
+              {{!-- Answers --}}
+              <div class='flex flex-col gap-[6px] w-full'>
+                {{#each this.answers}}
+                <div class='box-border w-full shrink-0 flex flex-row gap-[8px] p-[8px_12px] justify-start items-center rounded-[8px]
+                  {{#if this.isCorrect}}bg-[#F0FDF4] [outline:1px_solid_#BBF7D0]{{else}}bg-[#F5F5F5] [outline:1px_solid_#E5E5E5]{{/if}}'>
+                  <span class='text-[14px]/[normal] font-inter font-normal flex-1 min-w-0
+                    {{#if this.isCorrect}}text-[#15803D]{{else}}text-[#404040]{{/if}}'>{{this.answer}}</span>
+                  {{#if this.isCorrect}}
+                  <span class='box-border flex flex-row p-[2px_8px] justify-center items-center bg-[#DCFCE7] rounded-[16px]'>
+                    <span class='text-[12px]/[normal] text-[#15803D] font-inter font-medium whitespace-nowrap'>Correct</span>
+                  </span>
+                  {{/if}}
+                </div>
+                {{/each}}
+              </div>
+
+              {{!-- Question Actions --}}
+              <div class='flex flex-row gap-[8px] w-full pt-[4px]'>
+                <a href='/question/FormEdit/{{this.id}}'
+                  class='box-border shrink-0 h-[36px] flex flex-row gap-[6px] p-[6px_14px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] hover:bg-[#F5F5F5] transition-colors'>
+                  <span class='text-[14px]/[normal] text-[#404040] font-inter font-medium whitespace-nowrap'>Edit</span>
+                </a>
+                <form action='/question/{{this.id}}/{{../quiz.id}}?_method=DELETE' method='POST'>
+                  <button type='button' @click='confirmQuestionDelete($el)'
+                    class='box-border h-[36px] flex flex-row gap-[6px] p-[6px_14px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] hover:bg-[#FEE2E2] transition-colors'>
+                    <span class='text-[14px]/[normal] text-[#EF4444] font-inter font-medium whitespace-nowrap'>Delete</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
           {{/each}}
-        </tbody>
-      </table>
-    </div>
-    {{else}}
-    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 
-                 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      <p class="text-gray-700 font-medium text-lg">No scores yet</p>
-      <p class="text-gray-500 text-sm mt-1">
-        No user has completed this quiz yet.
-      </p>
-    </div>
-    {{/if}}
-  </div>
+        </div>
+        {{else}}
+        <div class='w-full h-[72px] flex items-center justify-center mb-[10px]'>
+          <span class='font-inter text-sm text-[#A3A3A3]'>No question yet. Click Add Question to create one.</span>
+        </div>
+        {{/if}}
 
+        {{!-- Add Question --}}
+        <a href='/question/formCreate/{{quiz.id}}'
+          class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
+          <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Question</span>
+        </a>
+      </div>
+
+      {{!-- Answer Tab --}}
+      <div x-show="tab === 'answer'" class='w-full'>
+        {{#if scores.length}}
+        <div class='flex flex-col gap-[10px] w-full'>
+          {{#each scores}}
+          <div class='box-border w-full shrink-0 h-[56px] flex flex-row gap-[12px] p-[12px_16px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px]'>
+            <div class='flex-1 min-w-0'>
+              <span class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>{{this.user.username}}</span>
+            </div>
+            <div class='box-border flex flex-row p-[2px_10px] justify-center items-center rounded-[16px]
+              {{#if (gte this.score ../quiz.minScore)}}bg-[#F0FDF4]{{else}}bg-[#FEF2F2]{{/if}}'>
+              <span class='text-[14px]/[normal] font-inter font-semibold whitespace-nowrap
+                {{#if (gte this.score ../quiz.minScore)}}text-[#15803D]{{else}}text-[#DC2626]{{/if}}'
+                x-text='{{this.score}}'></span>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        {{else}}
+        <div class='w-full h-[72px] flex items-center justify-center'>
+          <span class='font-inter text-sm text-[#A3A3A3]'>No scores yet. No user has completed this quiz.</span>
+        </div>
+        {{/if}}
+      </div>
+
+    </div>
+
+  </div>
 </div>
-</div>
+
+<script>
+function confirmQuizDetailDelete(el) {
+  Swal.fire({
+    title: 'Delete Quiz',
+    text: 'Are you sure you want to delete this quiz? Questions and scores will be removed too.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#C80606',
+    cancelButtonColor: '#525252',
+    confirmButtonText: 'Delete'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      el.closest('form').submit();
+    }
+  });
+}
+
+function confirmQuestionDelete(el) {
+  Swal.fire({
+    title: 'Delete Question',
+    text: 'Are you sure you want to delete this question?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#C80606',
+    cancelButtonColor: '#525252',
+    confirmButtonText: 'Delete'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      el.closest('form').submit();
+    }
+  });
+}
+
+function quizTabData() {
+  return {
+    tab: 'question',
+    noop() {}
+  }
+}
+</script>

@@ -26,7 +26,11 @@ export interface LearningScopeRule {
   method: 'GET' | 'POST' | 'ALL';
   /** Regex path. Group names (sessionId/quizId/weeksId/courseId/logbookId/id) dipakai untuk extract id. */
   match: RegExp;
-  resolve: (ids: Record<string, string>, req: Request, ctx: ScopeContext) => Promise<ScopeResolution | null>;
+  resolve: (
+    ids: Record<string, string>,
+    req: Request,
+    ctx: ScopeContext,
+  ) => Promise<ScopeResolution | null>;
 }
 
 async function resolveSession(
@@ -158,13 +162,15 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     name: 'attendance-create',
     method: 'POST',
     match: /^\/attendance\/[^/]+\/[^/]+\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) => (ids.courseId ? { courseId: ids.courseId, label: 'Absensi' } : null),
+    resolve: async (ids) =>
+      ids.courseId ? { courseId: ids.courseId, label: 'Absensi' } : null,
   },
   {
     name: 'questions-quiz',
     method: 'GET',
     match: /^\/question\/quiz\/[^/]+\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) => (ids.courseId ? { courseId: ids.courseId, label: 'Quiz' } : null),
+    resolve: async (ids) =>
+      ids.courseId ? { courseId: ids.courseId, label: 'Quiz' } : null,
   },
   {
     name: 'program-session',
@@ -202,13 +208,15 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     name: 'logbook-user',
     method: 'GET',
     match: /^\/logbooks\/user\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) => (ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null),
+    resolve: async (ids) =>
+      ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null,
   },
   {
     name: 'logbook-formCreate',
     method: 'GET',
     match: /^\/logbooks\/formCreate\/[^/]+\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) => (ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null),
+    resolve: async (ids) =>
+      ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null,
   },
   {
     name: 'logbook-detail',
@@ -219,7 +227,10 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
 ];
 
 /** Mengembalikan rule scope yang cocok dengan method + path, atau null jika di luar scope. */
-export function matchLearningScope(method: string, path: string): { rule: LearningScopeRule; ids: Record<string, string> } | null {
+export function matchLearningScope(
+  method: string,
+  path: string,
+): { rule: LearningScopeRule; ids: Record<string, string> } | null {
   for (const rule of LEARNING_SCOPE) {
     const okMethod = rule.method === 'ALL' || rule.method === method;
     if (!okMethod) continue;

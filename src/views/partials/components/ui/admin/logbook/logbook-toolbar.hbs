@@ -1,0 +1,32 @@
+{{!--
+  Component: Logbook Toolbar (Admin) — molecule, prefix logbook-
+  Path: components/ui/admin/logbook/logbook-toolbar.hbs
+  Dipakai: {{> components/ui/admin/logbook/logbook-toolbar}} di dalam scope logbookData() pada admin/session/detail → tab logbook.
+  Props: {{sessionId}} (string, session.id untuk href Add Logbook)
+
+  Pencil (Container - Logbook Review → Frame 2147229616):
+  row h44 gap12: Input w684 h44 white r8 stroke D4D4D4 p10 14 gap8 (placeholder Search logbook... 16 #A3A3A3 + search 20 #A3A3A3)
+  _Button base Add w180 h44 #003060 r8 text Add Logbook white 16/600
+  _Button base Export w122 h44 #16A34A r8 stroke 86EFAC icon download 20 white text Export white 16/600
+  Reuse: tidak ada komponen existing yang persis (search-toolbar generik beda lebar/warna), jadi dibuat terpisah.
+  BE: search → filteredData (Alpine); Add → GET /logbooks/create/:sessionId; Export → exportExcel() (SheetJS).
+--}}
+<div class='box-border w-full h-[44px] shrink-0 flex flex-row gap-[12px] justify-start items-center'>
+  {{!-- Search --}}
+  <div class='box-border flex-1 min-w-0 max-w-[684px] h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+    <input type='text' placeholder='Search logbook...' x-model='searchInput' @input='search = searchInput; pageNumber=0'
+      class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
+  </div>
+  {{!-- Add Logbook --}}
+  <a href='/logbooks/create/{{sessionId}}'
+    class='box-border w-[180px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#002040] transition-colors'>
+    <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Add Logbook</span>
+  </a>
+  {{!-- Export --}}
+  <button type='button' @click='exportExcel()'
+    class='box-border w-[122px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#16A34A] border border-[#86EFAC] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#15803D] transition-colors'>
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/><polyline points='7 10 12 15 17 10'/><line x1='12' x2='12' y1='15' y2='3'/></svg>
+    <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Export</span>
+  </button>
+</div>

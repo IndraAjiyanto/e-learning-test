@@ -1,0 +1,39 @@
+{{!--
+  Component: Assignment Row (Admin) — molecule, prefix assignment-
+  Path: components/ui/admin/assignment/assignment-row.hbs
+  Dipakai: {{> components/ui/admin/assignment/assignment-row}} di dalam x-for
+           `assigment` pada partials/session/tugas_tab.hbs.
+  Alpine scope (parent): `assigment` { id, title }, `session` id server-side.
+
+  Pencil (Container - Session Assignment → Button <title>):
+  row h68 white r8 stroke #D9D9D9 p8 14 gap6; judul Montserrat 16/600 #003060;
+  delete 44x44 outline #D9D9D9 (trash-2 16 #C80606); Detail w81 h44 outline
+  #003060 shadow teks #003060 Inter 16/600.
+  BE: Detail GET /answer-assigment/:id (halaman review jawaban); delete POST
+  /task/:id/:sessionId?_method=DELETE + confirmDelete (perilaku lama).
+  Catatan: desain tidak menampilkan tombol edit — hanya delete + Detail.
+--}}
+<div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
+
+  {{!-- Title --}}
+  <div class='text-[16px]/[normal] flex-1 min-w-0 text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='assigment.title' :title='assigment.title'></div>
+
+  {{!-- Delete --}}
+  <form :action="'/task/' + assigment.id + '/{{session.id}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
+    <button type='button'
+      onclick='confirmDelete(this)'
+      class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
+      title='Delete Assignment' aria-label='Delete Assignment'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+        <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+      </svg>
+    </button>
+  </form>
+
+  {{!-- Detail --}}
+  <a :href="'/answer-assigment/' + assigment.id"
+    class='box-border w-[81px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'
+    title='Assignment Detail' aria-label='Assignment Detail'>
+    <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap'>Detail</span>
+  </a>
+</div>

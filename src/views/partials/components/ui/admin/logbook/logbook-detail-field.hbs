@@ -1,0 +1,26 @@
+{{!--
+  Component: Logbook Detail Field (Admin) — atomic, prefix logbook-
+  Path: components/ui/admin/logbook/logbook-detail-field.hbs
+  Dipakai: {{> components/ui/admin/logbook/logbook-detail-field label='Full Name:' valueVar='selectedLogbook?.user?.username'}}
+  Props: {{label}} (static, mis. 'Full Name:'), {{valueVar}} (Alpine expression),
+         {{isLink}} (optional bool — true untuk LinkedIn, render <a> #2563EB + fallback "-")
+  Pencil (Container - User Property → User Details Container):
+  vertical gap4; label Montserrat 14/500 #737373 lh1.62; value Montserrat 14/500 #171717.
+  Clean-code: SRP — satu baris label/value; dipakai berulang di User Information
+  (Full Name/Email/LinkedIn) & Date & Time (Created/Time).
+--}}
+<div class='w-full flex flex-col gap-[4px] justify-start items-start'>
+  <div class='text-[14px]/[1.62] w-full text-[#737373] font-montserrat font-medium text-left'>{{label}}</div>
+  {{#if isLink}}
+    <template x-if='{{valueVar}}'>
+      <a :href='{{valueVar}}' target='_blank' rel='noopener noreferrer'
+        class='text-[14px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#2563EB] font-montserrat font-medium text-left hover:underline'
+        x-text='{{valueVar}}' :title='{{valueVar}}'></a>
+    </template>
+    <template x-if='!({{valueVar}})'>
+      <div class='text-[14px]/[normal] w-full text-[#171717] font-montserrat font-medium text-left'>-</div>
+    </template>
+  {{else}}
+    <div class='text-[14px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-montserrat font-medium text-left' x-text='{{valueVar}} || "-"'></div>
+  {{/if}}
+</div>

@@ -143,7 +143,7 @@ export class CoursesController {
   ) {
     try {
       await this.coursesService.addUserToCourse(userId, courseId);
-      req.flash('success', 'user successfuly add to program');
+      flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'user failed add to program');
@@ -715,7 +715,7 @@ export class CoursesController {
       }
       if (isUserInKelas) {
         // res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
-          const mingguUpdated = await this.coursesService.findWeeks(
+        const mingguUpdated = await this.coursesService.findWeeks(
           id,
           req.user.id,
         );
@@ -968,7 +968,7 @@ export class CoursesController {
   ) {
     try {
       await this.coursesService.removeCourseUser(userId, courseId);
-      req.flash('success', 'User successfully removed from program');
+      flashToast(req, 'User Removed', 'User successfully removed from program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove user from program');

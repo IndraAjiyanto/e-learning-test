@@ -1,0 +1,22 @@
+{{!--
+  Component: Mentor Avatar (Admin) — atomic, prefix mentor-
+  Path: components/ui/admin/program/mentor-avatar.hbs
+  Dipakai: {{> components/ui/admin/program/mentor-avatar}} di dalam x-for `mentor` (Mentors { profile, name })
+  Alpine scope: `mentor.profile`, `mentor.name`
+
+  Pencil: 32x32, bg #F9F5FF, radius full, lucide user 20px #7F56D9 (sama user-avatar).
+  Dibuat terpisah karena entity Mentors memakai `name` (bukan `username`) —
+  pemakaian user-avatar di sini akan menghasilkan alt yang salah.
+  Foto profil dipakai bila ada (BE: mentor.profile), fallback ikon user.
+--}}
+<template x-if='mentor.profile'>
+  <img :src='mentor.profile' :alt='mentor.name' class='box-border w-[32px] shrink-0 h-[32px] rounded-full object-cover' />
+</template>
+<template x-if='!mentor.profile'>
+  <div class='box-border w-[32px] shrink-0 h-[32px] flex flex-row gap-0 justify-center items-center bg-[#F9F5FF] rounded-full overflow-hidden'>
+    <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#7F56D9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0' aria-hidden='true'>
+      <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' />
+      <circle cx='12' cy='7' r='4' />
+    </svg>
+  </div>
+</template>

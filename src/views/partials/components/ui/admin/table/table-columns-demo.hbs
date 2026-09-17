@@ -1,0 +1,84 @@
+{{!--
+  Component: CSS Spec — Table Columns Demo (Admin) — molecule/spec
+  Path: components/ui/admin/table/table-columns-demo.hbs
+  Source: slicing.pen (CSS Spec — Table Columns Demo, id: R3FT5)
+
+  Spesifikasi Desain:
+  - Column - Confirm (140x116):
+      Header (140x44): bg #FAFAFA, border-bottom 1px #E5E5E5, p12 24, text 'Confirm' Inter 12/500 #525252
+      Cell (140x72): bg #FFFFFF, border-bottom 1px #E5E5E5, p16 24, gap 10, align-center
+        Approve: 40x40, rounded-full, bg #BBF7D0, shadow-xs, lucide check #16A34A (20x20)
+        Reject: 40x40, rounded-full, bg #FECACA, shadow-xs, lucide x #DC2626 (20x20)
+  - Column - Details (227x116):
+      Header (227x44): bg #FAFAFA, border-bottom 1px #E5E5E5, p12 24, text 'Details' Inter 12/500 #525252
+      Cell (227x72): bg #FFFFFF, border-bottom 1px #E5E5E5, p16, align-center
+        Inner (195): gap 4, align-center
+        Edit: 40x40, rounded 8, bg #FFFFFF, hover bg #F5F5F5, lucide square-pen #525252 (20x20)
+        Delete: 40x40, rounded 8, bg #FFFFFF, hover bg #FEF2F2, lucide trash-2 #DC2626 (20x20)
+        View: 75x44, rounded 8, bg #003060, outline 1px #003060, shadow-xs, Inter 16/600 white
+--}}
+<div class='box-border w-fit flex flex-col gap-[12px] justify-start items-start bg-transparent font-inter'>
+  {{!-- Columns Row --}}
+  <div class='box-border flex flex-row gap-[16px] justify-start items-start [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] overflow-hidden bg-[#FFFFFF] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
+
+    {{!-- Column - Confirm (140x116) --}}
+    <div class='box-border w-[140px] shrink-0 flex flex-col justify-start items-start [border-width:0px_1px_0px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+      {{!-- Header --}}
+      <div class='box-border w-[140px] h-[44px] flex flex-row p-[12px_24px] justify-center items-center bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+        <span class='text-[12px]/[1.5] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>Confirm</span>
+      </div>
+      {{!-- Body Cell --}}
+      <div class='box-border w-[140px] h-[72px] flex flex-row gap-[10px] p-[16px_24px] justify-center items-center bg-[#FFFFFF]'>
+        {{!-- Button Approve --}}
+        <button type='button'
+          class='box-border w-[40px] h-[40px] shrink-0 flex justify-center items-center bg-[#BBF7D0] rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#A7F3D0] transition-colors cursor-pointer'
+          title='Approve' aria-label='Approve'>
+          <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
+        </button>
+        {{!-- Button Reject --}}
+        <button type='button'
+          class='box-border w-[40px] h-[40px] shrink-0 flex justify-center items-center bg-[#FECACA] rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FCA5A5] transition-colors cursor-pointer'
+          title='Reject' aria-label='Reject'>
+          <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
+        </button>
+      </div>
+    </div>
+
+    {{!-- Column - Details (227x116) --}}
+    <div class='box-border w-[227px] shrink-0 flex flex-col justify-start items-start'>
+      {{!-- Header --}}
+      <div class='box-border w-[227px] h-[44px] flex flex-row p-[12px_24px] justify-center items-center bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+        <span class='text-[12px]/[1.5] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>Details</span>
+      </div>
+      {{!-- Body Cell --}}
+      <div class='box-border w-[227px] h-[72px] flex flex-row p-[16px] justify-center items-center bg-[#FFFFFF]'>
+        <div class='box-border w-[195px] h-[44px] flex flex-row gap-[4px] justify-center items-center'>
+          {{!-- Button Edit --}}
+          <button type='button'
+            class='box-border w-[40px] h-[40px] shrink-0 flex justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#F5F5F5] transition-colors cursor-pointer'
+            title='Edit' aria-label='Edit'>
+            <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/><path d='m15 5 4 4'/></svg>
+          </button>
+          {{!-- Button Delete --}}
+          <button type='button'
+            class='box-border w-[40px] h-[40px] shrink-0 flex justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#FEF2F2] transition-colors cursor-pointer'
+            title='Delete' aria-label='Delete'>
+            <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/></svg>
+          </button>
+          {{!-- Button View --}}
+          <button type='button'
+            class='box-border w-[75px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#002040] transition-colors cursor-pointer'
+            title='View' aria-label='View'>
+            <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>View</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {{!-- Caption --}}
+  <p class='text-[10px]/[1.4] text-[#737373] font-inter font-normal max-w-[383px]'>
+    Left: 140w Confirm (approve/reject) • Right: 227w Details (edit/trash/view) — padding, gaps & colors per CSS spec. Neutral/50 #FAFAFA header, Neutral/200 #E5E5E5 borders, Inter 12 Medium headers, shadows xs.
+  </p>
+</div>

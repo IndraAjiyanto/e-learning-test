@@ -1,18 +1,41 @@
-  <div class="bg-white rounded-xl shadow-lg p-6">
-    
-    <div x-data="materiData()" x-init="init()" class="space-y-6">
+{{!--
+  Partial: Session Materi Tab (Admin) — Container - Session Materi (slicing.pen dFE1o)
+  Path: partials/session/materi_tab.hbs
+  Dipakai: {{> session/materi_tab}} di admin/session/detail.hbs (tab materi).
+  Composes: sub_partials/session/materi_tab/{pdf,video,ppt} (pakai
+            material/material-row: title + edit/delete/Detail).
+  Design: sub-tab h44 tiga kolom — aktif fill #003060 teks white, nonaktif
+  white outline #003060 teks #003060 (Inter 16/600); rows h68; Add Material
+  full-width h48 outline #3B82F6.
+  BE: toggleFetchMateri → GET /session/{pdf,video,ppt}/:sessionId (JSON
+      Material[]). Preview modal via event open-materi-modal (perilaku lama).
+--}}
+  <div class='w-full'>
+    {{!-- Scope Alpine (tabMateri, dataMateri, toggleFetchMateri) berasal dari
+         x-data="materiData()" pembungkus di admin/session/detail.hbs — partial
+         ini scope-less agar tidak double-init. --}}
 
-      <div class="flex space-x-4">
-        <button @click="toggleFetchMateri('/session/pdf/{{session.id}}', 'pdf')" 
-                :class="tabMateri === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-                class="px-4 py-2 rounded-lg shadow transition">PDF</button>
-        <button @click="toggleFetchMateri('/session/video/{{session.id}}', 'video')" 
-                :class="tabMateri === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-                class="px-4 py-2 rounded-lg shadow transition">Video</button>
-        <button @click="toggleFetchMateri('/session/ppt/{{session.id}}', 'ppt')" 
-                :class="tabMateri === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-                class="px-4 py-2 rounded-lg shadow transition">PPT</button>
-      </div>
+    {{!-- Sub-tab Materi / Video / Document --}}
+    <div class='flex flex-row gap-[12px] w-full mb-[12px]'>
+      <button type='button' @click="toggleFetchMateri('/session/pdf/{{session.id}}', 'pdf')"
+        :class="tabMateri === 'pdf' ? 'bg-[#003060] [outline:1px_solid_#003060]' : 'bg-[#FFFFFF] [outline:1px_solid_#003060] hover:bg-[#F0F7FF]'"
+        class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center rounded-[8px] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors'>
+        <span class='text-[16px]/[normal] font-inter font-semibold whitespace-nowrap'
+          :class="tabMateri === 'pdf' ? 'text-[#FFFFFF]' : 'text-[#003060]'">Materi</span>
+      </button>
+      <button type='button' @click="toggleFetchMateri('/session/video/{{session.id}}', 'video')"
+        :class="tabMateri === 'video' ? 'bg-[#003060] [outline:1px_solid_#003060]' : 'bg-[#FFFFFF] [outline:1px_solid_#003060] hover:bg-[#F0F7FF]'"
+        class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center rounded-[8px] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors'>
+        <span class='text-[16px]/[normal] font-inter font-semibold whitespace-nowrap'
+          :class="tabMateri === 'video' ? 'text-[#FFFFFF]' : 'text-[#003060]'">Video</span>
+      </button>
+      <button type='button' @click="toggleFetchMateri('/session/ppt/{{session.id}}', 'ppt')"
+        :class="tabMateri === 'ppt' ? 'bg-[#003060] [outline:1px_solid_#003060]' : 'bg-[#FFFFFF] [outline:1px_solid_#003060] hover:bg-[#F0F7FF]'"
+        class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center rounded-[8px] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors'>
+        <span class='text-[16px]/[normal] font-inter font-semibold whitespace-nowrap'
+          :class="tabMateri === 'ppt' ? 'text-[#FFFFFF]' : 'text-[#003060]'">Document</span>
+      </button>
+    </div>
 
 {{> sub_partials/session/materi_tab/pdf}}
 
@@ -20,52 +43,51 @@
 
 {{> sub_partials/session/materi_tab/ppt}}
 
-    </div>
   </div>
 
-<div x-data="materiModal()" 
+<div x-data="materiModal()"
      @open-materi-modal.window="openModal($event.detail)"
      x-show="isOpen"
      x-cloak
      class="fixed inset-0 z-50 overflow-y-auto"
      style="display: none;">
-  
+
   <!-- Backdrop -->
   <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity z-40"
        @click="closeModal()"></div>
-  
+
   <!-- Modal Content -->
   <div class="relative flex items-center justify-center min-h-screen p-4 z-50">
     <div class="relative bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
          @click.stop>
-      
-      <!-- Header -->
-      <div class="flex items-center justify-between p-6 border-b">
+
+      <!-- Header (brand blue, sesuai frame header biru #003060) -->
+      <div class="flex items-center justify-between p-6 bg-[#003060]">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900" x-text="materi.title"></h2>
-          <p class="text-sm text-gray-600 mt-1">
+          <h2 class="text-2xl font-bold text-white font-montserrat" x-text="materi.title"></h2>
+          <p class="text-sm text-white/70 mt-1 font-inter">
             File Type: <span class="uppercase font-semibold" x-text="materi.fileType"></span>
           </p>
         </div>
-        <button @click="closeModal()" 
-                class="p-2 hover:bg-gray-100 rounded-lg transition">
-          <svg xmlns="http://www.w3.org/2000/svg" 
-               class="h-6 w-6 text-gray-600" 
-               fill="none" viewBox="0 0 24 24" 
+        <button @click="closeModal()"
+                class="p-2 hover:bg-white/10 rounded-lg transition">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-6 w-6 text-white"
+               fill="none" viewBox="0 0 24 24"
                stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-      
+
       <!-- Content -->
       <div class="p-6 overflow-y-auto bg-white" style="max-height: calc(90vh - 180px);">
-        
+
         <!-- PDF Viewer -->
         <template x-if="materi.fileType === 'pdf'">
           <div class="w-full h-[600px] bg-white">
-            <iframe :src="materi.file" 
+            <iframe :src="materi.file"
             type="application/pdf"
                     class="w-full h-full border rounded-lg bg-white"
                     frameborder="0">
@@ -74,12 +96,12 @@
         </template>
 
       </div>
-      
+
       <!-- Footer -->
       <div class="flex items-center justify-between p-6 border-t bg-gray-50">
- 
+
       </div>
-      
+
     </div>
   </div>
 </div>
@@ -95,37 +117,37 @@ function materiModal() {
       fileType: '',
       file: '',
     },
-    
+
     get totalSlides() {
       return this.materi.slides ? this.materi.slides.length : 0;
     },
-    
+
     openModal(data) {
-      
+
       this.materi = data;
-      
+
       // Pastikan slides adalah array
       if (data.slides && !Array.isArray(data.slides)) {
         this.materi.slides = [];
       }
-      
+
       this.currentSlide = 0;
       this.isOpen = true;
       document.body.style.overflow = 'hidden';
-    
+
     },
-    
+
     closeModal() {
       this.isOpen = false;
       document.body.style.overflow = 'auto';
     },
-    
+
     nextSlide() {
       if (this.currentSlide < this.totalSlides - 1) {
         this.currentSlide++;
       }
     },
-    
+
     prevSlide() {
       if (this.currentSlide > 0) {
         this.currentSlide--;
@@ -155,7 +177,7 @@ function materiData() {
       try{
       const res = await fetch(url);
       this.dataMateri = await res.json();
-  
+
       localStorage.setItem('dataMateri', JSON.stringify(this.dataMateri));
       } catch (error) {
         console.error('❌ Error:', error);

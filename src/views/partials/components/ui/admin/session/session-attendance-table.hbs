@@ -1,0 +1,144 @@
+{{!--
+  Component: Session Attendance Table (Admin) — organism, prefix session-
+  Path: components/ui/admin/session/session-attendance-table.hbs
+  Dipakai: {{> components/ui/admin/session/session-attendance-table}} di dalam
+           scope absenData() pada admin/session/detail.hbs (tab attendance).
+  Server scope: `session` (untuk URL create attendance).
+  Composes: program/user-avatar (userObj peserta), session/session-status-badge,
+            button/primary-button (Add Attendance w162).
+
+  Pencil (Container - Session Detail → Logbook Mentor in Detail program):
+  card white r12 stroke #E5E5E5 shadow, header h44 bg #FAFAFA Inter 12/500
+  #525252 p12 24, row h72 Inter 14 p16 24 + border-bottom, avatar 32 bg
+  #F9F5FF + user icon 20 #7F56D9, nama Inter 14/600 #404040, email Inter 12
+  #525252, badge pill r16 dot 8 Inter 12/500, action edit square-pen 20
+  #525252 + delete trash-2 20 #C80606 (40x40 r8).
+  Kolom: Name(662: avatar + username + email) LinkedIn(200: link #3B82F6,
+  fallback "-" — entity User TIDAK punya field linkedin, kolom tampil "-"
+  sampai BE menyediakannya) Status(200) Action(148: edit #525252 + delete
+  #C80606) — total min-w 1210px.
+  Perilaku dipertahankan dari partials/session/absen_tab.hbs: search
+  (searchInput/search/pageNumber), edit GET /attendance/formEdit/:id,
+  delete POST /attendance/:id/:sessionId?_method=DELETE + confirmDelete,
+  pagination pageNumber/size.
+  BE: GET /session/attendance/:sessionId → User[] + absent[] (Attendance).
+--}}
+<style>
+  .session-attendance-scroll::-webkit-scrollbar { height: 6px; }
+  .session-attendance-scroll::-webkit-scrollbar-track { background: transparent; }
+  .session-attendance-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 999px; }
+  .session-attendance-scroll::-webkit-scrollbar-thumb:hover { background: #A3A3A3; }
+</style>
+
+{{!-- Toolbar: search + Add Attendance --}}
+<div class='flex flex-row gap-[12px] w-full items-center'>
+  <div class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
+    <input type='text' placeholder='Search name or email...'
+      x-model='searchInput' @input='search = searchInput; pageNumber=0'
+      class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+  </div>
+  {{> components/ui/admin/button/primary-button text='Add Attendance' href=(concat '/attendance/create/' session.id) width='162'}}
+</div>
+
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] overflow-hidden shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
+
+  {{!-- Table --}}
+  <div x-show='filteredData && filteredData.length > 0' class='session-attendance-scroll w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
+
+    {{!-- Header --}}
+    <div class='w-full min-w-[1210px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+      <div class='box-border w-[662px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Name</div></div>
+      <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>LinkedIn</div></div>
+      <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Status</div></div>
+      <div class='box-border w-[148px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-center items-center'><div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>Action</div></div>
+    </div>
+
+    {{!-- Body --}}
+    <template x-for='(peserta, index) in filteredData' :key='peserta.id'>
+      <div class='w-full min-w-[1210px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+
+        {{!-- Name: avatar + username + email --}}
+        <div class='box-border w-[662px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <div class='box-border flex-1 min-w-0 flex flex-row gap-[10px] justify-start items-center'>
+            {{> components/ui/admin/program/user-avatar userObj='peserta'}}
+            <div class='flex-1 min-w-0 flex flex-col gap-0 justify-center items-start'>
+              <div class='text-[14px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#404040] font-inter font-semibold text-left' x-text="peserta.username ?? '-'" :title="peserta.username ?? ''"></div>
+              <div class='text-[12px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="peserta.email ?? '-'" :title="peserta.email ?? ''"></div>
+            </div>
+          </div>
+        </div>
+
+        {{!-- LinkedIn --}}
+        <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
+          <template x-if='peserta.linkedin'>
+            <a :href='peserta.linkedin' target='_blank' rel='noopener noreferrer'
+              class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#3B82F6] font-inter font-normal text-left hover:underline'
+              x-text='peserta.linkedin' :title='peserta.linkedin'></a>
+          </template>
+          <template x-if='!peserta.linkedin'>
+            <div class='text-[14px]/[normal] flex-1 text-[#525252] font-inter font-normal text-left'>-</div>
+          </template>
+        </div>
+
+        {{!-- Status --}}
+        <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-[4px] p-[16px_24px] justify-start items-center flex-wrap'>
+          <template x-for='pesertaAbsen in (peserta.attendance ?? peserta.absent ?? [])' :key='pesertaAbsen.id'>
+            {{> components/ui/admin/session/session-status-badge statusVar='pesertaAbsen.status'}}
+          </template>
+        </div>
+
+        {{!-- Action: edit + delete --}}
+        <div class='box-border w-[148px] shrink-0 h-full flex flex-row gap-[4px] p-[16px] justify-center items-center'>
+          <template x-for='pesertaAbsen in (peserta.attendance ?? peserta.absent ?? [])' :key='pesertaAbsen.id'>
+            <div class='flex flex-row gap-[4px] justify-center items-center'>
+              <form :action="'/attendance/formEdit/' + pesertaAbsen.id" method='get'>
+                <button type='submit'
+                  class='box-border w-[40px] h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#f5f5f5] transition-colors'
+                  title='Edit' aria-label='Edit'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+                    <path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/>
+                    <path d='m15 5 4 4'/>
+                  </svg>
+                </button>
+              </form>
+              <form :action="'/attendance/' + pesertaAbsen.id + '/{{session.id}}?_method=DELETE'" method='post'>
+                <button type='submit'
+                  onclick='confirmDelete(this)'
+                  class='box-border w-[40px] h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+                  title='Delete' aria-label='Delete'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+                    <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                  </svg>
+                </button>
+              </form>
+            </div>
+          </template>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  {{!-- Empty state --}}
+  <div x-show='!filteredData || filteredData.length === 0' class='w-full h-[72px] flex items-center justify-center'>
+    <span class='font-inter text-sm text-[#A3A3A3]'>No attendance found.</span>
+  </div>
+
+  {{!-- Pagination (perilaku lama: pageNumber/size) --}}
+  <div class='w-full flex justify-center gap-2 items-center py-4' x-show='pageCount() > 1'>
+    <button @click='prevPage' :disabled='pageNumber==0'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button @click='viewPage(index)'
+        class='px-3 py-1 rounded'
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text='index+1'></button>
+    </template>
+    <button @click='nextPage' :disabled='pageNumber >= pageCount()-1'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+  </div>
+
+</div>

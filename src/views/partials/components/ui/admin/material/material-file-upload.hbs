@@ -1,0 +1,56 @@
+{{!--
+  Component: Material File Upload (Admin) — molecule, prefix material-
+  Path: components/ui/admin/material/material-file-upload.hbs
+  Dipakai: {{> components/ui/admin/material/material-file-upload ...}} di
+           admin/materi/create.hbs cabang pdf (create + editMode = 2x).
+  Props: {{inputId}} (default 'file'), {{inputName}} (default 'file'),
+         {{accept}} (default '.pdf'), {{hint}} (default 'PDF file only! (max 10mb)'),
+         {{label}} (default 'Upload PDF File*' — isi 'Upload Assignment File*'
+         untuk form assignment),
+         {{required}} (optional — set true di create; edit boleh kosong),
+         {{currentFile}} (optional — URL file lama di editMode).
+  Alpine scope (parent): fileName, fileSize, hasFile, isValid, errorMessage,
+         maxSize, validateFile(file), clearFile(), $refs.fileInput.
+
+  Alasan komponen baru: picker file generik (non-gambar) belum ada di
+  components/ui/admin — photo-upload khusus gambar + preview; dipakai 2x.
+  Pencil (Container - Material Form (PDF) → Container Upload PDF File):
+  label Inter 14/500 #404040; dropzone h265 fill #F8F9FA r8 stroke #D9D9D9
+  p8 16 gap10; ikon file-text 40 #718096; teks Montserrat 16/500 #718096;
+  hint Montserrat 10/500 #ADB7C5.
+  BE: POST pdf = FileInterceptor('file') + ValidateFile (max 10MB, .pdf,
+  folder material/pdf). Edit: kosongkan = pertahankan file lama (perilaku lama).
+--}}
+<div class='flex flex-col gap-[8px] w-full'>
+  {{> components/ui/admin/form/form-label text=(default label 'Upload PDF File*')}}
+  {{#if currentFile}}
+  <p class='text-[12px]/[normal] font-inter text-[#525252]'>Current file: <a href='{{currentFile}}' target='_blank' rel='noopener noreferrer' class='text-[#3B82F6] hover:underline break-all'>{{currentFile}}</a> <span class='text-[#A3A3A3]'>(leave blank to keep the current file)</span></p>
+  {{/if}}
+  <input type='file' id='{{default inputId 'file'}}' name='{{default inputName 'file'}}' accept='{{default accept '.pdf'}}'
+    {{#if required}}required{{/if}}
+    x-ref='fileInput' class='hidden' @change='validateFile($event.target.files[0])' />
+  <label for='{{default inputId 'file'}}'
+    class='box-border w-full h-[265px] flex flex-col justify-center items-center p-[8px_16px] gap-[10px] bg-[#F8F9FA] border border-[#D9D9D9] rounded-[8px] cursor-pointer transition-colors hover:bg-[#EFF3F6] overflow-hidden'>
+    <template x-if='!hasFile'>
+      <div class='flex flex-col items-center gap-[10px]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4'/><path d='M10 9H8'/><path d='M16 13H8'/><path d='M16 17H8'/></svg>
+        <p class='text-[16px]/[1.25] font-montserrat font-medium text-[#718096] text-center'>Drag &amp; Drop your file here or click to browse</p>
+        <p class='text-[10px]/[12px] font-montserrat font-medium text-[#ADB7C5] text-center'>{{default hint 'PDF file only! (max 10mb)'}}</p>
+      </div>
+    </template>
+    <template x-if='hasFile && isValid'>
+      <div class='flex flex-col items-center gap-[10px]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4'/><path d='m9 15 2 2 4-4'/></svg>
+        <p class='text-[12px]/[16px] font-montserrat font-medium text-[#16A34A] text-center break-all' x-text='fileName + " (" + (fileSize / 1024).toFixed(1) + "KB)"'></p>
+        <button type='button' @click.prevent='clearFile()' class='text-[12px]/[normal] font-inter font-medium text-[#DC2626] hover:text-[#B91C1C]'>Remove file</button>
+      </div>
+    </template>
+    <template x-if='hasFile && !isValid'>
+      <div class='flex flex-col items-center gap-[10px]'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+        <p class='text-[12px]/[16px] font-montserrat font-medium text-[#DC2626] text-center' x-text='errorMessage'></p>
+        <button type='button' @click.prevent='clearFile()' class='text-[12px]/[normal] font-inter font-medium text-[#DC2626] hover:text-[#B91C1C]'>Choose another file</button>
+      </div>
+    </template>
+  </label>
+</div>
