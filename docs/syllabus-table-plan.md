@@ -5,7 +5,13 @@
 > penuh), bukan menumpang `session`. Perlu dicocokkan dari sisi admin, super
 > admin, dan user.
 
-Dokumen ini rencana. Belum ada kode yang diubah.
+> **Melanjutkan pekerjaan ini?** Baca `docs/syllabus-HANDOVER.md` LEBIH DULU -
+> di sana ada keadaan terkini, rencana rinci S3-S7, jebakan yang sudah memakan
+> waktu, dan cara menjalankan pemeriksaannya. Satu hal yang perlu diketahui
+> sejak awal: antarmuka student untuk program SPL SENGAJA masih gelap sampai
+> S3 selesai.
+
+S0-S2 sudah jadi kode (lihat bagian 7). Bagian selebihnya masih rencana.
 
 ---
 
