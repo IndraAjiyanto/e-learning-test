@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Social } from 'src/entities/social.entity';
 import { Repository } from 'typeorm';
 import { FooterService } from 'src/footer/footer.service';
+import { validateSocial } from './social.rules';
 
 @Injectable()
 export class SocialService {
@@ -19,7 +20,9 @@ export class SocialService {
   }
 
   async create(createSocialDto: CreateSocialDto) {
-    const social = this.socialRepository.create(createSocialDto);
+    const social = this.socialRepository.create(
+      validateSocial(createSocialDto),
+    );
     await this.socialRepository.save(social);
     await this.clearFooterCache();
     return social;
@@ -47,7 +50,7 @@ export class SocialService {
     if (!social) {
       throw new NotFoundException('Social not found');
     }
-    Object.assign(social, updateSocialDto);
+    Object.assign(social, validateSocial({ ...social, ...updateSocialDto }));
     await this.socialRepository.save(social);
     await this.clearFooterCache();
     return social;
