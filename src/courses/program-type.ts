@@ -18,8 +18,8 @@ export interface ProgramCapabilities {
   unlockUnit: 'week' | 'session';
   /** Apakah admin boleh mematikan logbook pada program ini. */
   logbookConfigurable: boolean;
-  /** Di mana kuis dipasang: per minggu, atau satu untuk seluruh program. */
-  quizScope: 'week' | 'program';
+  /** Di mana kuis dipasang. */
+  quizScope: 'week' | 'syllabus';
   /** Kata yang dipakai di antarmuka untuk satu wadah urutan. */
   unitLabel: 'week' | 'syllabus';
   /**
@@ -51,10 +51,9 @@ const NON_BOOTCAMP: ProgramCapabilities = {
   structure: 'syllabus',
   unlockUnit: 'session',
   logbookConfigurable: true,
-  // Opsi A pada rencana: silabus adalah Session di dalam satu Weeks tersirat,
-  // jadi kuis tetap punya rumah tanpa perubahan skema - hanya artinya yang
-  // berubah, dari kuis minggu menjadi kuis program.
-  quizScope: 'program',
+  // Satu kuis per SILABUS (keputusan pemilik 2026-09-18). Sempat 'program'
+  // waktu pertanyaannya belum terjawab; lihat migrasi 1788900000000.
+  quizScope: 'syllabus',
   unitLabel: 'syllabus',
   pacing: 'self_paced',
   mentorship: 'none',

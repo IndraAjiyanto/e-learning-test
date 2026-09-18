@@ -175,12 +175,21 @@ Catatan: logbook sudah punya sakelar per program dan pada SPL biasanya mati,
 jadi tabel ini kemungkinan besar kosong untuk sementara. Itu konsekuensi yang
 diterima dari pemisahan penuh, bukan kelalaian.
 
-### 2.5 Kuis
+### 2.5 Kuis — DIPUTUSKAN: satu per silabus (2026-09-18)
 
-Tidak berubah. Dengan wadah `weeks` dihapus, kuis non-bootcamp kehilangan
-rumahnya (`quiz.weeksId`). Perlu `quiz.courseId` nullable supaya kuis bisa
-menempel langsung ke program — ini yang di rencana lama disebut
-`quizScope: 'program'` tetapi belum pernah dikerjakan. Lihat pertanyaan 3.
+> **Keputusan pemilik:** satu kuis per SILABUS, bukan per program.
+
+Dengan wadah `weeks` dihapus, kuis non-bootcamp kehilangan rumahnya
+(`quiz.weeksId`). Rumah barunya `quiz.syllabusId` — migrasi `1788900000000`.
+
+S0 sempat menambahkan `quiz.courseId` dengan asumsi satu kuis per program,
+karena pertanyaannya belum terjawab saat itu. Kolom itu sekarang **dibuang**,
+bukan dibiarkan menganggur: kolom mati yang tidak pernah dipakai adalah jebakan
+untuk orang berikutnya. Nol baris terdampak — tidak ada satu pun kuis
+non-bootcamp saat koreksi ini dikerjakan.
+
+`capabilitiesFor().quizScope` ikut berubah dari `'program'` menjadi
+`'syllabus'`.
 
 ---
 
@@ -297,9 +306,9 @@ Gerbang yang sudah ada dipakai di tiap tahap: `npx tsc --noEmit`,
 2. **Absensi pada SPL benar-benar dihapus?** Rencana ini menggantinya dengan
    `completedAt`. Kalau ternyata ada program SPL yang tetap ingin mencatat
    kehadiran (mis. ada sesi live sesekali), keputusannya berubah.
-3. **Kuis non-bootcamp: satu per program, atau satu per silabus?**
-   *Rekomendasi: satu per program* (`quiz.courseId`), sesuai `quizScope`
-   yang sudah tercatat di kapabilitas.
+3. ~~**Kuis non-bootcamp: satu per program, atau satu per silabus?**~~
+   **Terjawab 2026-09-18: satu per SILABUS.** Sudah dikerjakan - migrasi
+   `1788900000000`, `quiz.syllabusId` menggantikan `quiz.courseId`. Lihat 2.5.
 4. **Tab "Attendance" untuk SPL sebaiknya bernama apa?** Isinya jadi daftar
    penyelesaian silabus. *Usul: "Progress"*.
 5. **Istilah di antarmuka: "Silabus" atau "Syllabus"?** Kode dan nama tabel

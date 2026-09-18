@@ -12,12 +12,12 @@ import {
 import { Question } from './question.entity';
 import { Score } from './score.entity';
 import { Weeks } from './weeks.entity';
-import { Course } from './course.entity';
+import { Syllabus } from './syllabus.entity';
 import { QuizProgress } from './quiz_progress.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
-@Index('IDX_quiz_course', ['course'])
+@Index('IDX_quiz_syllabus', ['syllabus'])
 export class Quiz {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -59,17 +59,20 @@ export class Quiz {
   quizProgresses: QuizProgress[];
 
   /**
-   * Kuis tingkat program, dipakai non-bootcamp. Tanpa lapisan `weeks`, kuis
-   * SPL tidak punya rumah - kolom ini rumahnya. Nullable: kuis bootcamp tetap
+   * Kuis milik satu SILABUS (program non-bootcamp). Nullable: kuis bootcamp
    * menempel di minggu lewat `weeks` di bawah dan tidak menyentuh kolom ini.
+   *
+   * Sempat berupa `courseId` (satu kuis per program) waktu pertanyaannya belum
+   * terjawab; pemilik memutuskan satu kuis per silabus - lihat migrasi
+   * 1788900000000.
    */
-  @ManyToOne(() => Course, (course) => course.quiz, {
+  @ManyToOne(() => Syllabus, (syllabus) => syllabus.quiz, {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  @JoinColumn({ name: 'courseId' })
+  @JoinColumn({ name: 'syllabusId' })
   @Exclude()
-  course: Course | null;
+  syllabus: Syllabus | null;
 
   @ManyToOne(() => Weeks, (week) => week.quiz, { onDelete: 'CASCADE' })
   @Exclude()

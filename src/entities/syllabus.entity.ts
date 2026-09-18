@@ -15,6 +15,7 @@ import { SyllabusMaterial } from './syllabus_material.entity';
 import { SyllabusAssignment } from './syllabus_assignment.entity';
 import { SyllabusLogbook } from './syllabus_logbook.entity';
 import { SyllabusProgress } from './syllabus_progress.entity';
+import { Quiz } from './quiz.entity';
 
 /**
  * Satu satuan belajar pada program non-bootcamp (SPL).
@@ -80,6 +81,14 @@ export class Syllabus {
   })
   @Exclude()
   logbooks: SyllabusLogbook[];
+
+  /** Kuis silabus ini. Satu per silabus (keputusan pemilik 2026-09-18). */
+  @OneToMany(() => Quiz, (quiz) => quiz.syllabus, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  quiz: Quiz[];
 
   @OneToMany(() => SyllabusProgress, (p) => p.syllabus, {
     cascade: true,
