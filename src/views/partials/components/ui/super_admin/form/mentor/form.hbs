@@ -77,7 +77,7 @@
 
     window.mentorForm = function mentorForm({ mentor, technologies } = {}) {
       const saved = (field) => byLang((l) => mentor?.[field]?.[l] ?? '');
-      const asOption = (tech) => ({ value: tech.id, label: tech.name });
+      const asOption = (tech) => ({ value: tech.id, label: tech.name, iconUrl: tech.imgUrl, iconSvg: tech.svg, isTool: true });
 
       return {
         loading: false,

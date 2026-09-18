@@ -235,6 +235,15 @@ export class SessionService {
 
     if (updateSessionDto.isFinalCheck === 'true') {
       updateSessionDto.isFinal = true;
+      // Hanya satu session per week yang boleh final — lepas flag dari session
+      // lain di week yang sama agar findLastSession tidak ambigu/salah baca.
+      await this.sessionRepository
+        .createQueryBuilder()
+        .update()
+        .set({ isFinal: false })
+        .where('weeksId = :weeksId', { weeksId: session.weeks.id })
+        .andWhere('id != :id', { id })
+        .execute();
     } else {
       updateSessionDto.isFinal = false;
     }

@@ -36,7 +36,7 @@
     <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto shrink-0'>
       <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post' class='w-full sm:w-auto'>
         <button type='button'
-          onclick='confirmDelete(this)'
+          onclick="openDeleteModal(this, 'Delete Session?', 'Are you sure you want to delete this session? This action cannot be undone.')"
           class='box-border w-full sm:w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'
           title='Delete Session' aria-label='Delete Session'>
           <span class='text-[16px]/[24px] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
