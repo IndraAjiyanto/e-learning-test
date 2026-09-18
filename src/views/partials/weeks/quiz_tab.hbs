@@ -37,22 +37,6 @@
 {{/if}}
 
 <script>
-function confirmQuizDelete(el) {
-  Swal.fire({
-    title: 'Delete Quiz',
-    text: 'Are you sure you want to delete this quiz? Questions and scores will be removed too.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#C80606',
-    cancelButtonColor: '#525252',
-    confirmButtonText: 'Delete'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      el.closest('form').submit();
-    }
-  });
-}
-
 function quizData() {
   return {
     data: JSON.parse(localStorage.getItem('activeData')) || [],

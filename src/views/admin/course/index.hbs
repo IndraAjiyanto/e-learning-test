@@ -28,6 +28,9 @@
 
     </div>
   </div>
+
+  {{!-- Modal konfirmasi toggle launch — dipicu confirmToggleLaunch() di kelasTable() --}}
+  {{> components/ui/admin/modal/confirm_action/index}}
 </div>
 
 <script>
@@ -94,6 +97,24 @@ function kelasTable() {
       if (page < 1 || page > this.totalPages) return;
       this.currentPage = page;
       await this.fetchKelas();
+    },
+
+    // Dipanggil dari @change checkbox launch: menahan aksi lewat modal konfirmasi
+    // sebelum benar-benar toggle. Checkbox dikembalikan ke state model saat ini
+    // dulu (native checked sudah berubah duluan oleh browser) supaya tampilan
+    // tidak berubah sebelum user menekan Confirm di modal.
+    confirmToggleLaunch(courseId, index, event) {
+      const course = this.kelasList[index];
+      const willLaunch = !course.launch;
+      event.target.checked = course.launch;
+
+      openConfirmModal({
+        title: willLaunch ? 'Launch Program?' : 'Unlaunch Program?',
+        description: `Are you sure you want to ${willLaunch ? 'launch' : 'unlaunch'} "${course.name}"?`,
+        confirmLabel: willLaunch ? 'Launch' : 'Unlaunch',
+        cancelLabel: 'Cancel',
+        onConfirm: () => this.toggleLaunch(courseId, index),
+      });
     },
 
     async toggleLaunch(courseId, index) {

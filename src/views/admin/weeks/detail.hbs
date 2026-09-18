@@ -38,7 +38,7 @@
         <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
           <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
             <button type='button'
-              onclick='confirmMeetingDelete(this)'
+              onclick='openDeleteModal(this)'
               class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
               title='Delete Week' aria-label='Delete Week'>
               <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
@@ -84,23 +84,12 @@
      redirect balik ke sini. Dipicu via flashToast() di weeks & session controller. --}}
 {{> components/ui/admin/toast/success/index toast=toast }}
 
-<script>
-function confirmMeetingDelete(el) {
-  Swal.fire({
-    title: 'Delete Week',
-    text: 'Are you sure you want to delete this week? Sessions inside it will be removed too.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#C80606',
-    cancelButtonColor: '#525252',
-    confirmButtonText: 'Delete'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      el.closest('form').submit();
-    }
-  });
-}
+{{> components/ui/admin/modal/delete_confirm/index
+    title='Delete Week'
+    description='Are you sure you want to delete this week? Sessions inside it will be removed too.'
+    confirmLabel='Delete' }}
 
+<script>
 function tabData() {
   return {
     search: '',

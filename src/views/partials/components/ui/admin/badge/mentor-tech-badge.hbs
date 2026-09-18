@@ -6,9 +6,21 @@
   Reusable: dipakai di mentor-table, bisa dipakai di detail page mentor lain.
 --}}
 <template x-for='(tech, tIndex) in (mentor.technologies ?? []).slice(0, 3)' :key='tech.id ?? tech.name'>
-  <span class='box-border inline-flex shrink-0 h-fit flex-row gap-0 p-[4px_12px] justify-center items-center rounded-[16px] text-[14px]/[normal] font-inter font-medium whitespace-nowrap'
-    :style="'background:' + mentorTechBg(tIndex) + ';color:' + mentorTechColor(tIndex)"
-    x-text='tech.name' :title='tech.name'></span>
+  <span class='box-border inline-flex shrink-0 h-fit flex-row gap-[6px] p-[4px_12px_4px_6px] justify-center items-center bg-[#F5F5F5] rounded-[16px] text-[14px]/[20px] text-[#404040] font-inter font-medium whitespace-nowrap'
+    :title='tech.name'>
+    <span class="flex h-4 w-4 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
+      <template x-if="tech.svg">
+        <span class="flex h-full w-full items-center justify-center [&>svg]:h-full [&>svg]:w-full" x-html="tech.svg"></span>
+      </template>
+      <template x-if="!tech.svg && tech.imgUrl">
+        <img :src="tech.imgUrl" :alt="tech.name" class="h-full w-full object-cover" />
+      </template>
+      <template x-if="!tech.svg && !tech.imgUrl">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </template>
+    </span>
+    <span x-text='tech.name'></span>
+  </span>
 </template>
 <template x-if='(mentor.technologies ?? []).length > 3'>
   <span class='box-border inline-flex shrink-0 h-fit flex-row gap-0 p-[4px_12px] justify-center items-center bg-[#F5F5F5] rounded-[16px] text-[14px]/[normal] text-[#404040] font-inter font-medium whitespace-nowrap'
