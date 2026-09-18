@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserAnswersService } from './user_answers.service';
+import { flashToastError } from 'src/common/utils/toast.util';
 import { QuizService } from 'src/quiz/quiz.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -61,7 +62,11 @@ export class UserAnswersController {
       req.flash('success', 'Success complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'unsuccess complete quiz');
+      flashToastError(
+        req,
+        'Quiz not submitted',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect(`/quiz/form/${quizId}`);
     }
   }

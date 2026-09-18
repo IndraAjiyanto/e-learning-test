@@ -1,17 +1,30 @@
 <div x-data="{ view: 'list', selectedAssignment: null }" class="w-full">
   
   <!-- ==================== VIEW: LIST (DEFAULT) ==================== -->
-  <div x-show="view === 'list'" x-transition class="w-full p-4 sm:px-[34px] sm:py-[42px]">
+  <div x-show="view === 'list'" x-transition class="w-full px-4 py-4 sm:px-8 sm:py-6">
 
-    <div class="flex flex-col gap-1">
-      {{> components/ui/super_admin/page_header/index titleTag='h2' title='Assignment' }}
-      {{> components/ui/super_admin/description/index text='Your tasks will be displayed here.' }}
-    </div>
+    {{> components/ui/learning/tab_summary/index
+        percent=stats.assignments.percent
+        label=(concat stats.assignments.approved ' ' (t 'test.startLearning.of') ' ' stats.assignments.total ' ' (t 'test.startLearning.assignmentsApprovedSuffix'))
+        hint=(t 'test.startLearning.assignmentIntro')
+        items=(array
+          (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.assignments.total 'tone' 'navy')
+          (obj 'label' (t 'test.startLearning.submitted') 'value' stats.assignments.submitted 'tone' 'green')
+          (obj 'label' (t 'test.startLearning.notSubmittedCount') 'value' stats.assignments.pending 'tone' 'amber')
+        ) }}
 
     <!-- Week Sections (Dynamic with Alpine.js): one collapsible block per real week -->
+    {{!--
+      Satu kartu per MINGGU, bukan satu kartu per sesi. Sebelumnya tiap sesi
+      jadi kartu putih sendiri dengan p-8 - satu baris judul memakan 150px -
+      dan kartu-kartu itu mengambang di luar kartu minggunya, jadi hubungan
+      induk-anaknya tidak terlihat sama sekali. Sekarang sesi jadi baris di
+      dalam kartu minggu, bentuknya sama dengan tab Attendance.
+    --}}
+    <div class="mt-4 space-y-3">
     {{#each course.weeks}}
     <div
-      class="w-full"
+      class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
       x-data="{
         openWeek: false,
         sessions: [],
@@ -35,36 +48,46 @@
           } finally {
             if (this.loadedWeekId === weekId) this.sessionsLoading = false;
           }
+        },
+        statusTone: { approved: 'green', review: 'amber', pending: 'gray' },
+        statusText: {
+          approved: '{{t 'test.startLearning.approved'}}',
+          review: '{{t 'test.startLearning.assignmentInReview'}}',
+          pending: '{{t 'test.startLearning.notSubmitted'}}'
         }
       }"
     >
 
-      <!-- Week Header -->
-      <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')">
-        <h3 class="font-inter text-xl font-bold leading-tight text-[#003060]">
-          Week {{weekNumber}} : {{description}}
-        </h3>
-        <div class="w-9 h-9 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
-          <i class="fas fa-chevron-up text-sm transition-transform duration-300" :class="openWeek ? '' : 'rotate-180'"></i>
-        </div>
-      </div>
+      <button
+        type="button"
+        @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')"
+        :aria-expanded="openWeek ? 'true' : 'false'"
+        class="group flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
+      >
+        {{> components/ui/learning/week_row/index
+            number=weekNumber
+            title=(concat (t 'test.startLearning.week') ' ' weekNumber)
+            summary=(lookup ../weekSummaries id)
+            kind='assignment'
+            expanded='openWeek' }}
+      </button>
 
       <!-- Week Content (Collapsible, sessions fetched from GET /program/session/:weeksId) -->
-      <div x-show="openWeek" x-transition class="w-full flex flex-col gap-6">
+      <div x-show="openWeek" x-transition class="border-t border-[#E5E5E5]" style="display: none;">
 
         <!-- Sessions Loading State -->
         <template x-if="sessionsLoading">
-          <div class="w-full max-w-[1232px] bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-6 sm:p-8 text-center">
-            <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="font-inter font-medium text-[#003060]">Loading sessions...</p>
+          <div class="px-5 py-8 text-center">
+            <div class="mx-auto mb-3 size-7 animate-spin rounded-full border-2 border-[#003060] border-t-transparent"></div>
+            <p class="font-inter text-sm text-[#737373]">Loading sessions...</p>
           </div>
         </template>
 
         <!-- Sessions Error State -->
         <template x-if="!sessionsLoading && sessionsError">
-          <div class="w-full max-w-[1232px] bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-6 sm:p-8 text-center space-y-3">
-            <p class="font-inter font-medium text-red-600">Failed to load sessions. Please try again.</p>
-            <button type="button" @click="loadSessions('{{id}}')" class="font-inter font-medium text-[#003060] underline cursor-pointer">
+          <div class="space-y-2 px-5 py-8 text-center">
+            <p class="font-inter text-sm text-[#B42318]">Failed to load sessions. Please try again.</p>
+            <button type="button" @click="loadSessions('{{id}}')" class="cursor-pointer font-inter text-sm font-semibold text-[#003060] underline">
               Retry
             </button>
           </div>
@@ -72,14 +95,15 @@
 
         <!-- Sessions Empty State -->
         <template x-if="!sessionsLoading && !sessionsError && sessions.length === 0">
-          <div class="w-full max-w-[1232px] bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-6 sm:p-8 text-center">
-            <p class="font-inter font-medium text-[#003060]">No sessions available for this week.</p>
+          <div class="px-5 py-8 text-center">
+            <p class="font-inter text-sm text-[#737373]">{{t 'test.startLearning.noSessionsInWeek'}}</p>
           </div>
         </template>
 
-        <!-- Assignment Card (one per Session) -->
-        <template x-for="session in sessions" :key="session.id">
-          <div x-data="{
+        <!-- Satu baris per sesi; panelnya terbuka di tempat -->
+        <ul class="divide-y divide-[#F0F0F0]">
+          <template x-for="session in sessions" :key="session.id">
+            <li x-data="{
             open: false,
             answer: session.assignments?.[0]?.taskAnswers?.[0] ?? null,
             get status() {
@@ -95,6 +119,16 @@
               return new Date(this.answer.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
             },
             answerUrl: session.assignments?.[0]?.taskAnswers?.[0]?.file ?? '',
+            get taskFile() {
+              return session.assignments?.[0]?.file ?? '';
+            },
+            get taskFileName() {
+              // Yang tampil dulu path mentahnya:
+              // /asset/assignments/1767090074635-2nryx6oimm5.pdf - panjang,
+              // dan tidak memberi tahu apa pun. Sekarang nama berkasnya saja.
+              const raw = this.taskFile.split('/').pop() || '';
+              return decodeURIComponent(raw.split('?')[0]);
+            },
             editing: false,
             submitting: false,
             submitError: '',
@@ -123,127 +157,158 @@
                 this.submitting = false;
               }
             },
-          }" class="relative flex w-full flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8">
+          }">
 
-            <!-- Status Badges: normal flow, not absolute - an absolute top-right badge here used
-                 to sit directly on top of the chevron toggle button below, causing a visible overlap. -->
-            <div x-show="status === 'review' || status === 'approved'" x-cloak class="flex justify-end">
-              {{> components/ui/super_admin/badge/index
-                text='status === "approved" ? "Approved" : "Under review"'
-                dot=true
-                classExpr="status === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#fffbeb] text-[#b45309]'"
-                dotClassExpr="status === 'approved' ? 'bg-[#22c55e]' : 'bg-[#f59e0b]'"
-              }}
-            </div>
+            {{!--
+              Baris sesi. Lencana statusnya dulu berdiri sendiri di baris atas
+              yang rata kanan - terlihat seperti tersesat - dan sesi yang belum
+              dikumpulkan tidak punya lencana sama sekali, jadi tidak ada
+              bedanya antara 'belum dikerjakan' dan 'tidak ada tugas'. Sekarang
+              ketiga keadaan itu memakai pil yang sama, sebaris dengan judulnya.
+            --}}
+            <div class="flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 transition-colors hover:bg-[#FAFAFA]" @click="open = !open">
+              <span
+                class="min-w-0 flex-1 truncate font-inter text-sm font-semibold text-[#171717]"
+                x-text="'Session ' + session.sessionOrder + ' - ' + session.topic"
+              ></span>
 
-            <!-- Header Card (click to expand/collapse this session's assignment) -->
-            <div class="flex items-center justify-between gap-4 cursor-pointer" @click="open = !open">
-              <h3 class="font-inter font-semibold text-base sm:text-lg leading-snug text-[#003060]" x-text="'Session ' + session.sessionOrder + ' - ' + session.topic"></h3>
-              <div class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
-                <i class="fas fa-chevron-up text-sm transition-transform duration-300" :class="open ? '' : 'rotate-180'"></i>
-              </div>
+              {{> components/ui/learning/status_pill/index
+                  tone="statusTone[status] || 'gray'"
+                  label="statusText[status] || statusText.pending" }}
+
+              <i
+                class="fa-solid fa-chevron-down shrink-0 text-sm text-[#a3a3a3] transition-transform duration-200"
+                :class="open ? 'rotate-180' : ''"
+              ></i>
             </div>
 
             <!-- Session Content (Collapsible) -->
-            <div x-show="open" x-transition class="flex flex-col gap-6">
+            {{!--
+              Isi panel dulu satu tumpukan lurus: judul, tautan, judul lagi,
+              dua baris tanggal berikon, sebuah kotak berisi URL yang tampak
+              seperti kolom isian padahal bukan, lalu tombol yang jauh dari
+              apa pun. Sekarang dua kartu kecil yang isinya jelas: berkas
+              tugasnya, dan jawaban yang dikirim - masing-masing dengan
+              aksinya sendiri di kanan.
 
-              {{!-- Tenggat sengaja TIDAK dirender. Sebelumnya di sini ada teks
-                   "Due date: Apr, 10 2026" dan "Deadline time: 23:59 WIB" yang
-                   dituliskan tetap, padahal entity Assignment maupun Session tidak
-                   punya kolom tenggat sama sekali. Menampilkan tanggal karangan
-                   pada halaman tugas lebih berbahaya daripada tidak menampilkan
-                   apa pun. Munculkan lagi setelah backend menambah kolomnya. --}}
+              Tenggat sengaja TIDAK dirender. Sebelumnya di sini ada
+              "Due date: Apr, 10 2026" dan "Deadline time: 23:59 WIB" yang
+              dituliskan tetap, padahal entity Assignment maupun Session tidak
+              punya kolom tenggat sama sekali. Munculkan lagi setelah backend
+              menambah kolomnya. Hal yang sama berlaku untuk nilai.
+            --}}
+            <div x-show="open" x-transition class="space-y-2.5 border-t border-[#F0F0F0] bg-[#FAFAFA] px-5 py-4" style="display: none;">
 
-              <!-- Assignment Link -->
-              <div class="flex flex-col gap-2" x-show="session.assignments?.[0]?.file">
-                <h4 class="font-inter font-semibold text-base sm:text-lg text-[#003060]">
-                  Your Assignment here:
-                </h4>
-                <a :href="session.assignments?.[0]?.file || '#'" @click.prevent="selectedAssignment = session.assignments?.[0]; view = 'detail'" class="font-inter font-medium text-sm sm:text-base text-[#003060] underline hover:text-blue-700" x-text="session.assignments?.[0]?.file"></a>
+              <!-- Berkas tugas -->
+              <div x-show="taskFile" class="flex flex-wrap items-center gap-3 rounded-lg border border-[#E5E5E5] bg-white px-4 py-3">
+                <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#FEF2F2] text-[#B42318]">
+                  <i class="fa-regular fa-file-lines text-sm"></i>
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-inter text-sm font-semibold text-[#171717]">{{t 'test.startLearning.assignmentFile'}}</span>
+                  <span class="block truncate font-inter text-xs text-[#737373]" x-text="taskFileName"></span>
+                </span>
+                <button
+                  type="button"
+                  @click="selectedAssignment = session.assignments?.[0]; view = 'detail'"
+                  class="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#E4F1F7]"
+                >
+                  <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                  {{t 'test.startLearning.openFile'}}
+                </button>
               </div>
 
-              <!-- Default State: Form Submission -->
-              <form x-show="status === 'pending' || editing" @submit.prevent="submitAnswer" class="flex flex-col gap-4">
-                <h4 class="font-inter font-semibold text-base sm:text-lg text-[#003060]">
-                  Your Answer:
-                </h4>
-                <p class="font-inter font-medium text-sm text-[#003060]">
-                  Enter a GitHub link, Google Drive, or any online file sharing link.
-                </p>
+              <p x-show="!taskFile" x-cloak class="rounded-lg border border-dashed border-[#E5E5E5] bg-white px-4 py-3 font-inter text-xs text-[#737373]">
+                {{t 'test.startLearning.noAssignmentFile'}}
+              </p>
 
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-[15px] mt-2">
+              <!-- Jawaban yang sudah dikirim -->
+              <div x-show="(status === 'review' || status === 'approved') && !editing" x-cloak class="rounded-lg border border-[#E5E5E5] bg-white px-4 py-3">
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+                    <i class="fa-solid fa-link text-xs"></i>
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block font-inter text-sm font-semibold text-[#171717]">{{t 'test.startLearning.yourSubmission'}}</span>
+                    {{!-- Tautannya kini benar-benar bisa dibuka; sebelumnya cuma
+                         teks di dalam kotak yang menyerupai kolom isian. --}}
+                    <a
+                      :href="answerUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="block truncate font-inter text-xs text-[#003060] underline hover:text-[#00254a]"
+                      x-text="answerUrl"
+                    ></a>
+                  </span>
+                  <button
+                    x-show="status === 'review'"
+                    type="button"
+                    @click="editing = true"
+                    class="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB]"
+                  >
+                    <i class="fa-solid fa-pen text-xs"></i>
+                    {{t 'test.startLearning.editSubmission'}}
+                  </button>
+                </div>
+
+                <p class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[#F0F0F0] pt-2.5 font-inter text-xs text-[#737373]">
+                  <span class="inline-flex items-center gap-1.5">
+                    <i class="fa-regular fa-calendar text-[0.65rem]"></i>
+                    {{t 'test.startLearning.submittedOn'}} <span class="font-medium text-[#171717]" x-text="submissionDate"></span>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-[0.65rem]"></i>
+                    <span class="font-medium text-[#171717]" x-text="submissionTime"></span>
+                  </span>
+                </p>
+              </div>
+
+              <!-- Formulir jawaban -->
+              <form x-show="status === 'pending' || editing" @submit.prevent="submitAnswer" class="rounded-lg border border-[#E5E5E5] bg-white px-4 py-3">
+                <span class="block font-inter text-sm font-semibold text-[#171717]">{{t 'test.startLearning.yourAnswer'}}</span>
+                <span class="mt-0.5 block font-inter text-xs text-[#737373]">{{t 'test.startLearning.answerHint'}}</span>
+
+                <div class="mt-3 flex flex-wrap items-center gap-2">
                   <input
                     type="url"
                     x-model="answerUrl"
                     placeholder="https://drive.google.com/..."
                     required
                     title="Enter a valid URL, for example https://drive.google.com"
-                    class="h-11 w-full max-w-[504px] rounded-lg border border-[#d4d4d4] bg-white px-3.5 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20"
+                    class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20"
                   >
+                  <button
+                    type="submit"
+                    :disabled="submitting"
+                    class="inline-flex h-10 shrink-0 cursor-pointer items-center justify-center rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <span x-show="!submitting">{{t 'test.startLearning.submitAnswerBtn'}}</span>
+                    <span x-show="submitting" x-cloak>{{t 'test.startLearning.submittingBtn'}}</span>
+                  </button>
+                  <button
+                    x-show="editing"
+                    type="button"
+                    @click="editing = false"
+                    class="inline-flex h-10 shrink-0 cursor-pointer items-center justify-center rounded-[8px] border border-[#D4D4D4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB]"
+                  >
+                    {{t 'test.startLearning.cancelBtn'}}
+                  </button>
                 </div>
 
-                <p x-show="submitError" x-cloak x-text="submitError" class="font-inter text-xs text-red-600"></p>
-
-                <div class="flex items-center gap-4 mt-6">
-                  <button type="submit" :disabled="submitting" class="inline-flex h-11 items-center justify-center rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-60">
-                    <span x-show="!submitting">Submit Answer</span>
-                    <span x-show="submitting" x-cloak>Submitting...</span>
-                  </button>
-                  <button x-show="editing" type="button" @click="editing = false" class="inline-flex h-11 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#f9fafb]">
-                    Cancel
-                  </button>
-                </div>
+                <p x-show="submitError" x-cloak x-text="submitError" class="mt-2 font-inter text-xs text-[#B42318]"></p>
               </form>
-
-              <!-- Submitted State: Under Review / Approved -->
-              <div x-show="(status === 'review' || status === 'approved') && !editing" x-cloak class="flex flex-col gap-4">
-                <h4 class="font-inter font-semibold text-base sm:text-lg text-[#003060]">
-                  Your Answer:
-                </h4>
-
-                <!-- Submission Date & Time Info -->
-                <div class="flex flex-col gap-[10px]">
-                  <div class="flex items-center gap-[8px] text-[#003060]">
-                    <i class="far fa-calendar text-sm"></i>
-                    <span class="font-inter font-semibold text-sm leading-relaxed">
-                      Submission Date: <span class="text-[#12BD26]" x-text="submissionDate"></span>
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-[8px] text-[#003060]">
-                    <i class="far fa-clock text-sm"></i>
-                    <span class="font-inter font-semibold text-sm leading-relaxed">
-                      Submission Time: <span class="text-[#12BD26]" x-text="submissionTime"></span>
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Submitted URL -->
-                <div class="flex items-center mt-2 px-[18px] bg-white h-9 w-fit">
-                  <span class="font-inter font-medium text-sm text-black" x-text="answerUrl"></span>
-                </div>
-
-                <!-- Action / Result Area -->
-                <div class="mt-4">
-                  <!-- Button shown only when Under Review -->
-                  <button x-show="status === 'review'" type="button" @click="editing = true" class="mt-2 inline-flex h-11 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#f9fafb]">
-                    Edit Submission
-                  </button>
-
-                  {{!-- Nilai sengaja TIDAK dirender. Sebelumnya setiap tugas yang
-                       disetujui menampilkan "Poin: 90/100 Good Job" secara tetap,
-                       padahal entity AnswerTask tidak punya kolom nilai. Munculkan
-                       lagi setelah backend menambah kolomnya. --}}
-                </div>
-              </div>
 
             </div>
 
-          </div>
-        </template>
+            </li>
+          </template>
+        </ul>
 
       </div>
     </div>
     {{/each}}
+    </div>
+
 
     {{#unless course.weeks.length}}
       <div class="flex w-full flex-col items-center gap-3 rounded-xl border border-[#d9d9d9] bg-white p-12 text-center">
@@ -260,7 +325,7 @@
   </div>
 
   <!-- ==================== VIEW: DETAIL (PDF PREVIEW) ==================== -->
-  <div x-show="view === 'detail'" x-cloak x-transition class="w-full p-4 sm:px-[34px] sm:py-[42px]">
+  <div x-show="view === 'detail'" x-cloak x-transition class="w-full px-4 py-4 sm:px-8 sm:py-6">
 
     <div class="flex items-center gap-4">
       <button @click="view = 'list'" aria-label="Back to assignment list" class="grid size-11 shrink-0 place-items-center rounded-lg border border-[#d4d4d4] bg-white text-[#344054] transition-colors hover:bg-[#f9fafb]">
@@ -281,7 +346,7 @@
           <iframe :src="selectedAssignment.file" type="application/pdf" class="w-full h-full" title="Assignment PDF"></iframe>
         </template>
         <template x-if="!selectedAssignment?.file">
-          <span class="text-slate-400 font-medium text-lg">No file available</span>
+          <span class="text-[#A3A3A3] font-medium text-lg">No file available</span>
         </template>
       </div>
 

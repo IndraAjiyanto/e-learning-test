@@ -1,4 +1,9 @@
-<div class="max-w-7xl mx-auto px-4 pt-28">
+{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
+     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
+     dan footer. Controller-nya merender dengan bareShell: true.
+     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.quiz')}}
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
 
 {{> user/quiz/start/header}}
 
@@ -210,4 +215,4 @@ function timeOverSubmit() {
     });
 }
 </script>
-
+{{/user/shell_frame/index}}

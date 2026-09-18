@@ -10,6 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { BiodatasService } from './biodatas.service';
+import { flashToastError } from 'src/common/utils/toast.util';
 import { CreateBiodataDto } from './dto/create-biodata.dto';
 import { UpdateBiodataDto } from './dto/update-biodata.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -36,7 +37,11 @@ export class BiodatasController {
       req.flash('success', 'biodata successfully create');
       res.redirect('/users/profile');
     } catch (error: any) {
-      req.flash('error', error.message || 'biodata failed to create');
+      flashToastError(
+        req,
+        'Biodata not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }
@@ -71,7 +76,11 @@ export class BiodatasController {
       req.flash('success', 'biodata successfully update');
       res.redirect('/users/profile');
     } catch (error: any) {
-      req.flash('error', error.message || 'biodata failed to update');
+      flashToastError(
+        req,
+        'Biodata not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }

@@ -96,6 +96,7 @@ export class UsersService {
         userCourses: {
           course: {
             category: true,
+            courseType: true,
             weeks: true,
           },
         },
@@ -165,7 +166,14 @@ export class UsersService {
   async getDashboardData(userId: string) {
     const userWithCourses = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+      relations: [
+        'userCourses',
+        'userCourses.course',
+        'userCourses.course.category',
+        // Baris Continue Learning pada frame dashboard memakai dua keterangan
+        // di bawah judul; yang kedua diambil dari tipe kelas.
+        'userCourses.course.courseType',
+      ],
     });
 
     const userCourses = userWithCourses?.userCourses ?? [];
@@ -176,11 +184,45 @@ export class UsersService {
       where: { user: { id: userId } },
     });
 
+    // Persentase kemajuan dihitung di sini, bukan di template. Handlebars hanya
+    // punya divide/multiply, jadi merakitnya di view berarti tiga helper
+    // bersarang untuk satu angka - dan pembagian nol harus dijaga dua kali.
+    const totalCourses = userCourses.length;
+    const completionPercent = totalCourses
+      ? Math.round((completedCourses.length / totalCourses) * 100)
+      : 0;
+
+    // Komposisi program yang diikuti, dikelompokkan per tipe kelas.
+    //
+    // Idenya dari donat "Komposisi Pembelian" di dasbor bisa.ai. Sumbernya
+    // sengaja BUKAN transaksi: tabel pembayaran tidak ikut dimuat di rute ini,
+    // dan program gratis tidak punya baris transaksi sama sekali - komposisinya
+    // akan bohong untuk sebagian student. Tipe kelas ada pada setiap program
+    // yang benar-benar diikuti, jadi angkanya selalu berasal dari kenyataan.
+    const compositionCounts = new Map<string, number>();
+    for (const uc of userCourses) {
+      const label =
+        uc.course?.courseType?.nameClassesType?.trim() ||
+        uc.course?.category?.name?.trim() ||
+        'Uncategorised';
+      compositionCounts.set(label, (compositionCounts.get(label) ?? 0) + 1);
+    }
+    const programComposition = [...compositionCounts.entries()]
+      .map(([label, count]) => ({
+        label,
+        count,
+        percent: totalCourses ? Math.round((count / totalCourses) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
     return {
       ongoingCourses,
+      programComposition,
       dashboardStats: {
         ongoingCount: ongoingCourses.length,
         completedCount: completedCourses.length,
+        totalCount: totalCourses,
+        completionPercent,
         certificatesCount,
       },
     };
@@ -210,6 +252,14 @@ export class UsersService {
     if (updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword) {
       throw new BadRequestException('confirm password wrong');
     }
+
+    // Aturan yang sama dengan pendaftaran (auth.service) dan lupa-password
+    // (resetPassword di berkas ini). Sebelumnya rute ini satu-satunya yang
+    // memakai aturannya sendiri - cukup 6 karakter, tanpa syarat lain - jadi
+    // mengganti password justru bisa MELEMAHKAN akun yang password awalnya
+    // sudah dipaksa kuat saat mendaftar.
+    assertStrongPassword(updatePaaswordDto.newPassword);
+
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -221,12 +271,6 @@ export class UsersService {
     );
     if (!isMatch) {
       throw new BadRequestException('Old password is incorrect');
-    }
-
-    if (updatePaaswordDto.newPassword.length < 6) {
-      throw new BadRequestException(
-        'New password must be at least 6 characters',
-      );
     }
 
     const hashedPassword = await bcrypt.hash(updatePaaswordDto.newPassword, 10);

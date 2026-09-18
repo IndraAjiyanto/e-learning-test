@@ -1,74 +1,56 @@
-            <!-- Locked Week Design (unchanged) -->
-            <div
-              class='border border-gray-300 rounded-xl shadow-md bg-gradient-to-r from-gray-100 to-gray-200 overflow-hidden opacity-75'
-            >
-              <div
-                class='w-full flex justify-between items-center px-5 py-3 bg-gradient-to-r from-gray-200 to-gray-300'
-              >
-                <div class='flex items-center space-x-3'>
-                  <div
-                    class='w-9 h-9 bg-gray-400 rounded-lg flex items-center justify-center text-white font-bold text-base'
-                  >
-                    <svg
-                      class='w-5 h-5'
-                      fill='none'
-                      stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                        stroke-width='2'
-                        d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 class='font-bold text-base text-gray-600'>
-                      {{t 'test.startLearning.week'}}
-                      {{this.weekNumber}}
-                      :
-                      {{this.description}}
-                    </h2>
-                    <p class='text-xs text-gray-500 mt-0.5'>
-                      {{t 'test.startLearning.completePreviousRequirements'}}
-                    </p>
-                  </div>
-                </div>
-                <svg
-                  class='w-5 h-5 text-gray-400'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
-                  />
-                </svg>
-              </div>
-              <div
-                class='px-5 py-4 bg-gradient-to-r from-yellow-50 to-yellow-100 border-t border-yellow-200'
-              >
-                <div class='flex items-center justify-center'>
-                  <svg
-                    class='w-4 h-4 text-yellow-600 mr-1.5'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
-                    />
-                  </svg>
-                  <p class='text-yellow-800 text-center text-xs font-medium'>
-                    {{t 'test.startLearning.previousWeekQuizRequirement'}}
-                  </p>
-                </div>
-              </div>
-            </div>
+{{!--
+  Kartu minggu yang masih terkunci.
+
+  Susunannya sengaja dibuat sejajar dengan kartu minggu yang terbuka
+  (button_week.hbs): lencana di kiri, judul, lalu keterangan. Yang membedakan
+  hanya warnanya yang teredam dan ikon gembok. Versi lama memakai gradien abu
+  dan `opacity-75` sehingga tampak seperti komponen rusak, bukan komponen yang
+  memang belum bisa dibuka.
+
+  Pita kuning di bawah tetap dipertahankan: pada frame desain memang ada, dan
+  ia menjawab pertanyaan "kenapa terkunci" tanpa student harus menebak.
+--}}
+<div class='overflow-hidden rounded-xl border border-[#E5E5E5] bg-[#FAFAFA]'>
+  <div class='flex w-full items-center justify-between gap-3 px-5 py-4'>
+    <div class='flex min-w-0 items-center gap-3'>
+      <span class='grid size-9 shrink-0 place-items-center rounded-lg bg-[#E5E5E5] text-[#737373]'>
+        <svg class='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+          <path
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            stroke-width='2'
+            d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+          />
+        </svg>
+      </span>
+      <div class='min-w-0'>
+        <div class='flex flex-wrap items-center gap-2'>
+          <h3 class='truncate font-montserrat text-base font-bold text-[#737373]'>
+            {{t 'test.startLearning.week'}} {{this.weekNumber}}
+          </h3>
+          <span class='rounded-full bg-[#E5E5E5] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#737373]'>
+            {{t 'test.startLearning.locked'}}
+          </span>
+        </div>
+        <p class='mt-0.5 truncate font-inter text-xs text-[#a3a3a3]'>
+          {{this.description}}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {{!-- Alasan penguncian. --}}
+  <div class='flex items-start gap-2 border-t border-[#FEF08A] bg-[#FEFCE8] px-5 py-3'>
+    <svg class='mt-0.5 size-4 shrink-0 text-[#A16207]' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+      <path
+        stroke-linecap='round'
+        stroke-linejoin='round'
+        stroke-width='2'
+        d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
+      />
+    </svg>
+    <p class='font-inter text-xs text-[#A16207]'>
+      {{t 'test.startLearning.previousWeekQuizRequirement'}}
+    </p>
+  </div>
+</div>
