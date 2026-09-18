@@ -1,7 +1,6 @@
 {{!--
   Page: Admin — Quiz Detail
   Path: admin/quiz/detail.hbs
-  Design: pen design language (matching weeks/detail.hbs pattern)
   Route: GET /quiz/:quizId — data: { quiz (weeks.course), scores (user), questions (answers) }}
   Feature Card - Quiz: back link, quiz info, Delete (red text) + Edit (navy)
   Table Detail Quiz: underline tabs (Question + Answer), question accordion + answer table
@@ -18,7 +17,7 @@
           class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
           title='Back' aria-label='Back'>
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'><polyline points='15 18 9 12 15 6'/></svg>
-          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+          <span class='text-[16px]/[normal] text-[#718096] font-inter font-medium'>Back</span>
         </a>
       </div>
 
@@ -26,7 +25,7 @@
       <div class='w-full flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start'>
         <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
           <div class='flex flex-col gap-[4px] w-full'>
-            <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Quiz {{quiz.quizName}}</div>
+            <div class='text-[34px]/[normal] w-full text-[#003060] font-inter font-bold text-left'>Quiz {{quiz.quizName}}</div>
           </div>
           <div class='flex flex-row flex-wrap gap-[8px] w-full justify-start items-center'>
             <div class='box-border flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
@@ -83,7 +82,7 @@
 
             {{!-- Question Header --}}
             <button @click="open = !open" class='w-full flex flex-row justify-between items-center py-[6px]'>
-              <span class='text-[14px]/[normal] text-[#003060] font-montserrat font-semibold text-left flex-1 min-w-0'>{{this.questionText}}</span>
+              <span class='text-[14px]/[normal] text-[#003060] font-inter font-semibold text-left flex-1 min-w-0'>{{this.questionText}}</span>
               <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' :class="open ? 'rotate-180' : ''" class='w-[16px] h-[16px] shrink-0 transition-transform ml-[8px]'><polyline points='6 9 12 15 18 9'/></svg>
             </button>
 

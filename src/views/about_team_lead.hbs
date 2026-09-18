@@ -1,14 +1,13 @@
 {{!--
-  Halaman: About - Team Lead Profile (Faisal) - Figma 250:1458 (Edu Background) / 250:1648 (Portfolio & Experience)
+  Halaman: About - Team Lead Profile (Faisal)
   Lokasi: src/views/about_team_lead.hbs
   Route: GET /dashboard/about/team/lead (dashboard.controller)
 
   Identitas (nama/foto/jabatan) = dinamis dari teamLead.[0].
-  SEMUA isi timeline + Key Projects = HARDCODED, teks PERSIS dari Figma
-  (250:1520-1585 edu, 250:1720-1773 experience, 250:1777-1812 projects).
+  SEMUA isi timeline + Key Projects = HARDCODED, teks PERSIS dari desain.
   Hanya Faisal yang punya data ini; edit langsung di file ini.
 
-  Header Figma = foto + nama + jabatan saja (TANPA sosmed, TANPA paragraf bio).
+  Header = foto + nama + jabatan saja (TANPA sosmed, TANPA paragraf bio).
   Satu halaman, dua tab (Alpine). Shell About. Standar: sizeClass, base + lg, font-inter.
 --}}
 
@@ -57,7 +56,7 @@
         <span class="font-semibold text-[#003060]" x-text="tab === 'portfolio' ? '{{t 'test.about.team.portfolioExperience'}}' : '{{t 'test.about.team.educationBackground'}}'"></span>
       </nav>
 
-      {{!-- Profile header: photo + name + role only (Figma 250:1512) --}}
+      {{!-- Profile header: photo + name + role only --}}
       <div class="flex items-center gap-6">
         <img
           src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}"
@@ -85,7 +84,7 @@
         >{{t 'test.about.team.portfolioExperience'}}</button>
       </div>
 
-      {{!-- ===== Educational Background (Figma 250:1458) ===== --}}
+      {{!-- ===== Educational Background ===== --}}
       <div x-cloak x-show="tab === 'education'" class="mt-8 flex flex-col gap-6">
         {{> _timelineCard icon="fa-graduation-cap"
             title="Master of Science (M.Sc.) in Data Science & Analytics"
@@ -106,7 +105,7 @@
             desc="Certified in designing distributed systems, cost optimization, and cloud architecture best practices." }}
       </div>
 
-      {{!-- ===== Portfolio & Experience (Figma 250:1648) ===== --}}
+      {{!-- ===== Portfolio & Experience ===== --}}
       <div x-cloak x-show="tab === 'portfolio'" class="mt-8 flex flex-col gap-10" style="display:none">
         <div class="flex flex-col gap-6">
           {{> _timelineCard icon="fa-briefcase" metricLabel="Scope / KPI:"
@@ -129,7 +128,7 @@
               metric="RESTful API / Microservices" }}
         </div>
 
-        {{!-- Key Projects Portfolio (Figma 250:1774) --}}
+        {{!-- Key Projects Portfolio --}}
         <div class="flex flex-col gap-6">
           <h2 class="text-xl font-inter font-bold text-[#111827] lg:text-2xl">Key Projects Portfolio</h2>
           <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">

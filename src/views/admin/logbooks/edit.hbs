@@ -1,16 +1,10 @@
 {{!--
-  Page: Admin — Edit Logbook (Container - Logbook Form (Edit), slicing.pen Hwecx)
+  Page: Admin — Edit Logbook
   Path: admin/logbooks/edit.hbs
   Route: GET /logbooks/formEdit/:logbookId -> PATCH /logbooks/:logbookId
   Data: { user, logbook (Logbook + user + session.weeks.course) }
-  Design: redesign FROM create (Container - Logbook Form (Create), slicing.pen iapom) —
-          struktur 1:1 dengan create (w1052 gap28, Title, Form Logbook card:
-          Row1 User + Obstacle, Row2 Activity + Documentation Link, Activity Details
-          textarea 128, Photo Documentation h200, footer Cancel 90 + Update).
-          Perbedaan vs create (Hwecx): Title Edit Logbook / subtitle
-          "Update the logbook details for this session", User read-only
-          (hidden userId + foto lama via showOldPhoto), semua input prefilled,
-          tombol Update Logbook, submit PATCH (kosong = pertahankan lama).
+  Beda dari create: User read-only (hidden userId + foto lama via showOldPhoto),
+  semua input prefilled, submit PATCH (kosong = pertahankan lama).
   Komponen (reuse, sama dengan create): text/page-header, form/form-card,
           form/form-field, form/form-label, form/text-input, form/textarea-input,
           button/primary-button, button/secondary-button,

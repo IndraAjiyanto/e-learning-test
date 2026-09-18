@@ -1,4 +1,4 @@
-<!-- Cover Program* — Figma Drop 363.5×128 #F8F9FA — EDIT (oldPhoto) -->
+<!-- Cover Program* — EDIT (oldPhoto) -->
 <div
   x-data="{
     previewUrl: null,
@@ -112,8 +112,8 @@
         <div class="w-10 h-10 flex justify-center items-center">
           <i class="fas fa-image text-[#718096] text-[32px] leading-none"></i>
         </div>
-        <p class="font-montserrat font-medium text-[12px] leading-[16px] text-[#718096] text-center w-[329.5px]">Drag & Drop your Image here or click to browse</p>
-        <p class="font-montserrat font-medium text-[10px] leading-[12px] text-[#ADB7C5] text-center w-[329.5px]">JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB</p>
+        <p class="font-inter font-medium text-[12px] leading-[16px] text-[#718096] text-center w-[329.5px]">Drag & Drop your Image here or click to browse</p>
+        <p class="font-inter font-medium text-[10px] leading-[12px] text-[#ADB7C5] text-center w-[329.5px]">JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB</p>
       </div>
     </template>
 
@@ -136,7 +136,7 @@
   <template x-if="previewUrl && isValid">
     <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg">
       <i class="fas fa-check-circle text-green-500"></i>
-      <span class="text-xs text-green-700 font-montserrat"><span class="font-semibold">Valid image:</span> <span x-text="`${imageWidth}x${imageHeight}px, ${(fileSize / 1024 / 1024).toFixed(2)}MB`"></span></span>
+      <span class="text-xs text-green-700 font-inter"><span class="font-semibold">Valid image:</span> <span x-text="`${imageWidth}x${imageHeight}px, ${(fileSize / 1024 / 1024).toFixed(2)}MB`"></span></span>
       <button type="button" @click="clearFile()" class="ml-auto text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
     </div>
   </template>

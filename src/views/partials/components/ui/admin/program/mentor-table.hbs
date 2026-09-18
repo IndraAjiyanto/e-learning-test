@@ -4,12 +4,11 @@
   Dipakai: {{> components/ui/admin/program/mentor-table}} di dalam scope mentorData()
   Composes: program/mentor-avatar, badge/mentor-tech-badge, text/mentor-link, button/mentor-action-buttons
 
-  Pencil (Table Detail Program - Mentor / H6vxaE, 6 kolom, total 1364px):
   card white, outline 1px #E5E5E5 offset -0.5px, radius 12, overflow hidden, shadow.
   Header h44 bg #FAFAFA + border-bottom, text Inter 12/500 #525252, p12 24 (exact slicing).
   Row h72 + border-bottom, text Inter 14/normal #404040, p16 24 (exact slicing).
   Kolom (entity Mentors): Mentor(268: avatar + nama) Position(240) Description(240)
-         Tech(300: pill badge Figma #0284C7/#E0F2FE, Miro #6941C6/#F4EBFF, Slack #EA580C/#FFEDD5, +N #404040/#F5F5F5)
+         Tech(300)
          LinkedIn(200: link #3B82F6) Action(116: Edit #525252 + Delete #DC2626).
   Position/Description: DB jsonb menyimpan object {id,en,ja} — joinList() di
   parent scope mengonversi ke string untuk display. Fallback "-" bila kosong.

@@ -1,11 +1,9 @@
 {{!--
-  Page: Admin — Edit Attendance (mirror Container - Attendance Form, slicing.pen Z8kPt)
+  Page: Admin — Edit Attendance
   Path: admin/attendance/edit.hbs
   Route: GET /attendance/formEdit/:id -> PATCH /attendance/:attendanceId/:sessionId
   Data: { user, attendance } (Attendance + session + user)
-  Design: mirror Add Attendance (form-card p20 gap20, footer Cancel w90 +
-          Update Attendance w183). Tanpa field User (perilaku lama: user tidak
-          diubah saat edit) — kolom Status/Date/Note pre-filled.
+  Tanpa field User (perilaku lama: user tidak diubah saat edit); Status/Date/Note prefilled.
   Komponen: sama seperti create (page-header, form-card, form-field,
           text-input, primary/secondary-button,
           attendance/attendance-status-select dengan initialStatus).

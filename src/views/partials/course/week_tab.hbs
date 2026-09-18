@@ -1,6 +1,5 @@
 <!-- ===================== TAB WEEK ===================== -->
 {{!--
-  Design: slicing.pen "Table Detail Program" — Session Rows + Add Button
   Row: h68 white, radius 8, stroke #D9D9D9, gap 6, p8 14
   Texts: "Pertemuan NN" Montserrat 14/600 #003060 + description Montserrat 14/500 #737373
   Delete: 44x44 white stroke #D9D9D9, trash-2 16px #C80606 (pen $danger)
@@ -17,8 +16,8 @@
 
         {{!-- Texts --}}
         <div class='flex flex-col gap-[2px] flex-1 min-w-0 justify-center items-start'>
-          <div class='text-[14px]/[normal] w-full text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text="'Pertemuan ' + String(weeks.weekNumber).padStart(2, '0')"></div>
-          <div class='text-[14px]/[normal] w-full text-[#737373] font-montserrat font-medium break-words' x-text='weeks.description' :title='weeks.description'></div>
+          <div class='text-[14px]/[normal] w-full text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text="'Pertemuan ' + String(weeks.weekNumber).padStart(2, '0')"></div>
+          <div class='text-[14px]/[normal] w-full text-[#737373] font-inter font-medium break-words' x-text='weeks.description' :title='weeks.description'></div>
         </div>
 
         {{!-- Delete --}}

@@ -1,7 +1,6 @@
 {{!--
   Page: Admin - Edit Session
   Path: admin/session/edit.hbs
-  Design: sama dengan admin/session/create.hbs (slicing.pen "Container - Add Session" 1052, gap 28)
   Route: GET /session/formEdit/:id -> PATCH /session/:sessionId (update)
   Data: { user, course, session, maxSession } — toggle "session terakhir" hanya
         tampil bila session yang diedit adalah session terakhir
@@ -97,7 +96,7 @@
                 checkedBind="isFinal"
                 onChange="isFinal = $event.target.checked"
               }}
-              <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold sm:whitespace-nowrap'>Jadikan session terakhir</span>
+              <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold sm:whitespace-nowrap'>Jadikan session terakhir</span>
               <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
             </div>
           {{else}}

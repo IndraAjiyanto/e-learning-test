@@ -1,19 +1,19 @@
 {{! --- MY LEARNING CONTENT PARTIAL --- }}
 {{!--
-  Tab: My Learning list (Figma 830:8684). Reskin 2026-09-15: dropped "Recent Activity",
-  "Stats", "Completed Learning" and "Learning This Week" sections - none of that existed in
-  Figma and all of it was hardcoded fake data (fixed numbers, a fake course, a made-up bar
+  Tab: My Learning list. Reskin 2026-09-15: dropped "Recent Activity",
+  "Stats", "Completed Learning" and "Learning This Week" sections - none of that was in the
+  design and all of it was hardcoded fake data (fixed numbers, a fake course, a made-up bar
   chart), not wired to anything real. Kept the header, search+filter bar, and program card
   grid, all of which use real `course`/`category` data from the controller.
 --}}
-<div class="space-y-14 font-montserrat bg-[#FAFAFA] p-5">
+<div class="space-y-14 font-inter bg-[#FAFAFA] p-5">
 
   {{! --- HEADER SECTION --- }}
   <div>
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
+    <h1 class="font-inter font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
       My Learning
     </h1>
-    <p class="font-montserrat font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
+    <p class="font-inter font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
       Continue your learning journey and track your progress.
     </p>
   </div>
@@ -27,7 +27,7 @@
       <input
         type="text"
         placeholder="Search learning"
-        class="w-full bg-transparent font-montserrat font-medium text-sm text-black placeholder:text-[#676767] focus:outline-none"
+        class="w-full bg-transparent font-inter font-medium text-sm text-black placeholder:text-[#676767] focus:outline-none"
       >
     </div>
 
@@ -41,13 +41,13 @@
         class="w-full h-11 bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 hover:shadow-sm transition-shadow cursor-pointer"
         :aria-expanded="open"
       >
-        <span class="font-montserrat font-medium text-sm text-[#666666] truncate pr-2" x-text="selected"></span>
+        <span class="font-inter font-medium text-sm text-[#666666] truncate pr-2" x-text="selected"></span>
         <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
       </button>
       <ul
         x-show="open"
         x-transition
-        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat max-h-60 overflow-y-auto"
+        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-inter max-h-60 overflow-y-auto"
         style="display: none;"
       >
         <template x-for="option in options" :key="option">
@@ -73,13 +73,13 @@
         class="w-full h-11 bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 hover:shadow-sm transition-shadow cursor-pointer"
         :aria-expanded="open"
       >
-        <span class="font-montserrat font-medium text-sm text-[#666666] truncate pr-2" x-text="selected"></span>
+        <span class="font-inter font-medium text-sm text-[#666666] truncate pr-2" x-text="selected"></span>
         <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
       </button>
       <ul
         x-show="open"
         x-transition
-        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat max-h-60 overflow-y-auto"
+        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-inter max-h-60 overflow-y-auto"
         style="display: none;"
       >
         <template x-for="option in ['All Method', 'Offline', 'Online', 'Hybrid']" :key="option">
@@ -100,7 +100,7 @@
   {{! --- PROGRAM CARDS SECTION --- }}
   <div>
     <div class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-      <h2 class="font-montserrat text-xl font-bold text-[#003060] sm:text-2xl">
+      <h2 class="font-inter text-xl font-bold text-[#003060] sm:text-2xl">
         Learning Path
       </h2>
       {{!-- Penghitung program, sesuai frame desain. Angkanya dari jumlah course
@@ -117,7 +117,7 @@
           <div class="flex flex-col gap-[12px]">
             <!-- Badge -->
             <div class="w-fit px-2 h-[23px] bg-[#0B1F3B1A]/10 rounded-md flex items-center justify-center">
-              <span class="font-montserrat font-medium text-xs text-[#003060]">{{this.category.name}}</span>
+              <span class="font-inter font-medium text-xs text-[#003060]">{{this.category.name}}</span>
             </div>
             <!-- Image -->
             <img
@@ -127,18 +127,18 @@
               class="w-full h-[138px] rounded-xl object-cover"
             >
             <!-- Course Title -->
-            <h3 class="font-montserrat font-semibold text-base text-[#003060]">
+            <h3 class="font-inter font-semibold text-base text-[#003060]">
               {{this.name}}
             </h3>
             <!-- Tag Row -->
             <div class="flex items-center gap-[6px] flex-wrap">
               {{#if this.method}}
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-xs text-[#003060]">
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-inter font-medium text-xs text-[#003060]">
                 <i class="fa-solid fa-location-dot text-xs"></i>
                 {{this.method}}
               </span>
               {{/if}}
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-xs text-[#003060]">
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-inter font-medium text-xs text-[#003060]">
                 <i class="fa-solid fa-graduation-cap text-xs"></i>
                 {{this.weeks.length}} Weeks
               </span>
@@ -147,7 +147,7 @@
           <!-- Button -->
           <a
             href="/program/{{this.id}}"
-            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
+            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent flex items-center justify-center font-inter font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
           >
             <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
             <i class="fa-solid fa-arrow-right text-sm"></i>
@@ -160,7 +160,7 @@
         <span class="grid size-14 place-items-center rounded-full bg-[#E0F2F9] text-[#003060]">
           <i class="fa-solid fa-book-open text-xl"></i>
         </span>
-        <p class="max-w-sm font-montserrat text-sm text-[#6B7280]">You're not enrolled in any program yet. Browse our programs to get started.</p>
+        <p class="max-w-sm font-inter text-sm text-[#6B7280]">You're not enrolled in any program yet. Browse our programs to get started.</p>
       </div>
     {{/if}}
   </div>

@@ -25,7 +25,7 @@
 
     <!-- Page Titles -->
     <div class="space-y-5">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
+      <h1 class="font-inter font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
         Select a video from the list to start watching
       </h1>
       <p class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-normal">
@@ -91,7 +91,7 @@
 
           <!-- No Video Selected Placeholder -->
           <template x-if="!currentVideo">
-            <p class="relative z-10 font-montserrat text-white/80 text-sm sm:text-base px-6 text-center">
+            <p class="relative z-10 font-inter text-white/80 text-sm sm:text-base px-6 text-center">
               Select a video from the list to start watching
             </p>
           </template>
@@ -106,7 +106,7 @@
       <!-- Header bar -->
       <div class="h-[66px] bg-[#6EB6E5] rounded-t-[12px] px-6 flex items-center justify-start gap-3 flex-shrink-0">
         <i class="fa-solid fa-pen-nib text-2xl"></i>
-        <h2 class="font-montserrat font-semibold text-black text-xl leading-none">
+        <h2 class="font-inter font-semibold text-black text-xl leading-none">
           Video Materials
         </h2>
       </div>
@@ -117,7 +117,7 @@
         <!-- Empty State -->
         <template x-if="!(selectedMaterial && selectedMaterial.materials && selectedMaterial.materials.filter(m => m.fileType === 'video').length)">
           <div class="h-full flex items-center justify-center px-6">
-            <p class="font-montserrat font-medium text-sm sm:text-base text-slate-400 text-center">
+            <p class="font-inter font-medium text-sm sm:text-base text-slate-400 text-center">
               No Video material available for this session
             </p>
           </div>
@@ -131,7 +131,7 @@
           >
             <span
               :class="currentVideo && currentVideo.id === item.id ? 'font-semibold text-black' : 'font-medium text-black'"
-              class="font-montserrat text-base sm:text-lg truncate leading-none"
+              class="font-inter text-base sm:text-lg truncate leading-none"
               x-text="item.title"
             ></span>
           </div>

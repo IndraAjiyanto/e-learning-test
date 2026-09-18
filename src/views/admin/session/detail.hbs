@@ -1,13 +1,8 @@
 {{!--
-  Page: Admin — Session Detail (Container - Session Detail, slicing.pen BpSjl)
+  Page: Admin — Session Detail
   Path: admin/session/detail.hbs
   Route: GET /session/:sessionId -> admin/session/detail
   Data: { user, session } (Session + weeks + weeks.course)
-  Design: Container w1052 vertical gap16 → Feature Card 1 (hero: Back, Session NN,
-          Mentoring Batch badge, Delete w87 + Edit Session w132, info grid
-          Location/Topic/Date/Time) → Table Detail Session card (underline tabs
-          Attendance/Materi/Assignment/Logbook User/Logbook Mentor, toolbar
-          search + Add Attendance w162, table Name/LinkedIn/Status/Action).
   Komponen (reuse): form/underline-tabs, button/primary-button,
           program/user-avatar. Baru (prefix session-): session/session-hero,
           session/session-info-item, session/session-status-badge,

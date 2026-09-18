@@ -1,16 +1,9 @@
 {{!--
-  Page: Admin — Edit Mentor Logbook (Container - Logbook Form (Edit), slicing.pen Hwecx)
+  Page: Admin — Edit Mentor Logbook
   Path: admin/mentor_logbook/edit.hbs
   Route: GET /logbooks-mentor/formEdit/:mentor_logbookId -> PATCH /logbooks-mentor/:mentor_logbookId
   Data: { user, mentor_logbook (MentorLogbook + user + session) }
-  Design: redesign FROM create (mentor_logbook/create.hbs, iapom) — struktur 1:1
-          (w1052 gap28, Title, Form Logbook card: Row Activity* + Obstacle*,
-          Activity Details* textarea 128, Photo Documentation* h200 dengan oldPhoto,
-          footer Cancel 90 + Update).
-          Perbedaan vs create (Hwecx): Title Edit Mentor Logbook / subtitle
-          "Update the mentor logbook details for this session", semua input
-          prefilled, tombol Update Logbook, submit PATCH (tanpa ganti foto =
-          pertahankan lama).
+  Beda dari create: semua input prefilled, submit PATCH (tanpa ganti foto = pertahankan lama).
   Komponen (reuse, sama dengan create): text/page-header, form/form-card,
           button/primary-button, button/secondary-button,
           logbook/logbook-mentor-form-fields (prefill + showOldPhoto, tanpa

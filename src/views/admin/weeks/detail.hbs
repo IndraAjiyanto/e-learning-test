@@ -1,7 +1,6 @@
 {{!--
   Page: Admin — Meeting Detail (Week)
   Path: admin/weeks/detail.hbs
-  Design: slicing.pen "Container - Meeting Detail" (1052, gap 16)
   Route: GET /week/:weeksId (findOne) — data: { weeks (course), lastSession }
   Feature Card - Meeting: back link, "Pertemuan NN" 34 + description + badge, Delete (red text) + Edit Week (navy)
   Table Detail Week: underline tabs (Session + Quiz if lastSession), session rows + Add Session
@@ -19,7 +18,7 @@
           class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
           title='Back' aria-label='Back'>
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'><polyline points='15 18 9 12 15 6'/></svg>
-          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+          <span class='text-[16px]/[normal] text-[#718096] font-inter font-medium'>Back</span>
         </a>
       </div>
 
@@ -27,8 +26,8 @@
       <div class='w-full flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start'>
         <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
           <div class='flex flex-col gap-[4px] w-full'>
-            <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Pertemuan {{weeks.week_number}}</div>
-            <div class='text-[14px]/[normal] w-full text-[#718096] font-montserrat font-medium text-left break-words'>{{weeks.description}}</div>
+            <div class='text-[34px]/[normal] w-full text-[#003060] font-inter font-bold text-left'>Pertemuan {{weeks.week_number}}</div>
+            <div class='text-[14px]/[normal] w-full text-[#718096] font-inter font-medium text-left break-words'>{{weeks.description}}</div>
           </div>
           <div class='box-border w-[173px] flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
             <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'><span class='capitalize'>{{weeks.course.method}}</span> · Session {{weeks.week_number}} · {{default weeks.course.quota '-'}} Seats</span>

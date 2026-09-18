@@ -84,15 +84,13 @@ export const uiHelpers = {
 
   /**
    * Return Tailwind font-family class
-   * Shorthand: sans, montserrat, inter, opensans
-   * Raw fallback: "font-serif", "font-['Open_Sans']", dll
+   * Shorthand: sans, inter
+   * Raw fallback: "font-serif", dll
    */
   fontClass: (font: string) => {
     const map: Record<string, string> = {
       sans: 'font-sans',
-      montserrat: 'font-montserrat',
       inter: 'font-inter',
-      opensans: 'font-open-sans',
     };
     return map[font] || font || 'font-sans';
   },

@@ -1,16 +1,16 @@
 {{!--
-  Page: Admin — Detail Program (Pencil slicing.pen: sFECD)
+  Page: Admin — Detail Program
   Path: admin/course/detail.hbs
   Route: GET /program/detail/program/admin/:courseId (detailKelas) — masih 1 endpoint lama
   Data kontrak: { course, categoryId?, user, lastWeek } — 100% dari Course entity (BE sebagai sumber kebenaran)
-  Layout: slicing.pen 1052px + canvas Gap16 → card hero + card basic info + duo form/capacity + card learning + tab section lama
+  Layout: card hero + card basic info + duo form/capacity + card learning + tab section lama
   Komponen (baru): hero / basic_info / form_info / capacity / learning di components/ui/admin/detail/* (reuse jika ada)
   Tab section (admin week/user/benefit/participants/flow/faq/installment/alumni/log_book) dibiarkan 100% (frozen)
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='box-border w-full max-w-[1052px] mx-auto flex flex-col gap-[16px] justify-start items-start'>
 
-    {{!-- slicing.pen — 5 card baru --}}
+    {{!-- 5 card baru --}}
     {{> components/ui/admin/detail/hero/index}}
     {{> components/ui/admin/detail/basic_info/index}}
     <div class='w-full flex flex-col lg:flex-row gap-[16px] justify-start items-stretch'>

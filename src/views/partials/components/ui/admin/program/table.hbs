@@ -3,16 +3,10 @@
   Path: components/ui/admin/program/table.hbs
   Dipakai: {{> components/ui/admin/program/table}}
 
-  Pencil: card bg #FFFFFF, outline 1px #E5E5E5 offset -0.5px, radius 12, overflow hidden
-          header h43.5 bg #FAFAFA + border-bottom #E5E5E5
-          row h71.5 + border-bottom #E5E5E5
-          kolom 10: No(60) Cover(110) Program(210) Group(130) Category(140)
-                      Status(120) Quota(86) Student(86) Launch(86) Action(110)
-          anti-rusak: shrink-0 per kolom + truncate + min-w-0 di flex-1 + :title tooltip
-
   Alpine (parent scope): kelasList, loading, currentPage, size, totalPages, changePage(), toggleLaunch()
   Action: Edit (link) + View Detail (link) + Delete (form + confirm)
   Pagination: menyatu di dalam card (border-top), tanpa gap
+  Anti-rusak: shrink-0 per kolom + truncate + min-w-0 di flex-1 + :title tooltip
 --}}
 <style>
   .table-scroll::-webkit-scrollbar { height: 6px; }

@@ -5,11 +5,10 @@
   Props: {{activeTabVar}} (Alpine variable name, e.g. "tab"),
          {{fetchFn}} (parent Alpine function name, e.g. "toggleFetch")
 
-  Design: full-width bottom border #D9D9D9, h40 tabs, Montserrat 14/600 #003060,
   active = 2px bottom #003060 (border-b-[#003060]).
 --}}
 <div class='flex flex-row w-full [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#D9D9D9] mb-6 overflow-x-auto'>
   <template x-for='t in tabs' :key='t.name'>
-    <button @click="{{fetchFn}}(t.url, t.name)" :class="{{activeTabVar}} === t.name ? 'border-b-[#003060]' : ''" class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[28px] py-[10px] border-b-2 border-transparent justify-center items-center text-[14px]/[normal] font-montserrat font-semibold text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors' x-text='t.label'></button>
+    <button @click="{{fetchFn}}(t.url, t.name)" :class="{{activeTabVar}} === t.name ? 'border-b-[#003060]' : ''" class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[28px] py-[10px] border-b-2 border-transparent justify-center items-center text-[14px]/[normal] font-inter font-semibold text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors' x-text='t.label'></button>
   </template>
 </div>

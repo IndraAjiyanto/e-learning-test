@@ -3,8 +3,6 @@
   Path: components/ui/admin/badge/mentor-tech-badge.hbs
   Dipakai: {{> components/ui/admin/badge/mentor-tech-badge}} di dalam x-for `tech` slice 0..2
   Props Alpine (parent): `tech.name`, `tIndex` (index 0..2 untuk warna)
-  Slicing H6vxaE Col Tags: Figma #0284C7 bg #E0F2FE, Miro #6941C6 bg #F4EBFF,
-    Slack #EA580C bg #FFEDD5, +N #404040 bg #F5F5F5, radius 16, p4 12
   Reusable: dipakai di mentor-table, bisa dipakai di detail page mentor lain.
 --}}
 <template x-for='(tech, tIndex) in (mentor.technologies ?? []).slice(0, 3)' :key='tech.id ?? tech.name'>
