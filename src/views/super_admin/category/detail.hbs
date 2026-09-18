@@ -151,7 +151,7 @@
 
         {{> category/kelas_tab }}
 
-        {{> category/alumni_tab }}
+        <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index categoryId=category.id }}</div>
 
         {{> category/faq_tab }}
 

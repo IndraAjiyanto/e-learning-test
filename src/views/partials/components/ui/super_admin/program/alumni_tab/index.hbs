@@ -3,9 +3,10 @@
   Lokasi: src/views/partials/components/ui/super_admin/program/alumni_tab/index.hbs
   Level: L2 Section (scoped super_admin)
 
-  Panel tab "Alumni" di halaman detail program: search + tabel alumni
-  + pagination. Datanya diambil sendiri dari GET /program/alumni/:courseId,
-  karena controller detail tidak ikut mengirimnya saat render.
+  Panel tab "Alumni" di halaman detail program dan detail category: search +
+  tabel alumni + pagination. Datanya diambil sendiri (GET /program/alumni/:courseId
+  atau GET /category/alumni/:categoryId), karena controller detail tidak ikut
+  mengirimnya saat render.
 
   `lang` hidup di scope Alpine bersarang: getter `rows` dan `totalPages` milik
   clientTable() akan hilang bila state digabung.
@@ -19,52 +20,51 @@
   - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
 
   Props:
-  - courseId : string (wajib) — dipakai untuk endpoint, tombol create, dan aksi delete
+  - courseId   : string — mode program; dipakai untuk endpoint, tombol create, dan aksi delete
+  - categoryId : string — mode category; memakai route /alumni/category/* dan
+                 menambah kolom Program karena alumni datang dari banyak program
+  Isi salah satunya.
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: "/program/alumni/" + {{json courseId}}, searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja"] })'
+  x-data='clientTable({ url: {{#if categoryId}}"/category/alumni/" + {{json categoryId}}{{else}}"/program/alumni/" + {{json courseId}}{{/if}}, searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja", "course.name"] })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
     placeholder='Search alumni..'
     searchLabel='Search program alumni'
-    createHref=(concat '/alumni/formCreate/' courseId)
+    createHref=(ternary categoryId (concat '/alumni/category/formCreate/' categoryId) (concat '/alumni/formCreate/' courseId))
     createLabel='Add Alumni'
     fullWidth=true
   }}
 
-  {{!-- courseId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
+  {{!-- parentId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
        yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
-  <div class='flex flex-col gap-5' x-data='{ lang: "id", courseId: {{json courseId}} }'>
+  <div class='flex flex-col gap-5' x-data='{ lang: "id", parentId: {{#if categoryId}}{{json categoryId}}{{else}}{{json courseId}}{{/if}} }'>
     {{> components/ui/super_admin/tabs/language/index ariaLabel='Program alumni language' }}
 
-    {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+    {{#> components/ui/super_admin/table/card tableClass=(ternary categoryId 'min-w-[1104px]' 'min-w-[944px]')}}
       <colgroup>
-        <col class='w-[66px]' />
         <col class='w-[73px]' />
         <col class='w-[250px]' />
         <col class='w-[334px]' />
         <col class='w-[171px]' />
+        {{#if categoryId}}<col class='w-[160px]' />{{/if}}
         <col class='w-[116px]' />
       </colgroup>
       <thead>
         <tr>
-          {{> components/ui/super_admin/table/header_cell label='No' }}
           {{> components/ui/super_admin/table/header_cell label='Profile' }}
           {{> components/ui/super_admin/table/header_cell label='Name' }}
           {{> components/ui/super_admin/table/header_cell label='Message' }}
           {{> components/ui/super_admin/table/header_cell label='Current Position' }}
+          {{#if categoryId}}{{> components/ui/super_admin/table/header_cell label='Program' }}{{/if}}
           {{> components/ui/super_admin/table/header_cell label='Action' }}
         </tr>
       </thead>
       <tbody>
-        <template x-for='(row, index) in rows' :key='row.id'>
+        <template x-for='row in rows' :key='row.id'>
           <tr class='transition-colors hover:bg-[#fafafa]'>
-
-            {{> components/ui/super_admin/table/cell
-              text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
-            }}
 
             {{#> components/ui/super_admin/table/cell variant='media'}}
               {{> components/ui/super_admin/table/avatar
@@ -94,21 +94,33 @@
               ></span>
             {{/components/ui/super_admin/table/cell}}
 
+            {{#if categoryId}}
+              {{> components/ui/super_admin/table/cell text='(row.course && row.course.name) || "—"' }}
+            {{/if}}
+
             {{#> components/ui/super_admin/table/cell variant='action'}}
-              {{> components/ui/super_admin/table/row_actions
-                entity='alumni'
-                deleteAction="'/alumni/' + row.id + '/' + courseId + '?_method=DELETE'"
-                editHref="'/alumni/formEdit/' + row.id"
-              }}
+              {{#if categoryId}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='alumni'
+                  deleteAction="'/alumni/category/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/alumni/category/formEdit/' + row.id"
+                }}
+              {{else}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='alumni'
+                  deleteAction="'/alumni/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/alumni/formEdit/' + row.id"
+                }}
+              {{/if}}
             {{/components/ui/super_admin/table/cell}}
           </tr>
         </template>
 
-        {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan=(ternary categoryId '6' '5')}}
           Loading alumni…
         {{/components/ui/super_admin/table/message_row}}
 
-        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan=(ternary categoryId '6' '5')}}
           No alumni found.
         {{/components/ui/super_admin/table/message_row}}
       </tbody>
