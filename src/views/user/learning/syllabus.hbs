@@ -186,6 +186,108 @@
       </section>
     {{/if}}
 
+    <!-- Logbook -->
+    {{!-- Hanya muncul kalau program menyalakan logbook. Kalau menyala, INILAH
+         gerbangnya: silabus berikutnya tidak terbuka sampai mentor menyetujui
+         logbook ini, meskipun student sudah menekan "Mark complete". Sebelum
+         layar ini ada, program SPL berlogbook adalah jalan buntu - tidak ada
+         cara menulis maupun menyetujuinya. --}}
+    {{#if caps.logbookEnabled}}
+      <section class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        <div class="flex flex-wrap items-center gap-2.5 border-b border-[#E5E5E5] px-5 py-4">
+          <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+            <i class="fa-solid fa-book text-sm"></i>
+          </span>
+          <h2 class="min-w-0 flex-1 font-montserrat text-base font-bold text-[#171717]">{{t 'test.startLearning.myLogbook'}}</h2>
+
+          {{#if logbook}}
+            {{#if (eq logbook.process 'approved')}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#15803D]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#22C55E]"></span>{{t 'test.assigment.approved'}}
+              </span>
+            {{else if (eq logbook.process 'rejected')}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#FECACA] bg-[#FEF2F2] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#B42318]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#EF4444]"></span>{{t 'test.assigment.needsRevision'}}
+              </span>
+            {{else}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#FDE68A] bg-[#FFFBEB] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#B45309]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#F59E0B]"></span>{{t 'test.startLearning.logBookUnderReview'}}
+              </span>
+            {{/if}}
+          {{/if}}
+        </div>
+
+        {{#if (eq logbook.process 'approved')}}
+          {{!-- Sudah disetujui: dibaca saja. Kalau isinya masih bisa ditukar
+               setelah lolos, persetujuan mentornya tidak berarti apa-apa -
+               dan logbook inilah yang membuka silabus berikutnya. --}}
+          <dl class="space-y-3 px-5 py-4">
+            <div>
+              <dt class="font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]">{{t 'test.logbook.createLogBook.activity'}}</dt>
+              <dd class="mt-0.5 font-inter text-sm text-[#171717]">{{logbook.activity}}</dd>
+            </div>
+            {{#if logbook.activityDetails}}
+              <div>
+                <dt class="font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]">{{t 'test.logbook.createLogBook.activityDetails'}}</dt>
+                <dd class="mt-0.5 font-inter text-sm text-[#525252]">{{logbook.activityDetails}}</dd>
+              </div>
+            {{/if}}
+            {{#if logbook.obstacles}}
+              <div>
+                <dt class="font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]">{{t 'test.logbook.createLogBook.obstacles'}}</dt>
+                <dd class="mt-0.5 font-inter text-sm text-[#525252]">{{logbook.obstacles}}</dd>
+              </div>
+            {{/if}}
+            {{#if logbook.otherDocumentation}}
+              <div>
+                <dt class="font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]">{{t 'test.logbook.createLogBook.linkDocumentation'}}</dt>
+                <dd class="mt-0.5 break-all font-inter text-sm">
+                  <a href="{{logbook.otherDocumentation}}" target="_blank" rel="noopener noreferrer" class="font-medium text-[#003060] underline">{{logbook.otherDocumentation}}</a>
+                </dd>
+              </div>
+            {{/if}}
+          </dl>
+        {{else}}
+          <form method="POST" action="/program/syllabus/detail/{{syllabus.id}}/logbook" class="space-y-3 px-5 py-4">
+            <p class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.logbookHint'}}</p>
+
+            <label class="block">
+              <span class="block font-inter text-xs font-semibold text-[#171717]">{{t 'test.logbook.createLogBook.activity'}}</span>
+              <input type="text" name="activity" required value="{{logbook.activity}}"
+                placeholder="{{t 'test.logbook.createLogBook.placeholderActivity'}}"
+                class="mt-1 h-10 w-full rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+            </label>
+
+            <label class="block">
+              <span class="block font-inter text-xs font-semibold text-[#171717]">{{t 'test.logbook.createLogBook.activityDetails'}}</span>
+              <textarea name="activityDetails" rows="3"
+                placeholder="{{t 'test.logbook.createLogBook.placeholderActivityDetails'}}"
+                class="mt-1 w-full rounded-lg border border-[#D4D4D4] bg-white px-3.5 py-2.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none">{{logbook.activityDetails}}</textarea>
+            </label>
+
+            <label class="block">
+              <span class="block font-inter text-xs font-semibold text-[#171717]">{{t 'test.logbook.createLogBook.obstacles'}}</span>
+              <textarea name="obstacles" rows="2"
+                placeholder="{{t 'test.logbook.createLogBook.placeholderObstacles'}}"
+                class="mt-1 w-full rounded-lg border border-[#D4D4D4] bg-white px-3.5 py-2.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none">{{logbook.obstacles}}</textarea>
+            </label>
+
+            <label class="block">
+              <span class="block font-inter text-xs font-semibold text-[#171717]">{{t 'test.logbook.createLogBook.linkDocumentation'}}</span>
+              <input type="url" name="otherDocumentation" value="{{logbook.otherDocumentation}}"
+                placeholder="{{t 'test.logbook.createLogBook.placeholderLinkDocumentation'}}"
+                class="mt-1 h-10 w-full rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+            </label>
+
+            <button type="submit"
+              class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]">
+              <i class="fa-solid fa-floppy-disk text-xs"></i>{{t 'test.logbook.createLogBook.addLogbook'}}
+            </button>
+          </form>
+        {{/if}}
+      </section>
+    {{/if}}
+
     {{!-- Penyelesaian. Ini pengganti absensi: student menandai sendiri bahwa
          materinya sudah dituntaskan, dan itulah yang membuka silabus
          berikutnya. Tombolnya tidak muncul kalau sudah selesai. --}}

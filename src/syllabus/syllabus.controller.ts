@@ -85,16 +85,53 @@ export class SyllabusController {
     // jalur bootcamp.
     const quiz = await this.syllabusService.quizFor(syllabusId);
 
+    // Logbook cuma relevan kalau program menyalakannya. Kalau mati, tidak ada
+    // yang dikirim sama sekali - bukan dikirim lalu disembunyikan template.
+    const caps = capabilitiesForCourse(syllabus.course);
+    const logbook = caps.logbookEnabled
+      ? await this.syllabusService.logbookFor(syllabusId, userId)
+      : null;
+
     return res.render('user/learning/syllabus', {
+      logbook,
       user: req.user,
       syllabus,
       quiz,
       assignments,
       view,
       course: syllabus.course,
-      caps: capabilitiesForCourse(syllabus.course),
+      caps,
       bareShell: true,
     });
+  }
+
+  /** Student menulis atau memperbarui logbook satu silabus. */
+  @Roles('user')
+  @Post('detail/:syllabusId/logbook')
+  async saveLogbook(
+    @Param('syllabusId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    syllabusId: string,
+    @Body('activity') activity: string,
+    @Body('activityDetails') activityDetails: string,
+    @Body('obstacles') obstacles: string,
+    @Body('documentation') documentation: string,
+    @Body('otherDocumentation') otherDocumentation: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.saveLogbook(syllabusId, req.user!.id, {
+        activity,
+        activityDetails,
+        obstacles,
+        documentation,
+        otherDocumentation,
+      });
+      flashToast(req, 'Logbook saved', 'Your mentor will review it.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not save logbook', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/detail/${syllabusId}`);
   }
 
   /** Student mengumpulkan atau memperbarui jawaban satu tugas silabus. */
@@ -495,6 +532,56 @@ export class SyllabusController {
       flashToastError(req, 'Could not delete quiz', e?.message || 'Try again.');
     }
     return res.redirect(`/program/syllabus/manage/${courseId}/${syllabusId}`);
+  }
+
+  /** Layar mentor: logbook seluruh student pada satu program. */
+  @Roles('admin', 'super_admin')
+  @Get('logbook/:courseId')
+  async logbooks(
+    @Param('courseId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const course = await this.syllabusService.courseFor(courseId);
+    const logbooks = await this.syllabusService.logbooksForCourse(courseId);
+    return res.render('admin/syllabus/logbook', {
+      user: req.user,
+      course,
+      courseId,
+      logbooks,
+      caps: capabilitiesForCourse(course),
+      bareShell: true,
+    });
+  }
+
+  /**
+   * Mentor menilai logbook. Menyetujui SEKALIGUS membuka silabus berikutnya,
+   * karena `logbookOk` itulah gerbangnya - lihat SyllabusService.isDone().
+   */
+  @Roles('admin', 'super_admin')
+  @Post('logbook/:courseId/:logbookId/review')
+  async reviewLogbook(
+    @Param('courseId') courseId: string,
+    @Param('logbookId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    logbookId: string,
+    @Body('process') process: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.reviewLogbook(logbookId, process as any);
+      flashToast(
+        req,
+        'Logbook reviewed',
+        process === 'approved'
+          ? 'The next syllabus is now open for them.'
+          : 'The student can revise it.',
+      );
+    } catch (e: any) {
+      flashToastError(req, 'Could not save review', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/logbook/${courseId}`);
   }
 
   /** Siapa sudah menyelesaikan silabus apa - pengganti layar absensi. */

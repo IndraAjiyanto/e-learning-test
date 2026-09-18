@@ -12,6 +12,7 @@ import { SyllabusAnswerTask } from 'src/entities/syllabus_answer_task.entity';
 import { SyllabusComment } from 'src/entities/syllabus_comment.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { Quiz } from 'src/entities/quiz.entity';
+import { SyllabusLogbook } from 'src/entities/syllabus_logbook.entity';
 import { FileType } from 'src/entities/materials.entity';
 import { capabilitiesForCourse } from 'src/courses/program-type';
 
@@ -73,6 +74,8 @@ export class SyllabusService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
+    @InjectRepository(SyllabusLogbook)
+    private readonly logbookRepository: Repository<SyllabusLogbook>,
   ) {}
 
   // ----------------------------------------------------------------- baca
@@ -622,6 +625,106 @@ export class SyllabusService {
     const syllabusId = quiz.syllabus.id;
     await this.quizRepository.remove(quiz);
     return syllabusId;
+  }
+
+
+  // ---------------------------------------------------------- logbook
+
+  /**
+   * Logbook student pada satu silabus. SATU per student per silabus.
+   *
+   * Ini bukan hiasan. Kalau program menyalakan logbook, `isDone()` menuntut
+   * `logbookOk` - artinya student bisa menandai silabus selesai tetapi silabus
+   * berikutnya TETAP TERKUNCI sampai mentor menyetujui logbooknya. Sebelum
+   * layar ini ada, tidak ada satu pun cara menulis maupun menyetujui logbook,
+   * jadi program SPL dengan logbook menyala adalah jalan buntu: ditemukan
+   * hidup di "TEST NON BOOTCAMP", silabus 1 selesai dan silabus 2 terkunci
+   * selamanya.
+   */
+  async logbookFor(
+    syllabusId: string,
+    userId: string,
+  ): Promise<SyllabusLogbook | null> {
+    return this.logbookRepository.findOne({
+      where: { syllabus: { id: syllabusId }, user: { id: userId } },
+    });
+  }
+
+  async saveLogbook(
+    syllabusId: string,
+    userId: string,
+    data: {
+      activity: string;
+      activityDetails?: string;
+      obstacles?: string;
+      documentation?: string;
+      otherDocumentation?: string;
+    },
+  ): Promise<SyllabusLogbook> {
+    if (!data.activity?.trim()) throw new Error('Activity is required.');
+
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const existing = await this.logbookFor(syllabusId, userId);
+
+    // Logbook yang SUDAH DISETUJUI tidak bisa diubah lagi - alasannya sama
+    // dengan jawaban tugas: kalau isinya masih bisa ditukar setelah lolos,
+    // persetujuan mentornya tidak berarti apa-apa. Dan karena logbook inilah
+    // yang membuka silabus berikutnya, taruhannya lebih besar.
+    if (existing?.process === 'approved') {
+      throw new Error('This logbook was approved and can no longer be changed.');
+    }
+
+    const row = existing ?? this.logbookRepository.create({ syllabus, user });
+    row.activity = data.activity.trim();
+    row.activityDetails = data.activityDetails?.trim() ?? '';
+    row.obstacles = data.obstacles?.trim() ?? '';
+    row.documentation = data.documentation?.trim() ?? '';
+    row.otherDocumentation = data.otherDocumentation?.trim() ?? '';
+    row.process = 'process';
+    return this.logbookRepository.save(row);
+  }
+
+  /** Semua logbook pada satu program - untuk layar mentor. */
+  async logbooksForCourse(courseId: string) {
+    return this.logbookRepository.find({
+      where: { syllabus: { course: { id: courseId } } },
+      relations: ['syllabus', 'user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Mentor menilai logbook. Menyetujui SEKALIGUS menandai `logbookOk` pada
+   * progres, karena itulah yang sebenarnya membuka silabus berikutnya -
+   * memisahkan keduanya cuma membuka peluang keduanya tidak sinkron.
+   */
+  async reviewLogbook(
+    logbookId: string,
+    process: ProcessStatus,
+  ): Promise<SyllabusLogbook> {
+    if (!['approved', 'process', 'rejected'].includes(process)) {
+      throw new Error('Unknown review status.');
+    }
+    const logbook = await this.logbookRepository.findOne({
+      where: { id: logbookId },
+      relations: ['syllabus', 'user'],
+    });
+    if (!logbook) throw new NotFoundException('Logbook not found');
+
+    logbook.process = process;
+    const saved = await this.logbookRepository.save(logbook);
+    await this.setLogbookApproved(
+      logbook.syllabus.id,
+      logbook.user.id,
+      process === 'approved',
+    );
+    return saved;
   }
 
   // ---------------------------------------------------------------- admin
