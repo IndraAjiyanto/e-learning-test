@@ -1,168 +1,438 @@
-{{! --- MY LEARNING CONTENT PARTIAL --- }}
 {{!--
-  Tab: My Learning list. Reskin 2026-09-15: dropped "Recent Activity",
-  "Stats", "Completed Learning" and "Learning This Week" sections - none of that was in the
-  design and all of it was hardcoded fake data (fixed numbers, a fake course, a made-up bar
-  chart), not wired to anything real. Kept the header, search+filter bar, and program card
-  grid, all of which use real `course`/`category` data from the controller.
---}}
-<div class="space-y-14 font-inter bg-[#FAFAFA] p-5">
+  Tab: My Learning (frame "Halaman My Learning").
 
-  {{! --- HEADER SECTION --- }}
-  <div>
-    <h1 class="font-inter font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
-      My Learning
+  Menggantikan versi backoffice lama yang jauh lebih tipis: satu kolom search,
+  dropdown "All Programs", dan kartu biru muda "Continue". Frame desainnya
+  memakai susunan yang sama persis dengan halaman My Learning di landing
+  (`user/mycourse.hbs` + `partials/user/myProgram/*`), jadi yang dipakai di sini
+  adalah state Alpine dan endpoint yang sudah terbukti di sana, bukan tiruan baru:
+
+    tab              -> query `category`
+    selectedCategory -> query `courseType`   (penamaan warisan dari landing)
+    selectedMethod   -> query `method`
+    searchQuery      -> query `search`
+
+  Sumber data: GET /dashboard/course/filter?userId=... yang hanya mengembalikan
+  program yang benar-benar diikuti student dan sudah launch.
+
+  Bilah filternya sengaja TIDAK menyalin `myProgram/filter.hbs`: bentuk landing
+  itu satu blok tinggi dengan label bertumpuk, sedangkan frame backoffice
+  menggambarkan satu baris ringkas [Filter] [All Category] [All Type]
+  [All Method] [Search]. Yang dibawa adalah perilakunya, bukan tata letaknya.
+
+  Props dari controller: user, category[], courseType[], lang
+--}}
+<div
+  class="font-inter"
+  x-data="{
+    tab: 'all',
+    selectedCategory: 'all',
+    selectedMethod: 'all',
+    searchQuery: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    loading: true,
+    kelasItems: [],
+    lang: '{{lang}}',
+    categoryOpen: false,
+    typeOpen: false,
+    methodOpen: false,
+
+    categories: [
+      { value: 'all', title: '{{t "test.mycourse.allCategories"}}' }{{#each category}},
+      { value: `{{this.name}}`, title: `{{this.name}}` }{{/each}}
+    ],
+    types: [
+      { value: 'all', title: '{{t "test.mycourse.allTypes"}}' }{{#each courseType}},
+      { value: `{{this.nameClassesType}}`, title: `{{this.nameClassesType}}` }{{/each}}
+    ],
+    methods: [
+      { value: 'all', title: '{{t "test.mycourse.allMethods"}}' },
+      { value: 'online', title: '{{t "test.home.programSection.online"}}' },
+      { value: 'offline', title: '{{t "test.home.programSection.offline"}}' }
+    ],
+
+    get categoryLabel() { return (this.categories.find(c => c.value === this.tab) || this.categories[0]).title; },
+    get typeLabel() { return (this.types.find(c => c.value === this.selectedCategory) || this.types[0]).title; },
+    get methodLabel() { return (this.methods.find(m => m.value === this.selectedMethod) || this.methods[0]).title; },
+
+    getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    enrolled(course) { return course.enrolledCount ?? course.userCourses?.length ?? 0; },
+    quotaPercent(course) {
+      if (!course.quota) return 0;
+      return Math.min(100, Math.round((this.enrolled(course) / course.quota) * 100));
+    },
+
+    async init() {
+      this.$watch('tab', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedCategory', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
+      await this.fetchKelas();
+    },
+
+    async fetchKelas() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        params.set('userId', '{{user.id}}');
+        if (this.tab !== 'all') params.set('category', this.tab);
+        if (this.selectedCategory !== 'all') params.set('courseType', this.selectedCategory);
+        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('page', this.currentPage);
+        params.set('limit', this.itemsPerPage);
+        const res = await fetch('/dashboard/course/filter?' + params.toString());
+        const json = await res.json();
+        this.kelasItems = json.data || [];
+        this.totalItems = json.totalItems || 0;
+        this.totalPages = json.totalPages || 1;
+        this.currentPage = json.currentPage || 1;
+      } catch (err) {
+        console.error('Fetch course error:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async changePage(page) {
+      this.currentPage = page;
+      await this.fetchKelas();
+    },
+
+    resetFilters() {
+      this.tab = 'all';
+      this.selectedCategory = 'all';
+      this.selectedMethod = 'all';
+      this.searchQuery = '';
+    },
+  }"
+>
+
+  {{! --- HEADER --- }}
+  <div class="px-4 py-4 sm:px-8 sm:py-6">
+    <h1 class="font-inter text-2xl font-bold leading-tight text-[#003060] sm:text-3xl">
+      {{t "test.mycourse.title"}}
     </h1>
-    <p class="font-inter font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
-      Continue your learning journey and track your progress.
+    <p class="mt-2 max-w-4xl font-inter text-sm leading-relaxed text-[#525252] sm:text-base">
+      {{t "test.mycourse.description"}}
     </p>
   </div>
 
-  {{! --- SEARCH & FILTER BAR SECTION --- }}
-  <div class="flex flex-col md:flex-row items-stretch md:items-center gap-[25px]">
+  {{! --- KARTU UTAMA: filter + penghitung + grid, persis seperti frame --- }}
+  <div class="px-4 pb-10 pt-6 sm:px-8">
+    <div class="rounded-xl border border-[#E5E7EB] bg-white p-4 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] sm:p-6">
 
-    <!-- Search Input -->
-    <div class="w-full md:w-[320px] h-11 bg-white rounded-md flex items-center gap-[15px] px-4 border border-slate-200/80 hover:shadow-sm transition-shadow">
-      <i class="fa-solid fa-magnifying-glass text-[#003060] text-sm flex-shrink-0"></i>
-      <input
-        type="text"
-        placeholder="Search learning"
-        class="w-full bg-transparent font-inter font-medium text-sm text-black placeholder:text-[#676767] focus:outline-none"
-      >
-    </div>
+      {{! --- BILAH FILTER --- }}
+      <div class="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-3 lg:flex-row lg:items-center">
+        <div class="flex shrink-0 items-center gap-2.5">
+          <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#003060] text-white">
+            <i class="fa-solid fa-filter text-xs"></i>
+          </span>
+          <span class="font-inter text-sm font-semibold text-[#1F2937]">Filter</span>
+        </div>
 
-    <!-- Dropdown All Programs -->
-    <div class="relative w-full md:w-[254px]" x-data="{ open: false, selected: 'All Programs', options: ['All Programs'{{#each category}}, '{{this.name}}'{{/each}}] }">
-      <input type="hidden" name="program_filter" :value="selected">
-      <button
-        type="button"
-        @click="open = !open"
-        @click.outside="open = false"
-        class="w-full h-11 bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 hover:shadow-sm transition-shadow cursor-pointer"
-        :aria-expanded="open"
-      >
-        <span class="font-inter font-medium text-sm text-[#666666] truncate pr-2" x-text="selected"></span>
-        <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
-      </button>
-      <ul
-        x-show="open"
-        x-transition
-        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-inter max-h-60 overflow-y-auto"
-        style="display: none;"
-      >
-        <template x-for="option in options" :key="option">
-          <li
-            @click="selected = option; open = false"
-            class="px-4 py-3 rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-            :class="selected === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
+        {{! Dropdown kategori -> query `category` }}
+        <div class="relative lg:w-[190px]" @click.outside="categoryOpen = false">
+          <button
+            type="button"
+            @click="categoryOpen = !categoryOpen; typeOpen = false; methodOpen = false"
+            :aria-expanded="categoryOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
           >
-            <span x-text="option"></span>
-            <i x-show="selected === option" class="fa-solid fa-check text-sm text-[#003060]"></i>
-          </li>
-        </template>
-      </ul>
-    </div>
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-table-cells-large shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="categoryLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="categoryOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="categoryOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in categories" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="tab = option.value; categoryOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="tab === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="tab === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
 
-    <!-- Dropdown All Method -->
-    <div class="relative w-full md:w-[254px]" x-data="{ open: false, selected: 'All Method' }">
-      <input type="hidden" name="method_filter" :value="selected">
-      <button
-        type="button"
-        @click="open = !open"
-        @click.outside="open = false"
-        class="w-full h-11 bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 hover:shadow-sm transition-shadow cursor-pointer"
-        :aria-expanded="open"
-      >
-        <span class="font-inter font-medium text-sm text-[#666666] truncate pr-2" x-text="selected"></span>
-        <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
-      </button>
-      <ul
-        x-show="open"
-        x-transition
-        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-inter max-h-60 overflow-y-auto"
-        style="display: none;"
-      >
-        <template x-for="option in ['All Method', 'Offline', 'Online', 'Hybrid']" :key="option">
-          <li
-            @click="selected = option; open = false"
-            class="px-4 py-3 rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-            :class="selected === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
+        {{! Dropdown tipe kelas -> query `courseType` }}
+        <div class="relative lg:w-[170px]" @click.outside="typeOpen = false">
+          <button
+            type="button"
+            @click="typeOpen = !typeOpen; categoryOpen = false; methodOpen = false"
+            :aria-expanded="typeOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
           >
-            <span x-text="option"></span>
-            <i x-show="selected === option" class="fa-solid fa-check text-sm text-[#003060]"></i>
-          </li>
-        </template>
-      </ul>
-    </div>
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-list shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="typeLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="typeOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="typeOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in types" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="selectedCategory = option.value; typeOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="selectedCategory === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="selectedCategory === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
 
-  </div>
+        {{! Dropdown metode -> query `method` }}
+        <div class="relative lg:w-[180px]" @click.outside="methodOpen = false">
+          <button
+            type="button"
+            @click="methodOpen = !methodOpen; categoryOpen = false; typeOpen = false"
+            :aria-expanded="methodOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-magnifying-glass-location shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="methodLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="methodOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="methodOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in methods" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="selectedMethod = option.value; methodOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="selectedMethod === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="selectedMethod === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
 
-  {{! --- PROGRAM CARDS SECTION --- }}
-  <div>
-    <div class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-      <h2 class="font-inter text-xl font-bold text-[#003060] sm:text-2xl">
-        Learning Path
-      </h2>
-      {{!-- Penghitung program, sesuai frame desain. Angkanya dari jumlah course
-           yang benar-benar diikuti, bukan angka tetap. --}}
-      <span class="font-inter text-sm text-[#737373]">
-        Showing {{course.length}} of {{course.length}} programs available.
-      </span>
-    </div>
+        {{! Pencarian: di frame letaknya paling kanan }}
+        <div class="relative lg:ml-auto lg:w-[300px] xl:w-[340px]">
+          <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[#718096]"></i>
+          <input
+            type="text"
+            x-model.debounce.400ms="searchQuery"
+            placeholder="{{t 'test.mycourse.placeholderSearch'}}"
+            aria-label="{{t 'test.mycourse.placeholderSearch'}}"
+            class="h-11 w-full rounded-lg border border-[#E5E7EB] bg-white pl-9 pr-9 font-inter text-sm text-[#1F2937] placeholder:text-[#9CA3AF] focus:border-[#003060] focus:outline-none"
+          />
+          <button
+            type="button"
+            x-show="searchQuery !== ''"
+            @click="searchQuery = ''"
+            style="display:none"
+            aria-label="Clear search"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] transition-colors hover:text-[#003060]"
+          >
+            <i class="fa-solid fa-circle-xmark text-sm"></i>
+          </button>
+        </div>
+      </div>
 
-    {{#if course.length}}
-      <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-[29px]">
-        {{#each course}}
-        <div class="w-full max-w-[300px] min-h-[386px] bg-[#E0F1F9] rounded-xl shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-[13px] flex flex-col justify-between gap-[12px] mx-auto sm:mx-0">
-          <div class="flex flex-col gap-[12px]">
-            <!-- Badge -->
-            <div class="w-fit px-2 h-[23px] bg-[#0B1F3B1A]/10 rounded-md flex items-center justify-center">
-              <span class="font-inter font-medium text-xs text-[#003060]">{{this.category.name}}</span>
-            </div>
-            <!-- Image -->
-            <img
-              src="{{this.image}}"
-              alt="{{this.name}}"
-              onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
-              class="w-full h-[138px] rounded-xl object-cover"
-            >
-            <!-- Course Title -->
-            <h3 class="font-inter font-semibold text-base text-[#003060]">
-              {{this.name}}
-            </h3>
-            <!-- Tag Row -->
-            <div class="flex items-center gap-[6px] flex-wrap">
-              {{#if this.method}}
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-inter font-medium text-xs text-[#003060]">
-                <i class="fa-solid fa-location-dot text-xs"></i>
-                {{this.method}}
-              </span>
-              {{/if}}
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-inter font-medium text-xs text-[#003060]">
-                <i class="fa-solid fa-graduation-cap text-xs"></i>
-                {{this.weeks.length}} Weeks
-              </span>
+      {{! --- PENGHITUNG HASIL --- }}
+      <p class="mt-5 font-inter text-sm text-[#525252]">
+        {{t "test.home.programSection.showing"}}
+        <span class="font-semibold text-[#1F2937]" x-text="kelasItems.length"></span>
+        {{t "test.home.programSection.of"}}
+        <span class="font-semibold text-[#1F2937]" x-text="totalItems"></span>
+        {{t "test.mycourse.programsAvailable"}}
+      </p>
+
+      {{! --- SKELETON SAAT MEMUAT --- }}
+      <div x-show="loading" class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <template x-for="i in 3" :key="i">
+          {{!-- Bentuknya meniru kartu sungguhan baris demi baris. Versi lama jauh
+               lebih pendek, sehingga saat kartunya datang seluruh halaman
+               bergeser turun - itu yang membuat My Learning punya CLS 0.65. --}}
+          <div class="animate-pulse overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+            <div class="h-[160px] w-full bg-[#EEF2F6]"></div>
+            <div class="flex flex-col gap-3 p-3">
+              <div class="flex gap-2">
+                <div class="h-6 w-20 rounded-full bg-[#EEF2F6]"></div>
+                <div class="h-6 w-28 rounded-full bg-[#EEF2F6]"></div>
+              </div>
+              <div class="flex gap-2">
+                <div class="h-6 w-16 rounded-full bg-[#EEF2F6]"></div>
+                <div class="h-6 w-24 rounded-full bg-[#EEF2F6]"></div>
+              </div>
+              <div class="h-5 w-3/4 rounded bg-[#EEF2F6]"></div>
+              <div class="h-3 w-full rounded bg-[#EEF2F6]"></div>
+              <div class="h-[52px] w-full rounded-lg bg-[#EEF2F6]"></div>
+              <div class="h-11 w-full rounded-lg bg-[#EEF2F6]"></div>
             </div>
           </div>
-          <!-- Button -->
-          <a
-            href="/program/{{this.id}}"
-            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent flex items-center justify-center font-inter font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
-          >
-            <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
-            <i class="fa-solid fa-arrow-right text-sm"></i>
-          </a>
-        </div>
-        {{/each}}
+        </template>
       </div>
-    {{else}}
-      <div class="flex flex-col items-center gap-3 rounded-2xl border border-[#E5E7EB] bg-white py-14 text-center">
+
+      {{! --- GRID KARTU PROGRAM --- }}
+      <div x-show="!loading" style="display:none" class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <template x-for="course in kelasItems" :key="course.id">
+          {{!--
+            Gambar dibuat menyatu dengan tepi kartu, sama seperti kartu program
+            di panel Start Learning: tinggi 160px, tanpa sudut membulat sendiri,
+            dan kartunya yang memotong sudutnya lewat overflow-hidden.
+            Sebelumnya gambar duduk di dalam padding kartu dengan sudut membulat
+            sendiri, sehingga dua kartu yang menampilkan program yang sama
+            terlihat berbeda antar halaman.
+          --}}
+          <div class="group flex h-full flex-col overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition-shadow hover:shadow-[0px_6px_16px_-4px_rgba(11,31,59,0.12)]">
+            <div class="h-[160px] w-full shrink-0 overflow-hidden bg-[#EEF2F6]">
+              <img
+                :src="course.image"
+                :alt="course.name"
+                onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                class="h-full w-full object-cover transition-transform duration-300"
+              />
+            </div>
+
+            {{!-- Isi kartu memakai padding sendiri karena kartunya tidak lagi
+                 punya padding luar. --}}
+            <div class="flex flex-1 flex-col gap-3 p-3">
+
+            {{! Chip kategori dan tipe kelas }}
+            <div class="flex flex-wrap items-center gap-2">
+              <template x-if="course.category?.name">
+                <span class="rounded-full bg-[#F1F5F9] px-3 py-1 font-inter text-xs font-semibold text-[#334155]" x-text="course.category.name"></span>
+              </template>
+              <template x-if="course.courseType?.nameClassesType">
+                <span class="rounded-full bg-[#003060] px-3 py-1 font-inter text-xs font-semibold text-white" x-text="course.courseType.nameClassesType"></span>
+              </template>
+            </div>
+
+            {{! Chip metode dan lokasi }}
+            <div class="flex flex-wrap items-center gap-2">
+              <template x-if="course.method">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F1F5F9] px-3 py-1 font-inter text-xs text-[#475569]">
+                  <i class="fa-solid fa-location-dot text-xs text-[#64748B]"></i>
+                  <span class="capitalize" x-text="course.method"></span>
+                </span>
+              </template>
+              <template x-if="getByLang(course.locations, lang)">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F1F5F9] px-3 py-1 font-inter text-xs text-[#475569]">
+                  <i class="fa-solid fa-user text-xs text-[#64748B]"></i>
+                  <span x-text="getByLang(course.locations, lang)"></span>
+                </span>
+              </template>
+            </div>
+
+            <h3 class="font-inter text-base font-bold leading-snug text-[#0F172A]" x-text="course.name"></h3>
+
+            <p class="line-clamp-1 font-inter text-xs text-[#64748B]" x-text="getByLang(course.description, lang)"></p>
+
+            {{! Kuota + bar kemajuan }}
+            <div class="rounded-lg bg-[#F8FAFC] p-3">
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 font-inter text-xs text-[#64748B]">
+                  <i class="fa-solid fa-users text-xs"></i>
+                  {{t "test.home.programSection.kuota"}}
+                </span>
+                <span class="font-inter text-xs font-bold text-[#0F172A]">
+                  <span x-text="enrolled(course)"></span>
+                  /
+                  <span x-text="course.quota || 0"></span>
+                  {{t "test.home.programSection.student"}}
+                </span>
+              </div>
+              <div
+                class="h-1.5 w-full overflow-hidden rounded-full bg-[#E2E8F0]"
+                role="progressbar"
+                aria-label="{{t 'test.home.programSection.kuota'}}"
+                :aria-valuenow="quotaPercent(course)"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div class="h-full rounded-full bg-[#22C55E] transition-all duration-500" :style="'width: ' + quotaPercent(course) + '%'"></div>
+              </div>
+            </div>
+
+            {{!-- Tetap ke /program/:id. Untuk program yang sudah diikuti, rute itu
+                 mengalihkan student ke area belajar di dalam shell backoffice. --}}
+            <a
+              :href="'/program/' + course.id"
+              class="mt-auto flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#003060] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#001f3f]"
+            >
+              <span>{{t "test.home.programSection.buttonViewProgram"}}</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      {{! --- KOSONG --- }}
+      <div x-show="!loading && kelasItems.length === 0" style="display:none" class="mt-5 flex flex-col items-center gap-3 rounded-xl border border-dashed border-[#E5E7EB] bg-[#FAFAFA] py-14 text-center">
         <span class="grid size-14 place-items-center rounded-full bg-[#E0F2F9] text-[#003060]">
           <i class="fa-solid fa-book-open text-xl"></i>
         </span>
-        <p class="max-w-sm font-inter text-sm text-[#6B7280]">You're not enrolled in any program yet. Browse our programs to get started.</p>
+        <p class="max-w-sm font-inter text-sm text-[#6B7280]">{{t "test.home.programSection.spanNoProgram"}}</p>
+        <button
+          type="button"
+          @click="resetFilters()"
+          x-show="tab !== 'all' || selectedCategory !== 'all' || selectedMethod !== 'all' || searchQuery !== ''"
+          style="display:none"
+          class="inline-flex h-10 items-center gap-2 rounded-lg border border-[#003060] px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#003060] hover:text-white"
+        >
+          <i class="fa-solid fa-rotate-right text-xs"></i>
+          {{t "test.home.programSection.clearFilters"}}
+        </button>
       </div>
-    {{/if}}
-  </div>
 
+      {{! --- PAGINASI --- }}
+      <div x-show="!loading && totalPages > 1" style="display:none" class="mt-8 flex items-center justify-center gap-2">
+        <button
+          type="button"
+          @click="changePage(Math.max(1, currentPage - 1))"
+          :disabled="currentPage === 1"
+          aria-label="Previous page"
+          class="grid size-10 place-items-center rounded-lg border border-[#E5E7EB] bg-white text-[#475569] transition-colors hover:bg-[#F4F7FC] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        <template x-for="page in totalPages" :key="page">
+          <button
+            type="button"
+            @click="changePage(page)"
+            class="size-10 rounded-lg border font-inter text-sm font-semibold transition-colors"
+            :class="currentPage === page ? 'border-[#003060] bg-[#003060] text-white' : 'border-[#E5E7EB] bg-white text-[#475569] hover:bg-[#F4F7FC]'"
+            x-text="page"
+          ></button>
+        </template>
+        <button
+          type="button"
+          @click="changePage(Math.min(totalPages, currentPage + 1))"
+          :disabled="currentPage === totalPages"
+          aria-label="Next page"
+          class="grid size-10 place-items-center rounded-lg border border-[#E5E7EB] bg-white text-[#475569] transition-colors hover:bg-[#F4F7FC] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>

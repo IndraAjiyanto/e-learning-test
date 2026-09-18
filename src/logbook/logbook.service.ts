@@ -6,6 +6,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
+import { capabilitiesForCourse } from 'src/courses/program-type';
 import { Session } from 'src/entities/session.entity';
 import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
@@ -160,6 +161,30 @@ export class LogbookService {
       throw new NotFoundException('log book not found');
     }
     return logbooks;
+  }
+
+  /**
+   * Apakah program yang menaungi sebuah sesi memang memakai logbook.
+   *
+   * Dipakai rute logbook student sebagai penjaga: pada program SPL yang
+   * logbooknya dimatikan, antarmukanya memang sudah tidak menampilkan tombol
+   * apa pun, tetapi URL-nya masih bisa diketik langsung atau tersimpan di
+   * riwayat peramban. Tanpa penjaga ini, logbook masih bisa dibuat untuk
+   * program yang seharusnya tidak punya logbook sama sekali.
+   */
+  async logbookEnabledForSession(sessionId: string): Promise<boolean> {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
+    });
+    return capabilitiesForCourse(session?.weeks?.course ?? null).logbookEnabled;
+  }
+
+  async logbookEnabledForCourse(courseId: string): Promise<boolean> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    return capabilitiesForCourse(course).logbookEnabled;
   }
 
   async findCapstoneProjects(kategoriId?: string) {

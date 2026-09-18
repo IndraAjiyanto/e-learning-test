@@ -12,6 +12,13 @@ function programData(mode) {
     submitAttempted: false,
     touched: {},
     paidClass: false,
+    // Bentuk belajar program. Lihat courses/program-type.ts - hanya
+    // non_bootcamp yang boleh mematikan logbook.
+    programType: 'bootcamp',
+    logbookEnabled: true,
+    get logbookConfigurable() {
+      return this.programType === 'non_bootcamp';
+    },
     methodOnline: true,
     coverHasFile: false,
     coverValid: true,

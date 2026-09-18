@@ -15,8 +15,9 @@
                 backend; course_benefits menyimpannya sebagai `benefit[...]`.
                 Hanya mengubah atribut name, bukan key state Alpine.
 
-  Partial block (opsional) dirender di akhir kartu 03 — Edit menaruh tombol
-  aksinya di sana, sedangkan Create memakai kartu aksi terpisah.
+  Partial block (opsional) dirender di akhir kartu terakhir yang tampil (03, atau
+  02 bila hideOrder) — Edit menaruh tombol aksinya di sana, sedangkan Create
+  memakai kartu aksi terpisah.
 
   Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
   meski tab-nya tidak aktif; x-cloak mencegah ketiganya sempat tampil bertumpuk
@@ -83,6 +84,12 @@
     {{> benefitLangField field='title' nameField=(default titleName 'title') label='Title' placeholder='Enter a title...' }}
 
     {{> benefitLangField field='description' label='Description' placeholder='Enter a description...' }}
+
+    {{#if hideOrder}}
+      {{#if @partial-block}}
+        {{> @partial-block}}
+      {{/if}}
+    {{/if}}
   </section>
 
   {{#unless hideOrder}}

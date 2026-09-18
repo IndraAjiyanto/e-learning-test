@@ -1,14 +1,12 @@
-<div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
+{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
+     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
+     dan footer. Controller-nya merender dengan bareShell: true.
+     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.myLogbook') back=(concat '/program/myProgram/' user.id '?courseId=' logbook.session.weeks.course.id)}}
+<div class="min-h-full py-8">
   <div class="max-w-4xl mx-auto px-6">
-    <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
+    <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6">
       <div class="flex justify-start mb-8">
-  <a href="/program/myProgram/{{user.id}}?courseId={{logbook.session.weeks.course.id}}"
-     class="btn bg-white inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-    </svg>
-    {{t "test.logbook.detailLogBook.backToProgram"}}
-  </a>
 </div>
       <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center font-inter">{{t "test.logbook.detailLogBook.logbookDetail"}}</h2>
 
@@ -17,19 +15,19 @@
         <!-- Kolom Kiri -->
         <div class="space-y-6">
           <!-- Activity -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.activity"}}</p>
+          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <p class="text-lg font-semibold text-[#404040] mb-3">{{t "test.logbook.detailLogBook.activity"}}</p>
             <p class="text-gray-900 text-lg leading-relaxed">{{logbook.activity}}</p>
           </div>
 
           <!-- Activity Details -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.activityDetails"}}</p>
+          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <p class="text-lg font-semibold text-[#404040] mb-3">{{t "test.logbook.detailLogBook.activityDetails"}}</p>
             <p class="text-gray-900 text-lg leading-relaxed whitespace-pre-line">{{logbook.activityDetails}}</p>
           </div>
 
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">                  
+          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <p class="text-lg font-semibold text-[#404040] mb-3">                  
                 {{t "test.logbook.createLogBook.linkDocumentation"}}
               </p>
             <a href="{{logbook.otherDocumentation}}" target="_blank" class="text-gray-900 text-lg leading-relaxed whitespace-pre-line">{{logbook.otherDocumentation}}</a>
@@ -39,29 +37,29 @@
         <!-- Kolom Kanan -->
         <div class="space-y-6">
           <!-- Obstacle -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.obstacles"}}</p>
+          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <p class="text-lg font-semibold text-[#404040] mb-3">{{t "test.logbook.detailLogBook.obstacles"}}</p>
             <p class="text-gray-900 text-lg leading-relaxed">{{logbook.obstacles}}</p>
           </div>
 
           <!-- User -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.user"}}</p>
+          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <p class="text-lg font-semibold text-[#404040] mb-3">{{t "test.logbook.detailLogBook.user"}}</p>
             <p class="text-gray-900 text-lg">{{user.username}}</p>
           </div>
 
           <!-- Status -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.status"}}</p>
+          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <p class="text-lg font-semibold text-[#404040] mb-3">{{t "test.logbook.detailLogBook.status"}}</p>
             <span class="inline-flex items-center px-4 py-2 rounded-full text-base font-semibold shadow-sm
-{{#if (roles logbook.process 'acc')}}
-                bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 border border-emerald-200
+{{#if (roles logbook.process 'approved')}}
+                bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]
 {{else if (roles logbook.process 'rejected')}}
-                bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200
+                bg-[#FEF2F2] text-[#B42318] border border-[#FECACA]
               {{else}}
-                bg-gradient-to-r from-slate-50 to-gray-50 text-slate-700 border border-slate-200
+                bg-[#f5f5f5] text-[#718096] border border-[#d9d9d9]
               {{/if}}">
-              {{#if (roles logbook.process 'acc')}}
+              {{#if (roles logbook.process 'approved')}}
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
@@ -83,28 +81,28 @@
       </div>
 
       <!-- Documentation Section (Full Width) — diperbesar & fullscreen -->
-      <div class="mt-8 bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm" x-data="{ full:false }">
-        <p class="text-lg font-semibold text-gray-700 mb-4">{{t "test.logbook.detailLogBook.photoDocumentation"}}</p>
+      <div class="mt-8 bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" x-data="{ full:false }">
+        <p class="text-lg font-semibold text-[#404040] mb-4">{{t "test.logbook.detailLogBook.photoDocumentation"}}</p>
         {{#if logbook.documentation}}
-          <div @click="full=true" class="flex justify-center bg-white p-2 rounded-xl border border-slate-200 cursor-zoom-in group hover:border-[#93c5fd] transition-colors">
+          <div @click="full=true" class="flex justify-center bg-white p-2 rounded-xl border border-[#E5E5E5] cursor-zoom-in group hover:border-[#93c5fd] transition-colors">
             <img src="{{logbook.documentation}}" alt="Dokumentasi" 
-                 class="w-full max-h-[560px] min-h-[320px] object-contain rounded-lg border border-slate-300 shadow-sm group-hover:shadow-md transition-all duration-300">
+                 class="w-full max-h-[560px] min-h-[320px] object-contain rounded-lg border border-[#D4D4D4] shadow-sm transition-all duration-300">
           </div>
-          <p class="mt-2 text-center text-xs text-slate-500">Klik gambar untuk fullscreen</p>
+          <p class="mt-2 text-center text-xs text-[#737373]">Klik gambar untuk fullscreen</p>
           <div x-show="full" x-transition.opacity x-cloak @click.self="full=false" @keydown.escape.window="full=false" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 sm:p-8">
             <button @click="full=false" class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[#0f172a] hover:bg-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
-            <img src="{{logbook.documentation}}" alt="Fullscreen" class="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl bg-white p-1 shadow-2xl" />
+            <img src="{{logbook.documentation}}" alt="Fullscreen" class="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl bg-white p-1 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
           </div>
         {{else}}
           <div class="text-center py-8">
             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <p class="text-lg text-slate-500 font-medium">{{t "test.logbook.detailLogBook.noDocumentation"}}</p>
+            <p class="text-lg text-[#737373] font-medium">{{t "test.logbook.detailLogBook.noDocumentation"}}</p>
           </div>
         {{/if}}
       </div>
@@ -112,3 +110,4 @@
     </div>
   </div>
 </div>
+{{/user/shell_frame/index}}

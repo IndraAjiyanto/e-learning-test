@@ -3,39 +3,54 @@
   Lokasi: src/views/partials/components/ui/super_admin/program/faq_tab/index.hbs
   Level: L2 Section (scoped super_admin)
 
-  Panel tab "FAQ" di halaman detail program: search + tabel tanya-jawab
-  + pagination. Datanya diambil sendiri dari GET /program/faq/:courseId,
-  karena controller detail tidak ikut mengirimnya saat render.
+  Panel tab "FAQ" di halaman detail program dan detail category: search + tabel
+  tanya-jawab + pagination. Datanya diambil sendiri (GET /program/faq/:courseId
+  atau GET /category/faq/:categoryId), karena controller detail tidak ikut
+  mengirimnya saat render.
 
   `lang` hidup di scope Alpine bersarang: getter `rows` dan `totalPages` milik
   clientTable() akan hilang bila state digabung.
 
-  questions & answers dibaca sebagai objek { id, en, ja } sesuai yang tersimpan;
-  entity course_question menuliskannya string[], tapi itu sudah usang.
+  Isi tanya-jawab dibaca sebagai objek { id, en, ja } sesuai yang tersimpan;
+  entity course_question menuliskannya string[], tapi itu sudah usang. Nama
+  field-nya beda: program `questions`/`answers`, category `question`/`answer`.
 
   Halaman pemanggil WAJIB memuat sekali:
   - components/ui/super_admin/table/client_table  (factory clientTable)
   - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
 
   Props:
-  - courseId : string (wajib) — dipakai untuk endpoint, tombol create, dan aksi delete
+  - courseId   : string — mode program (/question-program/*)
+  - categoryId : string — mode category (/question-general/*)
+  Isi salah satunya; dipakai untuk endpoint, tombol create, dan aksi delete.
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: "/program/faq/" + {{json courseId}}, searchKeys: ["questions.id", "questions.en", "questions.ja", "answers.id", "answers.en", "answers.ja"] })'
+  {{#if categoryId}}
+    x-data='clientTable({ url: "/category/faq/" + {{json categoryId}}, searchKeys: ["question.id", "question.en", "question.ja", "answer.id", "answer.en", "answer.ja"] })'
+  {{else}}
+    x-data='clientTable({ url: "/program/faq/" + {{json courseId}}, searchKeys: ["questions.id", "questions.en", "questions.ja", "answers.id", "answers.en", "answers.ja"] })'
+  {{/if}}
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
     placeholder='Search FAQ..'
     searchLabel='Search program FAQ'
-    createHref=(concat '/question-program/formCreate/' courseId)
+    createHref=(ternary categoryId (concat '/question-general/formCreate/' categoryId) (concat '/question-program/formCreate/' courseId))
     createLabel='Add FAQ'
     fullWidth=true
   }}
 
-  {{!-- courseId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
+  {{!-- parentId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
        yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
-  <div class='flex flex-col gap-5' x-data='{ lang: "id", courseId: {{json courseId}} }'>
+  <div
+    class='flex flex-col gap-5'
+    {{#if categoryId}}
+      x-data='{ lang: "id", parentId: {{json categoryId}}, qKey: "question", aKey: "answer" }'
+    {{else}}
+      x-data='{ lang: "id", parentId: {{json courseId}}, qKey: "questions", aKey: "answers" }'
+    {{/if}}
+  >
     {{> components/ui/super_admin/tabs/language/index ariaLabel='Program FAQ language' }}
 
     {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
@@ -64,23 +79,31 @@
             {{#> components/ui/super_admin/table/cell}}
               <span
                 class='block truncate font-inter text-sm leading-5 text-[#525252]'
-                x-text="(row.questions && row.questions[lang]) || '—'"
+                x-text="(row[qKey] && row[qKey][lang]) || '—'"
               ></span>
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell}}
               <span
                 class='block truncate font-inter text-sm leading-5 text-[#525252]'
-                x-text="(row.answers && row.answers[lang]) || '—'"
+                x-text="(row[aKey] && row[aKey][lang]) || '—'"
               ></span>
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell variant='action'}}
-              {{> components/ui/super_admin/table/row_actions
-                entity='FAQ'
-                deleteAction="'/question-program/' + row.id + '/' + courseId + '?_method=DELETE'"
-                editHref="'/question-program/formEdit/' + row.id"
-              }}
+              {{#if categoryId}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='FAQ'
+                  deleteAction="'/question-general/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/question-general/formEdit/' + row.id"
+                }}
+              {{else}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='FAQ'
+                  deleteAction="'/question-program/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/question-program/formEdit/' + row.id"
+                }}
+              {{/if}}
             {{/components/ui/super_admin/table/cell}}
           </tr>
         </template>

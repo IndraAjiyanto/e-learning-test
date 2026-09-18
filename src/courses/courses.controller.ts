@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
+import { capabilitiesForCourse } from './program-type';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -465,8 +466,29 @@ await this.coursesService.addUserToCourse(userId, courseId);
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
     // myProgram menampilkan angka nol di semua kartu statistik.
-    const { dashboardStats, ongoingCourses } =
+    const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(req.user!.id);
+
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    const initialSection = String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+    // Apakah program ini sudah tuntas.
+    //
+    // `userWithCourses` di atas bukan baris pendaftaran sungguhan - ia dirakit
+    // dari daftar course (`course.map((c) => ({ course: c }))`), jadi kolom
+    // `progress` memang tidak pernah ada di dalamnya. Itu sebabnya panel
+    // Certificate sempat menyatakan program yang sudah selesai sebagai belum
+    // selesai. Di sini dibaca dari baris user_courses yang sebenarnya.
+    // Hitungan untuk ringkasan tab My Logbook di dalam shell.
+    const stats = activeCourse
+      ? await this.coursesService.findLearningStats(activeCourse.id, id)
+      : null;
+    const enrolments = await this.usersService.findWithCourses(id);
+    const activeCourseCompleted = !!enrolments?.userCourses?.find(
+      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+    );
 
     res.render('user/user_profile/index', {
       course,
@@ -477,9 +499,21 @@ await this.coursesService.addUserToCourse(userId, courseId);
       userWithCourses,
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
+      initialSection,
+      stats,
+      activeCourseCompleted,
+      // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
+      // ia membaca caps - lihat courses/program-type.ts.
+      caps: capabilitiesForCourse(activeCourse),
+      // Peta untuk sisi klien: berpindah program tidak memuat ulang halaman,
+      // jadi sakelar logbook harus ikut berpindah.
+      programCaps: Object.fromEntries(
+        course.map((c) => [c.id, capabilitiesForCourse(c)]),
+      ),
       portfolio,
       dashboardStats,
       ongoingCourses,
+      programComposition,
       bareShell: true,
     });
   }
@@ -489,6 +523,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
   async myCourseFragment(
     @Param('id') id: string,
     @Res() res: Response,
+    @Req() req: Request,
     @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
@@ -496,10 +531,60 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    // Panel ini kini merender komposisi program_detail yang dipindahkan dari
+    // halaman landing, jadi datanya harus sama persis dengan yang dulu disiapkan
+    // untuk kelas/detail.hbs: status buka-kunci per minggu dari findWeeks(),
+    // baris user_courses, dan portfolio student pada course ini.
+    const [minggu, user_kelas, portfolio] = await Promise.all([
+      activeCourse
+        ? this.coursesService.findWeeks(activeCourse.id, id)
+        : Promise.resolve([]),
+      activeCourse
+        ? this.coursesService.findOneUserCourse(activeCourse.id)
+        : Promise.resolve(null),
+      activeCourse
+        ? this.coursesService.findOnePortfolio(id, activeCourse.id)
+        : Promise.resolve(null),
+    ]);
+
+    // Ringkasan kemajuan untuk kepala panel. Dihitung di sini, bukan di
+    // template: Handlebars tidak punya penjumlahan bersyarat, dan status
+    // minggu sudah ada di `minggu` sehingga tidak perlu query tambahan.
+    // Sumber kebenarannya sama dengan yang dipakai button_week.hbs:
+    //   terbuka  = weekProgresses[0].process
+    //   selesai  = weekProgresses[0].quiz
+    const weekState = (w: (typeof minggu)[number]) => {
+      const p = w.weekProgresses?.[0];
+      return { unlocked: p?.process === true, done: p?.quiz === true };
+    };
+    const totalWeeks = minggu.length;
+    const completedWeeks = minggu.filter((w) => weekState(w).done).length;
+    // Minggu berjalan = minggu terbuka pertama yang belum selesai. Kalau
+    // semuanya sudah selesai, tidak ada minggu berjalan.
+    const currentWeek =
+      minggu.find((w) => {
+        const st = weekState(w);
+        return st.unlocked && !st.done;
+      }) ?? null;
+    const progress = {
+      totalWeeks,
+      completedWeeks,
+      percent: totalWeeks ? Math.round((completedWeeks / totalWeeks) * 100) : 0,
+      currentWeekId: currentWeek?.id ?? null,
+      currentWeekNumber: currentWeek?.weekNumber ?? null,
+      allDone: totalWeeks > 0 && completedWeeks === totalWeeks,
+    };
+
     return res.render(
       'partials/user/sidebar_user_profile/my_learning/start_learning/index',
       {
         course: activeCourse,
+        minggu,
+        progress,
+        user_kelas,
+        portfolio,
+        user: req.user,
+        caps: capabilitiesForCourse(activeCourse),
         layout: false,
       },
     );
@@ -517,8 +602,24 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render('partials/user/sidebar_user_profile/assignment/index', {
       course: activeCourse,
+      stats,
+      weekSummaries,
+      caps: capabilitiesForCourse(activeCourse),
       layout: false,
     });
   }
@@ -536,11 +637,27 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render(
       'partials/user/sidebar_user_profile/my_learning/start_learning/attendance/index',
       {
         course: activeCourse,
         user: req.user,
+        stats,
+        weekSummaries,
+        caps: capabilitiesForCourse(activeCourse),
         layout: false,
       },
     );
@@ -558,13 +675,26 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
-    return res.render(
-      'partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index',
-      {
-        course: activeCourse,
-        layout: false,
-      },
+        // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
     );
+
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
+    return res.render('partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index', {
+      course: activeCourse,
+      stats,
+      weekSummaries,
+      caps: capabilitiesForCourse(activeCourse),
+      layout: false,
+    });
   }
 
   @Roles('user')
@@ -726,26 +856,15 @@ await this.coursesService.addUserToCourse(userId, courseId);
         }
       }
       if (isUserInKelas) {
-        // res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
-          const mingguUpdated = await this.coursesService.findWeeks(
-          id,
-          req.user.id,
+        // Student yang SUDAH terdaftar dibawa ke Start Learning di backoffice.
+        // Sebelumnya di sini dirender kelas/detail.hbs, yang memakai navbar publik
+        // dan footer, sehingga student mendapat chrome landing di tengah alur
+        // belajarnya. Barisnya memang sudah pernah ditulis lalu dikomentari.
+        // Pengunjung yang belum terdaftar tetap melihat halaman pemasaran di
+        // cabang else.
+        return res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${course.id}`,
         );
-        const user_kelas = await this.coursesService.findOneUserCourse(
-          // req.user.id,
-          course.id,
-        );
-        const portfolio = await this.coursesService.findOnePortfolio(
-          req.user.id,
-          course.id,
-        );
-        res.render('kelas/detail', {
-          user_kelas,
-          portfolio,
-          user: req.user,
-          course,
-          minggu: mingguUpdated,
-        });
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
         const courseQuestions =
@@ -1006,6 +1125,124 @@ await this.coursesService.addUserToCourse(userId, courseId);
       req.flash('error', error.message || 'Failed to remove user from program');
       res.redirect(`/program/addUser/${courseId}`);
     }
+  }
+
+  // Halaman detail sesi.
+  //
+  // WAJIB dideklarasikan SEBELUM `session/:weeksId` di bawahnya: Nest mencocokkan
+  // rute sesuai urutan pendaftaran, jadi kalau terbalik, `session/:weeksId` akan
+  // menelan "detail" sebagai weeksId dan halaman ini tidak pernah tercapai.
+  @Roles('user')
+  @Get('session/detail/:sessionId')
+  async sessionDetail(
+    @Param('sessionId') sessionId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.coursesService.findSessionDetail(
+      sessionId,
+      req.user!.id,
+    );
+
+    // Sesi terkunci tidak dirender isinya; student dikembalikan ke area belajar
+    // dengan alasannya. Penguncian dihitung di service, bukan di template.
+    if (!detail.unlocked) {
+      req.flash(
+        'error',
+        'Complete the previous session before opening this one.',
+      );
+      return res.redirect(
+        `/program/myProgram/${req.user!.id}?courseId=${detail.course.id}`,
+      );
+    }
+
+    // Bentuk data dirapikan di sini, bukan di template: Handlebars tidak punya
+    // filter, jadi mengelompokkan materi per jenis di view berarti tiga kali
+    // perulangan penuh beserta {{#if}} di dalamnya.
+    // Dikelompokkan per jenis, tetapi daftar isinya ikut dibawa: halaman
+    // menyebut judul tiap materi, bukan hanya jumlahnya. Satu sesi bisa punya
+    // beberapa PDF, dan "PDF Material 3" tidak memberi tahu apa pun tentang
+    // ketiganya.
+    const byType = (t: string) =>
+      detail.session.materials.filter((m) => m.fileType === t);
+    const materialGroups = [
+      { type: 'pdf', icon: 'fa-file-pdf', items: byType('pdf') },
+      { type: 'ppt', icon: 'fa-file-powerpoint', items: byType('ppt') },
+      { type: 'video', icon: 'fa-circle-play', items: byType('video') },
+    ].filter((g) => g.items.length > 0);
+    // Status tugas dipisah dari sekadar "sudah mengirim atau belum".
+    // Sebelumnya `submitted` bernilai true begitu ada baris jawaban, dan
+    // tampilannya menulis "Assignment Completed" - termasuk untuk jawaban yang
+    // DITOLAK mentor. Student jadi mengira tugasnya beres padahal harus
+    // dikirim ulang.
+    const assignments = detail.session.assignments.map((a) => {
+      const answer = a.taskAnswers?.[0] ?? null;
+      const status: 'not_submitted' | 'in_review' | 'approved' | 'rejected' =
+        !answer
+          ? 'not_submitted'
+          : answer.process === 'approved'
+            ? 'approved'
+            : answer.process === 'rejected'
+              ? 'rejected'
+              : 'in_review';
+      return { ...a, answer, status, submitted: !!answer };
+    });
+    const logbook = detail.session.logbooks?.[0] ?? null;
+
+    // Empat langkah yang membentuk satu sesi. Dipakai untuk penanda kemajuan di
+    // kepala halaman, supaya student melihat sisa pekerjaannya sekali lihat.
+    // Kapabilitas program pemilik sesi ini. Halaman sesi berdiri sendiri,
+    // jadi ia menghitung caps-nya sendiri dari course sesi tersebut.
+    const sessionCaps = capabilitiesForCourse(
+      detail.session?.weeks?.course ?? null,
+    );
+
+    const steps = [
+      { key: 'attendance', done: detail.attended, available: true },
+      {
+        key: 'materials',
+        done: detail.session.materials.length > 0 && detail.attended,
+        available: detail.session.materials.length > 0,
+      },
+      {
+        key: 'assignment',
+        // Dihitung dari jawaban yang DISETUJUI, bukan sekadar terkirim - kalau
+        // tidak, tugas yang ditolak tetap menghitung sesi ini sebagai beres.
+        done:
+          assignments.length > 0 &&
+          assignments.every((a) => a.status === 'approved'),
+        available: assignments.length > 0,
+      },
+      // Logbook hanya jadi langkah kalau program ini memang memakainya.
+      // Tanpa `available`, sesi pada program SPL tidak akan pernah mencapai
+      // 100% karena ada satu langkah yang tidak punya jalan diselesaikan.
+      {
+        key: 'logbook',
+        done: detail.logbookDone,
+        available: sessionCaps.logbookEnabled,
+      },
+    ];
+    const stepsAvailable = steps.filter((x) => x.available);
+    const stepsDone = stepsAvailable.filter((x) => x.done).length;
+
+    return res.render('user/learning/session', {
+      user: req.user,
+      ...detail,
+      caps: sessionCaps,
+      materialGroups,
+      materialsCount: detail.session.materials.length,
+      // Materi baru terbuka setelah student absen pada sesi ini.
+      materialsLocked: !detail.attended,
+      assignments,
+      logbook,
+      steps,
+      stepsDone,
+      stepsTotal: stepsAvailable.length,
+      stepsPercent: stepsAvailable.length
+        ? Math.round((stepsDone / stepsAvailable.length) * 100)
+        : 0,
+      bareShell: true,
+    });
   }
 
   @Roles('user')

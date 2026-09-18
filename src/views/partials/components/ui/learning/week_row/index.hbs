@@ -1,0 +1,40 @@
+{{!--
+  Isi kepala akordeon minggu. Dipakai tab Attendance dan Assignment.
+
+  Yang dirender hanya ISI tombolnya, bukan tombolnya - pemanggil yang memasang
+  <button> beserta @click-nya, karena tiap tab menyimpan keadaan buka-tutupnya
+  dengan cara yang berbeda (satu nomor minggu yang sedang terbuka di
+  Attendance, satu boolean per minggu di Assignment).
+
+  Params:
+    number   - nomor minggu
+    title    - judul minggu, mis. "Week 1"
+    summary  - satu entri weekSummaries (CoursesService.findWeekSummaries);
+               boleh kosong, barisnya tetap benar tanpa keterangan
+    kind     - 'attendance' | 'assignment', menentukan angka mana yang disebut
+    expanded - ekspresi Alpine yang bernilai true saat minggu terbuka
+
+  Baris keterangan inilah alasan komponen ini ada: sebelumnya kepala minggu
+  hanya menulis nomor dan deskripsi yang sering cuma mengulang nomornya, jadi
+  satu-satunya cara tahu ada apa di dalam sebuah minggu adalah membukanya.
+--}}
+<span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">{{number}}</span>
+
+<span class="min-w-0 flex-1">
+  <span class="block truncate font-montserrat text-base font-bold text-[#171717]">{{title}}</span>
+  {{#if summary}}
+    <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">
+      {{#if (eq kind 'assignment')}}
+        {{summary.assignments}} {{#if (eq summary.assignments 1)}}{{t 'test.startLearning.taskLower'}}{{else}}{{t 'test.startLearning.tasksLower'}}{{/if}} &middot; {{summary.submitted}} {{t 'test.startLearning.submittedLower'}}
+      {{else}}
+        {{summary.sessions}} {{#if (eq summary.sessions 1)}}{{t 'test.startLearning.sessionLower'}}{{else}}{{t 'test.startLearning.sessions'}}{{/if}} &middot; {{summary.attended}} {{t 'test.startLearning.attendedLower'}}
+      {{/if}}
+      {{#if summary.quizzes}}&middot; {{t 'test.startLearning.quizLower'}}{{/if}}
+    </span>
+  {{/if}}
+</span>
+
+<i
+  class="fa-solid fa-chevron-down shrink-0 text-sm text-[#a3a3a3] transition-transform duration-200 group-hover:text-[#003060]"
+  :class="{{{expanded}}} ? 'rotate-180' : ''"
+></i>

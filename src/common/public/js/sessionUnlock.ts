@@ -65,9 +65,44 @@ export function isAttended(session: SessionLike | null | undefined): boolean {
   return hasProgressFlag && hasAttendanceRecord;
 }
 
+/**
+ * Apakah logbook ikut menentukan terbukanya sesi berikutnya.
+ *
+ * INI JEBAKAN YANG HARUS DITANGANI LEBIH DULU. Sesi berikutnya baru terbuka
+ * bila sesi sebelumnya `isAttended` DAN logbooknya disetujui, dan kolom
+ * `session_progresses.logbook` HANYA pernah diisi oleh LogbookService.update
+ * saat admin menyetujui sebuah logbook. Artinya: pada program yang logbooknya
+ * dimatikan, tidak ada satu pun jalan yang mengisi kolom itu, sehingga sesi
+ * kedua dan seterusnya terkunci SELAMANYA. Karena itu syarat ini dilonggarkan
+ * lebih dulu, baru antarmuka logbooknya disembunyikan.
+ *
+ * Sumbernya atribut `data-logbook-required` pada <html>, diisi dari kapabilitas
+ * yang dihitung server (courses/program-type.ts). Dibaca setiap kali dipanggil,
+ * bukan disimpan: student bisa berpindah program tanpa memuat ulang halaman,
+ * dan program berikutnya bisa punya sakelar yang berbeda.
+ */
+let logbookRequiredOverride: boolean | null = null;
+
+export function setLogbookRequired(value: boolean | null): void {
+  logbookRequiredOverride = value;
+}
+
+export function isLogbookRequired(): boolean {
+  if (logbookRequiredOverride !== null) return logbookRequiredOverride;
+  if (typeof document !== 'undefined' && document.documentElement) {
+    if (document.documentElement.dataset.logbookRequired === 'false') {
+      return false;
+    }
+  }
+  // Default sengaja `true`: halaman yang belum menyebutkan apa pun berperilaku
+  // persis seperti sebelum sakelar ini ada.
+  return true;
+}
+
 export function logbookApproved(
   session: SessionLike | null | undefined,
 ): boolean {
+  if (!isLogbookRequired()) return true;
   const progress = progressOf(session);
   if (progress && progress.logbook === true) return true;
   return logbookProcessOf(session) === 'approved';
@@ -126,6 +161,9 @@ export function getStartLearningStatus(
 ): StartLearningStatus {
   if (!isSessionUnlocked(sessions, session)) return 'LOCKED';
   if (!isAttended(session)) return 'WAITING_FOR_ATTENDANCE';
+  // Tanpa logbook, sesi dianggap tuntas begitu absensinya tercatat - kalau
+  // tidak, statusnya berhenti di 'ALLOWED' selamanya dan sesi itu tidak pernah
+  // terlihat selesai.
   if (logbookApproved(session)) return 'COMPLETED';
   return 'ALLOWED';
 }

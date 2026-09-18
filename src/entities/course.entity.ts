@@ -33,6 +33,19 @@ import { ProcessStatus } from './types/process-status';
 
 export type Method = 'online' | 'offline';
 
+/**
+ * Bentuk belajar sebuah program. Bukan nama program dan bukan harganya -
+ * keduanya diurus `category` (lihat docs/program-type-plan.md bagian 1.4).
+ *
+ * - bootcamp     : minggu, tiap minggu berisi beberapa sesi, kuis per minggu.
+ * - non_bootcamp : silabus datar (SPL). Dipakai Starter Class dan Faster Class;
+ *                  keduanya hanya beda harga, jadi tidak perlu nilai sendiri.
+ * - lpk          : Japan Pathway. Hari ini sama dengan bootcamp; yang
+ *                  membedakan pendampingnya (sensei), lihat program-type.ts.
+ */
+export type ProgramType = 'bootcamp' | 'non_bootcamp' | 'lpk';
+export const PROGRAM_TYPES: ProgramType[] = ['bootcamp', 'non_bootcamp', 'lpk'];
+
 @Entity()
 export class Course {
   @PrimaryGeneratedColumn('uuid')
@@ -79,6 +92,26 @@ export class Course {
 
   @Column({ nullable: true })
   date_registration: Date;
+
+  /** Lihat ProgramType. Program lama otomatis 'bootcamp' lewat default. */
+  @Column({
+    name: 'program_type',
+    type: 'enum',
+    enum: PROGRAM_TYPES,
+    default: 'bootcamp',
+  })
+  programType: ProgramType;
+
+  /**
+   * Logbook bisa dimatikan per program. HANYA berlaku untuk program yang
+   * `logbookConfigurable`-nya true (non_bootcamp) - lihat program-type.ts.
+   *
+   * PENTING: mematikan kolom ini juga melonggarkan syarat buka-kunci sesi.
+   * Tanpa itu, `session_progresses.logbook` tidak pernah terisi dan sesi kedua
+   * dan seterusnya terkunci selamanya. Lihat sessionUnlock.logbookApproved.
+   */
+  @Column({ name: 'logbook_enabled', default: true })
+  logbookEnabled: boolean;
 
   @ManyToMany(() => Technology, (technologies) => technologies.course)
   @JoinTable({
@@ -148,6 +181,10 @@ export class Course {
   @Exclude()
   userCourses: UserCourse[];
 
+  // Diisi hanya oleh query yang memakai loadRelationCountAndMap('course.enrolledCount').
+  // Bukan kolom tabel, jadi tidak ada @Column di sini.
+  enrolledCount?: number;
+
   @OneToMany(() => Mentorings, (mentoring) => mentoring.course, {
     cascade: true,
     onDelete: 'CASCADE',
@@ -189,8 +226,12 @@ export class Course {
   @Exclude()
   category: Category;
 
+  // SET NULL, bukan CASCADE: begitu CourseType resmi jadi Tag yang bebas
+  // dibuat dan dihapus admin, CASCADE berarti menghapus tag ikut menghapus
+  // setiap program yang memakainya. Kolomnya memang sudah nullable.
   @ManyToOne(() => CourseType, (course_type) => course_type.classes, {
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
+    nullable: true,
   })
   @JoinColumn({ name: 'courseTypeId' })
   @Exclude()

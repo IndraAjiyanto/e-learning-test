@@ -23,7 +23,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { Request, Response } from 'express';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('logbooks')
@@ -48,9 +48,17 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-      // if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
-      //   throw new Error('Image upload failed. Please try again.');
-      // }
+      // Penjaga yang sama dengan formCreate, tetapi di jalur tulisnya: form
+      // bisa saja dikirim dari halaman yang sudah terbuka sebelum admin
+      // mematikan sakelarnya.
+      if (!(await this.logbookService.logbookEnabledForSession(sessionId))) {
+        flashToastError(
+          req,
+          'Logbook is off for this program',
+          'This program does not use logbooks.',
+        );
+        return res.redirect('/users/profile');
+      }
 
       createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
@@ -83,7 +91,11 @@ export class LogbookController {
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);
       const errorMessage = error.message || 'Failed to add log book';
-      req.flash('error', errorMessage);
+      flashToastError(
+        req,
+        'Logbook not saved',
+        errorMessage,
+      );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
@@ -110,6 +122,7 @@ export class LogbookController {
       logbooks,
       logbook: logbooks,
       courseId,
+      bareShell: true,
     });
   }
 
@@ -121,10 +134,22 @@ export class LogbookController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    // Program SPL bisa mematikan logbook. Antarmukanya memang sudah tidak
+    // menampilkan tombol apa pun, tetapi URL ini masih bisa diketik langsung
+    // atau tersimpan di riwayat peramban.
+    if (!(await this.logbookService.logbookEnabledForCourse(courseId))) {
+      flashToastError(
+        req,
+        'Logbook is off for this program',
+        'This program does not use logbooks.',
+      );
+      return res.redirect(`/program/${courseId}`);
+    }
     res.render('user/logbooks/createLog', {
       user: req.user,
       sessionId,
       courseId,
+      bareShell: true,
     });
   }
 
@@ -139,7 +164,11 @@ export class LogbookController {
     if (req.user!.role === 'admin') {
       res.render('admin/logbooks/edit', { user: req.user, logbook: logbooks });
     } else {
-      res.render('user/logbooks/edit', { user: req.user, logbook: logbooks });
+      res.render('user/logbooks/edit', {
+        user: req.user,
+        logbook: logbooks,
+        bareShell: true,
+      });
     }
   }
 
@@ -151,7 +180,11 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
-    res.render('user/logbooks/detail', { user: req.user, logbook: logbooks });
+    res.render('user/logbooks/detail', {
+      user: req.user,
+      logbook: logbooks,
+      bareShell: true,
+    });
   }
 
   @Roles('admin')
@@ -207,7 +240,11 @@ export class LogbookController {
       console.error(error.response || error.message || error);
 
       const logbooks = await this.logbookService.findOne(logbookId);
-      req.flash('error', error.message || 'logbooks failed to update');
+      flashToastError(
+        req,
+        'Logbook not saved',
+        error.message || 'Please try again in a moment.',
+      );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {

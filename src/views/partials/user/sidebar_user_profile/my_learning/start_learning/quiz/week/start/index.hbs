@@ -12,7 +12,7 @@ window.addEventListener("load", function(){
 </script>
 {{/if}}
 
-<div class="px-4 sm:px-8 md:px-14 py-10">
+<div class="px-4 py-4 sm:px-8 sm:py-6">
 
     <!-- Header -->
     <div class="space-y-2 mb-8">
@@ -35,12 +35,12 @@ window.addEventListener("load", function(){
         <div>
 
             <!-- Question Card -->
-            <div class="bg-white border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-white border border-[#E5E5E5] shadow-sm overflow-hidden">
 
                 <!-- Question Navigation Header -->
-                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-[#E5E5E5] bg-slate-50">
 
-                    <span class="text-sm font-medium text-slate-600">
+                    <span class="text-sm font-medium text-[#525252]">
                         {{t "test.quiz.start.question"}}
                         <span x-text="currentQuestion + 1"></span>
                         {{t "test.quiz.start.of"}}
@@ -79,7 +79,7 @@ window.addEventListener("load", function(){
                                         <img
                                             src="{{image}}"
                                             alt="Question Image"
-                                            class="max-h-64 rounded-xl border border-slate-200 shadow-sm object-contain"
+                                            class="max-h-64 rounded-xl border border-[#E5E5E5] shadow-sm object-contain"
                                         >
 
                                     </div>
@@ -87,7 +87,7 @@ window.addEventListener("load", function(){
                                 {{/if}}
 
                                 <!-- Question Text -->
-                                <p class="font-semibold text-slate-900 text-lg leading-relaxed">
+                                <p class="font-semibold text-[#171717] text-lg leading-relaxed">
                                     {{questionText}}
                                 </p>
 
@@ -102,17 +102,17 @@ window.addEventListener("load", function(){
                             {{#each answers}}
 
                             <label
-                                class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option"
+                                class="flex items-center p-4 border border-[#E5E5E5] rounded-xl cursor-pointer hover:bg-[#FAFAFA] hover:border-[#D4D4D4] transition-all duration-200 group/option"
                             >
 
                                 <input
                                     type="radio"
                                     name="q-{{../id}}"
                                     value="{{id}}"
-                                    class="w-5 h-5 radio border-gray-700 checked:text-gray-700 checked:bg-white"
+                                    class="w-5 h-5 radio border-[#D4D4D4] checked:text-[#404040] checked:bg-white"
                                 >
 
-                                <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
+                                <span class="ml-4 text-slate-800 font-medium group-hover/option:text-[#171717] transition-colors">
                                     {{answer}}
                                 </span>
 
@@ -164,7 +164,7 @@ window.addEventListener("load", function(){
             type="button"
             x-show="currentQuestion > 0"
             @click="prevQuestion()"
-            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+            class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
         >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -177,7 +177,7 @@ window.addEventListener("load", function(){
             type="button"
             x-show="currentQuestion < {{questions.length}} - 1"
             @click="nextQuestion()"
-            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+            class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
         >
             {{t "test.quiz.start.next"}}
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,8 +191,8 @@ window.addEventListener("load", function(){
             x-show="currentQuestion === {{questions.length}} - 1"
             @click="submitQuiz()"
             :disabled="answeredCount !== {{questions.length}}"
-            :class="answeredCount !== {{questions.length}} ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-1'"
-            class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+            :class="answeredCount !== {{questions.length}} ? 'opacity-40 cursor-not-allowed' : ' '"
+            class="bg-[#003060] text-white rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 flex items-center gap-2 font-semibold"
         >
             Submit Answer
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@ window.addEventListener("load", function(){
             type="button"
             x-show="currentQuestion > 0"
             @click="currentQuestion--"
-            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+            class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
         >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -222,7 +222,7 @@ window.addEventListener("load", function(){
             type="button"
             x-show="currentQuestion < 1"
             @click="currentQuestion++"
-            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+            class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
         >
             Next
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,7 +233,7 @@ window.addEventListener("load", function(){
         <button
             type="button"
             x-show="currentQuestion === 1"
-            class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+            class="bg-[#003060] text-white rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 flex items-center gap-2 font-semibold"
         >
             Submit Answer
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,12 +259,12 @@ window.addEventListener("load", function(){
     <!-- ============================= -->
     <!-- QUESTION LIST CARD -->
     <!-- ============================= -->
-    <div class="bg-white border border-slate-200 shadow-sm p-6 sticky top-6">
+    <div class="bg-white border border-[#E5E5E5] shadow-sm p-6 sticky top-6">
 
         <!-- Question List Header -->
         <div class="flex items-center justify-between mb-4">
 
-            <h3 class="text-lg font-semibold text-slate-900 font-inter">
+            <h3 class="text-lg font-semibold text-[#171717] font-inter">
                 {{t "test.quiz.start.questionList"}}
             </h3>
 
@@ -278,7 +278,7 @@ window.addEventListener("load", function(){
             {{else}}
 
                 <div id="countdownExample">
-                    <div class="values font-semibold text-slate-700"></div>
+                    <div class="values font-semibold text-[#404040]"></div>
                 </div>
 
                 {{#if remainingTime}}
@@ -333,10 +333,10 @@ window.addEventListener("load", function(){
                     'bg-secondary text-white border-secondary shadow-md':
                         currentQuestion === {{@index}},
 
-                    'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50':
+                    'bg-white text-[#404040] border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#FAFAFA]':
                         currentQuestion !== {{@index}} && !isAnswered({{@index}}),
 
-                    'bg-[#E5F6D4] text-[#003060] border-slate-200':
+                    'bg-[#E5F6D4] text-[#003060] border-[#E5E5E5]':
                         currentQuestion !== {{@index}} && isAnswered({{@index}})
                 }"
             >
@@ -352,7 +352,7 @@ window.addEventListener("load", function(){
             {{else}}
 
             <button type="button" class="w-[54px] h-[54px] rounded-xl border flex items-center justify-center bg-secondary text-white">1</button>
-            <button type="button" class="w-[54px] h-[54px] rounded-xl border flex items-center justify-center bg-white text-slate-700 border-slate-200">2</button>
+            <button type="button" class="w-[54px] h-[54px] rounded-xl border flex items-center justify-center bg-white text-[#404040] border-[#E5E5E5]">2</button>
 
             {{/if}}
 
@@ -365,13 +365,13 @@ window.addEventListener("load", function(){
     <!-- ============================= -->
     <!-- PROGRESS CARD -->
     <!-- ============================= -->
-    <div class="bg-white border border-slate-200 shadow-sm p-6 mt-4">
+    <div class="bg-white border border-[#E5E5E5] shadow-sm p-6 mt-4">
 
         {{#if questions.length}}
 
         <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-slate-700">{{t "test.quiz.start.progress"}}</span>
-            <span class="text-sm font-semibold text-slate-600" x-text="`${answeredCount}/{{questions.length}}`"></span>
+            <span class="text-sm font-semibold text-[#404040]">{{t "test.quiz.start.progress"}}</span>
+            <span class="text-sm font-semibold text-[#525252]" x-text="`${answeredCount}/{{questions.length}}`"></span>
         </div>
         <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
             <div class="bg-green-600 h-2.5 rounded-full transition-all duration-500" :style="`width: ${(answeredCount / {{questions.length}}) * 100}%`"></div>
@@ -380,8 +380,8 @@ window.addEventListener("load", function(){
         {{else}}
 
         <div class="flex items-center justify-between mb-3">
-            <span class="text-sm font-semibold text-slate-700">Progress</span>
-            <span class="text-sm font-semibold text-slate-600">0/2</span>
+            <span class="text-sm font-semibold text-[#404040]">Progress</span>
+            <span class="text-sm font-semibold text-[#525252]">0/2</span>
         </div>
         <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
             <div class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>

@@ -151,11 +151,11 @@
 
         {{> category/kelas_tab }}
 
-        {{> category/alumni_tab }}
+        <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index categoryId=category.id }}</div>
 
-        {{> category/faq_tab }}
+        <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index categoryId=category.id }}</div>
 
-        {{> category/benefit_tab }}
+        <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index categoryId=category.id }}</div>
 
         {{> category/gallery_tab category=category }}
       </div>
@@ -164,6 +164,8 @@
 </div>
 
 {{> components/ui/super_admin/toast/success/index toast=toast }}
+
+{{> components/ui/super_admin/table/fa_icon }}
 
 {{> components/ui/super_admin/modal/delete_confirm/index
   title='Delete Category?'
