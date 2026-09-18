@@ -31,6 +31,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  *     tidak punya ini, dan kodenya menambal dengan pola upsert manual di lima
  *     tempat berbeda.
  *
+ * Nama constraint FK sengaja memakai nama hasil turunan TypeORM (hash), bukan
+ * nama yang enak dibaca. Alasannya: dekorator relasi tidak bisa menamai FK,
+ * jadi kalau migrasinya memakai nama sendiri, entity dan basis data tidak
+ * pernah dianggap sepakat - `schema:log` berisik selamanya dan
+ * `migration:generate` berikutnya menghasilkan migrasi sampah yang mencoba
+ * membuat ulang semua FK. Diverifikasi dengan `schema:log` bersih.
+ *
  * Semua langkah idempoten.
  */
 export class AddSyllabusTables1788700000000 implements MigrationInterface {
@@ -73,7 +80,7 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "updatedAt"   TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus" PRIMARY KEY ("id"),
           CONSTRAINT "UQ_syllabus_course_order" UNIQUE ("courseId", "order"),
-          CONSTRAINT "FK_syllabus_course" FOREIGN KEY ("courseId")
+          CONSTRAINT "FK_7e3341205b518cbd98380b20b16" FOREIGN KEY ("courseId")
             REFERENCES "course"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -93,7 +100,7 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "createdAt"  TIMESTAMP NOT NULL DEFAULT now(),
           "updatedAt"  TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus_material" PRIMARY KEY ("id"),
-          CONSTRAINT "FK_syllabus_material_syllabus" FOREIGN KEY ("syllabusId")
+          CONSTRAINT "FK_ba6bac3a5bd4aa1ae63c4d19109" FOREIGN KEY ("syllabusId")
             REFERENCES "syllabus"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -112,7 +119,7 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "createdAt"  TIMESTAMP NOT NULL DEFAULT now(),
           "updatedAt"  TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus_assignment" PRIMARY KEY ("id"),
-          CONSTRAINT "FK_syllabus_assignment_syllabus" FOREIGN KEY ("syllabusId")
+          CONSTRAINT "FK_0d1b23153a81d54aab77c093941" FOREIGN KEY ("syllabusId")
             REFERENCES "syllabus"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -136,9 +143,9 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus_answer_task" PRIMARY KEY ("id"),
           CONSTRAINT "UQ_syllabus_answer_task_task_user" UNIQUE ("taskId", "userId"),
-          CONSTRAINT "FK_syllabus_answer_task_task" FOREIGN KEY ("taskId")
+          CONSTRAINT "FK_65783e2d1f137231808b2e896d0" FOREIGN KEY ("taskId")
             REFERENCES "syllabus_assignment"("id") ON DELETE CASCADE ON UPDATE NO ACTION,
-          CONSTRAINT "FK_syllabus_answer_task_user" FOREIGN KEY ("userId")
+          CONSTRAINT "FK_1705b1952e2df3975a695479c0b" FOREIGN KEY ("userId")
             REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -156,7 +163,7 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
           "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus_comment" PRIMARY KEY ("id"),
-          CONSTRAINT "FK_syllabus_comment_answer" FOREIGN KEY ("answerId")
+          CONSTRAINT "FK_44efd0cdf2c5324c55ea9a1b843" FOREIGN KEY ("answerId")
             REFERENCES "syllabus_answer_task"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -180,9 +187,9 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "createdAt"           TIMESTAMP NOT NULL DEFAULT now(),
           "updatedAt"           TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus_logbook" PRIMARY KEY ("id"),
-          CONSTRAINT "FK_syllabus_logbook_syllabus" FOREIGN KEY ("syllabusId")
+          CONSTRAINT "FK_c05c16d2718c1f64313096a0b78" FOREIGN KEY ("syllabusId")
             REFERENCES "syllabus"("id") ON DELETE CASCADE ON UPDATE NO ACTION,
-          CONSTRAINT "FK_syllabus_logbook_user" FOREIGN KEY ("userId")
+          CONSTRAINT "FK_ca7a58fcbe310bf69d5b19c4e3b" FOREIGN KEY ("userId")
             REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -207,9 +214,9 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
           "updatedAt"   TIMESTAMP NOT NULL DEFAULT now(),
           CONSTRAINT "PK_syllabus_progress" PRIMARY KEY ("id"),
           CONSTRAINT "UQ_syllabus_progress_syllabus_user" UNIQUE ("syllabusId", "userId"),
-          CONSTRAINT "FK_syllabus_progress_syllabus" FOREIGN KEY ("syllabusId")
+          CONSTRAINT "FK_e486ec5c9425f8fad0473d5e748" FOREIGN KEY ("syllabusId")
             REFERENCES "syllabus"("id") ON DELETE CASCADE ON UPDATE NO ACTION,
-          CONSTRAINT "FK_syllabus_progress_user" FOREIGN KEY ("userId")
+          CONSTRAINT "FK_a2ed86a25c3755309cca1527171" FOREIGN KEY ("userId")
             REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         )`);
       await q.query(
@@ -227,7 +234,7 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
     ) {
       await q.query(`ALTER TABLE "quiz" ADD "courseId" uuid`);
       await q.query(
-        `ALTER TABLE "quiz" ADD CONSTRAINT "FK_quiz_course"
+        `ALTER TABLE "quiz" ADD CONSTRAINT "FK_f74ae73a766eea8e0dfb09816ba"
            FOREIGN KEY ("courseId") REFERENCES "course"("id")
            ON DELETE CASCADE ON UPDATE NO ACTION`,
       );
@@ -244,7 +251,7 @@ export class AddSyllabusTables1788700000000 implements MigrationInterface {
     ) {
       await q.query(`DROP INDEX IF EXISTS "IDX_quiz_course"`);
       await q.query(
-        `ALTER TABLE "quiz" DROP CONSTRAINT IF EXISTS "FK_quiz_course"`,
+        `ALTER TABLE "quiz" DROP CONSTRAINT IF EXISTS "FK_f74ae73a766eea8e0dfb09816ba"`,
       );
       await q.query(`ALTER TABLE "quiz" DROP COLUMN "courseId"`);
     }

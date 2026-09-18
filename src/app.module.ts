@@ -7,6 +7,7 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { MaterialsModule } from './materials/material.module';
 import { CoursesModule } from './courses/courses.module';
 import { SessionsModule } from './sessions/session.module';
+import { SyllabusModule } from './syllabus/syllabus.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './data-source';
@@ -100,6 +101,7 @@ import path from 'path';
     MaterialsModule,
     CoursesModule,
     SessionsModule,
+    SyllabusModule,
     AuthModule,
     BiodatasModule,
     PortfoliosModule,

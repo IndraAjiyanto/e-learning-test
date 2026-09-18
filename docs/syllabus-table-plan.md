@@ -243,8 +243,8 @@ tersentuh.
 
 | Tahap | Isi | Risiko |
 |---|---|---|
-| **S0** | Migrasi: tabel `syllabus`, `syllabus_progress`, kolom `syllabusId` pada tabel yang dibagi, `quiz.courseId`. Belum ada kode yang membacanya. | rendah |
-| **S1** | Entity + `SyllabusService` (CRUD, buka-kunci, progres). Tanpa antarmuka. | rendah |
+| ~~**S0**~~ | **Selesai.** Migrasi `1788700000000`: tujuh tabel + `quiz.courseId`. Diuji turun-naik, ketiga UNIQUE diuji menolak duplikat, CASCADE diuji menyapu anak. | rendah |
+| ~~**S1**~~ | **Selesai.** Tujuh entity + `SyllabusService` + `SyllabusModule`. Diuji 11 perkara terhadap basis data sungguhan (urutan otomatis, rantai buka-kunci, penolakan silabus terkunci di server, idempoten, gerbang logbook, perapatan urutan setelah hapus, reorder, CASCADE). `schema:log` bersih dari drift buatan sendiri. | rendah |
 | **S2** | Perpindahan data (bagian 4), dengan `down()` yang diuji turun-naik. | **sedang** — satu-satunya tahap yang menyentuh data yang sudah ada |
 | **S3** | Sisi user: daftar silabus, halaman detail, "Mark complete". | sedang |
 | **S4** | Sisi admin: CRUD silabus, label, layar penyelesaian menggantikan absensi. | **besar** — 61 label |

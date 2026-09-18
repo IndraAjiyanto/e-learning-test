@@ -14,6 +14,8 @@ import { Portofolios } from './portofolios.entity';
 import { Category } from './category.entity';
 import { Payment } from './payment.entity';
 import { Weeks } from './weeks.entity';
+import { Syllabus } from './syllabus.entity';
+import { Quiz } from './quiz.entity';
 import { Certificates } from './certificate.entity';
 import { CourseType } from './course_type.entity';
 import { UserCourse } from './user_course.entity';
@@ -173,6 +175,25 @@ export class Course {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  /**
+   * Silabus program non-bootcamp. Kosong untuk bootcamp dan LPK - keduanya
+   * memakai `weeks` -> `session`. Lihat docs/syllabus-table-plan.md.
+   */
+  /** Kuis tingkat program (non-bootcamp). Kuis bootcamp ada di `weeks.quiz`. */
+  @OneToMany(() => Quiz, (quiz) => quiz.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  quiz: Quiz[];
+
+  @OneToMany(() => Syllabus, (syllabus) => syllabus.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  syllabus: Syllabus[];
 
   @OneToMany(() => UserCourse, (user_course) => user_course.course, {
     cascade: true,

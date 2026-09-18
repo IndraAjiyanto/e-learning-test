@@ -1,4 +1,5 @@
 import {
+  Index,
   JoinColumn,
   Column,
   CreateDateColumn,
@@ -11,10 +12,12 @@ import {
 import { Question } from './question.entity';
 import { Score } from './score.entity';
 import { Weeks } from './weeks.entity';
+import { Course } from './course.entity';
 import { QuizProgress } from './quiz_progress.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
+@Index('IDX_quiz_course', ['course'])
 export class Quiz {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -54,6 +57,19 @@ export class Quiz {
   })
   @Exclude()
   quizProgresses: QuizProgress[];
+
+  /**
+   * Kuis tingkat program, dipakai non-bootcamp. Tanpa lapisan `weeks`, kuis
+   * SPL tidak punya rumah - kolom ini rumahnya. Nullable: kuis bootcamp tetap
+   * menempel di minggu lewat `weeks` di bawah dan tidak menyentuh kolom ini.
+   */
+  @ManyToOne(() => Course, (course) => course.quiz, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'courseId' })
+  @Exclude()
+  course: Course | null;
 
   @ManyToOne(() => Weeks, (week) => week.quiz, { onDelete: 'CASCADE' })
   @Exclude()

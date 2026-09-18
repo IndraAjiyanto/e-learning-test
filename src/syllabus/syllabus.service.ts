@@ -1,0 +1,324 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Course } from 'src/entities/course.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
+import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
+import { capabilitiesForCourse } from 'src/courses/program-type';
+
+/** Keadaan satu silabus bagi seorang student. */
+export type SyllabusState = 'LOCKED' | 'OPEN' | 'COMPLETED';
+
+export interface SyllabusView {
+  id: string;
+  order: number;
+  title: string;
+  description: string | null;
+  isFinal: boolean;
+  state: SyllabusState;
+  completedAt: Date | null;
+  materialCount: number;
+  assignmentCount: number;
+  /** Hanya berarti pada program yang logbooknya menyala. */
+  logbookOk: boolean;
+}
+
+/**
+ * Aturan belajar untuk program non-bootcamp (SPL).
+ *
+ * Sengaja TIDAK memakai `sessionUnlock` milik bootcamp. Aturannya memang
+ * berbeda, dan menumpangkannya berarti mengulang tambalan yang justru
+ * dihapus oleh pemisahan ini:
+ *
+ *  - bootcamp : sesi berikutnya terbuka bila sesi sebelumnya DIHADIRI dan
+ *               logbooknya disetujui - dan baris progres sesi berikutnya
+ *               hanya pernah dibuat saat logbook disetujui, sehingga program
+ *               tanpa logbook harus ditambal di AttendanceService;
+ *  - silabus  : silabus berikutnya terbuka bila silabus sebelumnya
+ *               DISELESAIKAN. Titik. Logbook hanya ikut menentukan bila
+ *               program itu memang memakai logbook.
+ *
+ * Tidak ada absensi di sini. Student yang belajar mandiri tidak hadir, ia
+ * menyelesaikan. Lihat docs/syllabus-table-plan.md.
+ */
+@Injectable()
+export class SyllabusService {
+  constructor(
+    @InjectRepository(Syllabus)
+    private readonly syllabusRepository: Repository<Syllabus>,
+    @InjectRepository(SyllabusProgress)
+    private readonly progressRepository: Repository<SyllabusProgress>,
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>,
+  ) {}
+
+  // ----------------------------------------------------------------- baca
+
+  /** Silabus sebuah program, terurut. Tanpa konteks student. */
+  async findByCourse(courseId: string): Promise<Syllabus[]> {
+    return this.syllabusRepository.find({
+      where: { course: { id: courseId } },
+      order: { order: 'ASC' },
+    });
+  }
+
+  async findOne(syllabusId: string): Promise<Syllabus> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+      relations: ['course', 'materials', 'assignments'],
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+    return syllabus;
+  }
+
+  /**
+   * Daftar silabus BESERTA keadaannya untuk seorang student.
+   *
+   * Satu query untuk silabus, satu untuk progres - bukan satu query per
+   * silabus. Keadaan dihitung berurutan: sebuah silabus terbuka hanya kalau
+   * pendahulunya sudah tuntas.
+   */
+  async findForStudent(
+    courseId: string,
+    userId: string,
+  ): Promise<SyllabusView[]> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    const logbookRequired = capabilitiesForCourse(course).logbookEnabled;
+
+    const items = await this.syllabusRepository.find({
+      where: { course: { id: courseId } },
+      order: { order: 'ASC' },
+      relations: ['materials', 'assignments'],
+    });
+    if (items.length === 0) return [];
+
+    const progresses = await this.progressRepository.find({
+      where: { user: { id: userId }, syllabus: { course: { id: courseId } } },
+      relations: ['syllabus'],
+    });
+    const byId = new Map(progresses.map((p) => [p.syllabus.id, p]));
+
+    const views: SyllabusView[] = [];
+    let previousDone = true; // silabus pertama selalu terbuka
+    for (const item of items) {
+      const progress = byId.get(item.id) ?? null;
+      const done = this.isDone(progress, logbookRequired);
+      views.push({
+        id: item.id,
+        order: item.order,
+        title: item.title,
+        description: item.description,
+        isFinal: item.isFinal,
+        state: done ? 'COMPLETED' : previousDone ? 'OPEN' : 'LOCKED',
+        completedAt: progress?.completedAt ?? null,
+        materialCount: item.materials?.length ?? 0,
+        assignmentCount: item.assignments?.length ?? 0,
+        logbookOk: progress?.logbookOk ?? false,
+      });
+      previousDone = done;
+    }
+    return views;
+  }
+
+  /**
+   * Tuntas = sudah diselesaikan, DAN kalau program memakai logbook,
+   * logbooknya sudah disetujui. Pada program tanpa logbook, `logbookOk`
+   * tidak pernah diisi siapa pun - karena itu ia hanya diperiksa saat
+   * memang relevan.
+   */
+  private isDone(
+    progress: SyllabusProgress | null,
+    logbookRequired: boolean,
+  ): boolean {
+    if (!progress?.completedAt) return false;
+    return logbookRequired ? progress.logbookOk : true;
+  }
+
+  /** Ringkasan untuk kepala tab. */
+  async statsFor(
+    courseId: string,
+    userId: string,
+  ): Promise<{ total: number; completed: number; percent: number }> {
+    const views = await this.findForStudent(courseId, userId);
+    const completed = views.filter((v) => v.state === 'COMPLETED').length;
+    return {
+      total: views.length,
+      completed,
+      percent: views.length
+        ? Math.round((completed / views.length) * 100)
+        : 0,
+    };
+  }
+
+  // ---------------------------------------------------------------- tulis
+
+  /**
+   * Student menandai satu silabus selesai.
+   *
+   * Menolak bila silabusnya masih terkunci - penjagaan ada di server, bukan
+   * hanya di tombol. Idempoten: menandai dua kali tidak menggeser
+   * `completedAt` yang sudah tercatat.
+   */
+  async markComplete(syllabusId: string, userId: string): Promise<void> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+      relations: ['course'],
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+
+    const views = await this.findForStudent(syllabus.course.id, userId);
+    const view = views.find((v) => v.id === syllabusId);
+    if (!view || view.state === 'LOCKED') {
+      throw new NotFoundException('Syllabus is not open yet');
+    }
+    if (view.state === 'COMPLETED') return;
+
+    const existing = await this.progressRepository.findOne({
+      where: { syllabus: { id: syllabusId }, user: { id: userId } },
+    });
+    if (existing) {
+      if (existing.completedAt) return;
+      existing.completedAt = new Date();
+      await this.progressRepository.save(existing);
+      return;
+    }
+    // UNIQUE (syllabusId, userId) menjaga baris ganda di tingkat basis data,
+    // jadi tidak ada pola upsert manual seperti pada session_progresses.
+    await this.progressRepository.save(
+      this.progressRepository.create({
+        syllabus: { id: syllabusId } as Syllabus,
+        user: { id: userId } as any,
+        completedAt: new Date(),
+      }),
+    );
+  }
+
+  /** Dipanggil saat admin menyetujui / menolak logbook sebuah silabus. */
+  async setLogbookApproved(
+    syllabusId: string,
+    userId: string,
+    approved: boolean,
+  ): Promise<void> {
+    const existing = await this.progressRepository.findOne({
+      where: { syllabus: { id: syllabusId }, user: { id: userId } },
+    });
+    if (existing) {
+      existing.logbookOk = approved;
+      await this.progressRepository.save(existing);
+      return;
+    }
+    await this.progressRepository.save(
+      this.progressRepository.create({
+        syllabus: { id: syllabusId } as Syllabus,
+        user: { id: userId } as any,
+        logbookOk: approved,
+      }),
+    );
+  }
+
+  // ---------------------------------------------------------------- admin
+
+  /**
+   * Menambahkan satu silabus di urutan terakhir.
+   *
+   * Urutannya dihitung dari yang sudah ada, bukan diterima dari pemanggil -
+   * `UNIQUE (courseId, order)` akan menolak duplikat, dan menghitungnya di
+   * sini membuat penolakan itu tidak pernah terjadi karena kelalaian.
+   */
+  async create(
+    courseId: string,
+    data: { title: string; description?: string | null; isFinal?: boolean },
+  ): Promise<Syllabus> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (!course) throw new NotFoundException('Program not found');
+
+    const last = await this.syllabusRepository.findOne({
+      where: { course: { id: courseId } },
+      order: { order: 'DESC' },
+    });
+    return this.syllabusRepository.save(
+      this.syllabusRepository.create({
+        course,
+        order: (last?.order ?? 0) + 1,
+        title: data.title,
+        description: data.description ?? null,
+        isFinal: data.isFinal ?? false,
+      }),
+    );
+  }
+
+  async update(
+    syllabusId: string,
+    data: { title?: string; description?: string | null; isFinal?: boolean },
+  ): Promise<Syllabus> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+    if (data.title !== undefined) syllabus.title = data.title;
+    if (data.description !== undefined) syllabus.description = data.description;
+    if (data.isFinal !== undefined) syllabus.isFinal = data.isFinal;
+    return this.syllabusRepository.save(syllabus);
+  }
+
+  /**
+   * Menghapus satu silabus, lalu merapatkan urutan yang tersisa.
+   *
+   * Tanpa perapatan, menghapus silabus ke-2 dari 3 menyisakan urutan 1 dan 3,
+   * dan silabus berikutnya yang ditambahkan akan bernomor 4 - terlihat seperti
+   * ada yang hilang. Anaknya ikut terhapus lewat CASCADE di basis data.
+   */
+  async remove(syllabusId: string): Promise<void> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+      relations: ['course'],
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+    const courseId = syllabus.course.id;
+    await this.syllabusRepository.remove(syllabus);
+
+    const rest = await this.syllabusRepository.find({
+      where: { course: { id: courseId } },
+      order: { order: 'ASC' },
+    });
+    // Dinaikkan dulu ke rentang yang pasti kosong, baru diturunkan - kalau
+    // langsung ditulis 1..n, UNIQUE (courseId, order) menolak di tengah jalan
+    // karena nomor tujuan masih dipakai baris lain.
+    const OFFSET = 100000;
+    for (const [i, item] of rest.entries()) {
+      item.order = OFFSET + i + 1;
+    }
+    await this.syllabusRepository.save(rest);
+    for (const [i, item] of rest.entries()) {
+      item.order = i + 1;
+    }
+    await this.syllabusRepository.save(rest);
+  }
+
+  /** Memindahkan satu silabus ke posisi lain, urutan lain ikut menyesuaikan. */
+  async reorder(syllabusId: string, targetOrder: number): Promise<void> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+      relations: ['course'],
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+
+    const all = await this.syllabusRepository.find({
+      where: { course: { id: syllabus.course.id } },
+      order: { order: 'ASC' },
+    });
+    const without = all.filter((s) => s.id !== syllabusId);
+    const at = Math.max(0, Math.min(targetOrder - 1, without.length));
+    without.splice(at, 0, syllabus);
+
+    const OFFSET = 100000;
+    for (const [i, item] of without.entries()) item.order = OFFSET + i + 1;
+    await this.syllabusRepository.save(without);
+    for (const [i, item] of without.entries()) item.order = i + 1;
+    await this.syllabusRepository.save(without);
+  }
+}
