@@ -23,6 +23,7 @@
       method='POST'
       action='/program'
       enctype='multipart/form-data'
+      novalidate
       @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
       @input.capture="onInputCapture($event)"
       @change="updateCompleteness()"
