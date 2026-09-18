@@ -261,7 +261,7 @@ tersentuh.
 | ~~**S0**~~ | **Selesai.** Migrasi `1788700000000`: tujuh tabel + `quiz.courseId`. Diuji turun-naik, ketiga UNIQUE diuji menolak duplikat, CASCADE diuji menyapu anak. | rendah |
 | ~~**S1**~~ | **Selesai.** Tujuh entity + `SyllabusService` + `SyllabusModule`. Diuji 11 perkara terhadap basis data sungguhan (urutan otomatis, rantai buka-kunci, penolakan silabus terkunci di server, idempoten, gerbang logbook, perapatan urutan setelah hapus, reorder, CASCADE). `schema:log` bersih dari drift buatan sendiri. | rendah |
 | ~~**S2**~~ | **Selesai.** Migrasi `1788800000000`. 5 sesi -> 5 silabus, 2 progres, 1 absensi dibuang. Bootcamp tidak tersentuh (12 sesi, 6 absensi, tetap). Diuji turun-naik dua kali. **PERINGATAN: antarmuka student SPL gelap sampai S3** - datanya sudah pindah, tampilannya belum. | **sedang** |
-| **S3** | Sisi user: daftar silabus, halaman detail, "Mark complete". | sedang |
+| ~~**S3**~~ | **Selesai.** Fragment bercabang ke template silabus sendiri, halaman detail `/program/syllabus/detail/:id`, tombol Mark complete, tab Attendance disembunyikan untuk silabus. design-check `non-bootcamp-program` 23/23. | sedang |
 | **S4** | Sisi admin: CRUD silabus, label, layar penyelesaian menggantikan absensi. | **besar** — 61 label |
 | **S5** | `findLearningStats` + `findWeekSummaries` sadar silabus; dasbor super admin ikut benar. | sedang |
 | **S6** | Retire: `ensureSyllabusContainer`, `openNextSessionWhenLogbookIsOff`, dan cabang `caps.structure` yang membaca `minggu`. | rendah |

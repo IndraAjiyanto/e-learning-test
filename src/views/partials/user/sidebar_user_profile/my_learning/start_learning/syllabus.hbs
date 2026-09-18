@@ -1,0 +1,103 @@
+{{!--
+  Panel: Sessions untuk program NON-BOOTCAMP (SPL).
+  Dirender oleh courses.controller.ts -> myCourseFragment(), cabang
+  caps.structure === 'syllabus'.
+
+  Berdiri sendiri, BUKAN cabang keempat di start_learning/index.hbs. Dua
+  alasan:
+
+  1. Berkas itu sudah 600+ baris dengan Alpine yang memuat sesi lewat fetch
+     per minggu. Silabus tidak butuh fetch sama sekali - SyllabusService sudah
+     mengirim daftar lengkap beserta keadaannya dari server.
+  2. Setelah S6, berkas itu kembali menjadi murni bootcamp. Menaruh silabus di
+     sana berarti menambah cabang yang memang akan dibuang lagi.
+
+  Data dari controller:
+    silabus : SyllabusView[] - { id, order, title, description, state,
+              completedAt, materialCount, assignmentCount, logbookOk }
+              state = 'LOCKED' | 'OPEN' | 'COMPLETED'
+    caps    : kapabilitas program (program-type.ts)
+--}}
+<div class="space-y-4 px-4 py-4 sm:px-8 sm:py-6">
+
+  {{#if silabus.length}}
+    {{!-- Ringkasan. Dihitung di template dari `state` yang sudah dikirim
+         server, jadi tidak ada query tambahan. --}}
+    {{> components/ui/learning/tab_summary/index
+        percent=syllabusProgress.percent
+        label=(concat syllabusProgress.completed ' ' (t 'test.startLearning.of') ' ' syllabusProgress.total ' ' (t 'test.syllabus.completedSuffix'))
+        hint=(t 'test.syllabus.hint')
+        items=(array
+          (obj 'label' (t 'test.startLearning.totalCount') 'value' syllabusProgress.total 'tone' 'navy')
+          (obj 'label' (t 'test.startLearning.completedCount') 'value' syllabusProgress.completed 'tone' 'green')
+        ) }}
+
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <ul class="divide-y divide-[#F0F0F0]">
+        {{#each silabus}}
+          <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+
+            {{!-- Lencana urutan. Tiga keadaan, tiga rupa - student tidak perlu
+                 menebak mana yang bisa dibuka. --}}
+            {{#if (eq this.state 'COMPLETED')}}
+              <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F0FDF4] text-[#15803D]">
+                <i class="fa-solid fa-check text-sm"></i>
+              </span>
+            {{else if (eq this.state 'OPEN')}}
+              <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">{{this.order}}</span>
+            {{else}}
+              <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F5F5F5] text-[#a3a3a3]">
+                <i class="fa-solid fa-lock text-xs"></i>
+              </span>
+            {{/if}}
+
+            <span class="min-w-0 flex-1">
+              <span class="block truncate font-montserrat text-base font-bold {{#if (eq this.state 'LOCKED')}}text-[#a3a3a3]{{else}}text-[#171717]{{/if}}">{{this.title}}</span>
+
+              {{#if (eq this.state 'LOCKED')}}
+                <span class="mt-0.5 block truncate font-inter text-xs text-[#a3a3a3]">{{t 'test.syllabus.lockedHint'}}</span>
+              {{else}}
+                {{!-- Isinya disebut supaya student tahu ada apa sebelum membuka. --}}
+                <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">
+                  {{this.materialCount}}
+                  {{#if (eq this.materialCount 1)}}{{t 'test.syllabus.materialOne'}}{{else}}{{t 'test.syllabus.materialMany'}}{{/if}}
+                  &middot;
+                  {{this.assignmentCount}}
+                  {{#if (eq this.assignmentCount 1)}}{{t 'test.startLearning.taskLower'}}{{else}}{{t 'test.startLearning.tasksLower'}}{{/if}}
+                </span>
+              {{/if}}
+            </span>
+
+            {{#if (eq this.state 'COMPLETED')}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#15803D]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#22C55E]"></span>{{t 'test.startLearning.completed'}}
+              </span>
+            {{else if (eq this.state 'OPEN')}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#FDE68A] bg-[#FFFBEB] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#B45309]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#F59E0B]"></span>{{t 'test.syllabus.inProgress'}}
+              </span>
+            {{/if}}
+
+            {{#unless (eq this.state 'LOCKED')}}
+              <a
+                href="/program/syllabus/detail/{{this.id}}"
+                class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-[8px] {{#if (eq this.state 'COMPLETED')}}border border-[#003060] bg-white text-[#003060] hover:bg-[#E4F1F7]{{else}}bg-[#003060] text-white hover:bg-[#00254a]{{/if}} px-3.5 font-inter text-sm font-semibold no-underline transition-colors"
+              >
+                {{t 'test.syllabus.open'}}
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            {{/unless}}
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+  {{else}}
+    <div class="rounded-xl border border-[#E5E5E5] bg-white px-5 py-12 text-center">
+      <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+        <i class="fa-solid fa-list-check text-base"></i>
+      </span>
+      <p class="font-inter text-sm font-semibold text-[#171717]">{{t 'test.syllabus.emptyTitle'}}</p>
+      <p class="mt-1 font-inter text-xs text-[#737373]">{{t 'test.syllabus.emptyBody'}}</p>
+    </div>
+  {{/if}}
+</div>

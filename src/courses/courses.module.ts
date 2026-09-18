@@ -34,10 +34,14 @@ import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import { QuestionsModule } from 'src/questions/questions.module';
+import { SyllabusModule } from 'src/syllabus/syllabus.module';
 
 @Module({
   imports: [
     CommonModule,
+    // Jalur belajar non-bootcamp; fragment Sessions bercabang ke sini saat
+    // caps.structure === 'syllabus'.
+    SyllabusModule,
     TypeOrmModule.forFeature([
       Technology,
       Logbook,

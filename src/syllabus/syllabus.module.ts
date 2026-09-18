@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyllabusService } from './syllabus.service';
+import { SyllabusController } from './syllabus.controller';
 import { Course } from 'src/entities/course.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { SyllabusMaterial } from 'src/entities/syllabus_material.entity';
@@ -11,8 +12,7 @@ import { SyllabusLogbook } from 'src/entities/syllabus_logbook.entity';
 import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
 
 /**
- * Jalur belajar non-bootcamp. Belum punya controller - S1 hanya menyediakan
- * aturannya; antarmukanya S3 (student) dan S4 (admin).
+ * Jalur belajar non-bootcamp. Controller student ada di S3; sisi admin S4.
  */
 @Module({
   imports: [
@@ -27,6 +27,7 @@ import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
       SyllabusProgress,
     ]),
   ],
+  controllers: [SyllabusController],
   providers: [SyllabusService],
   exports: [SyllabusService],
 })

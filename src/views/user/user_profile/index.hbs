@@ -61,6 +61,10 @@
       if (section === 'logbook' && this.activeCaps.logbookEnabled === false) {
         section = 'uiux';
       }
+      // Tab Attendance tidak ada pada program silabus.
+      if (section === 'presentation' && this.activeCaps.structure === 'syllabus') {
+        section = 'uiux';
+      }
       this.activeSection = section;
       if (this.sectionFragmentConfig[section]) {
         const courseId = this.activeCourseId || (this.userCourses[0] && this.userCourses[0].course && this.userCourses[0].course.id);
@@ -174,6 +178,7 @@
   }"
   x-init="
     if (activeSection === 'logbook' && activeCaps.logbookEnabled === false) { activeSection = 'uiux'; }
+    if (activeSection === 'presentation' && activeCaps.structure === 'syllabus') { activeSection = 'uiux'; }
     if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }
   "
 >
@@ -597,9 +602,18 @@
                       (obj 'key' 'logbook' 'label' 'myLogbook' 'icon' 'fa-clipboard')
                       (obj 'key' 'certificate' 'label' 'certificate' 'icon' 'fa-award')
                     )}}
-                      {{!-- Tab yang bergantung sakelar hanya dirender kalau
-                           sakelarnya menyala; `caps` dihitung server. --}}
-                      {{#if (or (not (eq this.key 'logbook')) ../caps.logbookEnabled)}}
+                      {{!-- Tab yang bergantung keadaan program hanya dirender
+                           kalau memang berlaku; `caps` dihitung server.
+
+                           - logbook : mengikuti sakelar per program.
+                           - presentation (Attendance) : TIDAK ADA pada program
+                             silabus. Student belajar mandiri tidak hadir, ia
+                             menyelesaikan - dan kemajuannya sudah tampil di tab
+                             Sessions, jadi tab terpisah hanya mengulang. --}}
+                      {{#if (and
+                              (or (not (eq this.key 'logbook')) ../caps.logbookEnabled)
+                              (or (not (eq this.key 'presentation')) (not (eq ../caps.structure 'syllabus')))
+                            )}}
                       <button
                         type="button"
                         role="tab"

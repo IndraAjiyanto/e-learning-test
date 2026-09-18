@@ -19,6 +19,7 @@ import {
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
 import { capabilitiesForCourse } from './program-type';
+import { SyllabusService } from 'src/syllabus/syllabus.service';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -42,6 +43,7 @@ export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly usersService: UsersService,
+    private readonly syllabusService: SyllabusService,
   ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
@@ -540,6 +542,30 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    // Program non-bootcamp memakai silabus, bukan minggu-lalu-sesi. Datanya
+    // datang lengkap dari server (tidak ada fetch per minggu seperti jalur
+    // bootcamp), jadi templatenya pun berdiri sendiri.
+    const fragmentCaps = capabilitiesForCourse(activeCourse);
+    if (fragmentCaps.structure === 'syllabus') {
+      const silabus = activeCourse
+        ? await this.syllabusService.findForStudent(activeCourse.id, id)
+        : [];
+      const syllabusProgress = activeCourse
+        ? await this.syllabusService.statsFor(activeCourse.id, id)
+        : { total: 0, completed: 0, percent: 0 };
+      return res.render(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/syllabus',
+        {
+          course: activeCourse,
+          silabus,
+          syllabusProgress,
+          caps: fragmentCaps,
+          user: req.user,
+          layout: false,
+        },
+      );
+    }
 
     // Panel ini kini merender komposisi program_detail yang dipindahkan dari
     // halaman landing, jadi datanya harus sama persis dengan yang dulu disiapkan

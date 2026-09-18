@@ -1,0 +1,118 @@
+{{!--
+  Halaman: Detail Silabus (program non-bootcamp)
+  Rute   : GET /program/syllabus/detail/:syllabusId  (syllabus.controller.ts)
+
+  Padanan `user/learning/session.hbs` untuk jalur silabus. Yang membedakan:
+  tidak ada absensi. Student belajar mandiri tidak hadir, ia MENYELESAIKAN -
+  karena itu satu tombol "Mark complete", bukan formulir kehadiran.
+
+  Silabus terkunci tidak pernah sampai ke sini; controllernya mengalihkan.
+--}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.syllabus.detailTitle') back=(concat '/program/myProgram/' user.id '?courseId=' course.id)}}
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
+  <div class="flex w-full flex-col gap-4">
+
+    <!-- Kepala silabus -->
+    <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+      <div class="flex flex-wrap items-start gap-4">
+        <span class="grid size-11 shrink-0 place-items-center rounded-xl {{#if (eq view.state 'COMPLETED')}}bg-[#F0FDF4] text-[#15803D]{{else}}bg-[#E4F1F7] text-[#003060]{{/if}}">
+          {{#if (eq view.state 'COMPLETED')}}
+            <i class="fa-solid fa-check text-base"></i>
+          {{else}}
+            <span class="font-inter text-base font-bold">{{view.order}}</span>
+          {{/if}}
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <h1 class="font-montserrat text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{syllabus.title}}</h1>
+          {{#if syllabus.description}}
+            <p class="mt-1 font-inter text-sm text-[#737373]">{{syllabus.description}}</p>
+          {{/if}}
+          {{#if view.completedAt}}
+            <p class="mt-2 inline-flex items-center gap-1.5 font-inter text-xs text-[#15803D]">
+              <i class="fa-solid fa-circle-check text-[0.7rem]"></i>
+              {{t 'test.syllabus.completedOn'}} {{formatDate view.completedAt lang}}
+            </p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Materi -->
+    <section class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="flex items-center gap-2.5 border-b border-[#E5E5E5] px-5 py-4">
+        <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+          <i class="fa-regular fa-folder-open text-sm"></i>
+        </span>
+        <h2 class="font-montserrat text-base font-bold text-[#171717]">{{t 'test.startLearning.materials'}}</h2>
+      </div>
+      {{#if syllabus.materials.length}}
+        <ul class="divide-y divide-[#F0F0F0]">
+          {{#each syllabus.materials}}
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F5F5F5] text-[#525252]">
+                <i class="fa-regular fa-file-lines text-sm"></i>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate font-inter text-sm font-semibold text-[#171717]">{{this.title}}</span>
+                <span class="mt-0.5 block font-inter text-xs uppercase text-[#737373]">{{this.fileType}}</span>
+              </span>
+              <a href="{{this.file}}" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] no-underline transition-colors hover:bg-[#E4F1F7]">
+                <i class="fa-solid fa-up-right-from-square text-xs"></i>{{t 'test.startLearning.openFile'}}
+              </a>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="px-5 py-8 text-center font-inter text-sm text-[#737373]">{{t 'test.startLearning.noMaterials'}}</p>
+      {{/if}}
+    </section>
+
+    <!-- Tugas -->
+    <section class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="flex items-center gap-2.5 border-b border-[#E5E5E5] px-5 py-4">
+        <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+          <i class="fa-solid fa-file-pen text-sm"></i>
+        </span>
+        <h2 class="font-montserrat text-base font-bold text-[#171717]">{{t 'test.startLearning.assignment'}}</h2>
+      </div>
+      {{#if syllabus.assignments.length}}
+        <ul class="divide-y divide-[#F0F0F0]">
+          {{#each syllabus.assignments}}
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span class="min-w-0 flex-1 truncate font-inter text-sm font-semibold text-[#171717]">{{this.title}}</span>
+              <a href="{{this.file}}" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] no-underline transition-colors hover:bg-[#E4F1F7]">
+                <i class="fa-solid fa-up-right-from-square text-xs"></i>{{t 'test.startLearning.openFile'}}
+              </a>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="px-5 py-8 text-center font-inter text-sm text-[#737373]">{{t 'test.startLearning.noAssignments'}}</p>
+      {{/if}}
+    </section>
+
+    {{!-- Penyelesaian. Ini pengganti absensi: student menandai sendiri bahwa
+         materinya sudah dituntaskan, dan itulah yang membuka silabus
+         berikutnya. Tombolnya tidak muncul kalau sudah selesai. --}}
+    <section class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+      {{#if (eq view.state 'COMPLETED')}}
+        <p class="inline-flex items-center gap-2 font-inter text-sm text-[#15803D]">
+          <i class="fa-solid fa-circle-check"></i>{{t 'test.syllabus.alreadyComplete'}}
+        </p>
+      {{else}}
+        <form method="POST" action="/program/syllabus/detail/{{syllabus.id}}/complete" class="flex flex-wrap items-center gap-3">
+          <span class="min-w-0 flex-1 font-inter text-sm text-[#737373]">{{t 'test.syllabus.hint'}}</span>
+          <button type="submit"
+            class="inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]">
+            <i class="fa-solid fa-check text-xs"></i>{{t 'test.syllabus.markComplete'}}
+          </button>
+        </form>
+      {{/if}}
+    </section>
+
+  </div>
+</div>
+{{/user/shell_frame/index}}

@@ -591,7 +591,11 @@ const SCREENS = [
       const tabs = (await page.locator('[role="tab"]').allInnerTexts()).map((t) => t.trim());
       // Sakelar logbook mati -> tabnya tidak dirender sama sekali.
       check(s, 'logbook tab is hidden', !tabs.some((t) => /My Logbook/.test(t)), tabs.join(' | '));
-      check(s, 'five tabs remain', tabs.length === 5, String(tabs.length));
+      // Attendance tidak ada pada program silabus: student belajar mandiri
+      // tidak hadir, ia menyelesaikan - dan kemajuannya sudah tampil di tab
+      // Sessions, jadi tab terpisah hanya mengulang.
+      check(s, 'attendance tab is hidden', !tabs.some((t) => /Attendance/.test(t)), tabs.join(' | '));
+      check(s, 'four tabs remain', tabs.length === 4, String(tabs.length));
 
       // sessionUnlock membaca atribut ini untuk memutuskan apakah logbook ikut
       // mengunci sesi berikutnya.
@@ -602,8 +606,28 @@ const SCREENS = [
       check(s, 'no week header on a syllabus program', !/Week\s*\d/i.test(body),
         body.replace(/\n/g, ' ').slice(0, 90));
       check(s, 'no weeks-progress card', !/weeks? completed/i.test(body));
-      check(s, 'syllabus sessions are listed', /Silabus|Syllabus/i.test(body),
+      check(s, 'syllabus list is rendered', /Silabus|Syllabus/i.test(body),
         body.replace(/\n/g, ' ').slice(0, 90));
+      // Ringkasannya menghitung SILABUS, bukan minggu maupun sesi.
+      check(s, 'summary counts syllabi', /syllabi completed/i.test(body),
+        body.replace(/\n/g, ' ').slice(0, 70));
+      // Halaman detail silabus: terjangkau, dan tidak punya absensi.
+      const openLink = page.locator('#start-learning-container a[href*="/program/syllabus/detail/"]');
+      check(s, 'syllabus rows link to their detail page', await openLink.count() > 0);
+      if (await openLink.count() > 0) {
+        await openLink.first().click();
+        await page.waitForTimeout(1500);
+        const detail = await page.locator('body').innerText();
+        check(s, 'detail page opens', page.url().includes('/program/syllabus/detail/'),
+          new URL(page.url()).pathname);
+        check(s, 'detail page has no attendance form',
+          !/Mark attendance|Attendance Required/i.test(detail));
+        check(s, 'detail page offers completion or says it is done',
+          /Mark complete|completed this syllabus|Completed on/i.test(detail),
+          detail.replace(/\n/g, ' ').slice(0, 80));
+        await page.goBack({ waitUntil: 'networkidle' });
+        await page.waitForTimeout(1200);
+      }
 
       // Jebakan inti rencananya: tanpa logbook, sesi berikutnya harus tetap
       // bisa terbuka. Diperiksa lewat helper yang sama dengan templatenya.
