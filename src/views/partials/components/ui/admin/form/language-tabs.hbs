@@ -16,11 +16,10 @@
   - full (default): w128 tabs with flag + full language names (Indonesia/English/Japanese)
   - compact: w100 tabs with flag + short labels (ID/EN/JP)
   - mini: w80 tabs, no flag, short labels (ID/EN/JP)
-  - underline (slicing.pen Feature Card): full-width bar with bottom border #D9D9D9,
+  - underline: full-width bar with bottom border #D9D9D9,
     tabs ID 97 / EN 101 / JP 98 x h40, flag 20 circle + Montserrat 14 semibold #003060 label,
     active tab = 2px bottom accent #055C90 (box-shadow, no layout shift)
 
-  Design: flex row, gap 8
   Tab: h40, p0 12, gap 8, radius 8, bg transparent
   Active: outline 1px #003060, text #003060
   Inactive: text #525252
@@ -32,19 +31,19 @@
     {{#if alpineVar}}@click="{{alpineVar}} = 'id'" :class="{{#if errId}}(fieldStatus['{{errId}}'] === 'error' ? '[box-shadow:0px_2px_0px_0px_#DC2626]' : ({{alpineVar}} === 'id' ? '[box-shadow:0px_2px_0px_0px_#055C90]' : '[box-shadow:0px_2px_0px_0px_transparent]'))" :title="fieldStatus['{{errId}}'] === 'error' ? 'Wajib diisi' : ''"{{else}}{{alpineVar}} === 'id' ? '[box-shadow:0px_2px_0px_0px_#055C90]' : '[box-shadow:0px_2px_0px_0px_transparent]'"{{/if}}{{/if}}
     class='box-border w-[97px] shrink-0 h-[40px] flex flex-row gap-[4px] p-[10px_28px] justify-center items-center {{#unless alpineVar}}{{#if (eq activeTab "id")}}[box-shadow:0px_2px_0px_0px_#055C90]{{else}}[box-shadow:0px_2px_0px_0px_transparent]{{/if}}{{/unless}}'>
     <div class='w-[20px] h-[20px] rounded-full overflow-hidden bg-cover bg-center shrink-0' style="background-image: url('https://flagcdn.com/w320/id.png')"></div>
-    <span class='text-[14px]/[normal] font-montserrat font-semibold text-[#003060]'>ID</span>
+    <span class='text-[14px]/[normal] font-inter font-semibold text-[#003060]'>ID</span>
   </button>
   <button type='button'
     {{#if alpineVar}}@click="{{alpineVar}} = 'en'" :class="{{#if errEn}}(fieldStatus['{{errEn}}'] === 'error' ? '[box-shadow:0px_2px_0px_0px_#DC2626]' : ({{alpineVar}} === 'en' ? '[box-shadow:0px_2px_0px_0px_#055C90]' : '[box-shadow:0px_2px_0px_0px_transparent]'))" :title="fieldStatus['{{errEn}}'] === 'error' ? 'Wajib diisi' : ''"{{else}}{{alpineVar}} === 'en' ? '[box-shadow:0px_2px_0px_0px_#055C90]' : '[box-shadow:0px_2px_0px_0px_transparent]'"{{/if}}{{/if}}
     class='box-border w-[101px] shrink-0 h-[40px] flex flex-row gap-[4px] p-[10px_28px] justify-center items-center {{#unless alpineVar}}{{#if (eq activeTab "en")}}[box-shadow:0px_2px_0px_0px_#055C90]{{else}}[box-shadow:0px_2px_0px_0px_transparent]{{/if}}{{/unless}}'>
     <div class='w-[20px] h-[20px] rounded-full overflow-hidden bg-cover bg-center shrink-0' style="background-image: url('https://flagcdn.com/w320/gb.png')"></div>
-    <span class='text-[14px]/[normal] font-montserrat font-semibold text-[#003060]'>EN</span>
+    <span class='text-[14px]/[normal] font-inter font-semibold text-[#003060]'>EN</span>
   </button>
   <button type='button'
     {{#if alpineVar}}@click="{{alpineVar}} = 'ja'" :class="{{#if errJa}}(fieldStatus['{{errJa}}'] === 'error' ? '[box-shadow:0px_2px_0px_0px_#DC2626]' : ({{alpineVar}} === 'ja' ? '[box-shadow:0px_2px_0px_0px_#055C90]' : '[box-shadow:0px_2px_0px_0px_transparent]'))" :title="fieldStatus['{{errJa}}'] === 'error' ? 'Wajib diisi' : ''"{{else}}{{alpineVar}} === 'ja' ? '[box-shadow:0px_2px_0px_0px_#055C90]' : '[box-shadow:0px_2px_0px_0px_transparent]'"{{/if}}{{/if}}
     class='box-border w-[98px] shrink-0 h-[40px] flex flex-row gap-[4px] p-[10px_28px] justify-center items-center {{#unless alpineVar}}{{#if (eq activeTab "ja")}}[box-shadow:0px_2px_0px_0px_#055C90]{{else}}[box-shadow:0px_2px_0px_0px_transparent]{{/if}}{{/unless}}'>
     <div class='w-[20px] h-[20px] rounded-full overflow-hidden bg-cover bg-center shrink-0' style="background-image: url('https://flagcdn.com/w320/jp.png')"></div>
-    <span class='text-[14px]/[normal] font-montserrat font-semibold text-[#003060]'>JP</span>
+    <span class='text-[14px]/[normal] font-inter font-semibold text-[#003060]'>JP</span>
   </button>
 </div>
 {{else}}

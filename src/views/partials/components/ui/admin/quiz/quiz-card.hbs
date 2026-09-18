@@ -6,7 +6,6 @@
          {{deleteFormAction}} (optional, form action URL for delete),
          {{detailHref}} (optional, Alpine :href expression for detail link)
 
-  Design: min-h68 row, white, radius 8, stroke #D9D9D9, gap 6, p8 14
   Texts: quizName Montserrat 14/600 #003060 + meta (timer + duration, award + minScore)
   Delete: 44x44 white stroke #D9D9D9, trash-2 16px #C80606
   Detail: 81x44 white stroke #003060 + shadow, Inter 16/600 #003060
@@ -15,15 +14,15 @@
 
   {{!-- Texts + Meta --}}
   <div class='flex flex-col gap-[6px] flex-1 min-w-0 justify-center items-start'>
-    <div class='text-[14px]/[normal] w-full text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='quiz.quizName' :title='quiz.quizName'></div>
+    <div class='text-[14px]/[normal] w-full text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='quiz.quizName' :title='quiz.quizName'></div>
     <div class='flex flex-row flex-wrap gap-x-[16px] gap-y-[4px] w-full justify-start items-center'>
       <div class='flex flex-row gap-[4px] justify-start items-center'>
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>
-        <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-normal whitespace-nowrap' x-text='quiz.duration + " min"'></span>
+        <span class='text-[14px]/[normal] text-[#718096] font-inter font-normal whitespace-nowrap' x-text='quiz.duration + " min"'></span>
       </div>
       <div class='flex flex-row gap-[4px] justify-start items-center'>
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><circle cx='12' cy='8' r='6'/><path d='M15.477 12.89L17 22l-5-3-5 3 1.523-9.11'/></svg>
-        <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-normal whitespace-nowrap' x-text='"Min: " + quiz.minScore'></span>
+        <span class='text-[14px]/[normal] text-[#718096] font-inter font-normal whitespace-nowrap' x-text='"Min: " + quiz.minScore'></span>
       </div>
     </div>
   </div>

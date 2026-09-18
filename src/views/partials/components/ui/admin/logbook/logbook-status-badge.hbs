@@ -3,7 +3,6 @@
   Path: components/ui/admin/logbook/logbook-status-badge.hbs
   Props: {{statusVar}} (Alpine expression, e.g. 'log.process' or 'selectedLogbook.process')
   Dipakai: {{> components/ui/admin/logbook/logbook-status-badge statusVar='log.process'}} di dalam x-for
-  Pencil (Container - Logbook Review → Status pill): w fit h fit r16 gap6 p2 8 2 6,
   bg F0FDF4 dot 22C55E text 15803D untuk approved; FEFCE8 dot EAB308 text A16207 process;
   FEF2F2 dot EF4444 text B91C1C rejected.
   Clean-code: single responsibility, no magic — warna dimap dari enum ProcessStatus.

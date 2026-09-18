@@ -24,7 +24,7 @@
       <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-7 h-7 object-contain' alt='' />
     </div>
     <div class='flex-1'>
-      <p class='font-bold text-gray-900 text-base font-montserrat mb-1' x-text='kat.name'></p>
+      <p class='font-bold text-gray-900 text-base font-inter mb-1' x-text='kat.name'></p>
       <p class='text-sm text-gray-600 leading-relaxed' x-text='truncate(getByLang(kat.text,lang), 120)'></p>
     </div>
   </a>

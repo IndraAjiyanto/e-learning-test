@@ -41,7 +41,7 @@
 
       <!-- Week Header -->
       <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== '{{id}}') loadSessions('{{id}}')">
-        <h3 class="font-montserrat text-xl font-bold leading-tight text-[#003060]">
+        <h3 class="font-inter text-xl font-bold leading-tight text-[#003060]">
           Week {{weekNumber}} : {{description}}
         </h3>
         <div class="w-9 h-9 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
@@ -56,15 +56,15 @@
         <template x-if="sessionsLoading">
           <div class="w-full max-w-[1232px] bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-6 sm:p-8 text-center">
             <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="font-montserrat font-medium text-[#003060]">Loading sessions...</p>
+            <p class="font-inter font-medium text-[#003060]">Loading sessions...</p>
           </div>
         </template>
 
         <!-- Sessions Error State -->
         <template x-if="!sessionsLoading && sessionsError">
           <div class="w-full max-w-[1232px] bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-6 sm:p-8 text-center space-y-3">
-            <p class="font-montserrat font-medium text-red-600">Failed to load sessions. Please try again.</p>
-            <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-[#003060] underline cursor-pointer">
+            <p class="font-inter font-medium text-red-600">Failed to load sessions. Please try again.</p>
+            <button type="button" @click="loadSessions('{{id}}')" class="font-inter font-medium text-[#003060] underline cursor-pointer">
               Retry
             </button>
           </div>
@@ -73,7 +73,7 @@
         <!-- Sessions Empty State -->
         <template x-if="!sessionsLoading && !sessionsError && sessions.length === 0">
           <div class="w-full max-w-[1232px] bg-white border border-[#E5E7EB] rounded-[12px] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition p-6 sm:p-8 text-center">
-            <p class="font-montserrat font-medium text-[#003060]">No sessions available for this week.</p>
+            <p class="font-inter font-medium text-[#003060]">No sessions available for this week.</p>
           </div>
         </template>
 
@@ -138,7 +138,7 @@
 
             <!-- Header Card (click to expand/collapse this session's assignment) -->
             <div class="flex items-center justify-between gap-4 cursor-pointer" @click="open = !open">
-              <h3 class="font-montserrat font-semibold text-base sm:text-lg leading-snug text-[#003060]" x-text="'Session ' + session.sessionOrder + ' - ' + session.topic"></h3>
+              <h3 class="font-inter font-semibold text-base sm:text-lg leading-snug text-[#003060]" x-text="'Session ' + session.sessionOrder + ' - ' + session.topic"></h3>
               <div class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
                 <i class="fas fa-chevron-up text-sm transition-transform duration-300" :class="open ? '' : 'rotate-180'"></i>
               </div>
@@ -156,18 +156,18 @@
 
               <!-- Assignment Link -->
               <div class="flex flex-col gap-2" x-show="session.assignments?.[0]?.file">
-                <h4 class="font-montserrat font-semibold text-base sm:text-lg text-[#003060]">
+                <h4 class="font-inter font-semibold text-base sm:text-lg text-[#003060]">
                   Your Assignment here:
                 </h4>
-                <a :href="session.assignments?.[0]?.file || '#'" @click.prevent="selectedAssignment = session.assignments?.[0]; view = 'detail'" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline hover:text-blue-700" x-text="session.assignments?.[0]?.file"></a>
+                <a :href="session.assignments?.[0]?.file || '#'" @click.prevent="selectedAssignment = session.assignments?.[0]; view = 'detail'" class="font-inter font-medium text-sm sm:text-base text-[#003060] underline hover:text-blue-700" x-text="session.assignments?.[0]?.file"></a>
               </div>
 
               <!-- Default State: Form Submission -->
               <form x-show="status === 'pending' || editing" @submit.prevent="submitAnswer" class="flex flex-col gap-4">
-                <h4 class="font-montserrat font-semibold text-base sm:text-lg text-[#003060]">
+                <h4 class="font-inter font-semibold text-base sm:text-lg text-[#003060]">
                   Your Answer:
                 </h4>
-                <p class="font-montserrat font-medium text-sm text-[#003060]">
+                <p class="font-inter font-medium text-sm text-[#003060]">
                   Enter a GitHub link, Google Drive, or any online file sharing link.
                 </p>
 
@@ -182,7 +182,7 @@
                   >
                 </div>
 
-                <p x-show="submitError" x-cloak x-text="submitError" class="font-open-sans text-xs text-red-600"></p>
+                <p x-show="submitError" x-cloak x-text="submitError" class="font-inter text-xs text-red-600"></p>
 
                 <div class="flex items-center gap-4 mt-6">
                   <button type="submit" :disabled="submitting" class="inline-flex h-11 items-center justify-center rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-60">
@@ -197,7 +197,7 @@
 
               <!-- Submitted State: Under Review / Approved -->
               <div x-show="(status === 'review' || status === 'approved') && !editing" x-cloak class="flex flex-col gap-4">
-                <h4 class="font-montserrat font-semibold text-base sm:text-lg text-[#003060]">
+                <h4 class="font-inter font-semibold text-base sm:text-lg text-[#003060]">
                   Your Answer:
                 </h4>
 
@@ -205,13 +205,13 @@
                 <div class="flex flex-col gap-[10px]">
                   <div class="flex items-center gap-[8px] text-[#003060]">
                     <i class="far fa-calendar text-sm"></i>
-                    <span class="font-open-sans font-semibold text-sm leading-relaxed">
+                    <span class="font-inter font-semibold text-sm leading-relaxed">
                       Submission Date: <span class="text-[#12BD26]" x-text="submissionDate"></span>
                     </span>
                   </div>
                   <div class="flex items-center gap-[8px] text-[#003060]">
                     <i class="far fa-clock text-sm"></i>
-                    <span class="font-open-sans font-semibold text-sm leading-relaxed">
+                    <span class="font-inter font-semibold text-sm leading-relaxed">
                       Submission Time: <span class="text-[#12BD26]" x-text="submissionTime"></span>
                     </span>
                   </div>
@@ -219,7 +219,7 @@
 
                 <!-- Submitted URL -->
                 <div class="flex items-center mt-2 px-[18px] bg-white h-9 w-fit">
-                  <span class="font-montserrat font-medium text-sm text-black" x-text="answerUrl"></span>
+                  <span class="font-inter font-medium text-sm text-black" x-text="answerUrl"></span>
                 </div>
 
                 <!-- Action / Result Area -->
@@ -250,7 +250,7 @@
         <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
         </span>
-        <h3 class="font-montserrat text-xl font-bold text-[#003060]">No assignments yet</h3>
+        <h3 class="font-inter text-xl font-bold text-[#003060]">No assignments yet</h3>
         <p class="font-inter text-sm text-[#737373]">
           This program has no weeks or sessions yet. Your mentor will add them soon.
         </p>

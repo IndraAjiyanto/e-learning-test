@@ -1,13 +1,8 @@
 {{!--
-  Page: Admin — Create Assignment (Container - Create Assignment, slicing.pen bin7R)
+  Page: Admin — Create Assignment
   Path: admin/assignments/create.hbs
   Route: GET /task/formCreate/:sessionId -> POST /task/:sessionId (create)
   Data: { user, sessionId }
-  Design: Container w1052 gap28 → Title 34/brand ("Create Assignment" /
-          "Fill in the information below to create a assignment.") → Form Card
-          (white r12 stroke #D9D9D9 p20 gap20): Assignment Title* + Upload
-          Assignment File* (dropzone h265) → Footer h86 justify end
-          (Cancel w90 + Create Assignment w185).
   Komponen (reuse semua, tanpa komponen baru — form assignment hanya dipakai
   1x, tidak ada edit view): text/page-header, form/form-card, form/form-field,
           form/text-input, material/material-file-upload (label override),

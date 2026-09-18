@@ -4,7 +4,6 @@
   Dipakai: {{> components/ui/admin/program/mentor-avatar}} di dalam x-for `mentor` (Mentors { profile, name })
   Alpine scope: `mentor.profile`, `mentor.name`
 
-  Pencil: 32x32, bg #F9F5FF, radius full, lucide user 20px #7F56D9 (sama user-avatar).
   Dibuat terpisah karena entity Mentors memakai `name` (bukan `username`) —
   pemakaian user-avatar di sini akan menghasilkan alt yang salah.
   Foto profil dipakai bila ada (BE: mentor.profile), fallback ikon user.

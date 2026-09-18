@@ -1,12 +1,12 @@
 <!-- DETAIL PORTOFOLIO PARTIAL -->
-<div class="w-full space-y-8 pb-12 font-montserrat mb-28">
+<div class="w-full space-y-8 pb-12 font-inter mb-28">
   
   <!-- Back Button -->
   <div>
     <button 
       type="button" 
       @click="showDetail = false"
-      class="inline-flex items-center gap-2 font-montserrat font-medium text-sm sm:text-base text-[#003060] hover:text-[#001f3f] transition-colors cursor-pointer"
+      class="inline-flex items-center gap-2 font-inter font-medium text-sm sm:text-base text-[#003060] hover:text-[#001f3f] transition-colors cursor-pointer"
     >
       <i class="fa-solid fa-arrow-left text-sm"></i>
       <span>Back to Portfolio List</span>
@@ -15,10 +15,10 @@
 
   <!-- HEADER SECTION -->
     <div class="text-center max-w-4xl mx-auto space-y-5">
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none mb-2">
+      <h1 class="font-inter font-semibold text-2xl sm:text-3xl text-[#003060] leading-none mb-2">
         My Portofolio
       </h1>
-      <p class="font-montserrat font-normal text-sm sm:text-base text-[#003060] leading-relaxed max-w-4xl mx-auto">
+      <p class="font-inter font-normal text-sm sm:text-base text-[#003060] leading-relaxed max-w-4xl mx-auto">
         Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
       </p>
     </div>
@@ -80,7 +80,7 @@
 
     <!-- Portfolio Title -->
     <h2 
-      class="font-montserrat font-semibold text-xl sm:text-2xl text-[#003060] leading-none text-center"
+      class="font-inter font-semibold text-xl sm:text-2xl text-[#003060] leading-none text-center"
       x-text="selectedPortfolio ? selectedPortfolio.title : 'Judul Portofolio'"
     >
       Judul Portofolio
@@ -89,7 +89,7 @@
     <!-- Class Type Badge -->
     <div class="text-center">
       <span 
-        class="inline-flex items-center justify-center bg-[#0B1F3B1A] text-black font-montserrat font-medium text-base sm:text-lg px-6 py-2 rounded-[6px]"
+        class="inline-flex items-center justify-center bg-[#0B1F3B1A] text-black font-inter font-medium text-base sm:text-lg px-6 py-2 rounded-[6px]"
         x-text="selectedPortfolio ? selectedPortfolio.classType : 'Short Class'"
       >
         Short Class
@@ -105,11 +105,11 @@
       
       <!-- Project Description Card -->
       <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-3">
-        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Project Description
         </h3>
         <p 
-          class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed"
+          class="font-inter font-normal text-sm sm:text-base text-[#666666] leading-relaxed"
           x-text="selectedPortfolio ? selectedPortfolio.description : 'disini isinya adalah deskripsi project yang dibuat'"
         >
           disini isinya adalah deskripsi project yang dibuat
@@ -118,24 +118,24 @@
 
       <!-- Project Overview Card -->
       <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-3">
-        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Project Overview
         </h3>
         <div 
           id="overviewDetail"
-          class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed space-y-2"
+          class="font-inter font-normal text-sm sm:text-base text-[#666666] leading-relaxed space-y-2"
           x-html="renderOverview(selectedPortfolio ? selectedPortfolio.overview : '') || '<p class=\'italic text-[#999999]\'>No project overview provided yet.</p>'"
         ></div>
       </div>
 
       <!-- Technologies Used Card -->
       <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-4">
-        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Technologies Used
         </h3>
         <div class="flex flex-wrap gap-2">
           <template x-for="tech in (selectedPortfolio && selectedPortfolio.technologies ? selectedPortfolio.technologies : [])" :key="tech.id || tech.name">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-inter font-medium text-sm sm:text-base">
               <template x-if="tech.svg">
                 <span x-html="tech.svg" class="w-5 h-5 flex-shrink-0 [&>svg]:w-5 [&>svg]:h-5"></span>
               </template>
@@ -146,7 +146,7 @@
             </span>
           </template>
           <template x-if="!selectedPortfolio || !selectedPortfolio.technologies || selectedPortfolio.technologies.length === 0">
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base" x-text="selectedPortfolio ? selectedPortfolio.category : 'Program'">Program</span>
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-inter font-medium text-sm sm:text-base" x-text="selectedPortfolio ? selectedPortfolio.category : 'Program'">Program</span>
           </template>
         </div>
       </div>
@@ -157,8 +157,8 @@
     <div class="lg:col-span-5 space-y-6">
       
       <!-- Student Profile Card -->
-      <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-6 font-montserrat">
-        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+      <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-6 font-inter">
+        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Student Profile
         </h3>
 
@@ -174,7 +174,7 @@
             <span x-text="selectedPortfolio ? selectedPortfolio.author.charAt(0) : 'T'">T</span>
           </div>
           <div class="flex flex-col min-w-0">
-            <span class="font-montserrat font-semibold text-base text-black leading-tight truncate" x-text="selectedPortfolio ? selectedPortfolio.author : 'Trisna'">Trisna</span>
+            <span class="font-inter font-semibold text-base text-black leading-tight truncate" x-text="selectedPortfolio ? selectedPortfolio.author : 'Trisna'">Trisna</span>
             <span class="font-sans font-normal text-xs text-[#666666] truncate" x-text="selectedPortfolio ? selectedPortfolio.email : 'trisna@gmail.com'">trisna@gmail.com</span>
           </div>
         </div>
@@ -183,10 +183,10 @@
         <div class="flex items-start gap-3">
           <i class="fa-regular fa-circle-check text-base text-black mt-1 flex-shrink-0"></i>
           <div class="space-y-1">
-            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
+            <p class="font-inter font-semibold text-sm sm:text-base text-[#003060] leading-none">
               Program Completed
             </p>
-            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
+            <p class="font-inter font-normal text-xs sm:text-sm text-[#666666]">
               Seminar - PYTHON FOR DATA ANALYST - From zero to insight
             </p>
           </div>
@@ -196,10 +196,10 @@
         <div class="flex items-start gap-3">
           <i class="fa-regular fa-calendar text-base text-black mt-1 flex-shrink-0"></i>
           <div class="space-y-1">
-            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
+            <p class="font-inter font-semibold text-sm sm:text-base text-[#003060] leading-none">
               Completion Date
             </p>
-            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
+            <p class="font-inter font-normal text-xs sm:text-sm text-[#666666]">
               Saturday 20 June 2026
             </p>
           </div>
@@ -209,10 +209,10 @@
         <div class="flex items-start gap-3">
           <i class="fa-regular fa-clock text-base text-black mt-1 flex-shrink-0"></i>
           <div class="space-y-1">
-            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
+            <p class="font-inter font-semibold text-sm sm:text-base text-[#003060] leading-none">
               Project Duration
             </p>
-            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
+            <p class="font-inter font-normal text-xs sm:text-sm text-[#666666]">
               0 Months
             </p>
           </div>
@@ -224,14 +224,14 @@
       <a 
         :href="selectedPortfolio && selectedPortfolio.link ? selectedPortfolio.link : '#'" 
         target="_blank"
-        class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-sm flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
+        class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-sm flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
       >
         View Portofolio
       </a>
 
       <!-- Share To Social Media Card -->
       <div 
-        class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-4 font-montserrat"
+        class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-4 font-inter"
         x-data="{
           copied: false,
           shareUrl() {
@@ -278,10 +278,10 @@
           }
         }"
       >
-        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Share This Portofolio
         </h3>
-        <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666] leading-relaxed">
+        <p class="font-inter font-normal text-xs sm:text-sm text-[#666666] leading-relaxed">
           Share this project to your social media so more people can see it.
         </p>
 
@@ -340,12 +340,12 @@
             type="text" 
             readonly
             :value="shareUrl()"
-            class="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 bg-[#FAFAFA] font-montserrat font-normal text-xs sm:text-sm text-[#666666] truncate focus:outline-none"
+            class="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 bg-[#FAFAFA] font-inter font-normal text-xs sm:text-sm text-[#666666] truncate focus:outline-none"
           >
           <button 
             type="button"
             @click="copyLink()"
-            class="h-[42px] px-4 rounded-[8px] bg-[#CFE6F5] hover:bg-[#b9dcf0] text-[#003060] font-montserrat font-medium text-xs sm:text-sm flex items-center justify-center gap-2 flex-shrink-0 transition-all active:scale-95 cursor-pointer"
+            class="h-[42px] px-4 rounded-[8px] bg-[#CFE6F5] hover:bg-[#b9dcf0] text-[#003060] font-inter font-medium text-xs sm:text-sm flex items-center justify-center gap-2 flex-shrink-0 transition-all active:scale-95 cursor-pointer"
           >
             <i class="fa-solid text-sm" :class="copied ? 'fa-check' : 'fa-link'"></i>
             <span x-text="copied ? 'Copied!' : 'Copy'">Copy</span>

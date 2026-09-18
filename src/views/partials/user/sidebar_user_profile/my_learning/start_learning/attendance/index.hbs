@@ -1,5 +1,5 @@
 <!-- ATTENDANCE FORM CONTENT PARTIAL -->
-<div class="px-4 sm:px-8 md:px-14 py-10 space-y-4 font-montserrat"
+<div class="px-4 sm:px-8 md:px-14 py-10 space-y-4 font-inter"
   x-data="{
     courseId: '{{course.id}}',
     currentUserId: '{{user.id}}',
@@ -132,10 +132,10 @@
 
   <!-- HEADER SECTION -->
   <div class="space-y-[15px]">
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
+    <h1 class="font-inter font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
       Attendance Form
     </h1>
-    <p class="font-open-sans font-normal text-sm sm:text-base text-[#003060] leading-relaxed">
+    <p class="font-inter font-normal text-sm sm:text-base text-[#003060] leading-relaxed">
       Record your attendance to access each session's learning materials.
     </p>
   </div>
@@ -152,7 +152,7 @@
         @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; loadSessions('{{id}}') }"
         class="w-full flex items-center justify-between cursor-pointer"
       >
-        <h2 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] text-left">
+        <h2 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] text-left">
           Week {{weekNumber}} : {{description}}
         </h2>
         <div class="w-9 h-9 flex items-center justify-center flex-shrink-0">
@@ -169,15 +169,15 @@
         <template x-if="openWeek === {{weekNumber}} && sessionsLoading">
           <div class="py-[20px] text-center">
             <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">Loading sessions...</p>
+            <p class="font-inter font-medium text-sm sm:text-base text-[#003060]">Loading sessions...</p>
           </div>
         </template>
 
         <!-- Sessions Error State -->
         <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
           <div class="py-[20px] text-center space-y-3">
-            <p class="font-montserrat font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
-            <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
+            <p class="font-inter font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
+            <button type="button" @click="loadSessions('{{id}}')" class="font-inter font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
               Retry
             </button>
           </div>
@@ -186,7 +186,7 @@
         <!-- Sessions Empty State -->
         <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError && sessions.length === 0">
           <div class="py-[20px] text-center">
-            <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">No sessions available for this week.</p>
+            <p class="font-inter font-medium text-sm sm:text-base text-[#003060]">No sessions available for this week.</p>
           </div>
         </template>
 
@@ -195,7 +195,7 @@
           <div class="flex flex-col">
             <div class="flex items-center justify-between py-[20px]">
               <span
-                class="font-montserrat font-medium text-base sm:text-lg text-[#003060]"
+                class="font-inter font-medium text-base sm:text-lg text-[#003060]"
                 x-text="sessionLabel(session)"
               ></span>
               <div class="flex items-center gap-[23px]">
@@ -205,7 +205,7 @@
                   :class="attendanceStatus(sIndex) === 'LOCKED' ? 'bg-[#F3F4F6] border border-[#D1D5DB]' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'bg-[#E5F6D4] border border-[#12BD26]' : 'bg-[#F2DBDB] border border-[#F25151]')"
                 >
                   <span
-                    class="font-open-sans font-normal text-base leading-none"
+                    class="font-inter font-normal text-base leading-none"
                     :class="attendanceStatus(sIndex) === 'LOCKED' ? 'text-[#6B7280]' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'text-[#12BD26]' : 'text-[#F25151]')"
                     x-text="attendanceStatus(sIndex) === 'LOCKED' ? 'Locked' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'Attendance Recorded' : 'Attendance Required')"
                   ></span>
@@ -218,7 +218,7 @@
                     class="inline-flex items-center gap-[5px] cursor-pointer group"
                   >
                     <i class="fa-solid fa-pen text-[#003060] text-sm"></i>
-                    <span class="font-montserrat font-medium text-sm text-[#003060] underline group-hover:opacity-80 transition-opacity">
+                    <span class="font-inter font-medium text-sm text-[#003060] underline group-hover:opacity-80 transition-opacity">
                       Edit
                     </span>
                   </button>
@@ -239,7 +239,7 @@
       {{else}}
       <!-- Locked Week -->
       <div class="w-full flex items-center justify-between">
-        <h2 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060]">
+        <h2 class="font-inter font-semibold text-lg sm:text-xl text-[#003060]">
           Week {{weekNumber}} : {{description}}
         </h2>
         <div class="w-9 h-9 flex items-center justify-center flex-shrink-0">
@@ -253,7 +253,7 @@
   {{else}}
   <!-- Weeks Empty State -->
   <div class="mt-[40px] py-[20px] text-center">
-    <p class="font-montserrat font-medium text-base sm:text-lg text-[#003060]">
+    <p class="font-inter font-medium text-base sm:text-lg text-[#003060]">
       No weeks available for this program yet.
     </p>
   </div>

@@ -1,7 +1,6 @@
 {{!--
   Card 06 - Participant Criteria
   Path: partials/admin/program/create/card_06_criteria.hbs
-  Design: slicing.pen "Feature Card - Participan Criteria" (same chrome as 05;
   pen title keeps "Participan" typo — code uses correct "Participant").
   Card chrome via form-card. Lang tabs: language-tabs variant="underline".
   Input row: num 42x44 bg #F5F5F5 + outline #D9D9D9, zero-padded Montserrat number #718096
@@ -21,7 +20,7 @@
     <template x-for='(item, index) in items' :key='index'>
       <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
         <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
-          <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
+          <span class='text-[14px]/[normal] text-[#718096] font-inter font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
         </div>
         <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
           :class="borderClass('criterias_id')">
@@ -46,7 +45,7 @@
     <template x-for='(item, index) in items' :key='index'>
       <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
         <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
-          <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
+          <span class='text-[14px]/[normal] text-[#718096] font-inter font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
         </div>
         <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
           :class="borderClass('criterias_en')">
@@ -71,7 +70,7 @@
     <template x-for='(item, index) in items' :key='index'>
       <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
         <div class='box-border w-[42px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[8px]'>
-          <span class='text-[14px]/[normal] text-[#718096] font-montserrat font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
+          <span class='text-[14px]/[normal] text-[#718096] font-inter font-medium' x-text='String(index + 1).padStart(2, "0")'></span>
         </div>
         <div class='box-border flex-1 min-w-0 shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
           :class="borderClass('criterias_ja')">

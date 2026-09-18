@@ -2,7 +2,7 @@
   <!-- Header Quiz -->
   <div class=" space-y-4">
     <!-- Enhanced header with gradient text and better spacing -->
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060]">Quiz</h1>
+    <h1 class="font-inter font-semibold text-2xl sm:text-3xl text-[#003060]">Quiz</h1>
     <p class="font-sans text-sm text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
   </div>
 
@@ -11,9 +11,9 @@
     <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-4 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
       <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
         <div class="flex items-center justify-between gap-4">
-          <span class="font-montserrat font-semibold text-lg text-[#003060] truncate" x-text="(activeMeta ? activeMeta.description : '') + ' : ' + (activeRecord ? activeRecord.quizName : '')">
+          <span class="font-inter font-semibold text-lg text-[#003060] truncate" x-text="(activeMeta ? activeMeta.description : '') + ' : ' + (activeRecord ? activeRecord.quizName : '')">
           </span>
-          <span class="font-montserrat text-lg text-[#003060] whitespace-nowrap">Score:
+          <span class="font-inter text-lg text-[#003060] whitespace-nowrap">Score:
             <span class="font-semibold" x-text="scoreItem.score + '/100'">0/100</span>
           </span>
         </div>
@@ -47,7 +47,7 @@
 
   <!-- No attempts yet -->
   <div x-show="!activeRecord || !activeRecord.scores || activeRecord.scores.length === 0" class="bg-white shadow-sm rounded-2xl p-6 mb-4 border border-slate-200 text-center">
-    <p class="font-montserrat text-base text-[#003060]">No attempts yet.</p>
+    <p class="font-inter text-base text-[#003060]">No attempts yet.</p>
   </div>
 
   <!-- Info Quiz Card with Start Button -->
@@ -55,7 +55,7 @@
   <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
 
       <div class="flex items-center justify-between gap-4">
-        <span class="font-montserrat font-semibold text-lg text-[#003060] truncate" x-text="(activeMeta ? activeMeta.description : '') + ' : ' + (activeRecord ? activeRecord.quizName : '')">
+        <span class="font-inter font-semibold text-lg text-[#003060] truncate" x-text="(activeMeta ? activeMeta.description : '') + ' : ' + (activeRecord ? activeRecord.quizName : '')">
         </span>
       </div>
     <div class="flex items-center space-x-2">

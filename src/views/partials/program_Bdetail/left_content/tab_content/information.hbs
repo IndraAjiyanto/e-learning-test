@@ -7,7 +7,7 @@
               class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200'
             >
               <h3
-                class='font-montserrat text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+                class='font-inter text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
               >
                 {{course.name}}
               </h3>
@@ -37,7 +37,7 @@
                         class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.method"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                       >{{t "test.detailProgram.infoProgram.online"}}</h4>
                     </div>
                   </div>
@@ -59,7 +59,7 @@
                         class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.method"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                       >{{t "test.detailProgram.infoProgram.offline"}}</h4>
                     </div>
                   </div>
@@ -86,11 +86,11 @@
                     >{{t "test.detailProgram.infoProgram.location"}}</p>
                     {{#if (eq course.method 'online')}}
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                       ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.location lang}}</a></h4>
                     {{else}}
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                         title='{{course.location}}'
                       ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.location lang}}</a></h4>
                     {{/if}}
@@ -115,7 +115,7 @@
                         class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.capacity"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                       >{{course.quota}} {{t "test.detailProgram.infoProgram.students"}}</h4>
                     </div>
                   </div>
@@ -137,7 +137,7 @@
                       class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.duration"}}</p>
                     <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      class='font-inter text-sm font-bold text-gray-900 mb-1'
                     >
                       {{#if kelas.month}}
                         {{kelas.month}} {{t "test.detailProgram.infoProgram.months"}}
@@ -172,7 +172,7 @@
                         class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.month"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                       >{{course.month}} {{t "test.detailProgram.infoProgram.months"}}</h4>
                     </div>
                   </div>
@@ -195,7 +195,7 @@
                         class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.day"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-inter text-sm font-bold text-gray-900 mb-1'
                       >{{course.day}} {{t "test.detailProgram.infoProgram.days"}}</h4>
                     </div>
                   </div>
@@ -217,7 +217,7 @@
                       class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.startDate"}}</p>
                     <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      class='font-inter text-sm font-bold text-gray-900 mb-1'
                     >{{#if course.startDate}}{{formatDate course.startDate lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
@@ -238,7 +238,7 @@
                       class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.endDate"}}</p>
                     <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      class='font-inter text-sm font-bold text-gray-900 mb-1'
                     >{{#if course.startEnd}}{{formatDate course.startEnd lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
@@ -249,7 +249,7 @@
             <!-- Material Includes -->
             {{!-- <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-inter text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-box-open text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.lessonsIncludes"}}
@@ -291,7 +291,7 @@
               class='bg-transparant text-center rounded-xl p-6'
             >
               <h4
-                class='inline-flex items-center gap-2 px-6 py-2 border border-gray-900 rounded-full bg-[#6EB6E5]/20 font-montserrat mb-8 text-md text-gray-900'
+                class='inline-flex items-center gap-2 px-6 py-2 border border-gray-900 rounded-full bg-[#6EB6E5]/20 font-inter mb-8 text-md text-gray-900'
               >
                 {{t "test.detailProgram.infoProgram.whatYouLearn"}}
               </h4>
@@ -363,7 +363,7 @@
               class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'
             >
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-inter text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-user-check text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.requirement"}}
@@ -403,7 +403,7 @@
             <!-- Technologies -->
             {{!-- <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-inter text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-code text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.technology"}}

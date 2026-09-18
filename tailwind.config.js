@@ -50,10 +50,7 @@ module.exports = {
         fadeInUp: 'fadeInUp 0.5s ease-out both',
       },
       fontFamily: {
-        sans: ['"Open Sans"', 'sans-serif'],
-        'open-sans': ['"Open Sans"', 'sans-serif'],
-        opensans: ['"Open Sans"', 'sans-serif'],
-        montserrat: ['Montserrat', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
     },

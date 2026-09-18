@@ -3,7 +3,6 @@
   Lokasi: src/views/super_admin/user/create.hbs
   Level: L4 Page
 
-  Figma: LMS Kesatria — Create User (node 740:7042 "Content")
   - page bg #f3f3f3, padding 42px 34px, jarak judul → card 26px
   - Sidebar disediakan layouts/main.hbs (offset lg:ml-[319px])
 
@@ -11,7 +10,7 @@
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-[26px]'>
-    {{!-- Title — Figma node 740:7044 (gap 4px) --}}
+    {{!-- Title --}}
     <div class='flex flex-col gap-1'>
       {{> components/ui/super_admin/page_header/index
         title='Create User'
@@ -22,10 +21,10 @@
       }}
     </div>
 
-    {{!-- Section - MAIN FORM CARD (Details, Role, Status) — Figma node 740:7048
+    {{!-- Section - MAIN FORM CARD (Details, Role, Status)
          card bg #ffffff, border 1px #d9d9d9, radius 12, padding 32,
          shadow 0 1px 2px rgba(0,0,0,0.05), gap antar-section 24;
-         grid field 2 kolom, gap kolom 12, gap baris 10 (node 740:7060).
+         grid field 2 kolom, gap kolom 12, gap baris 10.
 
          Kontrak backend (tidak diubah): POST /users multipart/form-data
          dengan field username, email, password, role, profile. --}}
@@ -104,7 +103,6 @@
     return {
       loading: false,
 
-      // Role — urutan & label mengikuti Figma node 740:3638 (Admin, Mentor, User)
       roleOptions: [
         { value: 'super_admin', label: 'Admin' },
         { value: 'admin', label: 'Mentor' },
@@ -196,7 +194,6 @@
         this.formErrors[field] = this.touched[field] ? this.errorFor(field, val) : '';
       },
 
-      // Pesan error mengikuti Figma node 768:42045
       errorFor(field, val) {
         switch (field) {
           case 'username':

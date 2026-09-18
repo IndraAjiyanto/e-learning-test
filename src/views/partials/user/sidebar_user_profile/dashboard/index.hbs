@@ -1,5 +1,5 @@
 {{!--
-  Tab: Dashboard (NEW - Figma 830:9155, "Role User: Sudah Ikut Program")
+  Tab: Dashboard
   Lokasi: src/views/partials/user/sidebar_user_profile/dashboard/index.hbs
   Included from src/views/user/user_profile/index.hbs (the Alpine shell) as the
   activeSection === 'dashboard' panel. Shares that file's Alpine scope directly
@@ -8,19 +8,13 @@
   ({ongoingCount, completedCount, certificatesCount}), ongoingCourses[]
   dari UsersService.getDashboardData(), dipakai kedua rute yang merender shell.
   Kartu ketiga menampilkan jumlah portfolio, bukan sertifikat.
-  Font: Inter, confirmed via direct Figma node fetch (830:9214 banner text, 830:9226 stat cards
-  both come back fontFamily "Inter") - this is deliberately DIFFERENT from the shell's chrome
-  (app bar + sidebar nav = Montserrat, confirmed separately via 830:9177/830:9185/830:9211).
-  Don't "fix" this to match the shell without re-checking Figma.
 --}}
 {{#if userWithCourses.userCourses.length}}
   <div class="flex flex-col gap-6 font-inter p-5">
 
     {{!--
-      Welcome banner - recreated from the screenshot the user pasted 2026-09-15,
-      not a literal Figma asset export (API still rate-limited, see dashboard partial
-      history). The graduation-cap illustration below is a hand-built inline SVG
-      stand-in, not the real Figma vector.
+      Welcome banner - the graduation-cap illustration below is a hand-built
+      inline SVG stand-in, not an exported design asset.
     --}}
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#6B84A6] via-[#2E4A73] to-[#0A2647] px-6 py-8 sm:px-10 sm:py-10">
       <span aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/10"></span>
@@ -112,7 +106,7 @@
     </div>
   </div>
 {{else}}
-  {{!-- Empty state: hasn't joined any program yet (Figma 830:8544 is a blank frame - built to our standard) --}}
+  {{!-- Empty state: hasn't joined any program yet --}}
   <div class="flex flex-col items-center gap-4 rounded-xl border border-[#E5E7EB] bg-white py-16 text-center m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
     <span class="grid size-16 place-items-center rounded-full bg-[#E0F2F9] text-[#003060]">
       <i class="fas fa-compass text-2xl"></i>
