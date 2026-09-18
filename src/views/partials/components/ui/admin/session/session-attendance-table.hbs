@@ -12,10 +12,8 @@
   #F9F5FF + user icon 20 #7F56D9, nama Inter 14/600 #404040, email Inter 12
   #525252, badge pill r16 dot 8 Inter 12/500, action edit square-pen 20
   #525252 + delete trash-2 20 #C80606 (40x40 r8).
-  Kolom: Name(662: avatar + username + email) LinkedIn(200: link #3B82F6,
-  fallback "-" — entity User TIDAK punya field linkedin, kolom tampil "-"
-  sampai BE menyediakannya) Status(200) Action(148: edit #525252 + delete
-  #C80606) — total min-w 1210px.
+  Kolom: Name(662: avatar + username + email) Status(200) Action(148: edit #525252 + delete
+  #C80606) — total min-w 1010px.
   Perilaku dipertahankan dari partials/session/absen_tab.hbs: search
   (searchInput/search/pageNumber), edit GET /attendance/formEdit/:id,
   delete POST /attendance/:id/:sessionId?_method=DELETE + confirmDelete,
@@ -46,16 +44,15 @@
   <div x-show='filteredData && filteredData.length > 0' class='session-attendance-scroll w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
 
     {{!-- Header --}}
-    <div class='w-full min-w-[1210px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+    <div class='w-full min-w-[1010px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
       <div class='box-border w-[662px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Name</div></div>
-      <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>LinkedIn</div></div>
       <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Status</div></div>
       <div class='box-border w-[148px] shrink-0 h-full flex flex-row gap-0 p-[12px_24px] justify-center items-center'><div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>Action</div></div>
     </div>
 
     {{!-- Body --}}
     <template x-for='(peserta, index) in filteredData' :key='peserta.id'>
-      <div class='w-full min-w-[1210px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+      <div class='w-full min-w-[1010px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
 
         {{!-- Name: avatar + username + email --}}
         <div class='box-border w-[662px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
@@ -66,18 +63,6 @@
               <div class='text-[12px]/[normal] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="peserta.email ?? '-'" :title="peserta.email ?? ''"></div>
             </div>
           </div>
-        </div>
-
-        {{!-- LinkedIn --}}
-        <div class='box-border w-[200px] shrink-0 h-full flex flex-row gap-0 p-[16px_24px] justify-start items-center'>
-          <template x-if='peserta.linkedin'>
-            <a :href='peserta.linkedin' target='_blank' rel='noopener noreferrer'
-              class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#3B82F6] font-inter font-normal text-left hover:underline'
-              x-text='peserta.linkedin' :title='peserta.linkedin'></a>
-          </template>
-          <template x-if='!peserta.linkedin'>
-            <div class='text-[14px]/[normal] flex-1 text-[#525252] font-inter font-normal text-left'>-</div>
-          </template>
         </div>
 
         {{!-- Status --}}
