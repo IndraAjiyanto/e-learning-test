@@ -13,6 +13,8 @@ import {
   UseFilters,
   Query,
   ValidationPipe,
+  ParseUUIDPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
@@ -445,7 +447,15 @@ await this.coursesService.addUserToCourse(userId, courseId);
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id') id: string,
+        // `:id` diperiksa bentuknya SEBELUM menyentuh basis data.
+    //
+    // Tanpa ini, permintaan apa pun yang kebetulan jatuh di bawah path ini -
+    // misalnya <img src="logo.png"> pada sebuah course, yang diselesaikan
+    // peramban menjadi /program/myProgram/logo.png - masuk sebagai id, lalu
+    // Postgres menolaknya dengan `invalid input syntax for type uuid` dan
+    // rutenya menjawab 500. Yang benar 404: pathnya memang tidak ada.
+    @Param('id', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,

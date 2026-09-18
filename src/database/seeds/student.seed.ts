@@ -128,7 +128,7 @@ async function bootstrap() {
         courseRepo.create({
           name: plan.name,
           description: { id: plan.description, en: plan.description, ja: plan.description } as any,
-          image: 'logo.png',
+          image: '/public/image/logo.png',
           quota: 20,
           price: 1500000,
           promo: 0,

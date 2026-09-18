@@ -125,7 +125,7 @@ async function bootstrap() {
         en: 'belajar menjadi full stack developer',
         ja: 'belajar menjadi full stack developer',
       },
-      image: 'logo.png',
+      image: '/public/image/logo.png',
       quota: 10,
       price: 1000000,
       promo: 5000000,
