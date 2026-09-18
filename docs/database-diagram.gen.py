@@ -24,6 +24,12 @@ DOMAINS = {
  'CMS': ['about','award','background','collaborations','commitment','experience','faq','gallery',
          'header','image_benefit','info','mission','our_experience','paragraph','partner',
          'category_partner','social','story','superiority','team','team_leads','value','visions'],
+ # Jalur belajar non-bootcamp (SPL). Sengaja kelompok sendiri, bukan digabung
+ # ke Learning: seluruh pohonnya terpisah dari session/weeks dan hanya bertemu
+ # lagi di course dan user. Lihat docs/syllabus-table-plan.md.
+ 'Syllabus': ['syllabus','syllabus_material','syllabus_assignment',
+              'syllabus_answer_task','syllabus_comment','syllabus_logbook',
+              'syllabus_progress'],
  'Ops': ['migrations','_uuid_migration_meta'],
 }
 
@@ -66,6 +72,7 @@ PALETTE = {
     'Payments': ('#B45309', '#FFFBEB'),
     'Catalog':  ('#6D28D9', '#F5F3FF'),
     'CMS':      ('#BE185D', '#FDF2F8'),
+    'Syllabus': ('#0E7490', '#ECFEFF'),
     'Ops':      ('#525252', '#F5F5F5'),
 }
 HUBS = {'user': 'Users', 'course': 'Learning', 'category': 'Catalog'}
@@ -77,6 +84,7 @@ PAGES = [
     ('Users & enrolment', 'Users', ['course', 'answer_task']),
     ('Payments', 'Payments', ['user', 'course']),
     ('Catalog & taxonomy', 'Catalog', ['course', 'user', 'mentors']),
+    ('Syllabus (non-bootcamp)', 'Syllabus', ['course', 'user']),
     ('Marketing CMS', 'CMS', ['category']),
     ('Ops', 'Ops', []),
 ]
@@ -195,9 +203,10 @@ def build_page(name, domain, extra_hubs):
 def build_overview():
     """Peta tingkat domain: berapa tabel per kelompok, dan ke mana saja
     kelompok itu menunjuk. Halaman detail ada di tab berikutnya."""
-    order = ['Users', 'Learning', 'Catalog', 'Payments', 'CMS', 'Ops']
+    order = ['Users', 'Learning', 'Catalog', 'Payments', 'CMS', 'Ops', 'Syllabus']
     spot = {'Users': (60, 320), 'Learning': (470, 320), 'Catalog': (880, 320),
-            'Payments': (470, 40), 'CMS': (880, 40), 'Ops': (60, 40)}
+            'Payments': (470, 40), 'CMS': (880, 40), 'Ops': (60, 40),
+            'Syllabus': (470, 600)}
     BW, BH = 330, 200
     out = []
     for d in order:
@@ -239,7 +248,7 @@ def build_overview():
         f'<mxCell id="ov-note" value="{attr(note)}" style="text;html=1;align=left;'
         f'verticalAlign=top;whiteSpace=wrap;fontSize=11;fillColor=#FFFFFF;'
         f'strokeColor=#D4D4D4;spacing=10;" vertex="1" parent="1">'
-        f'<mxGeometry x="60" y="580" width="740" height="150" as="geometry"/></mxCell>')
+        f'<mxGeometry x="60" y="620" width="380" height="180" as="geometry"/></mxCell>')
     return out
 
 unassigned = [t for t in cols if t not in {x for v in DOMAINS.values() for x in v}]

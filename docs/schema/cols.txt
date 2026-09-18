@@ -391,6 +391,7 @@ quiz|updatedAt|timestamp without time zone|NO||
 quiz|duration|integer|NO||
 quiz|id|uuid|NO|PK|
 quiz|weeksId|uuid|YES||
+quiz|courseId|uuid|YES||
 quiz_progresses|process|boolean|NO||
 quiz_progresses|createdAt|timestamp without time zone|NO||
 quiz_progresses|updatedAt|timestamp without time zone|NO||
@@ -459,6 +460,57 @@ superiority|description|jsonb|YES||
 superiority|legacy_id|integer|YES||
 superiority|id|uuid|NO|PK|
 superiority|categoryId|uuid|YES||
+syllabus|id|uuid|NO|PK|
+syllabus|courseId|uuid|NO||UQ
+syllabus|order|integer|NO||UQ
+syllabus|title|character varying|NO||
+syllabus|description|text|YES||
+syllabus|is_final|boolean|NO||
+syllabus|createdAt|timestamp without time zone|NO||
+syllabus|updatedAt|timestamp without time zone|NO||
+syllabus_answer_task|id|uuid|NO|PK|
+syllabus_answer_task|taskId|uuid|NO||UQ
+syllabus_answer_task|userId|uuid|NO||UQ
+syllabus_answer_task|file|character varying|NO||
+syllabus_answer_task|process|USER-DEFINED|NO||
+syllabus_answer_task|createdAt|timestamp without time zone|NO||
+syllabus_answer_task|updatedAt|timestamp without time zone|NO||
+syllabus_assignment|id|uuid|NO|PK|
+syllabus_assignment|syllabusId|uuid|NO||
+syllabus_assignment|title|character varying|NO||
+syllabus_assignment|file|character varying|NO||
+syllabus_assignment|createdAt|timestamp without time zone|NO||
+syllabus_assignment|updatedAt|timestamp without time zone|NO||
+syllabus_comment|id|uuid|NO|PK|
+syllabus_comment|answerId|uuid|NO||
+syllabus_comment|comment|character varying|NO||
+syllabus_comment|createdAt|timestamp without time zone|NO||
+syllabus_comment|updatedAt|timestamp without time zone|NO||
+syllabus_logbook|id|uuid|NO|PK|
+syllabus_logbook|syllabusId|uuid|NO||
+syllabus_logbook|userId|uuid|NO||
+syllabus_logbook|activity|character varying|YES||
+syllabus_logbook|activity_details|character varying|YES||
+syllabus_logbook|documentation|character varying|YES||
+syllabus_logbook|obstacles|character varying|YES||
+syllabus_logbook|other_documentation|character varying|YES||
+syllabus_logbook|process|USER-DEFINED|NO||
+syllabus_logbook|createdAt|timestamp without time zone|NO||
+syllabus_logbook|updatedAt|timestamp without time zone|NO||
+syllabus_material|id|uuid|NO|PK|
+syllabus_material|syllabusId|uuid|NO||
+syllabus_material|title|character varying|NO||
+syllabus_material|file|character varying|NO||
+syllabus_material|fileType|USER-DEFINED|NO||
+syllabus_material|createdAt|timestamp without time zone|NO||
+syllabus_material|updatedAt|timestamp without time zone|NO||
+syllabus_progress|id|uuid|NO|PK|
+syllabus_progress|syllabusId|uuid|NO||UQ
+syllabus_progress|userId|uuid|NO||UQ
+syllabus_progress|completedAt|timestamp without time zone|YES||
+syllabus_progress|logbookOk|boolean|NO||
+syllabus_progress|createdAt|timestamp without time zone|NO||
+syllabus_progress|updatedAt|timestamp without time zone|NO||
 team|profile|character varying|NO||
 team|name|character varying|YES||
 team|teamOrder|integer|YES||

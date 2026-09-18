@@ -45,6 +45,7 @@ portofolios|courseId|course|id|CASCADE
 portofolios|userId|user|id|CASCADE
 program_benefits|courseId|course|id|CASCADE
 questions|quizId|quiz|id|CASCADE
+quiz|courseId|course|id|CASCADE
 quiz|weeksId|weeks|id|CASCADE
 quiz_progresses|quizId|quiz|id|CASCADE
 quiz_progresses|userId|user|id|CASCADE
@@ -56,6 +57,16 @@ session|weeksId|weeks|id|CASCADE
 session_progresses|sessionId|session|id|CASCADE
 session_progresses|userId|user|id|CASCADE
 superiority|categoryId|category|id|CASCADE
+syllabus|courseId|course|id|CASCADE
+syllabus_answer_task|taskId|syllabus_assignment|id|CASCADE
+syllabus_answer_task|userId|user|id|CASCADE
+syllabus_assignment|syllabusId|syllabus|id|CASCADE
+syllabus_comment|answerId|syllabus_answer_task|id|CASCADE
+syllabus_logbook|syllabusId|syllabus|id|CASCADE
+syllabus_logbook|userId|user|id|CASCADE
+syllabus_material|syllabusId|syllabus|id|CASCADE
+syllabus_progress|syllabusId|syllabus|id|CASCADE
+syllabus_progress|userId|user|id|CASCADE
 user_activity|userId|user|id|CASCADE
 user_answers|answerId|answers|id|CASCADE
 user_answers|questionId|questions|id|CASCADE

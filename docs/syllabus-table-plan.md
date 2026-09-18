@@ -89,7 +89,31 @@ urutan ganda membuat "silabus sebelumnya" tidak terdefinisi. Tabel `session`
 tidak punya penjagaan ini dan `previousSession` terpaksa mencari nilai terbesar
 yang lebih kecil untuk menutupinya.
 
-### 2.2 Materi dan tugas — PERTANYAAN TERBUKA, bukan keputusan saya
+### 2.2 Materi dan tugas — DIPUTUSKAN: pisah penuh (2026-09-18)
+
+> **Keputusan pemilik:** pisah penuh. Kolom kiri pada tabel di bawah yang
+> dipakai. Catatan saya di bawahnya dibiarkan apa adanya sebagai jejak
+> pertimbangan, bukan sebagai bantahan.
+>
+> **Konsekuensi yang baru terlihat saat dikerjakan:** pemisahan penuh merembet
+> dua tingkat lebih dalam. `answer_task` menggantung di `assignments`, dan
+> `comments` menggantung di `answer_task`. Jadi pohonnya tujuh tabel:
+>
+> ```
+> syllabus
+>  |- syllabus_material
+>  |- syllabus_assignment
+>  |    \- syllabus_answer_task
+>  |         \- syllabus_comment
+>  |- syllabus_logbook
+>  \- syllabus_progress
+> ```
+>
+> Enum TIDAK diduplikasi: `material_filetype_enum`, `answer_task_process_enum`,
+> dan `logbook_process_enum` dipakai ulang. Itu kosakata bersama, bukan tabel
+> bersama.
+
+#### Jejak pertimbangan sebelum keputusan di atas
 
 `material` dan `assignments` **tidak punya beda semantik sama sekali** antara
 sesi dan silabus: berkas PDF tetap berkas PDF. Menduplikasinya berarti dua jalur
@@ -134,11 +158,16 @@ karena baris progres sesi berikutnya hanya pernah dibuat saat logbook disetujui.
 tidak punya penjagaan ini dan kodenya menambalnya dengan pola upsert manual di
 lima tempat.
 
-### 2.4 Logbook
+### 2.4 Logbook — ikut pisah penuh
 
-`logbook` dapat `syllabusId` nullable (pola yang sama dengan 2.2). Logbook sudah
-punya sakelar per program, dan pada SPL biasanya mati — jadi tabel sendiri untuk
-sesuatu yang sering dimatikan tidak sepadan.
+`syllabus_logbook` berdiri sendiri, mengikuti keputusan 2.2. Kolomnya sama
+dengan `logbook` (`activity`, `activity_details`, `documentation`, `process`,
+`obstacles`, `other_documentation`) dengan induk `syllabusId` menggantikan
+`sessionId`, dan memakai ulang `logbook_process_enum`.
+
+Catatan: logbook sudah punya sakelar per program dan pada SPL biasanya mati,
+jadi tabel ini kemungkinan besar kosong untuk sementara. Itu konsekuensi yang
+diterima dari pemisahan penuh, bukan kelalaian.
 
 ### 2.5 Kuis
 
@@ -256,9 +285,9 @@ Gerbang yang sudah ada dipakai di tiap tahap: `npx tsc --noEmit`,
 
 ## 8. Yang perlu jawaban pemilik
 
-1. **Materi dan tugas: tabel sendiri, atau kolom `syllabusId` pada tabel yang
-   ada?** (bagian 2.2). *Rekomendasi: kolom `syllabusId`* — keduanya tidak punya
-   beda semantik apa pun, dan dua jalur unggah adalah ongkos tanpa imbalan.
+1. ~~**Materi dan tugas: tabel sendiri, atau kolom `syllabusId`?**~~
+   **Terjawab 2026-09-18: pisah penuh.** Lihat 2.2, termasuk rembetannya ke
+   `answer_task` dan `comments`.
 2. **Absensi pada SPL benar-benar dihapus?** Rencana ini menggantinya dengan
    `completedAt`. Kalau ternyata ada program SPL yang tetap ingin mencatat
    kehadiran (mis. ada sesi live sesekali), keputusannya berubah.
