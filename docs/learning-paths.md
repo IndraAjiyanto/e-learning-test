@@ -284,7 +284,7 @@ kehadiran sama sekali — lalu menambalnya satu per satu.
 | Logbook | `logbooks` (per sesi) | `syllabus_logbook` (per silabus) |
 | Absensi | `attendances` | **tidak ada** |
 | Aturan buka-kunci | `sessionUnlock.ts` (dipakai di browser) | `SyllabusService` (dihitung di server) |
-| Sertifikat | lulus kuis minggu final | **belum ada — lihat bagian 7** |
+| Sertifikat | lulus kuis minggu final | semua silabus selesai |
 
 Satu beda yang gampang terlewat: aturan bootcamp dihitung **di browser**
 (`sessionUnlock.ts`), aturan silabus dihitung **di server**
@@ -295,31 +295,34 @@ sampai ke halamannya — controllernya mengalihkan.
 
 ## 7. Lubang yang diketahui — BACA sebelum menambah fitur
 
-### 7.1 Program SPL tidak pernah menjadi "tamat", jadi sertifikatnya tidak pernah terbuka
+### 7.1 ~~Program SPL tidak pernah menjadi "tamat"~~ — SUDAH DITUTUP
 
-Sertifikat ditentukan `activeCourseCompleted`, yang berarti
-`user_courses.progress === true`.
+Dulu: sertifikat membaca `user_courses.progress`; bootcamp mengisinya saat lulus
+kuis minggu final, dan jalur silabus tidak punya satu pun kode yang mengisinya.
+Student bisa menyelesaikan seluruh silabus dan programnya tetap dianggap belum
+tamat.
 
-Pada bootcamp, kolom itu diisi saat student lulus kuis minggu **final**
-(`user_answers.service.ts`).
+Sekarang (keputusan pemilik 2026-09-18: **semua silabus selesai, baru tamat**):
+`SyllabusService.refreshCourseCompletion()` menghitungnya ulang setiap kali
+student menandai silabus selesai atau mentor menilai logbook, lalu menyimpannya
+di **kolom yang sama**, `user_courses.progress`. Jadi tidak ada jalur sertifikat
+kedua — kedua jalur bertemu di satu kolom.
 
-Pada jalur silabus, **tidak ada satu pun kode yang mengisinya.**
-`SyllabusService.markComplete()` hanya menulis `syllabus_progress.completedAt`
-dan berhenti di situ.
+Tiga hal yang sengaja begitu:
 
-**Sudah terjadi di data, bukan dugaan.** Pada basis data lokal:
+- **"Selesai" memakai definisi `isDone()` yang sama dengan buka-kunci**
+  (`completedAt`, ditambah `logbookOk` kalau logbook menyala). Definisi yang
+  lebih longgar akan membuat program dinyatakan tamat sementara silabus
+  terakhirnya masih terkunci bagi studentnya sendiri.
+- **Program tanpa silabus tidak pernah tamat.** Tanpa penjagaan itu, `every()`
+  pada daftar kosong menjawab `true` dan program yang belum diisi apa pun
+  langsung menerbitkan sertifikat.
+- **Dihitung ulang, bukan sekadar dinyalakan.** Mentor bisa menarik persetujuan
+  logbook; kalau itu terjadi programnya kembali belum tamat. Kolom yang hanya
+  bisa naik akan menerbitkan sertifikat untuk program yang syaratnya sudah tidak
+  terpenuhi lagi.
 
-```
-Dasar Pemrograman Web (SPL) | non_bootcamp | progress=false | 3 dari 3 silabus selesai
-```
-
-Student itu menyelesaikan seluruh silabusnya dan programnya tetap dianggap
-belum tamat, sehingga tombol sertifikatnya tidak pernah muncul.
-
-Memperbaikinya butuh satu keputusan yang belum dijawab: **apa yang menandai
-sebuah program SPL tamat?** Seluruh silabus selesai saja? Atau silabus
-`is_final` selesai? Dan kalau silabus terakhir punya kuis — apakah kuisnya harus
-lulus dulu? Jawaban itu bukan sesuatu yang boleh ditebak kode.
+Data lama ditambal migrasi `1789000000000-BackfillSyllabusCourseCompletion`.
 
 ### 7.2 Tujuh baris drift `schema:log` yang bukan dari jalur mana pun
 

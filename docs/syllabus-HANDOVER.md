@@ -28,7 +28,7 @@ kolom di basis data.
 
 `design-check` **258/259** — satu kegagalan adalah celah lama `week pagination`
 yang butuh PRD tersendiri, bukan bagian dari pekerjaan ini. Ditambah empat
-pemeriksa sisi silabus: **23 + 20 + 26 + 18**.
+pemeriksa sisi silabus: **23 + 20 + 26 + 19 + 6**.
 
 **Tidak ada entity maupun migrasi baru sejak S0.** Semua tabelnya memang sudah
 dirancang dari awal; yang kurang selama ini cuma kode yang memakainya.
@@ -341,7 +341,11 @@ COURSE=$SPL ENROLLED=1 node test/ui/syllabus-admin-check.mjs        # 23
 COURSE=$SPL              node test/ui/syllabus-submission-check.mjs # 20
 COURSE=$SPL BOOTCAMP_QUIZ=1bb22d86-b0cf-5c8b-b7ac-9c7e4dde1642 \
                          node test/ui/syllabus-quiz-check.mjs       # 26
-COURSE=$LOGBOOK_ON       node test/ui/syllabus-logbook-check.mjs    # 18
+COURSE=$LOGBOOK_ON       node test/ui/syllabus-logbook-check.mjs    # 19
+
+STUDENT_ID=<id student> DONE_COURSE=$SPL PARTIAL_COURSE=<SPL belum selesai> \
+  LOGBOOK_COURSE=$LOGBOOK_ON BOOTCAMP_COURSE=<bootcamp> \
+  node test/ui/syllabus-completion-check.mjs                         # 6
 ```
 
 `syllabus-logbook-check` HARUS memakai program yang logbooknya menyala — itulah

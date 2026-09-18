@@ -235,6 +235,7 @@ export class SyllabusService {
       if (existing.completedAt) return;
       existing.completedAt = new Date();
       await this.progressRepository.save(existing);
+      await this.refreshCourseCompletion(syllabus.course.id, userId);
       return;
     }
     // UNIQUE (syllabusId, userId) menjaga baris ganda di tingkat basis data,
@@ -246,6 +247,7 @@ export class SyllabusService {
         completedAt: new Date(),
       }),
     );
+    await this.refreshCourseCompletion(syllabus.course.id, userId);
   }
 
   /** Dipanggil saat admin menyetujui / menolak logbook sebuah silabus. */
@@ -628,6 +630,62 @@ export class SyllabusService {
   }
 
 
+
+  // ------------------------------------------------ ketamatan program
+
+  /**
+   * Menghitung ulang apakah sebuah program SPL sudah tamat bagi seorang
+   * student, lalu menyimpannya di `user_courses.progress`.
+   *
+   * Aturannya (keputusan pemilik 2026-09-18): **semua silabus selesai, baru
+   * tamat.** "Selesai" memakai definisi yang sama persis dengan buka-kunci
+   * (`isDone`) - `completedAt`, ditambah `logbookOk` kalau program memakai
+   * logbook. Memakai definisi yang lebih longgar di sini berarti program bisa
+   * dinyatakan tamat sementara silabus terakhirnya masih terkunci bagi
+   * studentnya sendiri.
+   *
+   * `user_courses.progress` adalah kolom yang sama yang dipakai jalur bootcamp
+   * (diisi saat lulus kuis minggu final) dan yang dibaca `activeCourseCompleted`
+   * untuk membuka sertifikat. Jadi tidak ada jalur sertifikat kedua - keduanya
+   * bertemu di satu kolom.
+   *
+   * DIHITUNG ULANG, bukan sekadar dinyalakan. Mentor bisa menarik persetujuan
+   * logbook, dan kalau itu terjadi programnya kembali belum tamat. Kolom yang
+   * hanya bisa naik akan membuat sertifikat terbit untuk program yang syaratnya
+   * sudah tidak terpenuhi lagi.
+   */
+  async refreshCourseCompletion(
+    courseId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    // Jalur bootcamp punya penentu ketamatannya sendiri (lulus kuis minggu
+    // final). Jangan disentuh dari sini.
+    if (!course || capabilitiesForCourse(course).structure !== 'syllabus') {
+      return false;
+    }
+
+    const views = await this.findForStudent(courseId, userId);
+
+    // Program tanpa silabus TIDAK tamat. Tanpa penjagaan ini, `every()` pada
+    // daftar kosong menjawab true dan program yang belum diisi apa pun langsung
+    // menerbitkan sertifikat.
+    const done = views.length > 0 && views.every((v) => v.state === 'COMPLETED');
+
+    const enrolment = await this.userCourseRepository.findOne({
+      where: { course: { id: courseId }, user: { id: userId } },
+    });
+    if (!enrolment) return done;
+
+    if (enrolment.progress !== done) {
+      enrolment.progress = done;
+      await this.userCourseRepository.save(enrolment);
+    }
+    return done;
+  }
+
   // ---------------------------------------------------------- logbook
 
   /**
@@ -724,6 +782,17 @@ export class SyllabusService {
       logbook.user.id,
       process === 'approved',
     );
+
+    // Pada program berlogbook, persetujuan inilah langkah TERAKHIR yang membuat
+    // sebuah silabus terhitung selesai - jadi di sinilah program bisa menjadi
+    // tamat. Dan sebaliknya: menarik persetujuan membatalkannya kembali.
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: logbook.syllabus.id },
+      relations: ['course'],
+    });
+    if (syllabus) {
+      await this.refreshCourseCompletion(syllabus.course.id, logbook.user.id);
+    }
     return saved;
   }
 

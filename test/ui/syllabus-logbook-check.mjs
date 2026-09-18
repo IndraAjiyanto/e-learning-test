@@ -51,6 +51,33 @@ const admin = await login(ADMIN);
 const student = await login(STUDENT);
 ok('both roles logged in', !admin.url().includes('/login') && !student.url().includes('/login'));
 
+// ---- MENYIAPKAN keadaan awal, bukan mengandaikannya
+//
+// Pemeriksa ini butuh logbook silabus pertama dalam keadaan BELUM disetujui -
+// itulah jalan buntu yang mau dibuktikan hilang. Pemeriksa lain
+// (syllabus-completion-check) memakai program yang sama dan meninggalkannya
+// dalam keadaan disetujui, jadi kalau ia jalan lebih dulu, pemeriksa ini akan
+// gagal karena urutan menjalankan - bukan karena aplikasinya salah.
+//
+// Menyiapkan sendiri lebih baik daripada menuntut urutan tertentu: pemeriksa
+// yang hasilnya bergantung pada apa yang kebetulan jalan sebelumnya tidak bisa
+// dipercaya siapa pun.
+// Yang ditekan harus tombol milik KARTU yang berstatus Approved, bukan tombol
+// pertama di halaman: kartunya diurutkan terbaru dulu, jadi `.first()` bisa
+// mengenai logbook yang memang sudah ditolak dan persiapannya tidak
+// mengubah apa pun. Kesalahan itu sempat terjadi dan membuat pemeriksa ini
+// tampak gagal padahal aplikasinya benar.
+for (let guard = 0; guard < 10; guard++) {
+  await admin.goto(`${BASE}/program/syllabus/logbook/${COURSE}`, { waitUntil: 'networkidle' });
+  const approvedCard = admin
+    .locator('div.rounded-xl.border')
+    .filter({ hasText: /Approved/ })
+    .filter({ has: admin.locator('button[value="rejected"]') });
+  if ((await approvedCard.count()) === 0) break;
+  await approvedCard.first().locator('button[value="rejected"]').click();
+  await admin.waitForLoadState('networkidle');
+}
+
 // ---- silabus program ini, urut
 await admin.goto(`${BASE}/program/syllabus/manage/${COURSE}`, { waitUntil: 'networkidle' });
 const links = await admin.locator('a:has-text("Content")').evaluateAll((as) =>
@@ -112,7 +139,16 @@ ok('mentor sees the submitted logbook', (await admin.locator('body').innerText()
 ok('mentor sees its details too',
    (await admin.locator('body').innerText()).includes('Membaca materi'));
 
-await admin.locator('button[value="approved"]').first().click();
+// Disetujui lewat KARTU yang memuat logbook percobaan ini, bukan kartu pertama
+// di halaman. Kartunya diurutkan terbaru dulu, dan program ini punya logbook
+// untuk silabus lain juga - `.first()` bisa menyetujui logbook yang salah, lalu
+// pemeriksaan berikutnya gagal dengan alasan yang menyesatkan.
+const probeCard = admin
+  .locator('div.rounded-xl.border')
+  .filter({ hasText: ACT })
+  .filter({ has: admin.locator('button[value="approved"]') });
+ok('the probe logbook has its own card', (await probeCard.count()) >= 1);
+await probeCard.first().locator('button[value="approved"]').click();
 await admin.waitForLoadState('networkidle');
 ok('mentor can approve it', APPROVED.test(await admin.locator('body').innerText()));
 
@@ -149,7 +185,13 @@ ok('a direct POST cannot rewrite an approved logbook',
 // salah. Tiga pemeriksa silabus lainnya membersihkan miliknya sendiri; yang ini
 // tadinya tidak, dan itu ketahuan saat dijalankan dua kali berturut-turut.
 await admin.goto(`${BASE}/program/syllabus/logbook/${COURSE}`, { waitUntil: 'networkidle' });
-await admin.locator('button[value="rejected"]').first().click();
+await admin
+  .locator('div.rounded-xl.border')
+  .filter({ hasText: ACT })
+  .filter({ has: admin.locator('button[value="rejected"]') })
+  .first()
+  .locator('button[value="rejected"]')
+  .click();
 await admin.waitForLoadState('networkidle');
 
 await student.goto(`${BASE}/program/syllabus/detail/${second}`, { waitUntil: 'networkidle' });
