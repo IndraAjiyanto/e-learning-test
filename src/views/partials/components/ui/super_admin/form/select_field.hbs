@@ -42,10 +42,12 @@
   - placeholder : string (opsional)
   - hint        : string (opsional)
   - required    : boolean (opsional)
+  - searchable  : boolean (opsional) — kotak cari di atas menu; kata kunci dikosongkan
+                  tiap menu dibuka agar semua opsi tetap muncul
 --}}
 <div
   class='flex flex-col gap-1.5'
-  x-data='{ open: false }'
+  x-data='{ open: false, q: "" }'
   @keydown.escape.stop='open = false'
   @click.outside='open = false'
 >
@@ -60,7 +62,7 @@
     <button
       type='button'
       id='{{id}}-trigger'
-      @click='open = !open'
+      @click="open = !open; q = ''{{#if searchable}}; if (open) $nextTick(() => $refs.search.focus()){{/if}}"
       :aria-expanded='open'
       :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
       aria-haspopup='listbox'
@@ -110,9 +112,22 @@
       x-transition.opacity.duration.150ms
       role='listbox'
       aria-labelledby='{{id}}-label'
-      class='absolute left-0 top-[calc(100%+6px)] z-20 w-full max-w-full overflow-hidden {{#if (eq variant 'dropdown')}}sm:w-60{{else}}sm:min-w-[320px]{{/if}} rounded-lg border border-[#e5e5e5] bg-white py-1 shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
+      class='absolute left-0 top-[calc(100%+6px)] z-20 w-full max-w-full {{#if searchable}}max-h-72 overflow-y-auto{{else}}overflow-hidden{{/if}} {{#if (eq variant 'dropdown')}}sm:w-60{{else}}sm:min-w-[320px]{{/if}} rounded-lg border border-[#e5e5e5] bg-white py-1 shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
     >
-      <template x-for='option in {{options}}' :key='String(option.value)'>
+      {{#if searchable}}
+        <li class='px-2 py-1'>
+          <input
+            type='text'
+            x-ref='search'
+            x-model='q'
+            @keydown.enter.prevent
+            placeholder='Search...'
+            aria-label='Search {{label}}'
+            class='h-9 w-full rounded-md border border-[#d4d4d4] bg-white px-3 font-inter text-sm leading-5 text-[#171717] placeholder:text-[#737373] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+          />
+        </li>
+      {{/if}}
+      <template x-for="option in {{#if searchable}}{{options}}.filter(o => !q || String(o.label).toLowerCase().includes(q.trim().toLowerCase())){{else}}{{options}}{{/if}}" :key='String(option.value)'>
         <li>
           <button
             type='button'
@@ -141,6 +156,12 @@
           </button>
         </li>
       </template>
+      {{#if searchable}}
+        <li
+          x-show='!{{options}}.filter(o => !q || String(o.label).toLowerCase().includes(q.trim().toLowerCase())).length'
+          class='px-3.5 py-2.5 font-inter text-sm leading-5 text-[#737373]'
+        >No results found</li>
+      {{/if}}
     </ul>
   </div>
 
