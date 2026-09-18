@@ -61,7 +61,7 @@
     <div class='grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_243px]'>
       <form
         action='/program/{{categoryId}}'
-        {{!-- createKelas memakai categoryId dari URL, jadi action mengikuti kategori yang dipilih. --}}
+        {{!-- createKelas memakai categoryId dari URL; field Category dikunci ke kategori asal. --}}
         :action="'/program/' + encodeURIComponent(formData.categoryId || {{json categoryId}})"
         method='post'
         enctype='multipart/form-data'
@@ -103,7 +103,7 @@
               </div>
             </div>
 
-            <div class='grid gap-x-3 gap-y-5 md:grid-cols-3'>
+            <div class='grid gap-x-3 gap-y-5 md:grid-cols-2 xl:grid-cols-4'>
               {{> components/ui/super_admin/form/select_field
                 id='categoryId'
                 name='categoryId'
@@ -111,7 +111,7 @@
                 label='Category'
                 placeholder='Select category'
                 options='categoryOptions'
-                searchable=true
+                disabled=true
                 required=true
               }}
 
@@ -126,21 +126,23 @@
                 required=true
               }}
 
+              {{> components/ui/super_admin/form/select_field
+                id='program_type'
+                name='program_type'
+                field='programType'
+                label='Learning Structure'
+                options='programTypeOptions'
+                searchable=false
+                required=true
+                highlight=true
+              }}
+
               {{> components/ui/super_admin/form/segmented
                 id='paid_check'
                 name='paid_check'
                 field='paid'
                 label='Paid Program'
                 options='paidOptions'
-                required=true
-              }}
-
-              {{> components/ui/super_admin/form/segmented
-                id='method'
-                name='method'
-                field='method'
-                label='Method'
-                options='methodOptions'
                 required=true
               }}
             </div>
@@ -154,6 +156,7 @@
                 placeholder='Enter quota'
                 numeric=true
                 required=true
+                highlight=true
               }}
 
               <template x-if="formData.paid === 'true'">
@@ -165,6 +168,7 @@
                   placeholder='Enter price'
                   numeric=true
                   required=true
+                  highlight=true
                 }}
               </template>
 
@@ -176,6 +180,7 @@
                   label='Promo'
                   placeholder='Enter promo price'
                   numeric=true
+                  highlight=true
                 }}
               </template>
 
@@ -189,10 +194,33 @@
                     label='Registration Form Link'
                     placeholder='https://forms.google.com/...'
                     icon='link'
+                    highlight=true
                   }}
                 </div>
               </template>
             </div>
+
+            <div class='grid gap-x-3 md:grid-cols-3'>
+              {{> components/ui/super_admin/form/segmented
+                id='method'
+                name='method'
+                field='method'
+                label='Method'
+                options='methodOptions'
+                required=true
+              }}
+            </div>
+
+            {{> components/ui/super_admin/form/select_field
+              id='mentoringsId'
+              name='mentoringsId'
+              field='mentoringsId'
+              label='Mentoring'
+              searchable=true
+              placeholder='Select mentoring'
+              options='mentoringOptions'
+              required=true
+            }}
           </div>
         {{/components/ui/super_admin/form/section_card}}
 
@@ -241,14 +269,14 @@
               <template x-if="formData.paid === 'true'">
                 {{> components/ui/super_admin/form/text_field
                   id='month' name='month' field='month' type='number'
-                  label='Month' placeholder='e.g 3' required=true
+                  label='Month' placeholder='1-12' required=true
                 }}
               </template>
 
               <template x-if="formData.paid === 'false'">
                 {{> components/ui/super_admin/form/text_field
                   id='day' name='day' field='day' type='number'
-                  label='Day' placeholder='e.g 3' required=true
+                  label='Day' placeholder='1-31' required=true
                 }}
               </template>
 
@@ -298,30 +326,17 @@
 
         {{#> components/ui/super_admin/form/section_card id='section-tools' number='04' title='Tools & Lessons'}}
           <div class='flex flex-col gap-5'>
-            <div class='grid gap-x-3 gap-y-5 md:grid-cols-2'>
-              <div class='flex flex-col gap-1.5'>
-                {{> components/ui/super_admin/form/multi_select_field
-                  id='technologies'
-                  name='technologiesIds[]'
-                  label='Tools'
-                  options='technologyOptions'
-                  placeholder='Search or select tools'
-                  emptyText='No tools found.'
-                  required=true
-                }}
-                <p x-show='formErrors.technologies' x-cloak x-text='formErrors.technologies' class='font-inter text-sm leading-5 text-[#ef4444]'></p>
-              </div>
-
-              {{> components/ui/super_admin/form/select_field
-                id='mentoringsId'
-                name='mentoringsId'
-                field='mentoringsId'
-                label='Mentoring'
-                searchable=true
-                placeholder='Select mentoring'
-                options='mentoringOptions'
+            <div class='flex flex-col gap-1.5'>
+              {{> components/ui/super_admin/form/multi_select_field
+                id='technologies'
+                name='technologiesIds[]'
+                label='Tools'
+                options='technologyOptions'
+                placeholder='Search or select tools'
+                emptyText='No tools found.'
                 required=true
               }}
+              <p x-show='formErrors.technologies' x-cloak x-text='formErrors.technologies' class='font-inter text-sm leading-5 text-[#ef4444]'></p>
             </div>
 
             <div class='flex flex-col gap-2'>
@@ -426,7 +441,7 @@
     const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
 
     const sectionPaths = (paid) => ({
-      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : ['form'])],
+      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : ['form']), 'mentoringsId'],
       'section-description': LANGS.map((l) => `description.${l}`),
       'section-schedule': [
         ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
@@ -436,7 +451,7 @@
         ...LANGS.map((l) => `locations.${l}`),
         'locationLink',
       ],
-      'section-tools': ['technologies', 'mentoringsId', ...LANGS.map((l) => `materials.${l}`)],
+      'section-tools': ['technologies', ...LANGS.map((l) => `materials.${l}`)],
       'section-learning': LANGS.map((l) => `learningTargets.${l}`),
       'section-criteria': LANGS.map((l) => `criteria.${l}`),
     });
@@ -460,6 +475,11 @@
 
         categoryOptions: categories,
         courseTypeOptions: courseTypes,
+        programTypeOptions: [
+          { value: 'bootcamp', label: 'Bootcamp — weeks, sessions, weekly quiz' },
+          { value: 'non_bootcamp', label: 'Non Bootcamp — flat syllabus (Starter / Faster Class)' },
+          { value: 'lpk', label: 'Japan Pathway — same as bootcamp, sensei-led' },
+        ],
         technologyOptions: technologies,
         mentoringOptions: mentorings,
         paidOptions: [{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }],
@@ -474,10 +494,12 @@
           { id: 'section-criteria', title: 'Participant Criteria' },
         ],
 
+        currentStep: 'section-basic',
+
         formData: {
           name: '', group: '',
           categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
-          jenis_kelasId: '', mentoringsId: '', paid: 'true', method: 'online',
+          jenis_kelasId: '', programType: 'bootcamp', mentoringsId: '', paid: 'true', method: 'online',
           quota: '', price: '', promo: '', form: '', month: '', day: '', time_start: '', time_end: '',
           date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
           description: byLang(() => ''), locations: byLang(() => ''),
@@ -591,9 +613,20 @@
           return id === 'section-basic' ? done && this.hasFile && this.isValid : done;
         },
 
+        init() {
+          const track = () => {
+            const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+            const passed = this.steps.filter((step) => document.getElementById(step.id)?.getBoundingClientRect().top <= window.innerHeight / 3);
+            this.currentStep = (atBottom ? this.steps.at(-1) : passed.at(-1) || this.steps[0]).id;
+          };
+          window.addEventListener('scroll', track, { passive: true });
+          track();
+        },
+
+        // Langkah menyala bila card-nya lengkap, atau card-nya sedang/sudah dilewati saat scroll.
         stepActive(id) {
           if (this.sectionComplete(id)) return true;
-          return this.steps.find((step) => !this.sectionComplete(step.id))?.id === id;
+          return this.steps.findIndex((step) => step.id === id) <= this.steps.findIndex((step) => step.id === this.currentStep);
         },
 
         validateImage(file) {
