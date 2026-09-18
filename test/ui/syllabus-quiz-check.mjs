@@ -116,6 +116,65 @@ await student.waitForLoadState('networkidle');
 ok('the quiz page opens for a student', student.url().includes('/quiz/form/'), student.url());
 ok('the quiz page shows its name', (await student.locator('body').innerText()).includes(NAME));
 
+// ---- student MENGERJAKAN kuisnya sampai lulus
+//
+// Ini yang tadinya tidak diuji, dan karenanya satu bug lolos: membuka halaman
+// kuis saja tidak menyentuh jalur penilaian. Pada `createScore()`, cabang
+// "lulus" memanggil `quiz.weeks.id` - untuk kuis silabus `quiz.weeks` itu null,
+// jadi student yang menjawab BENAR kena TypeError, dan karena penyimpanan skor
+// ada SETELAH blok itu, nilainya ikut hilang. Yang gagal justru student yang
+// mengerjakan dengan benar.
+await admin.goto(`${BASE}/quiz/${quizId}`, { waitUntil: 'networkidle' });
+const madeQuestion = await admin.evaluate(async ([url]) => {
+  const body = new URLSearchParams();
+  body.append('questionText', 'Apakah 1 + 1 = 2?');
+  body.append('options[]', 'BENAR');
+  body.append('options[]', 'SALAH');
+  body.append('answers', '0');           // indeks 0 = BENAR
+  const r = await fetch(url, { method: 'POST', body });
+  return r.status;
+}, [`${BASE}/question/${quizId}`]);
+await admin.goto(`${BASE}/quiz/${quizId}`, { waitUntil: 'networkidle' });
+ok('a question can be added to a syllabus quiz',
+   (await admin.locator('body').innerText()).includes('1 + 1'), `HTTP ${madeQuestion}`);
+
+// Student mengerjakannya lewat layar sungguhan.
+await student.goto(`${BASE}/quiz/start/${quizId}`, { waitUntil: 'networkidle' });
+const started = student.url().includes('/quiz/start/');
+ok('the quiz start screen opens', started, student.url());
+
+if (started) {
+  // Radio yang benar dipilih lewat TEKSNYA, bukan lewat urutan - kalau
+  // urutannya berubah, uji ini harus tetap memilih jawaban yang benar.
+  const correct = student.locator('label', { hasText: 'BENAR' }).locator('input[type=radio]').first();
+  const fallback = student.locator('input[type=radio]').first();
+  const target = (await correct.count()) > 0 ? correct : fallback;
+  await target.check({ timeout: 10000 }).catch(() => {});
+  await student.waitForTimeout(700);   // chose-answer dikirim lewat fetch
+
+  // Dikirim lewat tombol HALAMANNYA, bukan dengan menyusun payload sendiri.
+  // Percobaan pertama saya menyusun sendiri dan salah: `radio.name` itu
+  // `q-<uuid>`, sedangkan yang diminta server uuid telanjang - jadi uji-nya
+  // "gagal" karena ujinya sendiri keliru. Menekan tombol asli membuat uji ini
+  // ikut berubah sendiri kalau bentuk kirimannya nanti berubah.
+  await student.locator('button[onclick="confirmQuizSubmit()"]').click();
+  await student.locator('.swal2-confirm').waitFor({ state: 'visible', timeout: 10000 });
+  await Promise.all([
+    student.waitForNavigation({ timeout: 20000 }).catch(() => {}),
+    student.locator('.swal2-confirm').click(),
+  ]);
+  await student.waitForLoadState('networkidle');
+
+  // Buktinya bukan status HTTP - rutenya membalas 302 baik berhasil maupun
+  // gagal, karena controllernya menelan galat. Yang membedakan: percobaannya
+  // benar-benar tercatat. Tanpa penjagaan `quiz.weeks`, jumlahnya NOL.
+  await student.goto(`${BASE}/quiz/form/${quizId}`, { waitUntil: 'networkidle' });
+  const scoreBody = await student.locator('body').innerText();
+  ok('a passing attempt is actually recorded, not swallowed',
+     /\b100\b/.test(scoreBody),
+     scoreBody.replace(/\s+/g, ' ').match(/[^ ]*100[^ ]*/)?.[0] || 'tidak ada skor di layar');
+}
+
 // ---- bootcamp tidak boleh ikut berubah
 if (BOOTCAMP_QUIZ) {
   const r = await admin.goto(`${BASE}/quiz/${BOOTCAMP_QUIZ}`, { waitUntil: 'networkidle' });

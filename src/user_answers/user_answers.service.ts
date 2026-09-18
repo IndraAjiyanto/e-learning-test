@@ -179,7 +179,20 @@ export class UserAnswersService {
         throw new NotFoundException('quiz not found');
       }
 
-      if (scores >= quiz.minScore) {
+      // Kuis punya DUA induk yang mungkin dan hanya satu terisi: kuis bootcamp
+      // menempel di minggu, kuis silabus (non-bootcamp) di silabus. Seluruh
+      // mesin di bawah ini - membuka minggu berikutnya, menandai program tamat
+      // - hanya berlaku untuk yang pertama.
+      //
+      // Tanpa penjagaan `quiz.weeks`, student yang LULUS kuis silabus kena
+      // `Cannot read properties of null (reading 'id')`, dan karena baris
+      // penyimpanan skor ada SETELAH blok ini, nilainya ikut hilang. Yang
+      // gagal justru student yang mengerjakan dengan benar.
+      //
+      // Jalur silabus tidak punya padanan "membuka unit berikutnya" di sini:
+      // silabus dibuka oleh penyelesaiannya sendiri, bukan oleh kuis. Jadi
+      // untuk kuis silabus yang perlu terjadi hanyalah skornya tercatat.
+      if (scores >= quiz.minScore && quiz.weeks) {
         await this.weekProgress(quiz.weeks.id, userId);
         await this.updateWeekProgress(quiz.weeks.id, userId);
       }
