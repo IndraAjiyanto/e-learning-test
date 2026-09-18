@@ -1,47 +1,81 @@
-              <button
-                @click='toggleAndFetch()'
-                class='w-full flex justify-between items-center px-5 py-3 bg-gradient-to-r from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 transition-all duration-300 text-left group'
-              >
-                <div class='flex items-center space-x-3'>
-                  <div>
-                    <div class='flex items-center gap-2'>
-                      <h2
-                        class='font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors font-inter'
-                      >
-                        {{t 'test.startLearning.week'}}
-                        {{this.weekNumber}}
-                        :
-                        {{this.description}}
-                      </h2>
-                      {{#if weekProgresses.[0].quiz}}
-                        <span
-                          class='bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold'
-                        >
-                          {{t 'test.startLearning.completed'}}
-                        </span>
-                      {{/if}}
-                    </div>
-                    <p class='text-xs text-gray-500 mt-0.5'>
-                      {{#if weekProgresses.[0].quiz}}
-                        {{t 'test.startLearning.clickToReview'}}
-                      {{else}}
-                        {{t 'test.startLearning.clickToExpandWeek'}}
-                      {{/if}}
-                    </p>
-                  </div>
-                </div>
-                <svg
-                  :class="{'rotate-180': openMinggu, 'text-slate-600': openMinggu}"
-                  class='w-5 h-5 text-gray-400 transition-all duration-300 group-hover:text-slate-600'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M19 9l-7 7-7-7'
-                  />
-                </svg>
-              </button>
+{{!--
+  Kepala kartu minggu (bisa dibuka-tutup).
+
+  Perubahan terhadap versi lama:
+  - Judulnya dulu "Week 1 : week 1" — nomor lalu deskripsi yang sering hanya
+    mengulang nomornya. Sekarang nomor tampil sebagai lencana di kiri, dan
+    deskripsi hanya ditampilkan bila benar-benar menambah keterangan.
+  - Baris "Click to Review Content" dihapus. Ikon panah sudah mengatakannya,
+    dan kalimat itu terulang di setiap minggu.
+  - Sebagai gantinya baris kedua memuat isi minggu (jumlah sesi dan ada/tidaknya
+    kuis), supaya student tahu apa yang ada di dalam tanpa membukanya dulu.
+  - Gradien dan shadow gaya landing diganti token design system.
+
+  Scope Alpine berasal dari kartu minggu di start_learning/index.hbs:
+  `openMinggu`, `toggleAndFetch()`, `sessions`, `quizData`, `dataLoaded`.
+--}}
+<button
+  @click='toggleAndFetch()'
+  :aria-expanded='openMinggu'
+  class='group flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]'
+>
+  <div class='flex min-w-0 items-center gap-3'>
+    {{!-- Lencana nomor minggu; berubah jadi centang begitu minggunya selesai. --}}
+    <span
+      class='grid size-9 shrink-0 place-items-center rounded-lg font-inter text-sm font-bold
+        {{#if weekProgresses.[0].quiz}}bg-[#f0fdf4] text-[#15803d]{{else}}bg-[#E4F1F7] text-[#003060]{{/if}}'
+    >
+      {{#if weekProgresses.[0].quiz}}
+        <i class='fa-solid fa-check'></i>
+      {{else}}
+        {{this.weekNumber}}
+      {{/if}}
+    </span>
+
+    <div class='min-w-0'>
+      <div class='flex flex-wrap items-center gap-2'>
+        <h3 class='truncate font-inter text-base font-bold text-[#171717]'>
+          {{t 'test.startLearning.week'}} {{this.weekNumber}}
+        </h3>
+        {{#if weekProgresses.[0].quiz}}
+          <span class='rounded-full bg-[#f0fdf4] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#15803d]'>
+            {{t 'test.startLearning.completed'}}
+          </span>
+        {{else}}
+          <span class='rounded-full bg-[#EFF6FF] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#1D4ED8]'>
+            {{t 'test.startLearning.inProgress'}}
+          </span>
+        {{/if}}
+      </div>
+
+      {{!-- Isi minggu. `sessions` dan `quizData` diisi oleh fetch di kartu induk;
+           sebelum selesai dimuat, barisnya menampilkan deskripsi minggu saja. --}}
+      <p class='mt-0.5 truncate font-inter text-xs text-[#737373]'>
+        <template x-if='dataLoaded'>
+          <span>
+            <span x-text='sessions.length'></span>
+            <template x-if='sessions.length === 1'><span>{{t 'test.startLearning.sessionLower'}}</span></template>
+            <template x-if='sessions.length !== 1'><span>{{t 'test.startLearning.sessions'}}</span></template>
+            <template x-if='quizData && quizData.length'>
+              <span> &middot; {{t 'test.startLearning.quiz'}}</span>
+            </template>
+          </span>
+        </template>
+        <template x-if='!dataLoaded'>
+          <span>{{this.description}}</span>
+        </template>
+      </p>
+    </div>
+  </div>
+
+  <svg
+    :class="openMinggu ? 'rotate-180' : ''"
+    class='size-5 shrink-0 text-[#a3a3a3] transition-transform duration-300 group-hover:text-[#003060]'
+    fill='none'
+    stroke='currentColor'
+    viewBox='0 0 24 24'
+    aria-hidden='true'
+  >
+    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' />
+  </svg>
+</button>

@@ -132,7 +132,7 @@
             {{#> components/ui/super_admin/table/cell variant='action'}}
               {{> components/ui/super_admin/table/row_actions
                 entity='mentor'
-                deleteAction="'/mentor/' + row.id + '/' + courseId + '?_method=DELETE'"
+                deleteAction="'/mentor/' + courseId + '/' + row.id + '?_method=DELETE'"
                 editHref="'/mentor/formEdit/' + row.id"
               }}
             {{/components/ui/super_admin/table/cell}}

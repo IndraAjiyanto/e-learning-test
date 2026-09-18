@@ -83,7 +83,7 @@
         <!-- Empty State -->
         <template x-if="!(selectedMaterial && selectedMaterial.materials && selectedMaterial.materials.filter(m => m.fileType === 'pdf').length)">
           <div class="h-full flex items-center justify-center px-6">
-            <p class="font-inter font-medium text-sm sm:text-base text-slate-400 text-center">
+            <p class="font-inter font-medium text-sm sm:text-base text-[#A3A3A3] text-center">
               No PDF material available for this session
             </p>
           </div>
@@ -92,7 +92,7 @@
         <template x-for="item in (selectedMaterial && selectedMaterial.materials ? selectedMaterial.materials.filter(m => m.fileType === 'pdf') : [])" :key="item.id">
           <div
             @click="selectPdf(item)"
-            :class="currentPdf && currentPdf.id === item.id ? 'bg-white' : 'bg-white hover:bg-slate-50'"
+            :class="currentPdf && currentPdf.id === item.id ? 'bg-white' : 'bg-white hover:bg-[#FAFAFA]'"
             class="h-[60px] flex items-center px-6 border-y border-[#D9D9D9] transition-colors cursor-pointer"
           >
             <span

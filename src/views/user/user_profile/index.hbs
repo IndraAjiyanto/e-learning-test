@@ -15,11 +15,22 @@
 <script>
   window.userLogbooks = {{{json logbooks}}};
   window.userCourses = {{{json userWithCourses.userCourses}}};
+  // Kapabilitas per program, dihitung server (courses/program-type.ts). Sisi
+  // klien TIDAK menghitung ulang aturannya - kalau ia ikut menghitung, aturan
+  // yang sama hidup di dua tempat dan akan berbeda suatu hari.
+  window.programCaps = {{{json programCaps}}};
+  // Sakelar logbook dipasang pada <html> SEBELUM Alpine jalan: sessionUnlock
+  // membacanya untuk memutuskan apakah logbook ikut mengunci sesi berikutnya,
+  // dan keputusan itu sudah dipakai pada gambar pertama.
+  (function () {
+    var caps = {{{json caps}}};
+    document.documentElement.dataset.logbookRequired =
+      caps && caps.logbookEnabled === false ? 'false' : 'true';
+  })();
 </script>
 <div 
-  class="relative min-h-screen flex flex-col justify-between bg-[#F2F2F3] font-inter overflow-x-hidden"
+  class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-inter overflow-hidden"
   x-data="{
-    sidebarOpen: true,
     lang: '{{lang}}',
     activeSection: new URLSearchParams(window.location.search).get('tab') || '{{activeSection}}' || '{{#if (or (eq user.role "admin") (eq user.role "super_admin"))}}profile{{else}}dashboard{{/if}}',
     openMyLearning: true,
@@ -44,6 +55,12 @@
       quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' }
     },
     toggleActiveSection(section) {
+      // Student bisa sampai di ?tab=logbook lewat tautan lama atau riwayat
+      // peramban, termasuk untuk program yang logbooknya dimatikan. Tanpa
+      // penjagaan ini ia mendapat panel kosong tanpa penjelasan.
+      if (section === 'logbook' && this.activeCaps.logbookEnabled === false) {
+        section = 'uiux';
+      }
       this.activeSection = section;
       if (this.sectionFragmentConfig[section]) {
         const courseId = this.activeCourseId || (this.userCourses[0] && this.userCourses[0].course && this.userCourses[0].course.id);
@@ -53,6 +70,27 @@
         }
       }
     },
+    {{!-- Bagian yang memang milik sebuah program. Kepala program dan baris tab
+         hanya muncul untuk section ini; Dashboard, Profile, My Portfolio, dan
+         Payment History tidak boleh kebagian gambar program. --}}
+    programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'certificate', 'group-class', 'quiz-start'],
+    get isProgramSection() {
+      return this.programSections.includes(this.activeSection);
+    },
+
+    {{!-- Course yang sedang dibuka, diambil dari data yang SUDAH ada di sisi
+         klien (window.userCourses). Dengan begitu kepala program ikut benar di
+         kedua rute yang merender shell, tanpa menyentuh controller. --}}
+    get activeCourseData() {
+      const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
+      if (found) return found.course;
+      return this.userCourses[0] ? this.userCourses[0].course : null;
+    },
+    byLang(obj) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[this.lang] || obj.id || obj.en || '';
+    },
+
     get activeCourseName() {
       const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
       return found ? found.course.name : 'My Program';
@@ -81,7 +119,11 @@
       if (!config) return;
       const container = document.getElementById(config.container);
       if (!container) return;
-      container.innerHTML = '<div class=\'p-12 text-center text-slate-500\'>Loading...</div>';
+      // Penahan tempat memakai skeleton yang tingginya mendekati isi akhirnya.
+      // Sebelumnya hanya tulisan 'Loading...' setinggi ~120px, sementara isinya
+      // ~1026px - selisih itulah yang terlihat sebagai halaman melompat.
+      const skeleton = document.getElementById('learning-skeleton-source');
+      container.innerHTML = skeleton ? skeleton.innerHTML : '';
       try {
         const res = await fetch(config.url + '?courseId=' + courseId);
 
@@ -97,15 +139,32 @@
         if (!res.ok) throw new Error('Request failed');
 
         const html = await res.text();
+        // Tinggi wadah dikunci sepanjang pertukaran isi. Tanpa ini ada satu
+        // frame ketika skeleton sudah dilepas tetapi isi barunya belum selesai
+        // ditata, dan wadahnya sempat memendek - satu frame itu saja sudah
+        // terhitung sebagai pergeseran tata letak.
+        container.style.minHeight = container.offsetHeight + 'px';
         container.innerHTML = html;
         Alpine.initTree(container);
+        requestAnimationFrame(() => { container.style.minHeight = ''; });
       } catch (e) {
         container.innerHTML = '<div class=\'p-12 text-center text-red-500\'>Failed to load. Please try again.</div>';
       }
     },
+    {{!-- Program berikutnya bisa punya sakelar logbook yang berbeda, dan
+         berpindah program tidak memuat ulang halaman. --}}
+    syncProgramCaps() {
+      const caps = (window.programCaps || {})[this.activeCourseId];
+      document.documentElement.dataset.logbookRequired =
+        caps && caps.logbookEnabled === false ? 'false' : 'true';
+    },
+    get activeCaps() {
+      return (window.programCaps || {})[this.activeCourseId] || {};
+    },
     async selectCourseSection(courseId, section) {
       this.activeCourseId = courseId;
       this.logbookCurrentPage = 1;
+      this.syncProgramCaps();
       this.toggleActiveSection(section);
     },
     async selectCourse(courseId) {
@@ -113,17 +172,20 @@
       await this.selectCourseSection(courseId, 'uiux');
     }
   }"
-  x-init="if (activeSection !== 'uiux' && sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }"
+  x-init="
+    if (activeSection === 'logbook' && activeCaps.logbookEnabled === false) { activeSection = 'uiux'; }
+    if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }
+  "
 >
   {{!-- Application bar. Markup ada di partial supaya halaman student
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
   {{> user/app_bar/index user=user sidebarToggle=true }}
 
-  <div class="relative z-10 max-w-full flex-1 flex flex-col mb-0">
+  <div class="relative z-10 max-w-full flex-1 min-h-0 flex flex-col mb-0">
 
     {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
     <!-- Mobile Horizontal Scroll Navigation -->
-    <div class="lg:hidden mb-6 -mx-4 sm:mx-0 px-4 sm:px-0">
+    <div class="lg:hidden shrink-0 mb-6 -mx-4 sm:mx-0 px-4 sm:px-0">
       <div class="overflow-x-auto no-scrollbar">
         <nav class="flex space-x-3 min-w-max sm:min-w-0 pb-4">
 
@@ -133,7 +195,7 @@
             :class="activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
             class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
-            <i class="fas fa-gauge-high w-5 text-center"></i>
+            <i class="fas fa-table-cells-large w-5 text-center"></i>
             <span>Dashboard</span>
           </button>
 
@@ -149,13 +211,12 @@
 
           <!-- My Learning Button -->
           <button
-            @click="openMyLearning = !openMyLearning; toggleActiveSection('learning');"
+            @click="toggleActiveSection('learning');"
             :class="activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
             class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
             <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain brightness-0">
             <span>My Learning</span>
-            <i class="fas fa-chevron-down text-sm transition-transform duration-200" :class="openMyLearning ? 'rotate-180' : ''"></i>
           </button>
 
           <!-- My Portfolio Button -->
@@ -190,259 +251,101 @@
         </nav>
       </div>
 
-      <!-- My Learning Sub-Items (mobile mirror of the desktop UI/UX accordion) -->`
-      <div x-show="openMyLearning" x-transition class="overflow-x-auto no-scrollbar">
-        <nav class="flex space-x-3 min-w-max pb-4">
+      {{!-- Pohon course dihapus: frame desain hanya menampilkan lima item datar
+           di sidebar. Titik masuk per-course kini ada di kartu program pada
+           kolom kanan Start Learning. Lihat docs/user-area-submenu-removal-plan.md. --}}
 
-          <button
-            @click="toggleActiveSection('uiux');"
-            :class="activeSection === 'uiux' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/uiUxDesigner.svg" alt="{{activeCourse.name}}" class="w-4 h-4 object-contain brightness-0">
-            <span x-text="activeCourseName"></span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('presentation');"
-            :class="activeSection === 'presentation' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain brightness-0">
-            <span>Presentation</span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('logbook');"
-            :class="activeSection === 'logbook' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain brightness-0">
-            <span>My Logbook</span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('assignment');"
-            :class="activeSection === 'assignment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain brightness-0">
-            <span>Assignment</span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('quiz');"
-            :class="activeSection === 'quiz' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain brightness-0">
-            <span>Quiz</span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('certificate');"
-            :class="activeSection === 'certificate' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain brightness-0">
-            <span>Certificate</span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('group-class');"
-            :class="activeSection === 'group-class' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'"
-            class="h-11 px-4 gap-2.5 rounded-lg font-inter font-medium text-sm flex items-center whitespace-nowrap transition-colors duration-150 cursor-pointer"
-          >
-            <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain brightness-0">
-            <span>Join Group Class</span>
-          </button>
-
-        </nav>
-      </div>
     </div>
     {{/unless}}
 
     <!-- Flex Main Layout (Flex-1 Full Height to Footer) -->
-    <div class="flex flex-col lg:flex-row items-stretch w-full flex-1 min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-72px)]">
+    <div class="flex flex-col lg:flex-row items-stretch w-full flex-1 min-h-0">
 
       {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
       <!-- Desktop Sidebar Navigation: the outer box self-stretches to match the taller
            content column (so the white background + border never "cuts off" early). Nav
-           is its own sticky-scrolling region within that box. Log Out is a genuinely
+           is its own scrolling region within that box. Log Out is a genuinely
            separate `fixed` element pinned to the viewport bottom - not flex-distributed
            with nav - so it never moves regardless of how tall the nav content gets. -->
-      <div
-        class="hidden lg:flex flex-shrink-0 self-stretch bg-white border-r border-[#D9D9D9] transition-all duration-300 mb-0"
-        :class="sidebarOpen ? 'w-64' : 'w-20'"
-      >
-        <nav
-          class="w-full lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-72px)] overflow-y-auto space-y-2.5 pr-1 pb-24"
-          :class="sidebarOpen ? 'p-5 pt-5' : 'px-2.5 pt-5'"
-        >
+      <div class="js-user-sidebar hidden lg:flex flex-shrink-0 self-stretch bg-white border-r border-[#D9D9D9] transition-[width] duration-300 mb-0">
+        <nav class="js-user-sidebar-nav w-full h-full overflow-y-auto space-y-2.5 pb-24">
 
           <!-- 1. Dashboard Button - flat: active = #E4F1F7 bg + #003060 text,
                inactive = transparent + #718096, no border/shadow/blur anywhere -->
           <button
             @click="toggleActiveSection('dashboard');"
             :class="[
-              activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
+              activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer group"
+            aria-label="{{t 'test.userSidebar.dashboard'}}" title="{{t 'test.userSidebar.dashboard'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
-              <i class="fas fa-gauge-high text-base"></i>
+              <i class="fas fa-table-cells-large text-base"></i>
             </div>
-            <span x-show="sidebarOpen" class="whitespace-nowrap">Dashboard</span>
+            <span class="js-user-sidebar-label whitespace-nowrap">Dashboard</span>
           </button>
 
           <!-- 2. Profile Button -->
           <button
             @click="toggleActiveSection('profile');"
             :class="[
-              (activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
+              (activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer group"
+            aria-label="{{t 'test.userSidebar.profile'}}" title="{{t 'test.userSidebar.profile'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span>
             </div>
-            <span x-show="sidebarOpen" class="whitespace-nowrap">Profile</span>
+            <span class="js-user-sidebar-label whitespace-nowrap">Profile</span>
           </button>
 
           <!-- 3. My Learning Accordion Button -->
           <div class="space-y-2">
             <button
-              @click="openMyLearning = !openMyLearning; toggleActiveSection('learning');"
+              @click="toggleActiveSection('learning');"
               :class="[
-                activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
-                !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
+                activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
               ]"
-              class="text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
+              aria-label="{{t 'test.userSidebar.myLearning'}}" title="{{t 'test.userSidebar.myLearning'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
             >
               <div class="flex items-center gap-3">
                 <div class="w-5 flex justify-center items-center flex-shrink-0">
                   <span class="block size-5" :class="activeSection === 'learning' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span>
                 </div>
-                <span x-show="sidebarOpen" class="whitespace-nowrap">My Learning</span>
+                <span class="js-user-sidebar-label whitespace-nowrap">My Learning</span>
               </div>
-              <i x-show="sidebarOpen" class="fas fa-chevron-down text-sm transition-transform duration-200" :class="openMyLearning ? 'rotate-180' : ''"></i>
             </button>
 
-            <!-- My Learning Sub-Items Container - remade 2026-09-15: was styled identically to the
-                 top-level nav buttons (same white card + border + shadow), so a course inside "My
-                 Learning" looked like another main item instead of a child of it. Now a real
-                 tree: indent + connecting rule per level, weight drops the deeper you go. -->
-            <div x-show="openMyLearning && sidebarOpen" x-transition class="ml-[18px] space-y-0.5 border-l border-[#E5E7EB] pl-3">
+            {{!-- Pohon course dihapus, lihat catatan pada navigasi mobile di atas. --}}
 
-              <!-- Dynamic Courses Loop -->
-              {{#each userWithCourses.userCourses}}
-                <div>
-                  <button
-                    type="button"
-                    @click="selectCourse('{{this.course.id}}')"
-                    aria-label="Open {{this.course.name}}"
-                    :aria-expanded="openedCourses['{{this.course.id}}'] ? 'true' : 'false'"
-                    class="flex w-full items-center gap-2 rounded-md py-2 px-2 text-left font-inter text-sm font-medium transition-colors cursor-pointer"
-                    :class="openedCourses['{{this.course.id}}'] ? 'text-[#003060] bg-[#E4F1F7]' : 'text-slate-600 hover:bg-slate-50'"
-                  >
-                    <i class="fas fa-graduation-cap shrink-0 text-xs" :class="openedCourses['{{this.course.id}}'] ? 'text-[#003060]' : 'text-slate-400'"></i>
-                    <span class="min-w-0 flex-1 truncate whitespace-nowrap">{{this.course.name}}</span>
-                    <i class="fas fa-chevron-down shrink-0 text-xs transition-transform duration-200" :class="openedCourses['{{this.course.id}}'] ? 'rotate-180' : ''"></i>
-                  </button>
-
-                  <!-- Nested Items -->
-                  <div x-show="openedCourses['{{this.course.id}}']" x-transition class="ml-[13px] space-y-0.5 border-l border-[#E5E7EB] py-1 pl-3">
-
-                    <button
-                      @click="selectCourseSection('{{this.course.id}}', 'presentation');"
-                      :class="(activeSection === 'presentation' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-inter text-sm transition-colors cursor-pointer"
-                    >
-                      <i class="fas fa-display shrink-0 text-xs"></i>
-                      <span class="truncate whitespace-nowrap">Presentation</span>
-                    </button>
-
-                    <button
-                      @click="selectCourseSection('{{this.course.id}}', 'logbook');"
-                      :class="(activeSection === 'logbook' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-inter text-sm transition-colors cursor-pointer"
-                    >
-                      <i class="fas fa-clipboard-list shrink-0 text-xs"></i>
-                      <span class="truncate whitespace-nowrap">My Logbook</span>
-                    </button>
-
-                    <button
-                      @click="selectCourseSection('{{this.course.id}}', 'assignment');"
-                      :class="(activeSection === 'assignment' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-inter text-sm transition-colors cursor-pointer"
-                    >
-                      <i class="fas fa-list-check shrink-0 text-xs"></i>
-                      <span class="truncate whitespace-nowrap">Assignment</span>
-                    </button>
-
-                    <button
-                      @click="selectCourseSection('{{this.course.id}}', 'quiz');"
-                      :class="(activeSection === 'quiz' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-inter text-sm transition-colors cursor-pointer"
-                    >
-                      <i class="fas fa-circle-question shrink-0 text-xs"></i>
-                      <span class="truncate whitespace-nowrap">Quiz</span>
-                    </button>
-
-                    <button
-                      @click="selectCourseSection('{{this.course.id}}', 'certificate');"
-                      :class="(activeSection === 'certificate' && activeCourseId === '{{this.course.id}}') ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-inter text-sm transition-colors cursor-pointer"
-                    >
-                      <i class="fas fa-award shrink-0 text-xs"></i>
-                      <span class="truncate whitespace-nowrap">Certificate</span>
-                    </button>
-
-                    <button
-                      @click="toggleActiveSection('group-class');"
-                      :class="activeSection === 'group-class' ? 'text-[#003060] font-semibold bg-[#E4F1F7]' : 'text-slate-500 hover:bg-slate-50'"
-                      class="flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left font-inter text-sm transition-colors cursor-pointer"
-                    >
-                      <i class="fas fa-users shrink-0 text-xs"></i>
-                      <span class="truncate whitespace-nowrap">Join Group Class</span>
-                    </button>
-
-                  </div>
-                </div>
-              {{/each}}
-            </div>
           </div>
 
           <!-- 4. My Portfolio Button -->
           <button
             @click="toggleActiveSection('portfolio');"
             :class="[
-              activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
+              activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.userSidebar.myPortfolio'}}" title="{{t 'test.userSidebar.myPortfolio'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'portfolio' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
             </div>
-            <span x-show="sidebarOpen" class="whitespace-nowrap">My Portfolio</span>
+            <span class="js-user-sidebar-label whitespace-nowrap">My Portfolio</span>
           </button>
 
           <!-- 5. History Payment Button -->
           <button
             @click="toggleActiveSection('history-payment');"
             :class="[
-              activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]',
-              !sidebarOpen ? '!w-10 !h-10 !p-0 !gap-0 justify-center mx-auto rounded-lg' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg'
+              activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            class="text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.userSidebar.paymentHistory'}}" title="{{t 'test.userSidebar.paymentHistory'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'history-payment' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
             </div>
-            <span x-show="sidebarOpen" class="whitespace-nowrap">Payment History</span>
+            <span class="js-user-sidebar-label whitespace-nowrap">Payment History</span>
           </button>
 
         </nav>
@@ -452,107 +355,410 @@
            element from the scrolling <nav> above, so it can never be pushed around by
            however many menu items end up in the sidebar. -->
       <div
-        class="hidden lg:flex flex-shrink-0 fixed bottom-0 left-0 z-30 bg-white border-r border-t border-[#D9D9D9] transition-all duration-300"
-        :class="sidebarOpen ? 'w-64 p-5' : 'w-20 px-2.5 py-5'"
+        class="js-user-sidebar-logout hidden lg:flex flex-shrink-0 fixed bottom-0 left-0 z-30 bg-white border-r border-t border-[#D9D9D9] transition-[width] duration-300"
+
       >
+        {{!-- Warna Log Out ikut keadaan sidebar lewat CSS, bukan :class, dengan
+             alasan yang sama seperti item lain: Alpine baru berjalan setelah
+             halaman tergambar. --}}
         <a
           href='/logout'
-          class="w-full"
-          :class="[
-            'transition-colors duration-150 flex items-center font-inter font-medium leading-none cursor-pointer',
-            !sidebarOpen ? 'w-10 h-10 justify-center mx-auto rounded-lg bg-transparent text-[#C0392B] hover:bg-red-50' : 'w-full h-11 px-3.5 py-2.5 gap-3 rounded-lg text-white bg-[#C0392B] hover:bg-[#a5311f]'
-          ]"
+          class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg transition-colors duration-150 flex items-center font-inter font-medium leading-none cursor-pointer"
         >
           <div class="w-5 flex justify-center items-center flex-shrink-0">
-            <i class="fa-solid fa-arrow-right-from-bracket text-base" :class="!sidebarOpen ? 'text-[#C0392B]' : 'text-white'"></i>
+            <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
           </div>
-          <span x-show="sidebarOpen" class="whitespace-nowrap text-sm">Log Out</span>
+          <span class="js-user-sidebar-label whitespace-nowrap text-sm">Log Out</span>
         </a>
       </div>
       {{/unless}}
 
       <!-- Right Content Section -->
-      <div class="flex-1 w-full min-w-0">
-        
+      <div class="flex-1 w-full min-w-0 min-h-0 overflow-y-auto">
+
+        {{!--
+          Remah dan tombol kembali untuk panel di dalam shell.
+
+          Halaman berdiri sendiri mendapatkannya dari shell_frame; panel di sini
+          bukan halaman tersendiri, jadi barisnya dirakit dari `activeSection`.
+          Tombol kembali hanya muncul untuk panel yang memang berada DI DALAM
+          sebuah program (Start Learning dan turunannya) - pada tab tingkat atas
+          tidak ada tempat untuk kembali, jadi tombolnya tidak dirender.
+        --}}
+        <div
+          class="px-4 pt-4 sm:px-8 sm:pt-6"
+          x-data="{
+            labels: {
+              dashboard: '{{t 'test.userSidebar.dashboard'}}',
+              profile: '{{t 'test.userSidebar.profile'}}',
+              password: '{{t 'test.profile.changePassword'}}',
+              learning: '{{t 'test.userSidebar.myLearning'}}',
+              portfolio: '{{t 'test.userSidebar.myPortfolio'}}',
+              'history-payment': '{{t 'test.userSidebar.paymentHistory'}}',
+              uiux: '{{t 'test.startLearning.startLearning'}}',
+              assignment: '{{t 'test.startLearning.assignment'}}',
+              {{!-- Label tabnya sudah jadi Attendance; remahnya ikut, kalau
+                   tidak halaman yang sama punya dua nama. --}}
+              presentation: '{{t 'test.startLearning.tabAttendance'}}',
+              quiz: '{{t 'test.startLearning.quiz'}}',
+              logbook: '{{t 'test.startLearning.myLogbook'}}',
+              certificate: '{{t 'test.startLearning.certificate'}}',
+              'group-class': '{{t 'test.startLearning.joinGroup'}}'
+            },
+            nested: ['uiux','assignment','presentation','quiz','logbook','certificate','group-class'],
+            get isNested() { return this.nested.includes(this.activeSection); },
+            get label() { return this.labels[this.activeSection] || this.labels.dashboard; }
+          }"
+        >
+          {{!-- min-h-9 menyamai tinggi tombol kembali. Tanpa ini, barisnya
+               tumbuh 16px begitu tombolnya muncul, dan seluruh isi halaman
+               ikut terdorong turun - itulah lompatan yang tersisa setelah
+               skeleton dipasang. --}}
+          <div class="flex min-h-9 flex-wrap items-center gap-x-3 gap-y-2">
+            <button
+              type="button"
+              x-show="isNested"
+              {{!-- Keadaan awal ditentukan server supaya tombolnya tidak
+                   berkedip muncul sesudah halaman tampil. --}}
+              {{#unless (or (eq initialSection 'uiux') (eq initialSection 'assignment') (eq initialSection 'presentation') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class'))}}style="display:none"{{/unless}}
+              @click="toggleActiveSection('learning')"
+              class="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
+            >
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              {{t 'test.common.back'}}
+            </button>
+
+            <nav aria-label="{{t 'test.common.breadcrumb'}}" class="min-w-0">
+              <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-inter text-sm text-[#737373]">
+                <li>
+                  <button type="button" @click="toggleActiveSection('dashboard')" class="cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
+                    {{t 'test.common.home'}}
+                  </button>
+                </li>
+                <template x-if="isNested">
+                  <li class="flex min-w-0 items-center gap-2">
+                    <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
+                    <button type="button" @click="toggleActiveSection('learning')" class="cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
+                      {{t 'test.userSidebar.myLearning'}}
+                    </button>
+                  </li>
+                </template>
+                <li class="flex min-w-0 items-center gap-2">
+                  <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
+                  <span aria-current="page" class="truncate font-semibold text-[#003060]" x-text="label"></span>
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+
+
+        {{!--
+          Kepala program beserta baris tab.
+
+          Sebelumnya gambar, judul, dan tombol-tombol program berada DI DALAM
+          panel Start Learning. Begitu student membuka Assignment atau Quiz,
+          seluruh konteks programnya hilang dan tidak ada jalan pindah antar
+          bagian selain kembali dulu. Sekarang keduanya berada di luar panel,
+          jadi tetap terlihat di semua tab milik program.
+
+          Datanya dari window.userCourses yang sudah ada di sisi klien, bukan
+          dari controller - dengan begitu kedua rute yang merender shell
+          (users/profile dan program/myProgram) sama-sama benar.
+
+          Keadaan awal ditentukan server lewat `initialSection` supaya kepala
+          ini tidak berkedip muncul sesudah halaman tampil.
+        --}}
+        <div
+          x-show="isProgramSection"
+          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
+          class="px-4 pt-4 sm:px-8 sm:pt-6"
+        >
+          {{#if activeCourse}}
+            <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+              {{!--
+                Gambar di kanan, keterangan program di kiri. Sebelumnya gambar
+                membentang selebar kartu DI ATAS keterangan, dan kepala program
+                memakan 422px - hampir separuh layar laptop - sebelum tab
+                pertama kelihatan. Disandingkan begini tingginya ditentukan
+                keterangan, bukan gambar.
+
+                Urutan DOM tetap gambar-lalu-teks; yang dibalik cuma arah flex
+                pada sm ke atas, sehingga di ponsel gambar tetap di atas dan
+                tidak ada yang berubah untuk pembaca layar.
+              --}}
+              <div class="flex flex-col sm:min-h-[184px] sm:flex-row-reverse">
+                {{!--
+                  Tinggi tetap di ponsel, lebar tetap di sm ke atas.
+
+                  Gambarnya dipasang absolute, bukan sekadar h-full: pada sm ke
+                  atas kolom ini tingginya ikut baris (yang ditentukan kolom
+                  teks), dan `height:100%` terhadap induk yang `auto` runtuh
+                  menjadi tinggi asli gambar - begitu berkasnya selesai dimuat
+                  barisnya melar 16px dan seluruh halaman turun. Terukur: CLS
+                  0,0013 menjadi 0,0432. Absolute membuat gambar tidak ikut
+                  menghitung tinggi sama sekali.
+                --}}
+                <div class="relative h-[140px] w-full shrink-0 overflow-hidden bg-[#EEF2F6] sm:h-auto sm:w-[240px] lg:w-[300px]">
+                  <img
+                    src="{{activeCourse.image}}"
+                    alt="{{activeCourse.name}}"
+                    onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                    class="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+
+                <div class="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
+                  {{!-- self-start: di dalam kolom flex, span inline-flex akan
+                       melar selebar kolom kalau tidak ditahan. --}}
+                  {{#if activeCourse.category.name}}
+                    <span class="mb-2 inline-flex self-start items-center rounded-[6px] bg-[#CFE6F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#003060]">{{activeCourse.category.name}}</span>
+                  {{/if}}
+                  <h1 class="font-inter text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{activeCourse.name}}</h1>
+                  <p class="mt-1 line-clamp-2 font-inter text-sm text-[#737373]">{{getByLang activeCourse.description lang}}</p>
+
+                  {{!--
+                    Chip keterangan dan kedua tombol aksi berbagi satu baris.
+                    Sebelumnya tombol punya kolomnya sendiri di kanan atas; pada
+                    tata letak bersanding kolom itu sudah ditempati gambar, dan
+                    memberi tombol barisnya sendiri berarti membuang satu baris
+                    penuh - persis yang sedang dihemat.
+
+                    Chip: idenya dari baris chip halaman belajar bisa.ai (level,
+                    jumlah modul, poin, rating), tetapi isinya data yang memang
+                    ada di sini - tipe kelas, jumlah minggu, metode, lokasi -
+                    dengan token warna kita sendiri, bukan meniru warnanya.
+                  --}}
+                  <div class="mt-3 flex flex-1 flex-wrap items-end justify-between gap-x-4 gap-y-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                      {{#if activeCourse.courseType.nameClassesType}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                          <i class="fa-solid fa-signal text-[0.65rem] text-[#718096]"></i>
+                          {{activeCourse.courseType.nameClassesType}}
+                        </span>
+                      {{/if}}
+                      {{#if activeCourse.weeks.length}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                          <i class="fa-regular fa-calendar text-[0.65rem] text-[#718096]"></i>
+                          {{activeCourse.weeks.length}} {{#if (eq activeCourse.weeks.length 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
+                        </span>
+                      {{/if}}
+                      {{#if activeCourse.method}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium capitalize text-[#525252]">
+                          <i class="fa-solid fa-location-dot text-[0.65rem] text-[#718096]"></i>
+                          {{activeCourse.method}}
+                        </span>
+                      {{/if}}
+                      {{#if activeCourse.locations}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                          <i class="fa-solid fa-building text-[0.65rem] text-[#718096]"></i>
+                          {{getByLang activeCourse.locations lang}}
+                        </span>
+                      {{/if}}
+                    </div>
+
+                    {{!-- Dua aksi ini bukan tab: yang satu pergi ke halaman lain,
+                         yang satu dilakukan sekali - bukan tempat yang dihuni. --}}
+                    <div class="flex shrink-0 flex-wrap items-center gap-2">
+                      <a
+                        href="/program/program/detail/{{activeCourse.id}}"
+                        class="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+                      >
+                        <i class="fa-regular fa-file-lines text-xs"></i>
+                        {{t 'test.startLearning.detailProgram'}}
+                      </a>
+                      <button
+                        type="button"
+                        @click="toggleActiveSection('group-class')"
+                        class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#E4F1F7]"
+                      >
+                        <i class="fa-solid fa-users text-xs"></i>
+                        {{t 'test.startLearning.joinGroup'}}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {{!-- Baris tab. Menempel di bawah app bar saat digulung supaya
+                   berpindah tab tidak menuntut gulung balik ke atas, dan bisa
+                   digeser mendatar di layar sempit. --}}
+              <div class="sticky top-0 z-20 border-t border-[#E5E5E5] bg-white">
+                <div class="overflow-x-auto no-scrollbar">
+                  <nav class="flex min-w-max items-stretch gap-1 px-3" role="tablist" aria-label="{{t 'test.startLearning.programTabs'}}">
+                    {{!-- Kunci 'presentation' dipertahankan karena dipakai rute
+                         fragment dan URL ?tab=, meski isinya formulir absensi;
+                         yang diperbaiki hanya labelnya. --}}
+                    {{#each (array
+                      (obj 'key' 'uiux' 'label' 'tabSessions' 'icon' 'fa-list-check')
+                      (obj 'key' 'presentation' 'label' 'tabAttendance' 'icon' 'fa-user-check')
+                      (obj 'key' 'assignment' 'label' 'assignment' 'icon' 'fa-file-pen')
+                      (obj 'key' 'quiz' 'label' 'quiz' 'icon' 'fa-circle-question')
+                      (obj 'key' 'logbook' 'label' 'myLogbook' 'icon' 'fa-clipboard')
+                      (obj 'key' 'certificate' 'label' 'certificate' 'icon' 'fa-award')
+                    )}}
+                      {{!-- Tab yang bergantung sakelar hanya dirender kalau
+                           sakelarnya menyala; `caps` dihitung server. --}}
+                      {{#if (or (not (eq this.key 'logbook')) ../caps.logbookEnabled)}}
+                      <button
+                        type="button"
+                        role="tab"
+                        :aria-selected="activeSection === '{{this.key}}' ? 'true' : 'false'"
+                        @click="toggleActiveSection('{{this.key}}')"
+                        class="relative flex cursor-pointer items-center gap-2 whitespace-nowrap px-3 py-3.5 font-inter text-sm font-semibold transition-colors"
+                        :class="activeSection === '{{this.key}}' ? 'text-[#003060]' : 'text-[#718096] hover:text-[#003060]'"
+                      >
+                        <i class="fa-solid {{this.icon}} text-xs"></i>
+                        {{t (concat 'test.startLearning.' this.label)}}
+                        <span
+                          x-show="activeSection === '{{this.key}}'"
+                          class="absolute inset-x-2 bottom-0 h-0.5 rounded-t bg-[#003060]"
+                        ></span>
+                      </button>
+                      {{/if}}
+                    {{/each}}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          {{/if}}
+        </div>
+
         <!-- Dashboard Tab Content -->
-        <div x-show="activeSection === 'dashboard'">
+        <div x-show="activeSection === 'dashboard'"{{#unless (eq initialSection 'dashboard')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/dashboard/index }}
         </div>
 
         <!-- Profile Tab Content -->
-        <div x-show="activeSection === 'profile'">
+        <div x-show="activeSection === 'profile'"{{#unless (eq initialSection 'profile')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/profile/index }}
         </div>
 
         <!-- Change Password Tab Content -->
-        <div x-show="activeSection === 'password'">
+        <div x-show="activeSection === 'password'"{{#unless (eq initialSection 'password')}} style="display:none"{{/unless}}>
           {{> components/ui/profile/change_password/index user=user isTab=true }}
         </div>
 
         <!-- My Learning Tab Content -->
-        <div x-show="activeSection === 'learning'">
+        <div x-show="activeSection === 'learning'"{{#unless (eq initialSection 'learning')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_learning/index }}
         </div>
 
         <!-- Start Learning Tab Content -->
-        <div x-show="activeSection === 'uiux'" id="start-learning-container">
-          {{#if activeCourse}}
-          {{> user/sidebar_user_profile/my_learning/start_learning/index course=activeCourse}}
-          {{/if}}
+        {{!-- Sengaja kosong: isinya SELALU dimuat lewat loadCourseFragment.
+             Panel ini butuh `minggu`, `user_kelas`, dan `portfolio` yang hanya
+             disiapkan controller fragment; merendernya di server dari sini akan
+             selalu menghasilkan keadaan kosong karena data itu tidak ada di
+             sini. Lihat docs/user-area-learning-consolidation-plan.md tahap 3. --}}
+        <template id="learning-skeleton-source">
+          {{> components/ui/learning/skeleton/index }}
+        </template>
+        <div x-show="activeSection === 'uiux'" id="start-learning-container"{{#unless (eq initialSection 'uiux')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
         </div>
 
         <!-- My Portfolio Tab Content -->
-        <div x-show="activeSection === 'portfolio'">
+        <div x-show="activeSection === 'portfolio'"{{#unless (eq initialSection 'portfolio')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_portofolio/index }}
         </div>
 
         <!-- History Payment Tab Content -->
-        <div x-show="activeSection === 'history-payment'">
+        <div x-show="activeSection === 'history-payment'"{{#unless (eq initialSection 'history-payment')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/history_payment/index }}
         </div>
 
         <!-- Assignment Tab Content (loaded per course via loadCourseFragment) -->
-        <div x-show="activeSection === 'assignment'" id="assignment-container"></div>
+        <div x-show="activeSection === 'assignment'" id="assignment-container"{{#unless (eq initialSection 'assignment')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
+        </div>
 
         <!-- Logbook Tab Content -->
-        <div x-show="activeSection === 'logbook'">
+        <div x-show="activeSection === 'logbook'"{{#unless (eq initialSection 'logbook')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/logbook/index }}
         </div>
 
         <!-- Quiz Tab Content (loaded per course via loadCourseFragment) -->
-        <div x-show="activeSection === 'quiz'" id="quiz-container"></div>
+        <div x-show="activeSection === 'quiz'" id="quiz-container"{{#unless (eq initialSection 'quiz')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
+        </div>
 
         <!-- Quiz Start Tab Content (direct quiz-taking page from /quiz/start/:quizId) -->
-        <div x-show="activeSection === 'quiz-start'">
+        <div x-show="activeSection === 'quiz-start'"{{#unless (eq initialSection 'quiz-start')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_learning/start_learning/quiz/week/start/index }}
         </div>
 
         <!-- Join Group Class Tab Content -->
-        <div x-show="activeSection === 'group-class'">
+        <div x-show="activeSection === 'group-class'"{{#unless (eq initialSection 'group-class')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index course=activeCourse }}
         </div>
 
         <!-- Presentation Tab Content (loaded per course via loadCourseFragment) -->
-        <div x-show="activeSection === 'presentation'" id="presentation-container"></div>
+        <div x-show="activeSection === 'presentation'" id="presentation-container"{{#unless (eq initialSection 'presentation')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
+        </div>
 
         <!-- Certificate Tab Content -->
-        <div x-show="activeSection === 'certificate'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 text-center space-y-4 m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
-          <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
-            <i class="fas fa-award text-2xl"></i>
-          </div>
-          <h3 class="text-2xl font-bold text-[#003060]">Certificate</h3>
-          <template x-if="activeCourseId">
-            <a :href="'/certificates/' + activeCourseId" target="_blank" class="inline-flex items-center justify-center px-6 py-3 bg-[#003060] text-white rounded-[6px] font-inter font-medium hover:bg-[#001F3F] transition-colors cursor-pointer">
-              Download Certificate
-            </a>
-          </template>
+        {{!--
+          Panel ini dulu hanya ikon dan satu tombol unduh, tanpa menyebutkan
+          apakah sertifikatnya memang sudah bisa diambil. Sekarang keadaannya
+          disebut: kalau program sudah tuntas, tombolnya muncul; kalau belum,
+          dijelaskan syaratnya - bukan tombol unduh yang menjanjikan sesuatu
+          yang belum tentu ada.
+        --}}
+        <div x-show="activeSection === 'certificate'" class="mx-4 my-4 rounded-xl border border-[#E5E5E5] bg-white p-8 text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:mx-8 sm:my-6 sm:p-12">
           <template x-if="!activeCourseId">
-            <p class="text-slate-600 font-medium max-w-sm mx-auto">Select a course to download its certificate.</p>
+            <div>
+              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+                <i class="fas fa-award text-2xl"></i>
+              </span>
+              <p class="mx-auto max-w-sm font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateNoCourse'}}</p>
+            </div>
           </template>
+
+          {{#if activeCourseCompleted}}
+          <template x-if="activeCourseId">
+            <div>
+              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#f0fdf4] text-[#15803d]">
+                <i class="fas fa-award text-2xl"></i>
+              </span>
+              <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateReadyTitle'}}</h3>
+              <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
+              <a
+                :href="'/certificates/' + activeCourseId"
+                target="_blank"
+                rel="noopener"
+                class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+              >
+                <i class="fa-solid fa-download text-xs"></i>
+                {{t 'test.startLearning.downloadCertificate'}}
+              </a>
+            </div>
+          </template>
+
+          {{/if}}
+          {{#unless activeCourseCompleted}}
+          <template x-if="activeCourseId">
+            <div>
+              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+                <i class="fas fa-lock text-xl"></i>
+              </span>
+              <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateLockedTitle'}}</h3>
+              <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateLockedBody'}}</p>
+              <button
+                type="button"
+                @click="toggleActiveSection('uiux')"
+                class="mt-5 inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-[18px] font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
+              >
+                {{t 'test.startLearning.tabSessions'}}
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+          </template>
+          {{/unless}}
         </div>
 
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 text-center space-y-4 m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
+        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-[#E5E5E5] text-center space-y-4 mx-4 my-4 sm:mx-8 sm:my-6 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>

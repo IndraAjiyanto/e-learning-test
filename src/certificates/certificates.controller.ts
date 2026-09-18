@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Res, Req } from '@nestjs/common';
+import { flashToastError } from 'src/common/utils/toast.util';
 import { CertificatesService } from './certificates.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -20,7 +21,11 @@ export class CertificatesController {
 
     const biodata = await this.certificatesService.findBiodata(req.user.id);
     if (!biodata) {
-      req.flash('info', 'Lengkapi biodata terlebih dahulu sebelum mengunduh sertifikat.');
+      flashToastError(
+        req,
+        'Certificate not ready',
+        'Fill in your biodata first - the certificate is printed with the full name saved there.',
+      );
       return res.redirect('/users/profile?tab=profile');
     }
 
@@ -36,7 +41,11 @@ export class CertificatesController {
       // mengembalikan URL publiknya, jadi yang benar adalah mengantar user ke
       // berkas itu — bukan ke halaman perantara yang isinya cuma satu tautan.
       if (!certificate?.certificate) {
-        req.flash('error', 'Sertifikat belum tersedia. Coba lagi beberapa saat lagi.');
+        flashToastError(
+          req,
+          'Certificate not ready',
+          'The file has not been generated yet. Please try again in a moment.',
+        );
         return res.redirect('/users/profile?tab=certificate');
       }
 

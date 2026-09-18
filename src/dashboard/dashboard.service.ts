@@ -112,6 +112,11 @@ export class DashboardService {
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.courseType', 'courseType')
       .leftJoinAndSelect('course.userCourses', 'userCourses')
+      // Jumlah peserta sebenarnya. Join `userCourses` di atas ikut tersaring
+      // oleh filter userId di bawah, sehingga `userCourses.length` selalu 1
+      // untuk student yang sedang login - bar kuota jadi selalu "1 / N".
+      // loadRelationCountAndMap memakai subquery sendiri, tidak terpengaruh.
+      .loadRelationCountAndMap('course.enrolledCount', 'course.userCourses')
       .where('course.launch = :launch', { launch: true });
 
     if (params.userId) {

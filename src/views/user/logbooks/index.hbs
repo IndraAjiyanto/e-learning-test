@@ -1,5 +1,14 @@
-<div class='py-20 min-h-screen bg-white' x-data='logbookApp()'>
-  <div class='container mx-auto px-4 pb-16'>
+{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
+     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
+     dan footer. Controller-nya merender dengan bareShell: true.
+     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.myLogbook')}}
+{{!-- Latar putih setinggi halaman dibuang: filter dan tabelnya sudah berupa
+     kartu putih sendiri, jadi slab itu hanya menimpa latar abu shell - satu-
+     satunya layar student yang begitu, dan itu pula yang membuat isinya mulai
+     8px di bawah remah sementara layar lain 32px. --}}
+<div class='min-h-full px-4 py-4 sm:px-8 sm:py-6' x-data='logbookApp()'>
+  <div class='container mx-auto pb-16'>
 
 {{> user/logbook/index/header}}
 
@@ -97,9 +106,9 @@
             Issues: log.obstacles || "-",
             Class: log.session?.weeks?.course?.name || "-",
             Status:
-              log.process === "acc"
+              log.process === "approved"
                 ? "Approved"
-                : log.process === "proces"
+                : log.process === "process"
                 ? "Process"
                 : "Rejected",
             Date: this.formatDate(log.createdAt),
@@ -127,10 +136,11 @@
             `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`
           );
         } catch (err) {
-          alert("Failed to export data to Excel");
+          showErrorToast('Export failed', 'The logbook could not be exported to Excel.');
           console.error(err);
         }
       },
     };
   }
 </script>
+{{/user/shell_frame/index}}

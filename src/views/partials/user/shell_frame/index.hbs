@@ -1,0 +1,132 @@
+{{!--
+  Komponen: Shell Frame (area student)
+  Lokasi: src/views/partials/user/shell_frame/index.hbs
+  Level: L2 Section
+
+  Membungkus halaman student BERDIRI SENDIRI dengan chrome backoffice yang sama
+  seperti shell: app bar di atas, sidebar lima item di kiri, Log Out di bawah.
+
+  Dipakai halaman yang ditautkan dari dalam area belajar tetapi punya rute
+  sendiri (logbook, portfolio, tugas, materi, absensi, kuis). Sebelumnya
+  halaman-halaman itu memakai navbar publik dan footer, sehingga student
+  mendapat chrome landing di tengah alur belajarnya.
+
+  Sidebar di sini sengaja berupa tautan biasa, bukan tombol Alpine: halaman
+  berdiri sendiri tidak punya state tab shell. Setiap item menuju tab yang
+  bersangkutan di /users/profile.
+
+  Pemanggil WAJIB dirender dengan `bareShell: true` supaya layouts/main.hbs
+  tidak ikut memasang navbar publik dan footer.
+
+  Chrome-nya terkunci: frame ini setinggi viewport dan tidak ikut menggulung.
+  App bar dan sidebar tetap di tempatnya, hanya <main> yang punya scroll sendiri.
+  Jadi isi halaman TIDAK boleh memasang `min-h-screen` lagi.
+
+  Props:
+  - user   : object (wajib)
+  - active : 'dashboard' | 'profile' | 'learning' | 'portfolio' | 'history-payment'
+             menandai item sidebar yang sedang aktif
+  - back   : string (opsional) — href tombol kembali di atas konten
+
+  Isi halaman dikirim lewat block:
+    {{#> user/shell_frame/index user=user active='learning'}}
+      ...isi...
+    {{/user/shell_frame/index}}
+--}}
+{{!-- lang disediakan di sini karena komponen lang_switcher membacanya dari scope
+     Alpine induk. Shell mendefinisikannya di x-data miliknya; halaman berdiri
+     sendiri tidak punya itu, sehingga pemilih bahasanya dulu terender kosong. --}}
+<div class="relative flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col overflow-hidden bg-[#F2F2F3] font-montserrat" x-data="{ lang: '{{lang}}' }">
+  {{> user/app_bar/index user=user sidebarToggle=true }}
+
+  <div class="flex w-full flex-1 min-h-0 items-stretch">
+    <div class="js-user-sidebar hidden shrink-0 self-stretch border-r border-[#D9D9D9] bg-white transition-[width] duration-300 lg:flex">
+      <nav class="js-user-sidebar-nav w-full h-full overflow-y-auto space-y-2.5 pb-24">
+        <a
+          href="/users/profile?tab=dashboard"
+          aria-label="{{t 'test.userSidebar.dashboard'}}"
+          title="{{t 'test.userSidebar.dashboard'}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'dashboard')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-table-cells-large text-base"></i></span>
+          <span class="js-user-sidebar-label whitespace-nowrap">Dashboard</span>
+        </a>
+        <a
+          href="/users/profile?tab=profile"
+          aria-label="{{t 'test.userSidebar.profile'}}"
+          title="{{t 'test.userSidebar.profile'}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'profile')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'profile')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span></span>
+          <span class="js-user-sidebar-label whitespace-nowrap">Profile</span>
+        </a>
+        <a
+          href="/users/profile?tab=learning"
+          aria-label="{{t 'test.userSidebar.myLearning'}}"
+          title="{{t 'test.userSidebar.myLearning'}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'learning')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'learning')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span></span>
+          <span class="js-user-sidebar-label whitespace-nowrap">My Learning</span>
+        </a>
+        <a
+          href="/users/profile?tab=portfolio"
+          aria-label="{{t 'test.userSidebar.myPortfolio'}}"
+          title="{{t 'test.userSidebar.myPortfolio'}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'portfolio')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'portfolio')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span></span>
+          <span class="js-user-sidebar-label whitespace-nowrap">My Portfolio</span>
+        </a>
+        <a
+          href="/users/profile?tab=history-payment"
+          aria-label="{{t 'test.userSidebar.paymentHistory'}}"
+          title="{{t 'test.userSidebar.paymentHistory'}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'history-payment')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+        >
+          <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'history-payment')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span></span>
+          <span class="js-user-sidebar-label whitespace-nowrap">Payment History</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="js-user-sidebar-logout hidden lg:flex fixed bottom-0 left-0 z-30 shrink-0 border-r border-t border-[#D9D9D9] bg-white">
+      <a href="/logout" aria-label="Log Out" title="Log Out" class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors">
+        <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-arrow-right-from-bracket text-base"></i></span>
+        <span class="js-user-sidebar-label whitespace-nowrap">Log Out</span>
+      </a>
+    </div>
+
+    <main class="min-w-0 flex-1 min-h-0 overflow-y-auto">
+      {{!--
+        Tombol kembali dan remah, satu baris yang sama di SETIAP halaman
+        backoffice yang memakai frame ini.
+
+        Remahnya dirakit di sini dari `active` dan `pageTitle`, jadi halaman
+        pemanggil cukup menyebut judulnya sendiri dan tidak perlu menyusun
+        jejaknya satu per satu. Pemanggil yang butuh jejak lain boleh mengirim
+        `trail` sendiri; yang dikirim itulah yang dipakai.
+
+        Tujuan tombol kembali: `back` bila diberikan, kalau tidak jatuh ke tab
+        yang sedang aktif - jadi tombolnya tidak pernah kosong.
+      --}}
+      <div class="px-4 pt-4 sm:px-8 sm:pt-6">
+        {{> components/ui/backoffice/page_nav/index
+            back=(default back (concat '/users/profile?tab=' (default active 'dashboard')))
+            trail=(default trail (array
+              (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+              (obj 'label' (lookup (obj
+                  'dashboard' (t 'test.userSidebar.dashboard')
+                  'profile' (t 'test.userSidebar.profile')
+                  'learning' (t 'test.userSidebar.myLearning')
+                  'portfolio' (t 'test.userSidebar.myPortfolio')
+                  'history-payment' (t 'test.userSidebar.paymentHistory')
+                ) (default active 'dashboard'))
+                'href' (concat '/users/profile?tab=' (default active 'dashboard')))
+              (obj 'label' pageTitle)
+            )) }}
+      </div>
+      {{> @partial-block}}
+    </main>
+  </div>
+</div>

@@ -166,18 +166,56 @@
       validateKey="categoryId"
     }}
 
-    {{!-- Program Type --}}
+    {{!-- Tag. Dulu berlabel "Program Type", padahal isinya topik (Web
+         Development) dan tidak pernah membuat kode bercabang sama sekali.
+         Nama tabel dan kolomnya sengaja TIDAK diubah - itu sekitar 60 titik
+         baca tanpa manfaat langsung; yang diubah labelnya, dan aturan hapusnya
+         (CASCADE menjadi SET NULL) di migrasi 1788600000000. --}}
     {{> components/ui/admin/form/searchable_select/index
-      label="Program Type*"
+      label="Tag"
       forId="courseTypeId"
       errorId="courseTypeId_error"
       name="courseTypeId"
       itemsJson=(json courseType)
       displayField="nameClassesType"
-      placeholder="Search type..."
+      placeholder="Search tag..."
       initialId=(default course.courseType.id '')
       validateKey="courseTypeId"
     }}
+
+    {{!-- Bentuk belajar. Ini yang benar-benar mengubah perilaku program:
+         bootcamp memakai minggu, non-bootcamp memakai silabus datar. Lihat
+         docs/program-type-plan.md dan courses/program-type.ts. --}}
+    <div class='flex-1 min-w-0'>
+      {{#> components/ui/admin/form/form-field label="Learning Structure*" for="program_type" errorId="program_type_error"}}
+        <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FEFCE8] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'>
+          <select id='program_type' name='program_type' x-model='programType'
+            class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none'>
+            <option value='bootcamp'>Bootcamp — weeks, sessions, weekly quiz</option>
+            <option value='non_bootcamp'>Non Bootcamp — flat syllabus (Starter / Faster Class)</option>
+            <option value='lpk'>Japan Pathway — same as bootcamp, sensei-led</option>
+          </select>
+        </div>
+      {{/components/ui/admin/form/form-field}}
+    </div>
+
+    {{!-- Sakelar logbook. Hanya aktif pada non-bootcamp: pada bootcamp dan
+         Japan Pathway logbook adalah bagian dari bentuk programnya, bukan
+         pilihan. --}}
+    <div class='flex-1 min-w-0' x-show='logbookConfigurable' x-cloak>
+      {{#> components/ui/admin/form/form-field label="Logbook"}}
+        {{> components/ui/admin/form/segmented-button
+          alpineVar="logbookEnabled"
+          options=(array
+            (obj 'label' 'On' 'value' 'true' 'onClick' 'logbookEnabled = true' 'activeIf' 'logbookEnabled')
+            (obj 'label' 'Off' 'value' 'false' 'onClick' 'logbookEnabled = false' 'activeIf' '!logbookEnabled')
+          )
+        }}
+      {{/components/ui/admin/form/form-field}}
+    </div>
+    {{!-- Selalu dikirim, termasuk saat pilihannya tidak terlihat: tanpa ini
+         program bootcamp mengirim medan kosong dan mapper menganggapnya false. --}}
+    <input type='hidden' name='logbook_enabled' :value='logbookConfigurable ? logbookEnabled : true' />
 
     {{!-- Paid Program --}}
     <div class='flex-1 min-w-0'>

@@ -10,7 +10,7 @@
 <div class='py-10 px-6'>
   <div class='max-w-[1100px] mx-auto'
     x-data='{ ...programData("edit"), ...formDirtyGate() }'
-    x-init='paidClass = {{#if course.checkPaid}}true{{else}}false{{/if}}; methodOnline = {{#if (eq course.method 'offline')}}false{{else}}true{{/if}}; formData.description = {{#if course.description}}{{json course.description}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.location = {{#if course.locations}}{{json course.locations}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.locationLink = {{#if course.locationLink}}"{{course.locationLink}}"{{else}}""{{/if}}; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);; $nextTick(() => captureBaseline())'
+    x-init='paidClass = {{#if course.checkPaid}}true{{else}}false{{/if}}; programType = "{{default course.programType 'bootcamp'}}"; logbookEnabled = {{#if (eq course.logbookEnabled false)}}false{{else}}true{{/if}}; methodOnline = {{#if (eq course.method 'offline')}}false{{else}}true{{/if}}; formData.description = {{#if course.description}}{{json course.description}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.location = {{#if course.locations}}{{json course.locations}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.locationLink = {{#if course.locationLink}}"{{course.locationLink}}"{{else}}""{{/if}}; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);; $nextTick(() => captureBaseline())'
     @input='recomputeDirty()'
     @change='recomputeDirty()'
   >
