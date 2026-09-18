@@ -29,7 +29,7 @@
 --}}
 <div
   class='flex flex-col gap-3'
-  x-data='clientTable({ url: "/program/mentorProgram/" + {{json courseId}}, searchKeys: ["name", "linkedin", "position.id", "position.en", "position.ja", "description.id", "description.en", "description.ja"] })'
+  x-data='clientTable({ url: "/program/mentorProgram/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["name", "linkedin", "position.id", "position.en", "position.ja", "description.id", "description.en", "description.ja"] })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
