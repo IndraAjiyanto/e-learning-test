@@ -1,89 +1,87 @@
-<!-- Quiz Tab Content -->
-<div
-  x-data="{
-    weeksData: {{json course.weeks}},
-    quizStatus: {},
-    activeWeekId: null,
-    async loadWeekQuiz(weekId) {
-      this.quizStatus[weekId] = { loading: true, record: null, unlocked: false };
-      try {
-        const res = await fetch('/program/quiz/' + weekId);
-        if (!res.ok) throw new Error('Request failed');
-        const data = await res.json();
-        const record = Array.isArray(data) ? data[0] : null;
-        const unlocked = !!(record && record.quizProgresses && record.quizProgresses[0] && record.quizProgresses[0].process === true);
-        this.quizStatus[weekId] = { loading: false, record, unlocked };
+{{!--
+  Tab Quiz.
 
-        const targetWeekId = Number(new URLSearchParams(window.location.search).get('weekId'));
-        if (targetWeekId === weekId && unlocked) {
-          this.openQuiz(weekId);
-        }
-      } catch (e) {
-        this.quizStatus[weekId] = { loading: false, record: null, unlocked: false };
-      }
-    },
-    weekMeta(weekId) {
-      return this.weeksData.find((w) => w.id === weekId) || null;
-    },
-    openQuiz(weekId) {
-      const status = this.quizStatus[weekId];
-      if (!status || !status.unlocked) return;
-      this.activeWeekId = weekId;
-    },
-    closeQuiz() {
-      this.activeWeekId = null;
-    },
-    get activeMeta() {
-      return this.activeWeekId ? this.weekMeta(this.activeWeekId) : null;
-    },
-    get activeStatus() {
-      return this.activeWeekId ? (this.quizStatus[this.activeWeekId] || { loading: true, record: null, unlocked: false }) : { loading: false, record: null, unlocked: false };
-    },
-    get activeRecord() {
-      return this.activeStatus.record;
-    }
-  }"
-  x-init="{{#each course.weeks}}{{#if quiz.[0].id}}loadWeekQuiz('{{id}}');{{/if}}{{/each}}"
->
-  <!-- Quiz List View -->
-  <div x-show="!activeWeekId" class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
-    {{!-- Judul dihapus: label tab sudah menyebut bagian ini. --}}
-    {{> components/ui/learning/tab_summary/index
-        percent=stats.quizzes.percent
-        label=(concat stats.quizzes.passed ' ' (t 'test.startLearning.of') ' ' stats.quizzes.total ' ' (t 'test.startLearning.quizzesPassedSuffix'))
-        items=(array
-          (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.quizzes.total 'tone' 'navy')
-          (obj 'label' (t 'test.startLearning.passed') 'value' stats.quizzes.passed 'tone' 'green')
-        ) }}
-    <p class="font-sans text-sm text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
+  Sebelumnya tab ini punya tampilan detailnya sendiri di dalam tab
+  (quiz/week/index.hbs) yang isinya SAMA dengan halaman /quiz/form/:quizId:
+  jumlah soal, nilai minimum, durasi, dan tombol Start Quiz. Jadi untuk sampai
+  ke soal pertama student melewati empat tempat - daftar, detail dalam tab,
+  halaman ikhtisar, baru halaman pengerjaan. Dua di antaranya menampilkan hal
+  yang persis sama.
 
-    <!-- Quiz List Section -->
-    <div class="space-y-3">
-      {{#each course.weeks}}
+  Sekarang tombolnya langsung menuju halaman ikhtisar kuis, dan tampilan detail
+  dalam tab dihapus. Tiga tempat jadi dua.
+
+  Karena keadaan kuis (terkunci / terbuka / lulus) sudah dirender server lewat
+  weekSummaries, tab ini tidak lagi butuh Alpine maupun fetch per minggu -
+  tombolnya benar sejak halaman tampil, bukan sesudah beberapa permintaan.
+--}}
+<div class="space-y-4 px-4 py-4 sm:px-8 sm:py-6">
+  {{> components/ui/learning/tab_summary/index
+      percent=stats.quizzes.percent
+      label=(concat stats.quizzes.passed ' ' (t 'test.startLearning.of') ' ' stats.quizzes.total ' ' (t 'test.startLearning.quizzesPassedSuffix'))
+      hint=(t 'test.startLearning.quizIntro')
+      items=(array
+        (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.quizzes.total 'tone' 'navy')
+        (obj 'label' (t 'test.startLearning.passed') 'value' stats.quizzes.passed 'tone' 'green')
+      ) }}
+
+  <div class="space-y-3">
+    {{#each course.weeks}}
       {{#if quiz.[0].id}}
-      <div class="bg-white border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm transition-shadow">
-        <div class="flex items-center justify-between px-5 py-3.5 gap-4">
-          <span class="font-montserrat font-semibold text-lg text-[#003060] truncate">
-            {{description}} : {{quiz.[0].quizName}}
-          </span>
-          <button type="button"
-             @click="openQuiz('{{id}}')"
-             :class="quizStatus['{{id}}'] && quizStatus['{{id}}'].unlocked ? 'bg-[#003060] hover:bg-[#001F3F] cursor-pointer' : 'bg-[#9CA3AF] cursor-not-allowed'"
-             class="inline-flex items-center justify-center px-4 py-2 text-white rounded-lg font-montserrat font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0">Take Quiz
-          </button>
+        <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+            <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">{{weekNumber}}</span>
+
+            <span class="min-w-0 flex-1">
+              <span class="block truncate font-montserrat text-base font-bold text-[#171717]">{{quiz.[0].quizName}}</span>
+              <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">
+                {{t 'test.startLearning.week'}} {{weekNumber}}{{#if description}} &middot; {{description}}{{/if}}
+              </span>
+            </span>
+
+            {{#if (lookup (lookup ../weekSummaries id) 'quizzesPassed')}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#15803D]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#22C55E]"></span>{{t 'test.startLearning.passed'}}
+              </span>
+              <a
+                href="/quiz/form/{{quiz.[0].id}}"
+                class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] no-underline transition-colors hover:bg-[#E4F1F7]"
+              >
+                <i class="fa-solid fa-rotate-right text-xs"></i>{{t 'test.startLearning.reviewQuiz'}}
+              </a>
+            {{else if (lookup (lookup ../weekSummaries id) 'quizzesUnlocked')}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#FDE68A] bg-[#FFFBEB] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#B45309]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#F59E0B]"></span>{{t 'test.startLearning.quizAvailable'}}
+              </span>
+              <a
+                href="/quiz/form/{{quiz.[0].id}}"
+                class="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-3.5 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+              >
+                <i class="fa-solid fa-play text-xs"></i>{{t 'test.startLearning.takeQuiz'}}
+              </a>
+            {{else}}
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#E5E5E5] bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#737373]">
+                <span class="size-1.5 shrink-0 rounded-full bg-[#A3A3A3]"></span>{{t 'test.startLearning.quizNotUnlocked'}}
+              </span>
+              <span class="inline-flex size-9 shrink-0 items-center justify-center text-[#a3a3a3]" title="{{t 'test.startLearning.quizLocked'}}">
+                <i class="fa-solid fa-lock text-sm"></i>
+              </span>
+            {{/if}}
+          </div>
+
+          {{#unless (lookup (lookup ../weekSummaries id) 'quizzesUnlocked')}}
+            <p class="border-t border-[#E5E5E5] bg-[#FAFAFA] px-5 py-2.5 font-inter text-xs text-[#737373]">
+              {{t 'test.startLearning.quizLocked'}}
+            </p>
+          {{/unless}}
         </div>
-      </div>
       {{/if}}
-      {{/each}}
+    {{/each}}
 
-      <div x-show="!weeksData.some((w) => w.quiz && w.quiz[0] && w.quiz[0].id)" class="bg-white border border-[#D9D9D9] rounded-xl p-6 text-center">
-        <p class="font-montserrat text-base text-[#003060]">No quizzes available yet.</p>
+    {{#unless stats.quizzes.total}}
+      <div class="rounded-xl border border-[#E5E5E5] bg-white px-5 py-10 text-center">
+        <p class="font-inter text-sm text-[#737373]">No quizzes available yet.</p>
       </div>
-    </div>
-  </div>
-
-  <!-- Quiz Detail View -->
-  <div x-show="activeWeekId" class="!mt-0">
-    {{> user/sidebar_user_profile/my_learning/start_learning/quiz/week/index }}
+    {{/unless}}
   </div>
 </div>

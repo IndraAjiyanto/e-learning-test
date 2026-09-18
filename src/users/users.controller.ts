@@ -30,7 +30,8 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
+import { capabilitiesForCourse } from 'src/courses/program-type';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -284,6 +285,15 @@ export class UsersController {
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
     );
 
+    // Kapabilitas per tipe program. Template TIDAK PERNAH menyebut nama tipe
+    // programnya; ia membaca caps. Lihat courses/program-type.ts.
+    const caps = capabilitiesForCourse(activeCourse);
+    // Peta untuk sisi klien: student bisa berpindah program tanpa memuat ulang
+    // halaman, jadi sakelar logbook harus ikut berpindah bersamanya.
+    const programCaps = Object.fromEntries(
+      course.map((c) => [c.id, capabilitiesForCourse(c)]),
+    );
+
     return res.render('user/user_profile/index', {
       user: user,
       portfolio,
@@ -299,6 +309,8 @@ export class UsersController {
       stats,
       activeCourse,
       activeCourseCompleted,
+      caps,
+      programCaps,
       bareShell: true,
     });
   }
@@ -467,12 +479,21 @@ export class UsersController {
         );
         res.redirect('/users/profile');
       } else {
-        req.flash('error', 'Unauthorized access');
+        flashToastError(
+          req,
+          'Password not changed',
+          'You can only change the password of your own account.',
+        );
         res.redirect('/users/profile');
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to update password';
-      req.flash('error', errorMessage);
+      // Pesan dari assertStrongPassword dan dari pemeriksaan password lama
+      // sudah menjelaskan dirinya sendiri, jadi diteruskan apa adanya.
+      flashToastError(
+        req,
+        'Password not changed',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }

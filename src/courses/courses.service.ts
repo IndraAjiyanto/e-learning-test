@@ -12,6 +12,7 @@ import { User } from 'src/entities/user.entity';
 import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
+import { capabilitiesFor } from './program-type';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -24,6 +25,7 @@ import { Attendance } from 'src/entities/attendance.entity';
 import { Assignment } from 'src/entities/assignment.entity';
 import { AnswerTask } from 'src/entities/answer_task.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { Score } from 'src/entities/score.entity';
 import { Technology } from 'src/entities/technology.entity';
 import { Mentorings } from 'src/entities/mentoring.entity';
 import { Registration } from 'src/entities/registration.entity';
@@ -150,7 +152,40 @@ export class CoursesService {
       courseType: courseType,
       technologies: technologies,
     });
-    return await this.courseRepository.save(course);
+    const saved = await this.courseRepository.save(course);
+    await this.ensureSyllabusContainer(saved);
+    return saved;
+  }
+
+  /**
+   * Program non-bootcamp memakai silabus datar, dan silabus ITU ADALAH Session
+   * (lihat docs/program-type-plan.md bagian 3.3, opsi A). Session tetap butuh
+   * induk `Weeks`, jadi program seperti ini diberi TEPAT SATU baris weeks yang
+   * tidak pernah ditampilkan - wadah urutan, bukan minggu.
+   *
+   * Tanpa ini admin tidak punya tempat untuk menaruh silabus sama sekali:
+   * layar admin menambahkan sesi ke sebuah minggu, dan program non-bootcamp
+   * tidak pernah membuat minggu.
+   *
+   * Idempoten: dipanggil ulang tidak membuat wadah kedua.
+   */
+  async ensureSyllabusContainer(course: Course): Promise<Weeks | null> {
+    if (capabilitiesFor(course.programType).structure !== 'syllabus') {
+      return null;
+    }
+    const existing = await this.weeksRepository.findOne({
+      where: { course: { id: course.id } },
+      order: { weekNumber: 'ASC' },
+    });
+    if (existing) return existing;
+
+    const container = this.weeksRepository.create({
+      weekNumber: 1,
+      description: course.name,
+      isFinal: true,
+      course: course,
+    });
+    return await this.weeksRepository.save(container);
   }
 
   async createMentoring(userId: string, courseId: string) {
@@ -714,16 +749,22 @@ export class CoursesService {
         em.createQueryBuilder(Quiz, 'q').innerJoin('q.weeks', 'w'),
         'w',
       ).getCount(),
+      // LULUS, bukan TERBUKA. Hitungan ini dulu memakai QuizProgress dengan
+      // `process = true`, padahal baris itu dibuat saat logbook sesi terakhir
+      // sebuah minggu disetujui (logbook.service.ts:228) - artinya kuisnya baru
+      // TERBUKA. Akibatnya ringkasan menulis '1 dari 1 kuis lulus' untuk kuis
+      // yang belum pernah dikerjakan sama sekali. Lulus = ada nilai yang
+      // mencapai minimum_score kuisnya.
       countDistinct(
         forCourse(
           em
-            .createQueryBuilder(QuizProgress, 'qp')
-            .innerJoin('qp.quiz', 'q')
+            .createQueryBuilder(Score, 'sc')
+            .innerJoin('sc.quiz', 'q')
             .innerJoin('q.weeks', 'w'),
           'w',
         )
-          .andWhere('qp.userId = :userId', { userId })
-          .andWhere('qp.process = true'),
+          .andWhere('sc.userId = :userId', { userId })
+          .andWhere('sc.score >= q.minimum_score'),
         'q.id',
       ),
       forCourse(
@@ -786,6 +827,152 @@ export class CoursesService {
         percent: pct(logbooksApproved, logbooksTotal),
       },
     };
+  }
+
+  /**
+   * Hitungan per minggu untuk kepala akordeon di tab Attendance, Assignment,
+   * dan Quiz.
+   *
+   * Kepala minggu sebelumnya hanya menulis "Week 1" beserta deskripsi yang
+   * sering cuma mengulang nomornya, jadi satu-satunya cara tahu ada apa di
+   * dalam sebuah minggu adalah membukanya satu per satu. Hitungan ini dirender
+   * langsung di kepala supaya minggu bisa dilewati tanpa dibuka.
+   *
+   * Dua catatan yang sama dengan findLearningStats berlaku di sini:
+   * `.where()` MENGGANTI seluruh kondisi sebelumnya - karena itu kondisi
+   * program selalu jadi `.where()` PERTAMA - dan hitungan "sudah beres"
+   * memakai COUNT(DISTINCT induk), sebab satu sesi bisa punya lebih dari satu
+   * baris absensi dan satu tugas lebih dari satu jawaban.
+   */
+  async findWeekSummaries(courseId?: string, userId?: string) {
+    const summaries: Record<
+      string,
+      {
+        sessions: number;
+        attended: number;
+        assignments: number;
+        submitted: number;
+        quizzes: number;
+        quizzesUnlocked: number;
+        quizzesPassed: number;
+      }
+    > = {};
+    if (!courseId || !userId) return summaries;
+
+    const em = this.sessionRepository.manager;
+    const forCourse = (qb: any) =>
+      qb.where('w.courseId = :courseId', { courseId });
+
+    // Satu baris per minggu: { weekId, c }. Minggu tanpa baris sama sekali
+    // tidak muncul di hasil, jadi pembacanya harus tahan nilai kosong -
+    // itulah gunanya `blank()`.
+    const perWeek = async (qb: any, expr: string) =>
+      (await qb
+        .select('w.id', 'weekId')
+        .addSelect(`COUNT(DISTINCT ${expr})`, 'c')
+        .groupBy('w.id')
+        .getRawMany()) as Array<{ weekId: string; c: string }>;
+
+    const [
+      sessions,
+      attended,
+      assignments,
+      submitted,
+      quizzes,
+      quizzesUnlocked,
+      quizzesPassed,
+    ] = await Promise.all([
+      perWeek(
+        forCourse(em.createQueryBuilder(Session, 's').innerJoin('s.weeks', 'w')),
+        's.id',
+      ),
+      perWeek(
+        forCourse(
+          em
+            .createQueryBuilder(Attendance, 'a')
+            .innerJoin('a.session', 's')
+            .innerJoin('s.weeks', 'w'),
+        ).andWhere('a.userId = :userId', { userId }),
+        's.id',
+      ),
+      perWeek(
+        forCourse(
+          em
+            .createQueryBuilder(Assignment, 'asg')
+            .innerJoin('asg.session', 's')
+            .innerJoin('s.weeks', 'w'),
+        ),
+        'asg.id',
+      ),
+      perWeek(
+        forCourse(
+          em
+            .createQueryBuilder(AnswerTask, 'at')
+            .innerJoin('at.task', 'asg')
+            .innerJoin('asg.session', 's')
+            .innerJoin('s.weeks', 'w'),
+        ).andWhere('at.userId = :userId', { userId }),
+        'asg.id',
+      ),
+      perWeek(
+        forCourse(em.createQueryBuilder(Quiz, 'q').innerJoin('q.weeks', 'w')),
+        'q.id',
+      ),
+      // TERBUKA: baris QuizProgress dibuat saat logbook sesi terakhir minggu
+      // itu disetujui. Bukan tanda lulus.
+      perWeek(
+        forCourse(
+          em
+            .createQueryBuilder(QuizProgress, 'qp')
+            .innerJoin('qp.quiz', 'q')
+            .innerJoin('q.weeks', 'w'),
+        )
+          .andWhere('qp.userId = :userId', { userId })
+          .andWhere('qp.process = true'),
+        'q.id',
+      ),
+      // LULUS: ada nilai yang mencapai minimum_score kuisnya.
+      perWeek(
+        forCourse(
+          em
+            .createQueryBuilder(Score, 'sc')
+            .innerJoin('sc.quiz', 'q')
+            .innerJoin('q.weeks', 'w'),
+        )
+          .andWhere('sc.userId = :userId', { userId })
+          .andWhere('sc.score >= q.minimum_score'),
+        'q.id',
+      ),
+    ]);
+
+    const blank = () => ({
+      sessions: 0,
+      attended: 0,
+      assignments: 0,
+      submitted: 0,
+      quizzes: 0,
+      quizzesUnlocked: 0,
+      quizzesPassed: 0,
+    });
+    const merge = (
+      list: Array<{ weekId: string; c: string }>,
+      key: keyof ReturnType<typeof blank>,
+    ) => {
+      for (const row of list) {
+        summaries[row.weekId] ??= blank();
+        summaries[row.weekId][key] = Number(row.c ?? 0);
+      }
+    };
+
+    merge(sessions, 'sessions');
+    merge(attended, 'attended');
+    merge(assignments, 'assignments');
+    merge(submitted, 'submitted');
+    merge(quizzes, 'quizzes');
+    merge(quizzesUnlocked, 'quizzesUnlocked');
+    merge(quizzesPassed, 'quizzesPassed');
+
+    return summaries;
   }
 
   async findWeeks(courseId: string, userId: string) {
@@ -1403,7 +1590,10 @@ export class CoursesService {
       course.date_registration = new Date(updateCourseDto.date_registration);
     }
 
-    return await this.courseRepository.save(course);
+    const saved = await this.courseRepository.save(course);
+    // Program yang baru saja diubah menjadi non-bootcamp juga butuh wadahnya.
+    await this.ensureSyllabusContainer(saved);
+    return saved;
   }
 
   async remove(id: string) {

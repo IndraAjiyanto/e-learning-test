@@ -1,5 +1,5 @@
 <!-- ATTENDANCE FORM CONTENT PARTIAL -->
-<div class="px-4 sm:px-8 md:px-14 py-10 space-y-4 font-montserrat"
+<div class="px-4 py-4 sm:px-8 sm:py-6 space-y-4 font-montserrat"
   x-data="{
     courseId: '{{course.id}}',
     currentUserId: '{{user.id}}',
@@ -16,6 +16,15 @@
       'permission': 'Permission',
       'absent': 'Absent',
       'no_information': 'No Information'
+    },
+    {{!-- Rupa pil status, dipisah dari markup supaya ketiga keadaannya
+         terbaca sekaligus. Kuncinya nilai kembalian
+         sessionUnlock.getAttendanceStatus: LOCKED, COMPLETED, UNLOCKED. --}}
+    statusTone: { LOCKED: 'gray', COMPLETED: 'green', UNLOCKED: 'amber' },
+    statusText: {
+      LOCKED: '{{t 'test.startLearning.locked'}}',
+      COMPLETED: '{{t 'test.startLearning.attendaceRecorded'}}',
+      UNLOCKED: '{{t 'test.startLearning.attendanceRequired'}}'
     },
     openWeek: null,
     sessions: [],
@@ -96,7 +105,7 @@
         // No user-role update endpoint exists yet (only an admin-only
         // PATCH /attendance/:attendanceId/:sessionId) — editing an
         // already-submitted attendance record is not wired up.
-        alert('Editing an existing attendance record is not available yet.');
+        showErrorToast('Attendance not updated', '{{t 'test.startLearning.editAttendanceUnavailable'}}');
         return;
       }
       try {
@@ -121,10 +130,10 @@
             this.loadSessions(this.loadedWeekId);
           }
         } else {
-          alert(data.message || 'Failed to update attendance');
+          showErrorToast('Attendance not updated', data.message || 'Please try again in a moment.');
         }
       } catch (error) {
-        alert('An error occurred while updating attendance');
+        showErrorToast('Attendance not updated', 'The request did not go through. Check your connection and try again.');
       }
     }
   }"
@@ -145,48 +154,42 @@
     <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
 
       {{#if (or (weekUnlocked weekProgresses) @first)}}
-      {{!-- Judulnya dulu "Week 1 : week 1" - nomor lalu deskripsi yang sering
-           hanya mengulang nomornya. Bentuknya kini sama dengan baris minggu di
-           tab Sessions: lencana nomor, judul, lalu panah. --}}
       <button
         type="button"
         @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; loadSessions('{{id}}') }"
-        class="group flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA] cursor-pointer"
+        :aria-expanded="openWeek === {{weekNumber}} ? 'true' : 'false'"
+        class="group flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
       >
-        <span class="flex min-w-0 items-center gap-3">
-          <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">
-            {{weekNumber}}
-          </span>
-          <span class="min-w-0">
-            <span class="block truncate font-montserrat text-base font-bold text-[#171717]">
-              {{t 'test.startLearning.week'}} {{weekNumber}}
-            </span>
-            {{#if description}}
-              <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">{{description}}</span>
-            {{/if}}
-          </span>
-        </span>
-        <i
-          class="fa-solid fa-chevron-down shrink-0 text-sm text-[#a3a3a3] transition-transform duration-200 group-hover:text-[#003060]"
-          :class="openWeek === {{weekNumber}} ? 'rotate-180' : ''"
-        ></i>
+        {{> components/ui/learning/week_row/index
+            number=weekNumber
+            title=(concat (t 'test.startLearning.week') ' ' weekNumber)
+            summary=(lookup ../weekSummaries id)
+            kind='attendance'
+            expanded=(concat 'openWeek === ' weekNumber) }}
       </button>
 
-      <div x-show="openWeek === {{weekNumber}}" x-transition class="mt-[31px] space-y-0" style="display: none;">
+      {{!--
+        Isi akordeon. Sebelumnya tanpa padding mendatar sama sekali dan dengan
+        mt-[31px] yang menyisakan lubang kosong di bawah kepala minggu: judul
+        sesi menempel ke tepi kartu, dan tombol di kanan terpotong oleh
+        `overflow-hidden` kartunya sendiri. Sekarang padding dan garis
+        pemisahnya sama dengan kepala minggu.
+      --}}
+      <div x-show="openWeek === {{weekNumber}}" x-transition class="border-t border-[#E5E5E5]" style="display: none;">
 
         <!-- Sessions Loading State -->
         <template x-if="openWeek === {{weekNumber}} && sessionsLoading">
-          <div class="py-[20px] text-center">
-            <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">Loading sessions...</p>
+          <div class="px-5 py-8 text-center">
+            <div class="mx-auto mb-3 size-7 animate-spin rounded-full border-2 border-[#003060] border-t-transparent"></div>
+            <p class="font-inter text-sm text-[#737373]">Loading sessions...</p>
           </div>
         </template>
 
         <!-- Sessions Error State -->
         <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
-          <div class="py-[20px] text-center space-y-3">
-            <p class="font-montserrat font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
-            <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
+          <div class="space-y-2 px-5 py-8 text-center">
+            <p class="font-inter text-sm text-[#B42318]">Failed to load sessions. Please try again.</p>
+            <button type="button" @click="loadSessions('{{id}}')" class="cursor-pointer font-inter text-sm font-semibold text-[#003060] underline">
               Retry
             </button>
           </div>
@@ -194,66 +197,65 @@
 
         <!-- Sessions Empty State -->
         <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError && sessions.length === 0">
-          <div class="py-[20px] text-center">
-            <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">No sessions available for this week.</p>
+          <div class="px-5 py-8 text-center">
+            <p class="font-inter text-sm text-[#737373]">{{t 'test.startLearning.noSessionsInWeek'}}</p>
           </div>
         </template>
 
         <!-- Session Rows -->
-        <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError ? sessions : [])" :key="session.id">
-          <div class="flex flex-col">
-            <div class="flex items-center justify-between py-[20px]">
+        <ul class="divide-y divide-[#F0F0F0]">
+          <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError ? sessions : [])" :key="session.id">
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
               <span
-                class="font-montserrat font-medium text-base sm:text-lg text-[#003060]"
+                class="min-w-0 flex-1 truncate font-inter text-sm font-semibold text-[#171717]"
                 x-text="sessionLabel(session)"
               ></span>
-              <div class="flex items-center gap-[23px]">
-                <!-- Locked: first session is always unlocked; any later session unlocks only once the previous session's session_progresses row has isAttended=true and its logbook is done/approved -->
-                <span
-                  class="inline-flex items-center h-[22px] px-3 rounded-[12px]"
-                  :class="attendanceStatus(sIndex) === 'LOCKED' ? 'bg-[#F3F4F6] border border-[#D1D5DB]' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'bg-[#E5F6D4] border border-[#12BD26]' : 'bg-[#F2DBDB] border border-[#F25151]')"
+
+              {{!-- Pil status memakai komponen bersama; tiga tab ini dulu
+                   menggambar pilnya masing-masing dengan ukuran dan palet yang
+                   berbeda. --}}
+              {{> components/ui/learning/status_pill/index
+                  tone="statusTone[attendanceStatus(sIndex)] || 'amber'"
+                  label="statusText[attendanceStatus(sIndex)] || statusText.UNLOCKED" }}
+
+              {{!--
+                Aksinya cuma muncul saat memang ada yang bisa dilakukan.
+                Sebelumnya tautan "Edit" selalu tampil pada sesi yang terbuka,
+                termasuk yang absensinya SUDAH tercatat - dan menekannya hanya
+                memunculkan alert "not available yet". Tombol yang tidak pernah
+                bisa dipakai lebih buruk daripada tidak ada tombol.
+              --}}
+              <template x-if="attendanceStatus(sIndex) === 'UNLOCKED'">
+                <button
+                  type="button"
+                  @click="openEditModalForSession(session)"
+                  class="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-3.5 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
                 >
-                  <span
-                    class="font-open-sans font-normal text-base leading-none"
-                    :class="attendanceStatus(sIndex) === 'LOCKED' ? 'text-[#6B7280]' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'text-[#12BD26]' : 'text-[#F25151]')"
-                    x-text="attendanceStatus(sIndex) === 'LOCKED' ? 'Locked' : (attendanceStatus(sIndex) === 'COMPLETED' ? 'Attendance Recorded' : 'Attendance Required')"
-                  ></span>
+                  <i class="fa-solid fa-user-check text-xs"></i>
+                  {{t 'test.startLearning.markAttendanceShort'}}
+                </button>
+              </template>
+
+              <template x-if="attendanceStatus(sIndex) === 'LOCKED'">
+                <span class="inline-flex size-9 shrink-0 items-center justify-center text-[#a3a3a3]" :title="'{{t 'test.startLearning.completeThePreviousSession'}}'">
+                  <i class="fa-solid fa-lock text-sm"></i>
                 </span>
-
-                <template x-if="isSessionUnlocked(sIndex)">
-                  <button
-                    type="button"
-                    @click="openEditModalForSession(session)"
-                    class="inline-flex items-center gap-[5px] cursor-pointer group"
-                  >
-                    <i class="fa-solid fa-pen text-[#003060] text-sm"></i>
-                    <span class="font-montserrat font-medium text-sm text-[#003060] underline group-hover:opacity-80 transition-opacity">
-                      Edit
-                    </span>
-                  </button>
-                </template>
-
-                <template x-if="!isSessionUnlocked(sIndex)">
-                  <span class="ml-2 text-[#F25151] text-sm">
-                    <i class="fa-solid fa-lock text-[#F25151] text-sm"></i>
-                  </span>
-                </template>
-              </div>
-            </div>
-            <div class="w-full h-px bg-[#D9D9D9]"></div>
-          </div>
-        </template>
+              </template>
+            </li>
+          </template>
+        </ul>
 
       </div>
       {{else}}
-      <!-- Locked Week -->
-      <div class="w-full flex items-center justify-between">
-        <h2 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060]">
-          Week {{weekNumber}} : {{description}}
-        </h2>
-        <div class="w-9 h-9 flex items-center justify-center flex-shrink-0">
-          <i class="fa-solid fa-lock text-[#12BD26] text-sm"></i>
-        </div>
+      {{!-- Minggu terkunci. Dulu barisnya dirender tanpa padding sama sekali,
+           jadi judulnya menempel ke tepi kartu. --}}
+      <div class="flex w-full items-center gap-3 px-5 py-4">
+        <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F5F5F5] font-inter text-sm font-bold text-[#a3a3a3]">{{weekNumber}}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate font-montserrat text-base font-bold text-[#a3a3a3]">{{t 'test.startLearning.week'}} {{weekNumber}}</span>
+          <span class="mt-0.5 block truncate font-inter text-xs text-[#a3a3a3]">{{t 'test.startLearning.weekLockedHint'}}</span>
+        </span>
+        <i class="fa-solid fa-lock shrink-0 text-sm text-[#a3a3a3]"></i>
       </div>
       {{/if}}
 
@@ -261,8 +263,8 @@
     {{/each}}
   {{else}}
   <!-- Weeks Empty State -->
-  <div class="mt-[40px] py-[20px] text-center">
-    <p class="font-montserrat font-medium text-base sm:text-lg text-[#003060]">
+  <div class="rounded-xl border border-[#E5E5E5] bg-white px-5 py-10 text-center">
+    <p class="font-inter text-sm text-[#737373]">
       No weeks available for this program yet.
     </p>
   </div>

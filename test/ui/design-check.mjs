@@ -287,6 +287,59 @@ const SCREENS = [
       check(s, 'Join Group stays an action',
         await page.getByRole('button', { name: /Join Group/ }).count() > 0);
 
+      // Tiap panel tab dulu memakai padding mendatarnya sendiri - 34px, 32px,
+      // dan 56px - jadi tepi kartunya bergeser tiap kali student pindah tab
+      // meski kepala programnya diam. Sekarang semuanya px-4 sm:px-8, sejajar
+      // dengan kepala program.
+      const headerEdges = await page.locator('h1').first().evaluate((el) => {
+        const r = el.closest('.overflow-hidden.rounded-xl').getBoundingClientRect();
+        return { left: Math.round(r.left), right: Math.round(r.right) };
+      });
+
+      // Gambar program sempat membentang selebar kartu di atas keterangannya.
+      // Kepala program jadi 422px sebelum baris tab muncul - hampir separuh
+      // layar laptop habis sebelum isi tab pertama kelihatan. Sekarang gambar
+      // di kanan, keterangan di kiri.
+      const headerShape = await page.locator('h1').first().evaluate((el) => {
+        const card = el.closest('.overflow-hidden.rounded-xl');
+        const img = card.querySelector('img').getBoundingClientRect();
+        const title = el.getBoundingClientRect();
+        return {
+          height: Math.round(card.getBoundingClientRect().height),
+          imageIsBesideText: img.left > title.right,
+          tabsBottom: Math.round(card.querySelector('[role="tablist"]').getBoundingClientRect().bottom),
+        };
+      });
+      check(s, 'program image sits beside the text, not above it',
+        headerShape.imageIsBesideText, JSON.stringify(headerShape));
+      check(s, 'program header stays compact',
+        headerShape.height <= 280, `${headerShape.height}px (was 422px when the image was on top)`);
+      for (const label of ['Sessions', 'Attendance', 'Assignment', 'Quiz', 'My Logbook', 'Certificate']) {
+        await page.getByRole('tab', { name: label }).click();
+        await page.waitForTimeout(1200);
+        // Kartu putih pertama DI BAWAH baris tab. Batasnya dibaca dari baris tab
+        // itu sendiri, bukan angka mati: tinggi kepala program berubah setiap
+        // kali tata letaknya disetel, dan angka mati diam-diam berhenti menunjuk
+        // kartu yang dimaksud.
+        const edges = await page.evaluate(() => {
+          const cut = document.querySelector('[role="tablist"]').getBoundingClientRect().bottom;
+          const card = [...document.querySelectorAll('div,section')].find(
+            (e) => e.offsetParent !== null
+              && getComputedStyle(e).backgroundColor === 'rgb(255, 255, 255)'
+              && e.getBoundingClientRect().height > 60
+              && e.getBoundingClientRect().top > cut + 4,
+          );
+          if (!card) return null;
+          const r = card.getBoundingClientRect();
+          return { left: Math.round(r.left), right: Math.round(r.right) };
+        });
+        check(s, `panel "${label}" aligns with the program header`,
+          !!edges && edges.left === headerEdges.left && edges.right === headerEdges.right,
+          `${JSON.stringify(edges)} vs header ${JSON.stringify(headerEdges)}`);
+      }
+      await page.getByRole('tab', { name: 'Sessions' }).click();
+      await page.waitForTimeout(900);
+
       // Inti perubahannya: kepala program tidak lagi hilang saat pindah bagian.
       const programName = await page.locator('h1').first().innerText();
       await page.getByRole('tab', { name: 'Assignment' }).click();
@@ -505,6 +558,67 @@ const SCREENS = [
     },
   },
   {
+    // Program non-bootcamp (SPL): silabus datar, tanpa kepala minggu, dan
+    // logbook dimatikan. Dilewati kalau EXTRA_IDS tidak menyebut splCid, supaya
+    // pemeriksa ini tetap jalan di basis data yang belum punya program seperti
+    // itu. Lihat docs/program-type-plan.md.
+    name: 'non-bootcamp-program',
+    urlFrom: (ids) => {
+      const extra = JSON.parse(process.env.EXTRA_IDS || '{}');
+      return extra.splCid
+        ? `/program/myProgram/${ids.uid}?courseId=${extra.splCid}`
+        : null;
+    },
+    design: null,
+    async assert(page, s) {
+      const tabs = (await page.locator('[role="tab"]').allInnerTexts()).map((t) => t.trim());
+      // Sakelar logbook mati -> tabnya tidak dirender sama sekali.
+      check(s, 'logbook tab is hidden', !tabs.some((t) => /My Logbook/.test(t)), tabs.join(' | '));
+      check(s, 'five tabs remain', tabs.length === 5, String(tabs.length));
+
+      // sessionUnlock membaca atribut ini untuk memutuskan apakah logbook ikut
+      // mengunci sesi berikutnya.
+      check(s, 'page declares logbook is not required',
+        (await page.evaluate(() => document.documentElement.dataset.logbookRequired)) === 'false');
+
+      const body = await page.locator('#start-learning-container').innerText().catch(() => '');
+      check(s, 'no week header on a syllabus program', !/Week\s*\d/i.test(body),
+        body.replace(/\n/g, ' ').slice(0, 90));
+      check(s, 'no weeks-progress card', !/weeks? completed/i.test(body));
+      check(s, 'syllabus sessions are listed', /Silabus|Syllabus/i.test(body),
+        body.replace(/\n/g, ' ').slice(0, 90));
+
+      // Jebakan inti rencananya: tanpa logbook, sesi berikutnya harus tetap
+      // bisa terbuka. Diperiksa lewat helper yang sama dengan templatenya.
+      const gate = await page.evaluate(() => {
+        const store = window.Alpine.store('sessionUnlock');
+        const sessions = [
+          { sessionOrder: 1, sessionProgress: [{ isAttended: true, logbook: false }], attendances: [{ id: 'a' }], logbooks: [] },
+          { sessionOrder: 2, sessionProgress: [], attendances: [], logbooks: [] },
+        ];
+        const withoutLogbook = store.isSessionUnlocked(sessions, sessions[1]);
+        store.setLogbookRequired(true);
+        const withLogbook = store.isSessionUnlocked(sessions, sessions[1]);
+        store.setLogbookRequired(null);
+        return { withoutLogbook, withLogbook };
+      });
+      check(s, 'attendance alone unlocks the next syllabus', gate.withoutLogbook === true);
+      check(s, 'and still does NOT when logbook is required', gate.withLogbook === false);
+
+      // Tautan lama dan riwayat peramban masih bisa menunjuk ke ?tab=logbook.
+      const extra = JSON.parse(process.env.EXTRA_IDS || '{}');
+      const ids = JSON.parse(process.env.IDS || '{}');
+      await page.goto(`${BASE}/program/myProgram/${ids.uid}?courseId=${extra.splCid}&tab=logbook`, { waitUntil: 'networkidle' });
+      await page.waitForTimeout(1200);
+      const selected = await page.locator('[role="tab"][aria-selected="true"]').first().innerText().catch(() => '');
+      check(s, '?tab=logbook falls back to another tab', !/logbook/i.test(selected), selected.trim());
+
+      // Rute tulis logbook harus menolak, bukan sekadar disembunyikan.
+      await page.goto(`${BASE}/logbooks/formCreate/00000000-0000-0000-0000-000000000000/${extra.splCid}`, { waitUntil: 'networkidle' });
+      check(s, 'logbook create route is rejected', !page.url().includes('/logbooks/formCreate'), page.url());
+    },
+  },
+  {
     name: 'standalone-learning-pages',
     url: '/users/profile?tab=learning',
     design: null,
@@ -573,6 +687,12 @@ let screenUrl = '';
 
 for (const screen of SCREENS) {
   const url = screen.url || screen.urlFrom(ids);
+  // Layar yang butuh data yang belum tentu ada (mis. program non-bootcamp)
+  // mengembalikan null dan dilewati, bukan dilaporkan gagal.
+  if (!url) {
+    console.log(`\nSKIP ${screen.name}  (data tidak tersedia)`);
+    continue;
+  }
   screenUrl = url;
   const before = consoleErrors.length;
   await page.goto(`${BASE}${url}`, { waitUntil: 'networkidle' });

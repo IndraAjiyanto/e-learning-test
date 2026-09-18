@@ -1,204 +1,202 @@
-    <form method="POST" action="/answer-users/{{quizId}}" x-data="quiz()" x-init="init()" id="formSubmit">
+{{!--
+  Badan halaman pengerjaan kuis.
+
+  Yang berubah dari versi sebelumnya:
+  - Tombol Previous/Next tidak punya padding sama sekali (tidak ada px/py/h),
+    jadi keduanya saling menindih di pojok kanan atas. Sekarang tingginya sama
+    dengan tombol lain di area student, dan letaknya di BAWAH soal - arah baca
+    yang sama dengan halaman kuis bisa.ai.
+  - `:class="answeredCount !== N ? 'opacity-40 cursor-not-allowed'"` adalah
+    ternary tanpa cabang else; ekspresinya gagal dikompilasi Alpine dan seluruh
+    binding tombol Submit mati. Sekarang lengkap, dan alasan tombolnya nonaktif
+    ditulis di sebelahnya.
+  - Daftar soal berupa tombol memanjang satu per baris diganti kisi nomor
+    beserta keterangan warnanya, ditambah kartu cara mengerjakan - keduanya
+    ditiru dari bisa.ai.
+  - Baris kemajuan ("Soal x dari y" + batang) dipindah ke atas soal, bukan
+    terselip di kaki kolom kiri.
+--}}
+<form method="POST" action="/answer-users/{{quizId}}" x-data="quiz()" x-init="init()" id="formSubmit" class="mt-4">
 {{#if check}}
 <script>
 window.addEventListener("load", function(){
     timeOverSubmit();
 });
 </script>
-{{/if}}
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-sm p-6 sticky top-6">
-
-                <div class="flex items-center justify-between mb-4">
-
-                    <h3 class="text-lg font-semibold text-[#171717] font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
-{{#if check}}
-        <span class="text-red-500 font-semibold">
-            {{t "test.quiz.start.timeIsOver"}}
-        </span>
 {{else}}
-                                       <div id="countdownExample">
-    <div class="values font-semibold text-[#404040]"></div>
-</div>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
-const form = document.querySelector('#formSubmit');
-
     const timer = new easytimer.Timer();
-
     timer.start({ countdown: true, startValues: { seconds: {{default remainingTime 0}} } });
 
     function updateTimer() {
-        document.querySelector('#countdownExample .values').innerHTML =
-            timer.getTimeValues().toString();
+        const el = document.querySelector('#countdownExample .values');
+        if (el) el.innerHTML = timer.getTimeValues().toString();
     }
 
     updateTimer();
-
     timer.addEventListener('secondsUpdated', updateTimer);
-
-timer.addEventListener('targetAchieved', function () {
-    prepareAndSubmit();
-});
-
+    timer.addEventListener('targetAchieved', function () {
+        prepareAndSubmit();
+    });
 });
 </script>
 {{/if}}
-                    </div>
 
-                    <div class="space-y-2 max-h-[600px] overflow-y-auto">
-                        {{#each pertanyaan}}
-                        <button 
-                            type="button"
-                            @click="currentQuestion = {{@index}}"
-                            class="w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-center gap-3"
-                            :class="{
-                                ' bg-secondary text-white': currentQuestion === {{@index}},
-                                'border-[#E5E5E5] hover:border-[#D4D4D4] hover:bg-[#FAFAFA]': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
-                                'border-green-200 bg-green-50 text-green-800': currentQuestion !== {{@index}} && isAnswered({{@index}})
-                            }"
-                        >
-                            <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
-                                :class="{
-                                    'bg-white text-[#171717]': currentQuestion === {{@index}},
-                                    'bg-secondary text-white': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
-                                    'bg-green-500 text-white': currentQuestion !== {{@index}} && isAnswered({{@index}})
-                                }">
-                                <span>{{addOne @index}}</span>
-                            </div>
-                            <span class="text-sm font-medium truncate">{{t "test.quiz.start.question"}} {{addOne @index}}</span>
-                            <template x-if="isAnswered({{@index}})">
-                                <svg class="w-4 h-4 ml-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                </svg>
-                            </template>
-                        </button>
-                        {{/each}}
-                    </div>
+  <!-- Kemajuan pengerjaan -->
+  <div class="rounded-xl border border-[#E5E5E5] bg-white px-5 py-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <span class="font-inter text-sm text-[#525252]">
+        {{t 'test.quiz.start.question'}}
+        <span class="font-semibold text-[#171717]" x-text="currentQuestion + 1"></span>
+        {{t 'test.quiz.start.of'}}
+        <span class="font-semibold text-[#171717]">{{pertanyaan.length}}</span>
+      </span>
+      <span class="font-inter text-sm text-[#525252]">
+        {{t 'test.quizStart.answered'}}
+        <span class="font-semibold text-[#171717]" x-text="answeredCount"></span>
+        &middot;
+        <span class="font-semibold text-[#003060]" x-text="Math.round((answeredCount / {{pertanyaan.length}}) * 100) + '%'"></span>
+      </span>
+    </div>
+    <div class="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#F0F0F0]">
+      <div
+        class="h-full rounded-full bg-[#003060] transition-all duration-300"
+        :style="`width: ${(answeredCount / {{pertanyaan.length}}) * 100}%`"
+      ></div>
+    </div>
+  </div>
 
-                    <!-- Progress -->
-                    <div class="mt-6 pt-6 border-t border-[#E5E5E5]">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-medium text-[#525252]">{{t "test.quiz.start.progress"}}</span>
-                            <span class="text-sm text-[#525252]" x-text="`${answeredCount}/{{pertanyaan.length}}`"></span>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2">
-                            <div 
-                                class="bg-green-600 h-2 rounded-full transition-all duration-500" 
-                                :style="`width: ${(answeredCount / {{pertanyaan.length}}) * 100}%`"
-                            ></div>
-                        </div>
-                    </div>
-                </div>
+  <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+    <!-- Soal dan pilihan jawaban -->
+    <div class="lg:col-span-2">
+      <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        {{#each pertanyaan}}
+        <div x-show="currentQuestion === {{@index}}" class="p-5 sm:p-6">
+          <input type="hidden" name="q-{{id}}" value="">
+
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#E4F1F7] px-2.5 py-1 font-inter text-xs font-semibold leading-none text-[#003060]">
+            {{t 'test.quiz.start.question'}} {{addOne @index}}
+          </span>
+
+          {{#if image}}
+            <div class="mt-3 flex justify-center">
+              <img src="{{image}}" alt="" class="max-h-64 rounded-xl border border-[#E5E5E5] object-contain" />
             </div>
+          {{/if}}
 
-            <!-- Main Content - Question & Answers -->
-            <div class="lg:col-span-3">
-                <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-sm overflow-hidden">
-                    <!-- Question Navigation -->
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-[#E5E5E5] bg-slate-50">
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm font-medium text-[#525252]">
-                                {{t "test.quiz.start.question"}} <span x-text="currentQuestion + 1"></span> {{t "test.quiz.start.of"}} {{pertanyaan.length}}
-                            </span>
-                        </div>
-                        
-                        <div class="flex gap-2">
-                            <button 
-                                type="button"
-                                @click="prevQuestion()"
-                                class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                :disabled="currentQuestion === 0"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                                {{t "test.quiz.start.previous"}}
-                            </button>
-                            <button 
-                                type="button"
-                                @click="nextQuestion()"
-                                class="bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                :disabled="currentQuestion === {{pertanyaan.length}} - 1"
-                            >
-                                {{t "test.quiz.start.next"}}
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+          <p class="mt-3 font-inter text-base font-semibold leading-relaxed text-[#171717]">{{questionText}}</p>
 
-                    <!-- Question Content -->
-                    <div class="p-6">
-                        {{#each pertanyaan}}
-                        <div x-show="currentQuestion === {{@index}}">
-                            <input type="hidden" name="q-{{id}}" value="">
-                            <div class="flex items-start gap-4 mb-6">
-                                <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">
-                                    {{addOne @index}}
-                                </div>
-                                <div class="flex-1 space-y-4">
-                                    <!-- Question Image -->
-                                    {{#if image}}
-                                    <div class="w-full">
-                                        <div class="flex justify-center">
-                                            <img 
-                                                src="{{image}}" 
-                                                alt="Question Image" 
-                                                class="max-h-64 rounded-xl border border-[#E5E5E5] shadow-sm object-contain"
-                                            >
-                                        </div>
-                                    </div>
-                                    {{/if}}
-
-                                    <!-- Question Text -->
-                                    <p class="font-semibold text-[#171717] text-lg leading-relaxed">{{questionText}}</p>
-                                </div>
-                            </div>
-
-                            <!-- Answer Options -->
-                            <div class="space-y-3 ml-12">
-                                {{#each answers}}
-                                <label class="flex items-center p-4 border border-[#E5E5E5] rounded-xl cursor-pointer hover:bg-[#FAFAFA] hover:border-[#D4D4D4] transition-all duration-200 group/option">
-                                    <input 
-                                        type="radio" 
-                                        name="q-{{../id}}"
-                                        value="{{id}}"
-                                        
-                                        class="w-5 h-5 radio border-[#D4D4D4] checked:text-[#404040] checked:bg-white"
-                                    >
-                                    <span class="ml-4 text-slate-800 font-medium group-hover/option:text-[#171717] transition-colors">
-                                        {{answer}}
-                                    </span>
-                                </label>
-                                {{/each}}
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="flex justify-end p-6 border-t border-[#E5E5E5] bg-slate-50">
-                        <button 
-                            type='button'  onclick="confirmQuizSubmit()"
-                            :disabled="answeredCount !== {{pertanyaan.length}}"
-                            :class="answeredCount !== {{pertanyaan.length}} ? 'opacity-40 cursor-not-allowed'"
-                            class="border-0 group bg-[#003060] hover:bg-[#00254a] text-white rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 font-semibold text-lg"
-                        >
-                            <span class="flex items-center gap-2">
-                                {{t "test.quiz.start.submitAnswers"}}
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+          {{!-- Huruf pilihan (A, B, C, ...) ditiru dari bisa.ai; dipetakan dari
+               @index lewat helper array yang sudah ada, bukan helper baru. --}}
+          <div class="mt-4 space-y-2.5">
+            {{#each answers}}
+              <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-[#E5E5E5] bg-white px-4 py-3 transition-colors hover:border-[#D4D4D4] hover:bg-[#FAFAFA] has-[:checked]:border-[#003060] has-[:checked]:bg-[#E4F1F7]">
+                <input
+                  type="radio"
+                  name="q-{{../id}}"
+                  value="{{id}}"
+                  class="size-4 shrink-0 accent-[#003060]"
+                >
+                <span class="grid size-6 shrink-0 place-items-center rounded-md bg-[#F5F5F5] font-inter text-xs font-bold text-[#525252]">
+                  {{lookup (array 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H') @index}}
+                </span>
+                <span class="min-w-0 font-inter text-sm text-[#171717]">{{answer}}</span>
+              </label>
+            {{/each}}
+          </div>
         </div>
-    </form>
+        {{/each}}
+
+        <!-- Pindah soal dan kumpulkan -->
+        <div class="flex flex-wrap items-center gap-3 border-t border-[#E5E5E5] bg-[#FAFAFA] px-5 py-4 sm:px-6">
+          <button
+            type="button"
+            @click="prevQuestion()"
+            :disabled="currentQuestion === 0"
+            class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+            {{t 'test.quiz.start.previous'}}
+          </button>
+
+          <span
+            x-show="answeredCount !== {{pertanyaan.length}}"
+            class="min-w-0 flex-1 font-inter text-xs text-[#737373]"
+          >{{t 'test.quizStart.answerAllFirst'}}</span>
+          <span x-show="answeredCount === {{pertanyaan.length}}" class="min-w-0 flex-1"></span>
+
+          <button
+            type="button"
+            @click="nextQuestion()"
+            x-show="currentQuestion < {{pertanyaan.length}} - 1"
+            class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+          >
+            {{t 'test.quiz.start.next'}}
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+
+          <button
+            type="button"
+            onclick="confirmQuizSubmit()"
+            x-show="currentQuestion === {{pertanyaan.length}} - 1"
+            :disabled="answeredCount !== {{pertanyaan.length}}"
+            class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {{t 'test.quiz.start.submitAnswers'}}
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kisi nomor soal dan cara mengerjakan -->
+    <div class="space-y-4 lg:col-span-1">
+      <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] lg:sticky lg:top-4">
+        <h2 class="font-montserrat text-sm font-bold text-[#171717]">{{t 'test.quizStart.questionGrid'}}</h2>
+
+        <div class="mt-3 grid grid-cols-5 gap-2">
+          {{#each pertanyaan}}
+            <button
+              type="button"
+              @click="currentQuestion = {{@index}}"
+              :aria-current="currentQuestion === {{@index}} ? 'true' : 'false'"
+              class="grid h-9 cursor-pointer place-items-center rounded-lg border font-inter text-sm font-semibold transition-colors"
+              :class="currentQuestion === {{@index}}
+                ? 'border-[#003060] bg-[#003060] text-white'
+                : (isAnswered({{@index}})
+                  ? 'border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]'
+                  : 'border-[#E5E5E5] bg-white text-[#737373] hover:border-[#D4D4D4]')"
+            >{{addOne @index}}</button>
+          {{/each}}
+        </div>
+
+        <ul class="mt-4 space-y-1.5 border-t border-[#F0F0F0] pt-3">
+          <li class="flex items-center gap-2 font-inter text-xs text-[#737373]">
+            <span class="size-2.5 shrink-0 rounded-[3px] bg-[#003060]"></span>{{t 'test.quizStart.legendActive'}}
+          </li>
+          <li class="flex items-center gap-2 font-inter text-xs text-[#737373]">
+            <span class="size-2.5 shrink-0 rounded-[3px] border border-[#BBF7D0] bg-[#F0FDF4]"></span>{{t 'test.quizStart.legendAnswered'}}
+          </li>
+          <li class="flex items-center gap-2 font-inter text-xs text-[#737373]">
+            <span class="size-2.5 shrink-0 rounded-[3px] border border-[#E5E5E5] bg-white"></span>{{t 'test.quizStart.legendUnanswered'}}
+          </li>
+        </ul>
+      </div>
+
+      <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        <h2 class="font-montserrat text-sm font-bold text-[#171717]">{{t 'test.quizStart.instructions'}}</h2>
+        <ol class="mt-3 space-y-2.5">
+          {{#each (array (t 'test.quizStart.rule1') (t 'test.quizStart.rule2') (t 'test.quizStart.rule3') (t 'test.quizStart.rule4'))}}
+            <li class="flex gap-2.5">
+              <span class="grid size-5 shrink-0 place-items-center rounded-full bg-[#E4F1F7] font-inter text-[0.65rem] font-bold text-[#003060]">{{addOne @index}}</span>
+              <span class="font-inter text-xs leading-relaxed text-[#737373]">{{this}}</span>
+            </li>
+          {{/each}}
+        </ol>
+      </div>
+    </div>
+
+  </div>
+</form>

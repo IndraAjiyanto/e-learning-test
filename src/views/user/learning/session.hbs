@@ -241,6 +241,10 @@
       {{/if}}
     </section>
 
+    {{!-- Logbook hanya dirender kalau program ini memakainya. Pada program
+         SPL sakelarnya bisa dimatikan admin, dan menampilkan kartu yang
+         tidak punya jalan diselesaikan lebih buruk daripada tidak ada. --}}
+    {{#if caps.logbookEnabled}}
     {{!-- 4. Logbook. Keadaannya menentukan satu tombol saja, supaya student
          tidak perlu menebak mana yang berlaku. --}}
     <section class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
@@ -291,6 +295,7 @@
         {{/if}}
       </div>
     </section>
+    {{/if}}
 
     {{!-- Pindah sesi tanpa kembali ke daftar. --}}
     <nav class="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-between" aria-label="{{t 'test.startLearning.sessionNav'}}">

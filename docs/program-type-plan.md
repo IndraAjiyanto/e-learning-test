@@ -1,4 +1,4 @@
-# Rencana: tiga tipe program (bootcamp, non-bootcamp, LPK)
+# Rencana: tiga tipe program (bootcamp, non-bootcamp, Japan Pathway/LPK)
 
 > **Tanggal:** 2026-09-17
 > **Permintaan pemilik:** pisahkan program menjadi tiga tipe — bootcamp,
@@ -11,7 +11,21 @@
 > tipe program yang baru memakai enum supaya perilaku program bisa disesuaikan
 > per tipe di kemudian hari.
 
-Dokumen ini rencana, belum ada kode yang diubah.
+> **Tambahan pemilik, 2026-09-18:** daftar programnya disebutkan lengkap.
+> Non Bootcamp berisi **Starter Class** (course gratis, SPL) dan **Faster
+> Class** (course berbayar, SPL). Bootcamp / Special Program berisi **Bootcamp**
+> (berbayar, intensive mentor) dan **Japan Pathway** (berbayar, intensive
+> sensei). Bagian 1.4 menjelaskan ke mana keempat nama itu pergi di dalam model
+> data, dan pertanyaan terbuka 1 dan 2 di bagian 9 sudah terjawab olehnya.
+
+> **Status, 2026-09-18:** T0-T6 dan T8 sudah dikerjakan. Yang belum: T7 (kuis
+> tingkat program untuk non-bootcamp - tidak diperlukan dengan opsi A), layar
+> admin untuk menulis silabus (wadahnya sudah dibuat otomatis, tetapi tab admin
+> masih berlabel "Week"), penjagaan rute logbook di luar formCreate dan POST,
+> dan penggantian nama kategori menjadi Starter/Faster/Bootcamp/Japan Pathway.
+> Rincian di bagian 11.
+
+Dokumen ini rencana. Bagian 11 mencatat apa yang sudah jadi kode.
 
 ---
 
@@ -57,6 +71,66 @@ tag yang bebas dibuat dan dihapus admin, aturan ini berubah menjadi jebakan
 kehilangan data: menghapus tag "Web Development" akan menghapus enam program.
 
 **Ini harus ikut diperbaiki dalam pekerjaan ini**, bukan nanti.
+
+### 1.4 Empat nama program yang disebut pemilik — dan ke mana perginya
+
+Pemilik menyebut empat program dalam dua rombongan:
+
+| Rombongan | Program | Harga | Cara belajar |
+|---|---|---|---|
+| Non Bootcamp | Starter Class | gratis | SPL (belajar mandiri) |
+| Non Bootcamp | Faster Class | berbayar | SPL (belajar mandiri) |
+| Bootcamp / Special Program | Bootcamp | berbayar | pendampingan mentor intensif |
+| Bootcamp / Special Program | Japan Pathway | berbayar | pendampingan sensei intensif |
+
+Yang perlu dilihat: **daftar ini tidak menambah sumbu baru, ia mengisi dua sumbu
+yang sudah ada.**
+
+`Category.type` sudah berupa enum bernilai `Free Program`, `Paid Program`, dan
+`Special Program` (`entities/category.entity.ts:18`) — persis ketiga kotak yang
+dipakai pemilik untuk mengelompokkan keempat program itu. Isi tabelnya hari ini
+memang sudah terbagi begitu, hanya namanya yang belum:
+
+| Nama kategori sekarang | `category.type` | Jumlah program | Nama yang dimaksud pemilik |
+|---|---|---|---|
+| `Short Clas` (salah eja) | Free Program | 2 | **Starter Class** |
+| `Course` | Paid Program | 4 | **Faster Class** |
+| `WIP` | Special Program | 2 | **Bootcamp** dan **Japan Pathway** |
+
+Jadi keempat nama itu adalah **nama kategori**, bukan nilai enum baru. Itu juga
+konsisten dengan kode yang sudah ada: `partials/footer.hbs:52` menaut ke
+`/category/program/Bootcamp` dan `partials/special_program/program.hbs:4`
+membandingkan `category.name` dengan `"Bootcamp"` — keduanya sudah memperlakukan
+nama kategori sebagai nama program.
+
+Pembagian tugas antara ketiga sumbu jadi seperti ini:
+
+| Sumbu | Kolom | Menjawab pertanyaan |
+|---|---|---|
+| Nama & pemasaran | `category.name` | program ini namanya apa, halaman landingnya seperti apa |
+| Harga & pengelompokan | `category.type` | gratis, berbayar, atau special |
+| Struktur belajar | `course.program_type` (baru) | minggu atau silabus, siapa yang mengunci apa |
+| Topik | `course_type` → Tag | program ini soal apa (Web Development, dan seterusnya) |
+
+`programType` untuk keempatnya:
+
+| Program | `programType` | Alasan |
+|---|---|---|
+| Starter Class | `non_bootcamp` | SPL, silabus datar |
+| Faster Class | `non_bootcamp` | SPL, silabus datar — bedanya dengan Starter hanya harga, dan harga bukan urusan struktur belajar |
+| Bootcamp | `bootcamp` | minggu, kuis per minggu, mentor |
+| Japan Pathway | `lpk` | hari ini sama persis dengan bootcamp; yang membedakan nanti pendampingan sensei |
+
+**Japan Pathway diasumsikan sebagai program yang sebelumnya pemilik sebut
+"LPK".** Keduanya sama-sama berada di rombongan special, sama-sama berbayar, dan
+sama-sama disebut "untuk sekarang sama dengan bootcamp". Kalau ternyata LPK dan
+Japan Pathway dua program yang berbeda, nilai enumnya perlu ditambah satu lagi —
+lihat pertanyaan terbuka nomor 7.
+
+Starter Class dan Faster Class **tidak** mendapat nilai enum sendiri. Satu-satunya
+beda di antara keduanya adalah harga, dan harga sudah dijawab `category.type`.
+Memberi keduanya nilai enum berarti `capabilitiesFor` mengembalikan dua hasil
+yang identik — cabang yang tidak pernah bercabang.
 
 ---
 
@@ -199,27 +273,52 @@ export interface ProgramCapabilities {
   quizScope: 'week' | 'program';
   /** Istilah yang dipakai di antarmuka. */
   unitLabel: 'Week' | 'Silabus';
+  /**
+   * 'self_paced' = SPL, student jalan sendiri tanpa jadwal pendampingan.
+   * 'guided'     = ada pendampingan intensif dan jadwalnya mengikat.
+   */
+  pacing: 'self_paced' | 'guided';
+  /**
+   * Siapa yang mendampingi. Inilah satu-satunya tempat Bootcamp dan Japan
+   * Pathway berbeda hari ini, dan sengaja sudah punya namanya sendiri supaya
+   * saat perbedaannya benar-benar dipakai tidak perlu mencari-cari lagi.
+   */
+  mentorship: 'none' | 'mentor' | 'sensei';
 }
 
 export function capabilitiesFor(type: ProgramType): ProgramCapabilities {
   switch (type) {
+    // Starter Class dan Faster Class sama-sama masuk sini; bedanya cuma harga,
+    // dan harga dijawab category.type, bukan berkas ini.
     case 'non_bootcamp':
       return { structure: 'syllabus', unlockUnit: 'session',
                logbookConfigurable: true, quizScope: 'program',
-               unitLabel: 'Silabus' };
+               unitLabel: 'Silabus',
+               pacing: 'self_paced', mentorship: 'none' };
+    // Japan Pathway.
     case 'lpk':
+      return { structure: 'weeks', unlockUnit: 'week',
+               logbookConfigurable: false, quizScope: 'week',
+               unitLabel: 'Week',
+               pacing: 'guided', mentorship: 'sensei' };
     case 'bootcamp':
     default:
       return { structure: 'weeks', unlockUnit: 'week',
                logbookConfigurable: false, quizScope: 'week',
-               unitLabel: 'Week' };
+               unitLabel: 'Week',
+               pacing: 'guided', mentorship: 'mentor' };
   }
 }
 ```
 
-LPK sengaja ditulis sebagai `case` tersendiri yang jatuh ke perilaku bootcamp,
-bukan digabung. Saat LPK mulai berbeda, yang diubah hanya satu baris di berkas
-ini.
+Japan Pathway (`lpk`) sengaja ditulis sebagai `case` tersendiri, bukan digabung
+ke bootcamp lewat fall-through. Isinya hari ini memang sama kecuali
+`mentorship`; saat perbedaannya bertambah, yang diubah hanya blok ini.
+
+`pacing` dan `mentorship` belum dipakai bercabang di mana pun pada T1-T6. Nilainya
+tetap ditulis sejak awal karena keduanya berasal dari keterangan pemilik
+("SPL", "intensive mentor", "intensive sensei") — lebih murah dicatat sekarang
+daripada digali ulang nanti.
 
 Kapabilitas ini dikirim ke template sebagai satu objek `caps`, sehingga
 Handlebars cukup menulis `{{#if (eq caps.structure 'weeks')}}` dan tidak pernah
@@ -314,7 +413,7 @@ tahap yang meninggalkan program dalam keadaan terkunci.
 | **T5** | Student: cabang `structure` pada empat template, tampilan silabus datar. | sedang |
 | **T6** | Admin: penulisan silabus untuk non-bootcamp (section tersirat dibuat otomatis saat program dibuat). | sedang |
 | **T7** | Kuis tingkat program untuk non-bootcamp, bila memang diperlukan (lihat pertanyaan 3). | tergantung jawaban |
-| **T8** | Seed dan data contoh: satu program non-bootcamp dengan silabus, satu dengan logbook dimatikan. Tambahan pemeriksaan di `test/ui/design-check.mjs`. | rendah |
+| **T8** | Seed dan data contoh mengikuti daftar nyata di bagian 1.4: kategori `Starter Class` (Free), `Faster Class` (Paid), `Bootcamp` dan `Japan Pathway` (Special) — menggantikan `Short Clas`, `Course`, dan `WIP`. Satu program SPL dengan silabus, satu dengan logbook dimatikan. Tambahan pemeriksaan di `test/ui/design-check.mjs`. | sedang — mengubah nama kategori ikut mengubah tautan `/category/program/:name` di `footer.hbs:52` dan pembandingan di `special_program/program.hbs:4` |
 
 Gerbang yang sudah ada tetap dipakai di setiap tahap: `npx tsc --noEmit`,
 `npm run build`, `./scripts/check-user-area.sh`, dan `npm run test:ui`.
@@ -336,22 +435,23 @@ Gerbang yang sudah ada tetap dipakai di setiap tahap: `npx tsc --noEmit`,
 
 ## 9. Pertanyaan terbuka untuk pemilik
 
-Enam hal berikut tidak bisa disimpulkan dari kode. Rekomendasi disertakan supaya
-bisa dijawab cepat, atau dibiarkan kalau rekomendasinya sudah sesuai.
+Rekomendasi disertakan supaya bisa dijawab cepat, atau dibiarkan kalau
+rekomendasinya sudah sesuai. Dua yang pertama sudah terjawab oleh daftar program
+yang pemilik kirim 2026-09-18; jawabannya ditinggalkan di sini supaya jejak
+keputusannya tetap terbaca.
 
-1. **Hubungan `programType` dengan `category`.** Hari ini "Bootcamp" adalah nama
-   kategori, dan `category.type` sudah menentukan template landing.
-   *Rekomendasi:* biarkan `category` mengurus sisi pemasaran (template landing,
-   halaman kategori), dan `programType` mengurus sisi belajar (struktur, kunci,
-   logbook). Keduanya tidak saling menggantikan. Kalau pemilik ingin keduanya
-   digabung, itu pekerjaan tersendiri yang menyentuh seluruh halaman landing.
+1. ~~**Hubungan `programType` dengan `category`.**~~ **Terjawab 2026-09-18.**
+   Empat nama yang disebut pemilik — Starter Class, Faster Class, Bootcamp,
+   Japan Pathway — adalah **nama kategori**, dan pengelompokannya persis
+   `category.type` yang sudah ada. Jadi `category` mengurus nama, harga, dan
+   halaman landing; `programType` mengurus struktur belajar. Keduanya berdiri
+   sendiri. Lihat bagian 1.4.
 
-2. **Di mana "faster class" dan "starter class" hidup?** Keduanya disebut sebagai
-   isi dari non-bootcamp.
-   *Rekomendasi:* keduanya menjadi **tag**, sementara `programType` cukup
-   `non_bootcamp`. Dengan begitu menambah varian baru tidak menuntut migrasi
-   enum. Kalau keduanya perlu berperilaku berbeda, barulah ia pantas jadi nilai
-   enum tersendiri.
+2. ~~**Di mana "faster class" dan "starter class" hidup?**~~ **Terjawab
+   2026-09-18.** Keduanya kategori di bawah `category.type = 'Free Program'` dan
+   `'Paid Program'`, bukan tag dan bukan nilai enum. `programType` keduanya
+   `non_bootcamp`. (Rekomendasi sebelumnya menyebut "tag"; itu meleset — tag
+   dipakai untuk topik seperti Web Development, bukan untuk bentuk program.)
 
 3. **Apakah non-bootcamp punya kuis?** Kalau ya, per silabus atau per program?
    *Rekomendasi:* per program untuk sekarang (`quizScope: 'program'`), karena
@@ -374,6 +474,22 @@ bisa dijawab cepat, atau dibiarkan kalau rekomendasinya sudah sesuai.
    sakelarnya sendiri dan perlakuan yang sama seperti logbook di bagian 5 —
    termasuk jebakan penguncian yang sama.
 
+7. **Japan Pathway dan LPK: satu program atau dua?** Rencana ini
+   memperlakukannya sebagai satu — `programType = 'lpk'`, ditampilkan dengan
+   nama Japan Pathway. Keduanya sama-sama special, berbayar, dan "untuk sekarang
+   sama dengan bootcamp", jadi menggabungkannya tidak menghilangkan apa pun.
+   *Rekomendasi:* satu, dan nilai enumnya dinamai `lpk` saja karena itu istilah
+   yang lebih luas. Kalau ternyata dua program yang berbeda, tambahkan nilai
+   `japan_pathway` di T1 — ongkosnya satu `case` di `capabilitiesFor`.
+
+8. **Absensi pada program SPL.** Starter Class dan Faster Class berjalan mandiri
+   tanpa pendampingan. Absensi di sana mau diartikan sebagai apa — penanda
+   "sudah saya baca", atau dimatikan seperti logbook?
+   *Rekomendasi:* jadikan penanda "sudah selesai", dengan label yang berbeda.
+   Mekanismenya sudah ada dan penguncian berurutan butuh penandanya; yang
+   berubah cukup kata-katanya. Kalau dimatikan, jebakan penguncian di bagian 5
+   berlaku persis sama.
+
 ---
 
 ## 10. Ringkasan sekali baca
@@ -387,3 +503,51 @@ Yang membuatnya berisiko: mematikan logbook akan mengunci seluruh program kalau
 syarat penguncian tidak diperbaiki lebih dulu, dan menjadikan tipe program
 sebagai tag akan mengubah penghapusan tag menjadi penghapusan program selama FK
 `CASCADE` belum diganti.
+
+Yang membuat daftar empat program dari pemilik melegakan: keempatnya jatuh ke
+sumbu yang sudah ada. Starter Class dan Faster Class adalah kategori Free dan
+Paid dengan `programType = 'non_bootcamp'` yang sama; Bootcamp dan Japan Pathway
+adalah kategori Special dengan struktur minggu yang sama, beda pendampingnya
+saja. Tidak ada nilai enum yang perlu ditambah, dan tidak ada sumbu keempat yang
+perlu dikarang. Yang perlu dirapikan justru nama kategori yang sekarang masih
+`Short Clas`, `Course`, dan `WIP`.
+
+
+---
+
+## 11. Yang sudah dikerjakan (2026-09-18)
+
+| Tahap | Keadaan | Bukti |
+|---|---|---|
+| **T0** | selesai | migrasi `1788600000000-AddProgramTypeAndLogbookFlag`; 8 program terisi `bootcamp`/`true`; FK tag `confdeltype` berubah `c` -> `n` |
+| **T1** | selesai | `src/courses/program-type.ts`; `caps` dikirim ke shell, empat fragment, dan halaman sesi; `window.programCaps` untuk sisi klien |
+| **T2** | selesai | `sessionUnlock.logbookApproved` menghormati `data-logbook-required`; **plus** `AttendanceService.openNextSessionWhenLogbookIsOff` (lihat catatan di bawah) |
+| **T3** | sebagian | tab, panel, kartu logbook halaman sesi, langkah `steps`, dan dua rute tulis sudah dijaga. Belum: empat rute logbook student lainnya, layar admin, hitungan dashboard, ekspor |
+| **T4** | selesai | pilihan Learning Structure, sakelar Logbook (hanya non-bootcamp), label Tag; DTO + mapper + entity |
+| **T5** | selesai | `start_learning/index.hbs` bercabang pada `caps.structure`; silabus datar tanpa kepala minggu dan tanpa kartu kemajuan minggu |
+| **T6** | sebagian | `CoursesService.ensureSyllabusContainer` membuat wadah tersirat saat program dibuat/diubah. Layar admin belum berganti istilah "Week" -> "Silabus" |
+| **T7** | tidak dikerjakan | dengan opsi A kuis tetap punya rumah; `quizScope: 'program'` sudah tercatat di kapabilitas tetapi belum mengubah tampilan |
+| **T8** | selesai | program contoh `Dasar Pemrograman Web (SPL)` (Starter Class, logbook mati, 3 silabus) + layar `non-bootcamp-program` di `test/ui/design-check.mjs` (17 pemeriksaan) |
+
+### 11.1 Jebakan penguncian ternyata punya SISI KEDUA
+
+Bagian 5 menyebut satu sisi: syarat buka-kunci menuntut logbook, dan pada
+program tanpa logbook `session_progresses.logbook` tidak pernah terisi.
+
+Sisi kedua baru terlihat saat dijalankan: baris `session_progresses` milik sesi
+**berikutnya** juga hanya pernah dibuat oleh `LogbookService.update` saat admin
+menyetujui sebuah logbook (`logbook.service.ts:283`). Jadi walaupun syaratnya
+sudah dilonggarkan, daftar sesi tetap menggambar sesi berikutnya sebagai
+terkunci - karena barisnya memang tidak ada.
+
+Perbaikannya di `AttendanceService.openNextSessionWhenLogbookIsOff`: pada
+program yang logbooknya mati, absensi yang mengambil alih tugas membuka sesi
+berikutnya. Pada bootcamp urutannya tidak berubah sama sekali.
+
+### 11.2 Catatan migrasi
+
+`down()` menghapus kolom `program_type` dan `logbook_enabled`. Itu berarti
+membatalkan migrasi ini **menghilangkan** tipe program yang sudah disetel:
+program non-bootcamp kembali menjadi bootcamp saat migrasinya dijalankan lagi.
+Sudah diuji turun-naik; perilakunya memang begitu, bukan kejutan - tetapi jangan
+membatalkannya di production tanpa mencatat dulu isi kedua kolom itu.

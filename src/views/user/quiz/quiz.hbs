@@ -1,111 +1,125 @@
-{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
-     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
-     dan footer. Controller-nya merender dengan bareShell: true.
-     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{!--
+  Halaman: Ikhtisar Kuis (area student)
+  Rute   : GET /quiz/form/:quizId  (quiz.controller.ts)
+
+  Ini satu-satunya perhentian antara daftar kuis di tab dan halaman
+  pengerjaannya. Sebelumnya ada satu perhentian lagi - tampilan detail di dalam
+  tab Quiz - yang isinya persis sama dengan halaman ini; tampilan itu sudah
+  dihapus.
+
+  Susunannya meniru IDE kartu kepala pada halaman kuis bisa.ai: ikon, nama,
+  satu kalimat penjelas, lalu sebaris chip keterangan. Yang dipakai token warna
+  dan bentuk kita sendiri, bukan warnanya.
+
+  Halaman ini juga jadi tempat mendarat sesudah kuis dikumpulkan
+  (user_answers.controller.ts me-redirect ke sini), jadi hasil percobaan
+  terakhir harus langsung terbaca.
+--}}
 {{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.quiz') back=(concat '/program/' quiz.weeks.course.id)}}
-<div class="max-w-3xl mx-auto px-6 py-8">
-  <!-- Header Quiz -->
-  <div class="mb-8 text-center">
-    <!-- Enhanced header with gradient text and better spacing -->
-    <h1 class="text-2xl font-bold text-[#003060] mb-4 font-montserrat">{{quiz.quizName}}</h1>
-  </div>
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
+  <div class="flex w-full flex-col gap-4">
 
-  <!-- Info Quiz -->
-  <!-- Enhanced info card with gradient border and better styling -->
-  <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="flex items-center space-x-3">
-        <svg class="w-10 h-10 text-[#404040]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        <div>
-          <p class="text-[#525252] text-sm font-medium">{{t "test.quiz.totalQuestions"}}</p>
-          <p class="text-2xl font-bold text-[#171717]">{{questions.length}}</p>
+    <!-- Kepala kuis -->
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="flex flex-wrap items-start gap-4 p-5 sm:p-6">
+        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-[#E4F1F7] text-[#003060]">
+          <i class="fa-solid fa-circle-question text-base"></i>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <h1 class="font-montserrat text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{quiz.quizName}}</h1>
+          <p class="mt-1 font-inter text-sm text-[#737373]">{{t 'test.quiz.overviewHint'}}</p>
+
+          {{!-- Chip keterangan: ide dari baris chip halaman kuis bisa.ai.
+               Yang disebut hanya yang memang ada datanya. --}}
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+              <i class="fa-solid fa-list-ol text-[0.65rem] text-[#718096]"></i>
+              {{questionCount}} {{t 'test.quiz.questionsCount'}}
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+              <i class="fa-solid fa-list-check text-[0.65rem] text-[#718096]"></i>
+              {{t 'test.quiz.multipleChoice'}}
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+              <i class="fa-regular fa-clock text-[0.65rem] text-[#718096]"></i>
+              {{#if quiz.duration}}{{quiz.duration}} {{#if (eq quiz.duration 1)}}{{t 'test.quiz.minute'}}{{else}}{{t 'test.quiz.minutes'}}{{/if}}{{else}}{{t 'test.quiz.noTimeLimit'}}{{/if}}
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+              <i class="fa-solid fa-bullseye text-[0.65rem] text-[#718096]"></i>
+              {{t 'test.quiz.minimumScore'}} {{quiz.minScore}}
+            </span>
+          </div>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
-        <svg class="w-10 h-10 text-[#404040]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <div>
-          <p class="text-[#525252] text-sm font-medium">{{t "test.quiz.minimumScore"}}</p>
-          <p class="text-2xl font-bold text-[#171717]">{{quiz.minScore}}</p>
-        </div>
+
+      {{!-- Garis keadaan: hasil terbaik dan tombol utama. Sebelumnya tombol
+           Start Quiz berdiri sendiri di tengah halaman tanpa menyebutkan sama
+           sekali apakah kuisnya sudah pernah lulus. --}}
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-[#E5E5E5] bg-[#FAFAFA] px-5 py-4 sm:px-6">
+        {{#if attempts.length}}
+          <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-inter text-xs font-medium leading-none {{#if passed}}border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]{{else}}border-[#FECACA] bg-[#FEF2F2] text-[#B42318]{{/if}}">
+            <span class="size-1.5 shrink-0 rounded-full {{#if passed}}bg-[#22C55E]{{else}}bg-[#EF4444]{{/if}}"></span>
+            {{#if passed}}{{t 'test.quiz.passed'}}{{else}}{{t 'test.quiz.failed'}}{{/if}}
+          </span>
+          <span class="min-w-0 flex-1 font-inter text-xs text-[#737373]">
+            {{t 'test.quiz.bestScore'}} <span class="font-semibold text-[#171717]">{{best}}</span>
+            &middot; {{t 'test.quiz.attempts'}} <span class="font-semibold text-[#171717]">{{attempts.length}}</span>
+          </span>
+        {{else}}
+          <span class="min-w-0 flex-1 font-inter text-xs text-[#737373]">{{t 'test.quiz.startYourFirstQuiz'}}</span>
+        {{/if}}
+
+        <a
+          href="/quiz/start/{{quiz.id}}"
+          class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+        >
+          <i class="fa-solid fa-play text-xs"></i>
+          {{#if attempts.length}}{{t 'test.quiz.retakeQuiz'}}{{else}}{{t 'test.quiz.startQuiz'}}{{/if}}
+        </a>
       </div>
     </div>
-  </div>
 
-  <!-- Tombol Kembali + Mulai Quiz -->
-  <!-- Enhanced buttons with better styling and hover effects -->
-  <div class="mb-8 flex flex-row justify-between items-center gap-4">
-    <a href="/quiz/start/{{quiz.id}}"
-       class="bg-[#003060] hover:bg-[#00254a] text-white inline-flex items-center gap-3 px-6 py-3 rounded-xl shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-all duration-300 font-semibold text-lg focus:outline-none">
+    <!-- Riwayat nilai -->
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="border-b border-[#E5E5E5] px-5 py-4 sm:px-6">
+        <h2 class="font-montserrat text-base font-bold text-[#171717]">{{t 'test.quiz.scoreHistory'}}</h2>
+      </div>
 
-      <span>{{t "test.quiz.startQuiz"}}</span>
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-</svg>
-    </a>
-  </div>
-
-  <!-- Riwayat Nilai -->
-  <!-- Enhanced history section with better table styling and empty state -->
-  <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6">
-    <div class="flex items-center space-x-3 mb-6">
-      <svg class="w-8 h-8 text-[#404040]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-      </svg>
-      <h2 class="text-2xl font-bold text-[#171717] font-montserrat">{{t "test.quiz.scoreHistory"}}</h2>
+      {{#if attempts.length}}
+        {{!-- Nomor percobaan dan tanggal ditambahkan: tanpa keduanya, empat
+             baris bernilai 0 tampak seperti baris yang sama diulang. --}}
+        <ul class="divide-y divide-[#F0F0F0]">
+          {{#each attempts}}
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 sm:px-6">
+              <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F5F5F5] font-inter text-xs font-bold text-[#525252]">{{this.attempt}}</span>
+              <span class="min-w-0 flex-1">
+                <span class="block font-inter text-sm font-semibold text-[#171717]">
+                  {{t 'test.quiz.attempt'}} {{this.attempt}}
+                </span>
+                <span class="mt-0.5 block font-inter text-xs text-[#737373]">
+                  {{t 'test.quiz.takenOn'}} {{formatDate this.createdAt ../lang}}
+                </span>
+              </span>
+              <span class="shrink-0 font-montserrat text-lg font-bold text-[#171717]">{{this.score}}</span>
+              <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-inter text-xs font-medium leading-none {{#if this.passed}}border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]{{else}}border-[#FECACA] bg-[#FEF2F2] text-[#B42318]{{/if}}">
+                <span class="size-1.5 shrink-0 rounded-full {{#if this.passed}}bg-[#22C55E]{{else}}bg-[#EF4444]{{/if}}"></span>
+                {{#if this.passed}}{{t 'test.quiz.passed'}}{{else}}{{t 'test.quiz.failed'}}{{/if}}
+              </span>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <div class="px-5 py-10 text-center sm:px-6">
+          <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+            <i class="fa-solid fa-chart-simple text-base"></i>
+          </span>
+          <p class="font-inter text-sm font-semibold text-[#171717]">{{t 'test.quiz.noQuizAttempt'}}</p>
+          <p class="mt-1 font-inter text-xs text-[#737373]">{{t 'test.quiz.startYourFirstQuiz'}}</p>
+        </div>
+      {{/if}}
     </div>
 
-    {{#if scores.length}}
-      <div class="overflow-x-auto max-h-96 overflow-y-auto rounded-lg border border-[#E5E5E5]">
-        <table class="w-full">
-          <thead class="sticky top-0 z-10">
-            <tr class="bg-[#FAFAFA] border-b border-[#E5E5E5]">
-              <th class="px-6 py-4 text-left text-sm font-semibold text-[#404040] uppercase tracking-wider">{{t "test.quiz.score"}}</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-[#404040] uppercase tracking-wider">{{t "test.quiz.status"}}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 bg-white">
-            {{#each scores}}
-            <tr class="hover:bg-[#FAFAFA] transition-colors duration-150">
-              <td class="px-6 py-4">
-                <span class="text-2xl font-bold text-[#171717]">{{this.score}}</span>
-              </td>
-              <td class="px-6 py-4">
-                {{#if (gte this.score ../quiz.minScore)}}
-                  <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    {{t "test.quiz.passed"}}
-                  </span>
-                {{else}}
-                  <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-[#FEF2F2] text-[#B42318] border border-[#FECACA]">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    {{t "test.quiz.failed"}}
-                  </span>
-                {{/if}}
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    {{else}}
-      <div class="text-center py-12">
-        <div class="w-20 h-20 bg-[#E4F1F7] rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-10 h-10 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-        </div>
-        <p class="text-[#737373] text-lg font-medium mb-2">{{t "test.quiz.noQuizAttempt"}}</p>
-        <p class="text-[#A3A3A3]">{{t "test.quiz.startYourFirstQuiz"}}</p>
-      </div>
-    {{/if}}
   </div>
 </div>
 {{/user/shell_frame/index}}

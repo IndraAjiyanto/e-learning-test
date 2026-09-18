@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
+import { capabilitiesForCourse } from './program-type';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -501,6 +502,14 @@ await this.coursesService.addUserToCourse(userId, courseId);
       initialSection,
       stats,
       activeCourseCompleted,
+      // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
+      // ia membaca caps - lihat courses/program-type.ts.
+      caps: capabilitiesForCourse(activeCourse),
+      // Peta untuk sisi klien: berpindah program tidak memuat ulang halaman,
+      // jadi sakelar logbook harus ikut berpindah.
+      programCaps: Object.fromEntries(
+        course.map((c) => [c.id, capabilitiesForCourse(c)]),
+      ),
       portfolio,
       dashboardStats,
       ongoingCourses,
@@ -575,6 +584,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
         user_kelas,
         portfolio,
         user: req.user,
+        caps: capabilitiesForCourse(activeCourse),
         layout: false,
       },
     );
@@ -598,9 +608,18 @@ await this.coursesService.addUserToCourse(userId, courseId);
       id,
     );
 
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render('partials/user/sidebar_user_profile/assignment/index', {
       course: activeCourse,
       stats,
+      weekSummaries,
+      caps: capabilitiesForCourse(activeCourse),
       layout: false,
     });
   }
@@ -624,12 +643,21 @@ await this.coursesService.addUserToCourse(userId, courseId);
       id,
     );
 
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render(
       'partials/user/sidebar_user_profile/my_learning/start_learning/attendance/index',
       {
         course: activeCourse,
         user: req.user,
         stats,
+        weekSummaries,
+        caps: capabilitiesForCourse(activeCourse),
         layout: false,
       },
     );
@@ -653,9 +681,18 @@ await this.coursesService.addUserToCourse(userId, courseId);
       id,
     );
 
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
     return res.render('partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index', {
       course: activeCourse,
       stats,
+      weekSummaries,
+      caps: capabilitiesForCourse(activeCourse),
       layout: false,
     });
   }
@@ -1154,6 +1191,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
 
     // Empat langkah yang membentuk satu sesi. Dipakai untuk penanda kemajuan di
     // kepala halaman, supaya student melihat sisa pekerjaannya sekali lihat.
+    // Kapabilitas program pemilik sesi ini. Halaman sesi berdiri sendiri,
+    // jadi ia menghitung caps-nya sendiri dari course sesi tersebut.
+    const sessionCaps = capabilitiesForCourse(
+      detail.session?.weeks?.course ?? null,
+    );
+
     const steps = [
       { key: 'attendance', done: detail.attended, available: true },
       {
@@ -1170,7 +1213,14 @@ await this.coursesService.addUserToCourse(userId, courseId);
           assignments.every((a) => a.status === 'approved'),
         available: assignments.length > 0,
       },
-      { key: 'logbook', done: detail.logbookDone, available: true },
+      // Logbook hanya jadi langkah kalau program ini memang memakainya.
+      // Tanpa `available`, sesi pada program SPL tidak akan pernah mencapai
+      // 100% karena ada satu langkah yang tidak punya jalan diselesaikan.
+      {
+        key: 'logbook',
+        done: detail.logbookDone,
+        available: sessionCaps.logbookEnabled,
+      },
     ];
     const stepsAvailable = steps.filter((x) => x.available);
     const stepsDone = stepsAvailable.filter((x) => x.done).length;
@@ -1178,6 +1228,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
     return res.render('user/learning/session', {
       user: req.user,
       ...detail,
+      caps: sessionCaps,
       materialGroups,
       materialsCount: detail.session.materials.length,
       // Materi baru terbuka setelah student absen pada sesi ini.

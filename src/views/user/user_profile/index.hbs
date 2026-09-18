@@ -15,6 +15,18 @@
 <script>
   window.userLogbooks = {{{json logbooks}}};
   window.userCourses = {{{json userWithCourses.userCourses}}};
+  // Kapabilitas per program, dihitung server (courses/program-type.ts). Sisi
+  // klien TIDAK menghitung ulang aturannya - kalau ia ikut menghitung, aturan
+  // yang sama hidup di dua tempat dan akan berbeda suatu hari.
+  window.programCaps = {{{json programCaps}}};
+  // Sakelar logbook dipasang pada <html> SEBELUM Alpine jalan: sessionUnlock
+  // membacanya untuk memutuskan apakah logbook ikut mengunci sesi berikutnya,
+  // dan keputusan itu sudah dipakai pada gambar pertama.
+  (function () {
+    var caps = {{{json caps}}};
+    document.documentElement.dataset.logbookRequired =
+      caps && caps.logbookEnabled === false ? 'false' : 'true';
+  })();
 </script>
 <div 
   class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-montserrat overflow-hidden"
@@ -43,6 +55,12 @@
       quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' }
     },
     toggleActiveSection(section) {
+      // Student bisa sampai di ?tab=logbook lewat tautan lama atau riwayat
+      // peramban, termasuk untuk program yang logbooknya dimatikan. Tanpa
+      // penjagaan ini ia mendapat panel kosong tanpa penjelasan.
+      if (section === 'logbook' && this.activeCaps.logbookEnabled === false) {
+        section = 'uiux';
+      }
       this.activeSection = section;
       if (this.sectionFragmentConfig[section]) {
         const courseId = this.activeCourseId || (this.userCourses[0] && this.userCourses[0].course && this.userCourses[0].course.id);
@@ -133,9 +151,20 @@
         container.innerHTML = '<div class=\'p-12 text-center text-red-500\'>Failed to load. Please try again.</div>';
       }
     },
+    {{!-- Program berikutnya bisa punya sakelar logbook yang berbeda, dan
+         berpindah program tidak memuat ulang halaman. --}}
+    syncProgramCaps() {
+      const caps = (window.programCaps || {})[this.activeCourseId];
+      document.documentElement.dataset.logbookRequired =
+        caps && caps.logbookEnabled === false ? 'false' : 'true';
+    },
+    get activeCaps() {
+      return (window.programCaps || {})[this.activeCourseId] || {};
+    },
     async selectCourseSection(courseId, section) {
       this.activeCourseId = courseId;
       this.logbookCurrentPage = 1;
+      this.syncProgramCaps();
       this.toggleActiveSection(section);
     },
     async selectCourse(courseId) {
@@ -143,7 +172,10 @@
       await this.selectCourseSection(courseId, 'uiux');
     }
   }"
-  x-init="if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }"
+  x-init="
+    if (activeSection === 'logbook' && activeCaps.logbookEnabled === false) { activeSection = 'uiux'; }
+    if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }
+  "
 >
   {{!-- Application bar (Figma 830:9156). Markup ada di partial supaya halaman student
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
@@ -354,7 +386,7 @@
           tidak ada tempat untuk kembali, jadi tombolnya tidak dirender.
         --}}
         <div
-          class="px-4 pt-6 sm:px-[34px]"
+          class="px-4 pt-4 sm:px-8 sm:pt-6"
           x-data="{
             labels: {
               dashboard: '{{t 'test.userSidebar.dashboard'}}',
@@ -365,7 +397,9 @@
               'history-payment': '{{t 'test.userSidebar.paymentHistory'}}',
               uiux: '{{t 'test.startLearning.startLearning'}}',
               assignment: '{{t 'test.startLearning.assignment'}}',
-              presentation: '{{t 'test.startLearning.presentation'}}',
+              {{!-- Label tabnya sudah jadi Attendance; remahnya ikut, kalau
+                   tidak halaman yang sama punya dua nama. --}}
+              presentation: '{{t 'test.startLearning.tabAttendance'}}',
               quiz: '{{t 'test.startLearning.quiz'}}',
               logbook: '{{t 'test.startLearning.myLogbook'}}',
               certificate: '{{t 'test.startLearning.certificate'}}',
@@ -438,82 +472,111 @@
         <div
           x-show="isProgramSection"
           {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
-          class="px-4 pt-4 sm:px-8"
+          class="px-4 pt-4 sm:px-8 sm:pt-6"
         >
           {{#if activeCourse}}
             <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              {{!-- Tinggi tetap: tanpa ini gambar yang baru selesai dimuat
-                   mendorong seluruh halaman turun. --}}
-              <div class="h-[160px] w-full overflow-hidden bg-[#EEF2F6] sm:h-[200px]">
-                <img
-                  src="{{activeCourse.image}}"
-                  alt="{{activeCourse.name}}"
-                  onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
-                  class="h-full w-full object-cover"
-                />
-              </div>
+              {{!--
+                Gambar di kanan, keterangan program di kiri. Sebelumnya gambar
+                membentang selebar kartu DI ATAS keterangan, dan kepala program
+                memakan 422px - hampir separuh layar laptop - sebelum tab
+                pertama kelihatan. Disandingkan begini tingginya ditentukan
+                keterangan, bukan gambar.
 
-              <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
-                <div class="min-w-0">
+                Urutan DOM tetap gambar-lalu-teks; yang dibalik cuma arah flex
+                pada sm ke atas, sehingga di ponsel gambar tetap di atas dan
+                tidak ada yang berubah untuk pembaca layar.
+              --}}
+              <div class="flex flex-col sm:min-h-[184px] sm:flex-row-reverse">
+                {{!--
+                  Tinggi tetap di ponsel, lebar tetap di sm ke atas.
+
+                  Gambarnya dipasang absolute, bukan sekadar h-full: pada sm ke
+                  atas kolom ini tingginya ikut baris (yang ditentukan kolom
+                  teks), dan `height:100%` terhadap induk yang `auto` runtuh
+                  menjadi tinggi asli gambar - begitu berkasnya selesai dimuat
+                  barisnya melar 16px dan seluruh halaman turun. Terukur: CLS
+                  0,0013 menjadi 0,0432. Absolute membuat gambar tidak ikut
+                  menghitung tinggi sama sekali.
+                --}}
+                <div class="relative h-[140px] w-full shrink-0 overflow-hidden bg-[#EEF2F6] sm:h-auto sm:w-[240px] lg:w-[300px]">
+                  <img
+                    src="{{activeCourse.image}}"
+                    alt="{{activeCourse.name}}"
+                    onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                    class="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+
+                <div class="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
+                  {{!-- self-start: di dalam kolom flex, span inline-flex akan
+                       melar selebar kolom kalau tidak ditahan. --}}
                   {{#if activeCourse.category.name}}
-                    <span class="mb-2 inline-flex items-center rounded-[6px] bg-[#CFE6F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#003060]">{{activeCourse.category.name}}</span>
+                    <span class="mb-2 inline-flex self-start items-center rounded-[6px] bg-[#CFE6F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#003060]">{{activeCourse.category.name}}</span>
                   {{/if}}
                   <h1 class="font-montserrat text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{activeCourse.name}}</h1>
                   <p class="mt-1 line-clamp-2 font-inter text-sm text-[#737373]">{{getByLang activeCourse.description lang}}</p>
 
                   {{!--
-                    Keterangan ringkas program. Idenya diambil dari baris chip
-                    pada halaman belajar bisa.ai (level, jumlah modul, poin,
-                    rating), tetapi isinya memakai data yang benar-benar ada di
-                    sini - tipe kelas, jumlah minggu, metode, dan lokasi - dan
-                    memakai token warna kita sendiri, bukan meniru warnanya.
-                  --}}
-                  <div class="mt-3 flex flex-wrap items-center gap-2">
-                    {{#if activeCourse.courseType.nameClassesType}}
-                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
-                        <i class="fa-solid fa-signal text-[0.65rem] text-[#718096]"></i>
-                        {{activeCourse.courseType.nameClassesType}}
-                      </span>
-                    {{/if}}
-                    {{#if activeCourse.weeks.length}}
-                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
-                        <i class="fa-regular fa-calendar text-[0.65rem] text-[#718096]"></i>
-                        {{activeCourse.weeks.length}} {{#if (eq activeCourse.weeks.length 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
-                      </span>
-                    {{/if}}
-                    {{#if activeCourse.method}}
-                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium capitalize text-[#525252]">
-                        <i class="fa-solid fa-location-dot text-[0.65rem] text-[#718096]"></i>
-                        {{activeCourse.method}}
-                      </span>
-                    {{/if}}
-                    {{#if activeCourse.locations}}
-                      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
-                        <i class="fa-solid fa-building text-[0.65rem] text-[#718096]"></i>
-                        {{getByLang activeCourse.locations lang}}
-                      </span>
-                    {{/if}}
-                  </div>
-                </div>
+                    Chip keterangan dan kedua tombol aksi berbagi satu baris.
+                    Sebelumnya tombol punya kolomnya sendiri di kanan atas; pada
+                    tata letak bersanding kolom itu sudah ditempati gambar, dan
+                    memberi tombol barisnya sendiri berarti membuang satu baris
+                    penuh - persis yang sedang dihemat.
 
-                {{!-- Dua aksi ini bukan tab: yang satu pergi ke halaman lain,
-                     yang satu dilakukan sekali - bukan tempat yang dihuni. --}}
-                <div class="flex shrink-0 flex-wrap items-center gap-2">
-                  <a
-                    href="/program/program/detail/{{activeCourse.id}}"
-                    class="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
-                  >
-                    <i class="fa-regular fa-file-lines text-xs"></i>
-                    {{t 'test.startLearning.detailProgram'}}
-                  </a>
-                  <button
-                    type="button"
-                    @click="toggleActiveSection('group-class')"
-                    class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#E4F1F7]"
-                  >
-                    <i class="fa-solid fa-users text-xs"></i>
-                    {{t 'test.startLearning.joinGroup'}}
-                  </button>
+                    Chip: idenya dari baris chip halaman belajar bisa.ai (level,
+                    jumlah modul, poin, rating), tetapi isinya data yang memang
+                    ada di sini - tipe kelas, jumlah minggu, metode, lokasi -
+                    dengan token warna kita sendiri, bukan meniru warnanya.
+                  --}}
+                  <div class="mt-3 flex flex-1 flex-wrap items-end justify-between gap-x-4 gap-y-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                      {{#if activeCourse.courseType.nameClassesType}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                          <i class="fa-solid fa-signal text-[0.65rem] text-[#718096]"></i>
+                          {{activeCourse.courseType.nameClassesType}}
+                        </span>
+                      {{/if}}
+                      {{#if activeCourse.weeks.length}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                          <i class="fa-regular fa-calendar text-[0.65rem] text-[#718096]"></i>
+                          {{activeCourse.weeks.length}} {{#if (eq activeCourse.weeks.length 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
+                        </span>
+                      {{/if}}
+                      {{#if activeCourse.method}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium capitalize text-[#525252]">
+                          <i class="fa-solid fa-location-dot text-[0.65rem] text-[#718096]"></i>
+                          {{activeCourse.method}}
+                        </span>
+                      {{/if}}
+                      {{#if activeCourse.locations}}
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
+                          <i class="fa-solid fa-building text-[0.65rem] text-[#718096]"></i>
+                          {{getByLang activeCourse.locations lang}}
+                        </span>
+                      {{/if}}
+                    </div>
+
+                    {{!-- Dua aksi ini bukan tab: yang satu pergi ke halaman lain,
+                         yang satu dilakukan sekali - bukan tempat yang dihuni. --}}
+                    <div class="flex shrink-0 flex-wrap items-center gap-2">
+                      <a
+                        href="/program/program/detail/{{activeCourse.id}}"
+                        class="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+                      >
+                        <i class="fa-regular fa-file-lines text-xs"></i>
+                        {{t 'test.startLearning.detailProgram'}}
+                      </a>
+                      <button
+                        type="button"
+                        @click="toggleActiveSection('group-class')"
+                        class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#E4F1F7]"
+                      >
+                        <i class="fa-solid fa-users text-xs"></i>
+                        {{t 'test.startLearning.joinGroup'}}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -534,6 +597,9 @@
                       (obj 'key' 'logbook' 'label' 'myLogbook' 'icon' 'fa-clipboard')
                       (obj 'key' 'certificate' 'label' 'certificate' 'icon' 'fa-award')
                     )}}
+                      {{!-- Tab yang bergantung sakelar hanya dirender kalau
+                           sakelarnya menyala; `caps` dihitung server. --}}
+                      {{#if (or (not (eq this.key 'logbook')) ../caps.logbookEnabled)}}
                       <button
                         type="button"
                         role="tab"
@@ -549,6 +615,7 @@
                           class="absolute inset-x-2 bottom-0 h-0.5 rounded-t bg-[#003060]"
                         ></span>
                       </button>
+                      {{/if}}
                     {{/each}}
                   </nav>
                 </div>
@@ -638,7 +705,7 @@
           dijelaskan syaratnya - bukan tombol unduh yang menjanjikan sesuatu
           yang belum tentu ada.
         --}}
-        <div x-show="activeSection === 'certificate'" class="mx-4 my-6 rounded-xl border border-[#E5E5E5] bg-white p-8 text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:mx-8 sm:p-12">
+        <div x-show="activeSection === 'certificate'" class="mx-4 my-4 rounded-xl border border-[#E5E5E5] bg-white p-8 text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:mx-8 sm:my-6 sm:p-12">
           <template x-if="!activeCourseId">
             <div>
               <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
@@ -691,7 +758,7 @@
         </div>
 
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-[#E5E5E5] text-center space-y-4 m-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
+        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-[#E5E5E5] text-center space-y-4 mx-4 my-4 sm:mx-8 sm:my-6 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>

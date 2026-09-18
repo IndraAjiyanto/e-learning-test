@@ -6,6 +6,9 @@ export const logicHelpers = {
     args.pop();
     return args.some(Boolean);
   },
+  // Dipakai untuk menyembunyikan bagian yang bergantung pada sakelar, mis.
+  // tab My Logbook pada program yang logbooknya dimatikan.
+  not: (value: any) => !value,
   and: (...args: any[]) => {
     args.pop();
     return args.every(Boolean);

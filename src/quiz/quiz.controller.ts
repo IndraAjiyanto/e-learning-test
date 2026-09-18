@@ -103,11 +103,34 @@ export class QuizController {
     const quiz = await this.quizService.findOne(quizId);
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
+
+    // Riwayat nilai dulu hanya dua kolom - angka dan lencana lulus/gagal -
+    // tanpa nomor percobaan maupun tanggal, jadi empat baris "0 Failed"
+    // tidak bisa dibedakan satu sama lain. Nomor percobaan dihitung dari
+    // urutan waktu (terlama = percobaan 1), lalu dibalik supaya yang terbaru
+    // tampil paling atas.
+    const minScore = quiz?.minScore ?? 0;
+    const byTime = [...scores].sort(
+      (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt),
+    );
+    const attempts = byTime
+      .map((score, index) => ({
+        ...score,
+        attempt: index + 1,
+        passed: score.score >= minScore,
+      }))
+      .reverse();
+    const best = byTime.reduce((max, s) => Math.max(max, s.score), 0);
+
     res.render('user/quiz/quiz', {
       user: req.user,
       quiz,
       scores,
       questions,
+      attempts,
+      best,
+      passed: byTime.length > 0 && best >= minScore,
+      questionCount: questions.length,
       bareShell: true,
     });
   }
