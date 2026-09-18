@@ -13,6 +13,11 @@ import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { capabilitiesFor } from './program-type';
+import { Syllabus } from 'src/entities/syllabus.entity';
+import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
+import { SyllabusAssignment } from 'src/entities/syllabus_assignment.entity';
+import { SyllabusAnswerTask } from 'src/entities/syllabus_answer_task.entity';
+import { SyllabusLogbook } from 'src/entities/syllabus_logbook.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -152,40 +157,7 @@ export class CoursesService {
       courseType: courseType,
       technologies: technologies,
     });
-    const saved = await this.courseRepository.save(course);
-    await this.ensureSyllabusContainer(saved);
-    return saved;
-  }
-
-  /**
-   * Program non-bootcamp memakai silabus datar, dan silabus ITU ADALAH Session
-   * (lihat docs/program-type-plan.md bagian 3.3, opsi A). Session tetap butuh
-   * induk `Weeks`, jadi program seperti ini diberi TEPAT SATU baris weeks yang
-   * tidak pernah ditampilkan - wadah urutan, bukan minggu.
-   *
-   * Tanpa ini admin tidak punya tempat untuk menaruh silabus sama sekali:
-   * layar admin menambahkan sesi ke sebuah minggu, dan program non-bootcamp
-   * tidak pernah membuat minggu.
-   *
-   * Idempoten: dipanggil ulang tidak membuat wadah kedua.
-   */
-  async ensureSyllabusContainer(course: Course): Promise<Weeks | null> {
-    if (capabilitiesFor(course.programType).structure !== 'syllabus') {
-      return null;
-    }
-    const existing = await this.weeksRepository.findOne({
-      where: { course: { id: course.id } },
-      order: { weekNumber: 'ASC' },
-    });
-    if (existing) return existing;
-
-    const container = this.weeksRepository.create({
-      weekNumber: 1,
-      description: course.name,
-      isFinal: true,
-      course: course,
-    });
-    return await this.weeksRepository.save(container);
+    return await this.courseRepository.save(course);
   }
 
   async createMentoring(userId: string, courseId: string) {
@@ -665,7 +637,157 @@ export class CoursesService {
    * Semuanya COUNT, bukan pengambilan baris: yang ditampilkan memang hanya
    * angkanya, dan daftar isinya tetap diambil per minggu seperti sebelumnya.
    */
+  /**
+   * Hitungan untuk program silabus. Bentuk kembaliannya SAMA PERSIS dengan
+   * findLearningStats jalur bootcamp - `sessions` di sini berarti silabus,
+   * dan `attended` berarti diselesaikan.
+   *
+   * Nama medannya sengaja tidak diubah: template tab memakainya apa adanya,
+   * dan menambah bentuk kedua berarti tiap template harus bercabang. Yang
+   * berbeda cuma labelnya, dan label diurus i18n.
+   */
+  private async findSyllabusStats(courseId: string, userId: string) {
+    const em = this.sessionRepository.manager;
+    const forCourse = (qb: any, alias: string) =>
+      qb.where(`${alias}.courseId = :courseId`, { courseId });
+    const countDistinct = async (qb: any, expr: string) => {
+      const row = await qb.select(`COUNT(DISTINCT ${expr})`, 'c').getRawOne();
+      return Number(row?.c ?? 0);
+    };
+
+    const [
+      total,
+      completed,
+      assignmentsTotal,
+      assignmentsSubmitted,
+      assignmentsApproved,
+      quizzesTotal,
+      quizzesPassed,
+      logbooksTotal,
+      logbooksApproved,
+      logbooksRejected,
+    ] = await Promise.all([
+      forCourse(em.createQueryBuilder(Syllabus, 'y'), 'y').getCount(),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(SyllabusProgress, 'p')
+            .innerJoin('p.syllabus', 'y'),
+          'y',
+        )
+          .andWhere('p.userId = :userId', { userId })
+          .andWhere('p.completedAt IS NOT NULL'),
+        'y.id',
+      ),
+      forCourse(
+        em
+          .createQueryBuilder(SyllabusAssignment, 'a')
+          .innerJoin('a.syllabus', 'y'),
+        'y',
+      ).getCount(),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(SyllabusAnswerTask, 'at')
+            .innerJoin('at.task', 'a')
+            .innerJoin('a.syllabus', 'y'),
+          'y',
+        ).andWhere('at.userId = :userId', { userId }),
+        'a.id',
+      ),
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(SyllabusAnswerTask, 'at')
+            .innerJoin('at.task', 'a')
+            .innerJoin('a.syllabus', 'y'),
+          'y',
+        )
+          .andWhere('at.userId = :userId', { userId })
+          .andWhere("at.process = 'approved'"),
+        'a.id',
+      ),
+      forCourse(
+        em.createQueryBuilder(Quiz, 'q').innerJoin('q.syllabus', 'y'),
+        'y',
+      ).getCount(),
+      // LULUS, bukan terbuka - aturan yang sama dengan jalur bootcamp:
+      // ada nilai yang mencapai minimum_score kuisnya.
+      countDistinct(
+        forCourse(
+          em
+            .createQueryBuilder(Score, 'sc')
+            .innerJoin('sc.quiz', 'q')
+            .innerJoin('q.syllabus', 'y'),
+          'y',
+        )
+          .andWhere('sc.userId = :userId', { userId })
+          .andWhere('sc.score >= q.minimum_score'),
+        'q.id',
+      ),
+      forCourse(
+        em.createQueryBuilder(SyllabusLogbook, 'l').innerJoin('l.syllabus', 'y'),
+        'y',
+      )
+        .andWhere('l.userId = :userId', { userId })
+        .getCount(),
+      forCourse(
+        em.createQueryBuilder(SyllabusLogbook, 'l').innerJoin('l.syllabus', 'y'),
+        'y',
+      )
+        .andWhere('l.userId = :userId', { userId })
+        .andWhere("l.process = 'approved'")
+        .getCount(),
+      forCourse(
+        em.createQueryBuilder(SyllabusLogbook, 'l').innerJoin('l.syllabus', 'y'),
+        'y',
+      )
+        .andWhere('l.userId = :userId', { userId })
+        .andWhere("l.process = 'rejected'")
+        .getCount(),
+    ]);
+
+    const pct = (done: number, all: number) =>
+      all > 0 ? Math.round((done / all) * 100) : 0;
+
+    return {
+      sessions: { total, attended: completed, percent: pct(completed, total) },
+      assignments: {
+        total: assignmentsTotal,
+        submitted: assignmentsSubmitted,
+        approved: assignmentsApproved,
+        pending: Math.max(0, assignmentsTotal - assignmentsSubmitted),
+        percent: pct(assignmentsApproved, assignmentsTotal),
+      },
+      quizzes: {
+        total: quizzesTotal,
+        passed: quizzesPassed,
+        percent: pct(quizzesPassed, quizzesTotal),
+      },
+      logbooks: {
+        total: logbooksTotal,
+        approved: logbooksApproved,
+        rejected: logbooksRejected,
+        inReview: Math.max(
+          0,
+          logbooksTotal - logbooksApproved - logbooksRejected,
+        ),
+        percent: pct(logbooksApproved, logbooksTotal),
+      },
+    };
+  }
+
   async findLearningStats(courseId: string, userId: string) {
+    // Program silabus tidak punya session sama sekali, jadi seluruh hitungan
+    // di bawah mengembalikan nol untuknya. Bentuk kembaliannya dijaga sama
+    // persis supaya template tidak perlu tahu jalur mana yang dipakai.
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (capabilitiesFor(course?.programType).structure === 'syllabus') {
+      return this.findSyllabusStats(courseId, userId);
+    }
+
     const em = this.sessionRepository.manager;
 
     // CATATAN PENTING soal query builder TypeORM:
@@ -1590,10 +1712,7 @@ export class CoursesService {
       course.date_registration = new Date(updateCourseDto.date_registration);
     }
 
-    const saved = await this.courseRepository.save(course);
-    // Program yang baru saja diubah menjadi non-bootcamp juga butuh wadahnya.
-    await this.ensureSyllabusContainer(saved);
-    return saved;
+    return await this.courseRepository.save(course);
   }
 
   async remove(id: string) {
