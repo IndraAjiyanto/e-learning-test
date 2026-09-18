@@ -9,43 +9,29 @@
 
 ## 1. BACA INI DULU — keadaan per 2026-09-18
 
-**S4 SELESAI. Jalur silabus lengkap dari ujung ke ujung.** Student bisa membuka
-daftar silabus, membuka detailnya, dan menandainya selesai; admin bisa menambah,
-mengubah, memindah urutan, menghapus silabus, **mengisinya dengan materi dan
-tugas**, dan **melihat siapa sudah menyelesaikan silabus apa**.
+**Program non-bootcamp SELESAI.** Ketujuh tabel silabus yang dibuat di S0 kini
+benar-benar terpakai — dibaca DAN ditulis lewat antarmuka, bukan cuma ada di
+skema.
 
-`design-check` **258/259**. Satu-satunya kegagalan adalah celah lama
-`week pagination` yang butuh PRD tersendiri — bukan bagian dari pekerjaan ini.
-Ditambah `test/ui/syllabus-admin-check.mjs` **22/22** untuk sisi admin.
+| Tabel | Dipakai untuk |
+|---|---|
+| `syllabus` | CRUD admin, daftar dan detail student |
+| `syllabus_material` | materi: PDF diunggah, PPT/video berupa tautan |
+| `syllabus_assignment` | tugas yang dipasang admin |
+| `syllabus_answer_task` | jawaban student, satu per student per tugas |
+| `syllabus_comment` | komentar mentor atas jawaban |
+| `syllabus_logbook` | logbook student, disetujui mentor |
+| `syllabus_progress` | tandai selesai, `logbookOk`, layar penyelesaian |
 
-Tiga sisa S4 pada serah terima sebelumnya, dan apa jadinya:
+Kuis per silabus juga sudah tersambung (`quiz.syllabusId`), bukan lagi cuma
+kolom di basis data.
 
-1. **CRUD materi dan tugas silabus** — **selesai.**
-   `/program/syllabus/manage/:courseId/:syllabusId`. PDF diunggah, PPT dan
-   video berupa tautan, persis pembagian yang sudah berlaku di jalur bootcamp.
-2. **Layar penyelesaian** — **selesai.**
-   `/program/syllabus/completion/:courseId`, matriks student × silabus.
-   Daftar orangnya dari **pendaftaran**, bukan dari baris progres: baris progres
-   baru ada setelah student menyelesaikan sesuatu, jadi kalau daftarnya dari
-   sana, student yang belum mengerjakan apa pun tidak muncul — padahal justru
-   merekalah yang dicari admin di layar ini.
-3. **Sapuan 61 label** — **sebagian besar ternyata tidak perlu.** Diperiksa satu
-   per satu: dari 45 label session/week yang tersisa di sisi admin, 44 ada di
-   layar `admin/weeks/*` dan `admin/session/*` yang **hanya terjangkau lewat tab
-   "Week"**, dan tab itu sudah disembunyikan untuk program SPL sejak `3bea0076`.
-   Label di sana memang seharusnya berbunyi "Week"/"Session". Satu label sisanya
-   nyata salah dan sudah diperbaiki — lihat bagian temuan di bawah.
+`design-check` **258/259** — satu kegagalan adalah celah lama `week pagination`
+yang butuh PRD tersendiri, bukan bagian dari pekerjaan ini. Ditambah empat
+pemeriksa sisi silabus: **22 + 20 + 23 + 16**.
 
-**Program bootcamp tidak boleh ikut berubah**, dan itu dijaga otomatis: enam
-pemeriksaan terakhir pada layar `non-bootcamp-program` memeriksa bootcamp tetap
-punya 6 tab, tab Attendance dan My Logbook, masih menuntut logbook untuk
-membuka, masih merender kepala minggu, dan tidak punya satu pun tautan silabus.
-
-**Program bootcamp tidak terpengaruh sama sekali** dan harus tetap begitu.
-
-Dua keputusan rancangan yang paling mahal sudah dijawab pemilik (absensi SPL
-dihapus, kuis per silabus) dan keduanya sudah selesai dikerjakan — jadi S3 bisa
-dimulai tanpa menunggu siapa pun. Lihat bagian 5.
+**Tidak ada entity maupun migrasi baru sejak S0.** Semua tabelnya memang sudah
+dirancang dari awal; yang kurang selama ini cuma kode yang memakainya.
 
 ---
 
@@ -252,19 +238,27 @@ bootcamp, dan ditolak pada program silabus.
 
 ### Masih terbuka
 
-**Kuis per silabus baru ada di skema, belum tersambung.**
-Migrasi `1788900000000` sudah membuat `quiz.syllabusId` dan membuang
-`quiz.courseId`, tetapi **modul `quiz` belum menyentuhnya sama sekali**: semua
-rutenya masih `:weeksId` (`quiz.controller.ts`), dan `quiz.service.findOne()`
-hanya memuat relasi `weeks`. Artinya admin belum punya cara membuat kuis pada
-sebuah silabus, dan student belum punya cara mengerjakannya. Ini pekerjaan
-tersendiri, bukan sapuan label — perlakukan sebagai tahap baru.
-
 **Tujuh baris drift `schema:log` yang bukan dari pekerjaan ini.**
 Semuanya pada `payments`, `installment`, dan `gallery` — tabel yang tidak
 disentuh rangkaian silabus, berasal dari cabang `test-back-office` yang sudah
 digabung. Nol drift pada tabel silabus/kuis/course. Jangan kira ini akibat
 pekerjaan silabus.
+
+**Empat berkas seed menunjuk gambar yang tidak ada di disk.**
+Avatar admin dan dua gambar kategori. Muncul sebagai 404 diam-diam di setiap
+halaman lewat shell bersama. Bukan perkara silabus; perbaikannya soal data seed.
+
+### Sudah diperbaiki setelah itu — dan ini yang paling penting dibaca
+
+**Program SPL berlogbook adalah jalan buntu, dan itu sudah hidup di data.**
+`SyllabusService.isDone()` menuntut `logbookOk` kalau program menyalakan
+logbook, sementara tidak ada satu pun cara menulis maupun menyetujui logbook
+silabus. Akibatnya student bisa menekan "Mark complete" dan silabus berikutnya
+terkunci selamanya. Ditemukan hidup di "TEST NON BOOTCAMP" (silabus 1
+`completedAt` terisi, `logbookOk` false, silabus 2 dialihkan kembali) dan sudah
+ditutup oleh layar logbook.
+
+**Kuis per silabus baru ada di skema.** Sudah tersambung; lihat commit kuis.
 
 ---
 
@@ -333,17 +327,29 @@ Kalau basis datanya disemai ulang, ambil lagi dengan query di
 `week pagination` (lama, butuh PRD).
 Kalau tiba-tiba turun ke ~170, itu tanda env var-nya hilang, bukan regresi.
 
-### Menjalankan pemeriksaan sisi ADMIN
+### Menjalankan pemeriksaan sisi SILABUS
 
-`design-check.mjs` masuk sebagai student dari awal sampai akhir, jadi layar
-admin silabus diperiksa berkas terpisah:
+`design-check.mjs` masuk sebagai student dari awal sampai akhir, jadi jalur
+silabus — yang butuh admin dan student bergantian — diperiksa berkas terpisah.
+Keempatnya berdiri sendiri dan boleh dijalankan satu-satu:
 
 ```bash
-COURSE=af9279ec-3c6d-4737-a751-b186ca08c08e ENROLLED=1 \
-  node test/ui/syllabus-admin-check.mjs
+SPL=af9279ec-3c6d-4737-a751-b186ca08c08e
+LOGBOOK_ON=cd6d81fa-cebf-4f07-80d3-c8b929d4a5c7   # program yang logbooknya MENYALA
+
+COURSE=$SPL ENROLLED=1 node test/ui/syllabus-admin-check.mjs        # 22
+COURSE=$SPL              node test/ui/syllabus-submission-check.mjs # 20
+COURSE=$SPL BOOTCAMP_QUIZ=1bb22d86-b0cf-5c8b-b7ac-9c7e4dde1642 \
+                         node test/ui/syllabus-quiz-check.mjs       # 23
+COURSE=$LOGBOOK_ON       node test/ui/syllabus-logbook-check.mjs    # 16
 ```
 
-Diharapkan **22/22**. Pemeriksa ini benar-benar menambah materi dan tugas lewat
+`syllabus-logbook-check` HARUS memakai program yang logbooknya menyala — itulah
+yang diuji. Pada program yang logbooknya mati, formulirnya memang tidak muncul
+dan pemeriksanya akan gagal dengan benar.
+
+Ketiga yang lain membersihkan baris percobaannya sendiri; basis data kembali
+seperti semula. Pemeriksa ini benar-benar menambah materi dan tugas lewat
 formulir (termasuk satu unggahan PDF sungguhan), membacanya kembali dari daftar,
 lalu menghapusnya lagi — basis data kembali seperti semula. Tanpa `COURSE` ia
 **berhenti dengan status gagal**, bukan lulus diam-diam; pelajaran dari jebakan
@@ -392,7 +398,10 @@ npx tsc --noEmit
 npm run build
 ./scripts/check-user-area.sh
 IDS=... EXTRA_IDS=... npm run test:ui
-COURSE=... node test/ui/syllabus-admin-check.mjs                  # kalau menyentuh sisi admin silabus
+COURSE=... node test/ui/syllabus-admin-check.mjs                   # kalau menyentuh jalur silabus
+COURSE=... node test/ui/syllabus-submission-check.mjs              #   (lihat bagian 6 untuk keempatnya)
+COURSE=... node test/ui/syllabus-quiz-check.mjs
+COURSE=... node test/ui/syllabus-logbook-check.mjs
 npx typeorm-ts-node-commonjs schema:log -d ./src/data-source.ts   # kalau menyentuh entity
 ```
 
