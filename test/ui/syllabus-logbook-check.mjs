@@ -137,6 +137,29 @@ await student.goto(`${BASE}/program/syllabus/detail/${first}`, { waitUntil: 'net
 ok('a direct POST cannot rewrite an approved logbook',
    !(await student.locator('body').innerText()).includes('PROBE sneaky'), `HTTP ${forced}`);
 
+// ---- mentor MENARIK persetujuannya lagi
+//
+// Dua hal sekaligus. Pertama aturannya: persetujuan yang dicabut harus
+// mengunci kembali silabus berikutnya - kalau tidak, sekali disetujui berarti
+// selamanya terbuka dan tombol "Ask for revision" cuma hiasan.
+//
+// Kedua, kebersihan: tanpa langkah ini pemeriksa ini cuma bisa dijalankan
+// SEKALI. Jalan kedua akan menemukan logbook yang sudah disetujui, formulirnya
+// sudah baca-saja, dan gagal karena keadaan sisa - bukan karena aplikasinya
+// salah. Tiga pemeriksa silabus lainnya membersihkan miliknya sendiri; yang ini
+// tadinya tidak, dan itu ketahuan saat dijalankan dua kali berturut-turut.
+await admin.goto(`${BASE}/program/syllabus/logbook/${COURSE}`, { waitUntil: 'networkidle' });
+await admin.locator('button[value="rejected"]').first().click();
+await admin.waitForLoadState('networkidle');
+
+await student.goto(`${BASE}/program/syllabus/detail/${second}`, { waitUntil: 'networkidle' });
+ok('withdrawing approval locks syllabus 2 again',
+   student.url().includes('myProgram'), student.url());
+
+await student.goto(`${BASE}/program/syllabus/detail/${first}`, { waitUntil: 'networkidle' });
+ok('the student can edit the logbook again after a revision request',
+   await student.locator('form[action$="/logbook"]').count() === 1);
+
 await browser.close();
 console.log(failed === 0 ? '\nALL PASS' : `\n${failed} FAILED`);
 process.exit(failed === 0 ? 0 : 1);
