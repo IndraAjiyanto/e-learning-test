@@ -189,9 +189,30 @@ export class ConvertIdsToUuid1788300000000 implements MigrationInterface {
     const uniqueCons: UniqueMeta[] = await q.query(UNIQUE_SELECT);
 
     if (targets.length === 0) {
+      // Tidak menemukan apa-apa bisa berarti DUA hal yang sangat berbeda, dan
+      // dulu keduanya diperlakukan sebagai kegagalan:
+      //
+      //   a. skemanya memang sudah uuid seluruhnya - tidak ada yang perlu
+      //      dikerjakan, dan itu SUKSES;
+      //   b. basis datanya kosong / tidak seperti yang diharapkan - itu baru
+      //      pantas dibatalkan.
+      //
+      // Sejak ada BaselineSchema1787999999999, (a) adalah jalur normal untuk
+      // basis data baru: baseline membuat skemanya langsung dengan uuid. Kalau
+      // ini tetap dilempar sebagai error, SELURUH rangkaian migrasi gagal -
+      // dan karena TypeORM menjalankannya dalam satu transaksi, baseline yang
+      // sudah berhasil pun ikut dibatalkan. Akibatnya basis data ini tidak
+      // pernah bisa dibangun dari nol.
+      const [probe] = await q.query(
+        `SELECT to_regclass('public.course') IS NOT NULL AS has_schema`,
+      );
+      if (probe?.has_schema) {
+        return; // (a) sudah uuid, tidak ada pekerjaan
+      }
       throw new Error(
         'ConvertIdsToUuid: tidak menemukan satu pun tabel dengan primary key ' +
-          'integer bernama "id". Migrasi dibatalkan agar tidak mengubah apa pun.',
+          'integer bernama "id", dan tabel `course` pun tidak ada. Migrasi ' +
+          'dibatalkan agar tidak mengubah apa pun.',
       );
     }
 

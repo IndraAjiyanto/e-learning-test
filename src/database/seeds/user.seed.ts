@@ -9,6 +9,8 @@ import { ProcessStatus } from 'src/entities/types/process-status';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Technology } from 'src/entities/technology.entity';
 import { Mentorings } from 'src/entities/mentoring.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -161,6 +163,55 @@ async function bootstrap() {
       course: courses[0],
     },
   ]);
+
+  // ---------------------------------------------------------------------
+  // Satu program NON-BOOTCAMP (SPL) beserta silabusnya.
+  //
+  // Tanpa ini, seluruh hasil seed adalah bootcamp - jalur silabus tidak
+  // pernah bisa dilihat atau diuji pada basis data yang baru disemai, dan
+  // `syllabus` selalu kosong. Lihat docs/syllabus-table-plan.md.
+  //
+  // Logbook sengaja DIMATIKAN: itu bentuk paling khas program SPL, dan
+  // sekaligus menguji cabang yang aturan buka-kuncinya paling berbeda.
+  // ---------------------------------------------------------------------
+  const spl = await coursesRepository.save({
+    name: 'Dasar Pemrograman Web (SPL)',
+    description: {
+      id: 'Belajar mandiri dasar pemrograman web.',
+      en: 'Self-paced introduction to web programming.',
+      ja: 'Self-paced introduction to web programming.',
+    },
+    image: '/public/image/logo.png',
+    quota: 100,
+    group: 'grup whatsapp',
+    locationLink: '-',
+    method: 'online' as Method,
+    process: 'approved' as ProcessStatus,
+    launch: true,
+    checkPaid: false,
+    programType: 'non_bootcamp',
+    logbookEnabled: false,
+    courseType: courseTypes[0],
+    category: categories[0],
+    startDate: new Date('2026-01-05'),
+    startEnd: new Date('2026-02-05'),
+  });
+
+  const syllabusRepository = dataSource.getRepository(Syllabus);
+  await syllabusRepository.save(
+    [
+      { order: 1, title: 'Silabus 1 - HTML dasar', isFinal: false },
+      { order: 2, title: 'Silabus 2 - CSS dasar', isFinal: false },
+      { order: 3, title: 'Silabus 3 - JavaScript dasar', isFinal: true },
+    ].map((x) => syllabusRepository.create({ ...x, course: spl })),
+  );
+
+  // Student contoh ikut mendaftar, supaya programnya langsung terlihat di
+  // My Learning tanpa perlu didaftarkan manual lebih dulu.
+  const userCourseRepository = dataSource.getRepository(UserCourse);
+  await userCourseRepository.save(
+    userCourseRepository.create({ user: users[2], course: spl, progress: false }),
+  );
 
   await app.close();
 }
