@@ -55,11 +55,11 @@
     </div>
 
     {{#if (eq order.process "approved")}}
-      <a href="/payment/history/{{user.id}}" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
+      <a href="/users/profile?tab=history-payment" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
         Lihat Riwayat Pembayaran
       </a>
     {{else if (eq order.process "free_confirmed")}}
-      <a href="/payment/history/{{user.id}}" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
+      <a href="/users/profile?tab=history-payment" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
         Lihat Riwayat Pembayaran
       </a>
     {{else}}
@@ -69,7 +69,7 @@
           ✅ Konfirmasi Pembayaran (Test Mode)
         </button>
       </form>
-      <a href="/payment/history/{{user.id}}" class="block text-[#003060] text-sm hover:underline">
+      <a href="/users/profile?tab=history-payment" class="block text-[#003060] text-sm hover:underline">
         Kembali ke Riwayat Pembayaran
       </a>
     {{/if}}

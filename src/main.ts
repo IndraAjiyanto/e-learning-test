@@ -17,7 +17,10 @@ import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
 import { hbsHelpers } from './common/helpers';
-import { readFlashToast } from './common/utils/toast.util';
+import {
+  readFlashToast,
+  readFlashToastError,
+} from './common/utils/toast.util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -122,6 +125,7 @@ async function bootstrap() {
     // Key terpisah dari 'success': partial `sweetalert` merender 'success'
     // sebagai toast sendiri, jadi ini mencegah dua notifikasi untuk satu aksi.
     res.locals.toast = readFlashToast(req);
+    res.locals.toastError = readFlashToastError(req);
     next();
   });
 

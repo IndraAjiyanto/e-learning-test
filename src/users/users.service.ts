@@ -252,6 +252,14 @@ export class UsersService {
     if (updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword) {
       throw new BadRequestException('confirm password wrong');
     }
+
+    // Aturan yang sama dengan pendaftaran (auth.service) dan lupa-password
+    // (resetPassword di berkas ini). Sebelumnya rute ini satu-satunya yang
+    // memakai aturannya sendiri - cukup 6 karakter, tanpa syarat lain - jadi
+    // mengganti password justru bisa MELEMAHKAN akun yang password awalnya
+    // sudah dipaksa kuat saat mendaftar.
+    assertStrongPassword(updatePaaswordDto.newPassword);
+
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -263,12 +271,6 @@ export class UsersService {
     );
     if (!isMatch) {
       throw new BadRequestException('Old password is incorrect');
-    }
-
-    if (updatePaaswordDto.newPassword.length < 6) {
-      throw new BadRequestException(
-        'New password must be at least 6 characters',
-      );
     }
 
     const hashedPassword = await bcrypt.hash(updatePaaswordDto.newPassword, 10);

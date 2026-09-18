@@ -13,6 +13,7 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -49,7 +50,11 @@ export class PortfoliosController {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolios failed to create');
+      flashToastError(
+        req,
+        'Portfolio not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/portfolios');
     }
   }
@@ -65,6 +70,12 @@ export class PortfoliosController {
     maxWidth: 1920,
     minHeight: 1000,
     maxHeight: 1080,
+    // Tipe dan ukuran berkas sudah lama dijanjikan keterangan di bawah kotak
+    // unggah ("JPG, JPEG, PNG, or GIF - max 5MB"), tetapi rute ini tidak
+    // memeriksa satu pun: berkas 40MB atau .bmp tetap lolos selama dimensinya
+    // pas. Sekarang yang dijanjikan layar dan yang dijaga server sama.
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'],
     folder: 'portfolio',
   })
   async create(
@@ -116,7 +127,11 @@ export class PortfoliosController {
         });
       }
 
-      req.flash('error', error.message || 'Failed to upload portofolios');
+      flashToastError(
+        req,
+        'Upload failed',
+        error.message || 'The image could not be uploaded. Please try again.',
+      );
       res.redirect(`/program/${createPortfolioDto.courseId || ''}`);
     }
   }
@@ -201,6 +216,10 @@ export class PortfoliosController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isAjax =
+      req.xhr ||
+      (req.headers.accept && req.headers.accept.includes('application/json'));
+
     try {
       const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
 
@@ -222,9 +241,21 @@ export class PortfoliosController {
         );
       }
 
-      updatePortfolioDto.image = updatePortfolioDto.image || [];
+      // Gambar lama yang dipertahankan dikirim lewat `keepImages`, bukan
+      // `image`: nama `image` dipakai juga oleh berkas yang diunggah, dan pada
+      // multipart keduanya bertabrakan - form edit lama mengirimnya sebagai
+      // `image[]` sehingga tidak pernah terbaca DTO, dan setiap penyimpanan
+      // menghapus seluruh gambar lamanya. `image` tetap dibaca sebagai
+      // cadangan untuk pemanggil lama.
+      const rawKeep = (req.body.keepImages ??
+        req.body['keepImages[]'] ??
+        updatePortfolioDto.image ??
+        []) as string | string[];
+      const keptImages = (Array.isArray(rawKeep) ? rawKeep : [rawKeep]).filter(
+        (url): url is string => typeof url === 'string' && url.length > 0,
+      );
       const combineImage = [
-        ...(updatePortfolioDto.image || []),
+        ...keptImages,
         ...(req.body.uploadedImageUrls || []),
       ];
       const newImageUrls = await this.portfoliosService.deleteUnusedImages(
@@ -235,6 +266,9 @@ export class PortfoliosController {
       const updateData = {
         title: updatePortfolioDto.title,
         description: updatePortfolioDto.description,
+        // `link` sempat tidak ikut di sini, jadi menyunting portfolio tidak
+        // pernah bisa mengubah tautan proyeknya.
+        link: updatePortfolioDto.link,
         image: newImageUrls,
         content: updatePortfolioDto.content,
         contentHtml: updatePortfolioDto.contentHtml,
@@ -242,11 +276,33 @@ export class PortfoliosController {
 
       await this.portfoliosService.update(portfolioId, updateData);
 
-      req.flash('success', 'Portfolios successfully updated');
-      return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
+      if (isAjax) {
+        return res.status(200).json({
+          success: true,
+          message: 'Portfolio successfully updated',
+        });
+      }
+
+      flashToast(
+        req,
+        'Portfolio updated',
+        'Your changes have been saved.',
+      );
+      return res.redirect('/users/profile?tab=portfolio');
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolios failed to update');
-      return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Failed to update portfolio',
+        });
+      }
+
+      flashToastError(
+        req,
+        'Portfolio not saved',
+        error.message || 'Please try again in a moment.',
+      );
+      return res.redirect('/users/profile?tab=portfolio');
     }
   }
 
@@ -258,6 +314,10 @@ export class PortfoliosController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isAjax =
+      req.xhr ||
+      (req.headers.accept && req.headers.accept.includes('application/json'));
+
     try {
       const portfolio = await this.portfoliosService.findOne(portfolioId);
       if (portfolio) {
@@ -266,11 +326,32 @@ export class PortfoliosController {
         }
         await this.portfoliosService.remove(portfolioId);
       }
-      req.flash('success', 'Portfolios successfully deleted');
-      res.redirect(`/program/${courseId}`);
+
+      if (isAjax) {
+        return res.status(200).json({
+          success: true,
+          message: 'Portfolio successfully deleted',
+        });
+      }
+
+      flashToast(req, 'Portfolio deleted', 'The portfolio has been removed.');
+      // Dulu kembali ke /program/:courseId - halaman landing program. Yang
+      // menghapus portfolio ada di tab My Portfolio, jadi ke sanalah pulangnya.
+      res.redirect('/users/profile?tab=portfolio');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete portfolio');
-      res.redirect(`/program/${courseId}`);
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Failed to delete portfolio',
+        });
+      }
+
+      flashToastError(
+        req,
+        'Portfolio not deleted',
+        error.message || 'Please try again in a moment.',
+      );
+      res.redirect('/users/profile?tab=portfolio');
     }
   }
 }
