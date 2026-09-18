@@ -303,9 +303,15 @@ Gerbang yang sudah ada dipakai di tiap tahap: `npx tsc --noEmit`,
 1. ~~**Materi dan tugas: tabel sendiri, atau kolom `syllabusId`?**~~
    **Terjawab 2026-09-18: pisah penuh.** Lihat 2.2, termasuk rembetannya ke
    `answer_task` dan `comments`.
-2. **Absensi pada SPL benar-benar dihapus?** Rencana ini menggantinya dengan
-   `completedAt`. Kalau ternyata ada program SPL yang tetap ingin mencatat
-   kehadiran (mis. ada sesi live sesekali), keputusannya berubah.
+2. ~~**Absensi pada SPL benar-benar dihapus?**~~
+   **Terjawab 2026-09-18: ya, dihapus, pakai `completedAt`.** Ini menegaskan
+   rancangan yang sudah terpasang sejak S0 - tidak ada tabel absensi silabus,
+   penyelesaian dicatat `syllabus_progress.completedAt`, dan absensi milik
+   program SPL sudah dibuang di S2.
+
+   Konsekuensi yang kini pasti: `AttendanceService.openNextSessionWhenLogbookIsOff`
+   memang boleh dibuang di S6. Tambalan itu hanya pernah ada karena silabus
+   dulu menumpang sesi dan membutuhkan absensi untuk membuka sesi berikutnya.
 3. ~~**Kuis non-bootcamp: satu per program, atau satu per silabus?**~~
    **Terjawab 2026-09-18: satu per SILABUS.** Sudah dikerjakan - migrasi
    `1788900000000`, `quiz.syllabusId` menggantikan `quiz.courseId`. Lihat 2.5.

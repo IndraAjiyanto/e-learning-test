@@ -29,6 +29,10 @@ selesai.
 
 **Program bootcamp tidak terpengaruh sama sekali** dan harus tetap begitu.
 
+Dua keputusan rancangan yang paling mahal sudah dijawab pemilik (absensi SPL
+dihapus, kuis per silabus) dan keduanya sudah selesai dikerjakan — jadi S3 bisa
+dimulai tanpa menunggu siapa pun. Lihat bagian 5.
+
 ---
 
 ## 2. Keadaan sekarang
@@ -38,7 +42,7 @@ selesai.
 | S0 tabel | selesai | `d32edd7f` |
 | S1 entity + service | selesai | `bad11d0f` |
 | S2 perpindahan data | selesai | `6e57aeca` |
-| **S3 sisi student** | **belum — mulai dari sini** | — |
+| **S3 sisi student** | **belum — mulai dari sini, tidak ada yang menghalangi** | — |
 | S4 sisi admin | belum | — |
 | S5 hitungan & dasbor | belum | — |
 | S6 buang jalur lama | belum | — |
@@ -194,7 +198,8 @@ Setelah S3–S5 terbukti jalan:
 
 - `CoursesService.ensureSyllabusContainer` — wadah tersirat tidak diperlukan lagi
 - `AttendanceService.openNextSessionWhenLogbookIsOff` — tambalan yang memang
-  hanya ada karena silabus dulu menumpang sesi
+  hanya ada karena silabus dulu menumpang sesi. **Sudah dipastikan pemilik
+  (2026-09-18): absensi SPL dihapus, jadi ini boleh dibuang.**
 - tiga cabang `caps.structure` di `start_learning/index.hbs`
 - pertimbangkan: `capabilitiesForCourse().logbookEnabled` masih dipakai kedua
   jalur, **jangan** ikut dibuang
@@ -210,22 +215,23 @@ Setelah S3–S5 terbukti jalan:
 
 ## 5. Pertanyaan yang masih menunggu jawaban pemilik
 
-Tiga dari lima pertanyaan di `docs/syllabus-table-plan.md` bagian 8 belum
-dijawab. Satu di antaranya **menghalangi** pekerjaan:
+**Tidak ada lagi pertanyaan yang menghalangi.** Dua pertanyaan yang mahal
+diubah belakangan sudah dijawab pemilik pada 2026-09-18, dan keduanya sudah
+selesai dikerjakan. Sisanya murni soal label dan bisa diputuskan sambil jalan.
 
-| # | Pertanyaan | Menghalangi | Asumsi yang dipakai sekarang |
+| # | Pertanyaan | Menghalangi | Keadaan |
 |---|---|---|---|
-| 2 | Absensi pada SPL benar-benar dihapus? | S3, S4 | ya — diganti `completedAt` |
+| ~~2~~ | ~~Absensi pada SPL dihapus?~~ | — | **TERJAWAB: ya, pakai `completedAt`.** Sudah terpasang sejak S0; tidak ada tabel absensi silabus, absensi SPL dibuang di S2. Konsekuensinya `AttendanceService.openNextSessionWhenLogbookIsOff` pasti boleh dibuang di S6. |
 | ~~3~~ | ~~Kuis: satu per program atau per silabus?~~ | — | **TERJAWAB: per SILABUS.** Sudah dikerjakan, `quiz.syllabusId` (migrasi `1788900000000`). `quiz.courseId` dibuang. |
 | 4 | Tab "Attendance" untuk SPL jadi apa? | S3 | usul: "Progress" |
 | 5 | Label: "Silabus" atau "Syllabus"? | S3, S4 | usul: "Syllabus", i18n untuk id/ja |
 
-Kalau pemilik tidak sempat menjawab, **asumsi di kolom kanan sudah dipasang di
-kode** dan aman dilanjutkan — tetapi nomor 2 mahal diubah belakangan.
+Nomor 4 dan 5 tinggal soal kata yang dilihat student. Usul di kolom kanan sudah
+dipasang sebagai asumsi dan aman dilanjutkan; menggantinya nanti murah.
 
-Nomor 3 sudah terjawab dan dikerjakan pada 2026-09-18, saat belum ada satu pun
-kuis non-bootcamp. Itu contoh baik kenapa pertanyaan seperti ini lebih murah
-dijawab lebih awal: koreksinya nol baris data.
+Nomor 3 dikerjakan pada hari yang sama saat belum ada satu pun kuis
+non-bootcamp, jadi koreksinya **nol baris data**. Itu contoh konkret kenapa
+pertanyaan seperti ini lebih murah dijawab lebih awal.
 
 ---
 
