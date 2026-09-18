@@ -44,6 +44,8 @@
   - required    : boolean (opsional)
   - searchable  : boolean (default true) — kotak cari di atas menu; kata kunci dikosongkan
                   tiap menu dibuka agar semua opsi tetap muncul. Matikan dengan searchable=false
+  - highlight   : boolean (opsional) — latar trigger kuning #fefce8
+  - disabled    : boolean (opsional) — trigger tak bisa dibuka; nilai tetap terkirim lewat hidden input
 --}}
 <div
   class='flex flex-col gap-1.5'
@@ -62,19 +64,20 @@
     <button
       type='button'
       id='{{id}}-trigger'
+      {{#if disabled}}disabled{{/if}}
       @click="open = !open; q = ''{{#unless (eq searchable false)}}; if (open) $nextTick(() => $refs.search.focus()){{/unless}}"
       :aria-expanded='open'
       :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
       aria-haspopup='listbox'
       aria-labelledby='{{id}}-label'
       x-data='{ seen: false }'
-      x-init="$el.form?.addEventListener('submit', () => seen = true); $watch('formData.{{field}}', () => seen = true)"
+      {{#unless disabled}}x-init="$el.form?.addEventListener('submit', () => seen = true); $watch('formData.{{field}}', () => seen = true)"{{/unless}}
       :class="formErrors.{{field}}
         ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
         : seen
           ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
           : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
-      class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border bg-white py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2'
+      class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border {{#if highlight}}bg-[#fefce8]{{else}}bg-white{{/if}} py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5]'
     >
       <span class='flex min-w-0 items-center gap-2'>
         {{#if iconLeft}}

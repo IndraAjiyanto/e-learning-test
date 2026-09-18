@@ -56,6 +56,7 @@
   - maxlength   : number (opsional) — batas karakter native
   - hideLabel   : boolean (opsional) — label hanya untuk screen reader, bila label
                   visual sudah dirender pemanggil (mis. di atas tab bahasa)
+  - highlight   : boolean (opsional) — latar kuning #fefce8; hanya mode satu baris
 --}}
 <div class='flex flex-col gap-1.5'{{#if toggle}} x-data='{ showValue: false }'{{/if}}>
   <label
@@ -122,7 +123,7 @@
           {{!-- slot ikon error: pakai inline style agar tidak kalah urutan dari utility pr-3.5 --}}
           :style="formErrors.{{field}} && 'padding-right: 44px'"
         {{/unless}}
-        class='h-11 w-full rounded-lg border bg-white py-2.5 {{#if (or (eq icon 'link') iconLeft)}}pl-10{{else}}pl-3.5{{/if}} {{#if toggle}}pr-11{{else if (or (eq icon 'clock') (eq icon 'calendar'))}}pr-10 cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden{{else}}pr-3.5{{/if}} font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
+        class='h-11 w-full rounded-lg border {{#if highlight}}bg-[#fefce8]{{else}}bg-white{{/if}} py-2.5 {{#if (or (eq icon 'link') iconLeft)}}pl-10{{else}}pl-3.5{{/if}} {{#if toggle}}pr-11{{else if (or (eq icon 'clock') (eq icon 'calendar'))}}pr-10 cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden{{else}}pr-3.5{{/if}} font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5] disabled:text-[#a3a3a3]'
       />
 
       {{#if numeric}}
