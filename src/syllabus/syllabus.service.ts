@@ -3,10 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
+import { User } from 'src/entities/user.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
 import { SyllabusMaterial } from 'src/entities/syllabus_material.entity';
 import { SyllabusAssignment } from 'src/entities/syllabus_assignment.entity';
+import { SyllabusAnswerTask } from 'src/entities/syllabus_answer_task.entity';
+import { SyllabusComment } from 'src/entities/syllabus_comment.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 import { FileType } from 'src/entities/materials.entity';
 import { capabilitiesForCourse } from 'src/courses/program-type';
 
@@ -60,6 +64,12 @@ export class SyllabusService {
     private readonly assignmentRepository: Repository<SyllabusAssignment>,
     @InjectRepository(UserCourse)
     private readonly userCourseRepository: Repository<UserCourse>,
+    @InjectRepository(SyllabusAnswerTask)
+    private readonly answerRepository: Repository<SyllabusAnswerTask>,
+    @InjectRepository(SyllabusComment)
+    private readonly commentRepository: Repository<SyllabusComment>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // ----------------------------------------------------------------- baca
@@ -397,6 +407,129 @@ export class SyllabusService {
       rows,
       total: items.length,
     };
+  }
+
+
+  // ------------------------------------------------- pengumpulan tugas
+
+  /**
+   * Student mengumpulkan (atau memperbarui) jawaban satu tugas.
+   *
+   * SATU jawaban per student per tugas - dijaga `UQ (task, user)` di basis
+   * data, dan di sini diperlakukan sebagai upsert. Padanan bootcamp-nya
+   * (`AnswerTask`) tidak punya penjagaan itu dan alur "Edit Submission"-nya
+   * mengandalkan jawaban pertama yang kebetulan ditemukan; di sini tidak ada
+   * "kebetulan" karena barisnya memang cuma bisa satu.
+   *
+   * Jawaban yang SUDAH DISETUJUI tidak bisa diubah lagi. Kalau boleh, student
+   * bisa menukar isinya setelah lolos penilaian dan mentor tidak akan pernah
+   * tahu - persetujuannya jadi tidak berarti apa-apa.
+   */
+  async submitAnswer(
+    assignmentId: string,
+    userId: string,
+    file: string,
+  ): Promise<SyllabusAnswerTask> {
+    if (!file?.trim()) throw new Error('A link is required.');
+
+    const task = await this.assignmentRepository.findOne({
+      where: { id: assignmentId },
+    });
+    if (!task) throw new NotFoundException('Assignment not found');
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const existing = await this.answerRepository.findOne({
+      where: { task: { id: assignmentId }, user: { id: userId } },
+    });
+
+    if (existing) {
+      if (existing.process === 'approved') {
+        throw new Error('This answer was approved and can no longer be changed.');
+      }
+      existing.file = file.trim();
+      existing.process = 'process';
+      return this.answerRepository.save(existing);
+    }
+
+    return this.answerRepository.save(
+      this.answerRepository.create({
+        task,
+        user,
+        file: file.trim(),
+        process: 'process',
+      }),
+    );
+  }
+
+  /**
+   * Jawaban seorang student untuk seluruh tugas pada satu silabus, dipetakan
+   * per tugas supaya template tidak perlu mencari-cari.
+   */
+  async answersForStudent(
+    syllabusId: string,
+    userId: string,
+  ): Promise<Map<string, SyllabusAnswerTask>> {
+    const answers = await this.answerRepository.find({
+      where: {
+        user: { id: userId },
+        task: { syllabus: { id: syllabusId } },
+      },
+      relations: ['task', 'comments'],
+      order: { createdAt: 'ASC' },
+    });
+    return new Map(answers.map((a) => [a.task.id, a]));
+  }
+
+  /** Semua jawaban atas satu tugas - untuk layar penilaian mentor. */
+  async answersForAssignment(assignmentId: string) {
+    const task = await this.assignmentRepository.findOne({
+      where: { id: assignmentId },
+      relations: ['syllabus', 'syllabus.course'],
+    });
+    if (!task) throw new NotFoundException('Assignment not found');
+
+    const answers = await this.answerRepository.find({
+      where: { task: { id: assignmentId } },
+      relations: ['user', 'comments'],
+      order: { createdAt: 'ASC' },
+    });
+    return { task, answers };
+  }
+
+  /**
+   * Mentor menilai satu jawaban.
+   *
+   * Komentar disimpan sebagai baris tersendiri, bukan menimpa yang lama:
+   * riwayat penilaian adalah percakapan, dan student perlu bisa membaca lagi
+   * apa yang diminta pada putaran sebelumnya.
+   */
+  async reviewAnswer(
+    answerId: string,
+    process: ProcessStatus,
+    comment?: string,
+  ): Promise<SyllabusAnswerTask> {
+    if (!['approved', 'process', 'rejected'].includes(process)) {
+      throw new Error('Unknown review status.');
+    }
+    const answer = await this.answerRepository.findOne({
+      where: { id: answerId },
+    });
+    if (!answer) throw new NotFoundException('Answer not found');
+
+    answer.process = process;
+    const saved = await this.answerRepository.save(answer);
+
+    if (comment?.trim()) {
+      await this.commentRepository.save(
+        this.commentRepository.create({
+          answer: saved,
+          comment: comment.trim(),
+        }),
+      );
+    }
+    return saved;
   }
 
   // ---------------------------------------------------------------- admin

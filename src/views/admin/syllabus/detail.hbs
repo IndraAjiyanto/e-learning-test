@@ -113,6 +113,10 @@
               </span>
               <a href="{{this.file}}" target="_blank" rel="noopener noreferrer"
                  class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3 font-inter text-sm font-semibold text-[#003060] no-underline hover:bg-[#E4F1F7]">Open</a>
+              <a href="/program/syllabus/manage/{{../courseId}}/{{../syllabus.id}}/assignment/{{this.id}}/answers"
+                 class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] bg-[#003060] px-3 font-inter text-sm font-semibold text-white no-underline hover:bg-[#00254a]">
+                <i class="fa-regular fa-paper-plane text-xs"></i>Submissions
+              </a>
               <form method="POST" action="/program/syllabus/manage/{{../courseId}}/{{../syllabus.id}}/assignment/{{this.id}}/delete"
                     onsubmit="return confirm('Delete this assignment? Student submissions and comments go with it.')">
                 <button type="submit"

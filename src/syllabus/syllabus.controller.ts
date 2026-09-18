@@ -67,14 +67,52 @@ export class SyllabusController {
       );
     }
 
+    // Jawaban student ditempelkan ke tiap tugas, bukan dikirim sebagai daftar
+    // terpisah: template tidak punya cara mencari di dalam Map, dan mencocokkan
+    // di Handlebars selalu berakhir jadi helper baru yang tidak perlu.
+    const answers = await this.syllabusService.answersForStudent(
+      syllabusId,
+      userId,
+    );
+    const assignments = (syllabus.assignments ?? []).map((a) => ({
+      ...a,
+      answer: answers.get(a.id) ?? null,
+    }));
+
     return res.render('user/learning/syllabus', {
       user: req.user,
       syllabus,
+      assignments,
       view,
       course: syllabus.course,
       caps: capabilitiesForCourse(syllabus.course),
       bareShell: true,
     });
+  }
+
+  /** Student mengumpulkan atau memperbarui jawaban satu tugas silabus. */
+  @Roles('user')
+  @Post('detail/:syllabusId/assignment/:assignmentId/submit')
+  async submitAnswer(
+    @Param('syllabusId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    syllabusId: string,
+    @Param('assignmentId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    assignmentId: string,
+    @Body('file') file: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.submitAnswer(
+        assignmentId,
+        req.user!.id,
+        file,
+      );
+      flashToast(req, 'Answer submitted', 'Your mentor will review it.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not submit', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/detail/${syllabusId}`);
   }
 
   // =====================================================================
@@ -337,6 +375,63 @@ export class SyllabusController {
       flashToastError(req, 'Could not delete', e?.message || 'Try again.');
     }
     return res.redirect(`/program/syllabus/manage/${courseId}/${syllabusId}`);
+  }
+
+  /** Layar penilaian: semua jawaban student atas satu tugas silabus. */
+  @Roles('admin', 'super_admin')
+  @Get('manage/:courseId/:syllabusId/assignment/:assignmentId/answers')
+  async answers(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId') syllabusId: string,
+    @Param('assignmentId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    assignmentId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const { task, answers } =
+      await this.syllabusService.answersForAssignment(assignmentId);
+    return res.render('admin/syllabus/answers', {
+      user: req.user,
+      task,
+      answers,
+      syllabus: task.syllabus,
+      course: task.syllabus.course,
+      courseId,
+      syllabusId,
+      bareShell: true,
+    });
+  }
+
+  /**
+   * Mentor menilai satu jawaban: disetujui, diminta revisi, atau dikembalikan
+   * ke antrean. Komentarnya opsional dan disimpan sebagai baris tersendiri.
+   */
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId/:syllabusId/assignment/:assignmentId/answers/:answerId/review')
+  async reviewAnswer(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId') syllabusId: string,
+    @Param('assignmentId') assignmentId: string,
+    @Param('answerId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    answerId: string,
+    @Body('process') process: string,
+    @Body('comment') comment: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.reviewAnswer(
+        answerId,
+        process as any,
+        comment,
+      );
+      flashToast(req, 'Review saved', 'The student can see it now.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not save review', e?.message || 'Try again.');
+    }
+    return res.redirect(
+      `/program/syllabus/manage/${courseId}/${syllabusId}/assignment/${assignmentId}/answers`,
+    );
   }
 
   /** Siapa sudah menyelesaikan silabus apa - pengganti layar absensi. */
