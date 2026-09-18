@@ -8,7 +8,6 @@ import { Session } from 'src/entities/session.entity';
 import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
-import { capabilitiesForCourse } from 'src/courses/program-type';
 
 @Injectable()
 export class AttendanceService {
@@ -32,7 +31,7 @@ export class AttendanceService {
   async create(CreateAttendanceDto: CreateAttendanceDto) {
     const session = await this.sessionRepository.findOne({
       where: { id: CreateAttendanceDto.sessionId },
-      relations: ['weeks', 'weeks.course'],
+      relations: ['weeks'],
     });
     const user = await this.userRepository.findOne({
       where: { id: CreateAttendanceDto.userId },
@@ -42,6 +41,17 @@ export class AttendanceService {
     }
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+    const duplicate = await this.attendanceRepository.findOne({
+      where: {
+        session: { id: CreateAttendanceDto.sessionId },
+        user: { id: CreateAttendanceDto.userId },
+      },
+    });
+    if (duplicate) {
+      throw new NotFoundException(
+        'User has already submitted attendance for this session',
+      );
     }
     const attendance = await this.attendanceRepository.create({
       ...CreateAttendanceDto,
@@ -75,61 +85,7 @@ export class AttendanceService {
       });
     }
 
-    await this.openNextSessionWhenLogbookIsOff(session, user.id);
-
     return saved;
-  }
-
-  /**
-   * Membuka sesi berikutnya pada program yang logbooknya dimatikan.
-   *
-   * Ini SISI KEDUA dari jebakan yang disebut docs/program-type-plan.md bagian
-   * 5. Sisi pertama - syarat penguncian yang menuntut logbook - sudah
-   * dilonggarkan di sessionUnlock.logbookApproved. Tetapi baris
-   * `session_progresses` milik sesi BERIKUTNYA hanya pernah dibuat oleh
-   * LogbookService.update saat admin menyetujui sebuah logbook
-   * (logbook.service.ts:283). Pada program tanpa logbook, tidak ada satu pun
-   * jalan yang membuat baris itu, sehingga daftar sesi tetap menggambar sesi
-   * berikutnya sebagai terkunci meski aturannya sudah membolehkan.
-   *
-   * Karena itu di sini absensi mengambil alih tugas tersebut - dan HANYA pada
-   * program yang memang tidak memakai logbook. Pada bootcamp urutannya tidak
-   * berubah sama sekali: logbook yang disetujui tetap yang membuka sesi
-   * berikutnya.
-   */
-  private async openNextSessionWhenLogbookIsOff(
-    session: Session,
-    userId: string,
-  ): Promise<void> {
-    if (capabilitiesForCourse(session.weeks?.course ?? null).logbookEnabled) {
-      return;
-    }
-
-    const nextSession = await this.sessionRepository.findOne({
-      where: {
-        weeks: { id: session.weeks.id },
-        sessionOrder: session.sessionOrder + 1,
-      },
-    });
-    if (!nextSession) return;
-
-    const existing = await this.sessionProgressRepository.findOne({
-      where: { user: { id: userId }, session: { id: nextSession.id } },
-    });
-    if (existing) {
-      if (existing.isAttended) return;
-      await this.sessionProgressRepository.save({
-        id: existing.id,
-        isAttended: true,
-      });
-      return;
-    }
-    await this.sessionProgressRepository.save({
-      user: { id: userId },
-      session: { id: nextSession.id },
-      isAttended: true,
-      logbook: false,
-    });
   }
 
   async findAll() {
@@ -150,11 +106,24 @@ export class AttendanceService {
       where: { weeks: { session: { id: sessionId } } },
     });
     if (!course) {
-      return '';
+      return [];
     }
-    return await this.userRepository.find({
+    const enrolled = await this.userRepository.find({
       where: { role: 'user', userCourses: { course: { id: course.id } } },
     });
+    if (!enrolled.length) {
+      return [];
+    }
+    // Exclude users who already have an attendance record for this session,
+    // so they don't show up again in the admin "Add Attendance" dropdown.
+    const existing = await this.attendanceRepository.find({
+      where: { session: { id: sessionId } },
+      relations: ['user'],
+    });
+    const attendedIds = new Set(
+      existing.map((a) => a.user?.id).filter(Boolean),
+    );
+    return enrolled.filter((u) => !attendedIds.has(u.id));
   }
 
   async findCourse() {
