@@ -81,3 +81,9 @@ function tabData() {
 {{!-- Toast sukses untuk aksi tab program (mentor, participants, benefit,
      flow, FAQ, installment, alumni) yang semuanya redirect balik ke sini. --}}
 {{> components/ui/admin/toast/success/index toast=toast }}
+
+{{!-- Dipakai oleh tombol delete week di course/week_tab (openDeleteModal) --}}
+{{> components/ui/admin/modal/delete_confirm/index
+    title='Delete Week'
+    description='Are you sure you want to delete this week? Sessions inside it will be removed too.'
+    confirmLabel='Delete' }}

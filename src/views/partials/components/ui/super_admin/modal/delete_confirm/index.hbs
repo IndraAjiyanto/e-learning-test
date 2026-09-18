@@ -41,7 +41,7 @@
   x-data='deleteConfirmModal()'
   x-show='open'
   x-cloak
-  @delete-confirm:open.window='show($event.detail.form, $event.detail.trigger)'
+  @delete-confirm:open.window='show($event.detail.form, $event.detail.trigger, $event.detail.title, $event.detail.description)'
   @keydown.escape.window='close()'
   class='fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur-[16px]'
   @click.self='close()'

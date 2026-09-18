@@ -46,7 +46,7 @@
       categoryId: {{json categoryId}},
       categories: [{{#each category}}{ value: {{json id}}, label: {{json name}} }{{#unless @last}},{{/unless}}{{/each}}],
       courseTypes: [{{#each courseType}}{ value: {{json id}}, label: {{json nameClassesType}} }{{#unless @last}},{{/unless}}{{/each}}],
-      technologies: [{{#each technologies}}{ value: {{json id}}, label: {{json name}} }{{#unless @last}},{{/unless}}{{/each}}],
+      technologies: [{{#each technologies}}{ value: {{json id}}, label: {{json name}}, iconUrl: {{json imgUrl}}, iconSvg: {{json svg}}, isTool: true }{{#unless @last}},{{/unless}}{{/each}}],
       mentorings: [{{#each mentorings}}{ value: {{json id}}, label: {{json username}} }{{#unless @last}},{{/unless}}{{/each}}],
     })'
   >

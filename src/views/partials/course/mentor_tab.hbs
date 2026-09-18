@@ -119,25 +119,7 @@ function mentorData() {
     mentorTechBg(index) {
       return MENTOR_TECH_BG[index % MENTOR_TECH_BG.length];
     },
-
-    mentorConfirmDelete(buttonEl, mentorName) {
-      const name = mentorName ? '"' + mentorName + '"' : 'this mentor';
-      if (typeof Swal === 'undefined') {
-        if (confirm('Delete ' + name + '?')) buttonEl.closest('form').submit();
-        return;
-      }
-      Swal.fire({
-        title: 'Delete Mentor',
-        text: 'Are you sure you want to delete ' + name + '?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DC2626',
-        cancelButtonColor: '#525252',
-        confirmButtonText: 'Delete',
-      }).then((result) => {
-        if (result.isConfirmed) buttonEl.closest('form').submit();
-      });
-    },
+    }
   };
 }
 </script>
