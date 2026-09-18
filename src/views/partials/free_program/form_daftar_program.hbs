@@ -1,4 +1,4 @@
-<div class="w-full font-montserrat flex justify-center">
+<div class="w-full font-inter flex justify-center">
   <!-- Container 1098px wide -->
   <div class="w-full max-w-[1098px] p-4 sm:p-8 lg:p-10 flex flex-col justify-between">
     
@@ -18,47 +18,47 @@
       <div class="space-y-7">
         <!-- Your Program -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Your Program<span class="text-red-500">*</span>
           </label>
-          <span class="font-montserrat font-medium text-base sm:text-xl text-black">
+          <span class="font-inter font-medium text-base sm:text-xl text-black">
             {{course.name}} <!-- Menampilkan nama kelas dari backend -->
           </span>
         </div>
       <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Full Name<span class="text-red-500">*</span>
           </label>
           <input type="text" name="user_fullname" value="{{user.username}}" required placeholder="Input Your Full Name" 
-            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-inter font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
 
         <!-- Email (Otomatis Terisi & Bisa Diedit) -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Email<span class="text-red-500">*</span>
           </label>
           <input type="email" name="user_email" value="{{user.email}}" required placeholder="Input Your Email"
-            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-inter font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
         <!-- WhatsApp Number -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             WhatsApp Number<span class="text-red-500">*</span>
           </label>
-          <input type="tel" name="user_no" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+          <input type="tel" name="user_no" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-inter font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
 
         <!-- Current Status -->
                <!-- Current Status -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Current Status<span class="text-red-500">*</span>
           </label>
           <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-status">
             <input type="hidden" id="status-input" name="current_status" required value="">
             <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
-              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">Select your current status</span>
+              <span class="dropdown-label font-inter font-medium text-xl text-[#676767] truncate pr-4">Select your current status</span>
               <div class="size-[35px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
               </div>
@@ -79,13 +79,13 @@
         <!-- How did you know About the program? -->
              <!-- How did you know About the program? -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             How did you know About the program?<span class="text-red-500">*</span>
           </label>
           <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-source">
             <input type="hidden" id="source-input" name="referal_source" required value="">
             <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
-              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">Select Option</span>
+              <span class="dropdown-label font-inter font-medium text-xl text-[#676767] truncate pr-4">Select Option</span>
               <div class="size-[35px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
               </div>
@@ -105,24 +105,24 @@
 
         <!-- Will you attend this program? -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Will you attend this program?<span class="text-red-500">*</span>
           </label>
           <div class="flex flex-wrap gap-4 max-w-[900px]">
             <label class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-[6px] shadow-[0_0_5px_rgba(0,0,0,0.5)] cursor-pointer group hover:border-[#003060] transition-all">
               <input type="radio" name="attend_program" value="true" class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
-              <span class="text-slate-700 font-montserrat font-medium text-xl leading-none">Yes, I will attend</span>
+              <span class="text-slate-700 font-inter font-medium text-xl leading-none">Yes, I will attend</span>
             </label>
             <label class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-[6px] shadow-[0_0_5px_rgba(0,0,0,0.5)] cursor-pointer group hover:border-[#003060] transition-all">
               <input type="radio" name="attend_program" value="false" checked class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
-              <span class="text-slate-700 font-montserrat font-medium text-xl leading-none">No, I can't attend</span>
+              <span class="text-slate-700 font-inter font-medium text-xl leading-none">No, I can't attend</span>
             </label>
           </div>
         </div>
 
         <!-- Consent Checkbox -->
         <div>
-          <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
+          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             I agree to receive seminar updates via email or WhatsApp.
           </label>
           <label class="flex items-center gap-3 cursor-pointer group w-fit">
@@ -130,7 +130,7 @@
               <input type="checkbox" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
               <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
             </div>
-            <span class="text-slate-700 font-montserrat font-medium text-xl leading-none group-hover:text-[#0B3A68] transition-colors">Yes, I agree</span>
+            <span class="text-slate-700 font-inter font-medium text-xl leading-none group-hover:text-[#0B3A68] transition-colors">Yes, I agree</span>
           </label>
         </div>
       </div>

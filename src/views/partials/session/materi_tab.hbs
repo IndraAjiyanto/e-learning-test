@@ -1,10 +1,9 @@
 {{!--
-  Partial: Session Materi Tab (Admin) — Container - Session Materi (slicing.pen dFE1o)
+  Partial: Session Materi Tab (Admin) — Container - Session Materi
   Path: partials/session/materi_tab.hbs
   Dipakai: {{> session/materi_tab}} di admin/session/detail.hbs (tab materi).
   Composes: sub_partials/session/materi_tab/{pdf,video,ppt} (pakai
             material/material-row: title + edit/delete/Detail).
-  Design: sub-tab h44 tiga kolom — aktif fill #003060 teks white, nonaktif
   white outline #003060 teks #003060 (Inter 16/600); rows h68; Add Material
   full-width h48 outline #3B82F6.
   BE: toggleFetchMateri → GET /session/{pdf,video,ppt}/:sessionId (JSON
@@ -64,7 +63,7 @@
       <!-- Header (brand blue, sesuai frame header biru #003060) -->
       <div class="flex items-center justify-between p-6 bg-[#003060]">
         <div>
-          <h2 class="text-2xl font-bold text-white font-montserrat" x-text="materi.title"></h2>
+          <h2 class="text-2xl font-bold text-white font-inter" x-text="materi.title"></h2>
           <p class="text-sm text-white/70 mt-1 font-inter">
             File Type: <span class="uppercase font-semibold" x-text="materi.fileType"></span>
           </p>

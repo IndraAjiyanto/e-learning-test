@@ -1,5 +1,5 @@
 {{!--
-  Section: Program / "Specialized Career Pathways" (L2) - Figma programs-section 250:2866
+  Section: Program / "Specialized Career Pathways" (L2)
   Lokasi: src/views/partials/components/ui/sections/program/index.hbs
   Satu pohon markup, base + lg. Data: category[] (jsonb name/text + icon), social.[0].number.
 --}}
@@ -36,7 +36,7 @@
         <div class="flex">{{> components/ui/card/card_program/index image="/public/image/InHouseTraining.png" name="In House Training" text="Tailored team training designed around your company's stack and objectives." learnMore=(t 'test.home.programSection.learnMore') href="/dashboard/corporate-training"}}</div>
       {{/each}}
 
-      {{!-- program banner (Figma 286:3598) --}}
+      {{!-- program banner --}}
       <div class="flex flex-col justify-center gap-4 rounded-2xl bg-[#003060] p-7 lg:p-8">
         <h3 class="text-lg font-inter font-bold leading-snug text-white">{{t 'test.home.programSection.bannerTitle'}}</h3>
         <p class="{{sizeClass 'body-sm'}} font-inter text-[#E0F2F9]">{{t 'test.home.programSection.bannerDescription'}}</p>

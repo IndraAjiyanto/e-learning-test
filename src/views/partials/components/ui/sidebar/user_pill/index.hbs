@@ -5,7 +5,6 @@
 
   Menampilkan avatar + nama + role user. Saat pill diklik, muncul popover
   mengambang di atas pill berisi aksi "Edit Profile" dan "Logout"
-  (Figma node 238:20262 — PROFILE POPOVER).
 
   Props:
   - href         : string (opsional, default "/users/profile") tujuan Edit Profile
@@ -38,7 +37,7 @@
       href="{{default href '/users/profile'}}"
       role="menuitem"
       class="flex items-center gap-[12px] w-full px-[12px] py-[10px] rounded-[6px]
-        font-montserrat font-medium text-[14px] leading-[21px] text-[#003060]
+        font-inter font-medium text-[14px] leading-[21px] text-[#003060]
         transition-colors duration-150 hover:bg-[#E7F3FB] active:bg-[#D7E9F6]
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40"
     >
@@ -56,7 +55,7 @@
       href="{{default logoutHref '/logout'}}"
       role="menuitem"
       class="flex items-center gap-[12px] w-full px-[12px] py-[10px] rounded-[6px]
-        font-montserrat font-medium text-[14px] leading-[21px] text-[#C80606]
+        font-inter font-medium text-[14px] leading-[21px] text-[#C80606]
         transition-colors duration-150 hover:bg-[#FDECEC] active:bg-[#FBD5D5]
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C80606]/40"
     >
@@ -91,8 +90,8 @@
         {{/if}}
       </span>
       <span class="flex flex-col items-start min-w-0 text-left">
-        <span class="font-montserrat font-semibold text-[14px] leading-[18px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
-        <span class="font-montserrat font-medium text-[12px] leading-[16px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
+        <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
+        <span class="font-inter font-medium text-[12px] leading-[16px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
       </span>
     </span>
     <span class="flex shrink-0 text-[#718096]">

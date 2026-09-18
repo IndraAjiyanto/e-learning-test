@@ -1,7 +1,6 @@
 {{!--
   Page: Admin - Edit Week (Session Form)
   Path: admin/weeks/edit.hbs
-  Design: sama dengan admin/weeks/create.hbs (slicing.pen "Container - Session Form" 1052, gap 28)
   Route: GET /week/formEdit/:weeksId -> PATCH /week/update/:weeksId (update)
   Data: { user, weeks, lastWeek, maxWeek } — toggle "pertemuan terakhir" hanya
         tampil bila week yang diedit adalah week terakhir (weeks.weekNumber == maxWeek),
@@ -41,7 +40,7 @@
                 checkedBind="isFinal"
                 onChange="isFinal = $event.target.checked"
               }}
-              <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold sm:whitespace-nowrap'>Jadikan pertemuan terakhir</span>
+              <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold sm:whitespace-nowrap'>Jadikan pertemuan terakhir</span>
               <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
             </div>
           {{else}}

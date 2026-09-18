@@ -11,7 +11,6 @@
   Fitur baru: crop — file yang dipilih masuk modal crop dulu (free aspect) lalu
   hasil crop diteruskan ke validateFile. Preview memakai object-contain agar
   tidak terlalu zoom / terpotong.
-  Pencil (Container - Logbook Form → Container Photo Documentation):
   label Photo Documentation* 14 #404040; dropzone h200 fill #F8F9FA r8 stroke D9D9D9 p8 16 gap10
   ikon image 40 #718096; teks Montserrat 12/500 #718096; hint Montserrat 10/500 #ADB7C5 (JPEG,JPG,PNG Max 5 MB)
   Reuse: mentor-photo-upload mirip tapi hint & tinggi beda + logbook pakai field name documentation + validasi image 5MB
@@ -30,8 +29,8 @@
       class='box-border w-full h-[200px] flex flex-col justify-center items-center p-[8px_16px] gap-[10px] bg-[#F8F9FA] border border-[#D9D9D9] rounded-[8px] cursor-pointer transition-colors hover:bg-[#EFF3F6] overflow-hidden'>
       <div class='flex flex-col items-center gap-[10px]'>
         <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='18' x='3' y='3' rx='2' ry='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/></svg>
-        <p class='text-[12px]/[16px] font-montserrat font-medium text-[#718096] text-center'>Drag &amp; Drop your Image here or click to browse</p>
-        <p class='text-[10px]/[12px] font-montserrat font-medium text-[#ADB7C5] text-center'>JPEG, JPG, PNG · Max 5 MB · crop bebas anti-zoom</p>
+        <p class='text-[12px]/[16px] font-inter font-medium text-[#718096] text-center'>Drag &amp; Drop your Image here or click to browse</p>
+        <p class='text-[10px]/[12px] font-inter font-medium text-[#ADB7C5] text-center'>JPEG, JPG, PNG · Max 5 MB · crop bebas anti-zoom</p>
       </div>
     </label>
   </template>
@@ -54,13 +53,13 @@
   {{/if}}
   {{#if showOldPhoto}}
   <template x-if='!previewUrl && oldPhoto'>
-    <p class='text-[11px]/[normal] font-montserrat text-[#A3A3A3]'>Current photo — click to change (leave empty to keep)</p>
+    <p class='text-[11px]/[normal] font-inter text-[#A3A3A3]'>Current photo — click to change (leave empty to keep)</p>
   </template>
   {{/if}}
   <template x-if='hasFile && isValid && previewUrl'>
     <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
       <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
-      <span class='text-[12px]/[normal] font-montserrat text-[#16A34A]' x-text='fileName + " (" + (fileSize/1024).toFixed(1) + "KB)"'></span>
+      <span class='text-[12px]/[normal] font-inter text-[#16A34A]' x-text='fileName + " (" + (fileSize/1024).toFixed(1) + "KB)"'></span>
       <button type='button' @click='clearFile()' class='ml-auto text-[#DC2626] hover:text-[#B91C1C]'>
         <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
       </button>
@@ -69,7 +68,7 @@
   <template x-if='!isValid && errorMessage'>
     <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
       <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
-      <span class='text-[12px]/[normal] font-montserrat text-[#DC2626]' x-text='errorMessage'></span>
+      <span class='text-[12px]/[normal] font-inter text-[#DC2626]' x-text='errorMessage'></span>
     </div>
   </template>
   {{!-- Fullscreen preview --}}

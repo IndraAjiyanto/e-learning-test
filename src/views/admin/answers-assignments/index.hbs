@@ -1,14 +1,8 @@
 {{!--
-  Page: Admin — Assignment Review / Logbook Review (Container - Logbook Detail 1022, slicing.pen iLK5a)
+  Page: Admin — Assignment Review / Logbook Review
   Path: admin/answers-assignments/index.hbs
   Route: GET /answer-assigment/:assignmentId (admin)
   Data: { user, assignment (Assignment + session.weeks.course), assignment_answer[] }
-  Design: Container w1052 gap28 → Frame 2147229618 (Back + Title 34/brand, subtitle 16/medium)
-          → Frame 2147229619 (2 Kolom gap 16):
-          - Kiri: Table Detail Session (w554, fill #FFF, r12, stroke #D9D9D9, p12 20 20 20, gap20):
-            Tabs All/Under Review/Approved/Rejected + Button Wrapper cards (answer-review-card.hbs).
-          - Kanan: View Logbook (w482, r12, stroke #D9D9D9, overflow hidden, header navy #003060 h93
-            dengan Title "Assigment File" + assignment.title, body white p24 28 canvas #282828).
   Komponen:
     - components/ui/admin/assignment/answer-review-card (molekul card jawaban siswa)
     - components/ui/admin/assignment/assignment-file-preview (organism panel kanan View Logbook)
@@ -18,9 +12,9 @@
     x-data='answerTabData()' x-init='init()'
     @review-select.window='selectedUserId = $event.detail.userId; selectedUsername = $event.detail.username; selectedFile = $event.detail.file; activePreviewMode = "student"'>
 
-    {{!-- Frame 2147229618: Back + Title --}}
+    {{!-- Back + Title --}}
     <div class='flex flex-col gap-[12px] w-full'>
-      {{!-- Frame 2147229598: Back (z4xUMn: SVG Hiwbb + Back pFeHu) --}}
+      {{!-- Back --}}
       <div class='flex flex-row gap-[24px] justify-between items-center w-full'>
         <a href='/session/{{assignment.session.id}}'
           class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
@@ -28,22 +22,22 @@
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'>
             <path d='m15 18-6-6 6-6'/>
           </svg>
-          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+          <span class='text-[16px]/[normal] text-[#718096] font-inter font-medium'>Back</span>
         </a>
       </div>
 
       {{!-- Title (ZPyni: Heading B0EYt + Sub heading gwOFm) --}}
       <div class='flex flex-col gap-[4px] w-full'>
-        <h1 class='text-[34px]/[1.06] w-full text-[#003060] font-montserrat font-bold tracking-[-1px] text-left'>
+        <h1 class='text-[34px]/[1.06] w-full text-[#003060] font-inter font-bold tracking-[-1px] text-left'>
           {{#if assignment.session.sessionOrder}}Session {{assignment.session.sessionOrder}} - Logbook Review{{else}}{{default assignment.title 'Assignment Review'}}{{/if}}
         </h1>
-        <p class='text-[16px]/[1.25] w-full text-[#718096] font-montserrat font-medium text-left'>
+        <p class='text-[16px]/[1.25] w-full text-[#718096] font-inter font-medium text-left'>
           Review submitted logbooks for this session
         </p>
       </div>
     </div>
 
-    {{!-- Frame 2147229619: Main 2-Column Layout (gap 16px) --}}
+    {{!-- Main 2-Column Layout (gap 16px) --}}
     <div class='flex flex-col lg:flex-row gap-[16px] w-full items-start justify-between'>
 
       {{!-- Left Column: Table Detail Session (N7EC40: w554 fill, r12, stroke #D9D9D9, p12 20 20 20, gap20) --}}
@@ -54,28 +48,28 @@
           {{!-- All Tab (As9Bq: w83, h40, p10 32, font 14/600 #003060) --}}
           <button type='button' @click="setTab('all')"
             :class="activeTab === 'all' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
-            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[28px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[28px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-inter font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
             All
           </button>
 
           {{!-- Under Review Tab (vUAGT: w166, h40, p10 32, font 14/600 #003060) --}}
           <button type='button' @click="setTab('process')"
             :class="activeTab === 'process' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
-            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-inter font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
             Under Review
           </button>
 
           {{!-- Approved Tab (f2Fi6: w135, h40, p10 32, font 14/600 #003060) --}}
           <button type='button' @click="setTab('approved')"
             :class="activeTab === 'approved' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
-            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-inter font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
             Approved
           </button>
 
           {{!-- Rejected Tab (B6Oy0: w128, h40, p10 32, font 14/600 #003060) --}}
           <button type='button' @click="setTab('rejected')"
             :class="activeTab === 'rejected' ? 'border-b-[#003060] text-[#003060]' : 'border-transparent text-[#718096] hover:text-[#003060]'"
-            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-montserrat font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+            class='shrink-0 h-[40px] flex flex-row gap-[4px] px-[24px] py-[10px] border-b-2 justify-center items-center text-[14px]/[normal] font-inter font-semibold whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
             Rejected
           </button>
         </div>

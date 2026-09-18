@@ -8,7 +8,7 @@
   - text        : Teks badge (wajib)
   - tag         : Elemen HTML: span | h2 | h3 | div (default: span)
   - variant     : 'default' | 'section' (default: 'default')
-                  'section' = pill eyebrow Figma (dot biru + UPPERCASE, abu-abu muda),
+                  'section' = pill eyebrow (dot biru + UPPERCASE, abu-abu muda),
                   dipakai di atas judul section — warna, ukuran & dot sudah diatur,
                   cukup kirim `text` saja.
   - color       : Warna teks (default: primary → "text-[#003060]")
@@ -29,7 +29,7 @@
 {{#if (eq variant 'section')}}
 <{{default tag 'span'}} class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border
   border-[#E5E7EB] bg-[#F8F9FA] text-[#0B1F3B] shadow-none
-  px-4 py-1.5 font-montserrat text-[12px] font-bold uppercase tracking-wide
+  px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-wide
   before:inline-block before:h-2 before:w-2 before:shrink-0 before:rounded-full before:bg-[#6EB6E5] before:content-['']
   {{class}}">
   {{text}}

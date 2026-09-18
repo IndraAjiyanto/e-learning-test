@@ -9,7 +9,6 @@
   Alpine scope (parent): `materi` { id, title, file, fileType }, `session` id
          server-side ({{session.id}}) untuk URL delete.
 
-  Pencil (Container - Session Materi → Button <title>):
   row h68 white r8 stroke #D9D9D9 p8 14 gap6; judul Montserrat 16/600 #003060;
   edit 44x44 outline #D9D9D9 (square-pen 20 #525252); delete 44x44 outline
   #D9D9D9 (trash-2 16 #C80606); Detail w81 h44 outline #003060 shadow teks
@@ -22,7 +21,7 @@
 
   {{!-- Title (+ optional file link) --}}
   <div class='flex-1 min-w-0 flex flex-col gap-[2px] justify-center items-start'>
-    <div class='text-[16px]/[normal] w-full text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='materi.title' :title='materi.title'></div>
+    <div class='text-[16px]/[normal] w-full text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='materi.title' :title='materi.title'></div>
     {{#if showFileLink}}
     <template x-if='materi.file'>
       <a :href='materi.file' target='_blank' rel='noopener noreferrer'
