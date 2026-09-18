@@ -9,25 +9,32 @@
 
 ## 1. BACA INI DULU — keadaan per 2026-09-18
 
-**Jalur silabus sudah jalan dari ujung ke ujung.** Student bisa membuka daftar
-silabus, membuka detailnya, dan menandainya selesai; admin bisa menambah,
-mengubah, memindah urutan, dan menghapus silabus.
+**S4 SELESAI. Jalur silabus lengkap dari ujung ke ujung.** Student bisa membuka
+daftar silabus, membuka detailnya, dan menandainya selesai; admin bisa menambah,
+mengubah, memindah urutan, menghapus silabus, **mengisinya dengan materi dan
+tugas**, dan **melihat siapa sudah menyelesaikan silabus apa**.
 
 `design-check` **258/259**. Satu-satunya kegagalan adalah celah lama
 `week pagination` yang butuh PRD tersendiri — bukan bagian dari pekerjaan ini.
+Ditambah `test/ui/syllabus-admin-check.mjs` **22/22** untuk sisi admin.
 
-**Yang masih harus dikerjakan** ada di S4, dan tidak ada yang menghalanginya:
+Tiga sisa S4 pada serah terima sebelumnya, dan apa jadinya:
 
-1. **CRUD materi dan tugas silabus.** Tabelnya (`syllabus_material`,
-   `syllabus_assignment`) sudah ada sejak S0 dan sudah dibaca sisi student,
-   tetapi belum ada layar admin untuk mengisinya. Ini yang paling terasa:
-   silabus hari ini hanya bisa berisi judul.
-2. **Layar penyelesaian di sisi admin** — pengganti layar absensi, membaca
-   `syllabus_progress` ("siapa sudah menyelesaikan silabus apa").
-3. **Sapuan 61 label** session/week di sisi admin supaya mengikuti
-   `caps.unitLabel`.
-
-Nomor 1 yang paling berharga dikerjakan lebih dulu.
+1. **CRUD materi dan tugas silabus** — **selesai.**
+   `/program/syllabus/manage/:courseId/:syllabusId`. PDF diunggah, PPT dan
+   video berupa tautan, persis pembagian yang sudah berlaku di jalur bootcamp.
+2. **Layar penyelesaian** — **selesai.**
+   `/program/syllabus/completion/:courseId`, matriks student × silabus.
+   Daftar orangnya dari **pendaftaran**, bukan dari baris progres: baris progres
+   baru ada setelah student menyelesaikan sesuatu, jadi kalau daftarnya dari
+   sana, student yang belum mengerjakan apa pun tidak muncul — padahal justru
+   merekalah yang dicari admin di layar ini.
+3. **Sapuan 61 label** — **sebagian besar ternyata tidak perlu.** Diperiksa satu
+   per satu: dari 45 label session/week yang tersisa di sisi admin, 44 ada di
+   layar `admin/weeks/*` dan `admin/session/*` yang **hanya terjangkau lewat tab
+   "Week"**, dan tab itu sudah disembunyikan untuk program SPL sejak `3bea0076`.
+   Label di sana memang seharusnya berbunyi "Week"/"Session". Satu label sisanya
+   nyata salah dan sudah diperbaiki — lihat bagian temuan di bawah.
 
 **Program bootcamp tidak boleh ikut berubah**, dan itu dijaga otomatis: enam
 pemeriksaan terakhir pada layar `non-bootcamp-program` memeriksa bootcamp tetap
@@ -50,7 +57,7 @@ dimulai tanpa menunggu siapa pun. Lihat bagian 5.
 | S1 entity + service | selesai | `bad11d0f` |
 | S2 perpindahan data | selesai | `6e57aeca` |
 | S3 sisi student | selesai | `34fc2bcc` |
-| **S4 sisi admin** | **sebagian — lanjutkan dari sini** | `3bea0076` |
+| S4 sisi admin | selesai | `3bea0076` + commit ini |
 | S5 hitungan | selesai | `4dbcc175` |
 | S6 buang jalur lama | selesai | `4dbcc175` |
 | S7 pemeriksaan | selesai | `3bea0076` |
@@ -220,6 +227,47 @@ Setelah S3–S5 terbukti jalan:
 
 ---
 
+## 4b. Temuan saat mengerjakan S4 — baca sebelum melanjutkan
+
+Empat hal yang ditemukan sambil jalan. Dua sudah diperbaiki, dua masih terbuka.
+
+### Sudah diperbaiki
+
+**Kepala kuis admin selalu menulis "Week " tanpa angka.**
+`src/views/admin/quiz/detail.hbs` membaca `{{quiz.weeks.week_number}}` — itu
+nama KOLOM di basis data, sedangkan properti entity-nya `weekNumber`. Handlebars
+diam saja untuk properti yang tidak ada, jadi selama ini kepala halaman berbunyi
+"Full Stack Developer · Week " dengan angka kosong, dan tidak ada yang
+menyadarinya. Sekarang `weekNumber`, dan ada cabang untuk kuis silabus yang
+memang tidak punya `quiz.weeks`.
+
+**Minggu masih bisa dibuat pada program silabus lewat rute langsung.**
+`3bea0076` menyembunyikan tab "Week" untuk program SPL, tetapi tab yang
+disembunyikan bukan penjagaan — `POST /week/:courseId` tetap melayani siapa pun
+yang memanggilnya, dan minggu yang terlanjur dibuat membuat satu program punya
+dua struktur sekaligus. Penjaganya sekarang ada di `weeks.service.create()`,
+memakai `capabilitiesForCourse()` supaya tetap satu sumber kebenaran.
+Dibuktikan dengan kontrol: payload yang sama membuat minggu pada program
+bootcamp, dan ditolak pada program silabus.
+
+### Masih terbuka
+
+**Kuis per silabus baru ada di skema, belum tersambung.**
+Migrasi `1788900000000` sudah membuat `quiz.syllabusId` dan membuang
+`quiz.courseId`, tetapi **modul `quiz` belum menyentuhnya sama sekali**: semua
+rutenya masih `:weeksId` (`quiz.controller.ts`), dan `quiz.service.findOne()`
+hanya memuat relasi `weeks`. Artinya admin belum punya cara membuat kuis pada
+sebuah silabus, dan student belum punya cara mengerjakannya. Ini pekerjaan
+tersendiri, bukan sapuan label — perlakukan sebagai tahap baru.
+
+**Tujuh baris drift `schema:log` yang bukan dari pekerjaan ini.**
+Semuanya pada `payments`, `installment`, dan `gallery` — tabel yang tidak
+disentuh rangkaian silabus, berasal dari cabang `test-back-office` yang sudah
+digabung. Nol drift pada tabel silabus/kuis/course. Jangan kira ini akibat
+pekerjaan silabus.
+
+---
+
 ## 5. Pertanyaan yang masih menunggu jawaban pemilik
 
 **Tidak ada lagi pertanyaan yang menghalangi.** Dua pertanyaan yang mahal
@@ -285,6 +333,25 @@ Kalau basis datanya disemai ulang, ambil lagi dengan query di
 `week pagination` (lama, butuh PRD).
 Kalau tiba-tiba turun ke ~170, itu tanda env var-nya hilang, bukan regresi.
 
+### Menjalankan pemeriksaan sisi ADMIN
+
+`design-check.mjs` masuk sebagai student dari awal sampai akhir, jadi layar
+admin silabus diperiksa berkas terpisah:
+
+```bash
+COURSE=af9279ec-3c6d-4737-a751-b186ca08c08e ENROLLED=1 \
+  node test/ui/syllabus-admin-check.mjs
+```
+
+Diharapkan **22/22**. Pemeriksa ini benar-benar menambah materi dan tugas lewat
+formulir (termasuk satu unggahan PDF sungguhan), membacanya kembali dari daftar,
+lalu menghapusnya lagi — basis data kembali seperti semula. Tanpa `COURSE` ia
+**berhenti dengan status gagal**, bukan lulus diam-diam; pelajaran dari jebakan
+`test:ui` di atas.
+
+`ENROLLED` boleh dikosongkan; kalau diisi, jumlah baris pada layar penyelesaian
+dibandingkan dengan jumlah pendaftar.
+
 ### Membangun basis data dari nol
 
 ```bash
@@ -325,8 +392,13 @@ npx tsc --noEmit
 npm run build
 ./scripts/check-user-area.sh
 IDS=... EXTRA_IDS=... npm run test:ui
+COURSE=... node test/ui/syllabus-admin-check.mjs                  # kalau menyentuh sisi admin silabus
 npx typeorm-ts-node-commonjs schema:log -d ./src/data-source.ts   # kalau menyentuh entity
 ```
+
+`check-user-area.sh` akan **menyalak** untuk berkas admin/super_admin yang
+berubah. Itu memang aturannya, bukan kegagalan — sebutkan di deskripsi PR dan
+minta review pemilik halaman super admin.
 
 Diagram basis data ikut diperbarui kalau ada tabel baru:
 

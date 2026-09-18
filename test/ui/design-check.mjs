@@ -468,12 +468,25 @@ const SCREENS = [
         const found = await ctl.count() > 0;
         let clicked = false;
         if (found) clicked = await ctl.click({ timeout: 5000 }).then(() => true).catch(() => false);
-        await page.waitForTimeout(1500);
-        const chars = await page.evaluate(() => {
+
+        // DITUNGGU sampai panelnya terisi, bukan tidur 1500ms lalu mengukur.
+        // Beberapa panel (Assignment, Quiz) memuat isinya lewat fetch, dan
+        // tidur dengan panjang tetap membuat pemeriksa ini kadang gagal padahal
+        // aplikasinya baik-baik saja - persis yang terjadi: satu kali jalan
+        // "Assignment" terbaca 1 karakter, jalan berikutnya lolos, tanpa ada
+        // yang berubah. Gerbang yang kadang berbohong lebih buruk daripada
+        // tidak ada gerbang, karena orang berikutnya akan mengejar hantu.
+        const measure = () => page.evaluate(() => {
           const shown = [...document.querySelectorAll('[x-show^="activeSection ==="]')]
             .filter((el) => getComputedStyle(el).display !== 'none');
           return shown.map((el) => el.innerText.trim()).join(' ').length;
         });
+        let chars = 0;
+        for (const deadline = Date.now() + 8000; Date.now() < deadline; ) {
+          chars = await measure();
+          if (chars > 20) break;
+          await page.waitForTimeout(250);
+        }
         check(s, `"${label}" reachable from the program card`,
           found && clicked && chars > 20,
           found ? (clicked ? `${chars} chars` : 'found but click failed') : `no ${role} named "${label}"`);

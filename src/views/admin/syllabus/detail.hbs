@@ -1,0 +1,133 @@
+{{!--
+  Halaman admin: isi satu silabus (materi dan tugas).
+  Rute: GET /program/syllabus/manage/:courseId/:syllabusId
+
+  Pembagian unggah vs tautan MENGIKUTI jalur bootcamp apa adanya:
+  PDF diunggah, PPT dan video berupa tautan (Google Slides, YouTube). Bukan
+  kebiasaan baru - supaya admin tidak menemui dua cara berbeda untuk hal yang
+  sama.
+--}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle='Syllabus content' back=(concat '/program/syllabus/manage/' courseId)}}
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
+  <div class="flex w-full flex-col gap-4">
+
+    <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+      <span class="inline-flex items-center gap-2 rounded-full bg-[#E4F1F7] px-2.5 py-1 font-inter text-xs font-semibold text-[#003060]">
+        Syllabus {{syllabus.order}}
+      </span>
+      <h1 class="mt-2 font-montserrat text-xl font-bold text-[#003060] sm:text-2xl">{{syllabus.title}}</h1>
+      <p class="mt-1 font-inter text-sm text-[#737373]">{{course.name}}</p>
+    </div>
+
+    <!-- Materi -->
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="border-b border-[#E5E5E5] px-5 py-4">
+        <h2 class="font-montserrat text-base font-bold text-[#171717]">Materials</h2>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data"
+            action="/program/syllabus/manage/{{courseId}}/{{syllabus.id}}/material"
+            class="border-b border-[#E5E5E5] bg-[#FAFAFA] px-5 py-4"
+            x-data="{ kind: 'pdf' }">
+        <div class="flex flex-wrap items-center gap-2">
+          <input type="text" name="title" required placeholder="Material title"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+          <select name="fileType" x-model="kind"
+            class="h-10 shrink-0 rounded-lg border border-[#D4D4D4] bg-white px-3 font-inter text-sm text-[#171717] focus:border-[#003060] focus:outline-none">
+            <option value="pdf">PDF (upload)</option>
+            <option value="ppt">PPT (link)</option>
+            <option value="video">Video (link)</option>
+          </select>
+          {{!-- Hanya satu yang tampil, supaya tidak ada dua sumber berkas yang
+               saling bertabrakan. --}}
+          <input type="file" name="upload" accept="application/pdf" x-show="kind === 'pdf'"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3 py-1.5 font-inter text-sm text-[#525252]" />
+          {{!-- `style="display:none"` ditulis langsung: [x-cloak] tidak
+               didefinisikan global di proyek ini, tiap halaman memasangnya
+               sendiri. Tanpa ini medan tautan berkelip sebelum Alpine jalan. --}}
+          <input type="url" name="link" placeholder="https://..." x-show="kind !== 'pdf'" x-cloak style="display:none"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+          <button type="submit"
+            class="inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white hover:bg-[#00254a]">
+            <i class="fa-solid fa-plus text-xs"></i>Add
+          </button>
+        </div>
+      </form>
+
+      {{#if syllabus.materials.length}}
+        <ul class="divide-y divide-[#F0F0F0]">
+          {{#each syllabus.materials}}
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span class="inline-flex shrink-0 items-center rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-semibold uppercase text-[#525252]">{{this.fileType}}</span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate font-inter text-sm font-semibold text-[#171717]">{{this.title}}</span>
+                <span class="block truncate font-inter text-xs text-[#737373]">{{this.file}}</span>
+              </span>
+              <a href="{{this.file}}" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3 font-inter text-sm font-semibold text-[#003060] no-underline hover:bg-[#E4F1F7]">Open</a>
+              <form method="POST" action="/program/syllabus/manage/{{../courseId}}/{{../syllabus.id}}/material/{{this.id}}/delete"
+                    onsubmit="return confirm('Delete this material?')">
+                <button type="submit"
+                  class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-[8px] border border-[#FECACA] bg-white px-3 font-inter text-sm font-semibold text-[#B42318] hover:bg-[#FEF2F2]">
+                  <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
+              </form>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="px-5 py-8 text-center font-inter text-sm text-[#737373]">No materials yet.</p>
+      {{/if}}
+    </div>
+
+    <!-- Tugas -->
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="border-b border-[#E5E5E5] px-5 py-4">
+        <h2 class="font-montserrat text-base font-bold text-[#171717]">Assignments</h2>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data"
+            action="/program/syllabus/manage/{{courseId}}/{{syllabus.id}}/assignment"
+            class="border-b border-[#E5E5E5] bg-[#FAFAFA] px-5 py-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <input type="text" name="title" required placeholder="Assignment title"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+          <input type="file" name="upload" accept="application/pdf"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3 py-1.5 font-inter text-sm text-[#525252]" />
+          <input type="url" name="link" placeholder="or a link"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+          <button type="submit"
+            class="inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white hover:bg-[#00254a]">
+            <i class="fa-solid fa-plus text-xs"></i>Add
+          </button>
+        </div>
+      </form>
+
+      {{#if syllabus.assignments.length}}
+        <ul class="divide-y divide-[#F0F0F0]">
+          {{#each syllabus.assignments}}
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span class="min-w-0 flex-1">
+                <span class="block truncate font-inter text-sm font-semibold text-[#171717]">{{this.title}}</span>
+                <span class="block truncate font-inter text-xs text-[#737373]">{{this.file}}</span>
+              </span>
+              <a href="{{this.file}}" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-[#003060] bg-white px-3 font-inter text-sm font-semibold text-[#003060] no-underline hover:bg-[#E4F1F7]">Open</a>
+              <form method="POST" action="/program/syllabus/manage/{{../courseId}}/{{../syllabus.id}}/assignment/{{this.id}}/delete"
+                    onsubmit="return confirm('Delete this assignment? Student submissions and comments go with it.')">
+                <button type="submit"
+                  class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-[8px] border border-[#FECACA] bg-white px-3 font-inter text-sm font-semibold text-[#B42318] hover:bg-[#FEF2F2]">
+                  <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
+              </form>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="px-5 py-8 text-center font-inter text-sm text-[#737373]">No assignments yet.</p>
+      {{/if}}
+    </div>
+
+  </div>
+</div>
+{{/user/shell_frame/index}}

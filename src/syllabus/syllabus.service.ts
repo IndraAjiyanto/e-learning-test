@@ -2,8 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
+import { SyllabusMaterial } from 'src/entities/syllabus_material.entity';
+import { SyllabusAssignment } from 'src/entities/syllabus_assignment.entity';
+import { FileType } from 'src/entities/materials.entity';
 import { capabilitiesForCourse } from 'src/courses/program-type';
 
 /** Keadaan satu silabus bagi seorang student. */
@@ -50,6 +54,12 @@ export class SyllabusService {
     private readonly progressRepository: Repository<SyllabusProgress>,
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @InjectRepository(SyllabusMaterial)
+    private readonly materialRepository: Repository<SyllabusMaterial>,
+    @InjectRepository(SyllabusAssignment)
+    private readonly assignmentRepository: Repository<SyllabusAssignment>,
+    @InjectRepository(UserCourse)
+    private readonly userCourseRepository: Repository<UserCourse>,
   ) {}
 
   // ----------------------------------------------------------------- baca
@@ -243,6 +253,150 @@ export class SyllabusService {
         logbookOk: approved,
       }),
     );
+  }
+
+  // --------------------------------------------------- isi silabus (admin)
+
+  /**
+   * Menambah materi. `fileType` dibatasi tiga nilai yang sama dengan jalur
+   * bootcamp - enumnya memang dipakai bersama, bukan disalin.
+   */
+  async addMaterial(
+    syllabusId: string,
+    data: { title: string; file: string; fileType: FileType },
+  ): Promise<SyllabusMaterial> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+    if (!data.title?.trim()) throw new Error('Title is required.');
+    if (!data.file?.trim()) throw new Error('File or link is required.');
+    return this.materialRepository.save(
+      this.materialRepository.create({
+        syllabus,
+        title: data.title.trim(),
+        file: data.file.trim(),
+        fileType: data.fileType,
+      }),
+    );
+  }
+
+  async removeMaterial(materialId: string): Promise<string> {
+    const item = await this.materialRepository.findOne({
+      where: { id: materialId },
+      relations: ['syllabus'],
+    });
+    if (!item) throw new NotFoundException('Material not found');
+    const syllabusId = item.syllabus.id;
+    await this.materialRepository.remove(item);
+    return syllabusId;
+  }
+
+  async addAssignment(
+    syllabusId: string,
+    data: { title: string; file: string },
+  ): Promise<SyllabusAssignment> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+    if (!data.title?.trim()) throw new Error('Title is required.');
+    if (!data.file?.trim()) throw new Error('File or link is required.');
+    return this.assignmentRepository.save(
+      this.assignmentRepository.create({
+        syllabus,
+        title: data.title.trim(),
+        file: data.file.trim(),
+      }),
+    );
+  }
+
+  /**
+   * Menghapus tugas ikut menghapus jawaban student dan komentarnya lewat
+   * CASCADE di basis data. Itu disengaja - tugas yang hilang tidak boleh
+   * meninggalkan jawaban yatim.
+   */
+  async removeAssignment(assignmentId: string): Promise<string> {
+    const item = await this.assignmentRepository.findOne({
+      where: { id: assignmentId },
+      relations: ['syllabus'],
+    });
+    if (!item) throw new NotFoundException('Assignment not found');
+    const syllabusId = item.syllabus.id;
+    await this.assignmentRepository.remove(item);
+    return syllabusId;
+  }
+
+  /**
+   * Siapa sudah menyelesaikan silabus apa - pengganti layar absensi.
+   *
+   * Daftar orangnya diambil dari PENDAFTARAN (`user_courses`), bukan dari
+   * baris progres. Bedanya menentukan: baris progres baru ada setelah student
+   * menyelesaikan sesuatu, jadi kalau daftarnya dari sana, student yang belum
+   * mengerjakan apa pun tidak muncul sama sekali - padahal justru merekalah
+   * yang dicari admin di layar ini.
+   */
+  async completionFor(courseId: string) {
+    const items = await this.syllabusRepository.find({
+      where: { course: { id: courseId } },
+      order: { order: 'ASC' },
+    });
+
+    const enrolled = await this.userCourseRepository.find({
+      where: { course: { id: courseId } },
+      relations: ['user'],
+    });
+
+    const progresses = await this.progressRepository.find({
+      where: { syllabus: { course: { id: courseId } } },
+      relations: ['syllabus', 'user'],
+    });
+
+    const done = new Set(
+      progresses
+        .filter((p) => p.completedAt && p.user)
+        .map((p) => `${p.user.id}:${p.syllabus.id}`),
+    );
+
+    const students = new Map<
+      string,
+      { id: string; name: string; email: string }
+    >();
+    for (const e of enrolled) {
+      if (!e.user) continue;
+      students.set(e.user.id, {
+        id: e.user.id,
+        name: e.user.username ?? '',
+        email: e.user.email ?? '',
+      });
+    }
+    // Jaring pengaman: student yang punya progres tetapi pendaftarannya sudah
+    // dicabut tetap ditampilkan, supaya pekerjaannya tidak hilang diam-diam.
+    for (const p of progresses) {
+      if (!p.user || students.has(p.user.id)) continue;
+      students.set(p.user.id, {
+        id: p.user.id,
+        name: p.user.username ?? '',
+        email: p.user.email ?? '',
+      });
+    }
+
+    const rows = [...students.values()]
+      .map((st) => ({
+        ...st,
+        cells: items.map((i) => ({
+          id: i.id,
+          done: done.has(`${st.id}:${i.id}`),
+        })),
+        completed: items.filter((i) => done.has(`${st.id}:${i.id}`)).length,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return {
+      syllabi: items.map((i) => ({ id: i.id, order: i.order, title: i.title })),
+      rows,
+      total: items.length,
+    };
   }
 
   // ---------------------------------------------------------------- admin

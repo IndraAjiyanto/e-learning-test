@@ -37,7 +37,16 @@
               <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>Min: {{quiz.minScore}}</span>
             </div>
             <div class='box-border flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
-              <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>{{quiz.weeks.course.name}} · Week {{quiz.weeks.week_number}}</span>
+              {{!-- Kuis bootcamp menempel pada minggu; kuis silabus (non-bootcamp)
+                   menempel pada silabus dan TIDAK punya `quiz.weeks`. Tanpa penjaga
+                   ini kuis silabus akan menampilkan " · Week " dengan dua tempat
+                   kosong. Jalur silabusnya sendiri belum tersambung di modul quiz -
+                   lihat docs/syllabus-HANDOVER.md. --}}
+              {{#if quiz.weeks}}
+                <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>{{quiz.weeks.course.name}} · Week {{quiz.weeks.weekNumber}}</span>
+              {{else}}
+                <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'>{{quiz.syllabus.course.name}} · Syllabus {{quiz.syllabus.order}}</span>
+              {{/if}}
             </div>
           </div>
         </div>

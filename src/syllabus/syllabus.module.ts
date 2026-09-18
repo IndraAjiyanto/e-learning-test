@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SyllabusService } from './syllabus.service';
 import { SyllabusController } from './syllabus.controller';
 import { Course } from 'src/entities/course.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { SyllabusMaterial } from 'src/entities/syllabus_material.entity';
 import { SyllabusAssignment } from 'src/entities/syllabus_assignment.entity';
@@ -18,6 +19,7 @@ import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
   imports: [
     TypeOrmModule.forFeature([
       Course,
+      UserCourse,
       Syllabus,
       SyllabusMaterial,
       SyllabusAssignment,

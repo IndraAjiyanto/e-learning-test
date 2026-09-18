@@ -1,0 +1,98 @@
+{{!--
+  Halaman admin: penyelesaian silabus - PENGGANTI layar absensi.
+  Rute: GET /program/syllabus/completion/:courseId
+
+  Program non-bootcamp tidak punya absensi (keputusan pemilik 2026-09-18:
+  "absensi SPL dihapus, pakai completedAt"). Yang dilihat admin di sini bukan
+  siapa hadir pada jam berapa, melainkan siapa sudah MENYELESAIKAN silabus
+  apa - satu-satunya kemajuan yang memang ada pada belajar mandiri.
+
+  Daftar orangnya berasal dari pendaftaran, bukan dari baris progres, supaya
+  student yang belum mengerjakan apa pun tetap terlihat. Justru merekalah yang
+  dicari di layar ini.
+--}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle='Completion' back=(concat '/program/syllabus/manage/' course.id)}}
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
+  <div class="flex w-full flex-col gap-4">
+
+    <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+      <h1 class="font-montserrat text-xl font-bold text-[#003060] sm:text-2xl">Completion</h1>
+      <p class="mt-1 font-inter text-sm text-[#737373]">{{course.name}}</p>
+      <p class="mt-2 font-inter text-xs text-[#737373]">
+        Self-paced program — there is no attendance. This is who has marked
+        each syllabus complete.
+      </p>
+    </div>
+
+    {{#if rows.length}}
+      <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        {{!-- Silabus bisa banyak, jadi tabelnya digulung mendatar dan kolom
+             nama dipakukan supaya barisnya tetap terbaca saat digulung. --}}
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse font-inter text-sm">
+            <thead>
+              <tr class="bg-[#FAFAFA]">
+                <th class="sticky left-0 z-10 border-b border-[#E5E5E5] bg-[#FAFAFA] px-5 py-3 text-left font-semibold text-[#525252]">Student</th>
+                {{#each syllabi}}
+                  <th class="border-b border-[#E5E5E5] px-3 py-3 text-center font-semibold text-[#525252]" title="{{this.title}}">
+                    <span class="block text-xs">{{this.order}}</span>
+                  </th>
+                {{/each}}
+                <th class="border-b border-[#E5E5E5] px-5 py-3 text-right font-semibold text-[#525252]">Done</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each rows}}
+                <tr class="hover:bg-[#FAFAFA]">
+                  <td class="sticky left-0 z-10 border-b border-[#F0F0F0] bg-white px-5 py-3 hover:bg-[#FAFAFA]">
+                    <span class="block truncate font-semibold text-[#171717]">{{this.name}}</span>
+                    <span class="block truncate text-xs text-[#737373]">{{this.email}}</span>
+                  </td>
+                  {{#each this.cells}}
+                    <td class="border-b border-[#F0F0F0] px-3 py-3 text-center">
+                      {{#if this.done}}
+                        <span class="mx-auto grid size-6 place-items-center rounded-full bg-[#F0FDF4] text-[#15803D]" title="Completed">
+                          <i class="fa-solid fa-check text-[0.65rem]"></i>
+                        </span>
+                      {{else}}
+                        <span class="mx-auto block size-1.5 rounded-full bg-[#E5E5E5]" title="Not yet"></span>
+                      {{/if}}
+                    </td>
+                  {{/each}}
+                  <td class="border-b border-[#F0F0F0] px-5 py-3 text-right">
+                    <span class="font-inter text-sm font-semibold {{#if (eq this.completed ../total)}}text-[#15803D]{{else}}text-[#525252]{{/if}}">
+                      {{this.completed}}/{{../total}}
+                    </span>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {{!-- Kunci nomor kolom. Judulnya tidak muat di kepala tabel, jadi
+           disebutkan di bawahnya, bukan dipotong sampai tidak berarti. --}}
+      <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        <span class="block font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]">Columns</span>
+        <ul class="mt-2 flex flex-wrap gap-x-5 gap-y-1">
+          {{#each syllabi}}
+            <li class="font-inter text-xs text-[#525252]">
+              <span class="font-semibold text-[#003060]">{{this.order}}.</span> {{this.title}}
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+    {{else}}
+      <div class="rounded-xl border border-[#E5E5E5] bg-white px-5 py-12 text-center">
+        <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+          <i class="fa-solid fa-user-group text-base"></i>
+        </span>
+        <p class="font-inter text-sm font-semibold text-[#171717]">No students enrolled yet</p>
+        <p class="mt-1 font-inter text-xs text-[#737373]">Completion appears here once someone joins this program.</p>
+      </div>
+    {{/if}}
+
+  </div>
+</div>
+{{/user/shell_frame/index}}

@@ -12,6 +12,7 @@ import { Course } from 'src/entities/course.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Session } from 'src/entities/session.entity';
+import { capabilitiesForCourse } from 'src/courses/program-type';
 import { Quiz } from 'src/entities/quiz.entity';
 
 @Injectable()
@@ -43,6 +44,19 @@ export class WeeksService {
     if (!course) {
       throw new NotFoundException('course Not Found');
     }
+
+    // Program non-bootcamp memakai silabus, bukan minggu-lalu-sesi. Tab "Week"
+    // memang sudah disembunyikan untuk program seperti itu, TETAPI tab yang
+    // disembunyikan bukan penjagaan - rutenya masih bisa dipanggil langsung,
+    // dan minggu yang terlanjur dibuat membuat program punya dua struktur
+    // sekaligus. Penjagaannya ada di sini, di server.
+    if (capabilitiesForCourse(course).structure === 'syllabus') {
+      throw new BadRequestException(
+        'Program ini memakai silabus, bukan minggu. Kelola isinya lewat ' +
+          `/program/syllabus/manage/${course.id}.`,
+      );
+    }
+
     if (createWeekDto.weekNumber === 1) {
       const data = await this.weeksRepository.create({
         ...createWeekDto,
