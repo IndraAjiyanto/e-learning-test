@@ -361,12 +361,6 @@
 
           <div class='flex flex-col-reverse gap-3 sm:flex-row'>
             {{> components/ui/super_admin/form/button
-              variant='secondary'
-              label='Save draft'
-              disabled=true
-            }}
-
-            {{> components/ui/super_admin/form/button
               type='submit'
               variant='primary'
               label='Create Program'
@@ -380,7 +374,6 @@
       <div class='hidden self-stretch lg:block'>
         {{> components/ui/super_admin/form/progress
           steps='steps'
-          tips='You can save draft anytime before publishing'
         }}
       </div>
     </div>
