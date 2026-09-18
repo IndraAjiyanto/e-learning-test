@@ -1,0 +1,557 @@
+_uuid_migration_meta|kind|text|NO||
+_uuid_migration_meta|table_name|text|NO||
+_uuid_migration_meta|object_name|text|NO||
+_uuid_migration_meta|payload|jsonb|NO||
+about|image|character varying|NO||
+about|createdAt|timestamp without time zone|NO||
+about|updatedAt|timestamp without time zone|NO||
+about|title|jsonb|YES||
+about|text|jsonb|YES||
+about|id|uuid|NO|PK|
+activity_log|id|uuid|NO|PK|
+activity_log|userId|uuid|NO||
+activity_log|eventType|USER-DEFINED|NO||
+activity_log|eventAt|timestamp without time zone|NO||
+activity_log|createdAt|timestamp without time zone|NO||
+alumni|profile|character varying|NO||
+alumni|createdAt|timestamp without time zone|NO||
+alumni|updatedAt|timestamp without time zone|NO||
+alumni|name|jsonb|YES||
+alumni|message|jsonb|YES||
+alumni|currentPosition|jsonb|YES||
+alumni|id|uuid|NO|PK|
+alumni|courseId|uuid|YES||
+answer_task|file|character varying|NO||
+answer_task|process|USER-DEFINED|NO||
+answer_task|createdAt|timestamp without time zone|NO||
+answer_task|updatedAt|timestamp without time zone|NO||
+answer_task|id|uuid|NO|PK|
+answer_task|userId|uuid|YES||
+answer_task|taskId|uuid|YES||
+answers|answer|character varying|NO||
+answers|isCorrect|boolean|NO||
+answers|createdAt|timestamp without time zone|NO||
+answers|updatedAt|timestamp without time zone|NO||
+answers|id|uuid|NO|PK|
+answers|questionId|uuid|YES||
+assignments|title|character varying|NO||
+assignments|file|character varying|NO||
+assignments|createdAt|timestamp without time zone|NO||
+assignments|updatedAt|timestamp without time zone|NO||
+assignments|id|uuid|NO|PK|
+assignments|sessionId|uuid|YES||
+attendance|status|USER-DEFINED|NO||
+attendance|attendanceTime|timestamp without time zone|NO||
+attendance|notes|character varying|NO||
+attendance|createdAt|timestamp without time zone|NO||
+attendance|updatedAt|timestamp without time zone|NO||
+attendance|id|uuid|NO|PK|
+attendance|userId|uuid|YES||
+attendance|sessionId|uuid|YES||
+award|awardOrder|integer|YES||
+award|createdAt|timestamp without time zone|NO||
+award|updatedAt|timestamp without time zone|NO||
+award|content|jsonb|YES||
+award|details|jsonb|YES||
+award|id|uuid|NO|PK|
+background|backgroundOrder|integer|YES||
+background|createdAt|timestamp without time zone|NO||
+background|updatedAt|timestamp without time zone|NO||
+background|content|jsonb|YES||
+background|details|jsonb|YES||
+background|id|uuid|NO|PK|
+benefit|icon|character varying|NO||
+benefit|no|USER-DEFINED|NO||
+benefit|createdAt|timestamp without time zone|NO||
+benefit|updatedAt|timestamp without time zone|NO||
+benefit|title|jsonb|YES||
+benefit|description|jsonb|YES||
+benefit|id|uuid|NO|PK|
+benefit_category|icon|character varying|NO||
+benefit_category|createdAt|timestamp without time zone|NO||
+benefit_category|updatedAt|timestamp without time zone|NO||
+benefit_category|title|jsonb|YES||
+benefit_category|description|jsonb|YES||
+benefit_category|id|uuid|NO|PK|
+benefit_category|categoryId|uuid|YES||
+biodata|fullName|character varying|YES||
+biodata|no|character varying|NO||
+biodata|gender|character varying|YES||
+biodata|city|character varying|YES||
+biodata|education|character varying|YES||
+biodata|studyProgram|character varying|YES||
+biodata|createdAt|timestamp without time zone|NO||
+biodata|updatedAt|timestamp without time zone|NO||
+biodata|id|uuid|NO|PK|
+biodata|userId|uuid|NO||UQ
+category|name|character varying|YES||
+category|icon|character varying|NO||
+category|createdAt|timestamp without time zone|NO||
+category|updatedAt|timestamp without time zone|NO||
+category|type|USER-DEFINED|YES||
+category|text|jsonb|YES||
+category|description|jsonb|YES||
+category|contact|character varying|YES||
+category|hero_section_image|character varying|YES||
+category|id|uuid|NO|PK|
+category_course_types|courseTypeId|uuid|NO|PK|
+category_course_types|categoryId|uuid|NO|PK|
+category_partner|category|character varying|NO||
+category_partner|createdAt|timestamp without time zone|NO||
+category_partner|updatedAt|timestamp without time zone|NO||
+category_partner|id|uuid|NO|PK|
+certificates|certificate_file|character varying|NO||
+certificates|createdAt|timestamp without time zone|NO||
+certificates|updatedAt|timestamp without time zone|NO||
+certificates|id|uuid|NO|PK|
+certificates|userId|uuid|YES||
+certificates|courseId|uuid|YES||
+collaborations|image|character varying|NO||
+collaborations|createdAt|timestamp without time zone|NO||
+collaborations|updatedAt|timestamp without time zone|NO||
+collaborations|legacy_id|integer|YES||
+collaborations|id|uuid|NO|PK|
+comments|comment|character varying|NO||
+comments|createdAt|timestamp without time zone|NO||
+comments|updatedAt|timestamp without time zone|NO||
+comments|id|uuid|NO|PK|
+comments|assignment_answerId|uuid|YES||
+commitment|icon|character varying|NO||
+commitment|commitmentOrder|integer|YES||
+commitment|createdAt|timestamp without time zone|NO||
+commitment|updatedAt|timestamp without time zone|NO||
+commitment|title|jsonb|YES||
+commitment|description|jsonb|YES||
+commitment|id|uuid|NO|PK|
+course|name|character varying|NO||
+course|group|character varying|NO||
+course|image|character varying|NO||
+course|price|integer|YES||
+course|promo|integer|YES||
+course|locationLink|character varying|YES||
+course|method|USER-DEFINED|NO||
+course|launch|boolean|NO||
+course|process|USER-DEFINED|NO||
+course|quota|integer|YES||
+course|form|character varying|YES||
+course|checkPaid|boolean|NO||
+course|month|integer|YES||
+course|day|integer|YES||
+course|startDate|timestamp without time zone|NO||
+course|startEnd|timestamp without time zone|NO||
+course|createdAt|timestamp without time zone|NO||
+course|updatedAt|timestamp without time zone|NO||
+course|criteriaId|jsonb|YES||
+course|criteriaEn|jsonb|YES||
+course|criteriaJa|jsonb|YES||
+course|materialsId|jsonb|YES||
+course|materialsEn|jsonb|YES||
+course|materialsJa|jsonb|YES||
+course|learningTargetsId|jsonb|YES||
+course|learningTargetsEn|jsonb|YES||
+course|learningTargetsJa|jsonb|YES||
+course|description|jsonb|YES||
+course|locations|jsonb|YES||
+course|date_registration|timestamp without time zone|YES||
+course|time_start|time without time zone|YES||
+course|time_end|time without time zone|YES||
+course|id|uuid|NO|PK|
+course|courseTypeId|uuid|YES||
+course|categoryId|uuid|YES||
+course|program_type|USER-DEFINED|NO||
+course|logbook_enabled|boolean|NO||
+course_flow|sequence|integer|NO||
+course_flow|createdAt|timestamp without time zone|NO||
+course_flow|updatedAt|timestamp without time zone|NO||
+course_flow|title|jsonb|YES||
+course_flow|content|jsonb|YES||
+course_flow|id|uuid|NO|PK|
+course_flow|courseId|uuid|YES||
+course_questions|createdAt|timestamp without time zone|NO||
+course_questions|updatedAt|timestamp without time zone|NO||
+course_questions|question|jsonb|YES||
+course_questions|answer|jsonb|YES||
+course_questions|id|uuid|NO|PK|
+course_questions|courseId|uuid|YES||
+course_technologies|technologyId|uuid|NO|PK|
+course_technologies|courseId|uuid|NO|PK|
+course_type|icon|character varying|NO||
+course_type|createdAt|timestamp without time zone|NO||
+course_type|updatedAt|timestamp without time zone|NO||
+course_type|description|jsonb|YES||
+course_type|nameClassesType|character varying|YES||
+course_type|id|uuid|NO|PK|
+experience|experienceOrder|integer|YES||
+experience|createdAt|timestamp without time zone|NO||
+experience|updatedAt|timestamp without time zone|NO||
+experience|content|jsonb|YES||
+experience|details|jsonb|YES||
+experience|id|uuid|NO|PK|
+faq|createdAt|timestamp without time zone|NO||
+faq|updatedAt|timestamp without time zone|NO||
+faq|question|jsonb|YES||
+faq|answer|jsonb|YES||
+faq|id|uuid|NO|PK|
+faqs|question|jsonb|YES||
+faqs|answer|jsonb|YES||
+faqs|createdAt|timestamp without time zone|NO||
+faqs|updatedAt|timestamp without time zone|NO||
+faqs|id|uuid|NO|PK|
+faqs|categoryId|uuid|YES||
+flow_category|number|integer|NO||
+flow_category|createdAt|timestamp without time zone|NO||
+flow_category|updatedAt|timestamp without time zone|NO||
+flow_category|title|jsonb|YES||
+flow_category|description|jsonb|YES||
+flow_category|legacy_id|integer|YES||
+flow_category|id|uuid|NO|PK|
+flow_category|categoryId|uuid|YES||
+gallery|filePath|character varying|NO||
+gallery|title|character varying|NO||
+gallery|description|character varying|YES||
+gallery|no|USER-DEFINED|NO||
+gallery|id|uuid|NO|PK|
+gallery|categoryId|uuid|YES||
+header|title|character varying|NO||
+header|text|character varying|NO||
+header|image|character varying|NO||
+header|createdAt|timestamp without time zone|NO||
+header|updatedAt|timestamp without time zone|NO||
+header|id|uuid|NO|PK|
+image_benefit|image|character varying|NO||
+image_benefit|no|USER-DEFINED|NO||
+image_benefit|createdAt|timestamp without time zone|NO||
+image_benefit|updatedAt|timestamp without time zone|NO||
+image_benefit|legacy_id|integer|YES||
+image_benefit|id|uuid|NO|PK|
+info|createdAt|timestamp without time zone|NO||
+info|updatedAt|timestamp without time zone|NO||
+info|text|jsonb|YES||
+info|title|jsonb|YES||
+info|icon|character varying|NO||
+info|id|uuid|NO|PK|
+installment|downPayment|integer|NO||
+installment|price|jsonb|NO||
+installment|month|USER-DEFINED|NO||
+installment|createdAt|timestamp without time zone|NO||
+installment|updatedAt|timestamp without time zone|NO||
+installment|id|uuid|NO|PK|
+installment|courseId|uuid|YES||
+installment|dueDates|ARRAY|NO||
+installment_payments|id|uuid|NO|PK|
+installment_payments|paymentId|uuid|NO||
+installment_payments|month|integer|NO||
+installment_payments|amount|numeric|YES||
+installment_payments|no|character varying|YES||
+installment_payments|xendit_invoice_id|character varying|YES||
+installment_payments|xendit_invoice_url|character varying|YES||
+installment_payments|status|USER-DEFINED|NO||
+installment_payments|paidAt|timestamp without time zone|YES||
+installment_payments|createdAt|timestamp without time zone|NO||
+installment_payments|updatedAt|timestamp without time zone|NO||
+invoice|xendit_invoice_id|character varying|YES||
+invoice|xendit_invoice_url|character varying|YES||
+invoice|subtotal|numeric|YES||
+invoice|discount_amount|numeric|YES||
+invoice|final_total|numeric|YES||
+invoice|payment_method|character varying|YES||
+invoice|paid_at|timestamp without time zone|YES||
+invoice|createdAt|timestamp without time zone|NO||
+invoice|updatedAt|timestamp without time zone|NO||
+invoice|id|uuid|NO|PK|
+invoice|paymentId|uuid|YES||UQ
+logbook|activity|character varying|YES||
+logbook|activity_details|character varying|YES||
+logbook|documentation|character varying|YES||
+logbook|process|USER-DEFINED|NO||
+logbook|obstacles|character varying|YES||
+logbook|other_documentation|character varying|YES||
+logbook|createdAt|timestamp without time zone|NO||
+logbook|updatedAt|timestamp without time zone|NO||
+logbook|id|uuid|NO|PK|
+logbook|userId|uuid|YES||
+logbook|sessionId|uuid|YES||
+material|title|character varying|NO||
+material|file|character varying|NO||
+material|fileType|USER-DEFINED|NO||
+material|createdAt|timestamp without time zone|NO||
+material|updatedAt|timestamp without time zone|NO||
+material|id|uuid|NO|PK|
+material|sessionId|uuid|YES||
+mentor_biodata|role|character varying|NO||
+mentor_biodata|createdAt|timestamp without time zone|NO||
+mentor_biodata|updatedAt|timestamp without time zone|NO||
+mentor_biodata|id|uuid|NO|PK|
+mentor_biodata|userId|uuid|YES||UQ
+mentor_logbook|activity|character varying|NO||
+mentor_logbook|activityDetail|character varying|NO||
+mentor_logbook|documentation|character varying|NO||
+mentor_logbook|obstacle|character varying|NO||
+mentor_logbook|createdAt|timestamp without time zone|NO||
+mentor_logbook|updatedAt|timestamp without time zone|NO||
+mentor_logbook|id|uuid|NO|PK|
+mentor_logbook|sessionId|uuid|YES||
+mentor_logbook|userId|uuid|YES||
+mentor_technologies|mentorId|uuid|NO|PK|
+mentor_technologies|technologiesId|uuid|NO|PK|
+mentoring|createdAt|timestamp without time zone|NO||
+mentoring|updatedAt|timestamp without time zone|NO||
+mentoring|id|uuid|NO|PK|
+mentoring|courseId|uuid|YES||
+mentoring|userId|uuid|YES||
+mentors|name|character varying|NO||
+mentors|linkedin|character varying|NO||
+mentors|profile|character varying|NO||
+mentors|createdAt|timestamp without time zone|NO||
+mentors|updatedAt|timestamp without time zone|NO||
+mentors|position|jsonb|YES||
+mentors|description|jsonb|YES||
+mentors|id|uuid|NO|PK|
+mentors|courseId|uuid|YES||
+migrations|id|integer|NO|PK|
+migrations|timestamp|bigint|NO||
+migrations|name|character varying|NO||
+mission|missionOrder|integer|NO||
+mission|createdAt|timestamp without time zone|NO||
+mission|updatedAt|timestamp without time zone|NO||
+mission|content|jsonb|YES||
+mission|items|jsonb|YES||
+mission|id|uuid|NO|PK|
+our_experience|title|jsonb|YES||
+our_experience|description|jsonb|YES||
+our_experience|createdAt|timestamp without time zone|NO||
+our_experience|updatedAt|timestamp without time zone|NO||
+our_experience|icon|character varying|NO||
+our_experience|legacy_id|integer|YES||
+our_experience|id|uuid|NO|PK|
+paragraph|paragraphOrder|integer|NO||
+paragraph|createdAt|timestamp without time zone|NO||
+paragraph|updatedAt|timestamp without time zone|NO||
+paragraph|paragraphs|jsonb|YES||
+paragraph|id|uuid|NO|PK|
+participants|title|jsonb|YES||
+participants|description|jsonb|YES||
+participants|icon|character varying|NO||
+participants|createdAt|timestamp without time zone|NO||
+participants|updatedAt|timestamp without time zone|NO||
+participants|id|uuid|NO|PK|
+participants|courseId|uuid|YES||
+partner|image|character varying|NO||
+partner|createdAt|timestamp without time zone|NO||
+partner|updatedAt|timestamp without time zone|NO||
+partner|id|uuid|NO|PK|
+partner|categoryPartnerId|uuid|NO||
+payments|file|character varying|YES||
+payments|no|character varying|YES||
+payments|process|USER-DEFINED|NO||
+payments|createdAt|timestamp without time zone|NO||
+payments|updatedAt|timestamp without time zone|NO||
+payments|referalSource|USER-DEFINED|YES||
+payments|current_status|USER-DEFINED|YES||
+payments|attend_program|boolean|YES||
+payments|user_fullname|character varying|YES||
+payments|user_email|character varying|YES||
+payments|user_no|character varying|YES||
+payments|id|uuid|NO|PK|
+payments|courseId|uuid|YES||
+payments|installmentId|uuid|YES||UQ
+payments|userId|uuid|YES||
+payments|dpPaidAt|timestamp without time zone|YES||
+payments|reminderSentMonths|jsonb|YES||
+portofolios|image|jsonb|NO||
+portofolios|title|character varying|NO||
+portofolios|description|character varying|NO||
+portofolios|link|character varying|NO||
+portofolios|createdAt|timestamp without time zone|NO||
+portofolios|updatedAt|timestamp without time zone|NO||
+portofolios|content|text|NO||
+portofolios|contentHtml|text|NO||
+portofolios|views|integer|NO||
+portofolios|likes|integer|NO||
+portofolios|id|uuid|NO|PK|
+portofolios|userId|uuid|YES||
+portofolios|courseId|uuid|YES||
+program_benefits|icon|character varying|NO||
+program_benefits|createdAt|timestamp without time zone|NO||
+program_benefits|updatedAt|timestamp without time zone|NO||
+program_benefits|benefit|jsonb|YES||
+program_benefits|description|jsonb|YES||
+program_benefits|id|uuid|NO|PK|
+program_benefits|courseId|uuid|YES||
+questions|questionText|character varying|NO||
+questions|image|character varying|YES||
+questions|createdAt|timestamp without time zone|NO||
+questions|updatedAt|timestamp without time zone|NO||
+questions|id|uuid|NO|PK|
+questions|quizId|uuid|YES||
+quiz|quiz_name|character varying|NO||
+quiz|minimum_score|integer|NO||
+quiz|createdAt|timestamp without time zone|NO||
+quiz|updatedAt|timestamp without time zone|NO||
+quiz|duration|integer|NO||
+quiz|id|uuid|NO|PK|
+quiz|weeksId|uuid|YES||
+quiz_progresses|process|boolean|NO||
+quiz_progresses|createdAt|timestamp without time zone|NO||
+quiz_progresses|updatedAt|timestamp without time zone|NO||
+quiz_progresses|id|uuid|NO|PK|
+quiz_progresses|userId|uuid|YES||
+quiz_progresses|quizId|uuid|YES||
+registrations|file|character varying|YES||
+registrations|process|USER-DEFINED|NO||
+registrations|createdAt|timestamp without time zone|NO||
+registrations|updatedAt|timestamp without time zone|NO||
+registrations|user_fullname|character varying|YES||
+registrations|user_email|character varying|YES||
+registrations|user_no|character varying|YES||
+registrations|current_status|USER-DEFINED|YES||
+registrations|attend_program|boolean|YES||
+registrations|referal_source|USER-DEFINED|YES||
+registrations|id|uuid|NO|PK|
+registrations|userId|uuid|YES||
+registrations|courseId|uuid|YES||
+scores|score|integer|NO||
+scores|createdAt|timestamp without time zone|NO||
+scores|updatedAt|timestamp without time zone|NO||
+scores|id|uuid|NO|PK|
+scores|quizId|uuid|YES||
+scores|userId|uuid|YES||
+session|topic|character varying|YES||
+session|sessionOrder|integer|YES||
+session|date|timestamp without time zone|YES||
+session|location|character varying|YES||
+session|start_time|time without time zone|YES||
+session|end_time|time without time zone|YES||
+session|is_final|boolean|NO||
+session|createdAt|timestamp without time zone|NO||
+session|updatedAt|timestamp without time zone|NO||
+session|id|uuid|NO|PK|
+session|weeksId|uuid|YES||
+session_progresses|logbook|boolean|NO||
+session_progresses|isAttended|boolean|NO||
+session_progresses|createdAt|timestamp without time zone|NO||
+session_progresses|updatedAt|timestamp without time zone|NO||
+session_progresses|id|uuid|NO|PK|
+session_progresses|sessionId|uuid|YES||
+session_progresses|userId|uuid|YES||
+social|linkedin|character varying|NO||
+social|instagram|character varying|NO||
+social|youtube|character varying|NO||
+social|email|character varying|NO||
+social|address|character varying|NO||
+social|number|character varying|NO||
+social|linkAddress|text|NO||
+social|createdAt|timestamp without time zone|NO||
+social|updatedAt|timestamp without time zone|NO||
+social|videoYoutube|character varying|YES||
+social|linkForm|character varying|YES||
+social|id|uuid|NO|PK|
+story|link|integer|NO||
+story|createdAt|timestamp without time zone|NO||
+story|updatedAt|timestamp without time zone|NO||
+story|paragraph|character varying|NO||
+story|legacy_id|integer|YES||
+story|id|uuid|NO|PK|
+superiority|createdAt|timestamp without time zone|NO||
+superiority|updatedAt|timestamp without time zone|NO||
+superiority|title|jsonb|YES||
+superiority|description|jsonb|YES||
+superiority|legacy_id|integer|YES||
+superiority|id|uuid|NO|PK|
+superiority|categoryId|uuid|YES||
+team|profile|character varying|NO||
+team|name|character varying|YES||
+team|teamOrder|integer|YES||
+team|linkedin|character varying|NO||
+team|instagram|character varying|YES||
+team|createdAt|timestamp without time zone|NO||
+team|updatedAt|timestamp without time zone|NO||
+team|description|jsonb|YES||
+team|position|jsonb|YES||
+team|id|uuid|NO|PK|
+team_leads|profile|character varying|NO||
+team_leads|name|character varying|NO||
+team_leads|instagram|character varying|NO||
+team_leads|linkedin|character varying|NO||
+team_leads|createdAt|timestamp without time zone|NO||
+team_leads|updatedAt|timestamp without time zone|NO||
+team_leads|description|jsonb|YES||
+team_leads|position|jsonb|YES||
+team_leads|id|uuid|NO|PK|
+technologies|name|character varying|NO||
+technologies|svg|text|YES||
+technologies|createdAt|timestamp without time zone|NO||
+technologies|updatedAt|timestamp without time zone|NO||
+technologies|imgUrl|character varying|YES||
+technologies|id|uuid|NO|PK|
+user|username|character varying|NO||
+user|email|character varying|NO||UQ
+user|password|character varying|NO||
+user|profile|character varying|YES||
+user|role|USER-DEFINED|NO||
+user|resetPasswordToken|character varying|YES||
+user|resetPasswordExpires|timestamp without time zone|YES||
+user|createdAt|timestamp without time zone|NO||
+user|updatedAt|timestamp without time zone|NO||
+user|verificationToken|character varying|YES||
+user|isVerified|boolean|YES||
+user|verificationTokenExpires|timestamp without time zone|YES||
+user|countdownQuiz|timestamp without time zone|YES||
+user|quizStart|boolean|YES||
+user|id|uuid|NO|PK|
+user_activity|id|uuid|NO|PK|
+user_activity|userId|uuid|NO||UQ
+user_activity|sessionId|character varying|YES||
+user_activity|loginAt|timestamp without time zone|NO||
+user_activity|lastSeenAt|timestamp without time zone|NO||
+user_activity|currentCourseId|uuid|YES||
+user_activity|activityLabel|character varying|YES||
+user_activity|createdAt|timestamp without time zone|NO||
+user_activity|updatedAt|timestamp without time zone|NO||
+user_answers|id|uuid|NO|PK|
+user_answers|userId|uuid|YES||
+user_answers|questionId|uuid|YES||
+user_answers|answerId|uuid|YES||
+user_courses|progress|boolean|NO||
+user_courses|id|uuid|NO|PK|
+user_courses|userId|uuid|YES||
+user_courses|courseId|uuid|YES||
+value|icon|character varying|NO||
+value|valueOrder|integer|NO||
+value|createdAt|timestamp without time zone|NO||
+value|updatedAt|timestamp without time zone|NO||
+value|title|jsonb|YES||
+value|description|jsonb|YES||
+value|id|uuid|NO|PK|
+visions|createdAt|timestamp without time zone|NO||
+visions|updatedAt|timestamp without time zone|NO||
+visions|visions|jsonb|YES||
+visions|id|uuid|NO|PK|
+voucher|code_voucher|character varying|NO||UQ
+voucher|type|USER-DEFINED|NO||
+voucher|active|boolean|NO||
+voucher|createdAt|timestamp without time zone|NO||
+voucher|updatedAt|timestamp without time zone|NO||
+voucher|percent|double precision|YES||
+voucher|url_code|uuid|NO||UQ
+voucher|allowed_user_ids|json|YES||
+voucher|id|uuid|NO|PK|
+voucher_programs|voucherId|uuid|NO|PK|
+voucher_programs|courseId|uuid|NO|PK|
+web_sessions|sid|character varying|NO|PK|
+web_sessions|sess|json|NO||
+web_sessions|expire|timestamp without time zone|NO||
+week_progresses|quiz|boolean|NO||
+week_progresses|process|boolean|NO||
+week_progresses|createdAt|timestamp without time zone|NO||
+week_progresses|updatedAt|timestamp without time zone|NO||
+week_progresses|id|uuid|NO|PK|
+week_progresses|weekId|uuid|YES||
+week_progresses|userId|uuid|YES||
+weeks|week_number|integer|NO||
+weeks|description|character varying|NO||
+weeks|is_final|boolean|NO||
+weeks|createdAt|timestamp without time zone|NO||
+weeks|updatedAt|timestamp without time zone|NO||
+weeks|id|uuid|NO|PK|
+weeks|courseId|uuid|YES||

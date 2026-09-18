@@ -1,0 +1,69 @@
+activity_log|userId|user|id|CASCADE
+alumni|courseId|course|id|CASCADE
+answer_task|taskId|assignments|id|CASCADE
+answer_task|userId|user|id|CASCADE
+answers|questionId|questions|id|CASCADE
+assignments|sessionId|session|id|CASCADE
+attendance|sessionId|session|id|CASCADE
+attendance|userId|user|id|CASCADE
+benefit_category|categoryId|category|id|CASCADE
+biodata|userId|user|id|NO ACTION
+category_course_types|categoryId|category|id|CASCADE
+category_course_types|courseTypeId|course_type|id|NO ACTION
+certificates|courseId|course|id|CASCADE
+certificates|userId|user|id|CASCADE
+comments|assignment_answerId|answer_task|id|CASCADE
+course|categoryId|category|id|CASCADE
+course|courseTypeId|course_type|id|SET NULL
+course_flow|courseId|course|id|CASCADE
+course_questions|courseId|course|id|CASCADE
+course_technologies|courseId|course|id|CASCADE
+course_technologies|technologyId|technologies|id|NO ACTION
+faqs|categoryId|category|id|CASCADE
+flow_category|categoryId|category|id|CASCADE
+gallery|categoryId|category|id|CASCADE
+installment|courseId|course|id|CASCADE
+installment_payments|paymentId|payments|id|CASCADE
+invoice|paymentId|payments|id|CASCADE
+logbook|sessionId|session|id|CASCADE
+logbook|userId|user|id|CASCADE
+material|sessionId|session|id|CASCADE
+mentor_biodata|userId|user|id|NO ACTION
+mentor_logbook|sessionId|session|id|CASCADE
+mentor_logbook|userId|user|id|CASCADE
+mentor_technologies|mentorId|mentors|id|CASCADE
+mentor_technologies|technologiesId|technologies|id|NO ACTION
+mentoring|courseId|course|id|CASCADE
+mentoring|userId|user|id|CASCADE
+mentors|courseId|course|id|CASCADE
+participants|courseId|course|id|CASCADE
+partner|categoryPartnerId|category_partner|id|CASCADE
+payments|courseId|course|id|CASCADE
+payments|installmentId|installment|id|NO ACTION
+payments|userId|user|id|CASCADE
+portofolios|courseId|course|id|CASCADE
+portofolios|userId|user|id|CASCADE
+program_benefits|courseId|course|id|CASCADE
+questions|quizId|quiz|id|CASCADE
+quiz|weeksId|weeks|id|CASCADE
+quiz_progresses|quizId|quiz|id|CASCADE
+quiz_progresses|userId|user|id|CASCADE
+registrations|courseId|course|id|CASCADE
+registrations|userId|user|id|CASCADE
+scores|quizId|quiz|id|CASCADE
+scores|userId|user|id|CASCADE
+session|weeksId|weeks|id|CASCADE
+session_progresses|sessionId|session|id|CASCADE
+session_progresses|userId|user|id|CASCADE
+superiority|categoryId|category|id|CASCADE
+user_activity|userId|user|id|CASCADE
+user_answers|answerId|answers|id|CASCADE
+user_answers|questionId|questions|id|CASCADE
+user_answers|userId|user|id|CASCADE
+user_courses|courseId|course|id|CASCADE
+user_courses|userId|user|id|CASCADE
+voucher_programs|courseId|course|id|NO ACTION
+voucher_programs|voucherId|voucher|id|CASCADE
+week_progresses|userId|user|id|CASCADE
+week_progresses|weekId|weeks|id|CASCADE
+weeks|courseId|course|id|CASCADE
