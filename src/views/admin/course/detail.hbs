@@ -22,9 +22,20 @@
     {{!-- Tab section — x-data di wrapper agar tab + content satu scope (fix: tab is not defined) --}}
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()" x-init="init()">
 
+    {{!-- Program non-bootcamp memakai silabus, bukan minggu-lalu-sesi, dan
+         silabusnya dikelola di halamannya sendiri. Tautan ini yang membuat
+         halaman itu bisa ditemukan - tanpanya program SPL hanya bisa diisi
+         lewat SQL. Lihat docs/syllabus-table-plan.md. --}}
+    {{#if (eq course.programType 'non_bootcamp')}}
+      <a href="/program/syllabus/manage/{{course.id}}"
+         class="mb-3 inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]">
+        <i class="fa-solid fa-list-ol text-xs"></i>Manage syllabus
+      </a>
+    {{/if}}
+
     {{!-- Tab Navigation: underline-tabs component --}}
     <div x-data="{ tabs: [
-      {name:'week',label:'Week',url:'/program/week/{{course.id}}'},
+      {{#unless (eq course.programType 'non_bootcamp')}}{name:'week',label:'Week',url:'/program/week/{{course.id}}'},{{/unless}}
       {name:'user',label:'User',url:'/program/userProgram/{{course.id}}'},
       {name:'log_book_user',label:'Logbook User',url:'/program/logbookUser/{{course.id}}'},
       {name:'log_book_mentor',label:'Logbook Mentor',url:'/program/logbookMentor/{{course.id}}'},

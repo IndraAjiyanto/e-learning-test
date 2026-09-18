@@ -62,6 +62,33 @@ export class SyllabusService {
     });
   }
 
+  /** Program pemilik silabus, untuk kepala halaman admin. */
+  async courseFor(courseId: string): Promise<Course> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (!course) throw new NotFoundException('Program not found');
+    return course;
+  }
+
+  /** Daftar silabus beserta jumlah isinya - untuk layar admin. */
+  async findByCourseWithCounts(courseId: string) {
+    const items = await this.syllabusRepository.find({
+      where: { course: { id: courseId } },
+      order: { order: 'ASC' },
+      relations: ['materials', 'assignments'],
+    });
+    return items.map((s) => ({
+      id: s.id,
+      order: s.order,
+      title: s.title,
+      description: s.description,
+      isFinal: s.isFinal,
+      materialCount: s.materials?.length ?? 0,
+      assignmentCount: s.assignments?.length ?? 0,
+    }));
+  }
+
   async findOne(syllabusId: string): Promise<Syllabus> {
     const syllabus = await this.syllabusRepository.findOne({
       where: { id: syllabusId },

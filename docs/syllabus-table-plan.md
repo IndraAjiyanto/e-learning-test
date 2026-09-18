@@ -262,10 +262,10 @@ tersentuh.
 | ~~**S1**~~ | **Selesai.** Tujuh entity + `SyllabusService` + `SyllabusModule`. Diuji 11 perkara terhadap basis data sungguhan (urutan otomatis, rantai buka-kunci, penolakan silabus terkunci di server, idempoten, gerbang logbook, perapatan urutan setelah hapus, reorder, CASCADE). `schema:log` bersih dari drift buatan sendiri. | rendah |
 | ~~**S2**~~ | **Selesai.** Migrasi `1788800000000`. 5 sesi -> 5 silabus, 2 progres, 1 absensi dibuang. Bootcamp tidak tersentuh (12 sesi, 6 absensi, tetap). Diuji turun-naik dua kali. **PERINGATAN: antarmuka student SPL gelap sampai S3** - datanya sudah pindah, tampilannya belum. | **sedang** |
 | ~~**S3**~~ | **Selesai.** Fragment bercabang ke template silabus sendiri, halaman detail `/program/syllabus/detail/:id`, tombol Mark complete, tab Attendance disembunyikan untuk silabus. design-check `non-bootcamp-program` 23/23. | sedang |
-| **S4** | Sisi admin: CRUD silabus, label, layar penyelesaian menggantikan absensi. | **besar** — 61 label |
+| **S4** | **SEBAGIAN.** Selesai: CRUD silabus (`/program/syllabus/manage/:courseId`), tautan dari detail program, tab Week disembunyikan untuk SPL. **Belum:** CRUD materi & tugas silabus, layar penyelesaian pengganti absensi, sapuan 61 label. | **besar** |
 | ~~**S5**~~ | **Selesai.** `findLearningStats` bercabang ke `findSyllabusStats` dengan bentuk kembalian yang sama persis. SPL 0/0 menjadi 3/3. | sedang |
 | ~~**S6**~~ | **Selesai.** Ketiganya dibuang; `start_learning/index.hbs` kembali murni bootcamp. | rendah |
-| **S7** | `design-check`: layar `non-bootcamp-program` ditulis ulang untuk silabus; tambah pemeriksaan bahwa bootcamp TIDAK berubah. | rendah |
+| ~~**S7**~~ | **Selesai.** Layar `non-bootcamp-program` 30 pemeriksaan, termasuk jaring pengaman bahwa bootcamp tidak berubah. | rendah |
 
 Gerbang yang sudah ada dipakai di tiap tahap: `npx tsc --noEmit`,
 `npm run build`, `./scripts/check-user-area.sh`, `npm run test:ui`.

@@ -657,6 +657,33 @@ const SCREENS = [
       // Rute tulis logbook harus menolak, bukan sekadar disembunyikan.
       await page.goto(`${BASE}/logbooks/formCreate/00000000-0000-0000-0000-000000000000/${extra.splCid}`, { waitUntil: 'networkidle' });
       check(s, 'logbook create route is rejected', !page.url().includes('/logbooks/formCreate'), page.url());
+
+      // Rute detail silabus menolak id yang bukan UUID dengan 404, bukan 500.
+      // Tanpa ini, path apa pun yang jatuh di bawah rute ini (mis. gambar
+      // dengan src relatif) menabrak Postgres dan menjadi 500.
+      const junk = await page.request.get(
+        `${BASE}/program/syllabus/detail/bukan-uuid`,
+        { maxRedirects: 0 },
+      );
+      check(s, 'syllabus detail rejects a non-UUID with 404',
+        junk.status() === 404, String(junk.status()));
+
+      // ---- JARING PENGAMAN: bootcamp TIDAK BOLEH ikut berubah -------------
+      // Seluruh pekerjaan silabus berdiri atau jatuh pada satu syarat: jalur
+      // bootcamp tidak tersentuh. Pemeriksaan ini yang menjaganya.
+      await page.goto(`${BASE}/program/myProgram/${ids.uid}?courseId=${ids.cid}`, { waitUntil: 'networkidle' });
+      await page.waitForTimeout(1500);
+      const bootTabs = (await page.locator('[role="tab"]').allInnerTexts()).map((t) => t.trim());
+      check(s, 'bootcamp still has six tabs', bootTabs.length === 6, bootTabs.join(' | '));
+      check(s, 'bootcamp keeps its Attendance tab', bootTabs.some((t) => /Attendance/.test(t)));
+      check(s, 'bootcamp keeps its My Logbook tab', bootTabs.some((t) => /My Logbook/.test(t)));
+      check(s, 'bootcamp still requires a logbook to unlock',
+        (await page.evaluate(() => document.documentElement.dataset.logbookRequired)) === 'true');
+      const bootBody = await page.locator('#start-learning-container').innerText().catch(() => '');
+      check(s, 'bootcamp still renders week headers', /Week\s*\d/i.test(bootBody),
+        bootBody.replace(/\n/g, ' ').slice(0, 70));
+      check(s, 'bootcamp has no syllabus links',
+        await page.locator('a[href*="/program/syllabus/detail/"]').count() === 0);
     },
   },
   {

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -69,6 +70,119 @@ export class SyllabusController {
       caps: capabilitiesForCourse(syllabus.course),
       bareShell: true,
     });
+  }
+
+  // =====================================================================
+  // ADMIN
+  //
+  // Program non-bootcamp sampai sekarang hanya bisa diisi lewat SQL. Rute di
+  // bawah ini yang membuatnya bisa dikelola dari aplikasi.
+  //
+  // Urutan TIDAK diterima dari form: SyllabusService yang menghitungnya, dan
+  // `UNIQUE (courseId, order)` yang menjaganya. Admin tidak perlu memikirkan
+  // nomor sama sekali.
+  // =====================================================================
+
+  @Roles('admin', 'super_admin')
+  @Get('manage/:courseId')
+  async manage(
+    @Param('courseId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const course = await this.syllabusService.courseFor(courseId);
+    const silabus = await this.syllabusService.findByCourseWithCounts(courseId);
+    return res.render('admin/syllabus/index', {
+      user: req.user,
+      course,
+      silabus,
+      bareShell: true,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId')
+  async createSyllabus(
+    @Param('courseId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    courseId: string,
+    @Body('title') title: string,
+    @Body('description') description: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      if (!title?.trim()) throw new Error('Title is required.');
+      await this.syllabusService.create(courseId, {
+        title: title.trim(),
+        description: description?.trim() || null,
+      });
+      flashToast(req, 'Syllabus added', 'It is now the last one in the list.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not add syllabus', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/manage/${courseId}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId/:syllabusId/update')
+  async updateSyllabus(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    syllabusId: string,
+    @Body('title') title: string,
+    @Body('description') description: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.update(syllabusId, {
+        title: title?.trim(),
+        description: description?.trim() || null,
+      });
+      flashToast(req, 'Changes saved', 'The syllabus has been updated.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not save', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/manage/${courseId}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId/:syllabusId/delete')
+  async deleteSyllabus(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    syllabusId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      // Materi, tugas, jawaban, logbook, dan progres ikut terhapus lewat
+      // CASCADE di basis data; urutan yang tersisa dirapatkan service.
+      await this.syllabusService.remove(syllabusId);
+      flashToast(req, 'Syllabus deleted', 'The remaining order was tidied up.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not delete', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/manage/${courseId}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId/:syllabusId/move')
+  async moveSyllabus(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    syllabusId: string,
+    @Body('to') to: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.reorder(syllabusId, Number(to));
+    } catch (e: any) {
+      flashToastError(req, 'Could not reorder', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/manage/${courseId}`);
   }
 
   @Roles('user')
