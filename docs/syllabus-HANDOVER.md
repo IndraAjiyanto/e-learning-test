@@ -7,25 +7,32 @@
 
 ---
 
-## 1. BACA INI DULU — ada yang sengaja ditinggalkan rusak
+## 1. BACA INI DULU — keadaan per 2026-09-18
 
-**Antarmuka student untuk program non-bootcamp (SPL) sekarang GELAP.**
+**Jalur silabus sudah jalan dari ujung ke ujung.** Student bisa membuka daftar
+silabus, membuka detailnya, dan menandainya selesai; admin bisa menambah,
+mengubah, memindah urutan, dan menghapus silabus.
 
-Datanya sudah pindah ke tabel `syllabus` (S2 selesai), tetapi tampilannya masih
-membaca `weeks -> session` yang kini kosong untuk program SPL. Student yang
-membuka program SPL melihat **"No weeks yet"**.
+`design-check` **258/259**. Satu-satunya kegagalan adalah celah lama
+`week pagination` yang butuh PRD tersendiri — bukan bagian dari pekerjaan ini.
 
-Ini **disengaja dan diketahui**, bukan bug yang terlewat. `design-check`
-menangkapnya sebagai satu kegagalan:
+**Yang masih harus dikerjakan** ada di S4, dan tidak ada yang menghalanginya:
 
-```
-DIFF non-bootcamp-program (16/17)
-  ✗ syllabus sessions are listed — No weeks yet ...
-```
+1. **CRUD materi dan tugas silabus.** Tabelnya (`syllabus_material`,
+   `syllabus_assignment`) sudah ada sejak S0 dan sudah dibaca sisi student,
+   tetapi belum ada layar admin untuk mengisinya. Ini yang paling terasa:
+   silabus hari ini hanya bisa berisi judul.
+2. **Layar penyelesaian di sisi admin** — pengganti layar absensi, membaca
+   `syllabus_progress` ("siapa sudah menyelesaikan silabus apa").
+3. **Sapuan 61 label** session/week di sisi admin supaya mengikuti
+   `caps.unitLabel`.
 
-Kegagalan itu **dibiarkan merah** sampai S3 menutupnya. Jangan dilonggarkan,
-jangan di-skip — itu satu-satunya penanda otomatis bahwa pekerjaan ini belum
-selesai.
+Nomor 1 yang paling berharga dikerjakan lebih dulu.
+
+**Program bootcamp tidak boleh ikut berubah**, dan itu dijaga otomatis: enam
+pemeriksaan terakhir pada layar `non-bootcamp-program` memeriksa bootcamp tetap
+punya 6 tab, tab Attendance dan My Logbook, masih menuntut logbook untuk
+membuka, masih merender kepala minggu, dan tidak punya satu pun tautan silabus.
 
 **Program bootcamp tidak terpengaruh sama sekali** dan harus tetap begitu.
 
@@ -42,11 +49,11 @@ dimulai tanpa menunggu siapa pun. Lihat bagian 5.
 | S0 tabel | selesai | `d32edd7f` |
 | S1 entity + service | selesai | `bad11d0f` |
 | S2 perpindahan data | selesai | `6e57aeca` |
-| **S3 sisi student** | **belum — mulai dari sini, tidak ada yang menghalangi** | — |
-| S4 sisi admin | belum | — |
-| S5 hitungan & dasbor | belum | — |
-| S6 buang jalur lama | belum | — |
-| S7 pemeriksaan | belum | — |
+| S3 sisi student | selesai | `34fc2bcc` |
+| **S4 sisi admin** | **sebagian — lanjutkan dari sini** | `3bea0076` |
+| S5 hitungan | selesai | `4dbcc175` |
+| S6 buang jalur lama | selesai | `4dbcc175` |
+| S7 pemeriksaan | selesai | `3bea0076` |
 
 Di luar rangkaian itu, satu pekerjaan tambahan sudah selesai:
 `d6b734e1` — basis data kini bisa dibangun dari nol, dan seeder punya program
@@ -77,7 +84,7 @@ Semuanya sudah diuji terhadap basis data sungguhan — 11 perkara, lihat commit
 
 ---
 
-## 3. Rencana implementasi S3 — sisi student
+## 3. S3 — sisi student (SUDAH SELESAI, catatan ini disimpan sebagai jejak)
 
 **Tujuan:** kegagalan `design-check` di atas jadi hijau, tanpa menyentuh
 bootcamp.
@@ -274,8 +281,8 @@ splCid af9279ec-3c6d-4737-a751-b186ca08c08e   (Dasar Pemrograman Web, SPL)
 Kalau basis datanya disemai ulang, ambil lagi dengan query di
 `docs/migration-seeder-audit.md`.
 
-**Hasil yang diharapkan sekarang: 244/246.** Dua kegagalan, keduanya sudah
-diketahui: celah `week pagination` (lama, butuh PRD) dan silabus (S3).
+**Hasil yang diharapkan sekarang: 258/259.** Satu kegagalan: celah
+`week pagination` (lama, butuh PRD).
 Kalau tiba-tiba turun ke ~170, itu tanda env var-nya hilang, bukan regresi.
 
 ### Membangun basis data dari nol
