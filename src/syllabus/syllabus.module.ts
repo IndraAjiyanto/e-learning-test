@@ -5,6 +5,7 @@ import { SyllabusController } from './syllabus.controller';
 import { Course } from 'src/entities/course.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { User } from 'src/entities/user.entity';
+import { Quiz } from 'src/entities/quiz.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { SyllabusMaterial } from 'src/entities/syllabus_material.entity';
 import { SyllabusAssignment } from 'src/entities/syllabus_assignment.entity';
@@ -22,6 +23,7 @@ import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
       Course,
       UserCourse,
       User,
+      Quiz,
       Syllabus,
       SyllabusMaterial,
       SyllabusAssignment,

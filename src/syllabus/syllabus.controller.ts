@@ -79,9 +79,16 @@ export class SyllabusController {
       answer: answers.get(a.id) ?? null,
     }));
 
+    // Kuis silabus tidak punya gerbang tersendiri: silabus ini sudah terbuka
+    // (kalau tidak, controller sudah mengalihkan di atas), berarti kuisnya
+    // terbuka. Tidak ada QuizProgress yang perlu dibuka lebih dulu seperti di
+    // jalur bootcamp.
+    const quiz = await this.syllabusService.quizFor(syllabusId);
+
     return res.render('user/learning/syllabus', {
       user: req.user,
       syllabus,
+      quiz,
       assignments,
       view,
       course: syllabus.course,
@@ -240,10 +247,12 @@ export class SyllabusController {
     @Res() res: Response,
   ) {
     const syllabus = await this.syllabusService.findOne(syllabusId);
+    const quiz = await this.syllabusService.quizFor(syllabusId);
     return res.render('admin/syllabus/detail', {
       user: req.user,
       course: syllabus.course,
       syllabus,
+      quiz,
       courseId,
       bareShell: true,
     });
@@ -432,6 +441,60 @@ export class SyllabusController {
     return res.redirect(
       `/program/syllabus/manage/${courseId}/${syllabusId}/assignment/${assignmentId}/answers`,
     );
+  }
+
+  /**
+   * Membuat kuis untuk satu silabus. SATU kuis per silabus.
+   *
+   * Tidak lewat QuizService.create(): method itu sekaligus membuka
+   * QuizProgress berdasarkan kehadiran dan logbook sesi terakhir, dan jalur
+   * silabus memang tidak punya kehadiran. Pertanyaannya tetap dikelola di
+   * layar kuis yang sudah ada (/quiz/:quizId) - tidak ada gunanya membuat
+   * layar kedua untuk hal yang sama.
+   */
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId/:syllabusId/quiz')
+  async createQuiz(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    syllabusId: string,
+    @Body('quizName') quizName: string,
+    @Body('minScore') minScore: string,
+    @Body('duration') duration: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.syllabusService.createQuiz(syllabusId, {
+        quizName,
+        minScore: Number(minScore),
+        duration: Number(duration),
+      });
+      flashToast(req, 'Quiz created', 'Add its questions next.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not create quiz', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/manage/${courseId}/${syllabusId}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('manage/:courseId/:syllabusId/quiz/:quizId/delete')
+  async removeQuiz(
+    @Param('courseId') courseId: string,
+    @Param('syllabusId') syllabusId: string,
+    @Param('quizId', new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_FOUND }))
+    quizId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      // Pertanyaan, jawaban, nilai, dan progres ikut terhapus lewat CASCADE.
+      await this.syllabusService.removeQuiz(quizId);
+      flashToast(req, 'Quiz deleted', 'Its questions and scores went with it.');
+    } catch (e: any) {
+      flashToastError(req, 'Could not delete quiz', e?.message || 'Try again.');
+    }
+    return res.redirect(`/program/syllabus/manage/${courseId}/${syllabusId}`);
   }
 
   /** Siapa sudah menyelesaikan silabus apa - pengganti layar absensi. */

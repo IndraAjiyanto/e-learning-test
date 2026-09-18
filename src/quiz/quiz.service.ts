@@ -93,10 +93,23 @@ export class QuizService {
     });
   }
 
+  /**
+   * Satu kuis beserta induknya.
+   *
+   * DUA induk yang mungkin, dan hanya satu yang terisi: kuis bootcamp
+   * menempel di minggu (`weeks`), kuis non-bootcamp di silabus (`syllabus`).
+   * Keduanya ikut dimuat supaya pemanggil tidak perlu tahu lebih dulu ini
+   * kuis jenis apa - yang kosong tinggal null.
+   */
   async findOne(quizId: string) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
-      relations: ['weeks', 'weeks.course'],
+      relations: [
+        'weeks',
+        'weeks.course',
+        'syllabus',
+        'syllabus.course',
+      ],
     });
   }
 

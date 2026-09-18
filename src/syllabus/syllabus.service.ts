@@ -11,6 +11,7 @@ import { SyllabusAssignment } from 'src/entities/syllabus_assignment.entity';
 import { SyllabusAnswerTask } from 'src/entities/syllabus_answer_task.entity';
 import { SyllabusComment } from 'src/entities/syllabus_comment.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
+import { Quiz } from 'src/entities/quiz.entity';
 import { FileType } from 'src/entities/materials.entity';
 import { capabilitiesForCourse } from 'src/courses/program-type';
 
@@ -70,6 +71,8 @@ export class SyllabusService {
     private readonly commentRepository: Repository<SyllabusComment>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Quiz)
+    private readonly quizRepository: Repository<Quiz>,
   ) {}
 
   // ----------------------------------------------------------------- baca
@@ -530,6 +533,95 @@ export class SyllabusService {
       );
     }
     return saved;
+  }
+
+
+  // ------------------------------------------------------------- kuis
+
+  /**
+   * SATU kuis per silabus - keputusan pemilik 2026-09-18.
+   *
+   * Dikelola di sini, bukan lewat QuizService.create(), dan itu disengaja:
+   * method itu sekaligus membuka QuizProgress berdasarkan kehadiran dan
+   * logbook sesi terakhir (`sessionUnlock`). Jalur silabus memang tidak punya
+   * kehadiran, jadi memanggilnya berarti menyeret kembali aturan yang justru
+   * dibuang oleh pemisahan ini.
+   *
+   * Kuis silabus tidak punya gerbang buka-kunci tersendiri: silabusnya sudah
+   * terbuka, berarti kuisnya terbuka.
+   */
+  async quizFor(syllabusId: string): Promise<Quiz | null> {
+    return this.quizRepository.findOne({
+      where: { syllabus: { id: syllabusId } },
+      relations: ['questions'],
+    });
+  }
+
+  /** Kuis untuk seluruh silabus sebuah program, dipetakan per silabus. */
+  async quizzesForCourse(courseId: string): Promise<Map<string, Quiz>> {
+    const quizzes = await this.quizRepository.find({
+      where: { syllabus: { course: { id: courseId } } },
+      relations: ['syllabus', 'questions'],
+    });
+    return new Map(
+      quizzes.filter((q) => q.syllabus).map((q) => [q.syllabus!.id, q]),
+    );
+  }
+
+  async createQuiz(
+    syllabusId: string,
+    data: { quizName: string; minScore: number; duration: number },
+  ): Promise<Quiz> {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+    });
+    if (!syllabus) throw new NotFoundException('Syllabus not found');
+
+    if (!data.quizName?.trim()) throw new Error('Quiz name is required.');
+    if (!Number.isInteger(data.duration) || data.duration < 1) {
+      throw new Error('Duration must be at least 1 minute.');
+    }
+    if (!Number.isInteger(data.minScore) || data.minScore < 0) {
+      throw new Error('Minimum score cannot be negative.');
+    }
+
+    // Satu per silabus dijaga di sini, bukan oleh UNIQUE di basis data: kolom
+    // `syllabusId` dipakai bersama kuis bootcamp yang selalu NULL, dan UNIQUE
+    // di sana akan bertabrakan dengan mereka.
+    const existing = await this.quizRepository.findOne({
+      where: { syllabus: { id: syllabusId } },
+    });
+    if (existing) {
+      throw new Error('This syllabus already has a quiz.');
+    }
+
+    return this.quizRepository.save(
+      this.quizRepository.create({
+        syllabus,
+        quizName: data.quizName.trim(),
+        minScore: data.minScore,
+        duration: data.duration,
+      }),
+    );
+  }
+
+  /**
+   * Menghapus kuis silabus. Pertanyaan, jawaban, nilai, dan progresnya ikut
+   * terhapus lewat CASCADE - kuis yang hilang tidak boleh meninggalkan nilai
+   * yang tidak bisa ditelusuri lagi asalnya.
+   */
+  async removeQuiz(quizId: string): Promise<string | null> {
+    const quiz = await this.quizRepository.findOne({
+      where: { id: quizId },
+      relations: ['syllabus'],
+    });
+    if (!quiz) throw new NotFoundException('Quiz not found');
+    if (!quiz.syllabus) {
+      throw new Error('That quiz belongs to a week, not a syllabus.');
+    }
+    const syllabusId = quiz.syllabus.id;
+    await this.quizRepository.remove(quiz);
+    return syllabusId;
   }
 
   // ---------------------------------------------------------------- admin

@@ -153,8 +153,12 @@ export class QuizController {
     );
     const logbooks = await this.usersService.findAllLogbooks(req.user!.id);
     const portfolio = await this.usersService.findPortfolio(req.user!.id);
+    // Program pemilik kuis: lewat minggu untuk bootcamp, lewat silabus untuk
+    // non-bootcamp. Tanpa cabang kedua, kuis silabus tidak punya program aktif
+    // dan layar mulai kehilangan konteksnya.
+    const quizCourseId = quiz?.weeks?.course?.id ?? quiz?.syllabus?.course?.id;
     const activeCourse = userWithCourses?.userCourses.find(
-      (userCourse) => userCourse.course?.id === quiz?.weeks?.course?.id,
+      (userCourse) => userCourse.course?.id === quizCourseId,
     )?.course;
 
     if (check) {

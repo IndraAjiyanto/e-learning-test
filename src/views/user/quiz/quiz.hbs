@@ -15,7 +15,7 @@
   (user_answers.controller.ts me-redirect ke sini), jadi hasil percobaan
   terakhir harus langsung terbaca.
 --}}
-{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.quiz') back=(concat '/program/' quiz.weeks.course.id)}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.quiz') back=(concat '/program/' (default quiz.weeks.course.id quiz.syllabus.course.id))}}
 <div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
   <div class="flex w-full flex-col gap-4">
 

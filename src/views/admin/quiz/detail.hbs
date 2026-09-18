@@ -53,7 +53,12 @@
 
         {{!-- Actions --}}
         <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
-          <form action='/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE' method='POST'>
+          {{!-- Dua jalur hapus, karena kuis punya dua jenis induk. Rute lama
+               menuntut `weeksId` di path-nya, dan kuis silabus tidak punya
+               minggu - tanpa cabang ini tombolnya menghasilkan URL dengan ruas
+               kosong dan gagal, bukan menghapus apa pun. Jalur silabus memakai
+               rute miliknya sendiri yang sudah menangani CASCADE. --}}
+          <form method='POST' action='{{#if quiz.weeks}}/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE{{else}}/program/syllabus/manage/{{quiz.syllabus.course.id}}/{{quiz.syllabus.id}}/quiz/{{quiz.id}}/delete{{/if}}'>
             <button type='button'
               onclick='confirmQuizDetailDelete(this)'
               class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'

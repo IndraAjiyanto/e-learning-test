@@ -132,6 +132,56 @@
       {{/if}}
     </div>
 
+
+    <!-- Kuis -->
+    {{!-- SATU kuis per silabus (keputusan pemilik 2026-09-18), jadi ini bukan
+         daftar: kalau sudah ada, formulir tambahnya diganti ringkasan.
+         Pertanyaannya dikelola di layar kuis yang sudah ada, bukan layar kedua
+         untuk hal yang sama. --}}
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div class="border-b border-[#E5E5E5] px-5 py-4">
+        <h2 class="font-montserrat text-base font-bold text-[#171717]">Quiz</h2>
+        <p class="mt-0.5 font-inter text-xs text-[#737373]">One quiz per syllabus.</p>
+      </div>
+
+      {{#if quiz}}
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
+          <span class="min-w-0 flex-1">
+            <span class="block truncate font-inter text-sm font-semibold text-[#171717]">{{quiz.quizName}}</span>
+            <span class="block truncate font-inter text-xs text-[#737373]">
+              {{quiz.questions.length}} question{{#unless (eq quiz.questions.length 1)}}s{{/unless}}
+              &middot; min {{quiz.minScore}} &middot; {{quiz.duration}} min
+            </span>
+          </span>
+          <a href="/quiz/{{quiz.id}}"
+             class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] bg-[#003060] px-3 font-inter text-sm font-semibold text-white no-underline hover:bg-[#00254a]">
+            <i class="fa-solid fa-list-check text-xs"></i>Questions
+          </a>
+          <form method="POST" action="/program/syllabus/manage/{{courseId}}/{{syllabus.id}}/quiz/{{quiz.id}}/delete"
+                onsubmit="return confirm('Delete this quiz? Its questions and every student score go with it.')">
+            <button type="submit"
+              class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-[8px] border border-[#FECACA] bg-white px-3 font-inter text-sm font-semibold text-[#B42318] hover:bg-[#FEF2F2]">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+          </form>
+        </div>
+      {{else}}
+        <form method="POST" action="/program/syllabus/manage/{{courseId}}/{{syllabus.id}}/quiz"
+              class="flex flex-wrap items-center gap-2 px-5 py-4">
+          <input type="text" name="quizName" required placeholder="Quiz name"
+            class="h-10 min-w-0 flex-1 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#003060] focus:outline-none" />
+          <input type="number" name="minScore" required min="0" value="70" title="Minimum score"
+            class="h-10 w-28 shrink-0 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] focus:border-[#003060] focus:outline-none" />
+          <input type="number" name="duration" required min="1" value="30" title="Duration in minutes"
+            class="h-10 w-28 shrink-0 rounded-lg border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm text-[#171717] focus:border-[#003060] focus:outline-none" />
+          <button type="submit"
+            class="inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white hover:bg-[#00254a]">
+            <i class="fa-solid fa-plus text-xs"></i>Add
+          </button>
+        </form>
+      {{/if}}
+    </div>
+
   </div>
 </div>
 {{/user/shell_frame/index}}
