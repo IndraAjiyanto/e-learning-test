@@ -3,11 +3,11 @@
   Lokasi: src/views/super_admin/social/index.hbs
   Level: L4 Page
 
-  Data: GET /social -> { socials }. Search & pagination dijalankan di sisi client
-  lewat clientTable(), karena controller sudah mengirim seluruh baris sekaligus.
+  Data: GET /social -> { socials }. Pagination dijalankan di sisi client lewat
+  clientTable(), karena controller sudah mengirim seluruh baris sekaligus.
 
-  Tombol Create disembunyikan begitu satu baris sudah ada: halaman publik hanya
-  membaca satu set kontak, jadi tabel ini praktis record tunggal.
+  Tanpa search, dan toolbar (tombol Create) hilang begitu satu baris sudah ada:
+  halaman publik hanya membaca satu set kontak, jadi tabel ini praktis record tunggal.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
@@ -24,15 +24,15 @@
 
     <div
       class='flex flex-col gap-3.5'
-      x-data='clientTable({ items: {{json socials}}, searchKeys: ["linkedin", "instagram", "youtube", "videoYoutube", "email", "number", "address"] })'
+      x-data='clientTable({ items: {{json socials}} })'
     >
-      {{> components/ui/super_admin/table/toolbar
-        placeholder='Search social media..'
-        searchLabel='Search social media'
-        createHref='/social/formCreate'
-        createLabel='Create Social'
-        hideCreate=socials.length
-      }}
+      {{#unless socials.length}}
+        {{> components/ui/super_admin/table/toolbar
+          hideSearch=true
+          createHref='/social/formCreate'
+          createLabel='Create Social'
+        }}
+      {{/unless}}
 
       {{#> components/ui/super_admin/table/card tableClass='min-w-[1622px]'}}
         <colgroup>
