@@ -449,17 +449,34 @@ const SCREENS = [
       check(s, 'tab panels are siblings, not nested in the fragment container',
         nested.length === 0, nested.slice(0, 3).join(' | '));
 
-      // Setiap bagian per-course harus terjangkau dari kartu program.
-      for (const label of ['Presentation', 'Assignment', 'Quiz', 'Certificate', 'My Logbook', 'Join Group']) {
-        const btn = page.getByRole('button', { name: new RegExp(`^${label}$`) }).last();
-        await btn.click({ timeout: 5000 }).catch(() => {});
+      // Setiap bagian per-course harus benar-benar terjangkau.
+      //
+      // Pemeriksaan ini sempat HIJAU PALSU: kelima bagian pertama sudah lama
+      // berupa role="tab" (kartu program dibubarkan jadi baris tab), sementara
+      // pemeriksanya masih mencari role="button". Locator-nya kosong, klik-nya
+      // ditelan .catch(), lalu yang diukur panel SEBELUMNYA yang kebetulan
+      // masih terbuka - 180 karakter, lolos lima kali berturut-turut. Sekarang
+      // perannya benar, dan kalau kontrolnya tidak ketemu pemeriksaannya GAGAL,
+      // bukan diam-diam mengukur sisa layar.
+      const REACHABLE = [
+        ['Attendance', 'tab'], ['Assignment', 'tab'], ['Quiz', 'tab'],
+        ['Certificate', 'tab'], ['My Logbook', 'tab'],
+        ['Join Group', 'button'],   // aksi di kepala program, bukan tab
+      ];
+      for (const [label, role] of REACHABLE) {
+        const ctl = page.getByRole(role, { name: new RegExp(`^${label}$`) }).last();
+        const found = await ctl.count() > 0;
+        let clicked = false;
+        if (found) clicked = await ctl.click({ timeout: 5000 }).then(() => true).catch(() => false);
         await page.waitForTimeout(1500);
         const chars = await page.evaluate(() => {
           const shown = [...document.querySelectorAll('[x-show^="activeSection ==="]')]
             .filter((el) => getComputedStyle(el).display !== 'none');
           return shown.map((el) => el.innerText.trim()).join(' ').length;
         });
-        check(s, `"${label}" reachable from the program card`, chars > 20, `${chars} chars`);
+        check(s, `"${label}" reachable from the program card`,
+          found && clicked && chars > 20,
+          found ? (clicked ? `${chars} chars` : 'found but click failed') : `no ${role} named "${label}"`);
         await page.goBack().catch(() => {});
         await page.goto(`${BASE}${screenUrl}`, { waitUntil: 'networkidle' }).catch(() => {});
         await page.waitForTimeout(1200);

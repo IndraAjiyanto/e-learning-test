@@ -85,28 +85,28 @@
           <thead class='bg-[#FAFAFA]'>
             <tr>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.no'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.activity'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.details'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.issues'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.documentation'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.program'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.status'}}</th>
               <th
-                class='px-3 py-2 text-left text-xs font-bold text-[#404040] uppercase tracking-wider'
+                class='px-6 py-3 text-left text-sm font-bold text-[#404040] uppercase tracking-wider'
               >{{t 'test.logbook.logbookList.date'}}</th>
             </tr>
           </thead>
@@ -117,48 +117,48 @@
             >
               <tr class='hover:bg-[#FAFAFA] transition-colors'>
                 <td
-                  class='px-3 py-2 text-xs font-medium text-gray-900'
+                  class='px-6 py-4 text-sm font-medium text-gray-900'
                   x-text='((currentPage - 1) * itemsPerPage) + index + 1'
                 ></td>
                 <td
-                  class='px-3 py-2 text-xs font-semibold text-gray-900'
+                  class='px-6 py-4 text-sm font-semibold text-gray-900'
                   x-text='logbook.activity || "-"'
                 ></td>
-                <td class='px-3 py-2 text-xs text-[#404040]'>
+                <td class='px-6 py-4 text-sm text-[#404040]'>
                   <div
                     class='max-w-xs truncate'
                     :title='logbook.activityDetails'
                     x-text='logbook.activityDetails || "-"'
                   ></div>
                 </td>
-                <td class='px-3 py-2 text-xs text-[#404040]'>
+                <td class='px-6 py-4 text-sm text-[#404040]'>
                   <div
                     class='max-w-xs truncate'
                     :title='logbook.obstacles'
                     x-text='logbook.obstacles || "-"'
                   ></div>
                 </td>
-                <td class='px-3 py-2'>
+                <td class='px-6 py-4'>
                   <img
                     :src='logbook.documentation'
                     alt='Documentation'
-                    class='w-12 h-12 object-cover rounded-lg border border-[#E5E5E5] cursor-pointer hover:border-[#D4D4D4] transition-all'
+                    class='w-16 h-16 object-cover rounded-lg border border-[#E5E5E5] cursor-pointer hover:border-[#D4D4D4] transition-all'
                     @click="window.open(logbook.documentation, '_blank')"
                   />
                 </td>
-                <td class='px-3 py-2'>
+                <td class='px-6 py-4'>
                   <span
-                    class='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-[#404040] border border-[#D4D4D4]'
+                    class='inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-[#404040] border border-[#D4D4D4]'
                   >
-                    <i class='fas fa-graduation-cap mr-1 text-xs'></i>
+                    <i class='fas fa-graduation-cap mr-1 text-sm'></i>
                     <span
                       x-text='logbook.session?.weeks?.course?.name || "-"'
                     ></span>
                   </span>
                 </td>
-                <td class='px-3 py-2'>
+                <td class='px-6 py-4'>
                   <span
-                    class='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide'
+                    class='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide'
                     :class="{
                       'bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]': logbook.process === 'approved',
                       'bg-[#FEFCE8] text-[#A16207] border border-[#FEF08A]': logbook.process === 'process',
@@ -166,7 +166,7 @@
                     }"
                   >
                     <i
-                      class='fas mr-1 text-xs'
+                      class='fas mr-1 text-sm'
                       :class="{
                       'fa-check-circle': logbook.process === 'approved',
                       'fa-clock': logbook.process === 'process',
@@ -179,7 +179,7 @@
                   </span>
                 </td>
                 <td
-                  class='px-3 py-2 text-xs text-[#404040]'
+                  class='px-6 py-4 text-sm text-[#404040]'
                   x-text='formatDate(logbook.createdAt)'
                 ></td>
 
