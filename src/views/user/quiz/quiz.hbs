@@ -27,7 +27,7 @@
         </span>
 
         <div class="min-w-0 flex-1">
-          <h1 class="font-montserrat text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{quiz.quizName}}</h1>
+          <h1 class="font-inter text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{quiz.quizName}}</h1>
           <p class="mt-1 font-inter text-sm text-[#737373]">{{t 'test.quiz.overviewHint'}}</p>
 
           {{!-- Chip keterangan: ide dari baris chip halaman kuis bisa.ai.
@@ -83,7 +83,7 @@
     <!-- Riwayat nilai -->
     <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
       <div class="border-b border-[#E5E5E5] px-5 py-4 sm:px-6">
-        <h2 class="font-montserrat text-base font-bold text-[#171717]">{{t 'test.quiz.scoreHistory'}}</h2>
+        <h2 class="font-inter text-base font-bold text-[#171717]">{{t 'test.quiz.scoreHistory'}}</h2>
       </div>
 
       {{#if attempts.length}}
@@ -101,7 +101,7 @@
                   {{t 'test.quiz.takenOn'}} {{formatDate this.createdAt ../lang}}
                 </span>
               </span>
-              <span class="shrink-0 font-montserrat text-lg font-bold text-[#171717]">{{this.score}}</span>
+              <span class="shrink-0 font-inter text-lg font-bold text-[#171717]">{{this.score}}</span>
               <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-inter text-xs font-medium leading-none {{#if this.passed}}border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]{{else}}border-[#FECACA] bg-[#FEF2F2] text-[#B42318]{{/if}}">
                 <span class="size-1.5 shrink-0 rounded-full {{#if this.passed}}bg-[#22C55E]{{else}}bg-[#EF4444]{{/if}}"></span>
                 {{#if this.passed}}{{t 'test.quiz.passed'}}{{else}}{{t 'test.quiz.failed'}}{{/if}}

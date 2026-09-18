@@ -29,7 +29,7 @@
   })();
 </script>
 <div 
-  class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-montserrat overflow-hidden"
+  class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-inter overflow-hidden"
   x-data="{
     lang: '{{lang}}',
     activeSection: new URLSearchParams(window.location.search).get('tab') || '{{activeSection}}' || '{{#if (or (eq user.role "admin") (eq user.role "super_admin"))}}profile{{else}}dashboard{{/if}}',
@@ -193,7 +193,7 @@
           <button
             @click="toggleActiveSection('dashboard');"
             :class="activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
             <i class="fas fa-table-cells-large w-5 text-center"></i>
             <span>Dashboard</span>
@@ -203,7 +203,7 @@
           <button
             @click="toggleActiveSection('profile');"
             :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
             <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain brightness-0">
             <span>Profile</span>
@@ -213,7 +213,7 @@
           <button
             @click="toggleActiveSection('learning');"
             :class="activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
             <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain brightness-0">
             <span>My Learning</span>
@@ -223,7 +223,7 @@
           <button
             @click="toggleActiveSection('portfolio');"
             :class="activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
             <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-5 h-5 object-contain brightness-0">
             <span>My Portfolio</span>
@@ -233,7 +233,7 @@
           <button
             @click="toggleActiveSection('history-payment');"
             :class="activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none"
+            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
             <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain brightness-0">
             <span>Payment History</span>
@@ -242,7 +242,7 @@
           <!-- Logout Button -->
           <a
             href='/logout'
-            class="h-11 px-4 gap-2.5 rounded-lg transition-colors duration-150 flex items-center whitespace-nowrap text-sm font-medium font-montserrat leading-none text-white bg-[#C0392B] hover:bg-[#a5311f] cursor-pointer"
+            class="h-11 px-4 gap-2.5 rounded-lg transition-colors duration-150 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none text-white bg-[#C0392B] hover:bg-[#a5311f] cursor-pointer"
           >
             <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
             <span>Log Out</span>
@@ -277,7 +277,7 @@
             :class="[
               activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            aria-label="{{t 'test.userSidebar.dashboard'}}" title="{{t 'test.userSidebar.dashboard'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
+            aria-label="{{t 'test.userSidebar.dashboard'}}" title="{{t 'test.userSidebar.dashboard'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <i class="fas fa-table-cells-large text-base"></i>
@@ -291,7 +291,7 @@
             :class="[
               (activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            aria-label="{{t 'test.userSidebar.profile'}}" title="{{t 'test.userSidebar.profile'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer group"
+            aria-label="{{t 'test.userSidebar.profile'}}" title="{{t 'test.userSidebar.profile'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer group"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span>
@@ -306,7 +306,7 @@
               :class="[
                 activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
               ]"
-              aria-label="{{t 'test.userSidebar.myLearning'}}" title="{{t 'test.userSidebar.myLearning'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
+              aria-label="{{t 'test.userSidebar.myLearning'}}" title="{{t 'test.userSidebar.myLearning'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
             >
               <div class="flex items-center gap-3">
                 <div class="w-5 flex justify-center items-center flex-shrink-0">
@@ -326,7 +326,7 @@
             :class="[
               activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            aria-label="{{t 'test.userSidebar.myPortfolio'}}" title="{{t 'test.userSidebar.myPortfolio'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.userSidebar.myPortfolio'}}" title="{{t 'test.userSidebar.myPortfolio'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'portfolio' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
@@ -340,7 +340,7 @@
             :class="[
               activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            aria-label="{{t 'test.userSidebar.paymentHistory'}}" title="{{t 'test.userSidebar.paymentHistory'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-montserrat font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.userSidebar.paymentHistory'}}" title="{{t 'test.userSidebar.paymentHistory'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'history-payment' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
@@ -363,7 +363,7 @@
              halaman tergambar. --}}
         <a
           href='/logout'
-          class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg transition-colors duration-150 flex items-center font-montserrat font-medium leading-none cursor-pointer"
+          class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg transition-colors duration-150 flex items-center font-inter font-medium leading-none cursor-pointer"
         >
           <div class="w-5 flex justify-center items-center flex-shrink-0">
             <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
@@ -514,7 +514,7 @@
                   {{#if activeCourse.category.name}}
                     <span class="mb-2 inline-flex self-start items-center rounded-[6px] bg-[#CFE6F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#003060]">{{activeCourse.category.name}}</span>
                   {{/if}}
-                  <h1 class="font-montserrat text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{activeCourse.name}}</h1>
+                  <h1 class="font-inter text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{activeCourse.name}}</h1>
                   <p class="mt-1 line-clamp-2 font-inter text-sm text-[#737373]">{{getByLang activeCourse.description lang}}</p>
 
                   {{!--
@@ -721,7 +721,7 @@
               <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#f0fdf4] text-[#15803d]">
                 <i class="fas fa-award text-2xl"></i>
               </span>
-              <h3 class="font-montserrat text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateReadyTitle'}}</h3>
+              <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateReadyTitle'}}</h3>
               <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
               <a
                 :href="'/certificates/' + activeCourseId"
@@ -742,7 +742,7 @@
               <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
                 <i class="fas fa-lock text-xl"></i>
               </span>
-              <h3 class="font-montserrat text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateLockedTitle'}}</h3>
+              <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateLockedTitle'}}</h3>
               <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateLockedBody'}}</p>
               <button
                 type="button"

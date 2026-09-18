@@ -10,6 +10,7 @@
   - createLabel : default 'Create User'
   - fullWidth   : boolean (default false) — search mengisi sisa lebar sampai tombol create
   - hideCreate  : boolean — tanpa tombol create (tabel read-only)
+  - hideSearch  : boolean — tanpa kotak search; aksi rata kanan
 
   Aksi tambahan (mis. Export Excel) dikirim lewat partial-block dan muncul di
   kiri tombol create:
@@ -17,7 +18,8 @@
       <button type='button' @click='exportToExcel()'>Export Excel</button>
     {{/components/ui/super_admin/table/toolbar}}
 --}}
-<div class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+<div class='flex flex-col gap-3 sm:flex-row sm:items-center {{#if hideSearch}}sm:justify-end{{else}}sm:justify-between{{/if}}'>
+  {{#unless hideSearch}}
   {{!-- Spasi setelah {{else}} WAJIB ada. Tanpa itu, ekstraktor Tailwind tidak
        pernah melihat `sm:w-[400px]` sebagai kandidat kelas (nilai arbitrer yang
        menempel langsung pada `}}` tidak terdeteksi), kelasnya tidak pernah
@@ -40,6 +42,7 @@
       </svg>
     </span>
   </label>
+  {{/unless}}
 
   <div class='flex shrink-0 items-center gap-3'>
     {{#if @partial-block}}{{> @partial-block}}{{/if}}

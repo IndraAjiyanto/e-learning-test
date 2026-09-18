@@ -30,7 +30,7 @@
       {{#if user.profile}}
         <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
       {{else}}
-        <span class="font-montserrat font-medium {{default textSizeClass 'text-[20px]'}} leading-none">{{substring user.username 0 (default initialsLength 2)}}</span>
+        <span class="font-inter font-medium {{default textSizeClass 'text-[20px]'}} leading-none">{{substring user.username 0 (default initialsLength 2)}}</span>
       {{/if}}
     </template>
   </div>

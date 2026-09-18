@@ -6,7 +6,7 @@
   Props:
   - variant         : 'stacked' (default) | 'profile'
                       'stacked' = layout lama (quote di atas, profil di bawah)
-                      'profile' = layout Figma (profil di atas, quote, badge bootcamp)
+                      'profile' = layout baru (profil di atas, quote, badge bootcamp)
   - isDesktop       : boolean — true = data diambil dari state Alpine `item`, false = dari props Handlebars
   - message         : Teks ulasan/testimonial (multibahasa)
   - profile         : URL gambar profil (opsional, fallback ke orang.png)
@@ -18,7 +18,7 @@
 --}}
 
 {{#if (eq variant 'profile')}}
-{{!-- ============ VARIANT: PROFILE (Figma "alumni-card") ============ --}}
+{{!-- ============ VARIANT: PROFILE ============ --}}
 <div class="group relative flex h-full w-full flex-col gap-5 overflow-hidden rounded-[20px] border border-[#E2E8F0] bg-gradient-to-r from-white to-[#F1F5F9] p-6 sm:p-8 shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.03)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#003060]/30 hover:shadow-[0px_16px_40px_-4px_rgba(11,31,59,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
   <span aria-hidden="true" class="pointer-events-none absolute right-5 top-1 select-none font-inter text-7xl lg:text-8xl font-extrabold leading-none text-[#0B1F3B] opacity-5 transition-opacity duration-300 group-hover:opacity-10">&ldquo;</span>
 

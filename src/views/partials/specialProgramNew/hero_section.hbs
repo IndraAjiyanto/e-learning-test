@@ -1,4 +1,4 @@
-<section class="relative z-20 w-full min-h-[600px] lg:min-h-[750px] flex items-center font-montserrat py-16 lg:py-24">
+<section class="relative z-20 w-full min-h-[600px] lg:min-h-[750px] flex items-center font-inter py-16 lg:py-24">
   <!-- Background Image with 80% Opacity -->
   <div 
     class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
@@ -14,7 +14,7 @@
         
         <!-- Typewriter Title -->
         <h1 
-          class="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[70px] text-[#003060] leading-tight mb-6"
+          class="font-inter font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[70px] text-[#003060] leading-tight mb-6"
           x-data="{
             words: ['{{#if category.name}}{{category.name}}{{else}}In House Training{{/if}}'],
             wordIndex: 0,
@@ -44,14 +44,14 @@
         </h1>
 
         <!-- Description Paragraph -->
-        <p class="w-full max-w-[562px] font-['Open_Sans'] font-normal text-base sm:text-lg md:text-xl lg:text-[25px] leading-relaxed md:leading-normal lg:leading-[50px] text-justify text-[#003060] mb-8 lg:mb-12">
+        <p class="w-full max-w-[562px] font-inter font-normal text-base sm:text-lg md:text-xl lg:text-[25px] leading-relaxed md:leading-normal lg:leading-[50px] text-justify text-[#003060] mb-8 lg:mb-12">
           {{#if category.description}}{{getByLang category.description lang}}{{else}}Standardize competencies and boost your team's productivity through corporate training tailored to your company's business objectives.{{/if}}
         </p>
 
         <!-- View Program Button -->
         <button
           onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
-          class="font-montserrat font-semibold text-lg sm:text-xl lg:text-[22px] text-white bg-[#003060] hover:bg-[#002244] w-full sm:w-auto md:w-[300px] lg:w-[370px] h-[60px] md:h-[68px] lg:h-[85px] rounded-[12px] p-[10px] gap-[10px] flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+          class="font-inter font-semibold text-lg sm:text-xl lg:text-[22px] text-white bg-[#003060] hover:bg-[#002244] w-full sm:w-auto md:w-[300px] lg:w-[370px] h-[60px] md:h-[68px] lg:h-[85px] rounded-[12px] p-[10px] gap-[10px] flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
         >
           <span>{{#if (t "test.specialProgram.contactSection.buttonViewProgram")}}{{t "test.specialProgram.contactSection.buttonViewProgram"}}{{else}}View Program{{/if}}</span>
         </button>

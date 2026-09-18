@@ -351,7 +351,7 @@
       ta.rows = 8;
       ta.placeholder = 'FALLBACK MODE: Enter your content here... (EditorJS failed to load)';
       ta.value = this.newForm.overview || '';
-      ta.className = 'w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm';
+      ta.className = 'w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-inter text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm';
       const self = this;
       ta.addEventListener('input', function () { self.newForm.overview = ta.value; });
       holder.replaceWith(ta);
@@ -475,19 +475,19 @@
       <!-- LEFT: Filter Sidebar -->
       <aside class="mb-6 space-y-5 rounded-xl border border-[#d9d9d9] bg-white p-5 lg:mb-0">
         <div class="flex items-center justify-between">
-          <h3 class="font-montserrat font-semibold text-sm text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Active Filters</h3>
-          <button type="button" @click="resetFilters()" class="font-montserrat font-medium text-xs text-[#0369A1] hover:underline cursor-pointer flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+          <h3 class="font-inter font-semibold text-sm text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Active Filters</h3>
+          <button type="button" @click="resetFilters()" class="font-inter font-medium text-xs text-[#0369A1] hover:underline cursor-pointer flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset</button>
         </div>
 
-        <div x-show="categoryFilter === 'all' && classTypeFilter === 'all'" class="bg-[#F4F7FC] rounded-lg px-3 py-2 text-center font-montserrat text-xs text-[#94A3B8]">No active filters</div>
+        <div x-show="categoryFilter === 'all' && classTypeFilter === 'all'" class="bg-[#F4F7FC] rounded-lg px-3 py-2 text-center font-inter text-xs text-[#94A3B8]">No active filters</div>
         <div x-show="!(categoryFilter === 'all' && classTypeFilter === 'all')" class="flex flex-wrap gap-2">
-          <span x-show="categoryFilter !== 'all'" class="inline-flex items-center bg-[#E0F2F9] text-[#0369A1] font-montserrat text-xs px-2.5 py-1 rounded-full" x-text="categoryFilter"></span>
-          <span x-show="classTypeFilter !== 'all'" class="inline-flex items-center bg-[#E0F2F9] text-[#0369A1] font-montserrat text-xs px-2.5 py-1 rounded-full" x-text="classTypeFilter"></span>
+          <span x-show="categoryFilter !== 'all'" class="inline-flex items-center bg-[#E0F2F9] text-[#0369A1] font-inter text-xs px-2.5 py-1 rounded-full" x-text="categoryFilter"></span>
+          <span x-show="classTypeFilter !== 'all'" class="inline-flex items-center bg-[#E0F2F9] text-[#0369A1] font-inter text-xs px-2.5 py-1 rounded-full" x-text="classTypeFilter"></span>
         </div>
 
         <!-- Category -->
         <div class="space-y-2">
-          <label class="font-montserrat font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> Category</label>
+          <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> Category</label>
           <input type="text" x-model="categorySearch" placeholder="Search category..." class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
           <select x-model="categoryFilter" class="h-11 w-full cursor-pointer rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
             <option value="all">All Categories</option>
@@ -499,7 +499,7 @@
 
         <!-- Class Type -->
         <div class="space-y-2">
-          <label class="font-montserrat font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Class Type</label>
+          <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Class Type</label>
           <input type="text" x-model="classTypeSearch" placeholder="Search class type..." class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
           <select x-model="classTypeFilter" class="h-11 w-full cursor-pointer rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
             <option value="all">All</option>
@@ -510,8 +510,8 @@
         </div>
 
         <div class="bg-[#F4F7FC] rounded-lg px-3 py-3 text-center">
-          <span class="block font-montserrat font-bold text-lg text-[#003060]" x-text="filteredPortfolios().length"></span>
-          <span class="font-montserrat text-xs text-[#6B7280]">Projects Available</span>
+          <span class="block font-inter font-bold text-lg text-[#003060]" x-text="filteredPortfolios().length"></span>
+          <span class="font-inter text-xs text-[#6B7280]">Projects Available</span>
         </div>
       </aside>
 
@@ -523,7 +523,7 @@
       <button
         type="button"
         @click="openCreatePortfolio()"
-        class="w-[190px] h-11 rounded-lg gap-2 border border-[#003060] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm leading-none flex items-center justify-center cursor-pointer shadow-md transition-all"
+        class="w-[190px] h-11 rounded-lg gap-2 border border-[#003060] bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center cursor-pointer shadow-md transition-all"
       >
         <i class="fa-solid fa-plus text-base"></i>
         <span>Create Portfolio</span>
@@ -541,12 +541,12 @@
       </div>
 
       <!-- Heading -->
-      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl text-[#003060] leading-none mb-3 text-center">
+      <h2 class="font-inter font-semibold text-xl sm:text-2xl text-[#003060] leading-none mb-3 text-center">
         Project Not Found
       </h2>
 
       <!-- Subtitle -->
-      <p class="font-montserrat font-normal text-sm text-[#666666] leading-relaxed text-center mb-8">
+      <p class="font-inter font-normal text-sm text-[#666666] leading-relaxed text-center mb-8">
         Try adjusting your filters to find more projects.
       </p>
 
@@ -554,7 +554,7 @@
       <button
         type="button"
         @click="resetFilters()"
-        class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm leading-none flex items-center justify-center cursor-pointer transition-all"
+        class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center cursor-pointer transition-all"
       >
         Reset Filters
       </button>
@@ -571,7 +571,7 @@
           <div>
             <!-- Badge: Class Type -->
             <div class="mb-4">
-              <span class="inline-flex items-center justify-center w-full max-w-[110px] h-8 p-1 bg-[#0B1F3B1A] text-black rounded-md font-montserrat font-medium text-xs" x-text="item.classType">Short Class</span>
+              <span class="inline-flex items-center justify-center w-full max-w-[110px] h-8 p-1 bg-[#0B1F3B1A] text-black rounded-md font-inter font-medium text-xs" x-text="item.classType">Short Class</span>
             </div>
 
             <!-- Portfolio Image Slider Container -->
@@ -583,7 +583,7 @@
               <template x-if="!item.images || item.images.length === 0">
                 <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#94A3B8]">
                   <i class="fa-regular fa-image text-2xl"></i>
-                  <span class="font-montserrat text-xs">No image uploaded</span>
+                  <span class="font-inter text-xs">No image uploaded</span>
                 </div>
               </template>
               <template x-for="(imgSrc, imgIdx) in (item.images || [])" :key="imgIdx">
@@ -635,15 +635,15 @@
             </div>
 
             <!-- Title -->
-            <h3 class="font-montserrat font-semibold text-lg text-[#003060] leading-snug mb-3" x-text="item.title">Portfolio title</h3>
+            <h3 class="font-inter font-semibold text-lg text-[#003060] leading-snug mb-3" x-text="item.title">Portfolio title</h3>
 
             <!-- Description -->
-            <p class="font-montserrat font-normal text-sm text-black leading-relaxed mb-4 line-clamp-2" x-text="item.description">Portfolio description</p>
+            <p class="font-inter font-normal text-sm text-black leading-relaxed mb-4 line-clamp-2" x-text="item.description">Portfolio description</p>
 
             <!-- Technologies Tags -->
             <div class="mb-5 flex flex-wrap gap-2">
               <template x-for="tech in (item.technologies || [])" :key="tech.id || tech.name">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-inter font-medium text-sm 2xl:text-base">
                   <template x-if="tech.svg">
                     <span x-html="tech.svg" class="w-4 h-4 flex-shrink-0 [&>svg]:w-4 [&>svg]:h-4"></span>
                   </template>
@@ -654,7 +654,7 @@
                 </span>
               </template>
               <template x-if="!item.technologies || item.technologies.length === 0">
-                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base" x-text="item.category">Program</span>
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-inter font-medium text-sm 2xl:text-base" x-text="item.category">Program</span>
               </template>
             </div>
 
@@ -665,7 +665,7 @@
                 <span x-text="item.author.charAt(0)">T</span>
               </div>
               <div class="flex flex-col min-w-0">
-                <span class="font-montserrat font-semibold text-sm text-black leading-none truncate mb-0.5" x-text="item.author">Trisna</span>
+                <span class="font-inter font-semibold text-sm text-black leading-none truncate mb-0.5" x-text="item.author">Trisna</span>
                 <span class="font-sans font-normal text-xs text-[#666666] leading-[15px] truncate" x-text="item.email">trisna@gmail.com</span>
               </div>
             </div>
@@ -678,7 +678,7 @@
             <button 
               type="button" 
               @click="selectedPortfolio = item; showDetail = true;"
-              class="w-full h-11 rounded-xl bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm leading-none flex items-center justify-center text-center transition-all cursor-pointer shadow-md"
+              class="w-full h-11 rounded-xl bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center text-center transition-all cursor-pointer shadow-md"
             >
               View Detail
             </button>
@@ -686,7 +686,7 @@
               <button
                 type="button"
                 @click="openEditPortfolio(item)"
-                class="h-11 flex-1 rounded-xl border border-[#D4D4D4] bg-white text-[#003060] font-montserrat font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
+                class="h-11 flex-1 rounded-xl border border-[#D4D4D4] bg-white text-[#003060] font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
               >
                 <i class="fa-regular fa-pen-to-square text-xs"></i>
                 Edit
@@ -694,7 +694,7 @@
               <button
                 type="button"
                 @click="askDeletePortfolio(item)"
-                class="h-11 flex-1 rounded-xl border border-[#fca5a5] bg-[#fef2f2] text-[#ef4444] font-montserrat font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:bg-[#fee2e2]"
+                class="h-11 flex-1 rounded-xl border border-[#fca5a5] bg-[#fef2f2] text-[#ef4444] font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:bg-[#fee2e2]"
               >
                 <i class="fa-regular fa-trash-can text-xs"></i>
                 Delete
@@ -733,12 +733,12 @@
       {{!-- Hanya menutup selama isiannya masih kosong: dulu satu klik di
            luar modal membuang formulir yang sudah terisi tanpa bertanya. --}}
       @click.away="if (!portfolioFormTouched()) closePortfolioModal()"
-      class="bg-white rounded-[24px] p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] font-montserrat relative"
+      class="bg-white rounded-[24px] p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] font-inter relative"
       style="color-scheme: light;"
     >
       <!-- Title Header -->
       <h2
-        class="font-montserrat font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8"
+        class="font-inter font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8"
         x-text="editingId ? 'Edit Your Portfolio' : 'Create Your Portfolio'"
       >Create Your Portfolio</h2>
 
@@ -750,34 +750,34 @@
           <div class="space-y-6">
             <!-- Portfolio Title -->
             <div class="space-y-3">
-              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
                 Portfolio Title<span class="text-red-500">*</span>
               </label>
               <input 
                 type="text" 
                 x-model="newForm.title"
                 placeholder="Enter portfolio title"
-                class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
+                class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
               >
             </div>
 
             <!-- Description -->
             <div class="space-y-3">
-              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
                 Description
               </label>
               <textarea 
                 rows="4"
                 x-model="newForm.description"
                 placeholder="write a description..."
-                class="w-full bg-white rounded-[10px] border border-[#D4D4D4] p-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm"
+                class="w-full bg-white rounded-[10px] border border-[#D4D4D4] p-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm"
               ></textarea>
             </div>
 
 
             <!-- Program Dropdown -->
             <div class="space-y-3">
-              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
                 Program<span class="text-red-500">*</span>
               </label>
               {{!-- Saat menyunting, program tidak bisa dipindah: rute update
@@ -786,8 +786,8 @@
                    yang tidak akan tersimpan. --}}
               <template x-if="editingId">
                 <div>
-                  <div class="w-full h-[48px] bg-[#F5F5F5] rounded-[10px] border border-[#D4D4D4] px-4 flex items-center font-montserrat text-sm sm:text-base text-[#666666]" x-text="newForm.program || 'Program'"></div>
-                  <p class="font-montserrat font-normal text-xs text-[#666666] pt-1">
+                  <div class="w-full h-[48px] bg-[#F5F5F5] rounded-[10px] border border-[#D4D4D4] px-4 flex items-center font-inter text-sm sm:text-base text-[#666666]" x-text="newForm.program || 'Program'"></div>
+                  <p class="font-inter font-normal text-xs text-[#666666] pt-1">
                     A portfolio stays with the program it was created for.
                   </p>
                 </div>
@@ -796,7 +796,7 @@
                 <button 
                   type="button"
                   @click="modalProgramOpen = !modalProgramOpen"
-                  class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 flex items-center justify-between font-montserrat text-sm sm:text-base text-black hover:shadow-sm cursor-pointer"
+                  class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 flex items-center justify-between font-inter text-sm sm:text-base text-black hover:shadow-sm cursor-pointer"
                 >
                   <span x-text="newForm.program || 'Select Program'">Select Program</span>
                   <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060]" :class="modalProgramOpen ? 'rotate-180' : ''"></i>
@@ -804,7 +804,7 @@
                 <div 
                   x-show="modalProgramOpen" 
                   x-transition
-                  class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] py-2 z-30 font-montserrat text-sm sm:text-base text-black max-h-[200px] overflow-y-auto"
+                  class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] py-2 z-30 font-inter text-sm sm:text-base text-black max-h-[200px] overflow-y-auto"
                 >
                   <template x-for="uc in userCourses" :key="uc.course.id">
                     <button type="button" @click="newForm.program = uc.course.name; newForm.courseId = uc.course.id; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors" x-text="uc.course.name"></button>
@@ -818,16 +818,16 @@
             
             <!-- Link* -->
             <div>
-              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060] mb-3">
+              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060] mb-3">
                 Link
               </label>
               <input 
                 type="text" 
                 x-model="newForm.link"
                 placeholder="Enter link (e.g., https://example.com)..."
-                class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
+                class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
               >
-              <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666] pt-1">
+              <p class="font-inter font-normal text-xs sm:text-sm text-[#666666] pt-1">
                 Enter a valid URL starting with http:// or https://
               </p>
             </div>
@@ -838,19 +838,19 @@
 
             <!-- Project Overview -->
             <div class="space-y-3">
-              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
                 Project Overview
               </label>
               <div 
                 id="overviewEditor"
                 x-ignore
-                class="w-full min-h-[300px] rounded-[10px] border border-[#D4D4D4] p-4 font-montserrat text-sm sm:text-base text-black bg-white focus-within:border-[#003060] transition-colors hover:shadow-sm max-w-none text-left"
+                class="w-full min-h-[300px] rounded-[10px] border border-[#D4D4D4] p-4 font-inter text-sm sm:text-base text-black bg-white focus-within:border-[#003060] transition-colors hover:shadow-sm max-w-none text-left"
               ></div>
             </div>
 
             <!-- Upload Images* -->
             <div class="space-y-3">
-              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
                 Upload Images<span class="text-red-500">*</span>
               </label>
               
@@ -867,7 +867,7 @@
                         <i class="fa-regular fa-image text-xs"></i>
                         <img :src="url" alt="" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
                       </span>
-                      <span class="min-w-0 flex-1 truncate font-montserrat text-xs text-[#676767]" x-text="url.split('/').pop()"></span>
+                      <span class="min-w-0 flex-1 truncate font-inter text-xs text-[#676767]" x-text="url.split('/').pop()"></span>
                       <button
                         type="button"
                         @click="removeExistingImage(url)"
@@ -886,11 +886,11 @@
                 <template x-for="(upload, idx) in imageUploads" :key="upload.id">
                   <div class="w-full h-[52px] rounded-[10px] border border-[#D4D4D4] px-3 flex items-center justify-between gap-3 bg-white hover:shadow-sm">
                     <div class="flex items-center gap-3 min-w-0">
-                      <label class="cursor-pointer bg-[#0B1F3B1A] hover:bg-slate-200 text-black font-montserrat font-medium text-sm px-4 py-2 rounded-[6px] transition-colors flex-shrink-0">
+                      <label class="cursor-pointer bg-[#0B1F3B1A] hover:bg-slate-200 text-black font-inter font-medium text-sm px-4 py-2 rounded-[6px] transition-colors flex-shrink-0">
                         Choose File
                         <input type="file" class="hidden" accept="image/*" @change="handleFile($event, idx)">
                       </label>
-                      <span class="font-montserrat text-sm text-[#676767] truncate" x-text="upload.name">No file chosen</span>
+                      <span class="font-inter text-sm text-[#676767] truncate" x-text="upload.name">No file chosen</span>
                     </div>
                     <!-- Remove row button if more than 1 -->
                     <button 
@@ -907,14 +907,14 @@
               </div>
 
               <!-- Allowed format subtitle -->
-              <p class="font-montserrat font-normal text-xs text-[#666666] pt-0.5">
+              <p class="font-inter font-normal text-xs text-[#666666] pt-0.5">
                 JPG, JPEG, PNG, or GIF &middot; max 5MB &middot; 1900-1920 &times; 1000-1080 px
               </p>
               {{!-- Pesan ini muncul begitu berkas dipilih, bukan setelah
                    unggahannya ditolak server. Syaratnya sama persis dengan
                    @ValidateImage pada POST /portfolio/create. --}}
               <template x-for="upload in imageUploads.filter(u => u.error)" :key="'err-' + upload.id">
-                <p class="flex items-start gap-1.5 font-montserrat text-xs text-[#dc2626]">
+                <p class="flex items-start gap-1.5 font-inter text-xs text-[#dc2626]">
                   <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
                   <span x-text="upload.name + ': ' + upload.error"></span>
                 </p>
@@ -923,7 +923,7 @@
               <!-- Dotted Add Image Box -->
               <div 
                 @click="addImageRow()" 
-                class="w-full h-[52px] rounded-[10px] border border-dashed border-[#D4D4D4] flex items-center justify-center gap-2 cursor-pointer hover:bg-[#FAFAFA] text-[#666666] font-montserrat font-medium text-sm sm:text-base transition-colors mt-3"
+                class="w-full h-[52px] rounded-[10px] border border-dashed border-[#D4D4D4] flex items-center justify-center gap-2 cursor-pointer hover:bg-[#FAFAFA] text-[#666666] font-inter font-medium text-sm sm:text-base transition-colors mt-3"
               >
                 <i class="fa-solid fa-plus text-xs"></i>
                 <span>Add Image</span>
@@ -938,14 +938,14 @@
           <button 
             type="submit"
             :disabled="!canSubmitPortfolio() || savingPortfolio"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md disabled:pointer-events-none disabled:opacity-50"
+            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md disabled:pointer-events-none disabled:opacity-50"
           >
             <span x-text="savingPortfolio ? 'Saving...' : (editingId ? 'Save Changes' : 'Save')">Save</span>
           </button>
           <button 
             type="button"
             @click="closePortfolioModal()"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] border border-[#003060] bg-white hover:bg-[#FAFAFA] text-[#003060] font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
+            class="w-full max-w-[240px] h-[48px] rounded-[8px] border border-[#003060] bg-white hover:bg-[#FAFAFA] text-[#003060] font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
           >
             Cancel
           </button>

@@ -3,18 +3,18 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/select_field.hbs
   Level: L1 Atomik (scoped super_admin)
 
-  Trigger (identik di semua varian) — Figma Create User node 740:7085 / Edit User node 768:41902:
+  Trigger (identik di semua varian)
   - sama persis dengan text_field: h 44, radius 8, border #d4d4d4, shadow 0 1px 2px rgba(0,0,0,0.05)
   - placeholder Inter Regular 16/24 #737373, chevron-down 20px #737373 (padding kanan 14)
 
-  Menu punya DUA varian sesuai dua komponen Figma yang berbeda:
+  Menu punya DUA varian yang berbeda:
 
-  variant='menu' (default) — Figma node 740:3637 / 768:41908 ("_Select menu"), dipakai Role
+  variant='menu' (default), dipakai Role
   - menu min-w 320, item h 44, px 14, py 10, gap 8
   - item Montserrat 16/24 #4a5568; terpilih bg #e4f1f7, Montserrat Medium #055c90
   - ikon check 20px #055c90
 
-  variant='dropdown' — Figma node 768:41913 ("Dropdown menu"), dipakai Status
+  variant='dropdown', dipakai Status
   - menu w 240, item h 40, px 16, py 10, gap 12
   - item Montserrat 16/20 #404040 (berat teks tidak berubah saat terpilih); terpilih bg #e4f1f7
   - ikon check 20px #404040
@@ -24,9 +24,9 @@
 
   Indikator titik (dot 10px) bersifat data-driven, bukan varian: bila sebuah option
   punya property `dot` (nama class bg Tailwind), titik itu tampil di menu DAN di trigger.
-  Dipakai Status — Verified #22c55e (node 768:41916), Unverified #718096 (node 768:41920).
+  Dipakai Status — Verified #22c55e, Unverified #718096.
 
-  Menggunakan listbox Alpine (bukan <select> native) agar menu bisa mengikuti Figma.
+  Menggunakan listbox Alpine (bukan <select> native) agar menu bisa di-styling penuh.
   Nilai terpilih dikirim ke backend lewat <input type='hidden'>.
 
   Props:
@@ -122,7 +122,7 @@
             :class="formData.{{field}} === option.value
               ? '{{#if (eq variant 'dropdown')}}bg-[#e4f1f7]{{else}}bg-[#e4f1f7] font-medium text-[#055c90]{{/if}}'
               : 'hover:bg-[#f5f5f5] active:bg-[#ededed]{{#unless (eq variant 'dropdown')}} text-[#4a5568]{{/unless}}'"
-            class='flex w-full items-center text-left font-montserrat transition-colors focus:outline-none focus-visible:bg-[#f5f5f5] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003060]/40 {{#if (eq variant 'dropdown')}}h-10 gap-3 px-4 py-2.5 text-base leading-5 text-[#404040]{{else}}h-11 justify-between gap-2 px-3.5 py-2.5 text-base leading-6{{/if}}'
+            class='flex w-full items-center text-left font-inter transition-colors focus:outline-none focus-visible:bg-[#f5f5f5] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003060]/40 {{#if (eq variant 'dropdown')}}h-10 gap-3 px-4 py-2.5 text-base leading-5 text-[#404040]{{else}}h-11 justify-between gap-2 px-3.5 py-2.5 text-base leading-6{{/if}}'
           >
             {{!-- dot 10px — data-driven, ikut ada/tidaknya `dot` pada option --}}
             <template x-if='option.dot'>

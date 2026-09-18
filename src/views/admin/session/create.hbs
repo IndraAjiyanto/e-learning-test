@@ -1,7 +1,6 @@
 {{!--
   Page: Admin - Create Session
   Path: admin/session/create.hbs
-  Design: slicing.pen "Container - Add Session" (1052, gap 28)
   Route: GET /session/formCreate/:weeksId -> POST /session/:weeksId (create)
   Composed from components/ui/admin atomics: text/page-header, form/form-field,
   form/text-input, form/textarea-input, form/toggle-switch, button/secondary-button.
@@ -91,7 +90,7 @@
               checkedBind="isFinal"
               onChange="isFinal = $event.target.checked"
             }}
-            <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold sm:whitespace-nowrap'>Jadikan session terakhir</span>
+            <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold sm:whitespace-nowrap'>Jadikan session terakhir</span>
             <input type='hidden' name='isFinalCheck' :value="isFinal ? 'true' : 'false'" />
           </div>
 

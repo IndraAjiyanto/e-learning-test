@@ -98,11 +98,11 @@
             <circle cx="18" cy="18" r="15.915" fill="none" stroke="#E5E5E5" stroke-width="3"></circle>
             <circle cx="18" cy="18" r="15.915" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-dasharray="{{progress.percent}} 100"></circle>
           </svg>
-          <span class="absolute font-montserrat text-lg font-bold text-[#003060]">{{progress.percent}}%</span>
+          <span class="absolute font-inter text-lg font-bold text-[#003060]">{{progress.percent}}%</span>
         </div>
 
         <div class="min-w-0 flex-1">
-          <p class="font-montserrat text-base font-bold text-[#171717]">
+          <p class="font-inter text-base font-bold text-[#171717]">
             {{progress.completedWeeks}} {{t 'test.startLearning.of'}} {{progress.totalWeeks}}
             {{#if (eq progress.totalWeeks 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
             {{t 'test.startLearning.completedLower'}}
@@ -111,15 +111,15 @@
           <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
             <span class="inline-flex items-center gap-2">
               <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]"><i class="fa-regular fa-calendar text-xs"></i></span>
-              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.totalWeeks'}}<span class="block font-montserrat text-sm font-bold text-[#171717]">{{progress.totalWeeks}}</span></span>
+              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.totalWeeks'}}<span class="block font-inter text-sm font-bold text-[#171717]">{{progress.totalWeeks}}</span></span>
             </span>
             <span class="inline-flex items-center gap-2">
               <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f0fdf4] text-[#15803d]"><i class="fa-solid fa-circle-check text-xs"></i></span>
-              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.completedCount'}}<span class="block font-montserrat text-sm font-bold text-[#171717]">{{progress.completedWeeks}}</span></span>
+              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.completedCount'}}<span class="block font-inter text-sm font-bold text-[#171717]">{{progress.completedWeeks}}</span></span>
             </span>
             <span class="inline-flex items-center gap-2">
               <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#FEFCE8] text-[#A16207]"><i class="fa-regular fa-clock text-xs"></i></span>
-              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.remaining'}}<span class="block font-montserrat text-sm font-bold text-[#171717]">{{subtract progress.totalWeeks progress.completedWeeks}}</span></span>
+              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.remaining'}}<span class="block font-inter text-sm font-bold text-[#171717]">{{subtract progress.totalWeeks progress.completedWeeks}}</span></span>
             </span>
           </div>
         </div>
@@ -316,7 +316,7 @@
                             <div class='min-w-0'>
                               <div class='flex flex-wrap items-center gap-2'>
                                 <h4
-                                  class='truncate font-montserrat text-sm font-bold text-[#171717]'
+                                  class='truncate font-inter text-sm font-bold text-[#171717]'
                                   x-text='session.topic || `{{t "test.startLearning.session"}} ${session.sessionOrder}`'
                                 ></h4>
                                 <template x-if='$store.sessionUnlock.canOpenNextSession(session)'>
@@ -379,7 +379,7 @@
           <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
           </span>
-          <h3 class="font-montserrat text-xl font-bold text-[#003060]">No weeks yet</h3>
+          <h3 class="font-inter text-xl font-bold text-[#003060]">No weeks yet</h3>
           <p class="font-inter text-sm text-[#737373]">Your mentor has not added the learning weeks for this program.</p>
         </div>
       {{/unless}}

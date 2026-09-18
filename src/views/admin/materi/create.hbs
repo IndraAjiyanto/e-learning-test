@@ -8,10 +8,6 @@
     Edit:   GET /learning-material/formEdit/:id (editMode=true, material)
             -> PATCH /learning-material/{pdf,ppt,video}/:id
   Data: { user, sessionId, jenis_file } (+ { material, editMode } saat edit)
-  Design: Container w1052 gap28 → Title 34/brand + subtitle 16/#718096 →
-          Form Card (white r12 stroke #D9D9D9 p20 gap20): Material Title*,
-          link/file field + hint + info box (ppt) → Footer h86 justify end
-          (Cancel w90 + Save/Update Material w142).
   Komponen (reuse): text/page-header, form/form-card, form/form-field,
           form/text-input, button/primary-button, button/secondary-button.
           Baru (prefix material-): material/material-file-upload (pdf),

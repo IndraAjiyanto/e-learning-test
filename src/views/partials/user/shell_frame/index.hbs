@@ -36,7 +36,7 @@
 {{!-- lang disediakan di sini karena komponen lang_switcher membacanya dari scope
      Alpine induk. Shell mendefinisikannya di x-data miliknya; halaman berdiri
      sendiri tidak punya itu, sehingga pemilih bahasanya dulu terender kosong. --}}
-<div class="relative flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col overflow-hidden bg-[#F2F2F3] font-montserrat" x-data="{ lang: '{{lang}}' }">
+<div class="relative flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col overflow-hidden bg-[#F2F2F3] font-inter" x-data="{ lang: '{{lang}}' }">
   {{> user/app_bar/index user=user sidebarToggle=true }}
 
   <div class="flex w-full flex-1 min-h-0 items-stretch">
@@ -46,7 +46,7 @@
           href="/users/profile?tab=dashboard"
           aria-label="{{t 'test.userSidebar.dashboard'}}"
           title="{{t 'test.userSidebar.dashboard'}}"
-          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'dashboard')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-inter text-sm font-medium leading-none transition-colors {{#if (eq active 'dashboard')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
           <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-table-cells-large text-base"></i></span>
           <span class="js-user-sidebar-label whitespace-nowrap">Dashboard</span>
@@ -55,7 +55,7 @@
           href="/users/profile?tab=profile"
           aria-label="{{t 'test.userSidebar.profile'}}"
           title="{{t 'test.userSidebar.profile'}}"
-          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'profile')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-inter text-sm font-medium leading-none transition-colors {{#if (eq active 'profile')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
           <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'profile')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span></span>
           <span class="js-user-sidebar-label whitespace-nowrap">Profile</span>
@@ -64,7 +64,7 @@
           href="/users/profile?tab=learning"
           aria-label="{{t 'test.userSidebar.myLearning'}}"
           title="{{t 'test.userSidebar.myLearning'}}"
-          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'learning')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-inter text-sm font-medium leading-none transition-colors {{#if (eq active 'learning')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
           <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'learning')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span></span>
           <span class="js-user-sidebar-label whitespace-nowrap">My Learning</span>
@@ -73,7 +73,7 @@
           href="/users/profile?tab=portfolio"
           aria-label="{{t 'test.userSidebar.myPortfolio'}}"
           title="{{t 'test.userSidebar.myPortfolio'}}"
-          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'portfolio')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-inter text-sm font-medium leading-none transition-colors {{#if (eq active 'portfolio')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
           <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'portfolio')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span></span>
           <span class="js-user-sidebar-label whitespace-nowrap">My Portfolio</span>
@@ -82,7 +82,7 @@
           href="/users/profile?tab=history-payment"
           aria-label="{{t 'test.userSidebar.paymentHistory'}}"
           title="{{t 'test.userSidebar.paymentHistory'}}"
-          class="js-user-sidebar-item rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors {{#if (eq active 'history-payment')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
+          class="js-user-sidebar-item rounded-lg flex items-center font-inter text-sm font-medium leading-none transition-colors {{#if (eq active 'history-payment')}}bg-[#E4F1F7] text-[#003060]{{else}}text-[#718096] hover:bg-[#F4F7FC]{{/if}}"
         >
           <span class="flex w-5 shrink-0 justify-center"><span class="block size-5 {{#if (eq active 'history-payment')}}bg-[#003060]{{else}}bg-[#718096]{{/if}}" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span></span>
           <span class="js-user-sidebar-label whitespace-nowrap">Payment History</span>
@@ -91,7 +91,7 @@
     </div>
 
     <div class="js-user-sidebar-logout hidden lg:flex fixed bottom-0 left-0 z-30 shrink-0 border-r border-t border-[#D9D9D9] bg-white">
-      <a href="/logout" aria-label="Log Out" title="Log Out" class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg flex items-center font-montserrat text-sm font-medium leading-none transition-colors">
+      <a href="/logout" aria-label="Log Out" title="Log Out" class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg flex items-center font-inter text-sm font-medium leading-none transition-colors">
         <span class="flex w-5 shrink-0 justify-center"><i class="fa-solid fa-arrow-right-from-bracket text-base"></i></span>
         <span class="js-user-sidebar-label whitespace-nowrap">Log Out</span>
       </a>

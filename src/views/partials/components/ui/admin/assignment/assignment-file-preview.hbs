@@ -1,7 +1,6 @@
 {{!--
   Component: Assignment File Preview / View Logbook (Admin) — organism, prefix assignment-
   Path: components/ui/admin/assignment/assignment-file-preview.hbs
-  Source: slicing.pen (Container - Logbook Detail 1022, frame: iLK5a -> View Logbook TkXtP)
   Props: {{assignment}} (Assignment entity: title, file, createdAt, session)
   Alpine Parent Scope (answerTabData()):
     selectedUserId, selectedUsername, selectedFile, activePreviewMode ('assignment' | 'student'),
@@ -11,10 +10,10 @@
 
   {{!-- Feature Card 1: Partnership Header (ruttK: h93, fill #003060, p20 28) --}}
   <div class='box-border w-full min-h-[93px] flex flex-col gap-[4px] p-[20px_28px] justify-center items-start bg-[#003060]'>
-    <h2 class='text-[24px]/[1.21] w-full text-[#FFFFFF] font-montserrat font-bold tracking-[-1px] text-left overflow-hidden text-ellipsis whitespace-nowrap'>
+    <h2 class='text-[24px]/[1.21] w-full text-[#FFFFFF] font-inter font-bold tracking-[-1px] text-left overflow-hidden text-ellipsis whitespace-nowrap'>
       Assigment File
     </h2>
-    <p class='text-[16px]/[1.25] w-full text-[#F3F3F3] font-montserrat font-medium text-left overflow-hidden text-ellipsis whitespace-nowrap'
+    <p class='text-[16px]/[1.25] w-full text-[#F3F3F3] font-inter font-medium text-left overflow-hidden text-ellipsis whitespace-nowrap'
       x-text="activePreviewMode === 'student' && selectedUsername ? selectedUsername + ' Submission' : '{{default assignment.title 'UX Research & Design Thinking'}}'">
       {{default assignment.title 'UX Research & Design Thinking'}}
     </p>
@@ -27,12 +26,12 @@
     <div x-show='selectedFile' class='w-full flex flex-row items-center gap-[8px] p-[4px] bg-[#F5F5F5] rounded-[8px]'>
       <button type='button' @click="activePreviewMode = 'assignment'"
         :class="activePreviewMode === 'assignment' ? 'bg-[#FFFFFF] text-[#003060] shadow-sm font-semibold' : 'text-[#737373] font-medium hover:text-[#171717]'"
-        class='flex-1 py-[6px] px-[10px] rounded-[6px] text-[12px] font-montserrat transition-all text-center'>
+        class='flex-1 py-[6px] px-[10px] rounded-[6px] text-[12px] font-inter transition-all text-center'>
         Tugas Master
       </button>
       <button type='button' @click="activePreviewMode = 'student'"
         :class="activePreviewMode === 'student' ? 'bg-[#FFFFFF] text-[#003060] shadow-sm font-semibold' : 'text-[#737373] font-medium hover:text-[#171717]'"
-        class='flex-1 py-[6px] px-[10px] rounded-[6px] text-[12px] font-montserrat transition-all text-center truncate'>
+        class='flex-1 py-[6px] px-[10px] rounded-[6px] text-[12px] font-inter transition-all text-center truncate'>
         <span x-text="selectedUsername ? 'Jawaban ' + selectedUsername : 'Jawaban Siswa'"></span>
       </button>
     </div>
