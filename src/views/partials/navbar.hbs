@@ -229,6 +229,7 @@
       {{#if isAuthenticated}}
         <a
           href="/users/profile"
+          {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}}
           :class="isUserActive() ? 'bg-gray-100' : 'hover:bg-gray-100'"
           class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
         >
@@ -312,7 +313,7 @@
       </div>
 
       {{#if isAuthenticated}}
-        <a href="/users/profile" class="mt-2 flex items-center gap-3 border-t border-white/15 px-4 pt-4 hover:text-white/80">
+        <a href="/users/profile" {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}} class="mt-2 flex items-center gap-3 border-t border-white/15 px-4 pt-4 hover:text-white/80">
           <span class="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white/30 bg-white/20">
             {{#if user.profile}}<img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />{{else}}<span class="font-bold">{{substring user.username 0 1}}</span>{{/if}}
           </span>
