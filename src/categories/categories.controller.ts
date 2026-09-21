@@ -175,6 +175,7 @@ export class CategoriesController {
         benefit_category,
         alumni,
         gallery,
+        faqs,
       });
     }
   }

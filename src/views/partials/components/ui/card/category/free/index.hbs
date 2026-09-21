@@ -1,58 +1,108 @@
 {{!-- 
-  Komponen: Card Program (Free Program)
-  Lokasi: src/views/partials/components/free_program/card_program.hbs
+  Komponen: Card Program (Free Program - Short Classes)
+  Lokasi: src/views/partials/components/ui/card/category/free/index.hbs
   
-  Props:
-  - id      : ID Program
-  - image   : URL Gambar Program
-  - name    : Nama Program
-  - method  : Metode Belajar (Online/Offline)
-  - day     : Lama hari belajar
-  - quota   : Kuota siswa
+  Slicing presisi 100% sesuai Figma Node 2591:840 (Program Selection Card):
+  - Image: 16/10 aspect ratio, rounded-[16px] dengan hover zoom
+  - Title Row: Icon circle navy (#003060) + Title Montserrat Bold 22px (#0B1F3B)
+  - Chips: Pill rounded-full border #E5E7EB bg-[#F9FAFB]
+  - Description: Inter Regular 14px-15px #6B7280
+  - Footer CTA: "Explore program" di kiri + Tombol lingkaran panah navy di kanan
 --}}
-<div class="w-full max-w-[549px] bg-white border border-slate-200/80 rounded-[20px] shadow-[0px_2px_10px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col justify-between group">
-  <div>
-    <!-- Card Image -->
-    <div class="w-full h-[250px] sm:h-[270px] rounded-[16px] overflow-hidden bg-gray-100 mb-6">
+
+<div class="group flex flex-col justify-between w-full max-w-[504px] bg-white rounded-[24px] p-5 sm:p-6 shadow-[0px_6px_24px_-6px_rgba(0,0,0,0.06)] border border-[#F1F3F5] hover:shadow-[0px_14px_32px_-8px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
+  <div class="flex flex-col">
+    
+    {{!-- Card Image --}}
+    <div class="w-full aspect-[16/10] sm:h-[220px] rounded-[16px] overflow-hidden bg-gray-100 mb-5 relative">
       <img 
         src="{{default image 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop'}}" 
         alt="{{name}}" 
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        onerror="this.src='https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop'"
+        class="size-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
     </div>
 
-    <!-- Card Content -->
-    <div class="px-1">
-      <h3 class="font-inter font-semibold text-xl sm:text-[25px] leading-[35px] tracking-normal text-[#003060] text-left mb-7 line-clamp-2">
+    {{!-- Title Row with Dark Navy Icon Circle --}}
+    <div class="flex items-center gap-3.5 mb-3.5">
+      <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[#003060] text-white shadow-xs">
+        <i class="{{default icon 'fa-solid fa-graduation-cap'}} text-sm"></i>
+      </span>
+      <h3 class="font-montserrat font-bold text-xl sm:text-[22px] leading-tight text-[#0B1F3B] line-clamp-1">
         {{name}}
       </h3>
-
-      <!-- Badges Row -->
-      <div class="flex flex-wrap items-center gap-[20px] mb-8">
-        <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-          <i class="fa-solid fa-tag text-xs text-[#003060]"></i> {{t 'test.categoryFreeProgram.program.free'}}
-        </span>
-        <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-          <i class="fa-regular fa-clock text-xs text-[#003060]"></i> {{default day '1'}} {{t 'test.categoryFreeProgram.program.day'}}
-        </span>
-        <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-          <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> {{method}}
-        </span>
-        <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-          <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> {{quota}} {{t 'test.categoryFreeProgram.program.students'}}
-        </span>
-      </div>
     </div>
+
+    {{!-- Tags / Chips Row --}}
+    <div class="flex flex-wrap items-center gap-2 mb-3.5">
+      {{#if tags}}
+        {{#each tags}}
+          <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+            {{this}}
+          </span>
+        {{/each}}
+      {{else}}
+        {{#if method}}
+          <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+            {{method}}
+          </span>
+        {{/if}}
+        {{#if day}}
+          <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+            {{day}} {{default (t 'test.categoryFreeProgram.program.day') 'Day'}}
+          </span>
+        {{/if}}
+        {{#if quota}}
+          <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+            {{quota}} {{default (t 'test.categoryFreeProgram.program.students') 'Students'}}
+          </span>
+        {{/if}}
+        {{#unless method}}
+          {{#unless day}}
+            {{#unless quota}}
+              <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+                Language
+              </span>
+              <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+                Culture
+              </span>
+              <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+                Career
+              </span>
+            {{/unless}}
+          {{/unless}}
+        {{/unless}}
+      {{/if}}
+    </div>
+
+    {{!-- Description --}}
+    <p class="font-inter text-sm sm:text-[15px] leading-relaxed text-[#6B7280] line-clamp-3 min-h-[66px] mb-5">
+      {{#if (getByLang description lang)}}
+        {{getByLang description lang}}
+      {{else if description}}
+        {{description}}
+      {{else}}
+        A structured journey from language fundamentals to workplace readiness and long-term career opportunities.
+      {{/if}}
+    </p>
+
   </div>
 
-  <!-- Card Action Button -->
-  <div class="w-full pt-2">
-    <a
-      href="{{#if isFallback}}#program{{else}}/program/{{id}}{{/if}}"
-      class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
+  {{!-- Footer CTA Row --}}
+  <div class="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
+    <a 
+      href="{{#if isFallback}}#programs{{else}}/program/{{id}}{{/if}}" 
+      class="font-inter font-bold text-sm sm:text-[15px] text-[#0B1F3B] group-hover:text-[#003060] transition-colors"
     >
-      <span class="font-inter font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.program.detailProgram'}}</span>
-      <i class="fa-solid fa-arrow-right text-base sm:text-lg"></i>
+      {{default (t 'test.categoryPaidProgram.hero.explore') 'Explore program'}}
+    </a>
+    <a 
+      href="{{#if isFallback}}#programs{{else}}/program/{{id}}{{/if}}" 
+      class="grid size-11 shrink-0 place-items-center rounded-full bg-[#003060] text-white shadow-sm group-hover:bg-[#07172d] group-hover:scale-105 transition-all duration-300"
+      aria-label="{{name}}"
+    >
+      <i class="fa-solid fa-arrow-right text-sm"></i>
     </a>
   </div>
+
 </div>
