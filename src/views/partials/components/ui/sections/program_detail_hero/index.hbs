@@ -1,6 +1,7 @@
 {{!--
-  Komponen: Program Detail Hero Section (Level 2 - Section)
+  Komponen: Program Detail Hero Section
   Lokasi: src/views/partials/components/ui/sections/program_detail_hero/index.hbs
+  Level: L2 Section
 
   Props:
   - course           : object (wajib, data program/course)
@@ -13,119 +14,171 @@
   - regisClick       : string (opsional, Alpine click expression Free Program)
 --}}
 
-<div class="bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] min-h-screen pt-32 pb-24 font-inter overflow-x-hidden">
-  <div class="container mx-auto px-8 lg:px-12 max-w-[1400px]">
-
-    {{> components/ui/button/back/index
-      href="javascript:history.back()"
-      buttonClass="mb-10"
-      iconClass="size-4"
-    }}
-
-    <div class="flex flex-col lg:flex-row gap-12 justify-between">
+{{#if (or (eq course.checkPaid false) showTime)}}
+  {{!-- Free Program Detail Hero (Figma Node 1149:727) --}}
+  <section class="relative w-full bg-[#F8F9FA] overflow-hidden py-12 sm:py-16 lg:py-20">
+    <div class="mx-auto w-full max-w-[1728px] px-4 sm:px-8 lg:px-20 flex flex-col items-center gap-8 lg:gap-10">
       
-      <!-- Left Content -->
-      <div class="flex-1 lg:max-w-2xl pt-2">
-        {{#if showBatchPill}}
-          <!-- Batch Pill -->
-          <div class="inline-flex items-center justify-center px-5 lg:px-6 py-2 lg:py-2.5 mb-6 lg:mb-8 rounded-full border-2 border-white bg-white/80 backdrop-blur-[6.6px] shadow-[0_0_4px_rgba(0,0,0,0.1)] w-fit max-w-full">
-            <span class="text-[#0B1F3B] font-[600] text-[30px] leading-none text-center">{{course.group}} - {{t 'test.paidProgram.header.startLearning'}} {{formatDate course.startDate lang}}</span>
-          </div>
-        {{/if}}
-
-        <!-- Title -->
-        {{> components/ui/text/sub_title/index
-          text=course.name
-          align="left"
-          size="lg"
-          color="text-[#000000]"
-          class="mb-4 lg:mb-6"
+      <div class="w-full max-w-[1568px] flex flex-col items-start gap-6">
+        {{> components/ui/button/back/index
+          href="javascript:history.back()"
+          buttonClass="size-11 rounded-full border border-[#0B1F3B]/30 text-[#0B1F3B] hover:bg-[#0B1F3B]/10 shadow-sm"
+          iconClass="size-4"
         }}
 
-        <!-- Description -->
-        {{> components/ui/text/description/index
-          text=(getByLang course.description lang)
-          align="left"
-          size="lg"
-          color="text-[#000000]"
-          class="leading-[50px] mb-8 lg:mb-0"
-        }}
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-[65px] w-full">
+          {{!-- Hero Left Content (680px) --}}
+          <div class="flex flex-col items-start gap-8 lg:gap-10 w-full lg:w-[680px] lg:max-w-[680px]">
+            
+            {{!-- Headline Group --}}
+            <div class="flex flex-col items-start gap-4 w-full">
+              {{!-- Tag Badge --}}
+              <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-[#D9D9D9] rounded-[100px] h-[27px]">
+                <span class="size-2 rounded-full bg-[#6EB6E5] shrink-0"></span>
+                <span class="font-montserrat font-bold text-[12px] leading-[15px] uppercase text-[#003060]">
+                  {{#if course.category.name}}{{course.category.name}}{{else}}FREE PROGRAM{{/if}}
+                </span>
+              </div>
 
-        {{#if showLearnMore}}
-          <!-- Learn More Button -->
-          <div class="mt-8">
-            {{> components/ui/button/btn_action/index
-              href=(default learnMoreHref "#participants")
-              text=(t 'test.freeProgram.hero.learn')
-              icon="fa-solid fa-arrow-down ml-2 text-[15px]"
-              variant="outline"
-              class="py-3.5 px-8 border-[#7AA3C4] text-[#0B1F3B] hover:bg-[#7AA3C4]/10"
+              {{!-- Main Title --}}
+              <h1 class="font-montserrat font-extrabold text-[36px] sm:text-[44px] lg:text-[50px] leading-[115%] text-[#0B1F3B] tracking-tight">
+                {{course.name}}
+              </h1>
+
+              {{!-- Tagline Description --}}
+              <p class="font-inter font-normal text-[16px] sm:text-[18px] leading-[160%] text-[#64748B]">
+                {{#if course.description}}
+                  {{getByLang course.description lang}}
+                {{else}}
+                  Learn the fundamentals of Python for data analysis from scratch to better understand data insights in a simpler and more structured way.
+                {{/if}}
+              </p>
+            </div>
+
+            {{!-- Action CTA Group --}}
+            <div class="flex flex-row items-center gap-4 w-full sm:w-auto">
+              {{!-- Button Primary: Daftar Sekarang --}}
+              {{#if regisClick}}
+                <button
+                  type="button"
+                  @click.prevent="{{regisClick}}"
+                  class="inline-flex items-center justify-center px-7 py-4 w-auto min-w-[184px] h-[51px] bg-[#003060] hover:bg-[#002244] text-white font-inter font-bold text-[16px] leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] transition-all duration-200 active:scale-95 cursor-pointer"
+                >
+                  {{default (t 'test.freeProgram.hero.regisNow') 'Daftar Sekarang'}}
+                </button>
+              {{else if regisHref}}
+                <a
+                  href="{{regisHref}}"
+                  class="inline-flex items-center justify-center px-7 py-4 w-auto min-w-[184px] h-[51px] bg-[#003060] hover:bg-[#002244] text-white font-inter font-bold text-[16px] leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] transition-all duration-200 active:scale-95 cursor-pointer"
+                >
+                  {{default (t 'test.freeProgram.hero.regisNow') 'Daftar Sekarang'}}
+                </a>
+              {{else}}
+                <button
+                  type="button"
+                  @click.prevent="openRegistrationModal()"
+                  class="inline-flex items-center justify-center px-7 py-4 w-auto min-w-[184px] h-[51px] bg-[#003060] hover:bg-[#002244] text-white font-inter font-bold text-[16px] leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] transition-all duration-200 active:scale-95 cursor-pointer"
+                >
+                  {{default (t 'test.freeProgram.hero.regisNow') 'Daftar Sekarang'}}
+                </button>
+              {{/if}}
+
+              {{!-- Button Secondary: Konsultasi Gratis --}}
+              <a
+                href="{{#if course.category.contact}}{{waLink course.category.contact}}{{else}}https://wa.me/{{/if}}"
+                target="_blank"
+                class="inline-flex items-center justify-center px-6 py-4 w-auto min-w-[180px] h-[51px] bg-transparent hover:bg-[#003060]/10 text-[#003060] border-[1.5px] border-[#003060] font-inter font-semibold text-[16px] leading-[19px] rounded-[10px] transition-all duration-200 active:scale-95 cursor-pointer"
+              >
+                Konsultasi Gratis
+              </a>
+            </div>
+
+            {{!-- Hero Quick Stats --}}
+            {{> components/ui/card/hero_quick_stats/index
+              course=course
+              lang=lang
             }}
+
           </div>
-        {{/if}}
+
+          {{!-- Hero Right Container (823x529px) --}}
+          <div class="w-full lg:w-[823px] h-[300px] sm:h-[400px] lg:h-[529px] rounded-[24px] overflow-hidden shrink-0 shadow-[0px_16px_32px_-8px_rgba(0,0,0,0.1)] bg-white border border-[#E2E8F0]">
+            <img
+              src="{{#if course.image}}{{course.image}}{{else if course.category.hero_section_image}}{{course.category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+              alt="{{course.name}}"
+              onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+              class="w-full h-full object-cover rounded-[24px]"
+            />
+          </div>
+
+        </div>
       </div>
 
-      <!-- Right Content (Card) -->
-      <div class="lg:w-[480px]">
-        <div class="card bg-white/60 backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] p-8 md:p-10 border border-[#F0F0F0] rounded-xl">
-          
-          <div class="space-y-7 mb-10">
-            <!-- Learning Date -->
-            <div class="flex items-start gap-5">
-              <div class="mt-0.5">
-                <img src="/public/image/icons/paid_program/calendar.svg" alt="Calendar Icon" class="w-[30px] h-[30px]" />
-              </div>
-              <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{#if showTime}}{{t 'test.freeProgram.hero.saveDate'}}{{else}}{{t 'test.paidProgram.header.learningDate'}}{{/if}}</h3>
-                <p class="text-[#545454] font-[400] text-[20px]">
-                  {{formatDate course.startDate lang}}
-                  {{#if course.startEnd}} - {{formatDate course.startEnd lang}}{{/if}}
-                  - {{course.method}}
-                </p>
-              </div>
-            </div>
+    </div>
+  </section>
 
-            <!-- Location -->
-            <div class="flex items-start gap-5">
-              <div class="mt-0.5 ml-0.5">
-                <img src="/public/image/icons/paid_program/location.svg" alt="Location Icon" class="w-[23px] h-[32px]" />
-              </div>
-              <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.location'}}</h3>
-                <p class="text-[#545454] font-[400] text-[20px]">
-                  {{#if (eq course.method 'offline')}}
-                    {{getByLang course.locations lang}}
-                  {{else}}
-                    Zoom / Google Meet
-                  {{/if}}
-                </p>
-              </div>
-            </div>
+{{else}}
+  {{!-- Paid Program Detail Hero --}}
+  <div class="bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] min-h-screen pt-32 pb-24 font-inter overflow-x-hidden">
+    <div class="container mx-auto px-8 lg:px-12 max-w-[1400px]">
 
-            {{#if showTime}}
-              <!-- Time & Capacity Grid (Free Program Style) -->
-              <div class="grid grid-cols-2 gap-6 mt-1">
-                <div>
-                  <div class="flex items-center gap-3 text-black">
-                    <i class="fa-regular fa-clock text-[22px]"></i>
-                    <span class="font-bold text-[18px]">{{t 'test.freeProgram.hero.time'}}</span>
-                  </div>
-                  <p class="text-gray-800 text-[15px] mt-1.5 ml-[35px]">
-                    {{formatTime course.time_start}}
-                  </p>
+      {{> components/ui/button/back/index
+        href="javascript:history.back()"
+        buttonClass="mb-10"
+        iconClass="size-4"
+      }}
+
+      <div class="flex flex-col lg:flex-row gap-12 justify-between">
+        
+        <div class="flex-1 lg:max-w-2xl pt-2">
+          {{#if showBatchPill}}
+            <div class="inline-flex items-center justify-center px-5 lg:px-6 py-2 lg:py-2.5 mb-6 lg:mb-8 rounded-full border-2 border-white bg-white/80 backdrop-blur-[6.6px] shadow-[0_0_4px_rgba(0,0,0,0.1)] w-fit max-w-full">
+              <span class="text-[#0B1F3B] font-[600] text-[30px] leading-none text-center">{{course.group}} - {{t 'test.paidProgram.header.startLearning'}} {{formatDate course.startDate lang}}</span>
+            </div>
+          {{/if}}
+
+          <h1 class="text-[#0B1F3B] font-bold text-[36px] lg:text-[44px] leading-tight mb-4 lg:mb-6">
+            {{course.name}}
+          </h1>
+
+          <p class="text-gray-700 text-[18px] leading-relaxed mb-8 lg:mb-0">
+            {{getByLang course.description lang}}
+          </p>
+        </div>
+
+        <div class="lg:w-[480px]">
+          <div class="card bg-white/60 backdrop-blur-[6.6px] shadow-[0_0_6px_rgba(0,0,0,0.25)] p-8 md:p-10 border border-[#F0F0F0] rounded-xl">
+            <div class="space-y-7 mb-10">
+              <div class="flex items-start gap-5">
+                <div class="mt-0.5">
+                  <img src="/public/image/icons/paid_program/calendar.svg" alt="Calendar Icon" class="w-[30px] h-[30px]" />
                 </div>
                 <div>
-                  <div class="flex items-center gap-3 text-black">
-                    <i class="fa-solid fa-user-group text-[20px]"></i>
-                    <span class="font-bold text-[18px]">{{t 'test.freeProgram.hero.capacity'}}</span>
-                  </div>
-                  <p class="text-gray-800 text-[15px] mt-1.5 ml-[35px]">
-                    {{course.quota}} {{t 'test.freeProgram.hero.students'}}
+                  <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.learningDate'}}</h3>
+                  <p class="text-[#545454] font-[400] text-[20px]">
+                    {{formatDate course.startDate lang}}
+                    {{#if course.startEnd}} - {{formatDate course.startEnd lang}}{{/if}}
+                    - {{course.method}}
                   </p>
                 </div>
               </div>
-            {{else}}
-              <!-- Capacity Only (Paid Program Style) -->
+
+              <div class="flex items-start gap-5">
+                <div class="mt-0.5 ml-0.5">
+                  <img src="/public/image/icons/paid_program/location.svg" alt="Location Icon" class="w-[23px] h-[32px]" />
+                </div>
+                <div>
+                  <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.location'}}</h3>
+                  <p class="text-[#545454] font-[400] text-[20px]">
+                    {{#if (eq course.method 'offline')}}
+                      {{getByLang course.locations lang}}
+                    {{else}}
+                      Zoom / Google Meet
+                    {{/if}}
+                  </p>
+                </div>
+              </div>
+
               <div class="flex items-start gap-5">
                 <div class="mt-0.5">
                   <img src="/public/image/icons/paid_program/capacity.svg" alt="Capacity Icon" class="w-[30px] h-[21px]" />
@@ -135,56 +188,33 @@
                   <p class="text-[#545454] font-[400] text-[20px]">{{course.quota}} {{t 'test.paidProgram.header.students'}}</p>
                 </div>
               </div>
-            {{#if showTime}}
-              <!-- Time & Capacity Grid (Free Program Style) -->
-              <div class="grid grid-cols-2 gap-6 mt-1">
-                <div>
-                  <div class="flex items-center gap-3 text-black">
-                    <i class="fa-regular fa-clock text-[22px]"></i>
-                    <span class="font-bold text-[18px]">{{t 'test.freeProgram.hero.time'}}</span>
-                  </div>
-                  <p class="text-gray-800 text-[15px] mt-1.5 ml-[35px]">
-                    {{formatTime course.time_start}}
-                  </p>
-                </div>
-                <div>
-                  <div class="flex items-center gap-3 text-black">
-                    <i class="fa-solid fa-user-group text-[20px]"></i>
-                    <span class="font-bold text-[18px]">{{t 'test.freeProgram.hero.capacity'}}</span>
-                  </div>
-                  <p class="text-gray-800 text-[15px] mt-1.5 ml-[35px]">
-                    {{course.quota}} {{t 'test.freeProgram.hero.students'}}
-                  </p>
-                </div>
-              </div>
-            {{/if}}
+            </div>
+
+            <div class="text-center mb-6">
+              <p class="text-[#D32F2F] font-bold text-[17px]">
+                {{t 'test.paidProgram.header.registrationTime'}} {{formatDate course.date_registration lang}}
+              </p>
+            </div>
+
+            {{#if regisClick}}
+              {{> components/ui/button/btn_action/index
+                xClick=regisClick
+                text=(t 'test.paidProgram.header.registrationNow')
+                variant="primary"
+                class="py-3"
+              }}
+            {{else}}
+              {{> components/ui/button/btn_action/index
+                href=regisHref
+                text=(t 'test.paidProgram.header.registrationNow')
+                variant="primary"
+                class="py-3"
+              }}
             {{/if}}
           </div>
-
-          <!-- Registration Status -->
-          <div class="text-center mb-6">
-            <p class="text-[#D32F2F] font-bold text-[17px]">
-              {{#if showTime}}{{t 'test.freeProgram.hero.regisUntil'}}{{else}}{{t 'test.paidProgram.header.registrationTime'}}{{/if}} {{formatDate course.date_registration lang}}
-            </p>
-          </div>
-
-          {{#if regisClick}}
-            {{> components/ui/button/btn_action/index
-              xClick=regisClick
-              text=(t 'test.freeProgram.hero.regisNow')
-              variant="primary"
-              class="py-3"
-            }}
-          {{else}}
-            {{> components/ui/button/btn_action/index
-              href=regisHref
-              text=(t 'test.paidProgram.header.registrationNow')
-              variant="primary"
-              class="py-3"
-            }}
-          {{/if}}
         </div>
+
       </div>
     </div>
   </div>
-</div>
+{{/if}}
