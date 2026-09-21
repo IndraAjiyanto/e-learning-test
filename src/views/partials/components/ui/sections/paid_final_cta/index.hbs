@@ -1,0 +1,71 @@
+{{!--
+  Section: Paid Final CTA / Start Your Career (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/paid_final_cta/index.hbs
+
+  Spesifikasi Figma:
+  - Container: bg #FFFFFF, padding 80px (responsive), gap 40px, width 1728px
+  - Text:
+    - Eyebrow: "REGISTRATION PROCESS" (Inter 700 14px uppercase #6EB6E5)
+    - Headline: "Start Your Career in {{course.name}} Now" (Montserrat 800 42px #003060)
+      * Sesuai instruksi user: teks UI/UX digantikan dinamis oleh course.name
+    - Subtitle: "Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality." (Open Sans 400 20px #003060, max-w 800px)
+  - Action CTA Buttons:
+    - Button Primary: "Daftar Sekarang" (#003060, rounded-10, shadow)
+    - Button Secondary: "Konsultasi Gratis" (border 1.5px #003060)
+
+  Props:
+  - course   : object (course data)
+  - category : object (category data)
+  - lang     : string
+--}}
+
+<section 
+  id="final-cta" 
+  class="relative w-full bg-white font-inter py-16 sm:py-20 lg:py-24 border-t border-[#F1F5F9]"
+  data-node-id="final-cta"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-8 sm:gap-10 text-center">
+    
+    {{!-- CTA Text Group (Figma: gap 16px, max-w 1568px) --}}
+    <div class="flex flex-col items-center gap-3 sm:gap-4 max-w-[900px]">
+      
+      {{!-- REGISTRATION PROCESS (Inter 700 14px uppercase #6EB6E5) --}}
+      <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#6EB6E5] leading-tight">
+        REGISTRATION PROCESS
+      </span>
+
+      {{!-- Start Your Career in [Course Name] Now (Montserrat 800 32px-42px #003060) --}}
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[42px] font-extrabold leading-[120%] tracking-tight text-[#003060]">
+        Start Your Career in {{#if course.name}}{{course.name}}{{else}}UI/UX{{/if}} Now
+      </h2>
+
+      {{!-- Subtitle (Open Sans 400 16px-20px #003060, max-w 800px) --}}
+      <p class="font-sans text-sm sm:text-base lg:text-[20px] font-normal leading-[160%] text-[#003060]/80 max-w-[800px]">
+        Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality.
+      </p>
+
+    </div>
+
+    {{!-- Action Buttons --}}
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+      {{!-- Button Primary: Daftar Sekarang --}}
+      <a
+        href="{{#if course.id}}/payment/registration/{{course.id}}{{else}}#pricing{{/if}}"
+        class="flex items-center justify-center w-full sm:w-[200px] h-[51px] px-7 py-4 bg-[#003060] text-white font-inter font-bold text-base rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] transition-all hover:bg-[#002244] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+      >
+        Daftar Sekarang
+      </a>
+
+      {{!-- Button Secondary: Konsultasi Gratis --}}
+      <a
+        href="{{waLink (default category.contact course.contact)}}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="box-border flex items-center justify-center w-full sm:w-[190px] h-[51px] px-6 py-4 border-[1.5px] border-[#003060] bg-transparent text-[#003060] font-inter font-semibold text-base rounded-[10px] transition-all hover:bg-[#003060]/5 hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+      >
+        Konsultasi Gratis
+      </a>
+    </div>
+
+  </div>
+</section>

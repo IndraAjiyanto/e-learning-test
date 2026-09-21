@@ -1,0 +1,223 @@
+{{!--
+  Komponen: Single Interactive Pricing Card (Level 1 - Atomic UI Component)
+  Lokasi: src/views/partials/components/ui/card/pricing_card/index.hbs
+
+  Spesifikasi Figma & Penyesuaian Backend:
+  - Width: 773px (max-w-[773px], w-full mx-auto)
+  - Background: #FFFFFF, rounded-[20px], border #E2E8F0, p-6 sm:p-8
+  - Box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.0941176)
+  - Interaktivitas Toggle Tab:
+    - Tab "Full Payment":
+      - Menampilkan harga Full Payment dari BE (kolom course.promo / course.price).
+      - Menampilkan harga coret dan badge penghematan HANYA jika course.price > course.promo (diskon valid).
+      - Countdown timer: Offer Ends In 15 Days 11 : 50 : 05
+      - Kotak jadwal (Registration & Start Learning)
+      - Tombol "Registration Now" & link "Free Consultation"
+    - Tab "Installment":
+      - Menampilkan harga cicilan dari BE (kolom course.price / course.installments.[0].downPayment).
+      - Countdown timer
+      - Kotak kuning "Installment Information" dengan 4 poin penjelasan cicilan
+      - Kotak jadwal (Registration & Start Learning)
+      - Tombol "Registration Now" & link "Free Consultation"
+
+  Props:
+  - course          : object (price, promo, startDate, startEnd, date_registration, id, installments)
+  - installments    : array (opsional list cicilan)
+  - contactWhatsapp : string
+  - lang            : string
+--}}
+
+<div 
+  class="box-border flex w-full max-w-[773px] mx-auto flex-col items-start gap-6 rounded-[20px] border border-[#E2E8F0] bg-white p-6 sm:p-8 shadow-[0px_8px_24px_rgba(0,0,0,0.09)] transition-all duration-300"
+  x-data="{
+    tab: 'full',
+    openInstallmentInfo: true
+  }"
+>
+  
+  {{!-- Card Title: Inter 700 22px #0B1F3B text-center --}}
+  <h3 class="w-full text-center font-inter text-xl sm:text-[22px] font-bold leading-[27px] text-[#0B1F3B]">
+    Kickstart Your Career Today
+  </h3>
+
+  {{!-- Payment Toggle Tabs (Figma: width 100%, height 44px, bg #F1F5F9, rounded-full, p-1) --}}
+  <div class="flex w-full items-center rounded-full bg-[#F1F5F9] p-1 select-none">
+    {{!-- Full Payment Tab Button --}}
+    <button 
+      type="button"
+      @click="tab = 'full'"
+      class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer"
+      :class="tab === 'full' ? 'bg-[#003060] text-white shadow-xs' : 'border border-[#CBD5E1] text-[#64748B] hover:text-[#0B1F3B]'"
+    >
+      Full Payment
+    </button>
+    
+    {{!-- Installment Tab Button --}}
+    <button 
+      type="button"
+      @click="tab = 'installment'"
+      class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer"
+      :class="tab === 'installment' ? 'bg-[#003060] text-white shadow-xs' : 'border border-[#CBD5E1] text-[#64748B] hover:text-[#0B1F3B]'"
+    >
+      Installment
+    </button>
+  </div>
+
+  {{!-- Dynamic Price Section --}}
+  <div class="w-full flex flex-col gap-1.5">
+    
+    {{!-- FULL PAYMENT PRICE VIEW --}}
+    <div x-show="tab === 'full'" class="flex flex-col items-start gap-1.5 w-full">
+      {{!-- Harga Coret & Badge Save (Hanya tampil jika ada diskon valid: price > promo dan promo > 0) --}}
+      {{#if (and (isNumber course.price) (isNumber course.promo) (gt course.price course.promo) (gt course.promo 0))}}
+        <div class="flex flex-row items-center gap-2">
+          <span class="font-inter text-sm font-normal text-[#9CA3AF] line-through">
+            {{formatRupiah course.price}}
+          </span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#D1FAE5] font-inter text-[11px] font-semibold text-[#059669]">
+            Save {{formatRupiah (subtract course.price course.promo)}}
+          </span>
+        </div>
+      {{/if}}
+
+      {{!-- Harga Utama Full Payment --}}
+      <div class="font-inter text-2xl sm:text-[28px] font-extrabold leading-[34px] text-[#0B1F3B]">
+        {{#if (and (isNumber course.promo) (gt course.promo 0))}}
+          {{formatRupiah course.promo}}
+        {{else if (and (isNumber course.price) (gt course.price 0))}}
+          {{formatRupiah course.price}}
+        {{else if (or (eq course.promo 0) (eq course.price 0))}}
+          {{formatRupiah 0}}
+        {{else}}
+          Rp 100.000.000
+        {{/if}}
+      </div>
+    </div>
+
+    {{!-- INSTALLMENT PRICE VIEW --}}
+    <div x-show="tab === 'installment'" x-cloak class="flex flex-col items-start gap-1 w-full">
+      <div class="font-inter text-2xl sm:text-[28px] font-extrabold leading-[34px] text-[#0B1F3B]">
+        {{#if (and (eq course.price 0) (eq course.promo 0))}}
+          {{!-- Jika harga program di BE adalah 0, maka cicilan/DP juga Rp 0 --}}
+          {{formatRupiah 0}}
+        {{else if (and course.promo course.price (gt course.promo course.price) (gt course.price 0))}}
+          {{!-- Kasus data terbalik: promo adalah Full Payment (100jt) dan price adalah DP cicilan (1jt) --}}
+          {{formatRupiah course.price}}
+        {{else if course.installments.[0].downPayment}}
+          {{formatRupiah course.installments.[0].downPayment}}
+        {{else if installments.[0].downPayment}}
+          {{formatRupiah installments.[0].downPayment}}
+        {{else if (or (eq course.price 0) (eq course.promo 0))}}
+          {{formatRupiah 0}}
+        {{else}}
+          Rp 1.000.000
+        {{/if}}
+      </div>
+    </div>
+
+  </div>
+
+  {{!-- Countdown Row (Shared): Offer Ends In 15 Days 11 : 50 : 05 --}}
+  <div class="flex items-center gap-2 font-inter text-xs text-[#4B5563]">
+    <svg class="size-3.5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+    <span>Offer Ends In</span>
+    <span class="font-bold text-[#DC2626]" x-text="countdown.days + ' Days'">15 Days</span>
+    <span class="font-bold text-[#DC2626]" x-text="countdown.time">11 : 50 : 05</span>
+  </div>
+
+  {{!-- Divider (Only shown in Full Payment view) --}}
+  <hr x-show="tab === 'full'" class="w-full border-t border-[#E5E7EB]" />
+
+  {{!-- Installment Information Accordion (Only for Installment Tab) --}}
+  <div x-show="tab === 'installment'" x-cloak class="flex flex-col gap-3 w-full">
+    {{!-- Yellow Badge Bar --}}
+    <div 
+      @click="openInstallmentInfo = !openInstallmentInfo"
+      class="flex items-center justify-between rounded-lg bg-[#FEF3C7] border border-[#FDE68A] px-3.5 py-2.5 cursor-pointer select-none transition-colors hover:bg-[#FDE68A]/60"
+    >
+      <div class="flex items-center gap-2 text-[#B7791F]">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="#B7791F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        <span class="font-inter text-[13px] font-bold text-[#B7791F]">
+          Installment Information
+        </span>
+      </div>
+
+      <svg 
+        class="size-4 text-[#B7791F] transition-transform duration-200" 
+        :class="openInstallmentInfo ? 'rotate-180' : ''"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+
+    {{!-- 4 Points List --}}
+    <div x-show="openInstallmentInfo" x-collapse class="flex flex-col gap-1.5 font-inter text-xs sm:text-[13px] leading-relaxed text-[#64748B] pl-1">
+      <div class="flex items-start gap-2">
+        <span class="font-normal text-[#64748B] shrink-0">1.</span>
+        <span>Down Payment (DP) is required as the first payment for enrollment</span>
+      </div>
+      <div class="flex items-start gap-2">
+        <span class="font-normal text-[#64748B] shrink-0">2.</span>
+        <span>No additional fees or interest</span>
+      </div>
+      <div class="flex items-start gap-2">
+        <span class="font-normal text-[#64748B] shrink-0">3.</span>
+        <span>Pay monthly as per schedule below</span>
+      </div>
+      <div class="flex items-start gap-2">
+        <span class="font-normal text-[#64748B] shrink-0">4.</span>
+        <span>Full access after DP payment</span>
+      </div>
+    </div>
+  </div>
+
+  {{!-- Schedule Section Box (Shared across both tabs) --}}
+  <div class="flex w-full flex-col gap-2.5 rounded-xl bg-[#F9FAFB] p-4 font-inter text-xs text-[#374151]">
+    {{!-- Registration --}}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
+      <span class="font-bold text-[#374151] shrink-0">Registration</span>
+      <span class="font-normal text-[#4B5563] sm:text-right">
+        {{ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) "Friday, 21 August 2026"}}
+      </span>
+    </div>
+    
+    {{!-- Start Learning --}}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
+      <span class="font-bold text-[#374151] shrink-0">Start Learning</span>
+      <span class="font-normal text-[#4B5563] sm:text-right">
+        {{#if course.startDate}}
+          {{formatDateDayMonthYear course.startDate lang}}{{#if course.startEnd}} - {{formatDateDayMonthYear course.startEnd lang}}{{/if}}
+        {{else}}
+          Saturday, 22 August 2026 - Sunday, 23 August 2026
+        {{/if}}
+      </span>
+    </div>
+  </div>
+
+  {{!-- CTA Section (Shared across both tabs) --}}
+  <div class="flex w-full flex-col items-center gap-3">
+    <a
+      href="{{#if course.id}}/payment/registration/{{course.id}}{{else}}#hero{{/if}}"
+      class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#1E3A5F] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#152841] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+    >
+      Registration Now
+    </a>
+
+    <a
+      href="{{waLink contactWhatsapp}}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="font-inter text-[13px] font-semibold text-[#1E3A5F] underline hover:text-[#003060] text-center cursor-pointer"
+    >
+      Free Consultation
+    </a>
+  </div>
+
+</div>

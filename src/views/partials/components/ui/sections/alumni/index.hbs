@@ -138,4 +138,32 @@
     }{{#unless @last}},{{/unless}}
     {{/each}}
   ];
+  if (!window.__alumniCarousel || !window.__alumniCarousel.length) {
+    window.__alumniCarousel = [
+      {
+        id: 'alumni-1',
+        name: 'Aqmal Miftahul Husna',
+        position: 'Full Stack Developer',
+        company: 'Full Stack Development',
+        photo: '/public/image/orang.png',
+        testimonial: 'Belajar di sini sangat terarah dengan kurikulum yang relevan dengan kebutuhan industri masa kini. Mentor selalu memberikan feedback mendalam yang membantu saya berkembang cepat.'
+      },
+      {
+        id: 'alumni-2',
+        name: 'Ikhwan Nur Rizki Fathama',
+        position: 'Frontend Engineer',
+        company: 'Frontend Engineering',
+        photo: '/public/image/orang.png',
+        testimonial: 'Materi yang diajarkan sangat komprehensif mulai dari dasar hingga proyek nyata. Saya berhasil membangun portofolio yang solid dan langsung diterima kerja setelah lulus.'
+      },
+      {
+        id: 'alumni-3',
+        name: 'John Calvin Sukarman',
+        position: 'UI/UX Designer',
+        company: 'UI/UX Design',
+        photo: '/public/image/orang.png',
+        testimonial: 'Program mentoring 1-on-1 benar-benar membuka wawasan saya tentang standar industri digital saat ini. Sangat direkomendasikan bagi siapa saja yang ingin switch career.'
+      }
+    ];
+  }
 </script>

@@ -147,6 +147,10 @@ export const stringHelpers = {
     if (!str || typeof str !== 'string') return '';
     return str.toLowerCase();
   },
+  slice: (str: unknown, start: number, end?: number) => {
+    if (!str || typeof str !== 'string') return '';
+    return typeof end === 'number' ? str.slice(start, end) : str.slice(start);
+  },
   formatMethod: (method: unknown) => {
     if (!method || typeof method !== 'string') return 'Online & Offline';
     const m = method.toLowerCase().trim();
