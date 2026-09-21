@@ -37,3 +37,11 @@
 
 {{!-- CTA Section - khusus paid --}}
 {{> components/ui/sections/paid_cta/index}}
+
+{{!-- FAQ Section - khusus paid program --}}
+{{> components/ui/sections/paid_faq/index
+    category=category
+    faqs=(default faqs category.faqs)
+    faq=faq
+    lang=lang
+}}

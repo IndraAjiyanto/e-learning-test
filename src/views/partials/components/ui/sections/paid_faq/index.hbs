@@ -1,0 +1,59 @@
+{{!--
+  Section: Paid FAQ (L2) - khusus Paid Program
+  Lokasi: src/views/partials/components/ui/sections/paid_faq/index.hbs
+  Tiap baris: [point bulat] | [pertanyaan] .... [chevron], garis rambut atas & bawah.
+  Data: faqs[] atau faq[] dari backend (kategori), fallback statis. sizeClass, .page-shell.
+--}}
+<section
+  id="faq"
+  class="w-full bg-white py-14 font-inter lg:py-20"
+  x-data="{
+    activeIndex: null,
+    faqs: [
+      {{#if faqs.length}}
+        {{#each faqs}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
+      {{else if category.faqs.length}}
+        {{#each category.faqs}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
+      {{else if faq.length}}
+        {{#each faq}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
+      {{else}}
+        { question: 'What will I learn in this program?', answer: 'You will learn practical skills, industry workflows, and complete hands-on projects designed to prepare you for career opportunities.' },
+        { question: 'Is the program online or offline?', answer: 'We offer flexible options: interactive live online classes and hybrid sessions depending on your program.' },
+        { question: 'Do I need prior experience to enroll?', answer: 'No prior experience is required. We welcome beginners and guide you step by step from the fundamentals to advanced techniques.' },
+        { question: 'Will I receive a certificate after completing the program?', answer: 'Yes. Upon completing the coursework and capstone project you will receive an official certificate of completion.' },
+        { question: 'What if I miss a class?', answer: 'All live sessions are recorded and available on the learning platform so you can catch up anytime.' },
+        { question: 'How can I register?', answer: 'Register through our website by choosing your program and completing the enrollment form.' },
+        { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections.' }
+      {{/if}}
+    ],
+    toggle(i) { this.activeIndex = this.activeIndex === i ? null : i; }
+  }"
+>
+  <div class="page-shell flex flex-col items-center">
+
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{> components/ui/text/eyebrow/index text=(default eyebrow (t 'test.categoryPaidProgram.faq.eyebrow')) }}
+      <h2 class="text-2xl sm:text-3xl lg:text-[36px] lg:leading-tight font-inter font-bold text-[#0B1F3B]">{{default title (default (t 'test.categoryPaidProgram.faq.title') 'Frequently Asked Questions')}}</h2>
+      <p class="text-[16px] leading-relaxed max-w-[620px] font-inter text-[#4A5568]">{{default description (default (t 'test.categoryPaidProgram.faq.description') 'Have questions? Here are immediate answers to common details about our tracks and placement.')}}</p>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+    </div>
+
+    <div class="mt-10 w-full max-w-[1022px] lg:mt-14">
+      <template x-for="(item, i) in faqs" :key="i">
+        <div class="border-t border-[#D9D9D9] last:border-b">
+          <button type="button" @click="toggle(i)" class="flex w-full items-center gap-4 py-6 text-left lg:gap-6 group">
+            <span class="flex shrink-0 items-center gap-4">
+              <span class="size-2 sm:size-2.5 rounded-full bg-[#003060] shrink-0 transition-colors duration-300" :class="activeIndex === i ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"></span>
+              <span class="h-5 w-px bg-[#D9D9D9]"></span>
+            </span>
+            <span class="{{sizeClass 'h3'}} min-w-0 flex-1 font-inter font-semibold text-black transition-colors duration-300 group-hover:text-[#003060]" x-text="item.question"></span>
+            <i class="fas fa-chevron-down shrink-0 text-sm text-[#94A3B8] transition-transform duration-300" :class="activeIndex === i && 'rotate-180 text-[#003060]'"></i>
+          </button>
+          <div x-show="activeIndex === i" x-collapse>
+            <p class="{{sizeClass 'body'}} pb-6 pl-[2.25rem] font-inter text-[#4A5568] lg:pl-[2.75rem]" x-html="item.answer"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</section>
