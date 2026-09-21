@@ -120,4 +120,9 @@ export const stringHelpers = {
     typeof str === 'string' &&
     typeof suffix === 'string' &&
     str.toLowerCase().endsWith(suffix.toLowerCase()),
+  includes: (str: unknown, sub: unknown) =>
+    typeof str === 'string' &&
+    typeof sub === 'string' &&
+    str.toLowerCase().includes(sub.toLowerCase()),
 };
+

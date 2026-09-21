@@ -1,42 +1,115 @@
 {{!--
-  Section: Special Program - course list (L2) - reskin ke standar internal.
+  Section: Special Program - course list (L2)
   Lokasi: src/views/partials/components/ui/sections/special_program/index.hbs
-  Props: category (.name), courses[], lang.
+  Props: category (.name), courses[], lang, isJapan.
 --}}
 <section id="programs" class="w-full bg-white py-14 font-inter lg:py-20">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
-      {{> components/ui/text/eyebrow/index text=(t 'test.special_program.program.eyebrow') }}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
-        {{t 'test.special_program.program.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span>
-      </h2>
-      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.program.description'}}</p>
-    </div>
+    {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
+      {{!-- Header sesuai Figma Layer 3 (Japan Program) --}}
+      <div class="flex max-w-[580px] flex-col items-center gap-3 text-center">
+        {{> components/ui/text/eyebrow/index text="Program Options" dotColor="#6EB6E5" }}
+        <h2 class="font-montserrat text-3xl font-bold tracking-[-0.01em] text-[#0B1F3B] sm:text-4xl">
+          Choose Your <span class="text-[#003060]">Japan Program</span>
+        </h2>
+        <p class="font-inter text-[15px] leading-relaxed text-[#6B7280]">
+          Select the right path for your background and career goals.
+        </p>
+      </div>
 
-    {{#if courses}}
-      <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
-        {{#each courses}}
-          {{> components/ui/card/course/index
-              id=this.id
-              image=this.image
-              name=this.name
-              description=this.description
-              method=this.method
-              month=this.month
-              quota=this.quota
-              variant="special"
-              lang=../lang }}
-        {{/each}}
-      </div>
+      {{!-- Program Cards Grid (Figma Layer 3) --}}
+      {{#if courses.length}}
+        <div class="grid w-full grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {{#each courses}}
+            {{> components/ui/card/program_showcase/index
+                id=this.id
+                image=this.image
+                title=this.name
+                description=(default (getByLang this.description ../lang) "Comprehensive Japanese language program designed for learners aiming to study or work in Japan.")
+                tag1=(ternary this.month (concat this.month ' Months') '6 Months')
+                tag2=(ternary this.method this.method 'Language + Culture')
+                tag3=(ternary this.quota (concat this.quota ' Students') 'All Levels')
+                href=(concat '/program/' this.id)
+            }}
+          {{/each}}
+        </div>
+      {{else}}
+        {{!-- 3 Program Fallback Cards exactly from Figma --}}
+        <div class="grid w-full grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {{!-- Card 1: Japan Program --}}
+          {{> components/ui/card/program_showcase/index
+              title="Japan Program"
+              icon="fa-solid fa-graduation-cap"
+              image="/public/image/specialProgram/bgJapan.png"
+              tag1="N5 – N3 Level"
+              tag2="6 Months"
+              tag3="Language + Culture"
+              description="Comprehensive Japanese language program designed for learners aiming to study or work in Japan. Covers grammar, conversation, and cultural immersion."
+              href="#explore-program"
+          }}
+
+          {{!-- Card 2: Language / Speaking --}}
+          {{> components/ui/card/program_showcase/index
+              title="Language / Speaking"
+              icon="fa-solid fa-comments"
+              image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&fit=crop"
+              tag1="N5 – N4 Level"
+              tag2="3 Months"
+              tag3="Daily Conversation"
+              description="Focus on practical spoken Japanese for everyday situations. Perfect for beginners and intermediate learners who want to build speaking confidence quickly."
+              href="#explore-program"
+          }}
+
+          {{!-- Card 3: Career Support --}}
+          {{> components/ui/card/program_showcase/index
+              title="Career Support"
+              icon="fa-solid fa-briefcase"
+              image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&fit=crop"
+              tag1="All Levels"
+              tag2="1-on-1 Guidance"
+              tag3="Job Placement"
+              description="End-to-end assistance from resume preparation to interview coaching for the Japanese job market. Direct connection to hiring partner companies."
+              href="#explore-program"
+          }}
+        </div>
+      {{/if}}
+
     {{else}}
-      <div class="flex w-full max-w-[560px] flex-col items-center gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-14">
-        <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
-          <i class="fas fa-clock text-lg"></i>
-        </span>
-        <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.special_program.program.comingSoonTitle'}}</h3>
-        <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{t 'test.special_program.program.comingSoonText'}}</p>
+      {{!-- Generic / Default Special Program Category --}}
+      <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
+        {{> components/ui/text/eyebrow/index text=(t 'test.special_program.program.eyebrow') }}
+        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
+          {{t 'test.special_program.program.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span>
+        </h2>
+        <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.program.description'}}</p>
       </div>
+
+      {{#if courses}}
+        <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
+          {{#each courses}}
+            {{> components/ui/card/course/index
+                id=this.id
+                image=this.image
+                name=this.name
+                description=this.description
+                method=this.method
+                month=this.month
+                quota=this.quota
+                variant="special"
+                lang=../lang }}
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="flex w-full max-w-[560px] flex-col items-center gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-14">
+          <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
+            <i class="fas fa-clock text-lg"></i>
+          </span>
+          <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.special_program.program.comingSoonTitle'}}</h3>
+          <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{t 'test.special_program.program.comingSoonText'}}</p>
+        </div>
+      {{/if}}
     {{/if}}
+
   </div>
 </section>

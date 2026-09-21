@@ -1,0 +1,26 @@
+{{!--
+  Komponen: Meta Chip (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/badge/meta_chip/index.hbs
+
+  Pill badge transparan dengan icon checkmark lingkaran putih, sesuai spesifikasi Figma.
+  Dipakai di hero section untuk menampilkan keunggulan kurikulum & support.
+
+  Props:
+  - text        : Teks label chip (wajib)
+  - iconClass   : Override icon class (opsional, default: SVG checkmark navy)
+  - class       : Kelas tambahan (opsional)
+--}}
+<div class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E3]/20 bg-[#6EB6E5]/10 px-3.5 py-2 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] {{class}}">
+  <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E3]/25 bg-white shadow-xs">
+    {{#if iconClass}}
+      <i class="{{iconClass}} text-[10px] text-[#0B1F3B]"></i>
+    {{else}}
+      <svg class="h-2 w-2.5 text-[#0B1F3B]" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4.2L3.5 6.7L9 1.2" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    {{/if}}
+  </span>
+  <span class="font-inter text-[13px] font-semibold leading-none text-[#0B1F3B] whitespace-nowrap">
+    {{text}}
+  </span>
+</div>

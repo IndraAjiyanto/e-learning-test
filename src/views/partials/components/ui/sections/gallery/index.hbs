@@ -17,10 +17,10 @@
 
     <div class="flex flex-col items-center gap-4 text-center">
       {{#unless (eq showBadge false)}}
-        {{> components/ui/text/eyebrow/index text=(t (default badgeKey 'test.home.gallery.gallery')) }}
+        {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.home.gallery.gallery'))) dotColor=dotColor }}
       {{/unless}}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{{t (default titleKey 'test.home.gallery.title')}}}</h2>
-      <p class="{{sizeClass 'body'}} max-w-[658px] font-inter text-[#4A5568]">{{t (default descKey 'test.home.gallery.description')}}</p>
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{{default titleText (t (default titleKey 'test.home.gallery.title'))}}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[658px] font-inter text-[#4A5568]">{{default descText (t (default descKey 'test.home.gallery.description'))}}</p>
       {{#unless (eq showDivider false)}}
         <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
       {{/unless}}
@@ -37,8 +37,8 @@
 
     <div class="mt-8 flex flex-col items-center gap-5 lg:mt-10">
       {{#unless (eq showBottomLink false)}}
-        <a href="/dashboard/gallery" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-inter text-base font-semibold text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
-          {{t (default linkKey 'test.home.gallery.chooseGallery')}} <i class="fa-solid fa-arrow-right text-sm"></i>
+        <a href="{{default linkHref '/dashboard/gallery'}}" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-inter text-base font-semibold text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
+          {{default linkText (t (default linkKey 'test.home.gallery.chooseGallery'))}} <i class="fa-solid fa-arrow-right text-sm"></i>
         </a>
       {{/unless}}
       {{> components/ui/nav/carousel_nav/index count="pages" index="page" goTo="goTo" }}
