@@ -1,23 +1,29 @@
 {{!--
-  Section: Free CTA (L2) - reskin ke standar internal.
+  Section: Free CTA (L2) - minimal centered style
   Lokasi: src/views/partials/components/ui/sections/free_cta/index.hbs
-  Props: category (.name), lang.
+  Props: category (.name, .contact), lang, title, description, buttonText, href.
 --}}
-<section id="explore-program" class="w-full bg-white py-14 font-inter lg:py-20">
-  <div class="page-shell">
-    <div class="flex flex-col items-center gap-6 rounded-3xl bg-[#003060] px-6 py-14 text-center lg:gap-8 lg:px-10 lg:py-16">
-      <div class="flex max-w-[720px] flex-col items-center gap-3">
-        <h2 class="{{sizeClass 'h2'}} font-inter font-extrabold tracking-[-0.01em] text-white">{{t 'test.categoryFreeProgram.cta.title'}}</h2>
-        <p class="{{sizeClass 'lead'}} font-inter text-white/80">
-          {{t 'test.categoryFreeProgram.cta.description'}} {{category.name}} {{t 'test.categoryFreeProgram.cta.description2'}}
-        </p>
-      </div>
+<section id="explore-program" class="{{default sectionClass 'w-full bg-[#F9FAFB] py-16 font-inter lg:py-24'}}">
+  <div class="page-shell flex flex-col items-center gap-6 text-center lg:gap-8">
+    <div class="flex max-w-[680px] flex-col items-center gap-3 lg:gap-4">
+      <h2 class="text-3xl font-extrabold tracking-tight text-[#003060] sm:text-4xl lg:text-[42px] lg:leading-tight">
+        {{default title (default (t 'test.categoryFreeProgram.cta.title') 'Transform your team today')}}
+      </h2>
+      <p class="text-base font-normal leading-relaxed text-[#4A5568] sm:text-lg">
+        {{default description (default (t 'test.categoryFreeProgram.cta.description') 'Get a customized training proposal for your organization.')}}
+      </p>
+    </div>
+
+    <div>
       <a
-        href="#programs"
-        class="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 {{sizeClass 'body'}} font-bold text-[#003060] transition hover:-translate-y-0.5 hover:bg-[#E0F2F9]"
+        href="{{#if href}}{{href}}{{else if category.contact}}{{waLink category.contact}}{{else}}#programs{{/if}}"
+        {{#if category.contact}}target="_blank" rel="noopener"{{/if}}
+        class="inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#003060] px-8 py-3.5 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#00244a] hover:-translate-y-0.5 active:scale-95"
       >
-        <i class="fas fa-arrow-up text-xs"></i>{{t 'test.categoryFreeProgram.cta.button'}}
+        <span>{{default buttonText (default (t 'test.categoryFreeProgram.cta.button') 'Contact Us')}}</span>
+        <i class="fas fa-arrow-up text-xs"></i>
       </a>
     </div>
   </div>
 </section>
+

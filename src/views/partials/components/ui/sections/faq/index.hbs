@@ -6,7 +6,8 @@
 --}}
 <section
   id="faq"
-  class="{{default sectionClass 'w-full bg-gradient-to-b from-[#F8F9FA] to-white py-14 font-inter lg:py-20'}}"
+  class="{{default sectionClass 'w-full bg-white py-14 font-inter lg:py-20'}}"
+  {{#if sectionStyle}}style="{{sectionStyle}}"{{/if}}
   x-data="{
     activeIndex: null,
     faqs: [
@@ -15,13 +16,13 @@
       {{else if faq.length}}
         {{#each faq}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
       {{else}}
-        { question: 'What will I learn in this bootcamp?', answer: 'You will learn hands-on industry skills, tools, and methodologies to build real-world projects and accelerate your career.' },
-        { question: 'Is the bootcamp online or offline?', answer: 'We offer flexible options: interactive live online classes and hybrid offline sessions depending on your program.' },
+        { question: 'What will I learn in this program?', answer: 'You will learn hands-on industry skills, tools, and methodologies to build real-world projects and accelerate your career.' },
+        { question: 'Is the program online or offline?', answer: 'We offer flexible options: interactive live online classes and hybrid offline sessions depending on your program.' },
         { question: 'Do I need prior programming experience?', answer: 'No prior experience required. We welcome beginners and guide you step by step from the basics.' },
-        { question: 'Will I receive a certificate after completing the bootcamp?', answer: 'Yes. On completing the coursework and capstone project you receive an official certificate of completion.' },
+        { question: 'Will I receive a certificate after completing the program?', answer: 'Yes. On completing the coursework you receive an official certificate of completion.' },
         { question: 'What if I miss a class?', answer: 'All live sessions are recorded and available on the learning platform so you can catch up anytime.' },
         { question: 'How can I register?', answer: 'Register through our website by choosing your program and completing the enrollment form.' },
-        { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections.' }
+        { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and mentoring guidance.' }
       {{/if}}
     ],
     toggle(i) { this.activeIndex = this.activeIndex === i ? null : i; }
@@ -30,10 +31,14 @@
   <div class="page-shell flex flex-col items-center">
 
     <div class="flex flex-col items-center gap-4 text-center">
-      {{> components/ui/text/eyebrow/index text=(t 'test.home.faq.question') }}
-      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]{{/if}}">{{t 'test.home.faq.title'}}</h2>
-      <p class="{{sizeClass 'body'}} max-w-[534px] font-inter text-[#4A5568]">{{t 'test.home.faq.description'}}</p>
-      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+      {{#unless (eq showEyebrow false)}}
+        {{> components/ui/text/eyebrow/index text=(default eyebrowText (t (default eyebrowKey 'test.home.faq.question'))) dotColor=dotColor }}
+      {{/unless}}
+      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]{{/if}}">{{{default titleText (t (default titleKey 'test.home.faq.title'))}}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[534px] font-inter text-[#4A5568]">{{default descText (t (default descKey 'test.home.faq.description'))}}</p>
+      {{#unless (eq showDivider false)}}
+        <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+      {{/unless}}
     </div>
 
     <div class="mt-10 w-full max-w-[1022px] lg:mt-14">
