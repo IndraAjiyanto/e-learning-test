@@ -1,57 +1,99 @@
 <!-- SCHEDULE & FEES SECTION -->
-<section id="schedule-fees" class="w-full bg-[#FAFAFA] py-20 font-inter flex justify-center">
+<section id="schedule-fees" class="w-full bg-[#FAFAFA] py-16 md:py-[120px] px-4 sm:px-8 md:px-[80px] font-inter flex flex-col items-center gap-10 md:gap-[64px]">
   
-  <div class="max-w-[800px] w-full px-8 flex flex-col items-center">
+  <!-- Pricing Header -->
+  <div class="w-full max-w-[1568px] flex flex-col items-center gap-4 text-center">
+    <!-- Schedule & Fees -->
+    <span class="font-inter font-bold text-[14px] leading-[17px] uppercase tracking-[0.5px] text-[#003060]">
+      {{default badgeTitle (t 'test.freeProgram.badge.schedule')}}
+    </span>
+
+    <!-- No Payment Required -->
+    <h2 class="font-inter font-extrabold text-[28px] md:text-[36px] leading-[36px] md:leading-[44px] text-center text-[#0B1F3B] m-0">
+      {{default title (t 'test.freeProgram.schedule.title')}}
+    </h2>
+
+    <!-- You only need to register to join this program. -->
+    <p class="max-w-[680px] font-inter font-normal text-[16px] leading-[19px] text-center text-[#64748B] m-0">
+      {{default description (t 'test.freeProgram.schedule.description')}}
+    </p>
+  </div>
+
+  <!-- Pricing Grid Columns -->
+  <div class="w-full max-w-[1568px] flex flex-row justify-center items-center">
     
-    <!-- 1. Badge Judul (Tengah) -->
-    {{> components/ui/text/section_header/index
-      badge=(default badgeTitle (t 'test.freeProgram.badge.schedule'))
-      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
-    }}
-
-    {{> components/ui/text/sub_title/index
-      text=(t 'test.freeProgram.schedule.title')
-      tag="h2"
-      align="center"
-      color="text-[#22C55E]"
-      class="text-[28px] md:text-[34px] font-bold mb-4"
-    }}
-
-    {{> components/ui/text/description/index
-      text=(t 'test.freeProgram.schedule.description')
-      align="center"
-      color="gray"
-      class="text-[16px] mb-10"
-    }}
-
-    <!-- 3. Kotak Jadwal (Abu-abu rounded) -->
-    <div class="bg-[#F3F4F6] rounded-[12px] w-full max-w-[650px] p-6 md:px-10 md:py-8 flex flex-col gap-6 mb-12">
+    <!-- Pricing Card 1 -->
+    <div class="w-full max-w-[773px] bg-white rounded-[20px] shadow-[0px_8px_24px_rgba(0,0,0,0.0941176)] p-6 sm:p-8 md:p-[50px_36px] flex flex-col items-start gap-[27px]">
       
-      <!-- Baris Pendaftaran -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[18px] md:text-[20px] gap-2">
-        <span class="text-black font-bold">{{t 'test.freeProgram.schedule.registration'}}</span>
-        <span class="text-gray-800 text-left sm:text-right">
-          Until {{formatDate course.date_registration lang}}
-        </span>
+      <!-- card-title -->
+      <h3 class="w-full font-inter font-bold text-[20px] md:text-[24px] leading-[29px] text-center text-[#0B1F3B] m-0">
+        {{default cardTitle (default (t 'test.freeProgram.schedule.cardTitle') 'Kickstart Your Career Today')}}
+      </h3>
+
+      <!-- Frame 2147229718 & Frame 2147229719 -->
+      <div class="w-full flex flex-col items-start gap-[35px]">
+        
+        <!-- schedule-section -->
+        <div class="w-full bg-[#F8FAFC] rounded-[14px] overflow-hidden flex flex-col items-start">
+          
+          <!-- Schedule Header Bar -->
+          <div class="w-full bg-[#EEF2FF] px-4 py-3 flex flex-row items-start">
+            <span class="font-inter font-bold text-[11px] leading-[13px] tracking-[0.5px] uppercase text-[#4338CA]">
+              {{default (t 'test.freeProgram.schedule.scheduleHeader') 'SCHEDULE'}}
+            </span>
+          </div>
+
+          <!-- registration-row -->
+          <div class="w-full min-h-[52px] px-4 py-3.5 flex flex-row justify-between items-center gap-3">
+            <div class="flex flex-row items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#003060] flex-shrink-0"></span>
+              <span class="font-inter font-semibold text-[13px] leading-[16px] text-[#374151]">
+                {{t 'test.freeProgram.schedule.registration'}}
+              </span>
+            </div>
+            <div class="px-3 py-1 bg-[#DBEAFE] rounded-[20px] flex flex-row items-center justify-center">
+              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#1D4ED8] whitespace-nowrap">
+                {{#if (eq lang 'id')}}Sampai {{else if (eq lang 'ja')}}まで {{else}}Until {{/if}}{{formatDate course.date_registration lang}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Rectangle Divider -->
+          <div class="w-full h-[1px] bg-[#E2E8F0]"></div>
+
+          <!-- start-learning-row -->
+          <div class="w-full min-h-[52px] px-4 py-3.5 flex flex-row justify-between items-center gap-3">
+            <div class="flex flex-row items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0"></span>
+              <span class="font-inter font-semibold text-[13px] leading-[16px] text-[#374151]">
+                {{t 'test.freeProgram.schedule.start'}}
+              </span>
+            </div>
+            <div class="px-3 py-1 bg-[#D1FAE5] rounded-[20px] flex flex-row items-center justify-center">
+              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#065F46] whitespace-nowrap">
+                {{formatDate course.startDate lang}}
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- cta-section -->
+        <div class="w-full flex flex-col items-start gap-3">
+          <button
+            type="button"
+            @click="openRegistrationModal()"
+            class="w-full h-[45px] py-[14px] flex flex-row justify-center items-center bg-[#1E3A5F] hover:bg-[#152943] text-white rounded-[10px] font-inter font-bold text-[14px] leading-[17px] transition-colors cursor-pointer"
+          >
+            {{t 'test.freeProgram.schedule.regisNow'}}
+          </button>
+          <div class="w-full h-[1px] bg-[#F1F5F9]"></div>
+        </div>
+
       </div>
-      
-      <!-- Baris Mulai -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[18px] md:text-[20px] gap-2">
-        <span class="text-black font-bold">{{t 'test.freeProgram.schedule.start'}}</span>
-        <span class="text-gray-800 text-left sm:text-right">
-          {{formatDate course.startDate lang}}
-        </span>
-      </div>
-      
+
     </div>
 
-    <!-- 4. Tombol Pendaftaran -->
-    {{> components/ui/button/btn_action/index
-      xClick="openRegistrationModal()"
-      text=(t 'test.freeProgram.schedule.regisNow')
-      variant="primary"
-      class="w-full max-w-[340px] py-4 text-[18px] font-medium rounded-[10px]"
-    }}
-
   </div>
+
 </section>
