@@ -15,6 +15,7 @@
   - Data backend (courses[]) digunakan untuk image dan link id jika tersedia.
 --}}
 <section id="programs" class="w-full bg-white py-14 font-inter lg:py-20">
+<section id="programs" class="w-full bg-white py-16 sm:py-20 lg:py-24 font-inter">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
     {{!-- section-header --}}
@@ -22,20 +23,26 @@
         title=(t 'test.categoryPaidProgram.program.title')
         titleClass="font-inter font-bold text-[#6EB6E5] mb-3"
         titleSize="h2"
+        titleClass="font-inter font-bold text-3xl sm:text-4xl lg:text-[40px] lg:leading-[48px] text-[#6EB6E5] mb-3 text-center"
         description=(t 'test.categoryPaidProgram.program.description')
         descClass="font-inter font-normal text-[#6B7280] opacity-[0.85]"
         descSize="lead"
         wrapperClass="max-w-[760px]"
+        descClass="font-inter font-normal text-base sm:text-lg text-[#6B7280] leading-relaxed max-w-[720px] text-center"
+        wrapperClass="max-w-[760px] items-center text-center"
     }}
 
     {{!-- program-cards --}}
     <div class="flex w-full flex-col items-center justify-center gap-6 lg:flex-row lg:items-stretch">
+    {{!-- program-cards grid --}}
+    <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center">
 
       {{!-- Card 1: Japan Program (graduation-cap) --}}
       {{#with (lookup courses 0)}}
         {{> components/ui/card/category/paid/index
             id=this.id
             image=this.image
+            defaultImage="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
             name=(default this.name (default ../category.name "Japan Program"))
             description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
             icon="fa-graduation-cap"
@@ -45,6 +52,7 @@
         {{> components/ui/card/category/paid/index
             id="#"
             image=""
+            defaultImage="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
             name=(default category.name "Japan Program")
             description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
             icon="fa-graduation-cap"
@@ -57,6 +65,7 @@
         {{> components/ui/card/category/paid/index
             id=this.id
             image=this.image
+            defaultImage="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
             name=(default this.name (default ../category.name "Japan Program"))
             description="Build strong communication skills through structured lessons and interactive practice."
             icon="fa-eye"
@@ -66,6 +75,7 @@
         {{> components/ui/card/category/paid/index
             id="#"
             image=""
+            defaultImage="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
             name=(default category.name "Japan Program")
             description="Build strong communication skills through structured lessons and interactive practice."
             icon="fa-eye"
@@ -78,6 +88,7 @@
         {{> components/ui/card/category/paid/index
             id=this.id
             image=this.image
+            defaultImage="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
             name=(default this.name "Career & Study Support")
             description="Receive support for applications, interviews, and planning your path in Japan."
             icon="fa-users"
@@ -87,6 +98,7 @@
         {{> components/ui/card/category/paid/index
             id="#"
             image=""
+            defaultImage="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
             name="Career & Study Support"
             description="Receive support for applications, interviews, and planning your path in Japan."
             icon="fa-users"
