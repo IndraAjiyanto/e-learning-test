@@ -1,28 +1,100 @@
 {{!--
-  Section: Paid Program - course list (L2) - reskin ke standar internal.
+  Section: Paid Program — "Short Classes for You" (L2)
   Lokasi: src/views/partials/components/ui/sections/paid_program/index.hbs
-  Props: courses[], lang.
+
+  Desain baru sesuai Figma: header "Short Classes for You" + 3 program cards.
+  Props: courses[] (backend data untuk image & id), lang.
+
+  Menggunakan komponen yang sudah ada:
+  - components/ui/text/section_header/index -> untuk section header
+  - components/ui/card/category/paid/index   -> untuk card program (L1)
+
+  Catatan:
+  - Judul section, subtitle, card titles, descriptions, tags, dan icons di-hardcode
+    sesuai instruksi (tidak ada perintah menggunakan data backend untuk konten ini).
+  - Data backend (courses[]) digunakan untuk image dan link id jika tersedia.
 --}}
 <section id="programs" class="w-full bg-white py-14 font-inter lg:py-20">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
-      {{> components/ui/text/eyebrow/index text=(t 'test.categoryPaidProgram.program.eyebrow') }}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{t 'test.categoryPaidProgram.program.title'}}</h2>
-      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.categoryPaidProgram.program.description'}}</p>
-    </div>
+    {{!-- section-header --}}
+    {{> components/ui/text/section_header/index
+        title=(t 'test.categoryPaidProgram.program.title')
+        titleClass="font-inter font-bold text-[#6EB6E5] mb-3"
+        titleSize="h2"
+        description=(t 'test.categoryPaidProgram.program.description')
+        descClass="font-inter font-normal text-[#6B7280] opacity-[0.85]"
+        descSize="lead"
+        wrapperClass="max-w-[760px]"
+    }}
 
-    <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
-      {{#each courses}}
+    {{!-- program-cards --}}
+    <div class="flex w-full flex-col items-center justify-center gap-6 lg:flex-row lg:items-stretch">
+
+      {{!-- Card 1: Japan Program (graduation-cap) --}}
+      {{#with (lookup courses 0)}}
         {{> components/ui/card/category/paid/index
             id=this.id
             image=this.image
-            name=this.name
-            description=(getByLang this.description ../lang)
-            method=this.method
-            month=this.month
-            quota=this.quota }}
-      {{/each}}
+            name=(default this.name (default ../category.name "Japan Program"))
+            description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
+            icon="fa-graduation-cap"
+            tags=(array "Language" "Culture" "Career")
+        }}
+      {{else}}
+        {{> components/ui/card/category/paid/index
+            id="#"
+            image=""
+            name=(default category.name "Japan Program")
+            description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
+            icon="fa-graduation-cap"
+            tags=(array "Language" "Culture" "Career")
+        }}
+      {{/with}}
+
+      {{!-- Card 2: Japan Program (eye) --}}
+      {{#with (lookup courses 1)}}
+        {{> components/ui/card/category/paid/index
+            id=this.id
+            image=this.image
+            name=(default this.name (default ../category.name "Japan Program"))
+            description="Build strong communication skills through structured lessons and interactive practice."
+            icon="fa-eye"
+            tags=(array "Speaking" "Listening" "Reading" "Writing")
+        }}
+      {{else}}
+        {{> components/ui/card/category/paid/index
+            id="#"
+            image=""
+            name=(default category.name "Japan Program")
+            description="Build strong communication skills through structured lessons and interactive practice."
+            icon="fa-eye"
+            tags=(array "Speaking" "Listening" "Reading" "Writing")
+        }}
+      {{/with}}
+
+      {{!-- Card 3: Career & Study Support (users) --}}
+      {{#with (lookup courses 2)}}
+        {{> components/ui/card/category/paid/index
+            id=this.id
+            image=this.image
+            name=(default this.name "Career & Study Support")
+            description="Receive support for applications, interviews, and planning your path in Japan."
+            icon="fa-users"
+            tags=(array "Applications" "Interviews" "Planning")
+        }}
+      {{else}}
+        {{> components/ui/card/category/paid/index
+            id="#"
+            image=""
+            name="Career & Study Support"
+            description="Receive support for applications, interviews, and planning your path in Japan."
+            icon="fa-users"
+            tags=(array "Applications" "Interviews" "Planning")
+        }}
+      {{/with}}
+
     </div>
+
   </div>
 </section>

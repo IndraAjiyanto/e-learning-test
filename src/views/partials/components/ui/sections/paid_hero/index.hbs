@@ -20,7 +20,7 @@
           font="inter"
           fontWeight="font-bold"
           align="left"
-          class="font-montserrat leading-[17px]" }}
+          class="font-inter leading-[17px]" }}
       {{> components/ui/text/description/index
           text=description
           tag="span"
@@ -45,14 +45,14 @@
       {{!-- tag: pill with red accent dot (#E63946) per Figma --}}
       <span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5">
         <span class="size-2.5 shrink-0 rounded-full bg-[#E63946]"></span>
-        <span class="font-montserrat text-xs font-bold uppercase leading-[15px] text-[#0B1F3B]">
+        <span class="font-inter text-xs font-bold uppercase leading-[15px] text-[#0B1F3B]">
           {{t 'test.categoryPaidProgram.hero.badge'}}
         </span>
       </span>
 
       {{!-- Frame: headline + headline + subheading --}}
       <div class="flex flex-col items-start gap-4">
-        <h1 class="max-w-[809px] font-montserrat text-3xl font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B] lg:text-[52px]">
+        <h1 class="max-w-[809px] font-inter text-3xl font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B] lg:text-[52px]">
           {{#if category.name}}{{category.name}}{{else}}{{t 'test.categoryPaidProgram.hero.eyebrow'}}{{/if}}
         </h1>
 

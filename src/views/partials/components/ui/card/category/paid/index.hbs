@@ -1,55 +1,100 @@
 {{!-- 
   Komponen: Card Program (Paid Program)
-  Lokasi: src/views/partials/components/paid_program/card_program.hbs
+  Lokasi: src/views/partials/components/ui/card/category/paid/index.hbs
+
+  Card program sesuai desain Figma "Short Classes for You".
+  Struktur: image-area -> content (icon-badge + title, tags-row, description, bottom-row).
+
+  Komponen yang digunakan:
+  - components/ui/text/badge/index  -> untuk tag pills
+  - components/ui/text/link/index   -> untuk link "Explore program"
+  - components/ui/button/btn_action/index -> untuk tombol CTA bulat
+
+  Props:
+    id          (string)  — ID program untuk link
+    image       (string)  — URL gambar program
+    name        (string)  — Nama program (Inter SemiBold 22px)
+    description (string)  — Deskripsi singkat (Inter 14px)
+    icon        (string)  — FontAwesome icon class (e.g. "fa-graduation-cap")
+    tags        (array)   — Array of tag strings, e.g. ["Language", "Culture", "Career"]
 --}}
-<div class="w-full max-w-[465px] bg-white border border-gray-200/80 rounded-[20px] md:rounded-[24px] p-5 md:px-6 md:py-9 shadow-xs md:shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between gap-4 md:gap-[25px] group hover:shadow-md transition-all duration-300 min-h-full">
-  <div>
-    <!-- Batch Badge -->
-    <div class="w-[110px] md:w-[125px] h-[34px] md:h-[47px] rounded-[6px] bg-[#0B1F3B1A] text-[#003060] font-inter font-semibold text-xs md:text-sm flex items-center justify-center mb-3 md:mb-4 uppercase">
-      BATCH 6.2
-    </div>
+<div class="group flex w-full max-w-[504px] flex-col items-start overflow-hidden rounded-2xl bg-white shadow-[0px_6px_18px_-6px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
 
-    <!-- Course Image -->
-    <div class="w-full aspect-[16/10] md:h-[262px] md:aspect-auto rounded-[12px] overflow-hidden bg-gray-100 mb-4 md:mb-6">
-      <img
-        src="{{image}}"
-        alt="{{name}}"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      />
-    </div>
-
-    <!-- Course Info -->
-    <div class="w-full md:px-1">
-      <h3 class="font-inter font-bold md:font-semibold text-xl md:text-[35px] leading-tight md:leading-none text-[#003060] mb-3 md:mb-5 text-left">
-        {{name}}
-      </h3>
-      <p class="font-inter font-normal text-[13px] md:text-xl leading-[20px] md:leading-[30px] tracking-normal text-black/80 md:text-black mb-4 md:mb-5 text-left">
-        {{description}}
-      </p>
-
-      <!-- Tags / Badges -->
-      <div class="flex flex-wrap items-center gap-2 md:gap-[10px]">
-        <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
-          <i class="fa-solid fa-location-dot text-[11px] md:text-[12px] text-[#003060]"></i> {{#if (eq method 'online')}}Online{{else}}Offline{{/if}}
-        </span>
-        <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
-          <i class="fa-solid fa-graduation-cap text-[11px] md:text-[12px] text-[#003060]"></i> {{#if month}}{{month}} Months{{else}}? Months{{/if}}
-        </span>
-        <span class="inline-flex items-center gap-1.5 md:gap-[5px] h-[32px] md:h-[35px] bg-[#CFE6F5] text-[#003060] font-inter font-normal text-[12px] md:text-[15px] leading-none px-2.5 md:px-[10px] py-1 md:py-[10px] rounded-[6px]">
-          <i class="fa-solid fa-couch text-[11px] md:text-[12px] text-[#003060]"></i> {{#if quota}}{{quota}} Students{{else}}? Students{{/if}}
-        </span>
-      </div>
+  {{!-- image-area --}}
+  <div class="w-full rounded-t-2xl bg-white p-4 pb-0">
+    <div class="relative h-[224px] w-full overflow-hidden rounded-xl bg-gray-100">
+      {{#if image}}
+        <img
+          src="{{image}}"
+          alt="{{name}}"
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onerror="this.src='https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=800&auto=format&fit=crop'"
+        />
+      {{else}}
+        <div class="flex h-full w-full flex-col items-center justify-center text-[#6EB6E5]/70">
+          <i class="fa-solid fa-image mb-2 text-[40px]"></i>
+          <span class="text-[13px] font-semibold tracking-wide">No Image Available</span>
+        </div>
+      {{/if}}
     </div>
   </div>
 
-  <!-- Button -->
-  <div class="w-full pt-2 mt-auto">
-    <a
-      href="/program/{{id}}"
-      class="w-full h-[48px] md:h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-[14px] md:text-base rounded-[10px] md:rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 md:active:scale-100"
-    >
-      <span>Detail Program</span>
-      <i class="fa-solid fa-arrow-right text-xs md:text-sm"></i>
-    </a>
+  {{!-- content --}}
+  <div class="flex w-full flex-1 flex-col items-start gap-3 p-4">
+
+    {{!-- icon-badge + title --}}
+    <div class="flex items-center gap-[15px]">
+      <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#003060] shadow-[0px_6px_16px_-6px_rgba(0,0,0,0.08)]">
+        <i class="fa-solid {{icon}} text-white" style="font-size: 22px;"></i>
+      </div>
+      <h3 class="font-inter text-[22px] font-semibold leading-[120%] text-[#0B1F3B]">
+        {{name}}
+      </h3>
+    </div>
+
+    {{!-- tags-row --}}
+    <div class="flex flex-wrap items-center gap-2">
+      {{#each tags}}
+        {{> components/ui/text/badge/index
+            text=this
+            size="sm"
+            bgColor="bg-white"
+            borderColor="border-[#E5E7EB]"
+            color="dark"
+            shadowClass="shadow-none"
+            fontWeight="font-semibold"
+            textSize="text-xs"
+            class="!px-2.5 !py-1.5 !rounded-full"
+        }}
+        {{#unless @last}}
+          <span class="font-inter text-xs leading-[15px] text-[#9CA3AF]">·</span>
+        {{/unless}}
+      {{/each}}
+    </div>
+
+    {{!-- description --}}
+    <p class="line-clamp-2 w-full font-inter text-sm font-normal leading-[170%] text-[#6B7280]">
+      {{description}}
+    </p>
+
+    {{!-- bottom-row --}}
+    <div class="mt-auto flex w-full items-center justify-between pt-1">
+      {{> components/ui/text/link/index
+          text="Explore program"
+          href=(concat "/program/" id)
+          color="text-[#003060]"
+          weight="semibold"
+          size="text-[13px]"
+          font="font-inter"
+      }}
+      {{> components/ui/button/btn_action/index
+          href=(concat "/program/" id)
+          icon="fa-solid fa-arrow-right text-sm"
+          text=""
+          variant="primary"
+          class="!rounded-full !w-10 !h-10 !p-0 !shadow-[0px_8px_18px_-8px_rgba(0,0,0,0.15)]"
+      }}
+    </div>
+
   </div>
 </div>
