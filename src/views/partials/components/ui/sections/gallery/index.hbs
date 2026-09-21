@@ -17,10 +17,10 @@
 
     <div class="flex flex-col items-center gap-5 text-center">
       {{#unless (eq showBadge false)}}
-        {{> components/ui/text/eyebrow/index text=(t (default badgeKey 'test.home.gallery.gallery')) fontClass="font-montserrat" }}
+        {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.home.gallery.gallery'))) fontClass="font-montserrat" dotColor=dotColor }}
       {{/unless}}
-      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center">{{{t (default titleKey 'test.home.gallery.title')}}}</h2>
-      <p class="max-w-[658px] font-open-sans text-sm sm:text-base lg:text-[20px] font-normal leading-relaxed lg:leading-[160%] text-[#4A5568] text-center">{{t (default descKey 'test.home.gallery.description')}}</p>
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center">{{{default titleText (t (default titleKey 'test.home.gallery.title'))}}}</h2>
+      <p class="max-w-[658px] font-open-sans text-sm sm:text-base lg:text-[20px] font-normal leading-relaxed lg:leading-[160%] text-[#4A5568] text-center">{{default descText (t (default descKey 'test.home.gallery.description'))}}</p>
       {{#unless (eq showDivider false)}}
         <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
       {{/unless}}
@@ -37,8 +37,8 @@
 
     <div class="flex flex-col items-center gap-[30px]">
       {{#unless (eq showBottomLink false)}}
-        <a href="/dashboard/gallery" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold leading-5 text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
-          <span>{{t (default linkKey 'test.home.gallery.chooseGallery')}}</span>
+        <a href="{{default linkHref '/dashboard/gallery'}}" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold leading-5 text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
+          <span>{{default linkText (t (default linkKey 'test.home.gallery.chooseGallery'))}}</span>
           <svg class="size-4 shrink-0 text-[#003060]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M3.33334 8H12.6667M12.6667 8L8.66668 4M12.6667 8L8.66668 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>

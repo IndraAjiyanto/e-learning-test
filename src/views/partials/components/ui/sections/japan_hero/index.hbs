@@ -1,73 +1,71 @@
 {{!--
-  Section: Free Program Hero (Short Classes)
-  Lokasi: src/views/partials/components/ui/sections/free_hero/index.hbs
+  Section: Japan Program Hero (Special Program)
+  Lokasi: src/views/partials/components/ui/sections/japan_hero/index.hbs
 
-  Slicing lengkap Hero Section untuk Free Program sesuai spesifikasi Figma (Node 2591:807 & 2591:917):
-  - Tag / Eyebrow: "PREMIUM STUDY ABROAD" dengan accent dot merah (#E63946)
+  Slicing lengkap Hero Section untuk Japan Program (Special Program) sesuai spesifikasi Figma:
+  - hero-bg-wash: Linear gradient pink sakura ke biru langit (rgba(252, 231, 243, 0.22) -> rgba(224, 242, 254, 0.22))
+  - Tag / Eyebrow: "PREMIUM STUDY ABROAD" dengan accent dot #6EB6E5
   - Headline: Montserrat 800, 52px, -1px letter-spacing, #0B1F3B
   - Subheading: Inter 400, 16px, line-height 165%, #4B5563
-  - CTA Primary: View Program (dark navy #0B1F3B, pill, arrow icon, smooth scroll ke #programs)
+  - CTA Primary: View Program (dark navy #0B1F3B, pill, arrow icon)
   - CTA Secondary: Watch overview (white border, pill, play icon, interactive modal video)
   - Line divider: 1px solid #E5E7EB
-  - Meta Chips: "N5 readiness curriculum" & "Career & study support"
-  - Visual Image Box: rounded-[24px] dengan hover zoom halus & subtle gradient
+  - Meta Chips: "N5 readiness curriculum" dan "Career & study support"
+  - Visual Collage: 520x520 rounded-[24px] foto Pagoda Chureito & Gunung Fuji
   - Floating Snapshot Bar: Horizontal 900x112px dengan 3 fitur & divider vertikal
 --}}
 
 <section 
   x-data="{ videoModalOpen: false }"
   class="relative w-full bg-[#FAFAFA] font-inter pt-10 sm:pt-14 pb-16 lg:pb-24" 
-  data-node-id="free-hero"
+  data-node-id="japan-hero"
 >
   {{!-- Main Hero Shell --}}
   <div class="page-shell relative z-10">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-14 pt-4 lg:pt-8">
 
       {{!-- hero-left: Content Column --}}
-      <div class="flex flex-1 flex-col items-start gap-7 w-full lg:max-w-[860px] xl:max-w-[900px]">
+      <div class="flex flex-1 flex-col items-start gap-7 w-full lg:max-w-[680px] xl:max-w-[720px]">
         
-        {{!-- Tag / Eyebrow with red accent dot #E63946 (Figma 2591:809 & 2591:810) --}}
+        {{!-- Tag / Eyebrow (Premium Study Abroad with blue accent dot #6EB6E5) -> table category column type --}}
         <div class="inline-flex h-[27px] items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-xs">
-          <span class="size-2.5 shrink-0 rounded-full bg-[#E63946]"></span>
+          <span class="size-2.5 shrink-0 rounded-full bg-[#6EB6E5]"></span>
           <span class="font-montserrat text-[12px] font-bold leading-[15px] uppercase tracking-wider text-[#0B1F3B]">
-            {{#if category.type}}
-              {{category.type}}
-            {{else if (t 'test.categoryFreeProgram.hero.eyebrow')}}
-              {{t 'test.categoryFreeProgram.hero.eyebrow'}}
-            {{else}}
-              PREMIUM STUDY ABROAD
-            {{/if}}
+            {{#if category.type}}{{category.type}}{{else}}{{default tagText "PREMIUM STUDY ABROAD"}}{{/if}}
           </span>
         </div>
 
+        {{!-- Frame: Headline & Subheading -> table category column name & description --}}
         <div class="flex flex-col gap-4">
-          <h1 class="font-montserrat text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-extrabold leading-[1.22] sm:leading-[1.22] lg:leading-[1.22] xl:leading-[64px] tracking-[-1px] text-[#0B1F3B]">
-            {{#if (getByLang category.text lang)}}
-              {{{getByLang category.text lang}}}
+          <h1 class="font-montserrat text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B]">
+            {{#if headline}}
+              {{headline}}
+            {{else if (getByLang category.text lang)}}
+              {{getByLang category.text lang}}
             {{else}}
-              Free {{#if category.name}}{{#if (eq category.name "Short Class")}}Short Classes{{else}}{{category.name}}{{/if}}{{else}}Short Classes{{/if}} to Boost<br class="hidden sm:inline" /> Your Career<br class="hidden sm:inline" /> With Kesatria Academy
+              Transform your future in {{default category.name "Japan"}} — from language to career.
             {{/if}}
           </h1>
 
-          <p class="font-inter text-base sm:text-lg leading-[165%] text-[#4B5563]">
-            {{#if (getByLang category.description lang)}}
+          <p class="font-inter text-base sm:text-lg leading-[165%] text-[#4B5563] max-w-[600px]">
+            {{#if subheading}}
+              {{subheading}}
+            {{else if (getByLang category.description lang)}}
               {{getByLang category.description lang}}
-            {{else if (t 'test.categoryFreeProgram.hero.description')}}
-              {{t 'test.categoryFreeProgram.hero.description'}}
             {{else}}
               A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.
             {{/if}}
           </p>
         </div>
 
-        {{!-- hero-ctas: Primary & Secondary Buttons (Figma 2591:815) --}}
+        {{!-- hero-ctas: Primary & Secondary Buttons --}}
         <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           {{!-- Primary CTA: View Program --}}
           <a
             href="#programs"
             class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-[#0B1F3B] px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-white shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.08)] hover:bg-[#07172d] hover:-translate-y-0.5 active:scale-95 transition-all"
           >
-            <span>{{default (t 'test.categoryFreeProgram.hero.button') 'View Program'}}</span>
+            <span>View Program</span>
             <span class="grid size-6 shrink-0 place-items-center">
               <i class="fa-solid fa-arrow-right text-xs text-white"></i>
             </span>
@@ -88,10 +86,10 @@
           </button>
         </div>
 
-        {{!-- Divider Line (Figma 2591:824) --}}
+        {{!-- Divider Line --}}
         <div class="w-full h-px bg-[#E5E7EB] my-1"></div>
 
-        {{!-- hero-meta: Checkmark Meta Chips (Figma 2591:825) --}}
+        {{!-- hero-meta: Checkmark Meta Chips -> table category -> table course type column icon dan nameClassesType --}}
         <div class="flex flex-wrap items-center gap-3">
           {{#if category.courseTypes.length}}
             {{#each category.courseTypes}}
@@ -132,13 +130,13 @@
 
       </div>
 
-      {{!-- hero-right: Visual Box (Figma 2591:834) --}}
+      {{!-- hero-right-collage: Visual Image Box (Pagoda & Mt Fuji with Cherry Blossoms) --}}
       <div class="w-full lg:w-[520px] shrink-0 flex justify-center lg:justify-end">
-        <div class="relative w-full max-w-[420px] lg:max-w-[520px] aspect-[4/3] sm:aspect-square lg:aspect-[73/50] rounded-[24px] overflow-hidden shadow-[0px_18px_40px_-12px_rgba(11,31,59,0.08)] border border-[#E5E7EB]/60 bg-white">
+        <div class="relative w-full max-w-[420px] lg:max-w-[520px] aspect-square rounded-[24px] overflow-hidden shadow-[0px_18px_40px_-12px_rgba(11,31,59,0.08)] border border-[#E5E7EB]/60 bg-white">
           <img
-            src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-            alt="{{category.name}}"
-            onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+            src="/public/image/specialProgram/bgJapan.png"
+            alt="Japan Study Program - Mount Fuji &amp; Chureito Pagoda"
+            onerror="this.src='/public/image/specialProgram/bgJapan.png'"
             class="size-full object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
           />
           {{!-- Subtle inner gradient overlay at bottom of image --}}
@@ -148,7 +146,7 @@
 
     </div>
 
-    {{!-- floating-snapshot-card-horizontal: Overlapping Snapshot Bar (Figma 2591:917) --}}
+    {{!-- floating-snapshot-card-horizontal: Overlapping Snapshot Bar at bottom of Hero --}}
     <div class="mt-14 lg:mt-16 flex justify-center w-full">
       {{> components/ui/card/snapshot_bar/index
           item1Title="Comprehensive curriculum"
@@ -198,7 +196,7 @@
     >
       <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
         <h3 class="font-montserrat text-lg font-bold text-[#0B1F3B]">
-          Program Overview: {{#if category.name}}{{category.name}}{{else}}Short Classes{{/if}}
+          Program Overview: Japan Pathway
         </h3>
         <button
           type="button"
@@ -215,7 +213,7 @@
           <div class="grid size-16 mx-auto mb-3 place-items-center rounded-full bg-white/20 backdrop-blur-xs">
             <i class="fa-solid fa-play text-2xl text-white ml-1"></i>
           </div>
-          <p class="font-montserrat font-semibold text-lg">{{#if category.name}}{{category.name}}{{else}}Free Short Classes{{/if}} Overview</p>
+          <p class="font-montserrat font-semibold text-lg">Japan Study &amp; Career Overview</p>
           <p class="font-inter text-xs text-white/70 mt-1">Video overview will play here</p>
         </div>
       </div>

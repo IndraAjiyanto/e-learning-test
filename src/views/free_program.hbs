@@ -15,7 +15,7 @@
   {{> components/ui/sections/free_benefit/index category=category benefit_category=benefit_category lang=lang}}
 
   {{!-- Alumni Section - reuse existing alumni component with paid variant --}}
-  {{> components/ui/sections/alumni/index
+  {{!-- {{> components/ui/sections/alumni/index
       headerVariant="paid"
       showMobile=true
       titleKey="test.categoryFreeProgram.alumni.title"
@@ -25,7 +25,7 @@
       alumni=alumni
       category=category
       lang=lang
-  }}
+  }} --}}
 
   {{!-- Gallery Section - reuse existing gallery component --}}
   {{> components/ui/sections/gallery/index
@@ -37,6 +37,15 @@
       descKey="test.categoryFreeProgram.gallery.description"
       linkKey="test.categoryFreeProgram.gallery.allGaleries"
       gallery=gallery
+  }}
+
+  {{!-- FAQ Section - reuse existing faq component --}}
+  {{> components/ui/sections/faq/index
+      sectionClass="bg-[#F9FAFB]"
+      titleText=(default (t 'test.categoryFreeProgram.faq.title') (t 'test.home.faq.title'))
+      descText=(default (t 'test.categoryFreeProgram.faq.description') (t 'test.home.faq.description'))
+      faqs=faqs
+      lang=lang
   }}
 
   {{> components/ui/sections/free_cta/index category=category lang=lang}}

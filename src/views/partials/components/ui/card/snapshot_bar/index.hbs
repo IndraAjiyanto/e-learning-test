@@ -1,0 +1,45 @@
+{{!--
+  Komponen: Floating Snapshot Bar Horizontal (Level 2 - Composite Card)
+  Lokasi: src/views/partials/components/ui/card/snapshot_bar/index.hbs
+
+  Card floating horizontal berukuran 900x112px dengan 3 item fitur dan divider vertikal,
+  sesuai dengan spesifikasi Figma.
+
+  Props:
+  - item1Title, item1Desc, item1Icon
+  - item2Title, item2Desc, item2Icon
+  - item3Title, item3Desc, item3Icon
+  - class       : Kelas tambahan (misal positioning absolute/relative)
+--}}
+<div class="w-full max-w-[900px] rounded-[20px] border border-[#E5E7EB] bg-white p-4 sm:p-5 lg:px-6 lg:py-[18px] shadow-[0px_16px_32px_-4px_rgba(11,31,59,0.06)] {{class}}">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+    
+    {{!-- Feature Item 1 --}}
+    {{> components/ui/card/snapshot_bar/item
+        icon=(default item1Icon "fa-solid fa-book-open")
+        title=(default item1Title "Comprehensive curriculum")
+        description=(default item1Desc "Language + culture + career prep")
+    }}
+
+    {{!-- Divider 1 --}}
+    <div class="hidden h-12 w-px bg-[#E5E7EB] sm:block shrink-0"></div>
+
+    {{!-- Feature Item 2 --}}
+    {{> components/ui/card/snapshot_bar/item
+        icon=(default item2Icon "fa-solid fa-chalkboard-user")
+        title=(default item2Title "Mentor-led learning")
+        description=(default item2Desc "Experienced instructors & support")
+    }}
+
+    {{!-- Divider 2 --}}
+    <div class="hidden h-12 w-px bg-[#E5E7EB] sm:block shrink-0"></div>
+
+    {{!-- Feature Item 3 --}}
+    {{> components/ui/card/snapshot_bar/item
+        icon=(default item3Icon "fa-solid fa-compass")
+        title=(default item3Title "Career & study pathways")
+        description=(default item3Desc "Guidance for next steps in Japan")
+    }}
+
+  </div>
+</div>

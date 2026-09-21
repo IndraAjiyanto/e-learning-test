@@ -1,41 +1,83 @@
 {{!--
-  Section: Free Program - course list (L2) - reskin ke standar internal.
+  Section: Free Program - Program Selection / Course List (L2)
   Lokasi: src/views/partials/components/ui/sections/free_program/index.hbs
-  Props: category (.name), courses[], lang.
+  
+  Slicing presisi 100% sesuai Figma Node 2591:835 (Program Selection):
+  - Background: #FAFAFA / #F9FAFB
+  - Section Header (Node 2591:836):
+    - Title: Montserrat Bold 44px "#6EB6E5 Short Classes" "#0B1F3B for You"
+    - Subtitle: Inter Regular 18px text-[#6B7280] max-w-[760px]
+  - Grid: 3 kolom responsif (Node 2591:839 program-cards, gap 24px)
+  - Card: High fidelity matching Node 2591:840
+  
+  Props:
+  - category (.name), courses[], lang.
 --}}
-<section id="programs" class="w-full bg-white py-14 font-inter lg:py-20">
-  <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
-      {{> components/ui/text/eyebrow/index text=(t 'test.categoryFreeProgram.program.eyebrow') }}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
-        <span class="text-[#6EB6E5]">{{category.name}}</span> {{t 'test.categoryFreeProgram.program.title'}}
+<section id="programs" class="w-full bg-[#FAFAFA] py-16 font-inter lg:py-24" data-node-id="2591:835">
+  <div class="page-shell flex flex-col items-center gap-12 lg:gap-14">
+
+    {{!-- section-header (Figma Node 2591:836) --}}
+    <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
+      <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[110%] tracking-tight text-[#0B1F3B]">
+        <span class="text-[#6EB6E5]">{{#if category.name}}{{category.name}}{{else}}Short Classes{{/if}}</span> for You
       </h2>
-      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">
-        {{t 'test.categoryFreeProgram.program.description1'}} {{category.name}} {{t 'test.categoryFreeProgram.program.description2'}}
+      <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
+        {{default (t 'test.categoryFreeProgram.program.description') 'Choose the short class that matches your interests and start building practical skills.'}}
       </p>
     </div>
 
+    {{!-- program-cards Grid (Figma Node 2591:839) --}}
     {{#if courses.length}}
-      <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center">
         {{#each courses}}
           {{> components/ui/card/category/free/index
               id=this.id
               image=(default this.thumbnail this.image)
               name=this.name
-              day=this.day
+              description=this.description
               method=this.method
-              quota=this.quota }}
+              day=this.day
+              quota=this.quota
+              icon=this.icon
+              lang=../lang
+          }}
         {{/each}}
       </div>
     {{else}}
-      <div class="flex w-full max-w-[560px] flex-col items-center gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-14">
-        <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
-          <i class="fas fa-clock text-lg"></i>
-        </span>
-        <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.special_program.program.comingSoonTitle'}}</h3>
-        <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{t 'test.special_program.program.comingSoonText'}}</p>
+      {{!-- High Fidelity Fallback Cards matching Figma (Node 2591:840, 2591:864, 2591:892) --}}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center">
+        {{!-- Card 1 --}}
+        {{> components/ui/card/category/free/index
+            isFallback=true
+            image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop"
+            name="Japan Program"
+            icon="fa-solid fa-graduation-cap"
+            tags=(array "Language" "Culture" "Career")
+            description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
+        }}
+
+        {{!-- Card 2 --}}
+        {{> components/ui/card/category/free/index
+            isFallback=true
+            image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&fit=crop"
+            name="Japan Program"
+            icon="fa-solid fa-eye"
+            tags=(array "Speaking" "Listening" "Reading" "Writing")
+            description="Build strong communication skills through structured lessons and interactive practice."
+        }}
+
+        {{!-- Card 3 --}}
+        {{> components/ui/card/category/free/index
+            isFallback=true
+            image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop"
+            name="Career & Study Support"
+            icon="fa-solid fa-users"
+            tags=(array "Applications" "Interviews" "Planning")
+            description="Receive support for applications, interviews, and planning your path in Japan."
+        }}
       </div>
     {{/if}}
+
   </div>
 </section>
