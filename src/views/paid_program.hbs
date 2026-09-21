@@ -1,12 +1,18 @@
 {{!-- PAID PROGRAM PAGE --}}
-{{!-- Hero Section - khusus paid program --}}
-{{> components/ui/sections/paid_hero/index}}
+{{!-- Section 1: Hero Section - khusus paid program --}}
+{{> components/ui/sections/paid_hero/index category=category courses=courses course=courses.[0] lang=lang}}
 
-{{!-- Program Section - khusus paid (card/category/paid) --}}
+{{!-- Section 2: Key Advantages / Why Choose --}}
+{{> components/ui/sections/paid_advantage/index benefit_category=benefit_category courses=courses course=courses.[0] course_benefits=course_benefits lang=lang}}
+
+{{!-- Section 3: Bootcamp Syllabus / Curriculum --}}
+{{> components/ui/sections/paid_curriculum/index course=courses.[0] course_flows=course_flows lang=lang}}
+
+{{!-- Section 4: Software & Tools --}}
+{{> components/ui/sections/paid_tools/index course=courses.[0] technologies=technologies portfolio=portfolio lang=lang}}
+
+{{!-- Section 5: Program Section - daftar program/courses --}}
 {{> components/ui/sections/paid_program/index}}
-
-{{!-- Advantage Section - khusus paid --}}
-{{> components/ui/sections/paid_advantage/index}}
 
 {{!-- Flow Section - khusus paid (portfolio showcase) --}}
 {{> components/ui/sections/paid_flow/index}}

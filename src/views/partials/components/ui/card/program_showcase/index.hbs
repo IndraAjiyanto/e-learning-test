@@ -3,95 +3,139 @@
   Lokasi: src/views/partials/components/ui/card/program_showcase/index.hbs
 
   Card showcase program Jepang sesuai spesifikasi Figma (Layer 3):
-  - Card: p-6 (24px), gap-5 (20px), rounded-[16px], border #E5E7EB, shadow-[0px_4px_16px_rgba(0,0,0,0.06)]
-  - Image: h-[190px], rounded-[10px], overlay gradient
-  - Icon badge bulat navy (40x40) + Title (Montserrat 600 20px)
-  - Tags row berpemisah titik (·)
-  - Description text (Inter 400 13px / line-height 20px)
-  - Footer: "Explore program" (13px font-semibold #003060) + Tombol bulat panah kanan (29x29 #003060)
+  - Card: 504px x 495px, rounded-[16px], bg-white, shadow-[0px_6px_18px_-6px_rgba(0,0,0,0.0509804)]
+  - Image Area: p-4 pb-0, image 472x224px, rounded-[12px]
+  - Content: p-4 gap-3
+  - Icon badge: 48x48 rounded-full (24px) bg-[#003060], icon 22x22 stroke-2 #FFFFFF
+  - Title: Montserrat 600, 22px, leading 26px, text-[#0B1F3B]
+  - Tags: pill rounded-full (999px) border #E5E7EB bg-white px-2.5 py-1.5, Inter 600 12px text-[#0B1F3B] + dot · (#9CA3AF)
+  - Description: Inter 400 14px leading 170% text-[#6B7280]
+  - Bottom row: Explore program (Inter 600 13px #003060) + cta-button (40x40 rounded-full bg-[#003060] with arrow-right)
 
   Props:
   - id          : string (ID program)
   - image       : string (URL gambar)
-  - icon        : string (FontAwesome class, misal "fa-solid fa-graduation-cap")
+  - icon        : string (FontAwesome class atau icon name)
   - title       : string (Nama program)
-  - tag1        : string (Tag pertama, warna #003060 font-medium)
+  - tag1        : string (Tag pertama)
   - tag2        : string (Tag kedua)
   - tag3        : string (Tag ketiga)
-  - tags        : array of strings (opsional jika passing array)
+  - tag4        : string (Tag keempat)
+  - tags        : array of strings
   - description : string (Deskripsi program)
-  - href        : string (URL tujuan, default "/program/{{id}}")
+  - href        : string (URL tujuan)
 --}}
 
-<div class="group flex w-full flex-col justify-between rounded-[16px] border border-[#E5E7EB] bg-white p-6 shadow-[0px_4px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]">
+<div class="box-border flex w-full flex-col justify-between overflow-hidden rounded-[16px] border border-[#E5E7EB] bg-[#FFFFFF] shadow-[0px_6px_18px_-6px_rgba(0,0,0,0.0509804)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0px_16px_36px_-6px_rgba(11,31,59,0.12)]">
   
-  {{!-- Top Image Area --}}
-  <div class="relative h-[190px] w-full overflow-hidden rounded-[10px] bg-gray-100 mb-5">
-    <img
-      src="{{default image 'https://images.unsplash.com/photo-1528164344705-475426879c0d?q=80&w=800&fit=crop'}}"
-      alt="{{title}}"
-      class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-      onerror="this.src='/public/image/specialProgram/bgJapan.png'"
-    />
-    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B1F3B]/30 via-transparent to-transparent"></div>
+  {{!-- image-area (Figma: padding 16px 16px 0px, height 240px) --}}
+  <div class="box-border w-full p-4 pb-0">
+    <div class="relative h-[224px] w-full overflow-hidden rounded-[12px] bg-gray-100">
+      <img
+        src="{{default image 'https://images.unsplash.com/photo-1528164344705-475426879c0d?q=80&w=800&fit=crop'}}"
+        alt="{{title}}"
+        class="size-full object-cover transition-transform duration-700 ease-out hover:scale-105"
+        onerror="this.src='/public/image/specialProgram/bgJapan.png'"
+      />
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+    </div>
   </div>
 
-  {{!-- Content Body --}}
-  <div class="flex flex-1 flex-col gap-3">
+  {{!-- content (Figma: padding 16px, gap 12px) --}}
+  <div class="box-border flex flex-1 flex-col justify-between p-4">
     
-    {{!-- Icon Badge + Title --}}
-    <div class="flex items-center gap-3">
-      <div class="grid size-10 shrink-0 place-items-center rounded-full bg-[#003060] text-white">
-        <i class="{{default icon 'fa-solid fa-graduation-cap'}} text-sm text-white"></i>
+    <div class="flex flex-col gap-3">
+      {{!-- Frame 2147229474: icon-badge + title --}}
+      <div class="flex items-center gap-3.5">
+        <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#003060] shadow-[0px_6px_16px_-6px_rgba(0,0,0,0.0784314)] text-white">
+          {{#if (eq icon 'eye')}}
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          {{else if (eq icon 'users')}}
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          {{else if (eq icon 'fa-solid fa-graduation-cap')}}
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+              <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path>
+            </svg>
+          {{else}}
+            <i class="{{default icon 'fa-solid fa-graduation-cap'}} text-lg text-white"></i>
+          {{/if}}
+        </div>
+        <h3 class="font-montserrat text-[22px] font-semibold leading-[26px] text-[#0B1F3B]">
+          {{title}}
+        </h3>
       </div>
-      <h3 class="font-montserrat text-[20px] font-semibold leading-[27px] text-[#0B1F3B]">
-        {{title}}
-      </h3>
+
+      {{!-- tags-row with separator dots · --}}
+      <div class="flex flex-wrap items-center gap-2 pt-0.5">
+        {{#if tag1}}
+          <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
+            {{tag1}}
+          </span>
+          {{#if tag2}}
+            <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
+            <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
+              {{tag2}}
+            </span>
+          {{/if}}
+          {{#if tag3}}
+            <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
+            <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
+              {{tag3}}
+            </span>
+          {{/if}}
+          {{#if tag4}}
+            <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
+            <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
+              {{tag4}}
+            </span>
+          {{/if}}
+        {{else if tags}}
+          {{#each tags}}
+            <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
+              {{this}}
+            </span>
+            {{#unless @last}}
+              <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
+            {{/unless}}
+          {{/each}}
+        {{/if}}
+      </div>
+
+      {{!-- Description text (Inter 400 14px leading 170% text-[#6B7280]) --}}
+      <p class="font-inter text-[14px] leading-[170%] text-[#6B7280] line-clamp-3">
+        {{description}}
+      </p>
     </div>
 
-    {{!-- Tags Row --}}
-    <div class="flex flex-wrap items-center gap-2 pt-0.5 font-inter text-[12px] leading-[17px]">
-      {{#if tag1}}
-        <span class="font-medium text-[#003060]">{{tag1}}</span>
-        {{#if tag2}}
-          <span class="text-[#D1D5DB] select-none">·</span>
-          <span class="text-[#6B7280]">{{tag2}}</span>
-        {{/if}}
-        {{#if tag3}}
-          <span class="text-[#D1D5DB] select-none">·</span>
-          <span class="text-[#6B7280]">{{tag3}}</span>
-        {{/if}}
-      {{else if tags}}
-        {{#each tags}}
-          <span class="{{#if @first}}font-medium text-[#003060]{{else}}text-[#6B7280]{{/if}}">{{this}}</span>
-          {{#unless @last}}<span class="text-[#D1D5DB] select-none">·</span>{{/unless}}
-        {{/each}}
-      {{/if}}
+    {{!-- bottom-row: Explore program + cta-button (40x40 rounded-full #003060 with arrow-right) --}}
+    <div class="mt-5 flex items-center justify-between border-t border-[#F3F4F6] pt-3">
+      <a
+        href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
+        class="font-inter text-[13px] font-semibold leading-[16px] text-[#003060] hover:text-[#6EB6E5] transition-colors"
+      >
+        Explore program
+      </a>
+
+      <a
+        href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
+        class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#003060] text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
+        aria-label="Explore program"
+      >
+        <svg class="size-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </div>
 
-    {{!-- Description --}}
-    <p class="font-inter text-[13px] leading-[20px] text-[#6B7280] line-clamp-3">
-      {{description}}
-    </p>
-
-  </div>
-
-  {{!-- Bottom Action Row --}}
-  <div class="mt-5 flex items-center justify-between border-t border-[#F3F4F6] pt-3">
-    <a
-      href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
-      class="font-inter text-[13px] font-semibold text-[#003060] hover:text-[#6EB6E5] transition-colors"
-    >
-      Explore program
-    </a>
-
-    <a
-      href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
-      class="grid size-[29px] place-items-center rounded-full bg-[#003060] text-white shadow-[0px_2px_6px_rgba(0,48,96,0.25)] transition-transform hover:scale-105 active:scale-95"
-      aria-label="Explore program"
-    >
-      <i class="fa-solid fa-arrow-right text-[11px] text-white"></i>
-    </a>
   </div>
 
 </div>

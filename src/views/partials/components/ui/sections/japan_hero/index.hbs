@@ -58,32 +58,19 @@
           </p>
         </div>
 
-        {{!-- hero-ctas: Primary & Secondary Buttons --}}
-        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+        {{!-- hero-ctas: Primary & Secondary Buttons (Figma spec: 390px x 52px, gap 12px) --}}
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-[390px] h-auto sm:h-[52px]">
           {{!-- Primary CTA: View Program --}}
-          <a
-            href="#programs"
-            class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-[#0B1F3B] px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-white shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.08)] hover:bg-[#07172d] hover:-translate-y-0.5 active:scale-95 transition-all"
-          >
-            <span>View Program</span>
-            <span class="grid size-6 shrink-0 place-items-center">
-              <i class="fa-solid fa-arrow-right text-xs text-white"></i>
-            </span>
-          </a>
+          {{> components/ui/button/view_program/index
+              href="#programs"
+              text="View Program"
+          }}
 
           {{!-- Secondary CTA: Watch overview --}}
-          <button
-            type="button"
-            @click="videoModalOpen = true"
-            class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full border border-[#E5E7EB] bg-white px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-[#0B1F3B] shadow-xs hover:bg-[#F9FAFB] hover:border-[#D1D5DB] active:scale-95 transition-all cursor-pointer"
-          >
-            <span class="grid size-6 shrink-0 place-items-center">
-              <span class="grid size-4 shrink-0 place-items-center rounded-full border-[2px] border-[#0B1F3B]">
-                <i class="fa-solid fa-play text-[7px] text-[#0B1F3B] ml-0.5"></i>
-              </span>
-            </span>
-            <span>Watch overview</span>
-          </button>
+          {{> components/ui/button/watch_overview/index
+              xClick="videoModalOpen = true"
+              text="Watch overview"
+          }}
         </div>
 
         {{!-- Divider Line --}}

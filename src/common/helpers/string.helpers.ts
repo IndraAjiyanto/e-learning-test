@@ -55,8 +55,23 @@ export const stringHelpers = {
   },
   default: (value: any, defaultValue: any) => value || defaultValue,
   getByLang: (obj: any, lang: string) => {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || '';
+    if (!obj) return '';
+    if (typeof obj === 'string') {
+      try {
+        const parsed = JSON.parse(obj);
+        if (parsed && typeof parsed === 'object') {
+          return parsed[lang] || parsed['id'] || parsed['en'] || '';
+        }
+      } catch (e) {
+        return obj;
+      }
+      return obj;
+    }
+    if (Array.isArray(obj)) {
+      return lang === 'en' ? (obj[1] || obj[0] || '') : (obj[0] || obj[1] || '');
+    }
+    if (typeof obj !== 'object') return '';
+    return obj[lang] || obj['id'] || obj['en'] || '';
   },
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
@@ -124,5 +139,35 @@ export const stringHelpers = {
     typeof str === 'string' &&
     typeof sub === 'string' &&
     str.toLowerCase().includes(sub.toLowerCase()),
+  capitalize: (str: unknown) => {
+    if (!str || typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
+  lower: (str: unknown) => {
+    if (!str || typeof str !== 'string') return '';
+    return str.toLowerCase();
+  },
+  formatMethod: (method: unknown) => {
+    if (!method || typeof method !== 'string') return 'Online & Offline';
+    const m = method.toLowerCase().trim();
+    if (m === 'online') return 'Online';
+    if (m === 'offline') return 'Offline';
+    return method.charAt(0).toUpperCase() + method.slice(1);
+  },
+  formatMethodLine1: (method: unknown) => {
+    if (!method || typeof method !== 'string') return 'Online &';
+    const m = method.toLowerCase().trim();
+    if (m === 'online') return 'Online';
+    if (m === 'offline') return 'Offline';
+    if (m.includes('online') && m.includes('offline')) return 'Online &';
+    return m.charAt(0).toUpperCase() + m.slice(1);
+  },
+  formatMethodLine2: (method: unknown) => {
+    if (!method || typeof method !== 'string') return 'Offline';
+    const m = method.toLowerCase().trim();
+    if (m === 'online' || m === 'offline') return '';
+    if (m.includes('online') && m.includes('offline')) return 'Offline';
+    return '';
+  },
 };
 

@@ -1,46 +1,124 @@
 {{!--
-  Section: Paid Program Hero (Bootcamp) (L2) - reskin ke standar internal.
+  Section: Paid Program Hero (Bootcamp UI/UX) (Level 2 - Section)
   Lokasi: src/views/partials/components/ui/sections/paid_hero/index.hbs
-  Satu pohon markup, base + lg. .page-shell, sizeClass, font-inter heading + body (unified 2026-09-10, yana WA).
-  Props: category (.name, .description, .hero_section_image, .contact, .type), lang.
+
+  Slicing lengkap Hero Section untuk Paid Program sesuai spesifikasi Figma Layer:
+  - Hero container: width 1728px, height 756px, background #F8F9FA, padding 80px (responsive)
+  - Left Content (max-w 680px - 700px):
+    - Tag: pill #F8F9FA, border 1px #E5E7EB, dot #6EB6E5, text Montserrat 700 12px uppercase #0B1F3B
+    - Main Title: Montserrat 800, 50px, line-height 115%, #0B1F3B
+    - Tagline Description: Inter 400, 18px, line-height 160%, #64748B
+    - Action CTA Group:
+      - Button Primary: 184x51px, bg #003060, shadow 0px 8px 16px rgba(0,48,96,0.25), text "Daftar Sekarang", Inter 700 16px white
+      - Button Secondary: 180x51px, border 1.5px #003060, text "Konsultasi Gratis", Inter 600 16px #003060
+    - Hero Quick Stats: 700x106px, rounded 16px, bg white, border #E2E8F0, shadow (Tanggal Mulai, Tanggal Selesai, Learning System, Class Capacity persis 2 baris per metrik)
+  - Right Container: 823x529px, rounded 24px, photorealistic UI/UX monitor mockup
+
+  Props:
+  - course    : object (course data jika dipanggil dari detail course)
+  - courses   : array (courses list jika dipanggil dari kategori)
+  - category  : object (category data)
+  - lang      : string
 --}}
-<section id="hero" class="w-full bg-[#F8F9FA] font-inter">
-  <div class="page-shell py-14 lg:py-20">
-    <div class="relative overflow-hidden rounded-[28px] bg-[#003060] px-6 py-12 lg:px-14 lg:py-16">
-      <img
-        src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-        alt="{{category.name}}"
-        onerror="this.style.display='none'"
-        class="pointer-events-none absolute inset-0 size-full object-cover opacity-25"
-      />
-      <div class="relative flex max-w-[640px] flex-col items-start gap-5">
-        {{> components/ui/text/eyebrow/index text=(default (getByLang category.type lang) (default category.type (t 'test.categoryPaidProgram.hero.eyebrow'))) }}
 
-        <h1 class="{{sizeClass 'display'}} font-inter font-extrabold tracking-[-0.02em] text-white">
-          {{#if category.name}}{{category.name}}{{else}}Bootcamp{{/if}}
-        </h1>
+<section 
+  id="hero" 
+  class="relative w-full bg-[#F8F9FA] font-inter pt-10 sm:pt-14 lg:pt-16 pb-14 sm:pb-20 lg:pb-24 overflow-hidden"
+  data-node-id="paid-hero"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row items-center lg:items-end justify-between gap-10 lg:gap-8 xl:gap-[65px]">
 
-        <p class="{{sizeClass 'lead'}} max-w-[560px] font-inter text-white/85">
-          {{default (getByLang category.description lang) (t 'test.categoryPaidProgram.hero.description')}}
-        </p>
+      {{!-- Hero Left Content (Figma: width 680px, max-w 700px, gap 40px) --}}
+      <div class="flex flex-1 flex-col items-start gap-7 sm:gap-9 lg:gap-10 w-full max-w-[700px]">
 
-        <div class="mt-1 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-          {{> components/ui/button/btn_action/index
-              onClick="document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
-              text=(t 'test.categoryPaidProgram.hero.explore')
-              icon="fas fa-arrow-right text-sm shrink-0"
-              iconPosition="right"
-              variant="white"
-              class="gap-2.5 px-8 py-4 text-sm" }}
-          {{> components/ui/button/btn_action/index
-              href=(waLink category.contact)
-              target="_blank"
-              text=(t 'test.categoryPaidProgram.hero.consultation')
-              icon="fas fa-headset text-sm shrink-0"
-              variant="outline-white"
-              class="gap-2.5 px-8 py-4 text-sm" }}
+        {{!-- Headline Group (Figma: gap 16px) --}}
+        <div class="flex flex-col items-start gap-3 sm:gap-4 w-full">
+          
+          {{!-- Eyebrow Tag (Figma: tag pill, Ellipse #6EB6E5, text BOOTCAMP UI/UX) --}}
+          <div class="box-border inline-flex h-[27px] items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-2xs">
+            <span class="size-2 shrink-0 rounded-full bg-[#6EB6E5]"></span>
+            <span class="font-montserrat text-[12px] font-bold uppercase leading-[15px] tracking-wider text-[#0B1F3B]">
+              {{#if (eq course.checkPaid true)}}
+                Paid Program
+              {{else if (eq course.checkPaid false)}}
+                Free Program
+              {{else if category.type}}
+                {{category.type}}
+              {{else}}
+                BOOTCAMP UI/UX
+              {{/if}}
+            </span>
+          </div>
+
+          {{!-- Main Title (Figma: Montserrat 800, 50px, line-height 115%, #0B1F3B) --}}
+          <h1 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] xl:text-[50px] font-extrabold leading-[115%] tracking-[-0.5px] text-[#0B1F3B]">
+            {{#if course.name}}
+              {{course.name}}
+            {{else if category.name}}
+              {{category.name}}
+            {{else}}
+              UI/UX Design Bootcamp
+            {{/if}}
+          </h1>
+
+          {{!-- Tagline Description (Figma: Inter 400, 18px, line-height 160%, #64748B) --}}
+          <p class="font-inter text-base sm:text-[18px] font-normal leading-[160%] text-[#64748B] max-w-[680px]">
+            {{default (getByLang course.description lang) (default (getByLang category.description lang) "Ubah karirmu menjadi desainer produk digital dalam 12 minggu. Kuasai riset pengguna, wireframing, UI kit modular, hingga portofolio siap kerja melalui pembelajaran intensif terarah.")}}
+          </p>
+
         </div>
+
+        {{!-- Action CTA Group (Figma: Button Primary 184x51px, Button Secondary 180x51px, gap 16px) --}}
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          
+          {{!-- Button Primary: Daftar Sekarang --}}
+          <a
+            href="{{#if course.id}}/payment/registration/{{course.id}}{{else}}#programs{{/if}}"
+            onclick="if (!'{{course.id}}') { document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' }); }"
+            class="flex items-center justify-center w-full sm:w-[184px] h-[51px] px-7 py-4 bg-[#003060] text-white font-inter font-bold text-base rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] transition-all hover:bg-[#002244] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+          >
+            Daftar Sekarang
+          </a>
+
+          {{!-- Button Secondary: Konsultasi Gratis --}}
+          <a
+            href="{{waLink (default category.contact course.contact)}}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="box-border flex items-center justify-center w-full sm:w-[180px] h-[51px] px-6 py-4 border-[1.5px] border-[#003060] bg-transparent text-[#003060] font-inter font-semibold text-base rounded-[10px] transition-all hover:bg-[#003060]/5 hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+          >
+            Konsultasi Gratis
+          </a>
+
+        </div>
+
+        {{!-- Hero Quick Stats (Figma: 700x106px, rounded 16px, border #E2E8F0, shadow) --}}
+        <div class="w-full max-w-[700px]">
+          {{> components/ui/card/quick_stats/index
+              startDateDayMonth=(ternary course.startDate (formatDateDayMonth course.startDate lang) "16 Sep")
+              startDateYear=(ternary course.startDate (formatDateYear course.startDate) "2026")
+              endDateDayMonth=(ternary course.startEnd (formatDateDayMonth course.startEnd lang) "16 Des")
+              endDateYear=(ternary course.startEnd (formatDateYear course.startEnd) "2026")
+              methodLine1=(ternary course.method (formatMethodLine1 course.method) "Online &")
+              methodLine2=(ternary course.method (formatMethodLine2 course.method) "Offline")
+              quotaLine1=(ternary course.quota (concat "Maximum " course.quota) "Maximum 8")
+              quotaLine2="Students"
+          }}
+        </div>
+
       </div>
+
+      {{!-- Hero Right Container (Figma: width 823px, height 529px, rounded 24px, UI/UX workspace monitor) --}}
+      <div class="w-full lg:flex-1 xl:w-[823px] h-[280px] sm:h-[380px] md:h-[440px] lg:h-[480px] xl:h-[529px] rounded-[24px] overflow-hidden border border-[#E2E8F0]/80 shadow-[0px_16px_36px_-12px_rgba(0,0,0,0.08)] bg-white relative shrink-0">
+        <img
+          src="{{#if course.image}}{{course.image}}{{else if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/paidProgram/heroUiUx.png{{/if}}"
+          alt="{{#if course.name}}{{course.name}}{{else if category.name}}{{category.name}}{{else}}UI/UX Design Bootcamp{{/if}}"
+          onerror="this.src='/public/image/paidProgram/heroUiUx.png'"
+          class="size-full object-cover rounded-[24px] transition-transform duration-700 hover:scale-[1.02]"
+        />
+      </div>
+
     </div>
   </div>
 </section>

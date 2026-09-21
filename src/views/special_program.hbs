@@ -18,16 +18,14 @@
     {{!-- Layer 4: Why Choose ("Why Choose Our Japan Program?") --}}
     {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang isJapan=true}}
 
-    {{!-- Course Types / Topics (if configured) --}}
-    {{> components/ui/sections/special_topic/index category=category lang=lang}}
-
     {{!-- Layer 5: Alumni Stories ("Real Stories, Real Placement") --}}
     {{> components/ui/sections/alumni/index
         headerVariant="paid"
         showMobile=true
-        badgeText="Alumni Success"
+        badgeText="ALUMNI SUCCESS"
         dotColor="#6EB6E5"
         titleText="Real Stories, Real Placement"
+        titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
         descText="Hear directly from graduates who built successful careers in Japan."
         hideDivider=true
         footerTextKey="test.special_program.alumni.footer"
@@ -45,6 +43,7 @@
         badgeText="Campus Life"
         dotColor="#6EB6E5"
         titleText="Life at Kesatria Academy"
+        titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
         descText="A glimpse of our training environment, study sessions, and community events."
         linkText="See All Our Gallery"
         showDivider=false
@@ -56,6 +55,7 @@
     {{> components/ui/sections/faq/index
         titleKey="test.special_program.faq.title"
         descKey="test.special_program.faq.description"
+        titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
         faqs=faqs
         lang=lang
     }}

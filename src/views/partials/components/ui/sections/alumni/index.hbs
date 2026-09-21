@@ -28,7 +28,7 @@
   <div class="relative z-10 flex w-full flex-col items-center gap-4 text-center {{wrapperClass}}">
     {{#if (eq (default headerVariant 'home') 'paid')}}
       {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.categoryPaidProgram.alumni.badge'))) dotColor=dotColor }}
-      <h2 class="{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B] {{titleClass}}">
+      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B]{{/if}}">
         {{#if titleText}}{{titleText}}{{else}}{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}} <span class="text-[#6EB6E5]">{{category.name}}</span>{{/if}}
       </h2>
       <p class="{{sizeClass 'body'}} max-w-[592px] font-inter text-[#4A5568] {{descClass}}">
@@ -113,7 +113,7 @@
     {{> _alumni_header
         wrapperClass="mb-12 lg:mb-16"
         titleSize="h2"
-        titleClass="font-inter font-bold text-[#0B1F3B] text-center"
+        titleClass=(default titleClass "font-inter font-bold text-[#0B1F3B] text-center")
         descSize="body"
         descClass="font-normal max-w-[592px]"
         dividerClass="h-1 w-[60px]"
