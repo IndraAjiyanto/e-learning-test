@@ -748,8 +748,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
 
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
+      const course_flows = await this.coursesService.findCourseFlows(course.id);
       res.render('detail_program/free_program/index', {
         course,
+        course_flows,
         user: req.user,
         kelass,
         check_user,
@@ -820,8 +822,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
 
       if (course.checkPaid === false) {
         course.programBenefits = course_benefits;
+        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/free_program/index', {
           course,
+          course_flows,
           course_benefits,
           kelass,
           studentList,
@@ -907,9 +911,11 @@ await this.coursesService.addUserToCourse(userId, courseId);
         ];
 
         if (course.checkPaid === false) {
+          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
+            course_flows,
             course_benefits,
             kelass,
             studentList,

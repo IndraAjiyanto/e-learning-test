@@ -120,14 +120,15 @@
 
 {{> components/ui/sections/free_detail_what_you_get/index }}
 
+{{> components/ui/sections/bootcamp_sylabus/index
+  course_flows=course_flows
+}}
 
 {{> components/ui/sections/participants/index
   badgeTitle=(t 'test.freeProgram.badge.participants')
   showDescription=false
   gridColsClass="grid-cols-1 md:grid-cols-3 max-w-[1100px]"
 }}
-
-
 
 {{> components/ui/sections/free_detail_schedule_fee/index }}
 

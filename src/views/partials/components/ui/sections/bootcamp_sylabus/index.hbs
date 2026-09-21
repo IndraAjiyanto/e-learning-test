@@ -1,0 +1,310 @@
+{{!--
+  Komponen: Bootcamp Syllabus / Curriculum Section (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/bootcamp_sylabus.hbs
+  Referensi Figma: Node 1149-830 (Curriculum Section)
+
+  Props:
+  - course_flows : array (opsional, data course_flow dari controller)
+  - course       : object (opsional, fallback ke course.courseFlow)
+  - badgeTitle   : string (opsional, default: "BOOTCAMP SYLLABUS")
+  - title        : string (opsional, default: "Structured & Industry-Proven Curriculum")
+  - description  : string (opsional, default: "Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.")
+  - lang         : string (opsional, kode bahasa)
+--}}
+
+<section id="curriculum" class="w-full bg-[#FAFAFA] py-16 md:py-24 lg:py-[120px] px-4 sm:px-8 lg:px-[80px] flex flex-col items-center font-inter relative z-0">
+  <div class="w-full max-w-[1568px] mx-auto flex flex-col items-center gap-10 md:gap-14 lg:gap-[64px]">
+
+    {{!-- Curriculum Header --}}
+    <div class="w-full max-w-[1568px] flex flex-col items-center gap-4 text-center">
+      {{!-- Badge --}}
+      <div class="inline-flex items-center justify-center px-4 py-2 bg-[#E0F2FE] rounded-full">
+        <span class="font-inter font-bold text-[14px] leading-[17px] text-[#003060] uppercase tracking-wider">
+          {{default badgeTitle "BOOTCAMP SYLLABUS"}}
+        </span>
+      </div>
+
+      {{!-- Main Title (Hanya font Inter) --}}
+      <h2 class="font-inter font-extrabold text-[28px] sm:text-[32px] md:text-[36px] leading-[36px] sm:leading-[40px] md:leading-[44px] text-center text-[#0B1F3B] max-w-[1568px]">
+        {{default title "Structured & Industry-Proven Curriculum"}}
+      </h2>
+
+      {{!-- Subtitle / Description --}}
+      <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[19px] sm:leading-[24px] text-center text-[#64748B] max-w-[680px]">
+        {{default description "Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards."}}
+      </p>
+    </div>
+
+    {{!-- Curriculum Accordion Grid (Max width 1040px) --}}
+    <div
+      class="w-full max-w-[1040px] flex flex-col items-center gap-4 sm:gap-5 md:gap-[30px]"
+      x-data="{
+        opened: {},
+        init() {
+          const total = {{#if (or course_flows.length course.courseFlow.length)}}{{default course_flows.length course.courseFlow.length}}{{else}}6{{/if}};
+          for (let i = 0; i < total; i++) {
+            this.opened[i] = true;
+          }
+        },
+        isOpen(index) {
+          return this.opened[index] === true;
+        },
+        toggle(index) {
+          this.opened[index] = !this.isOpen(index);
+        }
+      }"
+    >
+      {{#if (or course_flows.length course.courseFlow.length)}}
+        {{#each (default course_flows course.courseFlow)}}
+          <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+            {{!-- Top Row --}}
+            <button
+              type="button"
+              @click="toggle({{@index}})"
+              class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+              aria-label="Toggle curriculum item"
+            >
+              {{!-- Left Frame: Icon Box + Title --}}
+              <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+                {{!-- Award Icon Box (44x44, rounded 14px, bg rgba(110, 182, 229, 0.08)) --}}
+                <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                  <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="7"></circle>
+                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                  </svg>
+                </div>
+
+                {{!-- Item Title --}}
+                <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B] truncate sm:whitespace-normal">
+                  {{getByLang this.title ../lang}}
+                </h3>
+              </div>
+
+              {{!-- Right Frame: Chevron Icon --}}
+              <div class="shrink-0 ml-2">
+                <svg
+                  class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform"
+                  :class="isOpen({{@index}}) ? 'rotate-180' : ''"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </button>
+
+            {{!-- Item Content / Description --}}
+            <div
+              x-show="isOpen({{@index}})"
+              x-collapse
+              class="w-full"
+            >
+              <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+                {{getByLang this.content ../lang}}
+              </p>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        {{!-- Fallback Dummy Data sesuai spesifikasi Figma (Node 1149-830) --}}
+        
+        {{!-- Curriculum Item 0 --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+          <button
+            type="button"
+            @click="toggle(0)"
+            class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+            aria-label="Toggle curriculum item"
+          >
+            <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+              <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B]">
+                Design Thinking &amp; User Research
+              </h3>
+            </div>
+            <div class="shrink-0 ml-2">
+              <svg class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform" :class="isOpen(0) ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          <div x-show="isOpen(0)" x-collapse class="w-full">
+            <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+              Pelajari metode design thinking, riset pengguna, persona, user journey, dan teknik wawancara untuk memahami kebutuhan pengguna secara mendalam.
+            </p>
+          </div>
+        </div>
+
+        {{!-- Curriculum Item 1 --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+          <button
+            type="button"
+            @click="toggle(1)"
+            class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+            aria-label="Toggle curriculum item"
+          >
+            <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+              <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B]">
+                Information Architecture &amp; Wireframing
+              </h3>
+            </div>
+            <div class="shrink-0 ml-2">
+              <svg class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform" :class="isOpen(1) ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          <div x-show="isOpen(1)" x-collapse class="w-full">
+            <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+              Kuasai struktur informasi, sitemap, user flow, dan wireframing untuk merancang pengalaman pengguna yang intuitif dan terorganisir.
+            </p>
+          </div>
+        </div>
+
+        {{!-- Curriculum Item 2 --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+          <button
+            type="button"
+            @click="toggle(2)"
+            class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+            aria-label="Toggle curriculum item"
+          >
+            <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+              <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B]">
+                Visual Design &amp; UI Fundamentals
+              </h3>
+            </div>
+            <div class="shrink-0 ml-2">
+              <svg class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform" :class="isOpen(2) ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          <div x-show="isOpen(2)" x-collapse class="w-full">
+            <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+              Dalami prinsip desain visual, tipografi, warna, layout grid, dan komponen UI untuk menciptakan antarmuka yang menarik dan fungsional.
+            </p>
+          </div>
+        </div>
+
+        {{!-- Curriculum Item 3 --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+          <button
+            type="button"
+            @click="toggle(3)"
+            class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+            aria-label="Toggle curriculum item"
+          >
+            <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+              <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B]">
+                Interactive Prototyping &amp; Motion
+              </h3>
+            </div>
+            <div class="shrink-0 ml-2">
+              <svg class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform" :class="isOpen(3) ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          <div x-show="isOpen(3)" x-collapse class="w-full">
+            <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+              Tingkatkan skill Figma dengan auto layout, komponen, varian, design token, dan bangun design system yang scalable.
+            </p>
+          </div>
+        </div>
+
+        {{!-- Curriculum Item 4 --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+          <button
+            type="button"
+            @click="toggle(4)"
+            class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+            aria-label="Toggle curriculum item"
+          >
+            <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+              <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B]">
+                Interactive Prototyping &amp; Motion
+              </h3>
+            </div>
+            <div class="shrink-0 ml-2">
+              <svg class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform" :class="isOpen(4) ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          <div x-show="isOpen(4)" x-collapse class="w-full">
+            <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+              Buat prototipe interaktif dengan transisi, animasi micro-interaction, dan motion design untuk presentasi desain yang lebih hidup.
+            </p>
+          </div>
+        </div>
+
+        {{!-- Curriculum Item 5 --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-6 flex flex-col gap-4 transition-shadow duration-200 hover:shadow-sm">
+          <button
+            type="button"
+            @click="toggle(5)"
+            class="w-full flex flex-row justify-between items-center text-left focus:outline-none cursor-pointer select-none group"
+            aria-label="Toggle curriculum item"
+          >
+            <div class="flex flex-row items-center gap-4 min-w-0 pr-2">
+              <div class="w-[44px] h-[44px] min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[14px] bg-[rgba(110,182,229,0.08)] shrink-0">
+                <svg class="w-[22px] h-[22px] text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+              </div>
+              <h3 class="font-inter font-bold text-[18px] sm:text-[20px] md:text-[22px] leading-[27px] text-[#0B1F3B]">
+                Usability Testing &amp; Final Capstone Project
+              </h3>
+            </div>
+            <div class="shrink-0 ml-2">
+              <svg class="w-5 h-5 text-[#64748B] transition-transform duration-300 transform" :class="isOpen(5) ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          <div x-show="isOpen(5)" x-collapse class="w-full">
+            <p class="font-inter font-normal text-[15px] sm:text-[16px] leading-[150%] text-[#66738C]">
+              Lakukan usability testing, analisis hasil pengujian, iterasi desain, dan kerjakan proyek akhir sebagai portofolio profesional.
+            </p>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+  </div>
+</section>
