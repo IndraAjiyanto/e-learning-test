@@ -1,22 +1,46 @@
 {{!--
-  Section: Special CTA - contact (L2) - reskin ke standar internal.
+  Section: Special CTA - contact (L2)
   Lokasi: src/views/partials/components/ui/sections/special_cta/index.hbs
-  Props: category (.contact - WhatsApp number), lang.
+  Props: category (.contact - WhatsApp number), lang, isJapan.
 --}}
-<section id="explore-program" class="w-full bg-white py-14 font-inter lg:py-20">
-  <div class="page-shell">
-    <div class="flex flex-col items-center gap-6 rounded-3xl bg-[#003060] px-6 py-14 text-center lg:gap-8 lg:px-10 lg:py-16">
-      <div class="flex max-w-[720px] flex-col items-center gap-3">
-        <h2 class="{{sizeClass 'h2'}} font-inter font-extrabold tracking-[-0.01em] text-white">{{t 'test.special_program.contact.title'}}</h2>
-        <p class="{{sizeClass 'lead'}} font-inter text-white/80">{{t 'test.special_program.contact.description'}}</p>
+{{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
+  {{!-- Figma Layer 8: Transform your team today --}}
+  <section id="explore-program" class="w-full bg-white py-16 font-inter lg:py-24">
+    <div class="page-shell flex flex-col items-center gap-8 text-center">
+      <div class="flex max-w-[640px] flex-col items-center gap-4">
+        <h2 class="font-montserrat text-3xl font-bold tracking-[-0.01em] text-[#0B1F3B] sm:text-4xl">
+          Transform your team today
+        </h2>
+        <p class="font-inter text-[15px] leading-relaxed text-[#6B7280]">
+          Empower your workforce with tailored training programs designed to meet your specific industry needs. Contact us today to learn more.
+        </p>
       </div>
       <a
-        href="{{#if category.contact}}{{waLink category.contact}}{{else}}#{{/if}}"
-        target="_blank" rel="noopener"
-        class="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 {{sizeClass 'body'}} font-bold text-[#003060] transition hover:-translate-y-0.5 hover:bg-[#E0F2F9]"
+        href="{{#if category.contact}}{{waLink category.contact}}{{else}}#programs{{/if}}"
+        target="{{#if category.contact}}_blank{{else}}_self{{/if}}"
+        rel="noopener"
+        class="inline-flex items-center justify-center rounded-full bg-[#003060] px-8 py-3.5 font-inter text-[15px] font-semibold text-white shadow-[0px_4px_14px_rgba(0,48,96,0.25)] transition-all hover:bg-[#002244] hover:-translate-y-0.5 active:scale-95"
       >
-        <i class="fas fa-phone text-xs"></i>{{t 'test.special_program.contact.contact'}}
+        Contact Us
       </a>
     </div>
-  </div>
-</section>
+  </section>
+{{else}}
+  <section id="explore-program" class="w-full bg-white py-14 font-inter lg:py-20">
+    <div class="page-shell">
+      <div class="flex flex-col items-center gap-6 rounded-3xl bg-[#003060] px-6 py-14 text-center lg:gap-8 lg:px-10 lg:py-16">
+        <div class="flex max-w-[720px] flex-col items-center gap-3">
+          <h2 class="{{sizeClass 'h2'}} font-inter font-extrabold tracking-[-0.01em] text-white">{{t 'test.special_program.contact.title'}}</h2>
+          <p class="{{sizeClass 'lead'}} font-inter text-white/80">{{t 'test.special_program.contact.description'}}</p>
+        </div>
+        <a
+          href="{{#if category.contact}}{{waLink category.contact}}{{else}}#{{/if}}"
+          target="_blank" rel="noopener"
+          class="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 {{sizeClass 'body'}} font-bold text-[#003060] transition hover:-translate-y-0.5 hover:bg-[#E0F2F9]"
+        >
+          <i class="fas fa-phone text-xs"></i>{{t 'test.special_program.contact.contact'}}
+        </a>
+      </div>
+    </div>
+  </section>
+{{/if}}

@@ -27,10 +27,14 @@
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
   class="
-    inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
+    inline-flex items-center justify-center font-semibold {{default roundedClass "rounded-[12px]"}} transition-all duration-300 shadow-md active:scale-95
 
     {{#if (eq variant 'secondary')}}
       bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else if (eq variant 'dark-navy')}}
+      bg-[#0B1F3B] hover:bg-[#08172c] text-white border border-[#0B1F3B] shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.15)]
+    {{else if (eq variant 'outline-gray')}}
+      bg-white text-[#0B1F3B] border border-[#E5E7EB] hover:bg-gray-50 shadow-none
     {{else}}
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
@@ -62,10 +66,14 @@
   {{#if xClick}}@click="{{xClick}}"{{/if}}
   {{#if xDisabled}}:disabled="{{xDisabled}}"{{/if}}
   class="
-    inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
+    inline-flex items-center justify-center font-semibold {{default roundedClass "rounded-[12px]"}} transition-all duration-300 shadow-md active:scale-95
 
     {{#if (eq variant 'secondary')}}
       bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else if (eq variant 'dark-navy')}}
+      bg-[#0B1F3B] hover:bg-[#08172c] text-white border border-[#0B1F3B] shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.15)]
+    {{else if (eq variant 'outline-gray')}}
+      bg-white text-[#0B1F3B] border border-[#E5E7EB] hover:bg-gray-50 shadow-none
     {{else}}
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white

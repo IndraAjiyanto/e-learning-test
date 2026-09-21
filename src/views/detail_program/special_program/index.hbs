@@ -1,0 +1,53 @@
+{{!--
+  Detail Special Program / Japan Pathway
+  Lokasi: src/views/detail_program/special_program/index.hbs
+--}}
+{{#if (or (eq course.programType 'lpk') (includes course.category.name 'japan') (includes course.name 'japan') isJapan)}}
+  {{> components/ui/sections/japan_hero/index 
+      category=course.category
+      lang=lang
+  }}
+{{else}}
+  {{> components/ui/sections/program_detail_hero/index
+    showBatchPill=true
+    regisHref=(concat '/payment/registration/' course.id)
+  }}
+{{/if}}
+
+<!-- Tabs Bar -->
+{{#> components/ui/sections/program_detail_nav/index}}
+  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.paidProgram.navbarMenu.participants') }}
+  {{> components/ui/text/nav_link/index href="#what-you-will-learn" text=(t 'test.paidProgram.navbarMenu.whatYouLearn') }}
+  {{> components/ui/text/nav_link/index href="#benefits" text=(t 'test.paidProgram.navbarMenu.benefits') }}
+  {{> components/ui/text/nav_link/index href="#learning-flow" text=(t 'test.paidProgram.navbarMenu.learningFlow') }}
+  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.paidProgram.navbarMenu.schedule&Fees') }}
+  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.paidProgram.navbarMenu.gallery') }}
+  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.paidProgram.navbarMenu.FAQ') }}
+{{/components/ui/sections/program_detail_nav/index}}
+
+<!-- PARTICIPANTS SECTION -->
+{{> components/ui/sections/participants/index}}
+
+<!-- WHAT YOU'LL LEARN SECTION -->
+{{> components/ui/sections/paid_detail_what_you_learn/index}}
+
+<!-- BENEFITS SECTION -->
+{{> components/ui/sections/paid_detail_benefit/index}}
+
+<!-- LEARNING FLOW SECTION -->
+{{> components/ui/sections/paid_detail_learning_flow/index}}
+
+<!-- SCHEDULE & FEES SECTION -->
+{{> components/ui/sections/paid_detail_schedule_fee/index}}
+
+<!-- GALLERY SECTION -->
+{{> components/ui/sections/program_detail_gallery/index}}
+
+<!-- FAQ SECTION -->
+{{> components/ui/sections/program_detail_faq/index}}
+
+<style>
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+</style>

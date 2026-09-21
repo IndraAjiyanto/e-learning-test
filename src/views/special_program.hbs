@@ -8,47 +8,102 @@
 </style>
 
 <div class="w-full bg-[#FAFAFA]">
-  {{> components/ui/sections/special_hero/index category=category lang=lang}}
+  {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
+    {{!-- Layer 1 & 2: Japan Hero Section with Floating Snapshot Bar --}}
+    {{> components/ui/sections/japan_hero/index category=category lang=lang}}
 
-  {{> components/ui/sections/special_program/index category=category courses=courses lang=lang}}
+    {{!-- Layer 3: Program Selection ("Choose Your Japan Program") --}}
+    {{> components/ui/sections/special_program/index category=category courses=courses lang=lang isJapan=true}}
 
-  {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang}}
+    {{!-- Layer 4: Why Choose ("Why Choose Our Japan Program?") --}}
+    {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang isJapan=true}}
 
-  {{> components/ui/sections/special_topic/index category=category lang=lang}}
+    {{!-- Course Types / Topics (if configured) --}}
+    {{> components/ui/sections/special_topic/index category=category lang=lang}}
 
-  {{!-- Alumni Section - reuse existing alumni component --}}
-  {{> components/ui/sections/alumni/index
-      headerVariant="paid"
-      showMobile=true
-      titleKey="test.special_program.alumni.title"
-      descKey="test.special_program.alumni.description"
-      footerTextKey="test.special_program.alumni.footer"
-      footerLinkTextKey="test.special_program.alumni.allStories"
-      desktopBgStyle="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
-      alumni=alumni
-      category=category
-      lang=lang
-  }}
+    {{!-- Layer 5: Alumni Stories ("Real Stories, Real Placement") --}}
+    {{> components/ui/sections/alumni/index
+        headerVariant="paid"
+        showMobile=true
+        badgeText="Alumni Success"
+        dotColor="#6EB6E5"
+        titleText="Real Stories, Real Placement"
+        descText="Hear directly from graduates who built successful careers in Japan."
+        hideDivider=true
+        footerTextKey="test.special_program.alumni.footer"
+        footerLinkTextKey="test.special_program.alumni.allStories"
+        desktopBgStyle="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
+        alumni=alumni
+        category=category
+        lang=lang
+    }}
 
-  {{!-- Gallery Section - reuse existing gallery component --}}
-  {{> components/ui/sections/gallery/index
-      renderMobile=true
-      showBadge=false
-      showDivider=false
-      showBottomLink=true
-      titleKey="test.special_program.gallery.title"
-      descKey="test.special_program.gallery.description"
-      linkKey="test.special_program.gallery.allGaleries"
-      gallery=gallery
-  }}
+    {{!-- Layer 6: Gallery ("Life at Kesatria Academy") --}}
+    {{> components/ui/sections/gallery/index
+        renderMobile=true
+        showBadge=true
+        badgeText="Campus Life"
+        dotColor="#6EB6E5"
+        titleText="Life at Kesatria Academy"
+        descText="A glimpse of our training environment, study sessions, and community events."
+        linkText="See All Our Gallery"
+        showDivider=false
+        showBottomLink=true
+        gallery=gallery
+    }}
 
-  {{> components/ui/sections/special_cta/index category=category lang=lang}}
+    {{!-- Layer 7: FAQ ("Frequently Asked Questions") --}}
+    {{> components/ui/sections/faq/index
+        titleKey="test.special_program.faq.title"
+        descKey="test.special_program.faq.description"
+        faqs=faqs
+        lang=lang
+    }}
 
-  {{!-- FAQ Section - reuse existing FAQ component --}}
-  {{> components/ui/sections/faq/index
-      titleKey="test.special_program.faq.title"
-      descKey="test.special_program.faq.description"
-      faqs=faqs
-      lang=lang
-  }}
+    {{!-- Layer 8: Final CTA ("Transform your team today" + Contact Us) --}}
+    {{> components/ui/sections/special_cta/index category=category lang=lang isJapan=true}}
+
+  {{else}}
+    {{!-- Default Special Program Layout --}}
+    {{> components/ui/sections/special_hero/index category=category lang=lang}}
+
+    {{> components/ui/sections/special_program/index category=category courses=courses lang=lang}}
+
+    {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang}}
+
+    {{> components/ui/sections/special_topic/index category=category lang=lang}}
+
+    {{> components/ui/sections/alumni/index
+        headerVariant="paid"
+        showMobile=true
+        titleKey="test.special_program.alumni.title"
+        descKey="test.special_program.alumni.description"
+        footerTextKey="test.special_program.alumni.footer"
+        footerLinkTextKey="test.special_program.alumni.allStories"
+        desktopBgStyle="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
+        alumni=alumni
+        category=category
+        lang=lang
+    }}
+
+    {{> components/ui/sections/gallery/index
+        renderMobile=true
+        showBadge=false
+        showDivider=false
+        showBottomLink=true
+        titleKey="test.special_program.gallery.title"
+        descKey="test.special_program.gallery.description"
+        linkKey="test.special_program.gallery.allGaleries"
+        gallery=gallery
+    }}
+
+    {{> components/ui/sections/faq/index
+        titleKey="test.special_program.faq.title"
+        descKey="test.special_program.faq.description"
+        faqs=faqs
+        lang=lang
+    }}
+
+    {{> components/ui/sections/special_cta/index category=category lang=lang}}
+  {{/if}}
 </div>

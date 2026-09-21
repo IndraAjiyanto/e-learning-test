@@ -27,23 +27,25 @@
 {{#*inline "_alumni_header"}}
   <div class="relative z-10 flex w-full flex-col items-center gap-4 text-center {{wrapperClass}}">
     {{#if (eq (default headerVariant 'home') 'paid')}}
-      {{> components/ui/text/eyebrow/index text=(t (default badgeKey 'test.categoryPaidProgram.alumni.badge')) }}
+      {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.categoryPaidProgram.alumni.badge'))) dotColor=dotColor }}
       <h2 class="{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B] {{titleClass}}">
-        {{t (default titleKey 'test.categoryPaidProgram.alumni.title')}} <span class="text-[#6EB6E5]">{{category.name}}</span>
+        {{#if titleText}}{{titleText}}{{else}}{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}} <span class="text-[#6EB6E5]">{{category.name}}</span>{{/if}}
       </h2>
       <p class="{{sizeClass 'body'}} max-w-[592px] font-inter text-[#4A5568] {{descClass}}">
-        {{t (default descKey 'test.categoryPaidProgram.alumni.description')}} {{category.name}}.
+        {{#if descText}}{{descText}}{{else}}{{t (default descKey 'test.categoryPaidProgram.alumni.description')}} {{category.name}}.{{/if}}
       </p>
     {{else}}
-      {{> components/ui/text/eyebrow/index text=(t (default badgeKey 'test.home.alumniSection.badge')) }}
+      {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.home.alumniSection.badge'))) dotColor=dotColor }}
       <h2 class="{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B] {{titleClass}}">
-        {{t (default titleKey 'test.home.alumniSection.title')}}
+        {{default titleText (t (default titleKey 'test.home.alumniSection.title'))}}
       </h2>
       <p class="{{sizeClass 'body'}} max-w-[592px] font-inter text-[#4A5568] {{descClass}}">
-        {{t (default descKey 'test.home.alumniSection.description')}}
+        {{default descText (t (default descKey 'test.home.alumniSection.description'))}}
       </p>
     {{/if}}
-    <div class="rounded-[2px] bg-[#003060] {{default dividerClass 'h-1 w-[60px]'}}"></div>
+    {{#unless hideDivider}}
+      <div class="rounded-[2px] bg-[#003060] {{default dividerClass 'h-1 w-[60px]'}}"></div>
+    {{/unless}}
   </div>
 {{/inline}}
 

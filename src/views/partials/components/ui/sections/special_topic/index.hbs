@@ -3,6 +3,7 @@
   Lokasi: src/views/partials/components/ui/sections/special_topic/index.hbs
   Props: category (.courseTypes[] with icon, nameClassesType, description jsonb), lang.
 --}}
+{{#if category.courseTypes.length}}
 <section id="topics" class="w-full bg-white py-14 font-inter lg:py-20">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
@@ -25,3 +26,4 @@
     </div>
   </div>
 </section>
+{{/if}}

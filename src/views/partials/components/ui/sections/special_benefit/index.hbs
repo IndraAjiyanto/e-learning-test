@@ -1,29 +1,129 @@
 {{!--
-  Section: Special Benefit / "Why Choose" (L2) - reskin ke standar internal.
+  Section: Special Benefit / "Why Choose" (L2)
   Lokasi: src/views/partials/components/ui/sections/special_benefit/index.hbs
-  Props: category (.name), benefit_category[] (icon + title/description jsonb), lang.
+  Props: category (.name), benefit_category[], lang, isJapan.
 --}}
-<section class="w-full bg-[#F8F9FA] py-14 font-inter lg:py-20">
-  <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
+<section class="w-full bg-[#F9FAFB] py-14 font-inter lg:py-20">
+  <div class="page-shell flex flex-col items-center gap-12 lg:gap-14">
 
-    <div class="flex max-w-[680px] flex-col items-center gap-4 text-center">
-      {{> components/ui/text/eyebrow/index text=(t 'test.special_program.whyChooseUs.eyebrow') }}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
-        {{t 'test.special_program.whyChooseUs.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span>?
-      </h2>
-      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.whyChooseUs.description'}}</p>
-    </div>
+    {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
+      {{!-- Section Header sesuai Figma Layer 4 --}}
+      <div class="flex max-w-[600px] flex-col items-center gap-3 text-center">
+        {{> components/ui/text/eyebrow/index text="Our Strengths" dotColor="#6EB6E5" }}
+        <h2 class="font-montserrat text-3xl font-bold tracking-[-0.01em] text-[#0B1F3B] sm:text-4xl">
+          Why Choose Our <span class="text-[#003060]">Japan Program</span>?
+        </h2>
+        <p class="font-inter text-[15px] leading-relaxed text-[#6B7280]">
+          Everything you need to go from beginner to career-ready in Japan.
+        </p>
+      </div>
 
-    <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
-      {{#each benefit_category}}
-        <div class="flex flex-col items-start gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)] lg:p-8">
-          <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-[#E0F2F9] text-[#003060]">
-            <i class="{{computeIcon icon}} text-lg" aria-hidden="true"></i>
-          </span>
-          <h3 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#0B1F3B]">{{getByLang this.title ../lang}}</h3>
-          <p class="{{sizeClass 'body'}} font-inter text-[#4A5568]">{{getByLang this.description ../lang}}</p>
-        </div>
-      {{/each}}
-    </div>
+      {{!-- 6 Features Grid (Figma Layer 4) --}}
+      <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {{#if benefit_category.length}}
+          {{#each benefit_category}}
+            <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+              <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+                <i class="{{computeIcon icon}} text-base" aria-hidden="true"></i>
+              </span>
+              <div class="flex flex-col">
+                <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">{{getByLang this.title ../lang}}</h3>
+                <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">{{getByLang this.description ../lang}}</p>
+              </div>
+            </div>
+          {{/each}}
+        {{else}}
+          {{!-- 6 Fallback Feature Cards directly from Figma --}}
+          {{!-- Card 1: Language Training --}}
+          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-language text-base" aria-hidden="true"></i>
+            </span>
+            <div class="flex flex-col">
+              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Language Training</h3>
+              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Structured curriculum from N5 to N3 with intensive speaking practice.</p>
+            </div>
+          </div>
+
+          {{!-- Card 2: Experienced Instructors --}}
+          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-chalkboard-user text-base" aria-hidden="true"></i>
+            </span>
+            <div class="flex flex-col">
+              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Experienced Instructors</h3>
+              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Native Japanese teachers and certified bilingual Indonesian mentors.</p>
+            </div>
+          </div>
+
+          {{!-- Card 3: JLPT Preparation --}}
+          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-certificate text-base" aria-hidden="true"></i>
+            </span>
+            <div class="flex flex-col">
+              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">JLPT Preparation</h3>
+              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Targeted mock tests, test strategies, and performance tracking.</p>
+            </div>
+          </div>
+
+          {{!-- Card 4: Career & Job Support --}}
+          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-briefcase text-base" aria-hidden="true"></i>
+            </span>
+            <div class="flex flex-col">
+              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Career & Job Support</h3>
+              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">CV review, interview simulations, and placement network in Japan.</p>
+            </div>
+          </div>
+
+          {{!-- Card 5: Interactive Classes --}}
+          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-users text-base" aria-hidden="true"></i>
+            </span>
+            <div class="flex flex-col">
+              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Interactive Classes</h3>
+              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Small-batch learning ensuring every student gets active speaking time.</p>
+            </div>
+          </div>
+
+          {{!-- Card 6: Culture & Workplace --}}
+          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-torii-gate text-base" aria-hidden="true"></i>
+            </span>
+            <div class="flex flex-col">
+              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Culture & Workplace</h3>
+              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Business manners, Japanese corporate etiquette, and living guidance.</p>
+            </div>
+          </div>
+        {{/if}}
+      </div>
+
+    {{else}}
+      {{!-- Generic Special Program Why Choose Us --}}
+      <div class="flex max-w-[680px] flex-col items-center gap-4 text-center">
+        {{> components/ui/text/eyebrow/index text=(t 'test.special_program.whyChooseUs.eyebrow') }}
+        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
+          {{t 'test.special_program.whyChooseUs.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span>?
+        </h2>
+        <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.whyChooseUs.description'}}</p>
+      </div>
+
+      <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
+        {{#each benefit_category}}
+          <div class="flex flex-col items-start gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)] lg:p-8">
+            <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-[#E0F2F9] text-[#003060]">
+              <i class="{{computeIcon icon}} text-lg" aria-hidden="true"></i>
+            </span>
+            <h3 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#0B1F3B]">{{getByLang this.title ../lang}}</h3>
+            <p class="{{sizeClass 'body'}} font-inter text-[#4A5568]">{{getByLang this.description ../lang}}</p>
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
+
   </div>
 </section>
