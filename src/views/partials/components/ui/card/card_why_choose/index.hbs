@@ -1,0 +1,57 @@
+{{!--
+  Komponen: Card Why Choose (why-card)
+  Lokasi: src/views/partials/components/ui/card/card_why_choose/index.hbs
+  Level: L1 Atomik
+
+  Props:
+  - title       : string (wajib, judul manfaat/keunggulan)
+  - description : string (wajib, penjelasan manfaat/keunggulan)
+  - icon        : string (opsional, nama icon atau class FontAwesome)
+--}}
+
+<div class="box-border flex flex-col items-start p-[28px] gap-[14px] w-full lg:w-[384px] min-h-[199px] lg:min-h-[221px] flex-1 bg-white/[0.78] border border-white/10 backdrop-blur-[6.9px] rounded-[20px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_24px_rgba(0,0,0,0.12)] hover:bg-white/90">
+  <div class="box-border flex flex-col justify-center items-center p-0 size-12 bg-[#F2F2F7] border border-[#E0E0E5] rounded-[14px] shrink-0">
+    {{#if (eq icon "person-connections")}}
+      <svg class="size-6 text-[#264D99]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    {{else if (eq icon "document-checklist")}}
+      <svg class="size-6 text-[#264D99]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <path d="m9 15 2 2 4-4" />
+      </svg>
+    {{else if (eq icon "person")}}
+      <svg class="size-6 text-[#264D99]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="7" r="4" />
+        <path d="M6 21v-2a6 6 0 0 1 12 0v2" />
+      </svg>
+    {{else if (eq icon "certificate")}}
+      <svg class="size-6 text-[#264D99]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="6" />
+        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+      </svg>
+    {{else if icon}}
+      <i class="{{computeIcon icon}} text-[#264D99] text-xl"></i>
+    {{else}}
+      <svg class="size-6 text-[#264D99]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    {{/if}}
+  </div>
+
+  <h3 class="font-inter font-bold text-[18px] leading-[23px] text-[#1A1A26] self-stretch">
+    {{title}}
+  </h3>
+
+  <p class="font-inter font-normal text-[14px] leading-[160%] text-[#596173] self-stretch">
+    {{description}}
+  </p>
+</div>
+

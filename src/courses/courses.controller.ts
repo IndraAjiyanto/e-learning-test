@@ -716,9 +716,9 @@ await this.coursesService.addUserToCourse(userId, courseId);
       question: cq.questions,
       answer: cq.answers,
     }));
-    // const course_flows = await this.coursesService.findCourseFlows(courseId);
-    // const mentor = await this.coursesService.findCourseMentors(courseId);
-    // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
+    const course_benefits =
+      await this.coursesService.findProgramBenefit(courseId);
+    course.programBenefits = course_benefits;
     const technologies =
       await this.coursesService.findCourseTechnologies(courseId);
     const installments =
@@ -755,9 +755,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
         check_user,
         studentList,
         faqs,
-        // course_flows,
-        // mentor,
-        // course_benefits,
+        course_benefits,
         technologies,
         installments,
         currentStatusOptions: statusOptions,
@@ -821,8 +819,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
       ];
 
       if (course.checkPaid === false) {
+        course.programBenefits = course_benefits;
         res.render('detail_program/free_program/index', {
           course,
+          course_benefits,
           kelass,
           studentList,
           technologies,
@@ -875,7 +875,9 @@ await this.coursesService.addUserToCourse(userId, courseId);
         }));
         // const course_flows = await this.coursesService.findCourseFlows(id);
         // const mentor = await this.coursesService.findCourseMentors(id);
-        // const course_benefits = await this.coursesService.findProgramBenefit(id);
+        const course_benefits =
+          await this.coursesService.findProgramBenefit(id);
+        course.programBenefits = course_benefits;
         const technologies =
           await this.coursesService.findCourseTechnologies(id);
         const installments =
@@ -908,6 +910,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
+            course_benefits,
             kelass,
             studentList,
             technologies,
