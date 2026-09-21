@@ -1,40 +1,225 @@
 {{!--
-  Section: Free Program Hero (L2) - reskin ke standar internal.
+  Section: Free Program Hero (Short Classes)
   Lokasi: src/views/partials/components/ui/sections/free_hero/index.hbs
-  Props: category (.name, .hero_section_image), lang.
+
+  Slicing lengkap Hero Section untuk Free Program sesuai spesifikasi Figma (Node 2591:807 & 2591:917):
+  - Tag / Eyebrow: "PREMIUM STUDY ABROAD" dengan accent dot merah (#E63946)
+  - Headline: Montserrat 800, 52px, -1px letter-spacing, #0B1F3B
+  - Subheading: Inter 400, 16px, line-height 165%, #4B5563
+  - CTA Primary: View Program (dark navy #0B1F3B, pill, arrow icon, smooth scroll ke #programs)
+  - CTA Secondary: Watch overview (white border, pill, play icon, interactive modal video)
+  - Line divider: 1px solid #E5E7EB
+  - Meta Chips: "N5 readiness curriculum" & "Career & study support"
+  - Visual Image Box: rounded-[24px] dengan hover zoom halus & subtle gradient
+  - Floating Snapshot Bar: Horizontal 900x112px dengan 3 fitur & divider vertikal
 --}}
-<section class="w-full bg-[#F8F9FA] font-inter">
-  <div class="page-shell flex flex-col justify-center gap-10 py-16 lg:min-h-[520px] lg:flex-row lg:items-center lg:gap-[72px] lg:py-20">
 
-    <div class="flex flex-1 flex-col items-start gap-6">
-      {{> components/ui/text/eyebrow/index text=(t 'test.categoryFreeProgram.hero.eyebrow') }}
+<section 
+  x-data="{ videoModalOpen: false }"
+  class="relative w-full bg-[#FAFAFA] font-inter pt-10 sm:pt-14 pb-16 lg:pb-24" 
+  data-node-id="free-hero"
+>
+  {{!-- Main Hero Shell --}}
+  <div class="page-shell relative z-10">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12 lg:gap-14 pt-4 lg:pt-8">
 
-      <h1 class="{{sizeClass 'display'}} max-w-[640px] font-inter font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
-        {{t 'test.categoryFreeProgram.hero.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span> {{t 'test.categoryFreeProgram.hero.title1'}} {{t 'test.categoryFreeProgram.hero.title2'}} {{t 'test.categoryFreeProgram.hero.title3'}}
-      </h1>
+      {{!-- hero-left: Content Column --}}
+      <div class="flex flex-1 flex-col items-start gap-7 w-full lg:max-w-[860px] xl:max-w-[900px]">
+        
+        {{!-- Tag / Eyebrow with red accent dot #E63946 (Figma 2591:809 & 2591:810) --}}
+        <div class="inline-flex h-[27px] items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-xs">
+          <span class="size-2.5 shrink-0 rounded-full bg-[#E63946]"></span>
+          <span class="font-montserrat text-[12px] font-bold leading-[15px] uppercase tracking-wider text-[#0B1F3B]">
+            {{#if category.type}}
+              {{category.type}}
+            {{else if (t 'test.categoryFreeProgram.hero.eyebrow')}}
+              {{t 'test.categoryFreeProgram.hero.eyebrow'}}
+            {{else}}
+              PREMIUM STUDY ABROAD
+            {{/if}}
+          </span>
+        </div>
 
-      <p class="{{sizeClass 'lead'}} max-w-[560px] font-inter text-[#4A5568]">
-        {{t 'test.categoryFreeProgram.hero.description'}}
-      </p>
+        <div class="flex flex-col gap-4">
+          <h1 class="font-montserrat text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-extrabold leading-[1.22] sm:leading-[1.22] lg:leading-[1.22] xl:leading-[64px] tracking-[-1px] text-[#0B1F3B]">
+            {{#if (getByLang category.text lang)}}
+              {{{getByLang category.text lang}}}
+            {{else}}
+              Free {{#if category.name}}{{#if (eq category.name "Short Class")}}Short Classes{{else}}{{category.name}}{{/if}}{{else}}Short Classes{{/if}} to Boost<br class="hidden sm:inline" /> Your Career<br class="hidden sm:inline" /> With Kesatria Academy
+            {{/if}}
+          </h1>
 
-      {{> components/ui/button/btn_action/index
-          onClick="document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
-          text=(t 'test.categoryFreeProgram.hero.button')
-          icon="fas fa-arrow-right text-sm shrink-0"
-          iconPosition="right"
-          variant="primary"
-          class="gap-2.5 px-8 py-4 text-sm shadow-none hover:-translate-y-0.5 hover:shadow-lg" }}
+          <p class="font-inter text-base sm:text-lg leading-[165%] text-[#4B5563]">
+            {{#if (getByLang category.description lang)}}
+              {{getByLang category.description lang}}
+            {{else if (t 'test.categoryFreeProgram.hero.description')}}
+              {{t 'test.categoryFreeProgram.hero.description'}}
+            {{else}}
+              A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.
+            {{/if}}
+          </p>
+        </div>
+
+        {{!-- hero-ctas: Primary & Secondary Buttons (Figma 2591:815) --}}
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          {{!-- Primary CTA: View Program --}}
+          <a
+            href="#programs"
+            class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-[#0B1F3B] px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-white shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.08)] hover:bg-[#07172d] hover:-translate-y-0.5 active:scale-95 transition-all"
+          >
+            <span>{{default (t 'test.categoryFreeProgram.hero.button') 'View Program'}}</span>
+            <span class="grid size-6 shrink-0 place-items-center">
+              <i class="fa-solid fa-arrow-right text-xs text-white"></i>
+            </span>
+          </a>
+
+          {{!-- Secondary CTA: Watch overview --}}
+          <button
+            type="button"
+            @click="videoModalOpen = true"
+            class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full border border-[#E5E7EB] bg-white px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-[#0B1F3B] shadow-xs hover:bg-[#F9FAFB] hover:border-[#D1D5DB] active:scale-95 transition-all cursor-pointer"
+          >
+            <span class="grid size-6 shrink-0 place-items-center">
+              <span class="grid size-4 shrink-0 place-items-center rounded-full border-[2px] border-[#0B1F3B]">
+                <i class="fa-solid fa-play text-[7px] text-[#0B1F3B] ml-0.5"></i>
+              </span>
+            </span>
+            <span>Watch overview</span>
+          </button>
+        </div>
+
+        {{!-- Divider Line (Figma 2591:824) --}}
+        <div class="w-full h-px bg-[#E5E7EB] my-1"></div>
+
+        {{!-- hero-meta: Checkmark Meta Chips (Figma 2591:825) --}}
+        <div class="flex flex-wrap items-center gap-3">
+          {{#if category.courseTypes.length}}
+            {{#each category.courseTypes}}
+              <div class="inline-flex h-[44px] items-center gap-2.5 rounded-full border border-[#6EB6E3]/20 bg-[#6EB6E5]/10 px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E3]/20 bg-white">
+                  <i class="{{computeIcon this.icon}} text-[10px] text-[#0B1F3B]"></i>
+                </span>
+                <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
+                  {{this.nameClassesType}}
+                </span>
+              </div>
+            {{/each}}
+          {{else}}
+            {{!-- Fallback 2 meta chips from Figma --}}
+            <div class="inline-flex h-[44px] items-center gap-2.5 rounded-full border border-[#6EB6E3]/20 bg-[#6EB6E5]/10 px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E3]/20 bg-white">
+                <svg class="h-2 w-2.5 text-[#0B1F3B]" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 4.2L3.5 6.7L9 1.2" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
+                N5 readiness curriculum
+              </span>
+            </div>
+
+            <div class="inline-flex h-[44px] items-center gap-2.5 rounded-full border border-[#6EB6E3]/20 bg-[#6EB6E5]/10 px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E3]/20 bg-white">
+                <svg class="h-2 w-2.5 text-[#0B1F3B]" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 4.2L3.5 6.7L9 1.2" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
+                Career &amp; study support
+              </span>
+            </div>
+          {{/if}}
+        </div>
+
+      </div>
+
+      {{!-- hero-right: Visual Box (Figma 2591:834) --}}
+      <div class="w-full lg:w-[520px] shrink-0 flex justify-center lg:justify-end">
+        <div class="relative w-full max-w-[420px] lg:max-w-[520px] aspect-[4/3] sm:aspect-square lg:aspect-[73/50] rounded-[24px] overflow-hidden shadow-[0px_18px_40px_-12px_rgba(11,31,59,0.08)] border border-[#E5E7EB]/60 bg-white">
+          <img
+            src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+            alt="{{category.name}}"
+            onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+            class="size-full object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
+          />
+          {{!-- Subtle inner gradient overlay at bottom of image --}}
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="w-full lg:w-[520px] lg:shrink-0">
-      <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#E0F2F9] lg:aspect-[73/50]">
-        <img
-          src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-          alt="{{category.name}}"
-          onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="size-full object-cover"
-        />
+    {{!-- floating-snapshot-card-horizontal: Overlapping Snapshot Bar (Figma 2591:917) --}}
+    <div class="mt-14 lg:mt-16 flex justify-center w-full">
+      {{> components/ui/card/snapshot_bar/index
+          item1Title="Comprehensive curriculum"
+          item1Desc="Language + culture + career prep"
+          item1Icon="fa-solid fa-book-open"
+
+          item2Title="Mentor-led learning"
+          item2Desc="Experienced instructors & support"
+          item2Icon="fa-solid fa-chalkboard-user"
+
+          item3Title="Career & study pathways"
+          item3Desc="Guidance for next steps in Japan"
+          item3Icon="fa-solid fa-compass"
+      }}
+    </div>
+
+  </div>
+
+  {{!-- Modal Overview Video (Alpine.js) --}}
+  <div
+    x-show="videoModalOpen"
+    x-cloak
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+    @keydown.escape.window="videoModalOpen = false"
+    style="display: none;"
+  >
+    <div 
+      @click="videoModalOpen = false"
+      class="fixed inset-0 z-0"
+    ></div>
+
+    <div 
+      x-show="videoModalOpen"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+      x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+      x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+      class="relative z-10 w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl border border-gray-100"
+    >
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+        <h3 class="font-montserrat text-lg font-bold text-[#0B1F3B]">
+          Program Overview: {{#if category.name}}{{category.name}}{{else}}Short Classes{{/if}}
+        </h3>
+        <button
+          type="button"
+          @click="videoModalOpen = false"
+          class="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          aria-label="Close modal"
+        >
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      
+      <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center">
+        <div class="text-center p-6 text-white">
+          <div class="grid size-16 mx-auto mb-3 place-items-center rounded-full bg-white/20 backdrop-blur-xs">
+            <i class="fa-solid fa-play text-2xl text-white ml-1"></i>
+          </div>
+          <p class="font-montserrat font-semibold text-lg">{{#if category.name}}{{category.name}}{{else}}Free Short Classes{{/if}} Overview</p>
+          <p class="font-inter text-xs text-white/70 mt-1">Video overview will play here</p>
+        </div>
       </div>
     </div>
   </div>
+
 </section>

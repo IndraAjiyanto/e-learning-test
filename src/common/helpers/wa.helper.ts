@@ -14,7 +14,9 @@ export function formatWa(nomor: string): string {
 export function waLink(phone: string, message?: string): string {
   const p = formatWa(phone || '');
   if (!p) return 'https://wa.me/';
-  if (message) return `https://wa.me/${p}?text=${encodeURIComponent(message)}`;
+  if (typeof message === 'string' && message.trim().length > 0) {
+    return `https://wa.me/${p}?text=${encodeURIComponent(message)}`;
+  }
   return `https://wa.me/${p}`;
 }
 
