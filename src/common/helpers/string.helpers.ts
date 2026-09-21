@@ -55,8 +55,20 @@ export const stringHelpers = {
   },
   default: (value: any, defaultValue: any) => value || defaultValue,
   getByLang: (obj: any, lang: string) => {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || '';
+    if (!obj) return '';
+    if (typeof obj === 'string') {
+      try {
+        const parsed = JSON.parse(obj);
+        if (parsed && typeof parsed === 'object') {
+          return parsed[lang] || parsed['id'] || parsed['en'] || '';
+        }
+      } catch {
+        return obj;
+      }
+      return obj;
+    }
+    if (typeof obj !== 'object') return '';
+    return obj[lang] || obj['id'] || obj['en'] || '';
   },
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
