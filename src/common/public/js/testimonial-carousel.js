@@ -7,44 +7,44 @@
 const defaultTestimonials = [
     {
       id: 1,
-      name: "John Calvin Sukarman",
-      position: "Backend Developer",
-      company: "PT. Wiratek Solusi Asia",
-      photo: "https://ui-avatars.com/api/?name=John+Calvin&background=CBE8FA&color=003060",
-      testimonial: "This bootcamp gave me more than just knowledge; I built a strong professional network. Collaborating with fellow participants on projects simulated the real-world dynamics of teamwork in the industry."
+      name: "Aqmal Miftahul Husna",
+      position: "Quality Assurance (QA)",
+      company: "Frontend Developer",
+      photo: "/public/image/alumni/aqmal.png",
+      testimonial: "Continue to foster a culture of mentorship that is humble yet critical. Mentors who can position themselves as learning partners are this bootcamp's greatest asset."
     },
     {
       id: 2,
-      name: "Aqmal Miftahul Husna",
-      position: "Quality Assurance (QA)",
-      company: "Tech Corp Indonesia",
-      photo: "https://ui-avatars.com/api/?name=Aqmal+Husna&background=CBE8FA&color=003060",
-      testimonial: "The intensive guidance from industry mentors helped me transition smoothly into a QA career. The practical real-world case studies were invaluable."
+      name: "Ikhwan Nur Rizki Fathama",
+      position: "Backend Developer",
+      company: "Frontend Developer",
+      photo: "/public/image/alumni/ikhwan.png",
+      testimonial: "I learned a lot about how to communicate effectively within a tech team and how to manage expectations in projects. The soft skills and work ethics covered in the program are highly relevant to today's workplace needs."
     },
     {
       id: 3,
-      name: "Saeful Haq Faruqi",
-      position: "Frontend Developer",
-      company: "PT. Bank SMBC",
-      photo: "https://ui-avatars.com/api/?name=Saeful+Haq&background=CBE8FA&color=003060",
-      testimonial: "Learning modern frontend frameworks and best practices at Kesatria Academy opened up incredible career opportunities for me in fintech."
+      name: "John Calvin Sukarman",
+      position: "Backend Developer at PT. Wiratek Solusi Asia",
+      company: "Frontend Developer",
+      photo: "/public/image/alumni/john.png",
+      testimonial: "This bootcamp gave me more than just knowledge; I built a strong professional network. Collaborating with fellow participants on projects simulated the real-world dynamics of teamwork in the industry."
     },
     {
       id: 4,
-      name: "Jane Doe",
-      position: "Data Scientist",
-      company: "Global Tech Solutions",
-      photo: "https://ui-avatars.com/api/?name=Jane+Doe&background=CBE8FA&color=003060",
-      testimonial: "The curriculum is updated to match what companies are actually looking for. The career support team assisted me every step of the way until I got hired."
+      name: "Saeful Haq Faruqi",
+      position: "Frontend Developer",
+      company: "Frontend Developer",
+      photo: "/public/image/orang.png",
+      testimonial: "Learning modern frontend frameworks and best practices at Kesatria Academy opened up incredible career opportunities for me in fintech."
     },
     {
       id: 5,
-      name: "Budi Santoso",
-      position: "UI/UX Designer",
-      company: "Creative Digital Studio",
-      photo: "https://ui-avatars.com/api/?name=Budi+Santoso&background=CBE8FA&color=003060",
-    testimonial: "Creating user-centered products through hands-on portfolio projects allowed me to showcase my skills to top employers with confidence."
-  }
+      name: "Jane Doe",
+      position: "Data Scientist",
+      company: "Frontend Developer",
+      photo: "/public/image/orang.png",
+      testimonial: "The curriculum is updated to match what companies are actually looking for. The career support team assisted me every step of the way until I got hired."
+    }
 ];
 
 function testimonialCarousel(customData = []) {
