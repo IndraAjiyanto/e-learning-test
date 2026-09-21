@@ -1,46 +1,139 @@
 {{!--
-  Section: Paid Program Hero (Bootcamp) (L2) - reskin ke standar internal.
+  Section: Paid Program Hero (Bootcamp) (L2) - reskin Figma 2026-09-21.
   Lokasi: src/views/partials/components/ui/sections/paid_hero/index.hbs
-  Satu pohon markup, base + lg. .page-shell, sizeClass, font-inter heading + body (unified 2026-09-10, yana WA).
-  Props: category (.name, .description, .hero_section_image, .contact, .type), lang.
+  Satu pohon markup, base + lg. .page-shell, font-inter heading + body.
+  Layout: eyebrow + headline + desc + CTA pill + meta chips (kiri) | image (kanan) + feature strip (bawah).
+  Meta chips & feature strip fallback di-hardcode (data benefit_category belum ada di DB).
+  Props: category (.name, .description, .hero_section_image, .contact, .type), benefit_category, lang.
 --}}
-<section id="hero" class="w-full bg-[#F8F9FA] font-inter">
-  <div class="page-shell py-14 lg:py-20">
-    <div class="relative overflow-hidden rounded-[28px] bg-[#003060] px-6 py-12 lg:px-14 lg:py-16">
-      <img
-        src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-        alt="{{category.name}}"
-        onerror="this.style.display='none'"
-        class="pointer-events-none absolute inset-0 size-full object-cover opacity-25"
-      />
-      <div class="relative flex max-w-[640px] flex-col items-start gap-5">
-        {{> components/ui/text/eyebrow/index text=(default (getByLang category.type lang) (default category.type (t 'test.categoryPaidProgram.hero.eyebrow'))) }}
+{{#*inline 'paidHeroFeature'}}
+  <div class="flex flex-1 items-center gap-4">
+    <div class="grid size-12 shrink-0 place-items-center rounded-full bg-[#6EB6E51F]">
+      <i class="{{computeIcon icon}} text-xl text-[#0B1F3B]" aria-hidden="true"></i>
+    </div>
+    <div class="flex flex-1 flex-col gap-1">
+      {{> components/ui/text/sub_title/index
+          text=title
+          tag="span"
+          size="body-sm"
+          color="gray"
+          font="inter"
+          fontWeight="font-bold"
+          align="left"
+          class="font-montserrat leading-[17px]" }}
+      {{> components/ui/text/description/index
+          text=description
+          tag="span"
+          size="body-sm"
+          color="muted"
+          font="inter"
+          align="left"
+          class="leading-[15px] !text-[#4B5563]" }}
+    </div>
+  </div>
+{{/inline}}
 
-        <h1 class="{{sizeClass 'display'}} font-inter font-extrabold tracking-[-0.02em] text-white">
-          {{#if category.name}}{{category.name}}{{else}}Bootcamp{{/if}}
+<section id="hero" class="relative w-full overflow-hidden bg-[#F9FAFB] font-inter">
+  {{!-- hero-bg-wash: gradien lembut pink -> biru (desain pencil) --}}
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#FDE7F3]/20 to-[#E0F2FE]/20" aria-hidden="true"></div>
+
+  <div class="page-shell relative flex flex-col justify-center gap-10 py-16 lg:min-h-[560px] lg:flex-row lg:items-center lg:gap-[72px] lg:py-20">
+
+    {{!-- hero-left --}}
+    <div class="flex flex-1 flex-col items-start gap-7">
+
+      {{!-- tag: pill with red accent dot (#E63946) per Figma --}}
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5">
+        <span class="size-2.5 shrink-0 rounded-full bg-[#E63946]"></span>
+        <span class="font-montserrat text-xs font-bold uppercase leading-[15px] text-[#0B1F3B]">
+          {{t 'test.categoryPaidProgram.hero.badge'}}
+        </span>
+      </span>
+
+      {{!-- Frame: headline + headline + subheading --}}
+      <div class="flex flex-col items-start gap-4">
+        <h1 class="max-w-[809px] font-montserrat text-3xl font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B] lg:text-[52px]">
+          {{#if category.name}}{{category.name}}{{else}}{{t 'test.categoryPaidProgram.hero.eyebrow'}}{{/if}}
         </h1>
 
-        <p class="{{sizeClass 'lead'}} max-w-[560px] font-inter text-white/85">
+        <p class="max-w-full font-inter text-base leading-[165%] text-[#4B5563]">
           {{default (getByLang category.description lang) (t 'test.categoryPaidProgram.hero.description')}}
         </p>
-
-        <div class="mt-1 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-          {{> components/ui/button/btn_action/index
-              onClick="document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
-              text=(t 'test.categoryPaidProgram.hero.explore')
-              icon="fas fa-arrow-right text-sm shrink-0"
-              iconPosition="right"
-              variant="white"
-              class="gap-2.5 px-8 py-4 text-sm" }}
-          {{> components/ui/button/btn_action/index
-              href=(waLink category.contact)
-              target="_blank"
-              text=(t 'test.categoryPaidProgram.hero.consultation')
-              icon="fas fa-headset text-sm shrink-0"
-              variant="outline-white"
-              class="gap-2.5 px-8 py-4 text-sm" }}
-        </div>
       </div>
+
+      {{!-- hero-ctas --}}
+      <div class="flex flex-col items-center gap-3 sm:flex-row">
+        {{!-- cta-primary: #0B1F3B pill --}}
+        {{> components/ui/button/btn_action/index
+            onClick="document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
+            text=(t 'test.categoryPaidProgram.hero.explore')
+            icon="fas fa-arrow-right text-sm shrink-0"
+            iconPosition="right"
+            variant="primary"
+            class="gap-2.5 !rounded-full px-[22px] py-3.5 shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.08)]"
+            textClass="font-inter text-[15px] font-bold leading-[18px]" }}
+
+        {{!-- cta-secondary: white pill --}}
+        {{> components/ui/button/btn_action/index
+            href=(waLink category.contact)
+            target="_blank"
+            text=(t 'test.categoryPaidProgram.hero.consultation')
+            icon="fas fa-play text-sm shrink-0"
+            variant="white"
+            class="gap-2.5 !rounded-full border border-[#E5E7EB] px-[22px] py-3.5"
+            textClass="font-inter text-[15px] font-bold leading-[18px]" }}
+      </div>
+
+      {{!-- divider line --}}
+      <div class="w-full border-t border-[#E5E7EB]"></div>
+
+      {{!-- hero-meta: chips --}}
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+          <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
+            <i class="fas fa-check text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+          </span>
+          <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B]">N5 readiness curriculum</span>
+        </span>
+        <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+          <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
+            <i class="fas fa-check text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+          </span>
+          <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B]">Career &amp; study support</span>
+        </span>
+      </div>
+    </div>
+
+    {{!-- hero-right: visual (448×616 = ~3:4 aspect) --}}
+    <div class="w-full lg:w-[448px] lg:shrink-0">
+      <div class="aspect-[3/4] w-full overflow-hidden">
+        <img
+          src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+          alt="{{category.name}}"
+          onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+          class="size-full object-cover"
+        />
+      </div>
+    </div>
+  </div>
+
+  {{!-- floating-snapshot-card-horizontal: feature strip --}}
+  <div class="page-shell relative pb-14 lg:pb-20">
+    <div class="mx-auto flex max-w-[900px] flex-col items-center justify-between gap-6 rounded-[20px] border border-[#E5E7EB] bg-white px-6 py-[18px] shadow-[0px_16px_32px_-4px_rgba(11,31,59,0.05)] sm:flex-row sm:gap-0 sm:px-6 lg:px-6">
+      {{#if benefit_category.length}}
+        {{#each benefit_category}}
+          {{#unless @first}}
+            <div class="hidden h-12 w-px shrink-0 bg-[#E5E7EB] sm:block" aria-hidden="true"></div>
+          {{/unless}}
+          {{> paidHeroFeature icon=icon title=(getByLang this.title ../lang) description=(getByLang this.description ../lang)}}
+        {{/each}}
+      {{else}}
+        {{> paidHeroFeature icon="fa-solid fa-book-open" title="Comprehensive curriculum" description="Language + culture + career prep"}}
+        <div class="hidden h-12 w-px shrink-0 bg-[#E5E7EB] sm:block" aria-hidden="true"></div>
+        {{> paidHeroFeature icon="fa-solid fa-user-group" title="Mentor-led learning" description="Experienced instructors & support"}}
+        <div class="hidden h-12 w-px shrink-0 bg-[#E5E7EB] sm:block" aria-hidden="true"></div>
+        {{> paidHeroFeature icon="fa-solid fa-briefcase" title="Career & study pathways" description="Guidance for next steps in Japan"}}
+      {{/if}}
     </div>
   </div>
 </section>
