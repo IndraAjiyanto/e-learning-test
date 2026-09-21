@@ -27,7 +27,7 @@
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: {{#if categoryId}}"/category/alumni/" + {{json categoryId}}{{else}}"/program/alumni/" + {{json courseId}}{{/if}}, searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja", "course.name"] })'
+  x-data='clientTable({ url: {{#if categoryId}}"/category/alumni/" + {{json categoryId}}{{else}}"/program/alumni/" + {{json courseId}}, sortKey: "createdAt"{{/if}}, searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja", "course.name"] })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar

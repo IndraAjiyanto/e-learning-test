@@ -27,9 +27,9 @@
 <div
   class='flex flex-col gap-3.5'
   {{#if categoryId}}
-    x-data='clientTable({ url: "/category/faq/" + {{json categoryId}}, searchKeys: ["question.id", "question.en", "question.ja", "answer.id", "answer.en", "answer.ja"] })'
+    x-data='clientTable({ url: "/category/faq/" + {{json categoryId}}, sortKey: "createdAt", searchKeys: ["question.id", "question.en", "question.ja", "answer.id", "answer.en", "answer.ja"] })'
   {{else}}
-    x-data='clientTable({ url: "/program/faq/" + {{json courseId}}, searchKeys: ["questions.id", "questions.en", "questions.ja", "answers.id", "answers.en", "answers.ja"] })'
+    x-data='clientTable({ url: "/program/faq/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["questions.id", "questions.en", "questions.ja", "answers.id", "answers.en", "answers.ja"] })'
   {{/if}}
   x-init='load()'
 >

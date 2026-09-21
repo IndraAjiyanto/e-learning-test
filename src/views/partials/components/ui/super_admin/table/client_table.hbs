@@ -18,6 +18,10 @@
   disimpan di `raw` supaya pemanggil bisa membaca field pendamping seperti
   availableMonths.
 
+  `sortKey` mengurutkan data (dari `items` maupun load()) naik menurut path itu
+  (mis. "createdAt"), untuk query yang tidak memakai ORDER BY: tanpa itu Postgres
+  menaruh baris yang baru diedit di akhir, dan urutan tabel berubah setelah edit.
+
   Kontrak state yang dihasilkan — sesuai yang diharapkan komponen lain:
   - searchInput, handleSearch()          → ui/super_admin/table/toolbar
   - currentPage, totalPages, changePage() → ui/super_admin/table/pagination
@@ -36,8 +40,19 @@
     <div x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'>
 --}}
 <script>
-  function clientTable({ items, size, searchKeys, url, dataKey }) {
-    const allItems = items || [];
+  // Membaca path bertitik ("categoryPartner.category") dengan aman —
+  // relasi bisa null, mis. partner tanpa kategori.
+  function valueAt(row, path) {
+    const value = path.split('.').reduce((acc, key) => (acc == null ? acc : acc[key]), row);
+    return value == null ? '' : String(value);
+  }
+
+  function clientTable({ items, size, searchKeys, url, dataKey, sortKey }) {
+    const byKey = (list) =>
+      sortKey
+        ? list.sort((a, b) => valueAt(a, sortKey).localeCompare(valueAt(b, sortKey)))
+        : list;
+    const allItems = byKey(items || []);
 
     return {
       items: allItems,
@@ -84,7 +99,7 @@
             );
           }
 
-          this.items = Array.isArray(list) ? list : [];
+          this.items = byKey(Array.isArray(list) ? list : []);
         } catch (error) {
           // Tabel tetap dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
           console.error('Failed to load table data:', error);
@@ -99,10 +114,7 @@
 
       // Membaca path bertitik ("categoryPartner.category") dengan aman —
       // relasi bisa null, mis. partner tanpa kategori.
-      valueAt(row, path) {
-        const value = path.split('.').reduce((acc, key) => (acc == null ? acc : acc[key]), row);
-        return value == null ? '' : String(value);
-      },
+      valueAt,
 
       // Satu-satunya tempat filter dijalankan.
       applySearch(keyword) {
