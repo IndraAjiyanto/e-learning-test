@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryPartnerDto } from './dto/create-category_partner.dto';
 import { UpdateCategoryPartnerDto } from './dto/update-category_partner.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -44,6 +48,12 @@ export class CategoryPartnerService {
 
   async remove(id: string) {
     const data = await this.findOne(id);
+    const partnerCount = data.partners?.length || 0;
+    if (partnerCount > 0) {
+      throw new BadRequestException(
+        `Kategori "${data.category}" tidak dapat dihapus karena masih memiliki ${partnerCount} data partnership. Hapus partnership tersebut terlebih dahulu.`,
+      );
+    }
     return await this.categoryPartnerRepository.remove(data);
   }
 }
