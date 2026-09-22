@@ -57,11 +57,20 @@
           <div class='box-border h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center rounded-[16px]' style='background: {{#if course.launch}}#DCFCE7{{else}}#FEF3C7{{/if}};'>
             <span class='text-[12px]/[normal] font-inter font-medium whitespace-nowrap' style='color: {{#if course.launch}}#16A34A{{else}}#D97706{{/if}};'>{{#if course.launch}}Active{{else}}Pending{{/if}}</span>
           </div>
-          {{!-- Badge Quota --}}
-          <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#F5F5F5] [outline-offset:-0.5px] rounded-[16px]'>
-            <div class='w-[8px] h-[8px] rounded-full bg-[#EF4444]'></div>
-            <span class='text-[12px]/[normal] text-[#171717] font-inter font-medium whitespace-nowrap'>{{#if course.quota}}{{subtract course.quota course.userCourses.length}} Seats Left{{else}}- Seats Left{{/if}}</span>
-          </div>
+          {{!-- Badge Quota / Launch --}}
+          {{#if (or isSyllabus (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
+            {{#if course.launch}}
+              <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#F5F5F5] [outline-offset:-0.5px] rounded-[16px]'>
+                <div class='w-[8px] h-[8px] rounded-full bg-[#16A34A]'></div>
+                <span class='text-[12px]/[normal] text-[#171717] font-inter font-medium whitespace-nowrap'>Launched</span>
+              </div>
+            {{/if}}
+          {{else}}
+            <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#F5F5F5] [outline-offset:-0.5px] rounded-[16px]'>
+              <div class='w-[8px] h-[8px] rounded-full bg-[#EF4444]'></div>
+              <span class='text-[12px]/[normal] text-[#171717] font-inter font-medium whitespace-nowrap'>{{#if course.quota}}{{subtract course.quota course.userCourses.length}} Seats Left{{else}}- Seats Left{{/if}}</span>
+            </div>
+          {{/if}}
         </div>
       </div>
 
@@ -74,7 +83,7 @@
         {{#if showDelete}}
           <form action='/program/{{course.id}}?_method=DELETE' method='post' class='inline' x-data>
             <input type='hidden' name='previous' :value="localStorage.getItem('kelasPrevUrl') || '/program'">
-            <button type='button' onclick="confirmDelete(this, '{{course.name}}')" class='box-border w-[87px] h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'>
+            <button type='button' onclick="if (typeof openDeleteModal === 'function') { openDeleteModal(this, 'Delete Program', 'Are you sure you want to delete this program? This action cannot be undone.'); } else { confirmDelete(this, '{{course.name}}'); }" class='box-border w-[87px] h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'>
               <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
             </button>
           </form>
