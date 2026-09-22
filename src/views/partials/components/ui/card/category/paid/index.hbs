@@ -86,7 +86,7 @@
     <div class="mt-auto flex w-full items-center justify-between pt-6">
       {{> components/ui/text/link/index
           text=(default (t 'test.categoryPaidProgram.program.explore') 'Explore program')
-          href=(concat "/program/" id)
+          href=(ternary (and id (ne id "#")) (concat "/program/" id) "#programs")
           color="text-[#003060]"
           weight="semibold"
           size="text-sm"
@@ -94,7 +94,7 @@
           class="hover:underline"
       }}
       {{> components/ui/button/btn_action/index
-          href=(concat "/program/" id)
+          href=(ternary (and id (ne id "#")) (concat "/program/" id) "#programs")
           icon="fa-solid fa-arrow-right text-sm"
           text=""
           variant="primary"

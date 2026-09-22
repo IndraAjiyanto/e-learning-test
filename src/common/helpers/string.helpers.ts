@@ -136,5 +136,11 @@ export const stringHelpers = {
     typeof str === 'string' &&
     typeof sub === 'string' &&
     str.toLowerCase().includes(sub.toLowerCase()),
+  lower: (str: unknown) =>
+    typeof str === 'string' ? str.toLowerCase() : '',
+  capitalize: (str: unknown) => {
+    if (typeof str !== 'string' || !str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
 };
 

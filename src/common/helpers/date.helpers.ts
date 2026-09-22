@@ -56,6 +56,10 @@ export const dateHelpers = {
     }
     return format(d, 'd MMMM yyyy', { locale });
   },
+  formatDateDayMonthYear: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => dateHelpers.formatDateSimple(date, lang),
   formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
   formatMinutes: (ms: number) => Math.floor(ms / 60000),
   /**
