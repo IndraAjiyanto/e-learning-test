@@ -8,112 +8,61 @@
 </style>
 
 <div class="w-full bg-[#FAFAFA]">
-  {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
-    {{!-- Layer 1 & 2: Japan Hero Section with Floating Snapshot Bar --}}
-    {{> components/ui/sections/japan_hero/index category=category lang=lang}}
+  {{!-- Layer 1 & 2: Hero Section with Floating Snapshot Bar --}}
+  {{> components/ui/sections/japan_hero/index category=category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
-    {{!-- Layer 3: Program Selection ("Choose Your Japan Program") --}}
-    {{> components/ui/sections/special_program/index category=category courses=courses lang=lang isJapan=true}}
+  {{!-- Layer 3: Program Selection --}}
+  {{> components/ui/sections/special_program/index category=category courses=courses lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
-    {{!-- Layer 4: Why Choose ("Why Choose Our Japan Program?") --}}
-    {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang isJapan=true}}
+  {{!-- Layer 4: Why Choose ("Why Choose Our Program?") --}}
+  {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
-    {{!-- Layer 5: Alumni Stories ("Real Stories, Real Placement") --}}
-    {{> components/ui/sections/alumni/index
-        headerVariant="paid"
-        variant="special"
-        isJapan=true
-        showMobile=true
-        badgeText="ALUMNI SUCCESS"
-        dotColor="#6EB6E5"
-        titleText="Real Stories, Real Placement"
-        titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
-        descText="Hear directly from graduates who built successful careers in Japan."
-        descClass="max-w-[760px] text-center"
-        hideDivider=false
-        dividerClass="h-1 w-[60px]"
-        footerTextKey="test.special_program.alumni.footer"
-        footerLinkTextKey="test.special_program.alumni.allStories"
-        desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
-        alumni=alumni
-        category=category
-        lang=lang
-    }}
+  {{!-- Layer 5: Alumni Stories ("Real Stories, Real Placement") --}}
+  {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      variant="special"
+      isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))
+      showMobile=true
+      badgeText="ALUMNI SUCCESS"
+      dotColor="#6EB6E5"
+      titleText="Real Stories, Real Placement"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descText=(ternary (or isJapan (includes category.name 'japan') (eq category.name 'LPK')) "Hear directly from graduates who built successful careers in Japan." "Hear directly from graduates who built successful careers through our programs.")
+      descClass="max-w-[760px] text-center"
+      hideDivider=false
+      dividerClass="h-1 w-[60px]"
+      footerTextKey="test.special_program.alumni.footer"
+      footerLinkTextKey="test.special_program.alumni.allStories"
+      desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
+      alumni=alumni
+      category=category
+      lang=lang
+  }}
 
-    {{!-- Layer 6: Gallery ("Life at Kesatria Academy") --}}
-    {{> components/ui/sections/gallery/index
-        renderMobile=true
-        showBadge=true
-        badgeText="Campus Life"
-        dotColor="#6EB6E5"
-        titleText="Life at Kesatria Academy"
-        titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
-        descText="A glimpse of our training environment, study sessions, and community events."
-        linkText="See All Our Gallery"
-        showDivider=false
-        showBottomLink=true
-        gallery=gallery
-    }}
+  {{!-- Layer 6: Gallery ("Life at Kesatria Academy") --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=true
+      badgeText="Campus Life"
+      dotColor="#6EB6E5"
+      titleText="Life at Kesatria Academy"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descText="A glimpse of our training environment, study sessions, and community events."
+      linkText="See All Our Gallery"
+      showDivider=false
+      showBottomLink=true
+      gallery=gallery
+  }}
 
-    {{!-- Layer 7: FAQ ("Frequently Asked Questions") --}}
-    {{> components/ui/sections/faq/index
-        titleKey="test.special_program.faq.title"
-        descKey="test.special_program.faq.description"
-        titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
-        faqs=faqs
-        lang=lang
-    }}
+  {{!-- Layer 7: FAQ ("Frequently Asked Questions") --}}
+  {{> components/ui/sections/faq/index
+      titleKey="test.special_program.faq.title"
+      descKey="test.special_program.faq.description"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      faqs=faqs
+      lang=lang
+  }}
 
-    {{!-- Layer 8: Final CTA ("Transform your team today" + Contact Us) --}}
-    {{> components/ui/sections/special_cta/index category=category lang=lang isJapan=true}}
-
-  {{else}}
-    {{!-- Default Special Program Layout --}}
-    {{> components/ui/sections/special_hero/index category=category lang=lang}}
-
-    {{> components/ui/sections/special_program/index category=category courses=courses lang=lang}}
-
-    {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang}}
-
-    {{> components/ui/sections/special_topic/index category=category lang=lang}}
-
-    {{> components/ui/sections/alumni/index
-        headerVariant="paid"
-        variant="special"
-        showMobile=true
-        badgeText="ALUMNI SUCCESS"
-        dotColor="#6EB6E5"
-        titleKey="test.special_program.alumni.title"
-        descKey="test.special_program.alumni.description"
-        descClass="max-w-[760px] text-center"
-        hideDivider=false
-        dividerClass="h-1 w-[60px]"
-        footerTextKey="test.special_program.alumni.footer"
-        footerLinkTextKey="test.special_program.alumni.allStories"
-        desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
-        alumni=alumni
-        category=category
-        lang=lang
-    }}
-
-    {{> components/ui/sections/gallery/index
-        renderMobile=true
-        showBadge=false
-        showDivider=false
-        showBottomLink=true
-        titleKey="test.special_program.gallery.title"
-        descKey="test.special_program.gallery.description"
-        linkKey="test.special_program.gallery.allGaleries"
-        gallery=gallery
-    }}
-
-    {{> components/ui/sections/faq/index
-        titleKey="test.special_program.faq.title"
-        descKey="test.special_program.faq.description"
-        faqs=faqs
-        lang=lang
-    }}
-
-    {{> components/ui/sections/special_cta/index category=category lang=lang}}
-  {{/if}}
+  {{!-- Layer 8: Final CTA ("Transform your team today" + Contact Us) --}}
+  {{> components/ui/sections/special_cta/index category=category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 </div>
