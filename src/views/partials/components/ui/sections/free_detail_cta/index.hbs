@@ -27,9 +27,13 @@
         {{default eyebrow (default (t 'test.freeProgram.cta.eyebrow') 'REGISTRATION PROCESS')}}
       </span>
 
-      <!-- Start Your Career in UI/UX Now -->
+      <!-- Start Your Career in [course.name] Now -->
       <h2 class="w-full max-w-[1568px] font-['Montserrat',sans-serif] font-extrabold text-[28px] sm:text-[36px] lg:text-[42px] leading-tight lg:leading-[51px] text-center text-[#003060] m-0">
-        {{default title (default (t 'test.freeProgram.cta.title') 'Start Your Career in UI/UX Now')}}
+        {{#if title}}
+          {{title}}
+        {{else}}
+          {{default (t 'test.freeProgram.cta.titlePrefix') 'Start Your Career in'}} {{#if course.name}}{{course.name}}{{else}}UI/UX{{/if}} {{default (t 'test.freeProgram.cta.titleSuffix') 'Now'}}
+        {{/if}}
       </h2>
 
       <!-- Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality. -->
