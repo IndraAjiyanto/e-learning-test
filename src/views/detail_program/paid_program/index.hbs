@@ -1,44 +1,56 @@
-<!-- HERO SECTION -->
-{{> components/ui/sections/program_detail_hero/index
-  showBatchPill=true
-  regisHref=(concat '/payment/registration/' course.id)
+{{!-- PAID PROGRAM DETAIL PAGE --}}
+
+{{!-- Section 1: Hero Section (Order 0) --}}
+{{> components/ui/sections/paid_hero/index course=course category=course.category lang=lang}}
+
+{{!-- Section 2: Key Advantages / Why Choose (Order 1) --}}
+{{> components/ui/sections/paid_advantage/index course=course course_benefits=course_benefits benefit_category=benefit_category lang=lang}}
+
+{{!-- Section 3: Bootcamp Syllabus / Curriculum (Order 2) --}}
+{{> components/ui/sections/paid_curriculum/index course=course course_flows=course_flows lang=lang}}
+
+{{!-- Section 4: Software & Tools (Order 3) --}}
+{{> components/ui/sections/paid_tools/index course=course technologies=technologies portfolio=portfolio lang=lang}}
+
+{{!-- Section 5: Schedule / Informasi Jadwal (Order 4) --}}
+{{> components/ui/sections/paid_schedule/index course=course lang=lang}}
+
+{{!-- Section 6: Pricing / Informasi Investasi (Order 5) --}}
+{{> components/ui/sections/paid_pricing/index course=course category=course.category installments=installments lang=lang}}
+
+{{!-- Section 7: Alumni Success (Order 6) --}}
+{{> components/ui/sections/alumni/index
+    headerVariant="paid"
+    showMobile=false
+    badgeText="ALUMNI SUCCESS"
+    titleText="Real Stories, Real Placement"
+    descText="Discover how our graduates transitioned into major engineering roles across the global industry."
+    alumni=alumni
+    category=course.category
+    lang=lang
 }}
 
-<!-- Tabs Bar -->
-{{#> components/ui/sections/program_detail_nav/index}}
-  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.paidProgram.navbarMenu.participants') }}
-  {{> components/ui/text/nav_link/index href="#what-you-will-learn" text=(t 'test.paidProgram.navbarMenu.whatYouLearn') }}
-  {{> components/ui/text/nav_link/index href="#benefits" text=(t 'test.paidProgram.navbarMenu.benefits') }}
-  {{> components/ui/text/nav_link/index href="#learning-flow" text=(t 'test.paidProgram.navbarMenu.learningFlow') }}
-  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.paidProgram.navbarMenu.schedule&Fees') }}
-  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.paidProgram.navbarMenu.gallery') }}
-  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.paidProgram.navbarMenu.FAQ') }}
-{{/components/ui/sections/program_detail_nav/index}}
+{{!-- Section 8: Life at Kesatria Academy / Gallery (Order 7) --}}
+{{> components/ui/sections/gallery/index
+    renderMobile=false
+    showBadge=true
+    showDivider=true
+    showBottomLink=true
+    badgeText="ACADEMY IN ACTION"
+    titleText="Life at Kesatria Academy"
+    descText="Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons."
+    linkText="See All Our Gallery"
+    gallery=gallery
+    desktopSectionClass="w-full bg-[#F8F9FA] py-16 sm:py-20 lg:py-24 font-inter"
+    desktopWrapperClass="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
+}}
 
-<!-- PARTICIPANTS SECTION -->
-{{> components/ui/sections/participants/index}}
+{{!-- Section 9: FAQ (Order 8) --}}
+{{> components/ui/sections/faq/index
+    faqs=faqs
+    faq=courseQuestions
+    lang=lang
+}}
 
-<!-- WHAT YOU'LL LEARN SECTION -->
-{{> components/ui/sections/paid_detail_what_you_learn/index}}
-
-<!-- BENEFITS SECTION -->
-{{> components/ui/sections/paid_detail_benefit/index}}
-
-<!-- LEARNING FLOW SECTION -->
-{{> components/ui/sections/paid_detail_learning_flow/index}}
-
-<!-- SCHEDULE & FEES SECTION -->
-{{> components/ui/sections/paid_detail_schedule_fee/index}}
-
-<!-- GALLERY SECTION -->
-{{> components/ui/sections/program_detail_gallery/index}}
-
-<!-- FAQ SECTION -->
-{{> components/ui/sections/program_detail_faq/index}}
-
-<style>
-  /* Untuk menyembunyikan scrollbar di menu tab namun tetap bisa di-scroll di HP */
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-</style>
+{{!-- Section 10: Final CTA / Start Your Career (Order 9) --}}
+{{> components/ui/sections/paid_final_cta/index course=course category=course.category lang=lang}}

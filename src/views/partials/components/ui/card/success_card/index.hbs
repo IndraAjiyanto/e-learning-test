@@ -1,0 +1,64 @@
+{{!--
+  Komponen: Success Card (Level 2 - Molekul)
+  Lokasi: src/views/partials/components/ui/card/success_card/index.hbs
+
+  Kartu ucapan sukses/konfirmasi dengan ilustrasi gambar, judul besar, sub-judul, dan tombol pill dengan ikon panah.
+
+  Props:
+  - title      : string (default: 'Thank you! Your Payment Is Success!')
+  - subtitle   : string (default: 'We will contact you shortly.')
+  - imageSrc   : string (default: '/public/image/paymentSucces.svg')
+  - imageAlt   : string (default: 'Success Illustration')
+  - buttonText : string (default: 'Back to Home')
+  - buttonHref : string (default: '/')
+  - class      : string (opsional)
+--}}
+
+<div class="flex flex-col items-center text-center max-w-[640px] w-full mx-auto py-6 sm:py-10 {{class}}">
+
+  <!-- Illustration / Image (Figma: image 35) -->
+  <div class="mb-8 sm:mb-12 flex items-center justify-center">
+    {{#if imageSrc}}
+      <img
+        src="{{imageSrc}}"
+        alt="{{default imageAlt 'Success'}}"
+        class="w-[200px] sm:w-[280px] md:w-[310px] h-auto max-h-[220px] object-contain mx-auto transition-transform duration-300 hover:scale-105"
+      />
+    {{else}}
+      <div class="size-20 sm:size-28 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 shadow-inner">
+        <i class="fa-solid fa-circle-check text-5xl sm:text-6xl"></i>
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Text Content (Figma: text-content) -->
+  <div class="flex flex-col items-center gap-3 sm:gap-4 mb-8 sm:mb-12 w-full">
+    <!-- Success Title -->
+    <h2 class="font-inter font-bold text-2xl sm:text-3xl md:text-[40px] leading-tight md:leading-[125%] tracking-[-0.01em] text-[#003060]">
+      {{default title 'Thank you! Your Payment Is Success!'}}
+    </h2>
+
+    <!-- Success Subtitle -->
+    <p class="font-inter font-normal text-sm sm:text-base md:text-[18px] leading-relaxed md:leading-[150%] text-[#4B5563] max-w-lg">
+      {{default subtitle 'We will contact you shortly and your program is now active.'}}
+    </p>
+  </div>
+
+  <!-- Action Button (Figma: back-home-button) -->
+  <div class="flex justify-center w-full">
+    <a
+      href="{{default buttonHref '/'}}"
+      class="
+        inline-flex items-center justify-center gap-2.5 px-8 sm:px-9 h-[51px]
+        bg-[#003060] hover:bg-[#082a4d] text-white rounded-[100px]
+        shadow-[0px_12px_24px_rgba(29,78,216,0.2)] font-inter font-semibold
+        text-sm sm:text-base leading-snug transition-all duration-200
+        active:scale-95 group
+      "
+    >
+      <span>{{default buttonText 'Back to Home'}}</span>
+      <i class="fa-solid fa-arrow-right text-xs sm:text-sm transition-transform duration-200 group-hover:translate-x-1"></i>
+    </a>
+  </div>
+
+</div>

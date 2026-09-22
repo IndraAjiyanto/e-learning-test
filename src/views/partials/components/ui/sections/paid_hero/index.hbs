@@ -72,13 +72,13 @@
         {{!-- Action CTA Group (Figma: Button Primary 184x51px, Button Secondary 180x51px, gap 16px) --}}
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           
-          {{!-- Button Primary: Daftar Sekarang --}}
+          {{!-- Button Primary: Daftar Sekarang / Pilih Program --}}
           <a
             href="{{#if course.id}}/payment/registration/{{course.id}}{{else}}#programs{{/if}}"
             onclick="if (!'{{course.id}}') { document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' }); }"
             class="flex items-center justify-center w-full sm:w-[184px] h-[51px] px-7 py-4 bg-[#003060] text-white font-inter font-bold text-base rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] transition-all hover:bg-[#002244] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
           >
-            Daftar Sekarang
+            {{#if course.id}}Daftar Sekarang{{else}}Pilih Program{{/if}}
           </a>
 
           {{!-- Button Secondary: Konsultasi Gratis --}}

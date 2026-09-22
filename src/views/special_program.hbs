@@ -21,16 +21,20 @@
     {{!-- Layer 5: Alumni Stories ("Real Stories, Real Placement") --}}
     {{> components/ui/sections/alumni/index
         headerVariant="paid"
+        variant="special"
+        isJapan=true
         showMobile=true
         badgeText="ALUMNI SUCCESS"
         dotColor="#6EB6E5"
         titleText="Real Stories, Real Placement"
         titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
         descText="Hear directly from graduates who built successful careers in Japan."
-        hideDivider=true
+        descClass="max-w-[760px] text-center"
+        hideDivider=false
+        dividerClass="h-1 w-[60px]"
         footerTextKey="test.special_program.alumni.footer"
         footerLinkTextKey="test.special_program.alumni.allStories"
-        desktopBgStyle="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
+        desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
         alumni=alumni
         category=category
         lang=lang
@@ -75,12 +79,18 @@
 
     {{> components/ui/sections/alumni/index
         headerVariant="paid"
+        variant="special"
         showMobile=true
+        badgeText="ALUMNI SUCCESS"
+        dotColor="#6EB6E5"
         titleKey="test.special_program.alumni.title"
         descKey="test.special_program.alumni.description"
+        descClass="max-w-[760px] text-center"
+        hideDivider=false
+        dividerClass="h-1 w-[60px]"
         footerTextKey="test.special_program.alumni.footer"
         footerLinkTextKey="test.special_program.alumni.allStories"
-        desktopBgStyle="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
+        desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
         alumni=alumni
         category=category
         lang=lang

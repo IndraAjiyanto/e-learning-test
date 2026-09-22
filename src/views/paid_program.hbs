@@ -1,24 +1,15 @@
-{{!-- PAID PROGRAM PAGE --}}
+{{!-- PAID PROGRAM CATEGORY PAGE --}}
 
 {{!-- Section 1: Hero Section (Order 0) --}}
-{{> components/ui/sections/paid_hero/index category=category courses=courses course=courses.[0] lang=lang}}
+{{> components/ui/sections/paid_hero/index category=category courses=courses lang=lang}}
 
-{{!-- Section 2: Key Advantages / Why Choose (Order 1) --}}
-{{> components/ui/sections/paid_advantage/index benefit_category=benefit_category courses=courses course=courses.[0] course_benefits=course_benefits lang=lang}}
+{{!-- Section 2: Program List Grid (Order 1) --}}
+{{> components/ui/sections/paid_program/index category=category courses=courses lang=lang}}
 
-{{!-- Section 3: Bootcamp Syllabus / Curriculum (Order 3) --}}
-{{> components/ui/sections/paid_curriculum/index course=courses.[0] course_flows=course_flows lang=lang}}
+{{!-- Section 3: Key Advantages / Why Choose (Order 2) --}}
+{{> components/ui/sections/paid_advantage/index benefit_category=benefit_category category=category lang=lang}}
 
-{{!-- Section 4: Software & Tools (Order 4) --}}
-{{> components/ui/sections/paid_tools/index course=courses.[0] technologies=technologies portfolio=portfolio lang=lang}}
-
-{{!-- Section 5: Schedule / Informasi Jadwal (Order 5) --}}
-{{> components/ui/sections/paid_schedule/index course=courses.[0] lang=lang}}
-
-{{!-- Section 6: Pricing / Informasi Investasi (Order 6) --}}
-{{> components/ui/sections/paid_pricing/index course=courses.[0] category=category lang=lang}}
-
-{{!-- Section 7: Alumni Success (Order 7) --}}
+{{!-- Section 4: Alumni Success (Order 3) --}}
 {{> components/ui/sections/alumni/index
     headerVariant="paid"
     showMobile=false
@@ -30,7 +21,7 @@
     lang=lang
 }}
 
-{{!-- Section 8: Life at Kesatria Academy / Gallery (Order 8) --}}
+{{!-- Section 5: Life at Kesatria Academy / Gallery (Order 4) --}}
 {{> components/ui/sections/gallery/index
     renderMobile=false
     showBadge=true
@@ -45,12 +36,11 @@
     desktopWrapperClass="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
 }}
 
-{{!-- Section 9: FAQ (Order 9) --}}
+{{!-- Section 6: FAQ (Order 5) --}}
 {{> components/ui/sections/faq/index
     faqs=faqs
-    faq=courseQuestions
     lang=lang
 }}
 
-{{!-- Section 10: Final CTA / Start Your Career (Order 10) --}}
-{{> components/ui/sections/paid_final_cta/index course=courses.[0] category=category lang=lang}}
+{{!-- Section 7: Final CTA / Start Your Career (Order 6) --}}
+{{> components/ui/sections/paid_final_cta/index category=category lang=lang}}

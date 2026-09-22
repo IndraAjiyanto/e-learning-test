@@ -1,0 +1,56 @@
+{{!--
+  Komponen: Form Select Dropdown (Level 2 - Molekul)
+  Lokasi: src/views/partials/components/ui/dropdown/select/index.hbs
+
+  Select dropdown dengan custom chevron, label Montserrat, dan kompatibilitas draft form.
+
+  Props:
+  - name         : string (default: 'select')
+  - id           : string (default: name)
+  - containerId  : string (opsional, id pembungkus)
+  - label        : string (opsional)
+  - placeholder  : string (default: 'Select option')
+  - required     : boolean (default: false)
+  - wrapperClass : string (opsional)
+  - labelClass   : string (opsional)
+  - selectClass  : string (opsional)
+--}}
+
+<div class="flex flex-col items-start gap-2 w-full {{wrapperClass}}" {{#if containerId}}id="{{containerId}}"{{/if}}>
+  {{#if label}}
+    <label
+      for="{{default id (default name 'select')}}"
+      class="font-montserrat font-medium text-base sm:text-xl text-[#003060] {{labelClass}}"
+    >
+      {{label}}{{#if required}}<span class="text-red-500 ml-1">*</span>{{/if}}
+    </label>
+  {{/if}}
+
+  <div class="relative w-full">
+    <select
+      id="{{default id (default name 'select')}}"
+      name="{{default name 'select'}}"
+      {{#if required}}required{{/if}}
+      class="
+        w-full h-12 sm:h-[54px] appearance-none rounded-[8px] border border-[#D9D9D9]
+        bg-white px-4 py-2.5 pr-12 font-montserrat font-normal text-base sm:text-xl
+        text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#003060] focus:border-[#003060]
+        cursor-pointer transition-all duration-200 {{selectClass}}
+      "
+    >
+      <option value="" disabled selected class="text-[#718096]">{{default placeholder 'Select option'}}</option>
+      {{#if options}}
+        {{#each options}}
+          <option value="{{this.value}}" class="text-slate-800">{{this.label}}</option>
+        {{/each}}
+      {{else}}
+        {{> @partial-block}}
+      {{/if}}
+    </select>
+
+    <!-- Custom Chevron Icon -->
+    <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#718096]">
+      <i class="fa-solid fa-chevron-down text-sm sm:text-base transition-transform duration-200"></i>
+    </div>
+  </div>
+</div>
