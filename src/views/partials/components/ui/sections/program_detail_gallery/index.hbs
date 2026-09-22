@@ -18,7 +18,7 @@
 <!-- GALLERY SECTION -->
 <section
   id="gallery"
-  class="{{default sectionClass 'w-full bg-[#F8F9FA] py-12 lg:pt-[50px] lg:pb-[120px] px-4 sm:px-8 lg:px-[80px] flex flex-col items-center'}}"
+  class="{{default sectionClass 'w-full bg-[#F8F9FA] py-12 lg:pt-[50px] lg:pb-[120px] px-4 sm:px-8 lg:px-[80px] font-inter flex flex-col items-center'}}"
   x-data="programDetailGalleryCarousel(window.__programDetailGalleryItems || [])"
 >
   <div class="{{default wrapperClass 'w-full max-w-[1568px] mx-auto flex flex-col items-center gap-10 lg:gap-[64px]'}}">
@@ -29,19 +29,19 @@
         <!-- Animated Tag -->
         <div class="box-border inline-flex items-center gap-2 rounded-[100px] border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-2xs">
           <span class="size-2 shrink-0 rounded-full {{default dotColor 'bg-[#6EB6E5]'}}" style="{{#if dotColor}}background-color: {{dotColor}};{{/if}}"></span>
-          <span class="font-montserrat text-[12px] font-bold leading-[15px] tracking-wider uppercase text-[#0B1F3B]">
+          <span class="font-inter text-[12px] font-bold leading-[15px] tracking-wider uppercase text-[#0B1F3B]">
             {{default badgeTitle (default badgeText (t (default badgeKey 'test.home.gallery.gallery')))}}
           </span>
         </div>
       {{/unless}}
 
       <!-- Title: Life at Kesatria Academy -->
-      <h2 class="w-full font-montserrat font-bold text-2xl sm:text-3xl lg:text-[36px] leading-tight lg:leading-[44px] text-center text-[#0B1F3B] m-0">
+      <h2 class="w-full font-inter font-bold text-2xl sm:text-3xl lg:text-[36px] leading-tight lg:leading-[44px] text-center text-[#0B1F3B] m-0">
         {{{default titleText (default title (t (default titleKey 'test.home.gallery.title')))}}}
       </h2>
 
       <!-- Description: Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons. -->
-      <p class="max-w-[658px] font-open-sans font-normal text-base sm:text-lg lg:text-[20px] leading-relaxed lg:leading-[160%] text-center text-[#4A5568] m-0">
+      <p class="max-w-[658px] font-inter font-normal text-base sm:text-lg lg:text-[20px] leading-relaxed lg:leading-[160%] text-center text-[#4A5568] m-0">
         {{default descText (default description (t (default descKey 'test.home.gallery.description')))}}
       </p>
 
@@ -71,7 +71,7 @@
         <!-- See All Gallery Link -->
         <a
           href="{{default linkHref '/dashboard/gallery'}}"
-          class="group box-border inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold leading-5 text-[#003060] transition-colors duration-200 hover:border-[#7AA3C4] hover:text-[#7AA3C4]"
+          class="group box-border inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-inter text-base font-semibold leading-5 text-[#003060] transition-colors duration-200 hover:border-[#7AA3C4] hover:text-[#7AA3C4]"
         >
           <span>{{default seeAllText (default linkText (t (default linkKey 'test.home.gallery.chooseGallery')))}}</span>
           <svg class="size-4 shrink-0 text-[#003060] transition-colors duration-200 group-hover:text-[#7AA3C4]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
