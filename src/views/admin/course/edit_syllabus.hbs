@@ -1,0 +1,334 @@
+{{!--
+  Page: Admin - Edit Syllabus (Syllabus Form)
+  Path: admin/course/edit_syllabus.hbs
+  Route: GET /program/edit-syllabus/:courseId
+  Design: Figma node 1867-10965
+--}}
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start'
+    x-data="{
+      title: 'HTML & CSS Fundamental',
+      description: 'Pengenalan mengenai sintaks dasar dan struktur fundamental dalam pengembangan web modern menggunakan HTML5 dan CSS3.',
+      content: 'Materi ini mencakup pemahaman tag semantik, layout box-model, flexbox, dan pengenalan grid system dasar.',
+      menuOpen: false,
+      loading: false,
+      handleCancel() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '/program/detail/program/admin/{{courseId}}';
+        }
+      },
+      handleSubmit() {
+        if (!this.title.trim()) {
+          alert('Title is required');
+          return;
+        }
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          window.location.href = '/program/detail/program/admin/{{courseId}}';
+        }, 500);
+      },
+      insertFormat(type) {
+        const textarea = this.$refs.contentInput;
+        if (!textarea) return;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = textarea.value.substring(start, end);
+        let replacement = '';
+
+        switch (type) {
+          case 'text':
+            replacement = selected || 'Text';
+            break;
+          case 'heading':
+            replacement = selected ? `### ${selected}` : '### Heading\n';
+            break;
+          case 'bullet':
+            replacement = selected ? selected.split('\n').map(l => `- ${l}`).join('\n') : '- List item\n';
+            break;
+          case 'number':
+            replacement = selected ? selected.split('\n').map((l, i) => `${i + 1}. ${l}`).join('\n') : '1. List item\n';
+            break;
+          case 'checklist':
+            replacement = selected ? selected.split('\n').map(l => `- [ ] ${l}`).join('\n') : '- [ ] Task item\n';
+            break;
+          case 'image':
+            replacement = '![Alt text](image-url)';
+            break;
+          case 'link':
+            replacement = selected ? `[${selected}](url)` : '[Link text](url)';
+            break;
+        }
+
+        const val = textarea.value;
+        this.content = val.substring(0, start) + replacement + val.substring(end);
+        this.menuOpen = false;
+        this.$nextTick(() => {
+          textarea.focus();
+          textarea.setSelectionRange(start + replacement.length, start + replacement.length);
+        });
+      }
+    }"
+    @click.outside="menuOpen = false">
+
+    {{!-- Title: Heading + Sub heading --}}
+    <div class='box-border w-full flex flex-col gap-[4px] items-start'>
+      <h1 class='w-full font-["Montserrat"] font-bold text-[34px] leading-[36px] tracking-[-1px] text-[#003060]'>
+        Edit Program Sylabus
+      </h1>
+      <p class='w-full font-["Montserrat"] font-medium text-[16px] leading-[20px] text-[#718096]'>
+        Fill in the information below to edit sylabus
+      </p>
+    </div>
+
+    {{!-- Create/Edit program form --}}
+    <form @submit.prevent="handleSubmit()" class='box-border w-full flex flex-col gap-[16px] items-start'>
+
+      {{!-- Feature Card 1: Form Inputs Card --}}
+      <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[20px] items-start'>
+
+        {{!-- Title Input Container --}}
+        <div class='box-border w-full flex flex-col gap-[8px] items-start'>
+          <label for='syllabus_title' class='w-full font-["Inter"] font-medium text-[14px] leading-[20px] text-[#404040]'>
+            Title*
+          </label>
+          <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center gap-[8px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+            <input
+              id='syllabus_title'
+              name='title'
+              type='text'
+              x-model='title'
+              required
+              placeholder='Enter title...'
+              class='w-full h-[24px] font-["Inter"] font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 focus:ring-0 focus:outline-none'
+            />
+          </div>
+        </div>
+
+        {{!-- Description Input Container --}}
+        <div class='box-border w-full flex flex-col gap-[8px] items-start'>
+          <label for='syllabus_description' class='w-full font-["Inter"] font-medium text-[14px] leading-[20px] text-[#404040]'>
+            Description*
+          </label>
+          <div class='box-border w-full h-[128px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-start gap-[8px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+            <textarea
+              id='syllabus_description'
+              name='description'
+              x-model='description'
+              required
+              rows='4'
+              placeholder='Enter description...'
+              class='w-full h-[108px] font-["Inter"] font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 resize-none focus:ring-0 focus:outline-none'
+            ></textarea>
+          </div>
+        </div>
+
+        {{!-- Content Rich/Structured Input Container --}}
+        <div class='relative box-border w-full flex flex-col gap-[8px] items-start'>
+          <label for='syllabus_content' class='w-full font-["Inter"] font-medium text-[14px] leading-[20px] text-[#404040]'>
+            Content*
+          </label>
+          <div class='box-border w-full min-h-[148px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-col gap-[2px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+            {{!-- Frame 2147229637: Content Row (input & formatting toolbar action) --}}
+            <div class='w-full min-h-[48px] flex flex-row justify-between items-start gap-[6px]'>
+              <textarea
+                id='syllabus_content'
+                name='content'
+                x-ref='contentInput'
+                x-model='content'
+                required
+                rows='4'
+                placeholder='Type "/" for commands'
+                class='flex-1 w-full min-h-[96px] font-["Inter"] font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 resize-none focus:ring-0 focus:outline-none'
+                @keydown.slash.prevent="menuOpen = !menuOpen"
+              ></textarea>
+
+              {{!-- Frame 2147229636: Toolbar buttons (add white + drag neutral) --}}
+              <div class='self-start shrink-0 flex flex-row items-center gap-[2px] pt-[2px]'>
+                {{!-- add button (+ icon) triggers Floating Action Menu --}}
+                <button
+                  type='button'
+                  @click.stop='menuOpen = !menuOpen'
+                  class='w-[24px] h-[24px] bg-[#FFFFFF] hover:bg-[#F5F5F5] rounded-[4px] flex items-center justify-center p-[4px] transition-colors'
+                  title='Commands & Formats'
+                  aria-label='Commands & Formats'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                    <line x1='12' y1='5' x2='12' y2='19'></line>
+                    <line x1='5' y1='12' x2='19' y2='12'></line>
+                  </svg>
+                </button>
+
+                {{!-- Drag handle / Dots icon --}}
+                <button
+                  type='button'
+                  class='w-[24px] h-[24px] bg-[#F5F5F5] hover:bg-[#E5E5E5] rounded-[4px] flex items-center justify-center p-[4px] cursor-grab transition-colors'
+                  title='Drag handle'
+                  aria-label='Drag handle'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='#737373' class='w-[16px] h-[16px]'>
+                    <circle cx='9' cy='6' r='1.5'></circle>
+                    <circle cx='15' cy='6' r='1.5'></circle>
+                    <circle cx='9' cy='12' r='1.5'></circle>
+                    <circle cx='15' cy='12' r='1.5'></circle>
+                    <circle cx='9' cy='18' r='1.5'></circle>
+                    <circle cx='15' cy='18' r='1.5'></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {{!-- Floating Action Menu Popup --}}
+          <div
+            x-show='menuOpen'
+            x-transition:enter='transition ease-out duration-100'
+            x-transition:enter-start='opacity-0 scale-95'
+            x-transition:enter-end='opacity-100 scale-100'
+            x-transition:leave='transition ease-in duration-75'
+            x-transition:leave-start='opacity-100 scale-100'
+            x-transition:leave-end='opacity-0 scale-95'
+            style='display: none;'
+            class='absolute right-0 top-[180px] z-50 w-[320px] bg-[#FFFFFF] border border-[#E5E5E5] shadow-[0px_12px_16px_-4px_rgba(0,0,0,0.08),0px_4px_6px_-2px_rgba(0,0,0,0.03)] rounded-[10px] p-[8px_10px] flex flex-col gap-[8px]'>
+
+            <div class='w-full px-[14px] py-[2px] font-["Inter"] font-normal text-[16px] leading-[24px] text-[#737373]'>
+              Add
+            </div>
+
+            <div class='w-full flex flex-col gap-0'>
+              {{!-- Text --}}
+              <button
+                type='button'
+                @click='insertFormat("text")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <polyline points='4 7 4 4 20 4 20 7'></polyline>
+                  <line x1='9' y1='20' x2='15' y2='20'></line>
+                  <line x1='12' y1='4' x2='12' y2='20'></line>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#525252]'>Text</span>
+              </button>
+
+              {{!-- Heading 1 --}}
+              <button
+                type='button'
+                @click='insertFormat("heading")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <path d='M6 12h12'></path>
+                  <path d='M6 4v16'></path>
+                  <path d='M18 4v16'></path>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#525252]'>Heading 1</span>
+              </button>
+
+              {{!-- Bullet list --}}
+              <button
+                type='button'
+                @click='insertFormat("bullet")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <line x1='8' y1='6' x2='21' y2='6'></line>
+                  <line x1='8' y1='12' x2='21' y2='12'></line>
+                  <line x1='8' y1='18' x2='21' y2='18'></line>
+                  <line x1='3' y1='6' x2='3.01' y2='6'></line>
+                  <line x1='3' y1='12' x2='3.01' y2='12'></line>
+                  <line x1='3' y1='18' x2='3.01' y2='18'></line>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#525252]'>Bullet list</span>
+              </button>
+
+              {{!-- Number list --}}
+              <button
+                type='button'
+                @click='insertFormat("number")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <line x1='10' y1='6' x2='21' y2='6'></line>
+                  <line x1='10' y1='12' x2='21' y2='12'></line>
+                  <line x1='10' y1='18' x2='21' y2='18'></line>
+                  <path d='M4 6h1v4'></path>
+                  <path d='M4 10h2'></path>
+                  <path d='M6 18H4c0-1 2-2 2-3s-1-1.5-2-1'></path>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#525252]'>Number list</span>
+              </button>
+
+              {{!-- Checklist --}}
+              <button
+                type='button'
+                @click='insertFormat("checklist")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <polyline points='9 11 12 14 22 4'></polyline>
+                  <path d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'></path>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#525252]'>Checklist</span>
+              </button>
+
+              {{!-- Image --}}
+              <button
+                type='button'
+                @click='insertFormat("image")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <rect x='3' y='3' width='18' height='18' rx='2' ry='2'></rect>
+                  <circle cx='8.5' cy='8.5' r='1.5'></circle>
+                  <polyline points='21 15 16 10 5 21'></polyline>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#525252]'>Image</span>
+              </button>
+
+              {{!-- Link --}}
+              <button
+                type='button'
+                @click='insertFormat("link")'
+                class='w-full h-[44px] px-[14px] py-[10px] rounded-[8px] hover:bg-[#FAFAFA] flex flex-row items-center gap-[8px] transition-colors text-left'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+                  <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+                  <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+                </svg>
+                <span class='font-["Inter"] font-normal text-[16px] leading-[24px] text-[#404040]'>Link</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {{!-- Feature Card 2: Actions Bar --}}
+      <div class='box-border w-full h-[86px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-row justify-end items-center gap-[24px]'>
+        <div class='flex flex-row items-center gap-[12px]'>
+          {{!-- Cancel button (90x44 white border #D4D4D4) --}}
+          <button
+            type='button'
+            @click='handleCancel()'
+            class='box-border w-[90px] h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors'>
+            <span class='font-["Inter"] font-semibold text-[16px] leading-[24px] text-[#003060]'>
+              Cancel
+            </span>
+          </button>
+
+          {{!-- Edit Sylabus submit button (147x44 #003060 white text) --}}
+          <button
+            type='submit'
+            :disabled='loading'
+            class='box-border min-w-[147px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
+            <span x-show='!loading' class='font-["Inter"] font-semibold text-[16px] leading-[24px] text-[#FFFFFF]'>
+              Edit Sylabus
+            </span>
+            <span x-show='loading' style='display: none;' class='font-["Inter"] font-semibold text-[16px] leading-[24px] text-[#FFFFFF] flex items-center gap-2'>
+              <svg class='animate-spin h-4 w-4 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
+                <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8H4z'></path>
+              </svg>
+              Updating...
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+

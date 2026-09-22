@@ -105,13 +105,7 @@ function sylabusData() {
     },
 
     get addUrl() {
-      if (this.containerWeekId) {
-        return '/session/formCreate/' + this.containerWeekId;
-      }
-      if (this.rawWeeks && this.rawWeeks.length > 0) {
-        return '/session/formCreate/' + this.rawWeeks[0].id;
-      }
-      return '/week/formAdd/{{course.id}}';
+      return '/program/create-syllabus/{{course.id}}';
     },
 
     async fetchSylabus() {
