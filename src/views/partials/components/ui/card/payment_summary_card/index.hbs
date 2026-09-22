@@ -33,7 +33,7 @@
     <!-- 1. Paling Atas: Nama Program & Harga Promo yang Berlaku -->
     <div class="flex justify-between items-start gap-4">
       <span class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-snug flex-1">
-        {{courseTitle}} <span class="font-medium">(Full Payment)</span>
+        {{courseTitle}} <span id="detail-payment-type" class="font-medium">(Full Payment)</span>
       </span>
       <span id="detail-price" class="font-sans font-semibold text-sm sm:text-base text-[#003060] shrink-0">
         {{formatRupiah (default promoPrice (default basePrice 0))}}

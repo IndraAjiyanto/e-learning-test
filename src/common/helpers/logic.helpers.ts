@@ -1,5 +1,6 @@
 export const logicHelpers = {
   eq: (a: any, b: any) => a == b,
+  ne: (a: any, b: any) => a != b,
   gte: (a: number, b: number) => a >= b,
   gt: (a: number, b: number) => a > b,
   or: (...args: any[]) => {

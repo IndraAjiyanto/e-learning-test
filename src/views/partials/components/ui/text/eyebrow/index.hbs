@@ -4,7 +4,7 @@
   Pill abu-abu (#F8F9FA), border #E5E7EB, titik #6EB6E5 (customizable), teks Inter Bold UPPERCASE #0B1F3B.
   Props: text, dotColor, class
 --}}
-<span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 {{#if class}}{{class}}{{else}}{{sizeClass 'eyebrow'}} font-inter font-bold text-[#0B1F3B]{{/if}}">
+<span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 {{#if class}}{{class}}{{else}}{{sizeClass 'eyebrow'}} {{default fontClass 'font-inter'}} font-bold text-[#0B1F3B]{{/if}}">
   <span class="size-2.5 shrink-0 rounded-full {{default dotColor 'bg-[#6EB6E5]'}}" style="{{#if dotColor}}background-color: {{dotColor}};{{/if}}"></span>
   {{text}}
 </span>

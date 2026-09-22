@@ -204,6 +204,7 @@
   {{!-- CTA Section (Shared across both tabs) --}}
   <div class="flex w-full flex-col items-center gap-3">
     <a
+      :href="tab === 'installment' ? '{{#if course.id}}/payment/registration/{{course.id}}?method=installment{{else}}#hero{{/if}}' : '{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}'"
       href="{{#if course.id}}/payment/registration/{{course.id}}{{else}}#hero{{/if}}"
       class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#1E3A5F] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#152841] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
     >

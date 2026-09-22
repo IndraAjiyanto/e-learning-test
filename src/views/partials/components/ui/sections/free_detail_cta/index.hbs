@@ -1,0 +1,47 @@
+{{!--
+  Section: Final CTA - Free Program Detail (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/free_detail_cta/index.hbs
+  Referensi Figma: Node 1149-1111 (final-cta)
+
+  Props:
+  - course          : object (opsional, data course)
+  - eyebrow         : string (opsional, default: "REGISTRATION PROCESS")
+  - title           : string (opsional, default: "Start Your Career in UI/UX Now")
+  - description     : string (opsional, default: "Don't miss the opportunity...")
+  - sectionClass    : string (opsional override kelas section)
+  - wrapperClass    : string (opsional override kelas wrapper)
+  - lang            : string (opsional)
+--}}
+
+<section
+  id="final-cta"
+  class="{{default sectionClass 'w-full bg-white py-16 md:py-20 px-4 sm:px-8 md:px-[80px] flex flex-col justify-center items-center font-inter'}}"
+>
+  <div class="{{default wrapperClass 'w-full max-w-[1568px] mx-auto flex flex-col items-center justify-center'}}">
+
+    <!-- cta-text (Node 1149-1111 / cta-text) -->
+    <div class="w-full max-w-[1568px] flex flex-col items-center gap-4 text-center">
+
+      <!-- REGISTRATION PROCESS -->
+      <span class="font-inter font-bold text-[14px] leading-[17px] uppercase tracking-[0.5px] text-[#6EB6E5]">
+        {{default eyebrow (default (t 'test.freeProgram.cta.eyebrow') 'REGISTRATION PROCESS')}}
+      </span>
+
+      <!-- Start Your Career in [course.name] Now -->
+      <h2 class="w-full max-w-[1568px] font-['Montserrat',sans-serif] font-extrabold text-[28px] sm:text-[36px] lg:text-[42px] leading-tight lg:leading-[51px] text-center text-[#003060] m-0">
+        {{#if title}}
+          {{title}}
+        {{else}}
+          {{default (t 'test.freeProgram.cta.titlePrefix') 'Start Your Career in'}} {{#if course.name}}{{course.name}}{{else}}UI/UX{{/if}} {{default (t 'test.freeProgram.cta.titleSuffix') 'Now'}}
+        {{/if}}
+      </h2>
+
+      <!-- Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality. -->
+      <p class="w-full max-w-[800px] font-['Open_Sans',sans-serif] font-normal text-[16px] sm:text-[18px] lg:text-[20px] leading-[24px] lg:leading-[27px] text-center text-[#003060] m-0">
+        {{default description (default (t 'test.freeProgram.cta.description') "Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality.")}}
+      </p>
+
+    </div>
+
+  </div>
+</section>

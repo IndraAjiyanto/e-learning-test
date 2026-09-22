@@ -1,0 +1,107 @@
+{{!--
+  Komponen: Installment Method Card (Level 2 - Molekul UI)
+  Lokasi: src/views/partials/components/ui/card/installment_method_card/index.hbs
+  Sesuai Spesifikasi Figma: Group 6727 (Payment Method Card - Installment)
+
+  Props:
+  - course : object (wajib, data course beserta relation installments)
+  - class  : string (opsional)
+--}}
+
+<div class="w-full bg-white rounded-[16px] shadow-[0px_4px_24px_rgba(0,0,0,0.0313726)] p-6 sm:p-8 flex flex-col gap-6 {{class}}">
+
+  <!-- Section Header (Figma: width 912px, height 49px, gap 8px) -->
+  <div class="flex flex-col gap-2 w-full">
+    <div class="flex items-center gap-1">
+      <h3 class="font-montserrat font-bold text-[20px] leading-[24px] text-[#1B2559]">
+        Installment Payment
+      </h3>
+    </div>
+    <p class="font-montserrat font-normal text-[14px] leading-[17px] text-[#718096]">
+      Select the most convenient payment method for you.
+    </p>
+  </div>
+
+  <!-- Period Selector Section (Figma: width 912px, height 80px, gap 12px) -->
+  <div class="flex flex-col gap-3 w-full">
+    <div class="flex items-center gap-1">
+      <span class="font-montserrat font-bold text-[15px] leading-[18px] text-[#1B2559]">
+        Choose Installment Period
+      </span>
+      <span class="font-montserrat font-bold text-[15px] leading-[18px] text-[#EE5D50]">*</span>
+    </div>
+
+    <!-- Active Tab: 3 Months (Figma: width 158px, height 50px, bg #003060, rounded 8px, p 16px) -->
+    <div class="flex items-center">
+      <div class="w-[158px] h-[50px] bg-[#003060] rounded-[8px] px-4 py-3 flex items-center gap-2 select-none shadow-xs text-[#F3F3F3]">
+        <i class="fa-regular fa-calendar text-base text-[#F3F3F3]"></i>
+        <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#F3F3F3]">
+          {{default course.installments.[0].month 3}} Months
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Schedule Segment (Figma: width 912px, p 24px, gap 20px, bg #F8FAFC, rounded 16px) -->
+  <div class="w-full bg-[#F8FAFC] rounded-[16px] p-5 sm:p-6 flex flex-col gap-5">
+    <h4 class="font-montserrat font-bold text-[15px] leading-[18px] text-[#1B2559]">
+      Payment Schedule
+    </h4>
+
+    <!-- DP Card (Figma: height 72px, p 16px, bg #FFFFFF, rounded 8px, shadow [0px_2px_8px_rgba(0,0,0,0.0156863)]) -->
+    <div class="w-full min-h-[72px] bg-white rounded-[8px] shadow-[0px_2px_8px_rgba(0,0,0,0.0156863)] p-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="size-10 rounded-[20px] bg-[#E0F2F9] flex items-center justify-center text-[#3B82F6] shrink-0">
+          <i class="fa-solid fa-wallet text-base text-[#3B82F6]"></i>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559]">
+            Down Payment (DP)
+          </span>
+          <span class="font-montserrat font-normal text-[12px] leading-[15px] text-[#718096]">
+            Pay now to enroll
+          </span>
+        </div>
+      </div>
+      <span id="ui-dp-price" class="font-montserrat font-bold text-[16px] leading-[20px] text-[#1B2559] shrink-0">
+        {{formatRupiah course.installments.[0].downPayment}}
+      </span>
+    </div>
+
+    <!-- Monthly Installments Section (Figma: gap 12px, data array kolom price) -->
+    <div class="flex flex-col gap-3 w-full">
+      <h5 class="font-montserrat font-bold text-[13px] leading-[16px] text-[#1B2559]">
+        Monthly Installment (After DP)
+      </h5>
+
+      <div class="flex flex-col gap-3 w-full">
+        {{#if course.installments.[0].price}}
+          {{#each course.installments.[0].price}}
+            <div class="flex justify-between items-center w-full h-[17px]">
+              <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">
+                Month {{addOne @index}}
+              </span>
+              <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">
+                {{formatRupiah this}}
+              </span>
+            </div>
+          {{/each}}
+        {{else}}
+          <div class="flex justify-between items-center w-full h-[17px]">
+            <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">Month 1</span>
+            <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">Rp 0</span>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Voucher Input Section (Figma: gap 8px, label 14px 600, input box 41px) -->
+  {{> components/ui/input/voucher_input/index
+    id="promo-input-installment"
+    removeBtnId="remove-promo-btn-installment"
+    messageId="promo-message-installment"
+    placeholder="Input Voucher Code"
+  }}
+
+</div>

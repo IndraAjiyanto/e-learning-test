@@ -10,8 +10,6 @@
 
   Props (opsional, default = home agar backward-compatible):
   - headerVariant      : 'home' | 'paid' (default: 'home')
-  - variant            : 'special' | other
-  - isJapan            : boolean
   - badgeKey, titleKey, descKey, footerTextKey, footerLinkTextKey : i18n keys
   - showMobile         : boolean (default: true) — render blok mobile
   - showDesktop        : boolean (default: true) — render blok desktop
@@ -19,8 +17,6 @@
   - mobileSectionClass : override kelas section mobile
   - desktopBgStyle     : inline style background section desktop
   - mobileBgStyle      : inline style background section mobile
-  - descClass          : kelas untuk teks deskripsi
-  - descMaxWidth       : max-width untuk teks deskripsi (default: max-w-[592px])
   - alumni, category, lang : data dari controller
 --}}
 
@@ -32,23 +28,23 @@
   <div class="relative z-10 flex w-full flex-col items-center gap-4 text-center {{wrapperClass}}">
     {{#if (eq (default headerVariant 'home') 'paid')}}
       {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.categoryPaidProgram.alumni.badge'))) dotColor=dotColor }}
-      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B]{{/if}}">
-        {{#if titleText}}{{titleText}}{{else}}{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}} <span class="text-[#6EB6E5]">{{category.name}}</span>{{/if}}
+      <h2 class="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center {{titleClass}}">
+        {{#if titleText}}{{titleText}}{{else}}{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}}{{/if}}
       </h2>
-      <p class="{{sizeClass 'body'}} font-inter text-[#4A5568] {{default descClass 'max-w-[592px]'}}">
-        {{#if descText}}{{descText}}{{else}}{{t (default descKey 'test.categoryPaidProgram.alumni.description')}} {{category.name}}.{{/if}}
+      <p class="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center {{descClass}}">
+        {{#if descText}}{{descText}}{{else}}{{t (default descKey 'test.categoryPaidProgram.alumni.description')}}{{/if}}
       </p>
     {{else}}
       {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.home.alumniSection.badge'))) dotColor=dotColor }}
-      <h2 class="{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B] {{titleClass}}">
+      <h2 class="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center {{titleClass}}">
         {{default titleText (t (default titleKey 'test.home.alumniSection.title'))}}
       </h2>
-      <p class="{{sizeClass 'body'}} font-inter text-[#4A5568] {{default descClass 'max-w-[592px]'}}">
+      <p class="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center {{descClass}}">
         {{default descText (t (default descKey 'test.home.alumniSection.description'))}}
       </p>
     {{/if}}
     {{#unless hideDivider}}
-      <div class="rounded-[2px] bg-[#003060] {{default dividerClass 'h-1 w-[60px]'}}"></div>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060] {{default dividerClass ''}}"></div>
     {{/unless}}
   </div>
 {{/inline}}
@@ -61,18 +57,15 @@
 --}}
 {{#*inline "_alumni_grid"}}
   <div class="relative z-10 flex w-full flex-col gap-8">
-    {{!-- viewport clips horizontally; generous vertical padding so the raised centre card + its shadow are not cut off --}}
-    <div class="-mx-3 overflow-x-hidden px-3 py-10">
+    {{!-- viewport clips horizontally; clean padding for card shadows and hover state --}}
+    <div class="-mx-3 overflow-x-hidden px-3 py-4">
       <div
         class="flex transition-transform duration-500 ease-out"
         :style="`transform: translateX(-${active * (100 / per)}%)`"
       >
         <template x-for="(item, i) in items" :key="item.id || i">
           <div class="shrink-0 px-3" :style="`width: ${100 / per}%`">
-            <div
-              class="h-full rounded-[20px] transition-all duration-500 ease-out"
-              :class="i === centerIndex ? '-translate-y-5 shadow-[0_28px_56px_-16px_rgba(11,31,59,0.22)]' : 'shadow-[0_10px_28px_-12px_rgba(11,31,59,0.08)] lg:opacity-90'"
-            >
+            <div class="h-full">
               {{> components/ui/card/card_alumni/index variant="profile" isDesktop=true}}
             </div>
           </div>
@@ -80,52 +73,36 @@
       </div>
     </div>
 
-    {{> components/ui/nav/carousel_nav/index count="dots" index="active" goTo="goTo" goPrev="prev()" goNext="next()" }}
-  </div>
-{{/inline}}
-
-{{!-- ============ FOOTER (teks + link "lihat semua") ============ --}}
-{{!--
-  Params: textClass, linkClass
---}}
-{{#*inline "_alumni_footer"}}
-  <div class="relative z-10 mt-12 text-center">
-    {{#if (eq (default headerVariant 'home') 'paid')}}
-      <p class="mb-3 font-inter font-normal text-[#4A5568] {{textClass}}">
-        {{t (default footerTextKey 'test.categoryPaidProgram.alumni.footer')}}
-      </p>
-      <a href="/dashboard/alumni" class="inline-flex items-center gap-2 font-inter font-medium text-[#003060] hover:underline {{linkClass}}">
-        {{t (default footerLinkTextKey 'test.categoryPaidProgram.alumni.allStories')}}
-        <i class="fas fa-arrow-right text-sm"></i>
-      </a>
-    {{else}}
-      <a href="/dashboard/alumni" class="inline-flex items-center gap-2 font-inter font-medium text-[#003060] hover:underline {{linkClass}}">
-        {{t (default footerLinkTextKey 'test.home.alumniSection.seeAll')}}
-        <i class="fas fa-arrow-right text-sm"></i>
-      </a>
-    {{/if}}
+    {{> components/ui/nav/carousel_nav/index
+        count="dots"
+        index="active"
+        goTo="goTo"
+        goPrev="prev()"
+        goNext="next()"
+        btnClass="flex size-14 sm:size-16 lg:size-[78px] items-center justify-center rounded-[20px] border border-[#F3F4F6] bg-white text-[#6B7280] shadow-[0_4px_12px_rgba(0,0,0,0.03)] transition hover:border-gray-300 hover:text-[#111827] focus:outline-none"
+        iconClass="text-base text-[#6B7280]"
+        dotsClass="flex items-center gap-3"
+        activeDotClass="bg-[#111827]"
+        inactiveDotClass="bg-[#D1D5DB] hover:bg-gray-400"
+    }}
   </div>
 {{/inline}}
 
 <!-- ================= ALUMNI SECTION (satu pohon, base + lg) ================= -->
 <section
-  class="{{default sectionClass 'w-full relative overflow-hidden bg-white py-14 lg:py-24'}}"
-  style="{{#if desktopBgStyle}}{{desktopBgStyle}}{{else if (or isJapan (eq variant 'special'))}}background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;{{else if (eq (default headerVariant 'home') 'paid')}}background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);{{/if}}"
+  class="{{default sectionClass 'w-full relative overflow-hidden bg-white py-14 lg:py-20'}}"
+  style="{{default desktopBgStyle ''}}"
   x-data="alumniDeck(window.__alumniCarousel)"
 >
-  <div class="page-shell">
+  <div class="page-shell relative z-10">
     {{> _alumni_header
-        wrapperClass="mb-12 lg:mb-16"
-        titleSize="h2"
-        titleClass=(default titleClass "font-inter font-bold text-[#0B1F3B] text-center")
-        descSize="body"
-        descClass=(default descClass "font-normal max-w-[592px]")
-        dividerClass=(default dividerClass "h-1 w-[60px]")
+        wrapperClass="mb-10 lg:mb-12"
+        titleClass="text-[#0B1F3B] text-center"
+        descClass="max-w-[592px]"
+        dividerClass="h-1 w-[60px]"
     }}
 
-    {{> _alumni_grid gridClass="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" navBtnClass="h-14 w-14 lg:h-[72px] lg:w-[72px]"}}
-
-    {{> _alumni_footer textClass="text-sm lg:text-base" linkClass="text-sm lg:text-base"}}
+    {{> _alumni_grid gridClass="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}}
   </div>
 </section>
 
@@ -142,32 +119,4 @@
     }{{#unless @last}},{{/unless}}
     {{/each}}
   ];
-  if (!window.__alumniCarousel || !window.__alumniCarousel.length) {
-    window.__alumniCarousel = [
-      {
-        id: 'alumni-1',
-        name: 'Aqmal Miftahul Husna',
-        position: 'Full Stack Developer',
-        company: 'Full Stack Development',
-        photo: '/public/image/orang.png',
-        testimonial: 'Belajar di sini sangat terarah dengan kurikulum yang relevan dengan kebutuhan industri masa kini. Mentor selalu memberikan feedback mendalam yang membantu saya berkembang cepat.'
-      },
-      {
-        id: 'alumni-2',
-        name: 'Ikhwan Nur Rizki Fathama',
-        position: 'Frontend Engineer',
-        company: 'Frontend Engineering',
-        photo: '/public/image/orang.png',
-        testimonial: 'Materi yang diajarkan sangat komprehensif mulai dari dasar hingga proyek nyata. Saya berhasil membangun portofolio yang solid dan langsung diterima kerja setelah lulus.'
-      },
-      {
-        id: 'alumni-3',
-        name: 'John Calvin Sukarman',
-        position: 'UI/UX Designer',
-        company: 'UI/UX Design',
-        photo: '/public/image/orang.png',
-        testimonial: 'Program mentoring 1-on-1 benar-benar membuka wawasan saya tentang standar industri digital saat ini. Sangat direkomendasikan bagi siapa saja yang ingin switch career.'
-      }
-    ];
-  }
 </script>
