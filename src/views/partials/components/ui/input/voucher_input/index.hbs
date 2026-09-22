@@ -42,7 +42,7 @@
     />
     <button
       type="button"
-      id="remove-promo-btn"
+      id="{{default removeBtnId 'remove-promo-btn'}}"
       onclick="removePromo()"
       class="px-5 h-[52px] bg-red-50 text-red-600 font-montserrat font-semibold text-xs rounded-[8px] border border-red-200 hover:bg-red-100 transition-colors hidden"
     >
@@ -51,5 +51,5 @@
   </div>
 
   <!-- Validation Status Message -->
-  <p id="promo-message" class="font-montserrat text-xs mt-0.5 font-medium hidden"></p>
+  <p id="{{default messageId 'promo-message'}}" class="font-montserrat text-xs mt-0.5 font-medium hidden"></p>
 </div>
