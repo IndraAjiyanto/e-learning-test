@@ -30,8 +30,10 @@ export class InformationController {
       activeUsers: summary.onlineNow,
       chartData: weekly.map((w) => ({
         day: w.label,
-        loginHeight: w.loginH,
-        activeHeight: w.activeH,
+        loginHeight: Math.max(w.login > 0 ? 4 : 0, w.loginH),
+        activeHeight: Math.max(w.active > 0 ? 4 : 0, w.activeH),
+        login: w.login,
+        active: w.active,
         max: w.max,
       })),
       activeUsersList,
@@ -44,5 +46,11 @@ export class InformationController {
   @Sse('api/learning/stream')
   learningStream(): Observable<any> {
     return this.userActivityService.learningStream();
+  }
+
+  @Roles('super_admin')
+  @Sse('api/overview/stream')
+  overviewStream(): Observable<any> {
+    return this.userActivityService.overviewStream();
   }
 }

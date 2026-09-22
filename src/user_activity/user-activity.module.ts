@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserActivity } from 'src/entities/user_activity.entity';
-import { ActivityLog } from 'src/entities/activity_log.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
@@ -16,7 +15,6 @@ import { UserActivityMiddleware } from './user-activity.middleware';
   imports: [
     TypeOrmModule.forFeature([
       UserActivity,
-      ActivityLog,
       UserCourse,
       Course,
       Session,
