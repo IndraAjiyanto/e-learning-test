@@ -46,7 +46,7 @@
       <span class="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5">
         <span class="size-2.5 shrink-0 rounded-full bg-[#E63946]"></span>
         <span class="font-inter text-xs font-bold uppercase leading-[15px] text-[#0B1F3B]">
-          {{t 'test.categoryPaidProgram.hero.badge'}}
+          {{#if category.type}}{{category.type}}{{else}}{{t 'test.categoryPaidProgram.hero.badge'}}{{/if}}
         </span>
       </span>
 
