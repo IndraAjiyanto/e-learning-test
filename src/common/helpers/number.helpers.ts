@@ -1,4 +1,5 @@
 export const numberHelpers = {
+  add: (a: any, b: any) => Number(a) + Number(b),
   addOne: (index: number) => index + 1,
   mod: (a: number, b: number) => a % b,
   check: (a: number, b: number) => a < b,

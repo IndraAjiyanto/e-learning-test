@@ -144,6 +144,11 @@ export class CategoriesController {
       category.id,
     );
     if (category?.type === 'Special Program') {
+      const isJapan = Boolean(
+        category.name &&
+          (category.name.toLowerCase().includes('japan') ||
+            category.name === 'LPK'),
+      );
       res.render('special_program', {
         category,
         user: req.user,
@@ -152,6 +157,7 @@ export class CategoriesController {
         benefit_category,
         faqs,
         gallery,
+        isJapan,
       });
     } else if (category?.type === 'Paid Program') {
       const portfolio = await this.categoriesService.findPortfolioByCategory(

@@ -1,98 +1,13 @@
 {{!--
-  Section: Special/Free/In-House Program Hero (L2) - reskin ke standar internal.
+  Section: Special Program Hero (L2) - reskin ke standar internal modern.
   Lokasi: src/views/partials/components/ui/sections/special_hero/index.hbs
-  Satu pohon markup, base + lg. .page-shell, sizeClass, font-inter heading + body (unified 2026-09-10, yana WA).
-  Props: category (.name, .description, .hero_section_image, .type), lang.
 --}}
-{{#if (or isJapan (eq category.name 'Japan Pathway') (eq category.name 'Japan Program') (eq category.name 'LPK'))}}
-  {{> components/ui/sections/japan_hero/index category=category lang=lang tagText=tagText headline=headline subheading=subheading}}
-{{else}}
-<section class="w-full bg-[#F8F9FA] font-inter" data-node-id="special-hero">
-  <div class="page-shell flex flex-col justify-center gap-10 py-16 lg:min-h-[560px] lg:flex-row lg:items-center lg:gap-[72px] lg:py-20">
-
-    {{!-- content --}}
-    <div class="flex flex-1 flex-col items-start gap-6">
-      {{> components/ui/text/eyebrow/index text=(default (getByLang category.type lang) (default category.type (t 'test.special_program.heroSection.eyebrow'))) }}
-
-      <h1 class="{{sizeClass 'display'}} max-w-[620px] font-inter font-extrabold tracking-[-0.02em] text-[#0B1F3B]">
-        <span
-          x-data="heroTypewriter()"
-          data-full="{{#if category.name}}{{category.name}}{{else}}In House Training{{/if}}"
-          x-init="start($el.dataset.full)"
-        ><span x-text="head"></span><span class="text-[#6EB6E5]" x-text="tail"></span><span class="ml-1 inline-block h-[0.8em] w-[3px] translate-y-[0.06em] rounded-sm bg-[#6EB6E5] transition-opacity" :class="showCursor ? 'opacity-100' : 'opacity-0'"></span></span>
-      </h1>
-
-      <p class="{{sizeClass 'lead'}} max-w-[560px] font-inter text-[#4A5568]">
-        {{default (getByLang category.description lang) (t 'test.special_program.heroSection.description')}}
-      </p>
-
-      {{> components/ui/button/btn_action/index
-          onClick="document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })"
-          text=(t 'test.special_program.heroSection.buttonViewProgram')
-          icon="fas fa-arrow-right text-sm shrink-0"
-          iconPosition="right"
-          variant="primary"
-          class="gap-2.5 px-8 py-4 text-sm shadow-none hover:-translate-y-0.5 hover:shadow-lg" }}
-    </div>
-
-    {{!-- visual --}}
-    <div class="w-full lg:w-[520px] lg:shrink-0">
-      <div class="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#E0F2F9] lg:aspect-[73/50]">
-        <img
-          src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-          alt="{{category.name}}"
-          onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="size-full object-cover"
-        />
-      </div>
-    </div>
-  </div>
-
-  {{!-- stats strip --}}
-  <div class="page-shell -mt-8 pb-14 lg:-mt-10">
-    <div class="mx-auto grid max-w-[880px] grid-cols-1 gap-6 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06),0px_18px_44px_-12px_rgba(11,31,59,0.14)] sm:grid-cols-3 lg:p-8">
-      {{#each (array
-        (array "fa-users" "500+" (t 'test.special_program.heroSection.alumni'))
-        (array "fa-briefcase" "200+" (t 'test.special_program.heroSection.hiringPartners'))
-        (array "fa-arrow-trend-up" "98%" (t 'test.special_program.heroSection.placement'))
-      )}}
-        <div class="flex items-center gap-4 {{#unless @first}}border-t border-[#E5E7EB] pt-6 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0{{/unless}}">
-          <span class="grid size-14 shrink-0 place-items-center rounded-full bg-[#E8EDF5] text-[#334155] lg:size-16">
-            <i class="fas {{lookup this 0}} text-lg"></i>
-          </span>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-2xl font-inter font-bold text-[#111827] lg:text-[28px]">{{lookup this 1}}</span>
-            <span class="{{sizeClass 'body-sm'}} font-inter text-[#6B7280]">{{lookup this 2}}</span>
-          </div>
-        </div>
-      {{/each}}
-    </div>
-  </div>
-
-  <script>
-    function heroTypewriter() {
-      return {
-        head: '', tail: '', showCursor: true, _target: '', _i: 0,
-        start(full) {
-          full = (full || 'In House Training').replace(/\s*\|\s*$/, '').trim();
-          const w = full.split(/\s+/);
-          const n = w.length > 2 ? 2 : 1;
-          this._target = w.slice(-n).join(' ');
-          this.head = w.slice(0, w.length - n).join(' ') + (w.length > n ? ' ' : '');
-          this._i = 0;
-          this._loop();
-          setInterval(() => { this.showCursor = !this.showCursor; }, 530);
-        },
-        _loop() {
-          if (this._i <= this._target.length) {
-            this.tail = this._target.slice(0, this._i++);
-            setTimeout(() => this._loop(), 85);
-          } else {
-            setTimeout(() => { this._i = 0; this._loop(); }, 2600);
-          }
-        }
-      };
-    }
-  </script>
-</section>
-{{/if}}
+{{> components/ui/sections/japan_hero/index 
+    category=category 
+    course=course 
+    lang=lang 
+    tagText=tagText 
+    headline=headline 
+    subheading=subheading
+    isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))
+}}

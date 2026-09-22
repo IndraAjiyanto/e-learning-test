@@ -6,110 +6,81 @@
 <section id="programs" class="{{default sectionClass 'w-full bg-gradient-to-b from-[#FAFAFA] via-white to-[#FAFAFA] py-14 font-inter lg:py-20'}}">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
-      {{!-- section-header sesuai Figma Layer 3 (Choose Your Japan Program, tanpa eyebrow/dots) --}}
-      <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1568px]">
-        <h2 class="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#0B1F3B] text-center max-w-[653px]">
-          <span class="text-[#6EB6E5]">Choose</span> Your {{#if (includes category.name 'japan')}}Japan Program{{else}}{{default category.name "Japan Program"}}{{/if}}
-        </h2>
-        <p class="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280]/85 text-center max-w-[760px]">
-          Select the program that aligns with your goals and passion.
-        </p>
-      </div>
+    {{!-- section-header sesuai Figma Layer 3 (Choose Your Program, tanpa eyebrow/dots) --}}
+    <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1568px]">
+      <h2 class="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#0B1F3B] text-center max-w-[653px]">
+        <span class="text-[#6EB6E5]">Choose</span> Your {{#if (includes category.name 'japan')}}Japan Program{{else}}{{default category.name "Special Program"}}{{/if}}
+      </h2>
+      <p class="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280]/85 text-center max-w-[760px]">
+        Select the program that aligns with your goals and passion.
+      </p>
+    </div>
 
-      {{!-- Program Cards Grid (Figma Layer 3: 3 cards, gap 24px, max-w 1568px) --}}
-      {{#if courses.length}}
-        <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
-          {{#each courses}}
-            {{> components/ui/card/program_showcase/index
-                id=this.id
-                image=this.image
-                icon="fa-solid fa-graduation-cap"
-                title=this.name
-                description=(default (getByLang this.description ../lang) "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.")
-                tag1="Language"
-                tag2="Culture"
-                tag3="Career"
-                href=(concat '/program/' this.id)
-            }}
-          {{/each}}
-        </div>
-      {{else}}
-        {{!-- 3 Program Fallback Cards exactly from Figma --}}
-        <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
-          {{!-- Card 1: Japan Program --}}
+    {{!-- Program Cards Grid (Figma Layer 3: cards showcase modern) --}}
+    {{#if courses.length}}
+      <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
+        {{#each courses}}
           {{> components/ui/card/program_showcase/index
-              title="Japan Program"
+              id=this.id
+              image=this.image
               icon="fa-solid fa-graduation-cap"
-              image="/public/image/specialProgram/bgJapan.png"
-              tag1="Language"
-              tag2="Culture"
-              tag3="Career"
-              description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
-              href="#explore-program"
+              title=this.name
+              description=(default (getByLang this.description ../lang) "A structured journey from fundamentals to workplace readiness and long-term career opportunities.")
+              tag1=(ternary this.method this.method (ternary ../isJapan "Language" "Practical"))
+              tag2=(ternary this.month (concat this.month " Month") (ternary ../isJapan "Culture" "Mentoring"))
+              tag3=(ternary this.quota (concat this.quota " Quota") (ternary ../isJapan "Career" "Career"))
+              href=(concat '/program/' this.id)
           }}
-
-          {{!-- Card 2: Japanese Language Training (Speaking, Listening, Reading, Writing) --}}
-          {{> components/ui/card/program_showcase/index
-              title="Japanese Language Training"
-              icon="eye"
-              image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&fit=crop"
-              tag1="Speaking"
-              tag2="Listening"
-              tag3="Reading"
-              tag4="Writing"
-              description="Build strong communication skills through structured lessons and interactive practice."
-              href="#explore-program"
-          }}
-
-          {{!-- Card 3: Career & Study Support --}}
-          {{> components/ui/card/program_showcase/index
-              title="Career & Study Support"
-              icon="users"
-              image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&fit=crop"
-              tag1="Applications"
-              tag2="Interviews"
-              tag3="Planning"
-              description="Receive support for applications, interviews, and planning your path in Japan."
-              href="#explore-program"
-          }}
-        </div>
-      {{/if}}
-
-    {{else}}
-      {{!-- Generic / Default Special Program Category --}}
-      <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
-        {{> components/ui/text/eyebrow/index text=(t 'test.special_program.program.eyebrow') }}
-        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
-          {{t 'test.special_program.program.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span>
-        </h2>
-        <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.program.description'}}</p>
+        {{/each}}
       </div>
+    {{else if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
+      {{!-- 3 Program Fallback Cards exactly from Figma --}}
+      <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
+        {{!-- Card 1: Japan Program --}}
+        {{> components/ui/card/program_showcase/index
+            title="Japan Program"
+            icon="fa-solid fa-graduation-cap"
+            image="/public/image/specialProgram/bgJapan.png"
+            tag1="Language"
+            tag2="Culture"
+            tag3="Career"
+            description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
+            href="#explore-program"
+        }}
 
-      {{#if courses}}
-        <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
-          {{#each courses}}
-            {{> components/ui/card/course/index
-                id=this.id
-                image=this.image
-                name=this.name
-                description=this.description
-                method=this.method
-                month=this.month
-                quota=this.quota
-                variant="special"
-                lang=../lang }}
-          {{/each}}
-        </div>
-      {{else}}
-        <div class="flex w-full max-w-[560px] flex-col items-center gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-14">
-          <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
-            <i class="fas fa-clock text-lg"></i>
-          </span>
-          <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.special_program.program.comingSoonTitle'}}</h3>
-          <p class="{{sizeClass 'body'}} font-inter leading-relaxed text-[#6B7280]">{{t 'test.special_program.program.comingSoonText'}}</p>
-        </div>
-      {{/if}}
+        {{!-- Card 2: Japanese Language Training (Speaking, Listening, Reading, Writing) --}}
+        {{> components/ui/card/program_showcase/index
+            title="Japanese Language Training"
+            icon="eye"
+            image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&fit=crop"
+            tag1="Speaking"
+            tag2="Listening"
+            tag3="Reading"
+            tag4="Writing"
+            description="Build strong communication skills through structured lessons and interactive practice."
+            href="#explore-program"
+        }}
+
+        {{!-- Card 3: Career & Study Support --}}
+        {{> components/ui/card/program_showcase/index
+            title="Career & Study Support"
+            icon="users"
+            image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&fit=crop"
+            tag1="Applications"
+            tag2="Interviews"
+            tag3="Planning"
+            description="Receive support for applications, interviews, and planning your path in Japan."
+            href="#explore-program"
+        }}
+      </div>
+    {{else}}
+      <div class="flex w-full max-w-[560px] flex-col items-center gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-14">
+        <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
+          <i class="fas fa-clock text-lg"></i>
+        </span>
+        <h3 class="font-inter text-xl font-bold text-[#111827]">{{default (t 'test.special_program.program.comingSoonTitle') "Coming Soon"}}</h3>
+        <p class="font-inter text-sm leading-relaxed text-[#6B7280]">{{default (t 'test.special_program.program.comingSoonText') "Program courses for this category are being prepared."}}</p>
+      </div>
     {{/if}}
 
   </div>
