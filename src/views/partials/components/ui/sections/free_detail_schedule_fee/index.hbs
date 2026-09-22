@@ -1,3 +1,19 @@
+{{!--
+  Section: Schedule & Fees - Free Program Detail (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/free_detail_schedule_fee/index.hbs
+
+  Props:
+  - course          : object (data course: date_registration, startDate, quota, userCourses)
+  - studentList     : number (opsional, total pendaftar saat ini)
+  - isQuotaFull     : boolean (opsional override status kuota penuh)
+  - isFull          : boolean (opsional override status kuota penuh)
+  - badgeTitle      : string (opsional)
+  - title           : string (opsional)
+  - description     : string (opsional)
+  - cardTitle       : string (opsional)
+  - lang            : string (opsional)
+--}}
+
 <!-- SCHEDULE & FEES SECTION -->
 <section id="schedule-fees" class="w-full bg-[#FAFAFA] py-16 md:py-[120px] px-4 sm:px-8 md:px-[80px] font-inter flex flex-col items-center gap-10 md:gap-[64px]">
   
@@ -80,13 +96,25 @@
 
         <!-- cta-section -->
         <div class="w-full flex flex-col items-start gap-3">
-          <button
-            type="button"
-            @click="openRegistrationModal()"
-            class="w-full h-[45px] py-[14px] flex flex-row justify-center items-center bg-[#1E3A5F] hover:bg-[#152943] text-white rounded-[10px] font-inter font-bold text-[14px] leading-[17px] transition-colors cursor-pointer"
-          >
-            {{t 'test.freeProgram.schedule.regisNow'}}
-          </button>
+          {{#if (or isFull isQuotaFull (and course.quota (gte (default studentList (default course.userCourses.length 0)) course.quota)))}}
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              class="w-full h-[45px] py-[14px] flex flex-row justify-center items-center bg-[#94A3B8] text-white rounded-[10px] font-inter font-bold text-[14px] leading-[17px] cursor-not-allowed opacity-60 select-none transition-colors"
+              title="{{t 'test.detailProgram.programIsFull'}}"
+            >
+              {{default (t 'test.detailProgram.programIsFull') (t 'test.freeProgram.schedule.regisNow')}}
+            </button>
+          {{else}}
+            <button
+              type="button"
+              @click="openRegistrationModal()"
+              class="w-full h-[45px] py-[14px] flex flex-row justify-center items-center bg-[#1E3A5F] hover:bg-[#152943] text-white rounded-[10px] font-inter font-bold text-[14px] leading-[17px] transition-colors cursor-pointer"
+            >
+              {{t 'test.freeProgram.schedule.regisNow'}}
+            </button>
+          {{/if}}
           <div class="w-full h-[1px] bg-[#F1F5F9]"></div>
         </div>
 
