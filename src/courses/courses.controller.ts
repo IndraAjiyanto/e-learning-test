@@ -425,12 +425,30 @@ await this.coursesService.addUserToCourse(userId, courseId);
   ) {
     if (req.user!.role === 'admin') {
       const course = await this.coursesService.findOneAdminCourse(courseId);
+      if (!course) {
+        req.flash('error', 'Program not found');
+        return res.redirect('/program');
+      }
       const lastWeek = await this.coursesService.findLastWeek(courseId);
-      res.render('admin/course/detail', {
+      const caps = capabilitiesForCourse(course);
+      if (course.programType === 'non_bootcamp' || caps.structure === 'syllabus') {
+        const containerWeek =
+          await this.coursesService.ensureSyllabusContainer(course);
+        return res.render('admin/course/detail_syllabus', {
+          user: req.user,
+          course,
+          lastWeek,
+          categoryId,
+          caps,
+          containerWeek,
+        });
+      }
+      return res.render('admin/course/detail', {
         user: req.user,
         course,
         lastWeek,
         categoryId,
+        caps,
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);

@@ -23,6 +23,14 @@
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()" x-init="init()">
 
     {{!-- Tab Navigation: underline-tabs component --}}
+    {{#if (or (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
+    <div x-data="{ tabs: [
+      {name:'sylabus',label:'Sylabus',url:'/program/week/{{course.id}}'},
+      {name:'user',label:'User',url:'/program/userProgram/{{course.id}}'}
+    ] }">
+      {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
+    </div>
+    {{else}}
     <div x-data="{ tabs: [
       {name:'week',label:'Week',url:'/program/week/{{course.id}}'},
       {name:'user',label:'User',url:'/program/userProgram/{{course.id}}'},
@@ -32,8 +40,10 @@
     ] }">
       {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
     </div>
+    {{/if}}
 
     {{!-- Tab Content Areas (frozen) --}}
+    <div x-show="tab === 'sylabus'" class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
     <div x-show="tab === 'week'" class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
     <div x-show="tab === 'mentor'" class='w-full' x-data="mentorData()" x-init="fetchMentors()">{{> course/mentor_tab}}</div>
     <div x-show="tab === 'flow'" class='w-full' x-data="flowData()" x-init="fetchFlow()">{{> course/flow_tab}}</div>
@@ -54,11 +64,17 @@
 
 <script>
 function tabData() {
+  const isSyllabus = "{{course.programType}}" === "non_bootcamp" || "{{caps.structure}}" === "syllabus";
   return {
     search: '',
     tab: localStorage.getItem('activeTab'),
     data: [],
     async init() {
+      if (isSyllabus && (!this.tab || (this.tab !== 'sylabus' && this.tab !== 'user'))) {
+        this.tab = 'sylabus';
+        localStorage.setItem('activeTab', 'sylabus');
+        return;
+      }
       if(!this.tab) {
         if("{{user.role}}" === "admin") {
           this.tab = 'week';
