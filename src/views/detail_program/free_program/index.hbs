@@ -181,18 +181,8 @@
       x-transition:leave="transition ease-in duration-200"
       x-transition:leave-start="opacity-100 scale-100 translate-y-0"
       x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-      class="relative w-full max-w-[1140px] bg-white rounded-[24px] shadow-2xl max-h-[90vh] overflow-y-auto p-2 sm:p-6 my-auto z-10"
+      class="relative w-full max-w-[720px] max-h-[90vh] overflow-y-auto my-auto z-10 rounded-[16px] shadow-2xl"
     >
-      <!-- Close Button -->
-      <button
-        @click="closeRegistrationModal()"
-        type="button"
-        class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full focus:outline-none transition-colors z-20"
-        aria-label="Close modal"
-      >
-        <i class="fa-solid fa-xmark text-2xl"></i>
-      </button>
-
       {{> free_program/form_daftar_program }}
     </div>
   </div>

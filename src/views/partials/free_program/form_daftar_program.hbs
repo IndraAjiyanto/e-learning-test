@@ -1,164 +1,293 @@
-<div class="w-full font-inter flex justify-center">
-  <!-- Container 1098px wide -->
-  <div class="w-full max-w-[1098px] p-4 sm:p-8 lg:p-10 flex flex-col justify-between">
-    
-    <!-- Form Header -->
-    <div class="mb-10">
-      <h1 class="text-2xl sm:text-3xl lg:text-3xl font-semibold text-[#003060] tracking-normal uppercase mb-5 leading-none">
+{{!--
+  Partial: Form Pendaftaran Short Class / Free Program
+  Lokasi: src/views/partials/free_program/form_daftar_program.hbs
+  Referensi Figma: Node 1158-1495 (form-card) - Font: Inter
+--}}
+
+<div class="relative w-full max-w-[720px] mx-auto bg-white rounded-[16px] shadow-[0px_12px_40px_-4px_rgba(15,23,42,0.0313726)] p-6 sm:p-8 md:p-[48px] flex flex-col gap-8 isolate text-left font-inter">
+  
+  <!-- close-button (Node 1158-1495) -->
+  <button
+    type="button"
+    @click="closeRegistrationModal()"
+    class="close-modal-trigger absolute top-4 right-6 sm:top-4 sm:right-[34px] w-9 h-9 flex items-center justify-center text-[#666666] hover:text-[#0F172A] rounded-full transition-colors font-inter text-[20px] leading-[24px] z-10 cursor-pointer focus:outline-none"
+    aria-label="Close"
+  >
+    ✕
+  </button>
+
+  <!-- card-header -->
+  <div class="w-full flex flex-col items-start gap-3">
+    <!-- badge -->
+    <div class="inline-flex items-center px-3 py-1.5 bg-[#003060]/[0.05] rounded-full">
+      <span class="font-inter font-bold text-[12px] leading-[16px] uppercase tracking-wider text-[#003060]">
         SHORT CLASS REGISTRATION
-      </h1>
-      <p class="text-base sm:text-lg lg:text-xl font-normal text-[#003060] leading-none">
-        Please complete the form below to confirm your registration
-      </p>
+      </span>
     </div>
 
-    <!-- Registration Form -->
-    <form id="short-class-form" class="space-y-8 flex-1 flex flex-col justify-between">
-      
-      <div class="space-y-7">
-        <!-- Your Program -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            Your Program<span class="text-red-500">*</span>
+    <!-- title -->
+    <h1 class="font-inter font-bold text-[28px] sm:text-[32px] leading-[36px] sm:leading-[40px] text-[#003060] m-0">
+      Short Class Registration
+    </h1>
+
+    <!-- subtitle -->
+    <p class="font-inter font-normal text-[14px] sm:text-[15px] leading-[20px] text-[#64748B] m-0">
+      Please complete the form below to confirm your registration
+    </p>
+  </div>
+
+  <!-- Registration Form (form-fields + action-bar) -->
+  <form id="short-class-form" class="w-full flex flex-col gap-6 sm:gap-8">
+    
+    <!-- form-fields -->
+    <div class="w-full flex flex-col gap-6">
+
+      <!-- field-your-program -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            Your Program
           </label>
-          <span class="font-inter font-medium text-base sm:text-xl text-black">
-            {{course.name}} <!-- Menampilkan nama kelas dari backend -->
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        
+        <!-- program-banner -->
+        <div class="w-full min-h-[52px] px-4 py-3 sm:py-3.5 bg-[#003060]/[0.05] border border-[#003060]/[0.15] rounded-lg flex items-center gap-3">
+          <svg class="w-5 h-5 text-[#003060] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+          <span class="font-inter font-semibold text-[15px] leading-[20px] text-[#003060] truncate">
+            {{course.name}}
           </span>
         </div>
-      <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            Full Name<span class="text-red-500">*</span>
-          </label>
-          <input type="text" name="user_fullname" value="{{user.username}}" required placeholder="Input Your Full Name" 
-            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-inter font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
-        </div>
+      </div>
 
-        <!-- Email (Otomatis Terisi & Bisa Diedit) -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            Email<span class="text-red-500">*</span>
+      <!-- field-Full Name -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label for="user_fullname" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            Full Name
           </label>
-          <input type="email" name="user_email" value="{{user.email}}" required placeholder="Input Your Email"
-            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-inter font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
         </div>
-        <!-- WhatsApp Number -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            WhatsApp Number<span class="text-red-500">*</span>
-          </label>
-          <input type="tel" name="user_no" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] font-inter font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
-        </div>
+        <input
+          type="text"
+          id="user_fullname"
+          name="user_fullname"
+          value="{{#if user.fullname}}{{user.fullname}}{{else}}{{user.username}}{{/if}}"
+          required
+          placeholder="Input Your Full Name"
+          class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+        />
+      </div>
 
-        <!-- Current Status -->
-               <!-- Current Status -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            Current Status<span class="text-red-500">*</span>
-          </label>
-          <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-status">
-            <input type="hidden" id="status-input" name="current_status" required value="">
-            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
-              <span class="dropdown-label font-inter font-medium text-xl text-[#676767] truncate pr-4">Select your current status</span>
-              <div class="size-[35px] flex items-center justify-center flex-shrink-0">
-                <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
-              </div>
-            </button>
-            <ul class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out max-h-60 overflow-y-auto">
-              
-              <!-- LOOPING OTOMATIS DARI BACKEND -->
-              {{#each currentStatusOptions}}
-              <li data-value="{{this}}" class="dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060]">
-                {{this}}
-              </li>
-              {{/each}}
-              
-            </ul>
-          </div>
-        </div>
-
-        <!-- How did you know About the program? -->
-             <!-- How did you know About the program? -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            How did you know About the program?<span class="text-red-500">*</span>
-          </label>
-          <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-source">
-            <input type="hidden" id="source-input" name="referal_source" required value="">
-            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
-              <span class="dropdown-label font-inter font-medium text-xl text-[#676767] truncate pr-4">Select Option</span>
-              <div class="size-[35px] flex items-center justify-center flex-shrink-0">
-                <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
-              </div>
-            </button>
-            <ul class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out max-h-60 overflow-y-auto">
-              
-              <!-- LOOPING OTOMATIS DARI BACKEND -->
-              {{#each referalSourceOptions}}
-              <li data-value="{{this}}" class="dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060]">
-                {{this}}
-              </li>
-              {{/each}}
-
-            </ul>
-          </div>
-        </div>
-
-        <!-- Will you attend this program? -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            Will you attend this program?<span class="text-red-500">*</span>
-          </label>
-          <div class="flex flex-wrap gap-4 max-w-[900px]">
-            <label class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-[6px] shadow-[0_0_5px_rgba(0,0,0,0.5)] cursor-pointer group hover:border-[#003060] transition-all">
-              <input type="radio" name="attend_program" value="true" class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
-              <span class="text-slate-700 font-inter font-medium text-xl leading-none">Yes, I will attend</span>
+      <!-- contact-row -->
+      <div class="w-full flex flex-col sm:flex-row items-start gap-5">
+        <!-- field-Email -->
+        <div class="w-full sm:flex-1 flex flex-col gap-2">
+          <div class="flex items-center gap-1">
+            <label for="user_email" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+              Email
             </label>
-            <label class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-[6px] shadow-[0_0_5px_rgba(0,0,0,0.5)] cursor-pointer group hover:border-[#003060] transition-all">
-              <input type="radio" name="attend_program" value="false" checked class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
-              <span class="text-slate-700 font-inter font-medium text-xl leading-none">No, I can't attend</span>
-            </label>
+            <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
           </div>
+          <input
+            type="email"
+            id="user_email"
+            name="user_email"
+            value="{{user.email}}"
+            required
+            placeholder="Input Your Email"
+            class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+          />
         </div>
 
-        <!-- Consent Checkbox -->
-        <div>
-          <label class="block font-inter font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
-            I agree to receive seminar updates via email or WhatsApp.
+        <!-- field-WhatsApp Number -->
+        <div class="w-full sm:flex-1 flex flex-col gap-2">
+          <div class="flex items-center gap-1">
+            <label for="user_no" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+              WhatsApp Number
+            </label>
+            <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+          </div>
+          <input
+            type="tel"
+            id="user_no"
+            name="user_no"
+            value="{{user.no_telp}}"
+            required
+            placeholder="Input Your WhatsApp Number"
+            class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+          />
+        </div>
+      </div>
+
+      <!-- field-Current Status -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            Current Status
           </label>
-          <label class="flex items-center gap-3 cursor-pointer group w-fit">
-            <div class="relative flex items-center justify-center">
-              <input type="checkbox" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
-              <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        <div class="relative w-full custom-dropdown" id="dropdown-status">
+          <input type="hidden" id="status-input" name="current_status" required value="" />
+          <button
+            type="button"
+            class="dropdown-trigger w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg flex items-center justify-between cursor-pointer focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-all text-left"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="dropdown-label font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] truncate pr-2">
+              Select your current status
+            </span>
+            <svg class="dropdown-chevron w-4 h-4 text-[#64748B] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <ul class="dropdown-menu absolute left-0 right-0 top-full mt-1.5 bg-white rounded-lg shadow-lg border border-[#E2E8F0] p-1.5 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out max-h-60 overflow-y-auto">
+            {{#each currentStatusOptions}}
+            <li data-value="{{this}}" class="dropdown-option px-3.5 py-2.5 rounded-md font-inter text-[14px] font-medium cursor-pointer text-[#0F172A] hover:bg-[#003060]/[0.05] hover:text-[#003060] transition-colors">
+              {{this}}
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+
+      <!-- field-How did you know About the program? -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            How did you know About the program?
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        <div class="relative w-full custom-dropdown" id="dropdown-source">
+          <input type="hidden" id="source-input" name="referal_source" required value="" />
+          <button
+            type="button"
+            class="dropdown-trigger w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg flex items-center justify-between cursor-pointer focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-all text-left"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="dropdown-label font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] truncate pr-2">
+              Select Option
+            </span>
+            <svg class="dropdown-chevron w-4 h-4 text-[#64748B] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <ul class="dropdown-menu absolute left-0 right-0 top-full mt-1.5 bg-white rounded-lg shadow-lg border border-[#E2E8F0] p-1.5 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out max-h-60 overflow-y-auto">
+            {{#each referalSourceOptions}}
+            <li data-value="{{this}}" class="dropdown-option px-3.5 py-2.5 rounded-md font-inter text-[14px] font-medium cursor-pointer text-[#0F172A] hover:bg-[#003060]/[0.05] hover:text-[#003060] transition-colors">
+              {{this}}
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+
+      <!-- field-will-attend -->
+      <div class="w-full flex flex-col gap-3">
+        <div class="flex items-center gap-1">
+          <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            Will you attend this program?
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        
+        <!-- radio-group -->
+        <div class="w-full flex flex-col sm:flex-row items-center gap-4">
+          <!-- radio-option-yes -->
+          <label id="radio-label-yes" class="radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border-[1.5px] border-[#003060] rounded-[10px] cursor-pointer transition-all">
+            <input type="radio" name="attend_program" value="true" checked class="sr-only" />
+            <div class="radio-outer w-5 h-5 rounded-full border-2 border-[#003060] flex items-center justify-center shrink-0">
+              <div class="radio-inner w-2.5 h-2.5 rounded-full bg-[#003060]"></div>
             </div>
-            <span class="text-slate-700 font-inter font-medium text-xl leading-none group-hover:text-[#0B3A68] transition-colors">Yes, I agree</span>
+            <span class="radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]">
+              Yes, I will attend
+            </span>
+          </label>
+
+          <!-- radio-option-no -->
+          <label id="radio-label-no" class="radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border border-[#D9D9D9] rounded-[10px] cursor-pointer transition-all">
+            <input type="radio" name="attend_program" value="false" class="sr-only" />
+            <div class="radio-outer w-5 h-5 rounded-full border-2 border-[#D9D9D9] flex items-center justify-center shrink-0">
+              <div class="radio-inner w-2.5 h-2.5 rounded-full bg-[#003060] hidden"></div>
+            </div>
+            <span class="radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]">
+              No, I can't attend
+            </span>
           </label>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="pt-8 max-w-[900px] flex flex-wrap items-center gap-4">
-        <button type="submit" class="h-[56px] px-10 bg-[#003060] hover:bg-[#082a4d] text-white text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center font-semibold transition-colors min-w-[180px]">
-          Register Now
-        </button>
+      <!-- field-consent -->
+      <div class="w-full pt-2 flex flex-col gap-3">
+        <p class="font-inter font-semibold text-[15px] leading-[20px] text-[#003060] m-0">
+          I agree to receive seminar updates via email or WhatsApp.
+        </p>
+        <label class="inline-flex items-center gap-3 cursor-pointer select-none w-fit group">
+          <div class="relative flex items-center justify-center">
+            <input
+              type="checkbox"
+              id="consent-checkbox"
+              name="agreement"
+              required
+              checked
+              class="peer appearance-none w-[22px] h-[22px] bg-[#003060] border border-[#003060] rounded-[6px] checked:bg-[#003060] checked:border-[#003060] transition-all cursor-pointer"
+            />
+            <svg class="w-3.5 h-3.5 text-white absolute pointer-events-none stroke-[2.5] opacity-100 peer-checked:opacity-100 peer-not-checked:opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+          <span class="font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]">
+            Yes, I agree
+          </span>
+        </label>
       </div>
 
-    </form>
-  </div>
+    </div>
+
+    <!-- action-bar -->
+    <div class="w-full pt-4 flex flex-col-reverse sm:flex-row items-center gap-4">
+      <!-- button-cancel -->
+      <button
+        type="button"
+        id="btn-cancel-form"
+        @click="closeRegistrationModal()"
+        class="w-full sm:flex-1 h-[49px] px-7 rounded-lg border-[1.5px] border-[#003060] bg-transparent hover:bg-[#003060]/[0.05] font-inter font-semibold text-[16px] leading-[21px] text-[#003060] flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+      >
+        Cancel
+      </button>
+
+      <!-- button-register -->
+      <button
+        type="submit"
+        id="btn-register-form"
+        class="w-full sm:flex-1 h-[49px] px-7 rounded-lg bg-[#003060] hover:bg-[#002244] shadow-[0px_4px_12px_rgba(0,48,96,0.2)] font-inter font-semibold text-[16px] leading-[21px] text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+      >
+        Register Now
+      </button>
+    </div>
+
+  </form>
 </div>
 
 <!-- Confirmation Modal -->
-<div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 invisible opacity-0 transition-all duration-300">
-  <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-[480px] w-[90%] flex flex-col items-center text-center">
-    <div class="mb-5 text-[#003060]">
+<div id="success-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-xs invisible opacity-0 transition-all duration-300 font-inter">
+  <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-[480px] w-[90%] flex flex-col items-center text-center">
+    <div class="mb-4 text-[#003060]">
       <i class="fa-solid fa-circle-question text-5xl"></i>
     </div>
-    <h2 class="text-2xl font-semibold text-[#003060] mb-3">Konfirmasi Pendaftaran</h2>
-    <p class="text-base text-slate-600 mb-8">Apakah kamu yakin ingin mendaftar program ini? Pastikan semua data yang diisi sudah benar.</p>
+    <h2 class="font-inter text-2xl font-bold text-[#003060] mb-2">Konfirmasi Pendaftaran</h2>
+    <p class="font-inter text-sm sm:text-base text-slate-600 mb-6">Apakah kamu yakin ingin mendaftar program ini? Pastikan semua data yang diisi sudah benar.</p>
     <div class="flex gap-4 w-full">
-      <button id="modal-cancel-btn" type="button" class="flex-1 h-[50px] rounded-[10px] border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 transition-colors">
+      <button id="modal-cancel-btn" type="button" class="flex-1 h-[46px] rounded-lg border border-slate-300 text-slate-700 font-inter font-semibold hover:bg-slate-100 transition-colors">
         Batal
       </button>
-      <button id="modal-confirm-btn" type="button" class="flex-1 h-[50px] rounded-[10px] bg-[#003060] hover:bg-[#082a4d] text-white font-semibold transition-colors relative">
+      <button id="modal-confirm-btn" type="button" class="flex-1 h-[46px] rounded-lg bg-[#003060] hover:bg-[#002244] text-white font-inter font-semibold transition-colors relative">
         <span id="modal-confirm-text">Register</span>
         <span id="modal-confirm-spinner" class="hidden absolute inset-0 flex items-center justify-center">
           <i class="fa-solid fa-spinner fa-spin text-white"></i>
@@ -170,7 +299,6 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    
     // Inject ID dari Backend Handlebars
     const USER_ID = "{{user.id}}";
     const COURSE_ID = "{{course.id}}";
@@ -180,18 +308,32 @@
     const modalConfirmBtn = document.getElementById('modal-confirm-btn');
     const modalCancelBtn = document.getElementById('modal-cancel-btn');
     
+    // Close modal triggers fallback (for Alpine or direct JS click)
+    const closeTriggers = document.querySelectorAll('.close-modal-trigger, #btn-cancel-form');
+    closeTriggers.forEach(btn => {
+      btn.addEventListener('click', function () {
+        // Trigger Alpine method if available
+        const alpineEl = document.querySelector('[x-data]');
+        if (alpineEl && alpineEl._x_dataStack && alpineEl._x_dataStack[0]?.closeRegistrationModal) {
+          alpineEl._x_dataStack[0].closeRegistrationModal();
+        }
+      });
+    });
+
     function openModal() {
+      if (!modal) return;
       modal.classList.remove('invisible', 'opacity-0');
       modal.classList.add('visible', 'opacity-100');
     }
 
     function closeModal() {
+      if (!modal) return;
       modal.classList.add('invisible', 'opacity-0');
       modal.classList.remove('visible', 'opacity-100');
     }
 
     if (form) {
-      // Submit form → validasi + buka modal konfirmasi
+      // Submit form -> validasi + buka modal konfirmasi
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -204,22 +346,22 @@
       });
     }
 
-    // Tombol "Batal" di modal → tutup modal
+    // Tombol "Batal" di modal -> tutup modal
     if (modalCancelBtn) {
       modalCancelBtn.addEventListener('click', function () {
         closeModal();
       });
     }
 
-    // Tombol "Register" di modal → POST ke backend
+    // Tombol "Register" di modal -> POST ke backend
     if (modalConfirmBtn) {
       modalConfirmBtn.addEventListener('click', async function () {
         const confirmText = document.getElementById('modal-confirm-text');
         const confirmSpinner = document.getElementById('modal-confirm-spinner');
 
         modalConfirmBtn.disabled = true;
-        confirmText.classList.add('hidden');
-        confirmSpinner.classList.remove('hidden');
+        if (confirmText) confirmText.classList.add('hidden');
+        if (confirmSpinner) confirmSpinner.classList.remove('hidden');
 
         try {
           const formData = new FormData(form);
@@ -245,19 +387,86 @@
           console.error('Registration error:', error);
           alert('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
           modalConfirmBtn.disabled = false;
-          confirmText.classList.remove('hidden');
-          confirmSpinner.classList.add('hidden');
+          if (confirmText) confirmText.classList.remove('hidden');
+          if (confirmSpinner) confirmSpinner.classList.add('hidden');
         }
       });
     }
 
-    // Klik overlay backdrop → tutup modal
+    // Klik overlay backdrop -> tutup modal konfirmasi
     if (modal) {
       modal.addEventListener('click', function (e) {
         if (e.target === modal) {
           closeModal();
         }
       });
+    }
+
+    // Radio button attend interactive styling
+    const radioInputs = document.querySelectorAll('input[name="attend_program"]');
+    const labelYes = document.getElementById('radio-label-yes');
+    const labelNo = document.getElementById('radio-label-no');
+
+    function updateRadioState() {
+      const selected = document.querySelector('input[name="attend_program"]:checked')?.value;
+      if (selected === 'true') {
+        if (labelYes) {
+          labelYes.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border-[1.5px] border-[#003060] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelYes.querySelector('.radio-outer');
+          const inner = labelYes.querySelector('.radio-inner');
+          const text = labelYes.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#003060] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.remove('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]';
+        }
+        if (labelNo) {
+          labelNo.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border border-[#D9D9D9] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelNo.querySelector('.radio-outer');
+          const inner = labelNo.querySelector('.radio-inner');
+          const text = labelNo.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#D9D9D9] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.add('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]';
+        }
+      } else {
+        if (labelYes) {
+          labelYes.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border border-[#D9D9D9] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelYes.querySelector('.radio-outer');
+          const inner = labelYes.querySelector('.radio-inner');
+          const text = labelYes.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#D9D9D9] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.add('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]';
+        }
+        if (labelNo) {
+          labelNo.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border-[1.5px] border-[#003060] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelNo.querySelector('.radio-outer');
+          const inner = labelNo.querySelector('.radio-inner');
+          const text = labelNo.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#003060] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.remove('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]';
+        }
+      }
+    }
+
+    radioInputs.forEach(input => {
+      input.addEventListener('change', updateRadioState);
+    });
+
+    // Consent Checkbox style toggle
+    const consentCheckbox = document.getElementById('consent-checkbox');
+    if (consentCheckbox) {
+      function updateConsentStyle() {
+        if (consentCheckbox.checked) {
+          consentCheckbox.classList.remove('bg-white', 'border-[#D9D9D9]');
+          consentCheckbox.classList.add('bg-[#003060]', 'border-[#003060]');
+        } else {
+          consentCheckbox.classList.remove('bg-[#003060]', 'border-[#003060]');
+          consentCheckbox.classList.add('bg-white', 'border-[#D9D9D9]');
+        }
+      }
+      consentCheckbox.addEventListener('change', updateConsentStyle);
     }
 
     // Init Custom Dropdowns
@@ -315,10 +524,10 @@
         function updateFocusedOption(index) {
           options.forEach((opt, idx) => {
             if (idx === index) {
-              opt.classList.add('ring-2', 'ring-[#003060]');
+              opt.classList.add('ring-1', 'ring-[#003060]', 'bg-[#003060]/[0.05]');
               opt.scrollIntoView({ block: 'nearest' });
             } else {
-              opt.classList.remove('ring-2', 'ring-[#003060]');
+              opt.classList.remove('ring-1', 'ring-[#003060]', 'bg-[#003060]/[0.05]');
             }
           });
         }
@@ -332,8 +541,8 @@
 
           if (label) {
             label.textContent = selectedValue;
-            label.classList.remove('text-[#676767]', 'text-slate-400');
-            label.classList.add('text-black');
+            label.classList.remove('text-[#94A3B8]', 'text-slate-400');
+            label.classList.add('text-[#0F172A]', 'font-medium');
           }
 
           options.forEach(opt => {
@@ -342,12 +551,12 @@
 
             const checkIcon = opt.querySelector('.fa-check');
             if (isSelected) {
-              opt.className = 'dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between';
+              opt.className = 'dropdown-option px-3.5 py-2.5 rounded-md font-inter text-[14px] font-semibold cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 flex items-center justify-between';
               if (!checkIcon) {
-                opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-sm text-[#003060]"></i>');
+                opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-xs text-[#003060]"></i>');
               }
             } else {
-              opt.className = 'dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between';
+              opt.className = 'dropdown-option px-3.5 py-2.5 rounded-md font-inter text-[14px] font-medium cursor-pointer transition-colors text-[#0F172A] hover:bg-[#003060]/[0.05] hover:text-[#003060] flex items-center justify-between';
               if (checkIcon) {
                 checkIcon.remove();
               }
