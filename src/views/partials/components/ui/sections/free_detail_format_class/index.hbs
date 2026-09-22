@@ -1,0 +1,145 @@
+{{!--
+  Section: Format Kelas & Jadwal Sesi (Free Program)
+  Lokasi: src/views/partials/components/ui/sections/free_detail_format_class/index.hbs
+  Level: L2 Section
+
+  Props:
+  - course : object (course data: startDate, date_registration, time_start, time_end, method)
+  - lang   : string (optional, locale code)
+--}}
+
+<section id="format-kelas" class="w-full bg-[#FAFAFA] py-16 md:py-[100px] px-4 sm:px-8 md:px-[80px] font-inter flex flex-col items-center">
+  <div class="w-full max-w-[1568px] mx-auto flex flex-col items-center gap-10 md:gap-[64px]">
+    
+    <!-- Schedule Header -->
+    <div class="w-full max-w-[1568px] flex flex-col items-center gap-3 md:gap-4 text-center">
+      <!-- Eyebrow: INFORMASI JADWAL -->
+      <span class="font-inter font-bold text-[14px] leading-[17px] uppercase tracking-[0.5px] text-[#003060]">
+        {{default (t 'test.freeProgram.formatClass.eyebrow') 'INFORMASI JADWAL'}}
+      </span>
+
+      <!-- Title: Format Kelas & Jadwal Sesi -->
+      <h2 class="font-inter font-extrabold text-[28px] md:text-[36px] leading-[36px] md:leading-[44px] text-center text-[#0B1F3B] m-0">
+        {{default (t 'test.freeProgram.formatClass.title') 'Format Kelas & Jadwal Sesi'}}
+      </h2>
+    </div>
+
+    <!-- Schedule Info Grid Layout -->
+    <div class="w-full flex justify-center items-center">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-[30px] w-full max-w-[1140px] justify-items-center">
+        
+        <!-- Detail Item 1 - Tanggal Mulai -->
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+          <!-- Icon Circle -->
+          <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <!-- Text Content -->
+          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+            <span class="font-inter font-normal text-[14px] leading-[17px] text-[#64748B]">
+              {{default (t 'test.freeProgram.formatClass.startDate') 'Tanggal Mulai'}}
+            </span>
+            <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
+              {{#if course.startDate}}
+                {{formatDateSimple course.startDate lang}}
+              {{else}}
+                21 April 2026
+              {{/if}}
+            </span>
+          </div>
+        </div>
+
+        <!-- Detail Item 2 - Tanggal Akhir Registrasi -->
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+          <!-- Icon Circle -->
+          <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <!-- Text Content -->
+          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+            <span class="font-inter font-normal text-[14px] leading-[17px] text-[#64748B]">
+              {{default (t 'test.freeProgram.formatClass.registrationEnd') 'Tanggal Akhir Registrasi'}}
+            </span>
+            <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
+              {{#if course.date_registration}}
+                {{formatDateSimple course.date_registration lang}}
+              {{else}}
+                30 April 2026
+              {{/if}}
+            </span>
+          </div>
+        </div>
+
+        <!-- Detail Item 3 - Jam Sesi -->
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+          <!-- Icon Circle -->
+          <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <!-- Text Content -->
+          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+            <span class="font-inter font-normal text-[14px] leading-[17px] text-[#64748B]">
+              {{default (t 'test.freeProgram.formatClass.sessionTime') 'Jam Sesi'}}
+            </span>
+            <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
+              {{#if (and course.time_start course.time_end)}}
+                {{formatTime course.time_start}} - {{formatTime course.time_end}} WIB
+              {{else if course.time_start}}
+                {{formatTime course.time_start}} WIB
+              {{else}}
+                19:00 - 21:00 WIB
+              {{/if}}
+            </span>
+          </div>
+        </div>
+
+        <!-- Detail Item 4 - Opsi Format -->
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+          <!-- Icon Circle -->
+          <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="7" x="3" y="3" rx="1"/>
+              <rect width="9" height="7" x="3" y="14" rx="1"/>
+              <rect width="5" height="7" x="16" y="14" rx="1"/>
+            </svg>
+          </div>
+          <!-- Text Content -->
+          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+            <span class="font-inter font-normal text-[14px] leading-[17px] text-[#64748B]">
+              {{default (t 'test.freeProgram.formatClass.formatOption') 'Opsi Format'}}
+            </span>
+            <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
+              {{#if (eq course.method 'online')}}
+                Online (Zoom Meeting)
+              {{else if (eq course.method 'offline')}}
+                Offline (Meetup)
+              {{else if (eq course.method 'hybrid')}}
+                Hybrid (Online Zoom &amp; Offline Meetup)
+              {{else if course.method}}
+                <span class="capitalize">{{course.method}}</span>
+              {{else}}
+                Hybrid (Online Zoom &amp; Offline Meetup)
+              {{/if}}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+

@@ -35,6 +35,27 @@ export const dateHelpers = {
     };
     return d.toLocaleDateString('en-US', options);
   },
+  formatDateSimple: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => {
+    if (!date) return lang ? 'Not set' : '-';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    let locale;
+    switch (lang) {
+      case 'en':
+        locale = enUS;
+        break;
+      case 'ja':
+        locale = ja;
+        break;
+      case 'id':
+      default:
+        locale = id;
+    }
+    return format(d, 'd MMMM yyyy', { locale });
+  },
   formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
   formatMinutes: (ms: number) => Math.floor(ms / 60000),
   /**
