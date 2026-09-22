@@ -3,76 +3,132 @@
   Lokasi: src/views/partials/components/ui/sections/program_detail_gallery/index.hbs
 
   Props:
-  - badgeTitle : string (opsional, default test.paidProgram.navbarMenu.gallery)
-  - lang       : string (opsional)
+  - badgeTitle / badgeText : string (opsional, default: "Academy in Action" / i18n test.home.gallery.gallery)
+  - title / titleText       : string (opsional, default: "Life at Kesatria Academy" / i18n test.home.gallery.title)
+  - description / descText  : string (opsional, default: "Explore real moments..." / i18n test.home.gallery.description)
+  - seeAllText / linkText   : string (opsional, default: "See All Our Gallery" / i18n test.home.gallery.chooseGallery)
+  - linkHref                : string (opsional, default: "/dashboard/gallery")
+  - showBadge               : bool (opsional, default: true)
+  - showDivider             : bool (opsional, default: true)
+  - showBottomLink          : bool (opsional, default: true)
+  - sectionClass            : string (opsional override kelas section)
+  - wrapperClass            : string (opsional override kelas wrapper)
 --}}
 
 <!-- GALLERY SECTION -->
-<section id="gallery" class="w-full py-20 bg-[#FAFAFA] font-inter">
-  
-  <div class="max-w-[1537px] mx-auto px-8 lg:px-16 flex flex-col items-center">
-    
-    <!-- 1. Header (Badge & Sub-judul) -->
-    <!-- Badge Baru dengan bentuk lebar & presisi -->
-    {{> components/ui/text/section_header/index
-      badge=(default badgeTitle (t 'test.paidProgram.navbarMenu.gallery'))
-      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
-    }}
-    
-    <!-- Sub-judul -->
-    {{> components/ui/text/description/index
-      text=(t 'test.paidProgram.gallery.description')
-      size="lg"
-      class="mb-14"
-    }}
+<section
+  id="gallery"
+  class="{{default sectionClass 'w-full bg-[#F8F9FA] py-12 lg:pt-[50px] lg:pb-[120px] px-4 sm:px-8 lg:px-[80px] flex flex-col items-center'}}"
+  x-data="programDetailGalleryCarousel(window.__programDetailGalleryItems || [])"
+>
+  <div class="{{default wrapperClass 'w-full max-w-[1568px] mx-auto flex flex-col items-center gap-10 lg:gap-[64px]'}}">
 
-    <!-- 2. Gallery Grid (3 Kolom) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full max-w-[1200px]">
-      
-      <!-- KOLOM 1 -->
-      <div class="flex flex-col gap-6 lg:gap-8 w-full">
-        {{> components/ui/card/gallery/index
-          image=course.category.gallery.[0].filePath
-          heightClass="h-[225px] md:h-[240px]"
-        }}
-        {{> components/ui/card/gallery/index
-          image=course.category.gallery.[1].filePath
-          heightClass="h-[433px] md:h-[460px]"
-        }}
-      </div>
-      
-      <!-- KOLOM 2 -->
-      <div class="flex flex-col gap-6 lg:gap-8 w-full">
-        {{> components/ui/card/gallery/index
-          image=course.category.gallery.[2].filePath
-          heightClass="h-[433px] md:h-[460px]"
-        }}
-        {{> components/ui/card/gallery/index
-          image=course.category.gallery.[3].filePath
-          heightClass="h-[225px] md:h-[240px]"
-        }}
-      </div>
-      
-      <!-- KOLOM 3 -->
-      <div class="flex flex-col gap-6 lg:gap-8 w-full">
-        {{> components/ui/card/gallery/index
-          image=course.category.gallery.[4].filePath
-          heightClass="h-[225px] md:h-[240px]"
-        }}
-        {{> components/ui/card/gallery/index
-          image=course.category.gallery.[5].filePath
-          heightClass="h-[433px] md:h-[460px]"
-        }}
-      </div>
-      
+    <!-- SECTION HEADER -->
+    <div class="w-full flex flex-col items-center gap-5 text-center">
+      {{#unless (eq showBadge false)}}
+        <!-- Animated Tag -->
+        <div class="box-border inline-flex items-center gap-2 rounded-[100px] border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-2xs">
+          <span class="size-2 shrink-0 rounded-full {{default dotColor 'bg-[#6EB6E5]'}}" style="{{#if dotColor}}background-color: {{dotColor}};{{/if}}"></span>
+          <span class="font-montserrat text-[12px] font-bold leading-[15px] tracking-wider uppercase text-[#0B1F3B]">
+            {{default badgeTitle (default badgeText (t (default badgeKey 'test.home.gallery.gallery')))}}
+          </span>
+        </div>
+      {{/unless}}
+
+      <!-- Title: Life at Kesatria Academy -->
+      <h2 class="w-full font-montserrat font-bold text-2xl sm:text-3xl lg:text-[36px] leading-tight lg:leading-[44px] text-center text-[#0B1F3B] m-0">
+        {{{default titleText (default title (t (default titleKey 'test.home.gallery.title')))}}}
+      </h2>
+
+      <!-- Description: Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons. -->
+      <p class="max-w-[658px] font-open-sans font-normal text-base sm:text-lg lg:text-[20px] leading-relaxed lg:leading-[160%] text-center text-[#4A5568] m-0">
+        {{default descText (default description (t (default descKey 'test.home.gallery.description')))}}
+      </p>
+
+      <!-- Accent Line -->
+      {{#unless (eq showDivider false)}}
+        <div class="w-[60px] h-1 rounded-[2px] bg-[#003060]"></div>
+      {{/unless}}
     </div>
 
-    <!-- 3. Teks Bawah (Tautan) -->
-    <div class="mt-16">
-      <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-[#0B1F3B] text-[16px] font-semibold transition-all hover:text-[#7AA3C4] border-b-[1.5px] border-[#0B1F3B] hover:border-[#7AA3C4] pb-1">
-        {{t 'test.paidProgram.gallery.seeAllOurGallery'}} <i class="fa-solid fa-arrow-right-long text-[15px]"></i>
-      </a>
+    <!-- GALLERY GRID (3 ITEMS PER PAGE, 450px HEIGHT ON DESKTOP, 16px RADIUS) -->
+    <div class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <template x-for="(item, i) in visible" :key="i">
+        <div class="group h-[280px] sm:h-[360px] lg:h-[450px] w-full overflow-hidden rounded-[16px] bg-gray-200 shadow-sm relative">
+          <img
+            :src="typeof item === 'string' ? item : (item.filePath || item.image || item.url)"
+            alt="Gallery"
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      </template>
+    </div>
+
+    <!-- BOTTOM CONTROLS (SEE ALL GALLERY LINK & PAGINATION DOTS) -->
+    <div class="flex flex-col items-center gap-[30px]">
+      {{#unless (eq showBottomLink false)}}
+        <!-- See All Gallery Link -->
+        <a
+          href="{{default linkHref '/dashboard/gallery'}}"
+          class="group box-border inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold leading-5 text-[#003060] transition-colors duration-200 hover:border-[#7AA3C4] hover:text-[#7AA3C4]"
+        >
+          <span>{{default seeAllText (default linkText (t (default linkKey 'test.home.gallery.chooseGallery')))}}</span>
+          <svg class="size-4 shrink-0 text-[#003060] transition-colors duration-200 group-hover:text-[#7AA3C4]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.33334 8H12.6667M12.6667 8L8.66668 4M12.6667 8L8.66668 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      {{/unless}}
+
+      <!-- Dots Pagination -->
+      <div x-cloak class="flex items-center justify-center gap-3" x-show="pages > 1">
+        <template x-for="d in pages" :key="d">
+          <button
+            type="button"
+            @click="goTo(d - 1)"
+            :aria-label="'Go to slide ' + d"
+            class="size-2 rounded-full transition-all duration-300"
+            :class="page === d - 1 ? 'bg-[#111827]' : 'bg-[#D1D5DB] hover:bg-[#9CA3AF]'"
+          ></button>
+        </template>
+      </div>
     </div>
 
   </div>
 </section>
+
+<script>
+  window.__programDetailGalleryItems = [
+    {{#if course.category.gallery}}
+      {{#each course.category.gallery}}{{{json this.filePath}}}{{#unless @last}},{{/unless}}{{/each}}
+    {{else if gallery}}
+      {{#each gallery}}{{{json this.filePath}}}{{#unless @last}},{{/unless}}{{/each}}
+    {{/if}}
+  ];
+  if (!window.__programDetailGalleryItems.length) {
+    window.__programDetailGalleryItems = [
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&h=500&fit=crop'
+    ];
+  }
+  if (typeof window.programDetailGalleryCarousel !== 'function') {
+    window.programDetailGalleryCarousel = function(items) {
+      return {
+        items: items,
+        page: 0,
+        per: 3,
+        _timer: null,
+        get pages() { return Math.max(1, Math.ceil(this.items.length / this.per)); },
+        get visible() { return this.items.slice(this.page * this.per, this.page * this.per + this.per); },
+        init() { this._restart(); },
+        goTo(i) { this.page = Math.max(0, Math.min(i, this.pages - 1)); this._restart(); },
+        _restart() {
+          clearInterval(this._timer);
+          if (this.pages <= 1) return;
+          this._timer = setInterval(() => { this.page = (this.page + 1) % this.pages; }, 5000);
+        },
+      };
+    };
+  }
+</script>
