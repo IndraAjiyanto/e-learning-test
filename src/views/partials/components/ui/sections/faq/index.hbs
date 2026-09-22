@@ -34,7 +34,7 @@
       {{#unless (eq showEyebrow false)}}
         {{> components/ui/text/eyebrow/index text=(default eyebrowText (t (default eyebrowKey 'test.home.faq.question'))) dotColor=dotColor }}
       {{/unless}}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{{default titleText (t (default titleKey 'test.home.faq.title'))}}}</h2>
+      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]{{/if}}">{{{default titleText (t (default titleKey 'test.home.faq.title'))}}}</h2>
       <p class="{{sizeClass 'body'}} max-w-[534px] font-inter text-[#4A5568]">{{default descText (t (default descKey 'test.home.faq.description'))}}</p>
       {{#unless (eq showDivider false)}}
         <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>

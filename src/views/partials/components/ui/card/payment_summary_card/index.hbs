@@ -1,0 +1,103 @@
+{{!--
+  Komponen: Payment Summary Card (Level 2 - Molekul)
+  Lokasi: src/views/partials/components/ui/card/payment_summary_card/index.hbs
+
+  Susunan kartu ringkasan pembayaran:
+  1. Paling atas : Nama Program & Harga Promo
+  2. Kedua       : Harga Normal (Price) yang dicoret (jika ada promo)
+  3. Ketiga      : Potongan Voucher (jika kode voucher aktif)
+  4. Paling bawah: Total Final yang harus dibayarkan
+
+  Props:
+  - courseTitle : string (wajib, nama program/kursus)
+  - basePrice   : number|string (wajib, harga normal asli / course.price)
+  - promoPrice  : number|string (opsional, harga promo / course.promo)
+  - class       : string (opsional)
+--}}
+
+<div
+  class="
+    w-full max-w-2xl bg-white border border-[#D9D9D9]
+    shadow-[0px_4px_12px_rgba(0,0,0,0.04)] rounded-[16px]
+    p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 {{class}}
+  "
+>
+  <!-- Card Header -->
+  <h2 class="font-montserrat font-semibold text-xl sm:text-2xl text-[#003060] leading-tight">
+    Complete your payment
+  </h2>
+
+  <!-- Line Items List -->
+  <div class="flex flex-col gap-4 w-full">
+
+    <!-- 1. Paling Atas: Nama Program & Harga Promo yang Berlaku -->
+    <div class="flex justify-between items-start gap-4">
+      <span class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-snug flex-1">
+        {{courseTitle}} <span class="font-medium">(Full Payment)</span>
+      </span>
+      <span id="detail-price" class="font-sans font-semibold text-sm sm:text-base text-[#003060] shrink-0">
+        {{formatRupiah (default promoPrice (default basePrice 0))}}
+      </span>
+    </div>
+
+    <!-- 2. Kedua: Harga Normal (Price) yang Dicoret jika ada promo -->
+    {{#if (and promoPrice basePrice (gt basePrice promoPrice))}}
+      <div class="flex justify-between items-center gap-4">
+        <span class="font-sans font-normal text-sm sm:text-base text-slate-400">
+          Normal Price
+        </span>
+        <span class="font-sans font-normal text-sm sm:text-base text-slate-400 line-through shrink-0">
+          {{formatRupiah basePrice}}
+        </span>
+      </div>
+    {{/if}}
+
+    <div class="border-t border-[#D9D9D9] w-full"></div>
+
+    <!-- 3. Ketiga: Potongan Diskon Voucher (Muncul jika ada voucher aktif) -->
+    <div id="discount-row" class="justify-between items-center gap-4 hidden">
+      <span class="font-sans font-normal text-sm sm:text-base text-[#003060]">
+        Discount Voucher (<span id="display-promo-code" class="font-semibold"></span>)
+      </span>
+      <span id="detail-voucher" class="font-sans font-semibold text-sm sm:text-base text-[#D22F27] shrink-0">
+        - Rp 0
+      </span>
+    </div>
+
+    <div id="discount-divider" class="border-t border-[#D9D9D9] w-full hidden"></div>
+
+    <!-- 4. Paling Bawah: Total Final yang Harus Dibayarkan -->
+    <div class="flex justify-between items-center pt-1">
+      <span class="font-sans font-bold text-lg sm:text-xl text-[#003060]">
+        Total
+      </span>
+      <span id="detail-total" class="font-sans font-bold text-lg sm:text-xl text-[#003060] shrink-0">
+        {{formatRupiah (default promoPrice (default basePrice 0))}}
+      </span>
+    </div>
+
+  </div>
+
+  <!-- CTA Section: Pay Now Button -->
+  <div class="pt-4 border-t border-[#D9D9D9] w-full">
+    <button
+      type="button"
+      id="btn-pay-now"
+      onclick="proceedToPayment()"
+      class="
+        w-full h-14 bg-[#003060] hover:bg-[#082a4d] text-white
+        rounded-[16px] font-sans font-bold text-base sm:text-lg
+        flex items-center justify-center transition-all duration-200
+        shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed relative
+      "
+    >
+      <span id="btn-pay-now-text">Pay Now</span>
+      <span id="btn-pay-now-spinner" class="hidden absolute inset-0 flex items-center justify-center">
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+    </button>
+  </div>
+</div>

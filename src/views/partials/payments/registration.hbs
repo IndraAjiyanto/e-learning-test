@@ -1,275 +1,91 @@
-<form id="step-1-form" class="space-y-6">
-  
-  <!-- Your Program -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-inter font-semibold mb-7">
-      Your Program<span class="text-red-500">*</span>
-    </label>
-    <span class="font-inter font-medium text-base sm:text-xl text-black mb-7">
-      {{course.group}} : {{course.name}}</span>
+{{!--
+  Partial: Registration Form (Step 1)
+  Lokasi: src/views/partials/payments/registration.hbs
+  Menggunakan komponen atomic & molekul dari components/ui
+--}}
+
+<form id="step-1-form" class="space-y-6 md:space-y-8 w-full">
+
+  <!-- Program Batch Info -->
+  {{> components/ui/input/static_field/index
+    label="Program Batch"
+    required=true
+    value=(concat course.group " : " course.name)
+  }}
+
+  <!-- Full Name Field -->
+  {{> components/ui/input/text/index
+    name="fullName"
+    id="fullName"
+    type="text"
+    label="Full Name"
+    required=true
+    value=user.username
+    placeholder="Input Your Full Name"
+  }}
+
+  <!-- Email Field -->
+  {{> components/ui/input/text/index
+    name="email"
+    id="email"
+    type="email"
+    label="Email"
+    required=true
+    value=user.email
+    placeholder="Input Your Email"
+  }}
+
+  <!-- WhatsApp Number (Accent Variant with Chat Icon) -->
+  {{> components/ui/input/text/index
+    name="whatsappNumber"
+    id="whatsappNumber"
+    type="tel"
+    label="WhatsApp Number"
+    required=true
+    value=user.no_telp
+    placeholder="Input Your WhatsApp Number"
+    icon="fa-regular fa-comment-dots"
+    variant="accent"
+  }}
+
+  <!-- Referral Source Dropdown -->
+  {{#> components/ui/dropdown/select/index
+    name="source"
+    id="source-input"
+    label="How did you know About the Kesatria Academy Program?"
+    required=true
+    placeholder="Select How Did You Know"
+  }}
+    <option value="Friends">Friends</option>
+    <option value="Social Media">Social Media</option>
+    <option value="Website">Website</option>
+    <option value="Other">Other</option>
+  {{/components/ui/dropdown/select/index}}
+
+  <!-- Agreement Box -->
+  {{> components/ui/input/agreement_box/index
+    name="agreement"
+    id="agreement"
+    required=true
+    label="I agree to participate in the program until its completion"
+    terms="By checking this box, you confirm your commitment to follow all learning sessions according to the scheduled curriculum."
+  }}
+
+  <!-- Next / Save Changes Button -->
+  <div class="pt-4 w-full">
+    {{> components/ui/button/btn_action/index
+      text="Save Changes"
+      type="button"
+      variant="primary"
+      class="w-full h-14 sm:h-[64px] rounded-[10px]"
+      textClass="font-montserrat font-semibold text-base sm:text-xl text-white"
+      icon="fa-solid fa-arrow-right text-lg ml-2"
+      iconPosition="right"
+      onClick="goToStep(2)"
+    }}
   </div>
 
-  <!-- Full Name -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-inter font-semibold mb-7">
-      Full Name<span class="text-red-500">*</span>
-    </label>
-    <input type="text" name="fullName" required placeholder="Input Your Full Name" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400" value="{{user.username}}">
-  </div>
-
-  <!-- Email -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-inter font-semibold mb-7">
-      Email<span class="text-red-500">*</span>
-    </label>
-    <input type="email" name="email" required placeholder="Input Your Email" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400" value="{{user.email}}">
-  </div>
-
-  <!-- WhatsApp Number -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-inter font-semibold mb-7">
-      WhatsApp Number<span class="text-red-500">*</span>
-    </label>
-    <input type="tel" name="whatsappNumber" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400" value="{{user.no_telp}}">
-  </div>
-
-  <!-- How did you know -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-inter font-semibold mb-7">
-      How did you know About the Kesatria Academy Program?<span class="text-red-500">*</span>
-    </label>
-    
-    <div class="relative w-full max-w-[760px] mb-4 custom-dropdown" id="dropdown-source">
-      <input type="hidden" id="source-input" name="source" required value="">
-      
-      <button 
-        type="button" 
-        class="dropdown-trigger w-full max-w-[760px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white border border-[#D9D9D9] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200"
-        aria-expanded="false"
-        aria-haspopup="listbox"
-      >
-        <span class="dropdown-label font-inter font-medium text-xl text-[#676767] truncate pr-4">
-          Select How Did You Know
-        </span>
-        <div class="size-[35px] flex items-center justify-center flex-shrink-0">
-          <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
-        </div>
-      </button>
-
-      <ul 
-        class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-inter max-h-60 overflow-y-auto"
-        role="listbox"
-      >
-        <li role="option" aria-selected="false" data-value="Friends" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-          <span>Friends</span>
-        </li>
-        <li role="option" aria-selected="false" data-value="Social Media" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-          <span>Social Media</span>
-        </li>
-        <li role="option" aria-selected="false" data-value="Website" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-          <span>Website</span>
-        </li>
-        <li role="option" aria-selected="false" data-value="Other" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-          <span>Other</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Agreement -->
-  <div class="pt-4 pb-2">
-    <label class="block text-2xl md:text-3xl text-[#003060] font-inter font-semibold mb-7">
-      I agree to participate in the program until its completion
-    </label>
-    <label class="flex items-center gap-3 cursor-pointer group w-fit">
-      <div class="relative flex items-center justify-center">
-        <input type="checkbox" name="agreement" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
-        <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
-      </div>
-      <span class="text-slate-700 group-hover:text-[#0B3A68] transition-colors font-inter font-medium text-base sm:text-2xl">Yes, I agree</span>
-    </label>
-  </div>
-
-  <!-- Next Button -->
-  <div class="pt-4 max-w-[760px]">
-    <button type="button" onclick="goToStep(2)" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center gap-[20px] font-semibold transition-colors">
-      <span>Next</span>
-      <i class="fa-solid fa-arrow-right text-xl pt-0.5"></i>
-    </button>
-  </div>
 </form>
-
-<script>
-  (function initCustomDropdowns() {
-    function setupDropdowns() {
-      const dropdownContainers = document.querySelectorAll('.custom-dropdown');
-
-      dropdownContainers.forEach(container => {
-        const trigger = container.querySelector('.dropdown-trigger');
-        const menu = container.querySelector('.dropdown-menu');
-        const chevron = container.querySelector('.dropdown-chevron');
-        const label = container.querySelector('.dropdown-label');
-        const hiddenInput = container.querySelector('input[type="hidden"]');
-        const options = container.querySelectorAll('.dropdown-option');
-
-        if (!trigger || !menu) return;
-
-        let isOpen = false;
-        let highlightedIndex = -1;
-
-        function toggleDropdown(forceState) {
-          isOpen = forceState !== undefined ? forceState : !isOpen;
-
-          trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-
-          if (isOpen) {
-            dropdownContainers.forEach(otherContainer => {
-              if (otherContainer !== container) {
-                const otherTrigger = otherContainer.querySelector('.dropdown-trigger');
-                const otherMenu = otherContainer.querySelector('.dropdown-menu');
-                const otherChevron = otherContainer.querySelector('.dropdown-chevron');
-                if (otherMenu && !otherMenu.classList.contains('invisible')) {
-                  otherMenu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-                  otherMenu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-                  if (otherChevron) otherChevron.classList.remove('rotate-180');
-                  if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
-                }
-              }
-            });
-
-            menu.classList.remove('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-            menu.classList.add('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-            if (chevron) chevron.classList.add('rotate-180');
-
-            highlightedIndex = Array.from(options).findIndex(opt => opt.getAttribute('aria-selected') === 'true');
-            if (highlightedIndex >= 0) {
-              updateFocusedOption(highlightedIndex);
-            }
-          } else {
-            menu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-            menu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-            if (chevron) chevron.classList.remove('rotate-180');
-            highlightedIndex = -1;
-          }
-        }
-
-        function updateFocusedOption(index) {
-          options.forEach((opt, idx) => {
-            if (idx === index) {
-              opt.classList.add('ring-2', 'ring-[#003060]');
-              opt.scrollIntoView({ block: 'nearest' });
-            } else {
-              opt.classList.remove('ring-2', 'ring-[#003060]');
-            }
-          });
-        }
-
-        function selectOption(option) {
-          const selectedValue = option.getAttribute('data-value');
-          
-          if (hiddenInput) {
-            hiddenInput.value = selectedValue;
-          }
-
-          if (label) {
-            label.textContent = selectedValue;
-            label.classList.remove('text-[#676767]', 'text-slate-400');
-            label.classList.add('text-black');
-          }
-
-          options.forEach(opt => {
-            const isSelected = opt === option;
-            opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-
-            const checkIcon = opt.querySelector('.fa-check');
-            if (isSelected) {
-              opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between';
-              if (!checkIcon) {
-                opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-sm text-[#003060]"></i>');
-              }
-            } else {
-              opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between';
-              if (checkIcon) {
-                checkIcon.remove();
-              }
-            }
-          });
-
-          toggleDropdown(false);
-          trigger.focus();
-          container.dispatchEvent(
-            new CustomEvent('dropdown:change', {
-              bubbles: true,
-              detail: { value: selectedValue }
-            })
-          );
-        }
-
-        container.__selectOptionByValue = function(value) {
-          const option = Array.from(options).find(opt => opt.getAttribute('data-value') === value);
-          if (option) {
-            selectOption(option);
-          }
-        };
-
-        trigger.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleDropdown();
-        });
-
-        options.forEach(option => {
-          option.addEventListener('click', function (e) {
-            e.stopPropagation();
-            selectOption(option);
-          });
-        });
-
-        trigger.addEventListener('keydown', function (e) {
-          if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Escape'].includes(e.key)) {
-            e.preventDefault();
-          }
-
-          if (e.key === 'Enter' || e.key === ' ') {
-            if (!isOpen) {
-              toggleDropdown(true);
-            } else if (highlightedIndex >= 0 && options[highlightedIndex]) {
-              selectOption(options[highlightedIndex]);
-            }
-          } else if (e.key === 'Escape') {
-            toggleDropdown(false);
-          } else if (e.key === 'ArrowDown') {
-            if (!isOpen) {
-              toggleDropdown(true);
-            } else {
-              highlightedIndex = (highlightedIndex + 1) % options.length;
-              updateFocusedOption(highlightedIndex);
-            }
-          } else if (e.key === 'ArrowUp') {
-            if (!isOpen) {
-              toggleDropdown(true);
-            } else {
-              highlightedIndex = (highlightedIndex - 1 + options.length) % options.length;
-              updateFocusedOption(highlightedIndex);
-            }
-          }
-        });
-
-        document.addEventListener('click', function (e) {
-          if (!container.contains(e.target) && isOpen) {
-            toggleDropdown(false);
-          }
-        });
-      });
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', setupDropdowns);
-    } else {
-      setupDropdowns();
-    }
-  })();
-</script>
 
 <script>
   (function initRegistrationDraftStorage() {
@@ -305,7 +121,8 @@
       const fullName = form.querySelector('input[name="fullName"]')?.value?.trim() || '';
       const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
       const whatsappNumber = form.querySelector('input[name="whatsappNumber"]')?.value?.trim() || '';
-      const source = form.querySelector('input[name="source"]')?.value || '';
+      const sourceInput = form.querySelector('input[name="source"], select[name="source"]');
+      const source = sourceInput?.value || '';
       const agreement = Boolean(form.querySelector('input[name="agreement"]')?.checked);
 
       return {
@@ -319,6 +136,11 @@
 
     const applySourceValue = (sourceValue) => {
       if (!sourceValue) return;
+      const selectElement = form.querySelector('select[name="source"]');
+      if (selectElement) {
+        selectElement.value = sourceValue;
+        return;
+      }
       const sourceContainer = document.getElementById('dropdown-source');
       if (!sourceContainer || typeof sourceContainer.__selectOptionByValue !== 'function') return;
       sourceContainer.__selectOptionByValue(sourceValue);

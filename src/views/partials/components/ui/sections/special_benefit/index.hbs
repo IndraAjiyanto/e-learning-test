@@ -3,127 +3,149 @@
   Lokasi: src/views/partials/components/ui/sections/special_benefit/index.hbs
   Props: category (.name), benefit_category[], lang, isJapan.
 --}}
-<section class="w-full bg-[#F9FAFB] py-14 font-inter lg:py-20">
-  <div class="page-shell flex flex-col items-center gap-12 lg:gap-14">
+<section class="w-full bg-[#FAFAFA] py-16 lg:py-24 font-inter">
+  <div class="max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-10">
 
-    {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
-      {{!-- Section Header sesuai Figma Layer 4 --}}
-      <div class="flex max-w-[600px] flex-col items-center gap-3 text-center">
-        {{> components/ui/text/eyebrow/index text="Our Strengths" dotColor="#6EB6E5" }}
-        <h2 class="font-montserrat text-3xl font-bold tracking-[-0.01em] text-[#0B1F3B] sm:text-4xl">
-          Why Choose Our <span class="text-[#003060]">Japan Program</span>?
-        </h2>
-        <p class="font-inter text-[15px] leading-relaxed text-[#6B7280]">
-          Everything you need to go from beginner to career-ready in Japan.
-        </p>
-      </div>
-
-      {{!-- 6 Features Grid (Figma Layer 4) --}}
-      <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {{#if benefit_category.length}}
-          {{#each benefit_category}}
-            <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-              <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-                <i class="{{computeIcon icon}} text-base" aria-hidden="true"></i>
-              </span>
-              <div class="flex flex-col">
-                <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">{{getByLang this.title ../lang}}</h3>
-                <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">{{getByLang this.description ../lang}}</p>
-              </div>
-            </div>
-          {{/each}}
+    {{!-- section-header (Figma: width 1568px, gap 12px, text center) --}}
+    <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1568px]">
+      <h2 class="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#111827] text-center max-w-[707px]">
+        Why Choose <span class="text-[#6EB6E5]">Our {{#if (includes category.name 'japan')}}Japan Program{{else}}{{default category.name "Program"}}{{/if}}</span>?
+      </h2>
+      <p class="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280] text-center max-w-[760px]">
+        {{#if (includes category.name 'japan')}}
+          Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.
+        {{else if (getByLang category.description lang)}}
+          {{getByLang category.description lang}}
         {{else}}
-          {{!-- 6 Fallback Feature Cards directly from Figma --}}
-          {{!-- Card 1: Language Training --}}
-          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-              <i class="fa-solid fa-language text-base" aria-hidden="true"></i>
-            </span>
-            <div class="flex flex-col">
-              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Language Training</h3>
-              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Structured curriculum from N5 to N3 with intensive speaking practice.</p>
-            </div>
-          </div>
-
-          {{!-- Card 2: Experienced Instructors --}}
-          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-              <i class="fa-solid fa-chalkboard-user text-base" aria-hidden="true"></i>
-            </span>
-            <div class="flex flex-col">
-              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Experienced Instructors</h3>
-              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Native Japanese teachers and certified bilingual Indonesian mentors.</p>
-            </div>
-          </div>
-
-          {{!-- Card 3: JLPT Preparation --}}
-          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-              <i class="fa-solid fa-certificate text-base" aria-hidden="true"></i>
-            </span>
-            <div class="flex flex-col">
-              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">JLPT Preparation</h3>
-              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Targeted mock tests, test strategies, and performance tracking.</p>
-            </div>
-          </div>
-
-          {{!-- Card 4: Career & Job Support --}}
-          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-              <i class="fa-solid fa-briefcase text-base" aria-hidden="true"></i>
-            </span>
-            <div class="flex flex-col">
-              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Career & Job Support</h3>
-              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">CV review, interview simulations, and placement network in Japan.</p>
-            </div>
-          </div>
-
-          {{!-- Card 5: Interactive Classes --}}
-          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-              <i class="fa-solid fa-users text-base" aria-hidden="true"></i>
-            </span>
-            <div class="flex flex-col">
-              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Interactive Classes</h3>
-              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Small-batch learning ensuring every student gets active speaking time.</p>
-            </div>
-          </div>
-
-          {{!-- Card 6: Culture & Workplace --}}
-          <div class="flex flex-row items-start gap-4 rounded-[14px] border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] bg-[#E0F2FE] text-[#003060]">
-              <i class="fa-solid fa-torii-gate text-base" aria-hidden="true"></i>
-            </span>
-            <div class="flex flex-col">
-              <h3 class="font-montserrat text-[16px] font-semibold text-[#0B1F3B]">Culture & Workplace</h3>
-              <p class="mt-1 font-inter text-[13px] leading-[20px] text-[#6B7280]">Business manners, Japanese corporate etiquette, and living guidance.</p>
-            </div>
-          </div>
+          Gain the skills, practical experience, and industry readiness needed with comprehensive guidance from experienced mentors.
         {{/if}}
-      </div>
+      </p>
+    </div>
 
-    {{else}}
-      {{!-- Generic Special Program Why Choose Us --}}
-      <div class="flex max-w-[680px] flex-col items-center gap-4 text-center">
-        {{> components/ui/text/eyebrow/index text=(t 'test.special_program.whyChooseUs.eyebrow') }}
-        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">
-          {{t 'test.special_program.whyChooseUs.title'}} <span class="text-[#6EB6E5]">{{category.name}}</span>?
-        </h2>
-        <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.whyChooseUs.description'}}</p>
-      </div>
-
-      <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
+    {{!-- feature-grid (Figma: width 1568px, gap 24px, 2 rows of 3 cards) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1568px]">
+      {{#if benefit_category.length}}
         {{#each benefit_category}}
-          <div class="flex flex-col items-start gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)] lg:p-8">
-            <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-[#E0F2F9] text-[#003060]">
-              <i class="{{computeIcon icon}} text-lg" aria-hidden="true"></i>
-            </span>
-            <h3 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#0B1F3B]">{{getByLang this.title ../lang}}</h3>
-            <p class="{{sizeClass 'body'}} font-inter text-[#4A5568]">{{getByLang this.description ../lang}}</p>
+          {{!-- feature-card (Figma: 505x245px, p-6, gap 12px, rounded 20px, bg-white, border #E5E7EB) --}}
+          <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+            {{!-- Frame (Figma: 44x44, rounded 14px, bg rgba(110, 182, 229, 0.08)) --}}
+            <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0 text-[#0B1F3B]">
+              <i class="{{computeIcon this.icon}} text-[20px]" aria-hidden="true"></i>
+            </div>
+            <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+              {{getByLang this.title ../lang}}
+            </h3>
+            <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+              {{getByLang this.description ../lang}}
+            </p>
           </div>
         {{/each}}
-      </div>
-    {{/if}}
+      {{else}}
+        {{!-- 6 Fallback Feature Cards --}}
+        
+        {{!-- Card 1: book-open --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{#if (or isJapan (includes category.name 'japan'))}}Comprehensive Japanese Language Training{{else}}Comprehensive Industry Curriculum{{/if}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{#if (or isJapan (includes category.name 'japan'))}}Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.{{else}}Master in-demand skills through a structured, project-driven curriculum designed with industry partners.{{/if}}
+          </p>
+        </div>
+
+        {{!-- Card 2: users --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            Experienced Mentors &amp; Practitioners
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            Learn directly from seasoned industry practitioners who provide 1-on-1 feedback, practical insights, and guidance throughout your learning journey.
+          </p>
+        </div>
+
+        {{!-- Card 3: award --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="7"></circle>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{#if (or isJapan (includes category.name 'japan'))}}JLPT Preparation &amp; Certification{{else}}Industry Certification &amp; Portfolio{{/if}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{#if (or isJapan (includes category.name 'japan'))}}Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.{{else}}Build verified, production-grade portfolios and gain recognized certificates to accelerate your career growth.{{/if}}
+          </p>
+        </div>
+
+        {{!-- Card 4: briefcase --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            Career &amp; Placement Support
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            Receive comprehensive career support, CV review, mock interviews, and exclusive hiring partner access to kickstart your professional journey.
+          </p>
+        </div>
+
+        {{!-- Card 5: handshake --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.6-4.6a2 2 0 0 0 0-2.8l-3.2-3.2a2 2 0 0 0-2.8 0L11 10.4"></path>
+              <path d="m18 10 3.3-3.3a2 2 0 0 0 0-2.8l-.9-.9a2 2 0 0 0-2.8 0L14 6.6"></path>
+              <path d="m2 14 6 6"></path>
+              <path d="m3.4 12.6 6.3 6.3"></path>
+              <path d="m7 7 4.3 4.3"></path>
+              <path d="M7 7 3.7 3.7a2 2 0 0 0-2.8 0l-.9.9a2 2 0 0 0 0 2.8L3.3 10.7"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            Hands-On &amp; Real-World Practice
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            Learn through real-world case studies, hands-on client projects, and collaborative workflows that simulate actual workplace conditions.
+          </p>
+        </div>
+
+        {{!-- Card 6: map-pin --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            Workplace Readiness &amp; Soft Skills
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            Cultivate professional work ethics, team collaboration, and communication skills to excel in any fast-paced engineering team.
+          </p>
+        </div>
+      {{/if}}
+    </div>
 
   </div>
 </section>

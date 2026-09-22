@@ -1,0 +1,83 @@
+{{!--
+  Komponen: Input Text (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/input/text/index.hbs
+
+  Input teks serbaguna dengan dukungan label, ikon, validasi HTML5, dan varian styling (default / accent).
+
+  Props:
+  - name         : string (default: 'text')
+  - id           : string (default: name)
+  - label        : string (opsional)
+  - type         : string (default: 'text', bisa 'text'|'email'|'tel'|'number')
+  - placeholder  : string (opsional)
+  - value        : string (opsional)
+  - required     : boolean (default: false)
+  - disabled     : boolean (default: false)
+  - readonly     : boolean (default: false)
+  - icon         : string (opsional, class FontAwesome mis. 'fa-regular fa-comment-dots')
+  - variant      : string ('default' | 'accent', default: 'default')
+  - hint         : string (opsional)
+  - error        : string (opsional)
+  - wrapperClass : string (opsional)
+  - labelClass   : string (opsional)
+  - inputClass   : string (opsional)
+--}}
+
+<div class="flex flex-col items-start gap-2 w-full {{wrapperClass}}">
+  {{#if label}}
+    <label
+      for="{{default id (default name 'text')}}"
+      class="
+        {{#if (eq variant 'accent')}}
+          font-inter font-normal text-base sm:text-xl text-[#0A356D]
+        {{else}}
+          font-montserrat font-medium text-base sm:text-xl text-[#003060]
+        {{/if}}
+        {{labelClass}}
+      "
+    >
+      {{label}}{{#if required}}<span class="text-red-500 ml-1">*</span>{{/if}}
+    </label>
+  {{/if}}
+
+  <div class="relative w-full">
+    {{#if icon}}
+      <div class="pointer-events-none absolute inset-y-0 left-4 sm:left-6 flex items-center text-[#7895BD]">
+        <i class="{{icon}} text-xl sm:text-2xl"></i>
+      </div>
+    {{/if}}
+
+    <input
+      type="{{default type 'text'}}"
+      id="{{default id (default name 'text')}}"
+      name="{{default name 'text'}}"
+      {{#if value}}value="{{value}}"{{/if}}
+      placeholder="{{default placeholder 'Enter value'}}"
+      {{#if required}}required{{/if}}
+      {{#if disabled}}disabled{{/if}}
+      {{#if readonly}}readonly{{/if}}
+      class="
+        w-full transition-all duration-200 bg-white
+        {{#if (eq variant 'accent')}}
+          h-14 sm:h-[64px] border-2 border-[#D7E4F2] rounded-[12px]
+          {{#if icon}}pl-14 sm:pl-16 pr-5{{else}}px-5 sm:px-6{{/if}}
+          font-inter font-normal text-base sm:text-xl text-[#0A356D]
+          placeholder:text-[#7895BD] focus:outline-none focus:ring-2 focus:ring-[#1677F2] focus:border-[#1677F2]
+        {{else}}
+          h-12 sm:h-[54px] border border-[#D9D9D9] rounded-[8px]
+          {{#if icon}}pl-12 sm:pl-14 pr-4{{else}}px-4 py-2.5{{/if}}
+          font-montserrat font-normal text-base sm:text-xl text-slate-800
+          placeholder:text-[#718096] focus:outline-none focus:ring-2 focus:ring-[#003060] focus:border-[#003060]
+        {{/if}}
+        {{#if error}}border-red-500 focus:ring-red-400{{/if}}
+        {{inputClass}}
+      "
+    />
+  </div>
+
+  {{#if error}}
+    <p class="font-inter text-xs sm:text-sm text-red-500 mt-0.5">{{error}}</p>
+  {{else if hint}}
+    <p class="font-inter text-xs sm:text-sm text-gray-500 mt-0.5">{{hint}}</p>
+  {{/if}}
+</div>

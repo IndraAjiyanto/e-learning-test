@@ -1354,12 +1354,15 @@ export class CoursesService {
       where: { id: courseId },
       relations: [
         'category',
+        'category.gallery',
+        'category.benefit_category',
         'courseType',
         'technologies',
         'userCourses',
         'weeks',
         'programBenefits',
         'participants',
+        'courseFlow',
       ],
     });
     if (!course) {
@@ -1374,6 +1377,7 @@ export class CoursesService {
       relations: [
         'category',
         'category.gallery',
+        'category.benefit_category',
         'courseType',
         'userCourses',
         'userCourses.user',

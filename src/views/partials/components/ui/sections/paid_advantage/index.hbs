@@ -1,35 +1,256 @@
 {{!--
-  Section: Paid Advantage - "Core Knowledge First" (L2) - reskin ke standar internal.
+  Section: Paid Advantage / Why Choose ("Why Study at Kesatria Academy?") (Level 2 - Section)
   Lokasi: src/views/partials/components/ui/sections/paid_advantage/index.hbs
-  4 poin keunggulan (teks statis dari i18n). .page-shell, sizeClass.
+
+  Slicing lengkap Why Choose Section untuk Paid Program sesuai spesifikasi Figma Layer:
+  - Width: 1728px, Height: 522px (desktop)
+  - Background: linear-gradient(63.43deg, #264673 33.33%, #2C5C9C 66.67%, #264673 100%)
+  - Padding: 50px 0px, Gap: 50px, isolation: isolate
+  - Dekorasi visual: 22 floating elements (circles, dots, lines, rects, crosses) dengan posisi pixel presisi
+  - Header:
+    - Eyebrow: "KEY ADVANTAGES" (Outfit 700 14px, line-height 120%, text-align center, #93C5FD)
+    - Headline: "Why Study at Kesatria Academy?" (Outfit 700 32px, line-height 120%, text-align center, #FFFFFF)
+  - Grid: 4 Frosted Glass Cards (1-on-1 Mentoring, Real-World Portfolio, Career Support, Competency Certificate)
+    - Card: bg rgba(255, 255, 255, 0.78), border 1px solid rgba(255, 255, 255, 0.1), backdrop-blur 6.9px, rounded 20px, p-7
+    - Menggunakan komponen atomik: components/ui/card/advantage_card/index
+
+  Props:
+  - benefit_category : array (dari category page, table benefit_category)
+  - course_benefits  : array (dari course detail page, table program_benefits)
+  - course           : object
+  - lang             : string (bahasa aktif)
 --}}
-<section id="advantage" class="w-full bg-[#F8F9FA] py-14 font-inter lg:py-20">
-  <div class="page-shell">
-    <div class="flex flex-col gap-8 rounded-3xl border border-[#E5E7EB] bg-white p-8 shadow-[0px_12px_32px_-12px_rgba(11,31,59,0.08)] lg:p-12">
 
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center gap-4">
-          <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-[#E0F2F9] text-[#003060]">
-            <i class="fas fa-lightbulb text-lg" aria-hidden="true"></i>
-          </span>
-          <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{t 'test.categoryPaidProgram.advantage.title'}}</h2>
-        </div>
-        <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.categoryPaidProgram.advantage.description'}}</p>
-      </div>
+<section 
+  id="advantage" 
+  class="relative w-full overflow-hidden py-[50px] lg:py-[60px]"
+  style="background: linear-gradient(63.43deg, #264673 33.33%, #2C5C9C 66.67%, #264673 100%); isolation: isolate;"
+  data-node-id="why-choose"
+>
+  {{!-- Decorative Background Shapes (22 Elemen Spesifikasi Figma Layer CSS) --}}
+  <div class="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none">
+    
+    {{!-- deco-circle-large-1: 340x340, left: -80px, top: -80px, blur: 1px --}}
+    <div 
+      class="absolute size-[340px] rounded-full border border-white/[0.051] bg-white/[0.02] blur-[1px]"
+      style="left: -80px; top: -80px;"
+    ></div>
 
-      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {{#each (array
-          (t 'test.categoryPaidProgram.advantage.point1')
-          (t 'test.categoryPaidProgram.advantage.point2')
-          (t 'test.categoryPaidProgram.advantage.point3')
-          (t 'test.categoryPaidProgram.advantage.point4')
-        )}}
-          <li class="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
-            <i class="fas fa-circle-check mt-0.5 shrink-0 text-[#0284C7]" aria-hidden="true"></i>
-            <span class="{{sizeClass 'body'}} font-inter text-[#374151]">{{this}}</span>
-          </li>
-        {{/each}}
-      </ul>
+    {{!-- deco-circle-large-2: 400x400, right: -120px, bottom: -100px --}}
+    <div 
+      class="absolute size-[400px] rounded-full border border-white/[0.031] bg-white/[0.016]"
+      style="right: -120px; bottom: -100px;"
+    ></div>
+
+    {{!-- deco-circle-med-1: 120x120, left: 200px, top: 40px --}}
+    <div 
+      class="absolute size-[120px] rounded-full border border-[#4A90D9]/[0.102]"
+      style="left: 200px; top: 40px;"
+    ></div>
+
+    {{!-- deco-circle-med-2: 80x80, right: 280px, top: 180px --}}
+    <div 
+      class="absolute size-[80px] rounded-full border border-[#4A90D9]/[0.078]"
+      style="right: 280px; top: 180px;"
+    ></div>
+
+    {{!-- deco-circle-small-1: 48x48, left: 900px, bottom: 60px --}}
+    <div 
+      class="absolute size-12 rounded-full border border-white/[0.102] bg-white/[0.031]"
+      style="left: 900px; bottom: 60px;"
+    ></div>
+
+    {{!-- deco-circle-small-2: 32x32, left: 60px, top: 300px --}}
+    <div 
+      class="absolute size-8 rounded-full border border-white/[0.078]"
+      style="left: 60px; top: 300px;"
+    ></div>
+
+    {{!-- deco-dot-1: 6x6, left: 120px, top: 90px --}}
+    <div 
+      class="absolute size-1.5 rounded-full bg-white/20"
+      style="left: 120px; top: 90px;"
+    ></div>
+
+    {{!-- deco-dot-2: 4x4, left: 180px, top: 140px --}}
+    <div 
+      class="absolute size-1 rounded-full bg-white/[0.133]"
+      style="left: 180px; top: 140px;"
+    ></div>
+
+    {{!-- deco-dot-3: 6x6, right: 160px, top: 80px --}}
+    <div 
+      class="absolute size-1.5 rounded-full bg-white/20"
+      style="right: 160px; top: 80px;"
+    ></div>
+
+    {{!-- deco-dot-4: 4x4, right: 220px, top: 130px --}}
+    <div 
+      class="absolute size-1 rounded-full bg-white/[0.133]"
+      style="right: 220px; top: 130px;"
+    ></div>
+
+    {{!-- deco-dot-5: 5x5, left: 800px, bottom: 100px --}}
+    <div 
+      class="absolute size-[5px] rounded-full bg-[#4A90D9]/[0.267]"
+      style="left: 800px; bottom: 100px;"
+    ></div>
+
+    {{!-- deco-dot-6: 4x4, left: 400px, top: 30px --}}
+    <div 
+      class="absolute size-1 rounded-full bg-white/[0.102]"
+      style="left: 400px; top: 30px;"
+    ></div>
+
+    {{!-- deco-dot-7: 6x6, right: 400px, bottom: 120px --}}
+    <div 
+      class="absolute size-1.5 rounded-full bg-[#4A90D9]/20"
+      style="right: 400px; bottom: 120px;"
+    ></div>
+
+    {{!-- deco-line-1: 60px x 1px, left: 60px, top: 170px, rotate(-30deg) --}}
+    <div 
+      class="absolute h-px w-[60px] rounded-full bg-white/[0.071]"
+      style="left: 60px; top: 170px; transform: rotate(-30deg);"
+    ></div>
+
+    {{!-- deco-line-2: 80px x 1px, right: 80.5px, top: 250px, rotate(30deg) --}}
+    <div 
+      class="absolute h-px w-[80px] rounded-full bg-white/[0.059]"
+      style="right: 80.5px; top: 250px; transform: rotate(30deg);"
+    ></div>
+
+    {{!-- deco-line-3: 50px x 1px, left: 299.74px, bottom: 80px, rotate(15deg) --}}
+    <div 
+      class="absolute h-px w-[50px] rounded-full bg-white/[0.071]"
+      style="left: 299.74px; bottom: 80px; transform: rotate(15deg);"
+    ></div>
+
+    {{!-- deco-rect-1: 80x80, right: 70.71px, top: 40px, rotate(15deg), rounded 12px --}}
+    <div 
+      class="absolute size-20 rounded-[12px] bg-white/[0.02]"
+      style="right: 70.71px; top: 40px; transform: rotate(15deg);"
+    ></div>
+
+    {{!-- deco-rect-2: 60x60, left: 40px, bottom: 52.47px, rotate(-12deg), rounded 10px --}}
+    <div 
+      class="absolute size-[60px] rounded-[10px] bg-[#4A90D9]/[0.031]"
+      style="left: 40px; bottom: 52.47px; transform: rotate(-12deg);"
+    ></div>
+
+    {{!-- deco-rect-3: 40x40, left: 686.32px, top: 20px, rotate(20deg), rounded 6px --}}
+    <div 
+      class="absolute size-10 rounded-[6px] bg-white/[0.024]"
+      style="left: 686.32px; top: 20px; transform: rotate(20deg);"
+    ></div>
+
+    {{!-- deco-x-1 (cross 1): left: 1378.59px, top: 313px --}}
+    <div 
+      class="absolute size-5"
+      style="left: 1378.59px; top: 313px;"
+    >
+      <span class="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 rotate-45 rounded-full bg-white/[0.125]"></span>
+      <span class="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 -rotate-45 rounded-full bg-white/[0.125]"></span>
     </div>
+
+    {{!-- deco-x-2 (cross 2): left: 218.59px, bottom: 155px --}}
+    <div 
+      class="absolute size-4"
+      style="left: 218.59px; bottom: 155px;"
+    >
+      <span class="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 rotate-45 rounded-full bg-[#4A90D9]/[0.188]"></span>
+      <span class="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 -rotate-45 rounded-full bg-[#4A90D9]/[0.188]"></span>
+    </div>
+
+  </div>
+
+  {{!-- Content Container (Figma: width 1608px, gap 50px) --}}
+  <div class="relative z-10 mx-auto flex w-full max-w-[1608px] flex-col items-center gap-[50px] px-4 sm:px-6 lg:px-8">
+    
+    {{!-- Section Header (Figma: Frame 2147229479, gap 12px, text-center) --}}
+    <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1608px]">
+      <span class="font-outfit text-sm font-bold uppercase leading-[120%] tracking-wider text-[#93C5FD]">
+        KEY ADVANTAGES
+      </span>
+      <h2 class="font-outfit text-2xl sm:text-3xl lg:text-[32px] font-bold leading-[120%] text-white">
+        Why Study at Kesatria Academy?
+      </h2>
+    </div>
+
+    {{!-- Benefit Cards Grid (Figma: why-choose-row-1, width 1608px, gap 24px) --}}
+    <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      
+      {{#if course.programBenefits.length}}
+        {{!-- Dynamic Benefit Data dari Backend (table program_benefits via course.programBenefits) --}}
+        {{#each course.programBenefits}}
+          {{> components/ui/card/advantage_card/index
+              icon=this.icon
+              title=this.benefit
+              description=this.description
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else if course_benefits.length}}
+        {{!-- Dynamic Benefit Data dari Backend (table program_benefits / course_benefits) --}}
+        {{#each course_benefits}}
+          {{> components/ui/card/advantage_card/index
+              icon=this.icon
+              title=this.benefit
+              description=this.description
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else if benefit_category.length}}
+        {{!-- Dynamic Benefit Data dari Backend (table benefit_category) --}}
+        {{#each benefit_category}}
+          {{> components/ui/card/advantage_card/index
+              icon=this.icon
+              title=this.title
+              description=this.description
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else}}
+        {{!-- Fallback 4 Cards Persis Sesuai Spesifikasi Figma --}}
+        
+        {{!-- Card 1: 1-on-1 Mentoring --}}
+        {{> components/ui/card/advantage_card/index
+            iconType="mentoring"
+            title="1-on-1 Mentoring"
+            description="Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio."
+            lang=lang
+        }}
+
+        {{!-- Card 2: Real-World Portfolio --}}
+        {{> components/ui/card/advantage_card/index
+            iconType="portfolio"
+            title="Real-World Portfolio"
+            description="Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes."
+            lang=lang
+        }}
+
+        {{!-- Card 3: Career Support --}}
+        {{> components/ui/card/advantage_card/index
+            iconType="career"
+            title="Career Support"
+            description="CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network."
+            lang=lang
+        }}
+
+        {{!-- Card 4: Competency Certificate --}}
+        {{> components/ui/card/advantage_card/index
+            iconType="certificate"
+            title="Competency Certificate"
+            description="Earn an official graduation certificate to prove your practical skills to recruiters."
+            lang=lang
+        }}
+
+      {{/if}}
+
+    </div>
+
   </div>
 </section>
