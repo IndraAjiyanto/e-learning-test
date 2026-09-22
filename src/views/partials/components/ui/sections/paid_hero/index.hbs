@@ -3,8 +3,8 @@
   Lokasi: src/views/partials/components/ui/sections/paid_hero/index.hbs
   Satu pohon markup, base + lg. .page-shell, font-inter heading + body.
   Layout: eyebrow + headline + desc + CTA pill + meta chips (kiri) | image (kanan) + feature strip (bawah).
-  Meta chips & feature strip fallback di-hardcode (data benefit_category belum ada di DB).
-  Props: category (.name, .description, .hero_section_image, .contact, .type), benefit_category, lang.
+  Feature strip fallback di-hardcode (data benefit_category belum ada di DB). Meta chips dari category.courseTypes.
+  Props: category (.name, .description, .hero_section_image, .contact, .type, .courseTypes), benefit_category, lang.
 --}}
 {{#*inline 'paidHeroFeature'}}
   <div class="flex flex-1 items-center gap-4">
@@ -87,20 +87,33 @@
       {{!-- divider line --}}
       <div class="w-full border-t border-[#E5E7EB]"></div>
 
-      {{!-- hero-meta: chips --}}
+      {{!-- hero-meta: chips -> table category -> table course type column icon dan nameClassesType --}}
       <div class="flex flex-wrap items-center gap-3">
-        <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-          <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
-            <i class="fas fa-check text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+        {{#if category.courseTypes.length}}
+          {{#each category.courseTypes}}
+            <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
+                <i class="{{computeIcon this.icon}} text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+              </span>
+              <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B] whitespace-nowrap">
+                {{this.nameClassesType}}
+              </span>
+            </span>
+          {{/each}}
+        {{else}}
+          <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+            <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
+              <i class="fas fa-check text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+            </span>
+            <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B]">N5 readiness curriculum</span>
           </span>
-          <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B]">N5 readiness curriculum</span>
-        </span>
-        <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-          <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
-            <i class="fas fa-check text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+          <span class="inline-flex items-center gap-2.5 rounded-full border border-[#6EB6E333] bg-[#6EB6E51A] px-3.5 py-2.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+            <span class="grid size-6 shrink-0 place-items-center rounded-full border border-[#6EB6E333] bg-white">
+              <i class="fas fa-check text-[10px] text-[#0B1F3B]" aria-hidden="true"></i>
+            </span>
+            <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B]">Career &amp; study support</span>
           </span>
-          <span class="font-inter text-[13px] font-semibold leading-4 text-[#0B1F3B]">Career &amp; study support</span>
-        </span>
+        {{/if}}
       </div>
     </div>
 
@@ -120,20 +133,11 @@
   {{!-- floating-snapshot-card-horizontal: feature strip --}}
   <div class="page-shell relative pb-14 lg:pb-20">
     <div class="mx-auto flex max-w-[900px] flex-col items-center justify-between gap-6 rounded-[20px] border border-[#E5E7EB] bg-white px-6 py-[18px] shadow-[0px_16px_32px_-4px_rgba(11,31,59,0.05)] sm:flex-row sm:gap-0 sm:px-6 lg:px-6">
-      {{#if benefit_category.length}}
-        {{#each benefit_category}}
-          {{#unless @first}}
-            <div class="hidden h-12 w-px shrink-0 bg-[#E5E7EB] sm:block" aria-hidden="true"></div>
-          {{/unless}}
-          {{> paidHeroFeature icon=icon title=(getByLang this.title ../lang) description=(getByLang this.description ../lang)}}
-        {{/each}}
-      {{else}}
         {{> paidHeroFeature icon="fa-solid fa-book-open" title="Comprehensive curriculum" description="Language + culture + career prep"}}
         <div class="hidden h-12 w-px shrink-0 bg-[#E5E7EB] sm:block" aria-hidden="true"></div>
         {{> paidHeroFeature icon="fa-solid fa-user-group" title="Mentor-led learning" description="Experienced instructors & support"}}
         <div class="hidden h-12 w-px shrink-0 bg-[#E5E7EB] sm:block" aria-hidden="true"></div>
-        {{> paidHeroFeature icon="fa-solid fa-briefcase" title="Career & study pathways" description="Guidance for next steps in Japan"}}
-      {{/if}}
+        {{> paidHeroFeature icon="fa-solid fa-briefcase" title="Career & study pathways" description="Guidance for next steps in Japan"}}  
     </div>
   </div>
 </section>

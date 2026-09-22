@@ -1356,6 +1356,7 @@ export class CoursesService {
         'category',
         'category.gallery',
         'category.benefit_category',
+        'category.courseTypes',
         'courseType',
         'technologies',
         'userCourses',
