@@ -1,8 +1,10 @@
 export const logicHelpers = {
   eq: (a: any, b: any) => a == b,
   ne: (a: any, b: any) => a != b,
-  gte: (a: number, b: number) => a >= b,
-  gt: (a: number, b: number) => a > b,
+  gte: (a: any, b: any) => Number(a) >= Number(b),
+  gt: (a: any, b: any) => Number(a) > Number(b),
+  lte: (a: any, b: any) => Number(a) <= Number(b),
+  lt: (a: any, b: any) => Number(a) < Number(b),
   or: (...args: any[]) => {
     args.pop();
     return args.some(Boolean);

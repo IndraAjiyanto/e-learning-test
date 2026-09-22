@@ -27,24 +27,33 @@
     Complete your payment
   </h2>
 
-  <!-- Line Items List -->
+  <!-- Line Items List / Nota Pembayaran -->
   <div class="flex flex-col gap-4 w-full">
 
-    <!-- 1. Paling Atas: Nama Program & Harga Promo yang Berlaku -->
+    <!-- 1. Paling Atas: Menampilkan dari course.promo (atau harga program jika tanpa promo) -->
     <div class="flex justify-between items-start gap-4">
-      <span class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-snug flex-1">
-        {{courseTitle}} <span id="detail-payment-type" class="font-medium">(Full Payment)</span>
-      </span>
-      <span id="detail-price" class="font-sans font-semibold text-sm sm:text-base text-[#003060] shrink-0">
-        {{formatRupiah (default promoPrice (default basePrice 0))}}
+      <div class="flex flex-col">
+        <span class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-snug">
+          {{courseTitle}} <span id="detail-payment-type" class="font-medium text-xs sm:text-sm text-[#718096]">(Full Payment)</span>
+        </span>
+        {{#if (and promoPrice (gt promoPrice 0))}}
+          <span class="font-sans font-medium text-xs text-emerald-600 mt-0.5">Promo Price</span>
+        {{/if}}
+      </div>
+      <span id="detail-subtotal" class="font-sans font-semibold text-sm sm:text-base text-[#003060] shrink-0">
+        {{#if (and promoPrice (gt promoPrice 0))}}
+          {{formatRupiah promoPrice}}
+        {{else}}
+          {{formatRupiah (default basePrice 0)}}
+        {{/if}}
       </span>
     </div>
 
-    <!-- 2. Kedua: Harga Normal (Price) yang Dicoret jika ada promo -->
-    {{#if (and promoPrice basePrice (gt basePrice promoPrice))}}
+    <!-- 2. Di Bawahnya: Course Price yang Dicoret jika ada promo -->
+    {{#if (and promoPrice basePrice (gt promoPrice 0) (gt basePrice 0) (ne promoPrice basePrice))}}
       <div class="flex justify-between items-center gap-4">
         <span class="font-sans font-normal text-sm sm:text-base text-slate-400">
-          Normal Price
+          Course Price
         </span>
         <span class="font-sans font-normal text-sm sm:text-base text-slate-400 line-through shrink-0">
           {{formatRupiah basePrice}}
@@ -52,27 +61,29 @@
       </div>
     {{/if}}
 
-    <div class="border-t border-[#D9D9D9] w-full"></div>
-
-    <!-- 3. Ketiga: Potongan Diskon Voucher (Muncul jika ada voucher aktif) -->
+    <!-- 3. Di Bawahnya: Potongan Diskon Voucher (jika ada voucher aktif) -->
     <div id="discount-row" class="justify-between items-center gap-4 hidden">
       <span class="font-sans font-normal text-sm sm:text-base text-[#003060]">
-        Discount Voucher (<span id="display-promo-code" class="font-semibold"></span>)
+        Discount Voucher (<span id="display-promo-code" class="font-semibold text-emerald-700"></span>)
       </span>
       <span id="detail-voucher" class="font-sans font-semibold text-sm sm:text-base text-[#D22F27] shrink-0">
         - Rp 0
       </span>
     </div>
 
-    <div id="discount-divider" class="border-t border-[#D9D9D9] w-full hidden"></div>
+    <div class="border-t border-[#D9D9D9] w-full"></div>
 
-    <!-- 4. Paling Bawah: Total Final yang Harus Dibayarkan -->
+    <!-- 4. Paling Bawah: Harga Final (Total) yang Harus Dibayarkan -->
     <div class="flex justify-between items-center pt-1">
       <span class="font-sans font-bold text-lg sm:text-xl text-[#003060]">
         Total
       </span>
       <span id="detail-total" class="font-sans font-bold text-lg sm:text-xl text-[#003060] shrink-0">
-        {{formatRupiah (default promoPrice (default basePrice 0))}}
+        {{#if (and promoPrice (gt promoPrice 0))}}
+          {{formatRupiah promoPrice}}
+        {{else}}
+          {{formatRupiah (default basePrice 0)}}
+        {{/if}}
       </span>
     </div>
 

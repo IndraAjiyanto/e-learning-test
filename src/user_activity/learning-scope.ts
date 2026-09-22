@@ -149,19 +149,25 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
   {
     name: 'answer-assigment',
     method: 'ALL',
-    match: /^\/answer-assigment\/[^/]+\/(?<sessionId>[^/]+)$/,
+    match: /^\/answer-assigment\/(?<sessionId>[^/]+)(?:\/[^/]+)?$/,
     resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Tugas'),
+  },
+  {
+    name: 'direct-session',
+    method: 'GET',
+    match: /^\/session\/(?<sessionId>[^/]+)$/,
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Materi Sesi'),
   },
   {
     name: 'attendance-form',
     method: 'GET',
-    match: /^\/attendance\/form\/(?<id>[^/]+)$/,
+    match: /^\/attendance\/(?:form|create)\/(?<id>[^/]+)$/,
     resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Absensi'),
   },
   {
     name: 'attendance-create',
     method: 'POST',
-    match: /^\/attendance\/[^/]+\/[^/]+\/(?<courseId>[^/]+)$/,
+    match: /^\/attendance\/(?<sessionId>[^/]+)\/[^/]+\/(?<courseId>[^/]+)$/,
     resolve: async (ids) =>
       ids.courseId ? { courseId: ids.courseId, label: 'Absensi' } : null,
   },
@@ -171,6 +177,19 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     match: /^\/question\/quiz\/[^/]+\/(?<courseId>[^/]+)$/,
     resolve: async (ids) =>
       ids.courseId ? { courseId: ids.courseId, label: 'Quiz' } : null,
+  },
+  {
+    name: 'program-session-detail',
+    method: 'GET',
+    match: /^\/program\/session\/detail\/(?<sessionId>[^/]+)$/,
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Materi Sesi'),
+  },
+  {
+    name: 'program-course-detail',
+    method: 'GET',
+    match: /^\/program\/(?:program\/detail\/|detail\/)?(?<courseId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i,
+    resolve: async (ids) =>
+      ids.courseId ? { courseId: ids.courseId, label: 'Melihat Program' } : null,
   },
   {
     name: 'program-session',

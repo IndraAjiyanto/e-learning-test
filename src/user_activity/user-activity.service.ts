@@ -13,7 +13,6 @@ import {
   map,
 } from 'rxjs';
 import { UserActivity } from 'src/entities/user_activity.entity';
-import { ActivityLog } from 'src/entities/activity_log.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
@@ -59,6 +58,12 @@ export interface LearningParticipant {
   lastSeenHuman: string;
   bgColor: string;
   textColor: string;
+  hasAttended: boolean;
+  attendanceLabel: string;
+  hasSubmittedAssignment: boolean;
+  assignmentLabel: string;
+  hasCompletedQuiz: boolean;
+  quizLabel: string;
 }
 
 export interface WeeklyStat {
@@ -91,8 +96,6 @@ export class UserActivityService {
   constructor(
     @InjectRepository(UserActivity)
     private readonly activityRepository: Repository<UserActivity>,
-    @InjectRepository(ActivityLog)
-    private readonly activityLogRepository: Repository<ActivityLog>,
     @InjectRepository(UserCourse)
     private readonly userCourseRepository: Repository<UserCourse>,
     @InjectRepository(Course)
@@ -152,7 +155,7 @@ export class UserActivityService {
     }
 
     await this.activityRepository.save(activity);
-    await this.logActivity(userId, 'login', now);
+    this.events.emit(EVENT_LEARNING_UPDATED);
   }
 
   async touch(userId: string) {
@@ -165,8 +168,8 @@ export class UserActivityService {
 
   async markInactive(userId: string) {
     if (!userId) return;
-    await this.logActivity(userId, 'logout', new Date());
     await this.activityRepository.delete({ userId });
+    this.events.emit(EVENT_LEARNING_UPDATED);
   }
 
   async purgeExpired(maxAgeMinutes = 60) {
@@ -177,35 +180,16 @@ export class UserActivityService {
 
     if (stale.length === 0) return;
 
-    const now = new Date();
-    const events = stale.map((row) =>
-      this.activityLogRepository.create({
-        userId: row.userId,
-        eventType: 'expired',
-        eventAt: now,
-      }),
-    );
-    await this.activityLogRepository.save(events);
-
     const staleIds = stale.map((row) => row.id);
     await this.activityRepository.delete(staleIds);
-  }
-
-  private async logActivity(
-    userId: string,
-    eventType: 'login' | 'logout' | 'expired',
-    eventAt: Date,
-  ) {
-    await this.activityLogRepository.save(
-      this.activityLogRepository.create({ userId, eventType, eventAt }),
-    );
+    this.events.emit(EVENT_LEARNING_UPDATED);
   }
 
   /**
    * Dipanggil middleware global untuk setiap request.
    * - role 'user' + endpoint dalam scope pembelajaran  => set currentCourseId + label.
-   * - role 'user' + endpoint di luar scope              => reset currentCourseId + label (tidak belajar).
-   * - role lain                                        => cukup update lastSeenAt.
+   * - role 'user' + navigasi eksplisit ke luar scope   => reset currentCourseId + label.
+   * - role lain / background request non-exit         => cukup update lastSeenAt.
    */
   async handleRequest(user: any, req: Request) {
     if (!user?.id) return;
@@ -215,13 +199,15 @@ export class UserActivityService {
     }
 
     const method = (req.method ?? 'GET').toUpperCase();
-    const path = req.path || req.baseUrl || '/';
+    const rawUrl = req.originalUrl || req.url || req.path || '/';
+    const path = rawUrl.split('?')[0];
+
     const matched = matchLearningScope(method, path);
 
-    let courseId: string | null = null;
-    let label: string | null = null;
-
     if (matched) {
+      let courseId: string | null = null;
+      let label: string | null = null;
+
       try {
         const resolution = await matched.rule.resolve(
           matched.ids,
@@ -233,11 +219,25 @@ export class UserActivityService {
           label = resolution.label;
         }
       } catch (error) {
-        // Gagal resolve scope !== crash request; biarkan null (dianggap keluar scope).
+        // Gagal resolve scope !== crash request.
+      }
+
+      if (courseId) {
+        await this.updateActivity(user.id, courseId, label);
+        return;
       }
     }
 
-    await this.updateActivity(user.id, courseId, label);
+    // Jika tidak cocok dengan learning scope:
+    // Hanya reset courseId jika student membuka halaman non-learning utama secara eksplisit
+    // (misal: /dashboard, /users/profile tanpa tab belajar, /logout, dll.)
+    const isExplicitExit = /^\/(dashboard|users\/profile|portfolios|payments|history|alumni|login|register)(\/|$)/i.test(path);
+    if (isExplicitExit) {
+      await this.updateActivity(user.id, null, null);
+    } else {
+      // Background request atau aset atau sub-halaman lain tidak boleh menghapus status belajar
+      await this.touch(user.id);
+    }
   }
 
   private async updateActivity(
@@ -385,11 +385,168 @@ export class UserActivityService {
       activities.map((a) => a.currentCourseId ?? ''),
     );
 
+    const userIds = activities.map((a) => a.userId);
+    const courseIds = Array.from(
+      new Set(
+        activities
+          .map((a) => a.currentCourseId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    );
+
+    // Batch query untuk memeriksa absensi, tugas, dan kuis secara parallel
+    const [
+      attendances,
+      assignmentsTotal,
+      assignmentsSubmitted,
+      quizzesTotal,
+      quizzesCompleted,
+    ] = await Promise.all([
+      // 1. Data kehadiran user
+      userIds.length > 0 && courseIds.length > 0
+        ? this.activityRepository.manager.query(
+            `
+          SELECT a."userId", w."courseId", a.status
+          FROM attendance a
+          JOIN session s ON a."sessionId" = s.id
+          JOIN weeks w ON s."weeksId" = w.id
+          WHERE a."userId" IN (${userIds.map((_, i) => `$${i + 1}`).join(',')})
+            AND w."courseId" IN (${courseIds.map((_, i) => `$${userIds.length + i + 1}`).join(',')})
+        `,
+            [...userIds, ...courseIds],
+          )
+        : Promise.resolve([]),
+
+      // 2. Total tugas yang ada di course
+      courseIds.length > 0
+        ? this.activityRepository.manager.query(
+            `
+          SELECT w."courseId", COUNT(a.id)::int as total
+          FROM assignments a
+          JOIN session s ON a."sessionId" = s.id
+          JOIN weeks w ON s."weeksId" = w.id
+          WHERE w."courseId" IN (${courseIds.map((_, i) => `$${i + 1}`).join(',')})
+          GROUP BY w."courseId"
+        `,
+            courseIds,
+          )
+        : Promise.resolve([]),
+
+      // 3. Tugas yang sudah dikumpulkan user
+      userIds.length > 0 && courseIds.length > 0
+        ? this.activityRepository.manager.query(
+            `
+          SELECT at."userId", w."courseId", COUNT(DISTINCT at."taskId")::int as submitted
+          FROM answer_task at
+          JOIN assignments a ON at."taskId" = a.id
+          JOIN session s ON a."sessionId" = s.id
+          JOIN weeks w ON s."weeksId" = w.id
+          WHERE at."userId" IN (${userIds.map((_, i) => `$${i + 1}`).join(',')})
+            AND w."courseId" IN (${courseIds.map((_, i) => `$${userIds.length + i + 1}`).join(',')})
+          GROUP BY at."userId", w."courseId"
+        `,
+            [...userIds, ...courseIds],
+          )
+        : Promise.resolve([]),
+
+      // 4. Total quiz yang ada di course
+      courseIds.length > 0
+        ? this.activityRepository.manager.query(
+            `
+          SELECT w."courseId", COUNT(q.id)::int as total
+          FROM quiz q
+          JOIN weeks w ON q."weeksId" = w.id
+          WHERE w."courseId" IN (${courseIds.map((_, i) => `$${i + 1}`).join(',')})
+          GROUP BY w."courseId"
+        `,
+            courseIds,
+          )
+        : Promise.resolve([]),
+
+      // 5. Quiz yang sudah diselesaikan user
+      userIds.length > 0 && courseIds.length > 0
+        ? this.activityRepository.manager.query(
+            `
+          SELECT sc."userId", w."courseId", COUNT(DISTINCT sc."quizId")::int as completed
+          FROM scores sc
+          JOIN quiz q ON sc."quizId" = q.id
+          JOIN weeks w ON q."weeksId" = w.id
+          WHERE sc."userId" IN (${userIds.map((_, i) => `$${i + 1}`).join(',')})
+            AND w."courseId" IN (${courseIds.map((_, i) => `$${userIds.length + i + 1}`).join(',')})
+          GROUP BY sc."userId", w."courseId"
+        `,
+            [...userIds, ...courseIds],
+          )
+        : Promise.resolve([]),
+    ]);
+
+    const attendanceMap = new Set(
+      attendances.map((a: any) => `${a.userId}:${a.courseId}`),
+    );
+
+    const assignTotalMap = new Map<string, number>(
+      assignmentsTotal.map((r: any) => [r.courseId, Number(r.total) || 0]),
+    );
+    const assignSubMap = new Map<string, number>(
+      assignmentsSubmitted.map((r: any) => [
+        `${r.userId}:${r.courseId}`,
+        Number(r.submitted) || 0,
+      ]),
+    );
+
+    const quizTotalMap = new Map<string, number>(
+      quizzesTotal.map((r: any) => [r.courseId, Number(r.total) || 0]),
+    );
+    const quizCompMap = new Map<string, number>(
+      quizzesCompleted.map((r: any) => [
+        `${r.userId}:${r.courseId}`,
+        Number(r.completed) || 0,
+      ]),
+    );
+
     return activities.map((a, index) => {
       const u = a.user as any;
       const username = u?.username ?? '';
       const courseId = a.currentCourseId ?? '';
       const palette = colorFor(index);
+      const userCourseKey = `${a.userId}:${courseId}`;
+
+      // Status Absensi
+      const hasAttended = attendanceMap.has(userCourseKey);
+      const attendanceLabel = hasAttended ? 'Sudah Absen' : 'Belum Absen';
+
+      // Status Tugas / Assignment
+      const totalAssign = assignTotalMap.get(courseId) ?? 0;
+      const subAssign = assignSubMap.get(userCourseKey) ?? 0;
+      let hasSubmittedAssignment = false;
+      let assignmentLabel = 'Belum Tugas';
+      if (totalAssign === 0) {
+        hasSubmittedAssignment = true;
+        assignmentLabel = 'Tidak Ada Tugas';
+      } else if (subAssign >= totalAssign) {
+        hasSubmittedAssignment = true;
+        assignmentLabel = 'Tugas Selesai';
+      } else {
+        hasSubmittedAssignment = false;
+        assignmentLabel = `Tugas (${subAssign}/${totalAssign})`;
+      }
+
+      // Status Quiz
+      const totalQuiz = quizTotalMap.get(courseId) ?? 0;
+      const compQuiz = quizCompMap.get(userCourseKey) ?? 0;
+      let hasCompletedQuiz = false;
+      let quizLabel = 'Belum Quiz';
+      if (totalQuiz === 0) {
+        hasCompletedQuiz = true;
+        quizLabel = 'Tidak Ada Quiz';
+      } else if (compQuiz >= totalQuiz) {
+        hasCompletedQuiz = true;
+        quizLabel = 'Quiz Selesai';
+      } else {
+        hasCompletedQuiz = false;
+        quizLabel = `Quiz (${compQuiz}/${totalQuiz})`;
+      }
+
       return {
         userId: a.userId,
         name: username,
@@ -403,8 +560,19 @@ export class UserActivityService {
         lastSeenHuman: this.humanize(a.lastSeenAt),
         bgColor: palette.bg,
         textColor: palette.text,
+        hasAttended,
+        attendanceLabel,
+        hasSubmittedAssignment,
+        assignmentLabel,
+        hasCompletedQuiz,
+        quizLabel,
       };
     });
+  }
+
+  /** Memicu update real-time ke semua klien SSE yang sedang mendengarkan */
+  notifyLearningUpdated() {
+    this.events.emit(EVENT_LEARNING_UPDATED);
   }
 
   /** SSE stream: snapshot awal + push saat ada perubahan + heartbeat tiap 20 detik. */
@@ -427,36 +595,76 @@ export class UserActivityService {
     );
   }
 
+  /** SSE stream overview: summary + chart + activeUsers + learners — semua panel dashboard. */
+  overviewStream() {
+    const THRESHOLD = 5;
+
+    const snapshot = async () => {
+      const [summary, chart, activeUsers, learners] = await Promise.all([
+        this.getSummaryToday(),
+        this.getWeeklyChart(),
+        this.getActiveParticipants(THRESHOLD),
+        this.getCurrentlyLearning(THRESHOLD),
+      ]);
+      return { summary, chart, activeUsers, learners };
+    };
+
+    const initial   = from(snapshot());
+    const updates   = fromEvent(this.events, EVENT_LEARNING_UPDATED).pipe(
+      debounceTime(400),
+      switchMap(() => snapshot()),
+    );
+    const heartbeat = interval(20000).pipe(switchMap(() => snapshot()));
+
+    return merge(initial, updates, heartbeat).pipe(
+      map((data) => ({ data: JSON.stringify(data) })),
+    );
+  }
+
   async getWeeklyChart(): Promise<WeeklyStat[]> {
     const today = new Date();
     const start = startOfDay(subDays(today, 6));
 
-    const loginRows = await this.activityLogRepository
-      .createQueryBuilder('al')
-      .innerJoin('al.user', 'user')
-      .select("TO_CHAR(al.eventAt, 'YYYY-MM-DD')", 'day')
-      .addSelect('COUNT(*)', 'count')
-      .where('al.eventType = :type', { type: 'login' })
-      .andWhere('al.eventAt >= :start', { start })
-      .andWhere('user.role = :role', { role: 'user' })
-      .groupBy("TO_CHAR(al.eventAt, 'YYYY-MM-DD')")
-      .getRawMany();
-
-    const activeRows = await this.activityLogRepository
-      .createQueryBuilder('al')
-      .innerJoin('al.user', 'user')
-      .select("TO_CHAR(al.eventAt, 'YYYY-MM-DD')", 'day')
-      .addSelect('COUNT(DISTINCT al.userId)', 'count')
-      .where('al.eventAt >= :start', { start })
-      .andWhere('user.role = :role', { role: 'user' })
-      .groupBy("TO_CHAR(al.eventAt, 'YYYY-MM-DD')")
-      .getRawMany();
+    // Ambil data keaktifan per hari dari user_activity dan attendance 7 hari terakhir
+    const [loginRows, activeRows] = await Promise.all([
+      this.activityRepository.manager.query(
+        `
+        SELECT TO_CHAR(ua."loginAt", 'YYYY-MM-DD') as day, COUNT(*)::int as count
+        FROM user_activity ua
+        JOIN "user" u ON ua."userId" = u.id
+        WHERE u.role = 'user' AND ua."loginAt" >= $1
+        GROUP BY TO_CHAR(ua."loginAt", 'YYYY-MM-DD')
+      `,
+        [start],
+      ),
+      this.activityRepository.manager.query(
+        `
+        SELECT TO_CHAR(a."attendanceTime", 'YYYY-MM-DD') as day, COUNT(DISTINCT a."userId")::int as count
+        FROM attendance a
+        WHERE a."attendanceTime" >= $1
+        GROUP BY TO_CHAR(a."attendanceTime", 'YYYY-MM-DD')
+      `,
+        [start],
+      ),
+    ]);
 
     const loginMap = new Map<string, number>(
-      loginRows.map((r) => [r.day, Number(r.count) ?? 0]),
+      loginRows.map((r: any) => [r.day, Number(r.count) || 0]),
     );
     const activeMap = new Map<string, number>(
-      activeRows.map((r) => [r.day, Number(r.count) ?? 0]),
+      activeRows.map((r: any) => [r.day, Number(r.count) || 0]),
+    );
+
+    // Hari ini minimal memiliki nilai keaktifan sesuai user_activity aktif
+    const todayKey = format(today, 'yyyy-MM-dd');
+    const currentActiveUsers = await this.getActiveParticipants(30);
+    activeMap.set(
+      todayKey,
+      Math.max(activeMap.get(todayKey) ?? 0, currentActiveUsers.length),
+    );
+    loginMap.set(
+      todayKey,
+      Math.max(loginMap.get(todayKey) ?? 0, currentActiveUsers.length),
     );
 
     const stats = Array.from({ length: 7 }, (_, i) => {
@@ -474,29 +682,55 @@ export class UserActivityService {
     return stats.map((s) => ({
       ...s,
       max,
-      loginH: Math.round((s.login / max) * 265),
-      activeH: Math.round((s.active / max) * 265),
+      loginH: Math.round((s.login / max) * 220),
+      activeH: Math.round((s.active / max) * 220),
     }));
   }
 
   async getSummaryToday() {
     const start = startOfDay(new Date());
-    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1);
 
-    const activeToday = await this.activityLogRepository
-      .createQueryBuilder('al')
-      .innerJoin('al.user', 'user')
-      .select('COUNT(DISTINCT al.userId)', 'count')
+    // 1. Hitung user yang loginAt-nya hari ini dari user_activity
+    const activeTodayRows = await this.activityRepository
+      .createQueryBuilder('ua')
+      .innerJoin('ua.user', 'user')
+      .select('COUNT(DISTINCT ua.userId)', 'count')
       .where('user.role = :role', { role: 'user' })
-      .andWhere('al.eventAt >= :start', { start })
-      .andWhere('al.eventAt <= :end', { end })
+      .andWhere('ua.loginAt >= :start', { start })
       .getRawOne();
 
+    // 2. User online sekarang
     const activeParticipants = await this.getActiveParticipants(5);
 
+    // 3. Completion rate dan modul diselesaikan
+    const [ucProgress, spProgress] = await Promise.all([
+      this.activityRepository.manager.query(`
+        SELECT
+          COUNT(*)::int as total,
+          COUNT(CASE WHEN progress = true THEN 1 END)::int as completed
+        FROM user_courses
+      `),
+      this.activityRepository.manager.query(`
+        SELECT COUNT(*)::int as completed_modules
+        FROM session_progresses
+        WHERE "isAttended" = true
+      `),
+    ]);
+
+    const totalEnrollments = Number(ucProgress[0]?.total) || 0;
+    const completedCourses = Number(ucProgress[0]?.completed) || 0;
+    const completionPercent =
+      totalEnrollments > 0
+        ? Math.round((completedCourses / totalEnrollments) * 100)
+        : 0;
+    const completedModules = Number(spProgress[0]?.completed_modules) || 0;
+
     return {
-      activeToday: Number(activeToday?.count ?? 0),
+      activeToday: Number(activeTodayRows?.count ?? 0),
       onlineNow: activeParticipants.length,
+      completionValue: completedCourses,
+      completionPercent: `${completionPercent}%`,
+      completedModules,
     };
   }
 }
