@@ -1,0 +1,78 @@
+{{!--
+  Komponen: Advantage / Key Benefits Card (Level 1 - Atomic UI Card)
+  Lokasi: src/views/partials/components/ui/card/advantage_card/index.hbs
+
+  Spesifikasi Figma:
+  - Width: 384px, Min-height: 221px
+  - Background: rgba(255, 255, 255, 0.780392)
+  - Border: 1px solid rgba(255, 255, 255, 0.101961)
+  - Backdrop-filter: blur(6.9px)
+  - Border-radius: 20px
+  - Padding: 28px
+  - Gap: 14px
+  - Icon: 48x48px, rounded-[14px], bg: #F2F2F7, border: 1px solid #E0E0E5, icon stroke: #264D99
+  - Title: Outfit 700 18px leading 23px, #1A1A26
+  - Description: Outfit 400 14px leading 160%, #596173
+
+  Props:
+  - icon        : string (FontAwesome class atau icon identifier dari BE)
+  - iconType    : "mentoring" | "portfolio" | "career" | "certificate" (opsional untuk SVG vektor Figma murni)
+  - title       : string | object (multibahasa via getByLang)
+  - description : string | object (multibahasa via getByLang)
+  - lang        : string (bahasa aktif, default 'id')
+  - class       : string (kelas CSS tambahan)
+--}}
+
+<div class="box-border flex w-full min-h-[221px] flex-col items-start gap-3.5 rounded-[20px] border border-white/10 bg-white/[0.78] p-7 backdrop-blur-[6.9px] transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.88] hover:shadow-lg select-none {{class}}">
+  
+  {{!-- Icon Frame 48x48px, rounded 14px, #F2F2F7, border #E0E0E5 --}}
+  <div class="flex size-12 shrink-0 items-center justify-center rounded-[14px] border border-[#E0E0E5] bg-[#F2F2F7] text-[#264D99]">
+    {{#if (eq iconType "mentoring")}}
+      {{!-- 1-on-1 Mentoring / Person Connections SVG --}}
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="#264D99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <line x1="19" x2="19" y1="8" y2="14"/>
+        <line x1="22" x2="16" y1="11" y2="11"/>
+      </svg>
+    {{else if (eq iconType "portfolio")}}
+      {{!-- Real-World Portfolio / Document Checklist SVG --}}
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="#264D99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <path d="m9 15 2 2 4-4"/>
+      </svg>
+    {{else if (eq iconType "career")}}
+      {{!-- Career Support / Person SVG --}}
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="#264D99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    {{else if (eq iconType "certificate")}}
+      {{!-- Competency Certificate / Certificate SVG --}}
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="#264D99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="6"/>
+        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+      </svg>
+    {{else if icon}}
+      {{!-- Dinamis Icon dari Database (FontAwesome / SVG) --}}
+      <i class="{{computeIcon icon}} text-xl text-[#264D99]" aria-hidden="true"></i>
+    {{else}}
+      {{!-- Fallback Generic Star / Award Icon --}}
+      <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="#264D99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    {{/if}}
+  </div>
+
+  {{!-- Title: Outfit 700 18px leading 23px #1A1A26 --}}
+  <h3 class="font-outfit text-[18px] font-bold leading-[23px] text-[#1A1A26] line-clamp-2">
+    {{default (getByLang title lang) (default title "Key Advantage")}}
+  </h3>
+
+  {{!-- Description: Outfit 400 14px leading 160% #596173 --}}
+  <p class="font-outfit text-sm font-normal leading-[160%] text-[#596173]">
+    {{default (getByLang description lang) description}}
+  </p>
+
+</div>

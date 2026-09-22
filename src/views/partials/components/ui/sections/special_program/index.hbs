@@ -3,73 +3,74 @@
   Lokasi: src/views/partials/components/ui/sections/special_program/index.hbs
   Props: category (.name), courses[], lang, isJapan.
 --}}
-<section id="programs" class="w-full bg-white py-14 font-inter lg:py-20">
+<section id="programs" class="{{default sectionClass 'w-full bg-gradient-to-b from-[#FAFAFA] via-white to-[#FAFAFA] py-14 font-inter lg:py-20'}}">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
     {{#if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
-      {{!-- Header sesuai Figma Layer 3 (Japan Program) --}}
-      <div class="flex max-w-[580px] flex-col items-center gap-3 text-center">
-        {{> components/ui/text/eyebrow/index text="Program Options" dotColor="#6EB6E5" }}
-        <h2 class="font-montserrat text-3xl font-bold tracking-[-0.01em] text-[#0B1F3B] sm:text-4xl">
-          Choose Your <span class="text-[#003060]">Japan Program</span>
+      {{!-- section-header sesuai Figma Layer 3 (Choose Your Japan Program, tanpa eyebrow/dots) --}}
+      <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1568px]">
+        <h2 class="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#0B1F3B] text-center max-w-[653px]">
+          <span class="text-[#6EB6E5]">Choose</span> Your {{#if (includes category.name 'japan')}}Japan Program{{else}}{{default category.name "Japan Program"}}{{/if}}
         </h2>
-        <p class="font-inter text-[15px] leading-relaxed text-[#6B7280]">
-          Select the right path for your background and career goals.
+        <p class="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280]/85 text-center max-w-[760px]">
+          Select the program that aligns with your goals and passion.
         </p>
       </div>
 
-      {{!-- Program Cards Grid (Figma Layer 3) --}}
+      {{!-- Program Cards Grid (Figma Layer 3: 3 cards, gap 24px, max-w 1568px) --}}
       {{#if courses.length}}
-        <div class="grid w-full grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
           {{#each courses}}
             {{> components/ui/card/program_showcase/index
                 id=this.id
                 image=this.image
+                icon="fa-solid fa-graduation-cap"
                 title=this.name
-                description=(default (getByLang this.description ../lang) "Comprehensive Japanese language program designed for learners aiming to study or work in Japan.")
-                tag1=(ternary this.month (concat this.month ' Months') '6 Months')
-                tag2=(ternary this.method this.method 'Language + Culture')
-                tag3=(ternary this.quota (concat this.quota ' Students') 'All Levels')
+                description=(default (getByLang this.description ../lang) "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.")
+                tag1="Language"
+                tag2="Culture"
+                tag3="Career"
                 href=(concat '/program/' this.id)
             }}
           {{/each}}
         </div>
       {{else}}
         {{!-- 3 Program Fallback Cards exactly from Figma --}}
-        <div class="grid w-full grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
           {{!-- Card 1: Japan Program --}}
           {{> components/ui/card/program_showcase/index
               title="Japan Program"
               icon="fa-solid fa-graduation-cap"
               image="/public/image/specialProgram/bgJapan.png"
-              tag1="N5 – N3 Level"
-              tag2="6 Months"
-              tag3="Language + Culture"
-              description="Comprehensive Japanese language program designed for learners aiming to study or work in Japan. Covers grammar, conversation, and cultural immersion."
+              tag1="Language"
+              tag2="Culture"
+              tag3="Career"
+              description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
               href="#explore-program"
           }}
 
-          {{!-- Card 2: Language / Speaking --}}
+          {{!-- Card 2: Japanese Language Training (Speaking, Listening, Reading, Writing) --}}
           {{> components/ui/card/program_showcase/index
-              title="Language / Speaking"
-              icon="fa-solid fa-comments"
+              title="Japanese Language Training"
+              icon="eye"
               image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&fit=crop"
-              tag1="N5 – N4 Level"
-              tag2="3 Months"
-              tag3="Daily Conversation"
-              description="Focus on practical spoken Japanese for everyday situations. Perfect for beginners and intermediate learners who want to build speaking confidence quickly."
+              tag1="Speaking"
+              tag2="Listening"
+              tag3="Reading"
+              tag4="Writing"
+              description="Build strong communication skills through structured lessons and interactive practice."
               href="#explore-program"
           }}
 
-          {{!-- Card 3: Career Support --}}
+          {{!-- Card 3: Career & Study Support --}}
           {{> components/ui/card/program_showcase/index
-              title="Career Support"
-              icon="fa-solid fa-briefcase"
+              title="Career & Study Support"
+              icon="users"
               image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&fit=crop"
-              tag1="All Levels"
-              tag2="1-on-1 Guidance"
-              tag3="Job Placement"
-              description="End-to-end assistance from resume preparation to interview coaching for the Japanese job market. Direct connection to hiring partner companies."
+              tag1="Applications"
+              tag2="Interviews"
+              tag3="Planning"
+              description="Receive support for applications, interviews, and planning your path in Japan."
               href="#explore-program"
           }}
         </div>

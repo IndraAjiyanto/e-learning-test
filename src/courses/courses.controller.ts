@@ -716,9 +716,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
       question: cq.questions,
       answer: cq.answers,
     }));
-    // const course_flows = await this.coursesService.findCourseFlows(courseId);
-    // const mentor = await this.coursesService.findCourseMentors(courseId);
-    // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
+    const course_flows = await this.coursesService.findCourseFlows(courseId);
+    const course_benefits = await this.coursesService.findProgramBenefit(courseId);
+    const alumni = await this.coursesService.findCourseAlumni(courseId);
+    const gallery = course.category?.gallery || [];
     const technologies =
       await this.coursesService.findCourseTechnologies(courseId);
     const installments =
@@ -746,7 +747,33 @@ await this.coursesService.addUserToCourse(userId, courseId);
       'Other',
     ];
 
-    if (course.checkPaid === false) {
+    const isSpecial =
+      course.category?.type === 'Special Program' ||
+      course.programType === 'lpk' ||
+      (course.category?.name &&
+        course.category.name.toLowerCase().includes('japan'));
+
+    if (isSpecial) {
+      res.render('detail_program/special_program/index', {
+        course,
+        category: course.category,
+        courses: kelass,
+        user: req.user,
+        kelass,
+        check_user,
+        studentList,
+        courseQuestions,
+        faqs,
+        course_flows,
+        course_benefits,
+        benefit_category: course.category?.benefit_category || [],
+        technologies,
+        installments,
+        alumni,
+        gallery,
+        isJapan: true,
+      });
+    } else if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
       res.render('detail_program/free_program/index', {
         course,
@@ -764,17 +791,22 @@ await this.coursesService.addUserToCourse(userId, courseId);
         referalSourceOptions: referalOptions,
       });
     } else {
-      res.render('course/Bdetail', {
+      res.render('detail_program/paid_program/index', {
         course,
+        category: course.category,
         user: req.user,
         kelass,
         check_user,
-        // courseQuestions,
-        // course_flows,
-        // mentor,
-        // course_benefits,
+        studentList,
+        courseQuestions,
+        faqs,
+        course_flows,
+        course_benefits,
+        benefit_category: course.category?.benefit_category || [],
         technologies,
         installments,
+        alumni,
+        gallery,
       });
     }
   }
@@ -793,7 +825,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
         question: cq.questions,
         answer: cq.answers,
       }));
+      const course_flows = await this.coursesService.findCourseFlows(id);
       const course_benefits = await this.coursesService.findProgramBenefit(id);
+      const alumni = await this.coursesService.findCourseAlumni(id);
+      const gallery = course.category?.gallery || [];
       const technologies = await this.coursesService.findCourseTechnologies(id);
       const installments = await this.coursesService.findCourseInstallments(id);
       const userCourses = await this.coursesService.findCourseUsers(id);
@@ -820,7 +855,32 @@ await this.coursesService.addUserToCourse(userId, courseId);
         'Other',
       ];
 
-      if (course.checkPaid === false) {
+      const isSpecial =
+        course.category?.type === 'Special Program' ||
+        course.programType === 'lpk' ||
+        (course.category?.name &&
+          course.category.name.toLowerCase().includes('japan'));
+
+      if (isSpecial) {
+        res.render('detail_program/special_program/index', {
+          course,
+          category: course.category,
+          courses: kelass,
+          kelass,
+          studentList,
+          courseQuestions,
+          course_flows,
+          course_benefits,
+          benefit_category: course.category?.benefit_category || [],
+          technologies,
+          installments,
+          userCourses,
+          faqs,
+          alumni,
+          gallery,
+          isJapan: true,
+        });
+      } else if (course.checkPaid === false) {
         res.render('detail_program/free_program/index', {
           course,
           kelass,
@@ -835,16 +895,19 @@ await this.coursesService.addUserToCourse(userId, courseId);
       } else {
         res.render('detail_program/paid_program/index', {
           course,
+          category: course.category,
           kelass,
           studentList,
           courseQuestions,
-          // course_flows,
-          // mentor,
+          course_flows,
           course_benefits,
+          benefit_category: course.category?.benefit_category || [],
           technologies,
           installments,
           userCourses,
           faqs,
+          alumni,
+          gallery,
         });
       }
     } else {
@@ -873,9 +936,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
           question: cq.questions,
           answer: cq.answers,
         }));
-        // const course_flows = await this.coursesService.findCourseFlows(id);
-        // const mentor = await this.coursesService.findCourseMentors(id);
-        // const course_benefits = await this.coursesService.findProgramBenefit(id);
+        const course_flows = await this.coursesService.findCourseFlows(id);
+        const course_benefits = await this.coursesService.findProgramBenefit(id);
+        const alumni = await this.coursesService.findCourseAlumni(id);
+        const gallery = course.category?.gallery || [];
         const technologies =
           await this.coursesService.findCourseTechnologies(id);
         const installments =
@@ -904,7 +968,33 @@ await this.coursesService.addUserToCourse(userId, courseId);
           'Other',
         ];
 
-        if (course.checkPaid === false) {
+        const isSpecial =
+          course.category?.type === 'Special Program' ||
+          course.programType === 'lpk' ||
+          (course.category?.name &&
+            course.category.name.toLowerCase().includes('japan'));
+
+        if (isSpecial) {
+          res.render('detail_program/special_program/index', {
+            user: req.user,
+            course,
+            category: course.category,
+            courses: kelass,
+            kelass,
+            studentList,
+            courseQuestions,
+            faqs,
+            course_flows,
+            course_benefits,
+            benefit_category: course.category?.benefit_category || [],
+            technologies,
+            userCourses,
+            installments,
+            alumni,
+            gallery,
+            isJapan: true,
+          });
+        } else if (course.checkPaid === false) {
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
@@ -921,16 +1011,19 @@ await this.coursesService.addUserToCourse(userId, courseId);
           res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
+            category: course.category,
             kelass,
             studentList,
             courseQuestions,
             faqs,
-            // course_flows,
-            // mentor,
-            // course_benefits,
+            course_flows,
+            course_benefits,
+            benefit_category: course.category?.benefit_category || [],
             technologies,
             userCourses,
             installments,
+            alumni,
+            gallery,
           });
         }
       }

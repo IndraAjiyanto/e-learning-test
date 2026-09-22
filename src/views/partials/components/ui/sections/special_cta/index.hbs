@@ -8,21 +8,37 @@
   <section id="explore-program" class="w-full bg-white py-16 font-inter lg:py-24">
     <div class="page-shell flex flex-col items-center gap-8 text-center">
       <div class="flex max-w-[640px] flex-col items-center gap-4">
-        <h2 class="font-montserrat text-3xl font-bold tracking-[-0.01em] text-[#0B1F3B] sm:text-4xl">
+        <h2 class="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]">
           Transform your team today
         </h2>
         <p class="font-inter text-[15px] leading-relaxed text-[#6B7280]">
           Empower your workforce with tailored training programs designed to meet your specific industry needs. Contact us today to learn more.
         </p>
       </div>
-      <a
-        href="{{#if category.contact}}{{waLink category.contact}}{{else}}#programs{{/if}}"
-        target="{{#if category.contact}}_blank{{else}}_self{{/if}}"
-        rel="noopener"
-        class="inline-flex items-center justify-center rounded-full bg-[#003060] px-8 py-3.5 font-inter text-[15px] font-semibold text-white shadow-[0px_4px_14px_rgba(0,48,96,0.25)] transition-all hover:bg-[#002244] hover:-translate-y-0.5 active:scale-95"
-      >
-        Contact Us
-      </a>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        {{#if course.id}}
+          <a
+            href="/payment/registration/{{course.id}}"
+            class="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#003060] px-8 py-3.5 font-inter text-[15px] font-semibold text-white shadow-[0px_4px_14px_rgba(0,48,96,0.25)] transition-all hover:bg-[#002244] hover:-translate-y-0.5 active:scale-95"
+          >
+            <span>Daftar Sekarang</span>
+            <svg class="size-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {{/if}}
+        <a
+          href="{{#if (or category.contact course.contact)}}{{waLink (default category.contact course.contact)}}{{else}}#programs{{/if}}"
+          target="{{#if (or category.contact course.contact)}}_blank{{else}}_self{{/if}}"
+          rel="noopener"
+          class="inline-flex items-center justify-center gap-2.5 rounded-full {{#if course.id}}border-[1.5px] border-[#003060] bg-transparent text-[#003060]{{else}}bg-[#003060] text-white{{/if}} px-8 py-3.5 font-inter text-[15px] font-semibold shadow-xs transition-all hover:bg-[#003060]/5 hover:-translate-y-0.5 active:scale-95"
+        >
+          <span>Contact Us</span>
+          <svg class="size-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
     </div>
   </section>
 {{else}}

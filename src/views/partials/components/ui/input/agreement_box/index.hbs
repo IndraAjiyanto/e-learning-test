@@ -1,0 +1,54 @@
+{{!--
+  Komponen: Agreement Box (Level 2 - Molekul)
+  Lokasi: src/views/partials/components/ui/input/agreement_box/index.hbs
+
+  Kotak persetujuan berlatar biru muda (#F3F8FE) dengan checkbox dan teks syarat/ketentuan.
+
+  Props:
+  - name       : string (default: 'agreement')
+  - id         : string (default: name)
+  - label      : string (wajib, judul persetujuan)
+  - terms      : string (opsional, deskripsi syarat & ketentuan)
+  - required   : boolean (default: true)
+  - checked    : boolean (default: false)
+  - class      : string (opsional, class tambahan wrapper)
+--}}
+
+<div
+  class="
+    w-full bg-[#F3F8FE] rounded-[12px] p-5 sm:p-7 md:p-[28px]
+    flex flex-row items-start gap-3 sm:gap-[18px] transition-all duration-200
+    {{class}}
+  "
+>
+  <!-- Checkbox Wrapper -->
+  <div class="pt-0.5 shrink-0">
+    <input
+      type="checkbox"
+      id="{{default id (default name 'agreement')}}"
+      name="{{default name 'agreement'}}"
+      {{#if required}}required{{/if}}
+      {{#if checked}}checked{{/if}}
+      class="
+        size-6 sm:size-7 rounded-[4px] border-2 border-[#7895BD]
+        text-[#003060] focus:ring-2 focus:ring-[#1677F2] cursor-pointer
+        accent-[#003060] transition-colors
+      "
+    />
+  </div>
+
+  <!-- Agreement Copy -->
+  <label
+    for="{{default id (default name 'agreement')}}"
+    class="flex flex-col items-start gap-1 sm:gap-2 cursor-pointer select-none"
+  >
+    <span class="font-inter font-normal text-base sm:text-xl leading-snug sm:leading-6 text-[#0A356D]">
+      {{label}}
+    </span>
+    {{#if terms}}
+      <p class="font-inter font-normal text-sm sm:text-base md:text-xl leading-relaxed text-[#7895BD]">
+        {{terms}}
+      </p>
+    {{/if}}
+  </label>
+</div>

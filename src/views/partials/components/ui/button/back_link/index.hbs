@@ -1,0 +1,39 @@
+{{!--
+  Komponen: Back Link (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/button/back_link/index.hbs
+
+  Tombol navigasi kembali dengan ikon panah circular dan label teks.
+
+  Props:
+  - href         : string (opsional, default 'javascript:history.back()')
+  - label        : string (opsional, default 'Back')
+  - class        : string (opsional, class tambahan untuk wrapper)
+  - iconClass    : string (opsional, class tambahan untuk icon circle)
+  - labelClass   : string (opsional, class tambahan untuk label text)
+  - onClick      : string (opsional, handler onclick)
+--}}
+
+<a
+  href="{{default href 'javascript:history.back()'}}"
+  {{#if onClick}}onclick="{{onClick}}"{{/if}}
+  class="inline-flex items-center gap-3 md:gap-4 group cursor-pointer transition-opacity hover:opacity-80 active:scale-98 {{class}}"
+>
+  <div
+    class="
+      flex items-center justify-center size-10 md:size-[54px] rounded-full
+      border border-[#D7E4F2] bg-white transition-all duration-200
+      group-hover:border-[#1677F2] group-hover:shadow-sm shrink-0
+      {{iconClass}}
+    "
+  >
+    <i class="fa-solid fa-arrow-left text-lg md:text-[24px] text-[#1677F2]"></i>
+  </div>
+
+  {{#if label}}
+    <span
+      class="font-inter font-normal text-base md:text-[22px] leading-tight text-[#7895BD] group-hover:text-[#1677F2] transition-colors {{labelClass}}"
+    >
+      {{label}}
+    </span>
+  {{/if}}
+</a>

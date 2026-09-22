@@ -1,0 +1,27 @@
+{{!-- 
+  Komponen: View Program Button (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/button/view_program/index.hbs
+  
+  Sesuai spesifikasi Figma CSS:
+  - Container: w-[181px], h-[52px], px-[22px] py-[14px], gap 10px, rounded-full (999px), bg-[#0B1F3B], shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.078)]
+  - Text: 103x18 (order 0) Inter 15px Bold #FFFFFF
+  - Icon: 24x24 container (order 1) dengan 16x16 vector arrow right (#FFFFFF)
+  
+  Props:
+  - href   : URL tujuan link (default: "#programs")
+  - text   : Label teks tombol (default: "View Program")
+  - class  : Kelas tambahan opsional
+--}}
+<a
+  href="{{default href '#programs'}}"
+  class="box-border flex flex-row items-center justify-center w-full sm:w-[181px] h-[52px] px-[22px] py-[14px] gap-[10px] bg-[#0B1F3B] shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.0784314)] rounded-[999px] shrink-0 order-0 hover:bg-[#07172d] hover:-translate-y-0.5 active:scale-95 transition-all {{class}}"
+>
+  <span class="w-auto sm:w-[103px] h-[18px] font-inter font-bold text-[15px] leading-[18px] text-white shrink-0 order-0 whitespace-nowrap text-center">
+    {{default text "View Program"}}
+  </span>
+  <div class="flex flex-col justify-center items-center p-0 w-6 h-6 shrink-0 order-1">
+    <svg class="w-4 h-4 shrink-0 order-0" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</a>

@@ -1,0 +1,55 @@
+{{!--
+  Komponen: Voucher Input (Level 2 - Molekul)
+  Lokasi: src/views/partials/components/ui/input/voucher_input/index.hbs
+
+  Input kode voucher dengan ikon tiket, validasi real-time, dan tombol batalkan.
+
+  Props:
+  - id          : string (opsional, default: 'promo-input')
+  - placeholder : string (opsional, default: 'Input Voucher Code')
+  - class       : string (opsional)
+--}}
+
+<div class="flex flex-col items-start gap-3 w-full {{class}}">
+  <!-- Label with Ticket Icon -->
+  <div class="flex items-center gap-2">
+    <div class="flex items-center justify-center size-4 text-[#3B82F6]">
+      <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+        <path d="M13 5v2"/>
+        <path d="M13 17v2"/>
+        <path d="M13 11v2"/>
+      </svg>
+    </div>
+    <span class="font-montserrat font-semibold text-sm text-[#1B2559]">
+      Voucher Discount
+    </span>
+  </div>
+
+  <!-- Input Field & Cancel Button -->
+  <div class="flex gap-2 items-center w-full relative">
+    <input
+      type="text"
+      id="{{default id 'promo-input'}}"
+      oninput="handlePromoInput()"
+      placeholder="{{default placeholder 'Input Voucher Code'}}"
+      class="
+        uppercase flex-1 h-[52px] rounded-[8px] border border-[#D9D9D9] px-4
+        bg-white font-montserrat font-normal text-sm text-slate-800
+        placeholder:text-[#718096] focus:outline-none focus:ring-2 focus:ring-[#003060] focus:border-[#003060]
+        transition-all duration-200
+      "
+    />
+    <button
+      type="button"
+      id="remove-promo-btn"
+      onclick="removePromo()"
+      class="px-5 h-[52px] bg-red-50 text-red-600 font-montserrat font-semibold text-xs rounded-[8px] border border-red-200 hover:bg-red-100 transition-colors hidden"
+    >
+      Cancel
+    </button>
+  </div>
+
+  <!-- Validation Status Message -->
+  <p id="promo-message" class="font-montserrat text-xs mt-0.5 font-medium hidden"></p>
+</div>

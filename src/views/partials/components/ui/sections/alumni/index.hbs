@@ -10,6 +10,8 @@
 
   Props (opsional, default = home agar backward-compatible):
   - headerVariant      : 'home' | 'paid' (default: 'home')
+  - variant            : 'special' | other
+  - isJapan            : boolean
   - badgeKey, titleKey, descKey, footerTextKey, footerLinkTextKey : i18n keys
   - showMobile         : boolean (default: true) — render blok mobile
   - showDesktop        : boolean (default: true) — render blok desktop
@@ -17,6 +19,8 @@
   - mobileSectionClass : override kelas section mobile
   - desktopBgStyle     : inline style background section desktop
   - mobileBgStyle      : inline style background section mobile
+  - descClass          : kelas untuk teks deskripsi
+  - descMaxWidth       : max-width untuk teks deskripsi (default: max-w-[592px])
   - alumni, category, lang : data dari controller
 --}}
 
@@ -28,10 +32,10 @@
   <div class="relative z-10 flex w-full flex-col items-center gap-4 text-center {{wrapperClass}}">
     {{#if (eq (default headerVariant 'home') 'paid')}}
       {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.categoryPaidProgram.alumni.badge'))) dotColor=dotColor }}
-      <h2 class="{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B] {{titleClass}}">
+      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B]{{/if}}">
         {{#if titleText}}{{titleText}}{{else}}{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}} <span class="text-[#6EB6E5]">{{category.name}}</span>{{/if}}
       </h2>
-      <p class="{{sizeClass 'body'}} max-w-[592px] font-inter text-[#4A5568] {{descClass}}">
+      <p class="{{sizeClass 'body'}} font-inter text-[#4A5568] {{default descClass 'max-w-[592px]'}}">
         {{#if descText}}{{descText}}{{else}}{{t (default descKey 'test.categoryPaidProgram.alumni.description')}} {{category.name}}.{{/if}}
       </p>
     {{else}}
@@ -39,7 +43,7 @@
       <h2 class="{{sizeClass (default titleSize 'h2')}} font-inter font-bold text-[#0B1F3B] {{titleClass}}">
         {{default titleText (t (default titleKey 'test.home.alumniSection.title'))}}
       </h2>
-      <p class="{{sizeClass 'body'}} max-w-[592px] font-inter text-[#4A5568] {{descClass}}">
+      <p class="{{sizeClass 'body'}} font-inter text-[#4A5568] {{default descClass 'max-w-[592px]'}}">
         {{default descText (t (default descKey 'test.home.alumniSection.description'))}}
       </p>
     {{/if}}
@@ -106,17 +110,17 @@
 <!-- ================= ALUMNI SECTION (satu pohon, base + lg) ================= -->
 <section
   class="{{default sectionClass 'w-full relative overflow-hidden bg-white py-14 lg:py-24'}}"
-  style="{{default desktopBgStyle (ternary (eq (default headerVariant 'home') 'paid') 'background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);' '')}}"
+  style="{{#if desktopBgStyle}}{{desktopBgStyle}}{{else if (or isJapan (eq variant 'special'))}}background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;{{else if (eq (default headerVariant 'home') 'paid')}}background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);{{/if}}"
   x-data="alumniDeck(window.__alumniCarousel)"
 >
   <div class="page-shell">
     {{> _alumni_header
         wrapperClass="mb-12 lg:mb-16"
         titleSize="h2"
-        titleClass="font-inter font-bold text-[#0B1F3B] text-center"
+        titleClass=(default titleClass "font-inter font-bold text-[#0B1F3B] text-center")
         descSize="body"
-        descClass="font-normal max-w-[592px]"
-        dividerClass="h-1 w-[60px]"
+        descClass=(default descClass "font-normal max-w-[592px]")
+        dividerClass=(default dividerClass "h-1 w-[60px]")
     }}
 
     {{> _alumni_grid gridClass="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" navBtnClass="h-14 w-14 lg:h-[72px] lg:w-[72px]"}}
@@ -138,4 +142,32 @@
     }{{#unless @last}},{{/unless}}
     {{/each}}
   ];
+  if (!window.__alumniCarousel || !window.__alumniCarousel.length) {
+    window.__alumniCarousel = [
+      {
+        id: 'alumni-1',
+        name: 'Aqmal Miftahul Husna',
+        position: 'Full Stack Developer',
+        company: 'Full Stack Development',
+        photo: '/public/image/orang.png',
+        testimonial: 'Belajar di sini sangat terarah dengan kurikulum yang relevan dengan kebutuhan industri masa kini. Mentor selalu memberikan feedback mendalam yang membantu saya berkembang cepat.'
+      },
+      {
+        id: 'alumni-2',
+        name: 'Ikhwan Nur Rizki Fathama',
+        position: 'Frontend Engineer',
+        company: 'Frontend Engineering',
+        photo: '/public/image/orang.png',
+        testimonial: 'Materi yang diajarkan sangat komprehensif mulai dari dasar hingga proyek nyata. Saya berhasil membangun portofolio yang solid dan langsung diterima kerja setelah lulus.'
+      },
+      {
+        id: 'alumni-3',
+        name: 'John Calvin Sukarman',
+        position: 'UI/UX Designer',
+        company: 'UI/UX Design',
+        photo: '/public/image/orang.png',
+        testimonial: 'Program mentoring 1-on-1 benar-benar membuka wawasan saya tentang standar industri digital saat ini. Sangat direkomendasikan bagi siapa saja yang ingin switch career.'
+      }
+    ];
+  }
 </script>

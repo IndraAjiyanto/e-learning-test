@@ -35,11 +35,13 @@
           </span>
         </div>
 
-        {{!-- Frame: Headline & Subheading -> table category column name & description --}}
+        {{!-- Frame: Headline & Subheading -> table course / table category column name & description --}}
         <div class="flex flex-col gap-4">
           <h1 class="font-montserrat text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B]">
             {{#if headline}}
               {{headline}}
+            {{else if course.name}}
+              {{course.name}}
             {{else if (getByLang category.text lang)}}
               {{getByLang category.text lang}}
             {{else}}
@@ -50,6 +52,8 @@
           <p class="font-inter text-base sm:text-lg leading-[165%] text-[#4B5563] max-w-[600px]">
             {{#if subheading}}
               {{subheading}}
+            {{else if (getByLang course.description lang)}}
+              {{getByLang course.description lang}}
             {{else if (getByLang category.description lang)}}
               {{getByLang category.description lang}}
             {{else}}
@@ -58,32 +62,19 @@
           </p>
         </div>
 
-        {{!-- hero-ctas: Primary & Secondary Buttons --}}
-        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          {{!-- Primary CTA: View Program --}}
-          <a
-            href="#programs"
-            class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-[#0B1F3B] px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-white shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.08)] hover:bg-[#07172d] hover:-translate-y-0.5 active:scale-95 transition-all"
-          >
-            <span>View Program</span>
-            <span class="grid size-6 shrink-0 place-items-center">
-              <i class="fa-solid fa-arrow-right text-xs text-white"></i>
-            </span>
-          </a>
+        {{!-- hero-ctas: Primary & Secondary Buttons (Figma spec: 390px x 52px, gap 12px) --}}
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-[390px] h-auto sm:h-[52px]">
+          {{!-- Primary CTA: Daftar Sekarang (Detail) / View Program (Category) --}}
+          {{> components/ui/button/view_program/index
+              href=(ternary course.id (concat '/payment/registration/' course.id) '#programs')
+              text=(ternary course.id "Daftar Sekarang" "View Program")
+          }}
 
           {{!-- Secondary CTA: Watch overview --}}
-          <button
-            type="button"
-            @click="videoModalOpen = true"
-            class="inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full border border-[#E5E7EB] bg-white px-[22px] py-[14px] font-inter text-[15px] font-bold leading-[18px] text-[#0B1F3B] shadow-xs hover:bg-[#F9FAFB] hover:border-[#D1D5DB] active:scale-95 transition-all cursor-pointer"
-          >
-            <span class="grid size-6 shrink-0 place-items-center">
-              <span class="grid size-4 shrink-0 place-items-center rounded-full border-[2px] border-[#0B1F3B]">
-                <i class="fa-solid fa-play text-[7px] text-[#0B1F3B] ml-0.5"></i>
-              </span>
-            </span>
-            <span>Watch overview</span>
-          </button>
+          {{> components/ui/button/watch_overview/index
+              xClick="videoModalOpen = true"
+              text="Watch overview"
+          }}
         </div>
 
         {{!-- Divider Line --}}
@@ -134,8 +125,8 @@
       <div class="w-full lg:w-[520px] shrink-0 flex justify-center lg:justify-end">
         <div class="relative w-full max-w-[420px] lg:max-w-[520px] aspect-square rounded-[24px] overflow-hidden shadow-[0px_18px_40px_-12px_rgba(11,31,59,0.08)] border border-[#E5E7EB]/60 bg-white">
           <img
-            src="/public/image/specialProgram/bgJapan.png"
-            alt="Japan Study Program - Mount Fuji &amp; Chureito Pagoda"
+            src="{{#if course.image}}{{course.image}}{{else if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/specialProgram/bgJapan.png{{/if}}"
+            alt="{{#if course.name}}{{course.name}}{{else}}Japan Study Program - Mount Fuji &amp; Chureito Pagoda{{/if}}"
             onerror="this.src='/public/image/specialProgram/bgJapan.png'"
             class="size-full object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
           />

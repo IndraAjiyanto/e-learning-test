@@ -1,0 +1,154 @@
+{{!--
+  Section: Paid Curriculum / Bootcamp Syllabus (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/paid_curriculum/index.hbs
+
+  Spesifikasi Figma:
+  - Section container: bg #FAFAFA, padding 120px 80px (desktop), gap 64px
+  - Header:
+    - Badge: bg #E0F2FE, rounded-full, px-4 py-2, text "BOOTCAMP SYLLABUS", Inter 700 14px #003060
+    - Headline: "Structured & Industry-Proven Curriculum", Montserrat 800 36px leading 44px #0B1F3B
+    - Description: "Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.", Inter 400 16px #64748B, max-w 680px
+  - Accordion:
+    - Max-w: 1040px, gap 16px-24px
+    - 6 Modules with collapsible content via Alpine.js
+
+  Props:
+  - course : object (course data jika memiliki relasi course.weeks)
+  - weeks  : array (opsional array weeks)
+  - lang   : string
+--}}
+
+<section 
+  id="curriculum" 
+  class="relative w-full bg-[#FAFAFA] font-inter py-16 sm:py-20 lg:py-24"
+  data-node-id="curriculum-section"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-12 lg:gap-16">
+    
+    {{!-- Curriculum Header (Figma: Frame 2147229479, gap 16px) --}}
+    <div class="flex flex-col items-center gap-4 text-center max-w-[800px]">
+      
+      {{!-- Badge (Figma: bg #E0F2FE, rounded 999px, text BOOTCAMP SYLLABUS) --}}
+      <div class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#E0F2FE]">
+        <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-none">
+          BOOTCAMP SYLLABUS
+        </span>
+      </div>
+
+      {{!-- Headline (Figma: Montserrat 800, 36px, leading 44px, #0B1F3B) --}}
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
+        Structured & Industry-Proven Curriculum
+      </h2>
+
+      {{!-- Description (Figma: Inter 400, 16px, #64748B, max-w 680px) --}}
+      <p class="font-inter text-sm sm:text-base font-normal leading-[160%] text-[#64748B] max-w-[680px]">
+        Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.
+      </p>
+
+    </div>
+
+    {{!-- Curriculum Accordion Grid (Figma: max-w 1040px, gap 20px-30px) --}}
+    <div 
+      x-data="{ activeIndex: 0 }" 
+      class="flex flex-col w-full max-w-[1040px] gap-4 sm:gap-5"
+    >
+      {{#if course.courseFlow.length}}
+        {{!-- Dynamic Data dari Database (table course_flow via course.courseFlow) --}}
+        {{#each course.courseFlow}}
+          {{> components/ui/card/curriculum_item/index
+              index=@index
+              title=(default (getByLang this.title ../lang) (default this.title (concat "Module " (default this.sequence (add @index 1)))))
+              description=(default (getByLang this.content ../lang) (default this.content "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri."))
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else if course_flows.length}}
+        {{!-- Dynamic Data jika array course_flows dioper langsung --}}
+        {{#each course_flows}}
+          {{> components/ui/card/curriculum_item/index
+              index=@index
+              title=(default (getByLang this.title ../lang) (default this.title (concat "Module " (default this.sequence (add @index 1)))))
+              description=(default (getByLang this.content ../lang) (default this.content "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri."))
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else if course.weeks.length}}
+        {{!-- Dynamic Data dari Database (table weeks via course.weeks) --}}
+        {{#each course.weeks}}
+          {{> components/ui/card/curriculum_item/index
+              index=@index
+              title=(default (getByLang this.description ../lang) (concat "Module " (default this.weekNumber (add @index 1))))
+              description=(default (getByLang this.description ../lang) "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.")
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else if weeks.length}}
+        {{!-- Dynamic Data jika array weeks dioper langsung --}}
+        {{#each weeks}}
+          {{> components/ui/card/curriculum_item/index
+              index=@index
+              title=(default (getByLang this.description ../lang) (concat "Module " (default this.weekNumber (add @index 1))))
+              description=(default (getByLang this.description ../lang) "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.")
+              lang=../lang
+          }}
+        {{/each}}
+
+      {{else}}
+        {{!-- Fallback 6 Modul Lengkap Sesuai Spesifikasi Figma --}}
+
+        {{!-- Module 0: Design Thinking & User Research --}}
+        {{> components/ui/card/curriculum_item/index
+            index=0
+            title="Design Thinking & User Research"
+            description="Pelajari metode design thinking, riset pengguna, persona, user journey, dan teknik wawancara untuk memahami kebutuhan pengguna secara mendalam."
+            lang=lang
+        }}
+
+        {{!-- Module 1: Information Architecture & Wireframing --}}
+        {{> components/ui/card/curriculum_item/index
+            index=1
+            title="Information Architecture & Wireframing"
+            description="Kuasai struktur informasi, sitemap, user flow, dan wireframing untuk merancang pengalaman pengguna yang intuitif dan terorganisir."
+            lang=lang
+        }}
+
+        {{!-- Module 2: Visual Design & UI Fundamentals --}}
+        {{> components/ui/card/curriculum_item/index
+            index=2
+            title="Visual Design & UI Fundamentals"
+            description="Dalami prinsip desain visual, tipografi, warna, layout grid, dan komponen UI untuk menciptakan antarmuka yang menarik dan fungsional."
+            lang=lang
+        }}
+
+        {{!-- Module 3: Design System & Scalable Components --}}
+        {{> components/ui/card/curriculum_item/index
+            index=3
+            title="Design System & Component Library"
+            description="Tingkatkan skill Figma dengan auto layout, komponen, varian, design token, dan bangun design system yang scalable."
+            lang=lang
+        }}
+
+        {{!-- Module 4: Interactive Prototyping & Motion --}}
+        {{> components/ui/card/curriculum_item/index
+            index=4
+            title="Interactive Prototyping & Motion"
+            description="Buat prototipe interaktif dengan transisi, animasi micro-interaction, dan motion design untuk presentasi desain yang lebih hidup."
+            lang=lang
+        }}
+
+        {{!-- Module 5: Usability Testing & Final Capstone Project --}}
+        {{> components/ui/card/curriculum_item/index
+            index=5
+            title="Usability Testing & Final Capstone Project"
+            description="Lakukan usability testing, analisis hasil pengujian, iterasi desain, dan kerjakan proyek akhir sebagai portofolio profesional."
+            lang=lang
+        }}
+
+      {{/if}}
+    </div>
+
+  </div>
+</section>

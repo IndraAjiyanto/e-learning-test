@@ -1,38 +1,46 @@
-{{!-- PAID PROGRAM PAGE --}}
-{{!-- Hero Section - khusus paid program --}}
-{{> components/ui/sections/paid_hero/index}}
+{{!-- PAID PROGRAM CATEGORY PAGE --}}
 
-{{!-- Program Section - khusus paid (card/category/paid) --}}
-{{> components/ui/sections/paid_program/index}}
+{{!-- Section 1: Hero Section (Order 0) --}}
+{{> components/ui/sections/paid_hero/index category=category courses=courses lang=lang}}
 
-{{!-- Advantage Section - khusus paid --}}
-{{> components/ui/sections/paid_advantage/index}}
+{{!-- Section 2: Program List Grid (Order 1) --}}
+{{> components/ui/sections/paid_program/index category=category courses=courses lang=lang}}
 
-{{!-- Flow Section - khusus paid (portfolio showcase) --}}
-{{> components/ui/sections/paid_flow/index}}
+{{!-- Section 3: Key Advantages / Why Choose (Order 2) --}}
+{{> components/ui/sections/paid_advantage/index benefit_category=benefit_category category=category lang=lang}}
 
-{{!-- Alumni Section - reuse section alumni dengan headerVariant paid --}}
+{{!-- Section 4: Alumni Success (Order 3) --}}
 {{> components/ui/sections/alumni/index
     headerVariant="paid"
     showMobile=false
-    titleKey="test.categoryPaidProgram.alumni.title"
-    descKey="test.categoryPaidProgram.alumni.description"
-    footerTextKey="test.categoryPaidProgram.alumni.footer"
-    footerLinkTextKey="test.categoryPaidProgram.alumni.allStories"
+    badgeText="ALUMNI SUCCESS"
+    titleText="Real Stories, Real Placement"
+    descText="Discover how our graduates transitioned into major engineering roles across the global industry."
+    alumni=alumni
+    category=category
+    lang=lang
 }}
 
-{{!-- Gallery Section - reuse section gallery dengan konfigurasi paid --}}
+{{!-- Section 5: Life at Kesatria Academy / Gallery (Order 4) --}}
 {{> components/ui/sections/gallery/index
     renderMobile=false
-    showBadge=false
-    showDivider=false
+    showBadge=true
+    showDivider=true
     showBottomLink=true
-    titleKey="test.categoryPaidProgram.gallery.title"
-    descKey="test.categoryPaidProgram.gallery.description"
-    linkKey="test.categoryPaidProgram.gallery.allGaleries"
-    desktopSectionClass="w-full py-20 font-inter"
-    desktopWrapperClass="w-auto mx-auto px-8 lg:px-16 flex flex-col items-center"
+    badgeText="ACADEMY IN ACTION"
+    titleText="Life at Kesatria Academy"
+    descText="Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons."
+    linkText="See All Our Gallery"
+    gallery=gallery
+    desktopSectionClass="w-full bg-[#F8F9FA] py-16 sm:py-20 lg:py-24 font-inter"
+    desktopWrapperClass="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
 }}
 
-{{!-- CTA Section - khusus paid --}}
-{{> components/ui/sections/paid_cta/index}}
+{{!-- Section 6: FAQ (Order 5) --}}
+{{> components/ui/sections/faq/index
+    faqs=faqs
+    lang=lang
+}}
+
+{{!-- Section 7: Final CTA / Start Your Career (Order 6) --}}
+{{> components/ui/sections/paid_final_cta/index category=category lang=lang}}

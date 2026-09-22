@@ -2,52 +2,77 @@
   Detail Special Program / Japan Pathway
   Lokasi: src/views/detail_program/special_program/index.hbs
 --}}
-{{#if (or (eq course.programType 'lpk') (includes course.category.name 'japan') (includes course.name 'japan') isJapan)}}
+
+<div class="w-full bg-[#FAFAFA]">
+  {{!-- Section 1: Hero Section (with Background Wash, Meta Chips, and Snapshot Bar) --}}
   {{> components/ui/sections/japan_hero/index 
+      course=course 
+      category=course.category 
+      lang=lang 
+      isJapan=true
+  }}
+
+  {{!-- Section 2: Why Choose ("Why Choose Our Japan Program?" - 6 Feature Cards) --}}
+  {{> components/ui/sections/special_benefit/index 
+      course=course
+      category=course.category 
+      benefit_category=benefit_category 
+      lang=lang 
+      isJapan=true
+  }}
+
+  {{!-- Section 3: Alumni Success ("Real Stories, Real Placement") --}}
+  {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      variant="special"
+      isJapan=true
+      showMobile=true
+      badgeText="ALUMNI SUCCESS"
+      dotColor="#6EB6E5"
+      titleText="Real Stories, Real Placement"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descText="Discover how our graduates transitioned into major engineering roles across the global industry."
+      descClass="max-w-[760px] text-center"
+      hideDivider=false
+      dividerClass="h-1 w-[60px]"
+      footerTextKey="test.special_program.alumni.footer"
+      footerLinkTextKey="test.special_program.alumni.allStories"
+      desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
+      alumni=alumni
       category=course.category
       lang=lang
   }}
-{{else}}
-  {{> components/ui/sections/program_detail_hero/index
-    showBatchPill=true
-    regisHref=(concat '/payment/registration/' course.id)
+
+  {{!-- Section 4: Life at Kesatria Academy / Gallery --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=true
+      badgeText="ACADEMY IN ACTION"
+      dotColor="#6EB6E5"
+      titleText="Life at Kesatria Academy"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descText="Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons."
+      linkText="See All Our Gallery"
+      showDivider=false
+      showBottomLink=true
+      gallery=gallery
   }}
-{{/if}}
 
-<!-- Tabs Bar -->
-{{#> components/ui/sections/program_detail_nav/index}}
-  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.paidProgram.navbarMenu.participants') }}
-  {{> components/ui/text/nav_link/index href="#what-you-will-learn" text=(t 'test.paidProgram.navbarMenu.whatYouLearn') }}
-  {{> components/ui/text/nav_link/index href="#benefits" text=(t 'test.paidProgram.navbarMenu.benefits') }}
-  {{> components/ui/text/nav_link/index href="#learning-flow" text=(t 'test.paidProgram.navbarMenu.learningFlow') }}
-  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.paidProgram.navbarMenu.schedule&Fees') }}
-  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.paidProgram.navbarMenu.gallery') }}
-  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.paidProgram.navbarMenu.FAQ') }}
-{{/components/ui/sections/program_detail_nav/index}}
+  {{!-- Section 5: Frequently Asked Questions (FAQ) --}}
+  {{> components/ui/sections/faq/index
+      titleKey="test.special_program.faq.title"
+      descKey="test.special_program.faq.description"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      faqs=faqs
+      faq=courseQuestions
+      lang=lang
+  }}
 
-<!-- PARTICIPANTS SECTION -->
-{{> components/ui/sections/participants/index}}
-
-<!-- WHAT YOU'LL LEARN SECTION -->
-{{> components/ui/sections/paid_detail_what_you_learn/index}}
-
-<!-- BENEFITS SECTION -->
-{{> components/ui/sections/paid_detail_benefit/index}}
-
-<!-- LEARNING FLOW SECTION -->
-{{> components/ui/sections/paid_detail_learning_flow/index}}
-
-<!-- SCHEDULE & FEES SECTION -->
-{{> components/ui/sections/paid_detail_schedule_fee/index}}
-
-<!-- GALLERY SECTION -->
-{{> components/ui/sections/program_detail_gallery/index}}
-
-<!-- FAQ SECTION -->
-{{> components/ui/sections/program_detail_faq/index}}
-
-<style>
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-</style>
+  {{!-- Section 6: Final CTA ("Transform your team today" / Pendaftaran) --}}
+  {{> components/ui/sections/special_cta/index 
+      course=course 
+      category=course.category 
+      lang=lang 
+      isJapan=true
+  }}
+</div>

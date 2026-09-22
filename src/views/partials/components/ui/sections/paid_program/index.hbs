@@ -16,6 +16,7 @@
       {{#each courses}}
         {{> components/ui/card/category/paid/index
             id=this.id
+            group=this.group
             image=this.image
             name=this.name
             description=(getByLang this.description ../lang)

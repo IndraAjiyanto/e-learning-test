@@ -1,32 +1,45 @@
-<div class="min-h-screen bg-[#FAFAFA] font-inter pt-24 pb-12">
-  <div class="ml-0 md:ml-12 mr-0 md:mr-12 px-6">
-    <!-- Back Button -->
-    {{> backButton }}
+<div class="min-h-screen bg-[#FAFAFA] font-inter pt-20 md:pt-28 pb-16">
+  <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8">
 
-    <!-- Header Section -->
-    <h1 class="text-2xl md:text-4xl lg:text-[36px] leading-tight font-semibold text-[#003060] mb-3">Kesatria Academy Program Registration Form</h1>
-    <p class="text-base md:text-2xl lg:text-[28px] leading-snug font-normal text-[#003060] mb-12">Please complete your payment to verify your registration and activate your participation.</p>
+    <!-- Back Link (Figma Layer: Back link) -->
+    <div class="mb-8">
+      {{> components/ui/button/back_link/index
+        label="Back"
+      }}
+    </div>
 
-    <!-- Progress Bar -->
-    {{> payments/progresBar }}
+    <!-- Page Header (Dynamic based on selected program) -->
+    {{> components/ui/text/section_header/index
+      title=(default course.name "Program Registration")
+      titleTag="h1"
+      titleClass="font-montserrat font-bold text-2xl sm:text-3xl md:text-[34px] leading-tight md:leading-[42px] text-[#003060]"
+      description="Please complete your payment to verify your registration and activate your participation."
+      descClass="font-montserrat font-normal text-sm sm:text-base text-[#718096] mt-1"
+      align="text-left"
+      wrapperClass="mb-10 md:mb-14"
+    }}
 
-    <!-- Form Container -->
-    <div class="bg-[#FAFAFA] rounded-xl pt-4 md:pt-8 max-w-[1300px] w-full">
+    <!-- Icon Stepper (Figma Layer: Steps / Icon Stepper Core) -->
+    {{> components/ui/stepper/icon_stepper/index }}
+
+    <!-- Form Container Card (Figma Layer: Personal information card) -->
+    {{#> components/ui/card/form_card/index}}
       <!-- Step 1: Registration Form -->
       <div id="step-1-content" class="step-content">
         {{> payments/registration}}
       </div>
 
-      <!-- Step 2: Payment Method (Will be added later) -->
+      <!-- Step 2: Payment Method -->
       <div id="step-2-content" class="step-content hidden">
         {{> payments/paymentMethod}}
       </div>
 
-      <!-- Step 3: Checkout (Will be added later) -->
+      <!-- Step 3: Confirmation / Checkout Result -->
       <div id="step-3-content" class="step-content hidden">
         {{> payments/successfull}}
       </div>
-    </div>
+    {{/components/ui/card/form_card/index}}
+
   </div>
 </div>
 
@@ -87,39 +100,51 @@
     
     // Show target content
     const targetContent = document.getElementById(`step-${step}-content`);
-    if(targetContent) {
+    if (targetContent) {
       targetContent.classList.remove('hidden');
-      // Adding a subtle fade-in animation
       targetContent.classList.add('animate-fade-in');
     }
 
-    // Update Progress Bar
-    const progressLine = document.getElementById('progress-line');
-    if (step === 1) progressLine.style.width = '0%';
-    if (step === 2) progressLine.style.width = '50%';
-    if (step === 3) progressLine.style.width = '100%';
-
-    // Update Step Indicators
+    // Update Step Indicators (Icon Stepper)
     document.querySelectorAll('.step-indicator').forEach(indicator => {
       const indicatorStep = parseInt(indicator.dataset.step);
-      const circle = indicator.querySelector('div');
-      
+      const circle = indicator.querySelector('.step-circle') || indicator.querySelector('div');
+      const icon = indicator.querySelector('.step-icon');
+      const title = indicator.querySelector('.step-title');
+      const subtitle = indicator.querySelector('.step-subtitle');
+
+      const originalIcon =
+        indicatorStep === 1
+          ? 'fa-solid fa-user'
+          : indicatorStep === 2
+          ? 'fa-regular fa-credit-card'
+          : 'fa-regular fa-circle-check';
+
       if (indicatorStep < step) {
         // Completed step
-        circle.className = 'w-[50px] h-[50px] rounded-full flex items-center justify-center font-semibold transition-colors duration-300 bg-[#6EB6E5] text-black';
+        if (circle) circle.className = 'step-circle flex items-center justify-center size-12 rounded-full transition-all duration-300 bg-[#1A56DB] border-4 border-white shadow-[0px_4px_8px_rgba(26,86,219,0.14)]';
+        if (icon) icon.className = 'step-icon fa-solid fa-check text-lg text-white transition-colors duration-300';
+        if (title) title.className = 'step-title font-inter font-bold text-xs sm:text-sm md:text-base text-[#1A56DB] transition-colors duration-300';
+        if (subtitle) subtitle.className = 'step-subtitle font-inter font-normal text-[11px] sm:text-xs md:text-[13px] text-[#6B7280] transition-colors duration-300 mt-0.5';
       } else if (indicatorStep === step) {
-        // Current step
-        circle.className = 'w-[50px] h-[50px] rounded-full flex items-center justify-center font-semibold transition-colors duration-300 bg-[#6EB6E5] text-black';
+        // Current active step
+        if (circle) circle.className = 'step-circle flex items-center justify-center size-12 rounded-full transition-all duration-300 bg-[#1A56DB] border-4 border-white shadow-[0px_4px_8px_rgba(26,86,219,0.14)]';
+        if (icon) icon.className = `step-icon ${originalIcon} text-lg text-white transition-colors duration-300`;
+        if (title) title.className = 'step-title font-inter font-bold text-xs sm:text-sm md:text-base text-[#1A56DB] transition-colors duration-300';
+        if (subtitle) subtitle.className = 'step-subtitle font-inter font-normal text-[11px] sm:text-xs md:text-[13px] text-[#6B7280] transition-colors duration-300 mt-0.5';
       } else {
-        // Future step
-        circle.className = 'w-[50px] h-[50px] rounded-full flex items-center justify-center font-semibold transition-colors duration-300 bg-white text-black shadow-[0_0_4px_rgba(0,0,0,0.25)]';
+        // Future / inactive step
+        if (circle) circle.className = 'step-circle flex items-center justify-center size-12 rounded-full transition-all duration-300 bg-white border-2 border-[#E5E7EB] shadow-[0px_2px_4px_rgba(0,0,0,0.02)]';
+        if (icon) icon.className = `step-icon ${originalIcon} text-lg text-[#9CA3AF] transition-colors duration-300`;
+        if (title) title.className = 'step-title font-inter font-semibold text-xs sm:text-sm md:text-base text-[#6B7280] transition-colors duration-300';
+        if (subtitle) subtitle.className = 'step-subtitle font-inter font-normal text-[11px] sm:text-xs md:text-[13px] text-[#9CA3AF] transition-colors duration-300 mt-0.5';
       }
     });
 
     // Scroll back to top of form
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Save step to sessionStorage
+    // Save step to sessionStorage & localStorage
     sessionStorage.setItem('currentPaymentStep', step);
     savePaymentProgressStep(step);
 
@@ -132,15 +157,14 @@
 
   // Restore step on page reload and handle Back Button
   document.addEventListener('DOMContentLoaded', () => {
-    // Handle back button specifically for checkout steps
     const backBtn = document.querySelector('a[href="javascript:history.back()"]');
     if (backBtn) {
       backBtn.addEventListener('click', (e) => {
         const localDraft = readPaymentProgressDraft();
         const currentStep = Number(localDraft?.form) || parseInt(sessionStorage.getItem('currentPaymentStep') || '1');
         if (currentStep > 1) {
-          e.preventDefault(); // Prevent actually going back in browser history
-          goToStep(currentStep - 1, true); // Go back one step
+          e.preventDefault();
+          goToStep(currentStep - 1, true);
         }
       });
     }
