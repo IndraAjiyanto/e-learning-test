@@ -1,15 +1,17 @@
 {{!--
   Partial: Payment Method (Step 2)
   Lokasi: src/views/partials/payments/paymentMethod.hbs
-  Fokus: Full Payment (tanpa pemilihan cicilan/installment)
+  Mendukung: Full Payment & Installment Payment (Figma Group 6727)
 --}}
 
 <form id="step-2-form" class="w-full">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start w-full">
+  <!-- Hidden input for payment method (Full Payment | Installment) -->
+  <input type="hidden" id="payment-method-select" name="paymentMethod" value="Full Payment" />
 
-    <!-- Left Column: Payment Method Info & Voucher Input (Figma: Voucher Input Section) -->
+  <!-- 1. FULL PAYMENT VIEW -->
+  <div id="view-full-payment" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start w-full">
+    <!-- Left Column: Full Payment Info & Voucher Input -->
     <div class="lg:col-span-5 flex flex-col gap-6 w-full">
-      <!-- Section Header -->
       <div class="flex flex-col gap-1.5">
         <h3 class="font-montserrat font-bold text-lg sm:text-xl text-[#1B2559]">
           Full Payment
@@ -19,17 +21,16 @@
         </p>
       </div>
 
-      <!-- Hidden input for payment method (always Full Payment) -->
-      <input type="hidden" id="payment-method-select" name="paymentMethod" value="Full Payment" />
-
-      <!-- Voucher Input Component -->
+      <!-- Voucher Input Component (Full Payment) -->
       {{> components/ui/input/voucher_input/index
         id="promo-input"
+        removeBtnId="remove-promo-btn"
+        messageId="promo-message"
         placeholder="Input Voucher Code"
       }}
     </div>
 
-    <!-- Right Column: Payment Details Card (Figma: payment-details-card) -->
+    <!-- Right Column: Full Payment Summary Card -->
     <div class="lg:col-span-7 flex justify-end w-full">
       {{> components/ui/card/payment_summary_card/index
         courseTitle=(default course.name "Program Course")
@@ -37,8 +38,28 @@
         promoPrice=course.promo
       }}
     </div>
-
   </div>
+
+  <!-- 2. INSTALLMENT PAYMENT VIEW (Group 6727 / Frame 2147229714) -->
+  <div id="view-installment" class="flex flex-col xl:flex-row items-start gap-[30px] w-full hidden">
+    <!-- Left Column: Installment Method Card (Group 6727, width 976px) -->
+    <div class="w-full xl:w-[976px] xl:max-w-[976px]">
+      {{> components/ui/card/installment_method_card/index
+        course=course
+      }}
+    </div>
+
+    <!-- Right Column: Installment Summary Card (Group 6727, width 480px) -->
+    <div class="w-full xl:w-[480px] xl:max-w-[480px] shrink-0">
+      {{> components/ui/card/installment_summary_card/index
+        courseTitle=(default course.name "Program Course")
+        downPayment=course.installments.[0].downPayment
+        month=(default course.installments.[0].month 3)
+        pricePerMonth=course.installments.[0].price.[0]
+      }}
+    </div>
+  </div>
+
 </form>
 
 <script>
@@ -46,7 +67,10 @@
   const coursePromo = Number('{{course.promo}}') || 0;
   const courseBasePrice = Number('{{course.price}}') || 0;
   const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
+  const courseInstallmentDP = Number('{{course.installments.[0].downPayment}}') || courseBasePrice;
+  const hasInstallments = Boolean(courseInstallmentDP > 0);
 
+  let currentMethod = 'Full Payment';
   let currentSubtotal = courseFullPrice;
   let activePromo = null;
   let currentDiscountAmount = 0;
@@ -60,24 +84,38 @@
     };
   }
 
-  function showPromoMessage(text, type) {
-    const el = document.getElementById("promo-message");
-    if (!el) return;
-    el.textContent = text;
-    el.classList.remove("hidden");
-    if (type === 'success') {
-      el.className = "font-montserrat text-xs mt-1 font-medium block text-green-600";
-    } else if (type === 'error') {
-      el.className = "font-montserrat text-xs mt-1 font-medium block text-red-500";
-    } else {
-      el.className = "font-montserrat text-xs mt-1 font-medium block text-slate-500";
+  function getActivePromoInput() {
+    if (currentMethod === 'Installment') {
+      return document.getElementById("promo-input-installment") || document.getElementById("promo-input");
     }
+    return document.getElementById("promo-input") || document.getElementById("promo-input-installment");
+  }
+
+  function showPromoMessage(text, type) {
+    const msgIds = ['promo-message', 'promo-message-installment'];
+    msgIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.classList.remove("hidden");
+      if (type === 'success') {
+        el.className = "font-montserrat text-xs mt-1 font-medium block text-green-600";
+      } else if (type === 'error') {
+        el.className = "font-montserrat text-xs mt-1 font-medium block text-red-500";
+      } else {
+        el.className = "font-montserrat text-xs mt-1 font-medium block text-slate-500";
+      }
+    });
   }
 
   const checkPromo = debounce(async () => {
-    const promoInput = document.getElementById("promo-input");
+    const promoInput = getActivePromoInput();
     if (!promoInput) return;
     const code = promoInput.value.trim().toUpperCase();
+
+    // Sync input values
+    const otherInput = document.getElementById(currentMethod === 'Installment' ? "promo-input" : "promo-input-installment");
+    if (otherInput) otherInput.value = code;
 
     if (!code) {
       removePromo();
@@ -118,10 +156,18 @@
         currentDiscountAmount = discount_amount;
         updatePricingUI(currentSubtotal, discount_amount, final_total);
 
-        promoInput.disabled = true;
-        promoInput.classList.add("bg-green-50", "border-green-300");
-        const removeBtn = document.getElementById("remove-promo-btn");
-        if (removeBtn) removeBtn.classList.remove("hidden");
+        ['promo-input', 'promo-input-installment'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.disabled = true;
+            el.classList.add("bg-green-50", "border-green-300");
+          }
+        });
+
+        ['remove-promo-btn', 'remove-promo-btn-installment'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove("hidden");
+        });
 
         showPromoMessage(result.message || "Kode promo berhasil diterapkan!", "success");
       } else {
@@ -140,9 +186,15 @@
   }, 800);
 
   function handlePromoInput() {
-    const input = document.getElementById("promo-input");
+    const input = getActivePromoInput();
     if (!input) return;
     input.classList.remove("bg-green-50", "border-green-300");
+
+    const otherInput = document.getElementById(currentMethod === 'Installment' ? "promo-input" : "promo-input-installment");
+    if (otherInput) {
+      otherInput.value = input.value;
+      otherInput.classList.remove("bg-green-50", "border-green-300");
+    }
 
     if (input.value.trim() === "") {
       removePromo();
@@ -155,33 +207,41 @@
   function removePromo() {
     activePromo = null;
     currentDiscountAmount = 0;
-    const input = document.getElementById("promo-input");
-    if (input) {
-      input.value = "";
-      input.disabled = false;
-      input.classList.remove("bg-green-50", "border-green-300");
-    }
 
-    const removeBtn = document.getElementById("remove-promo-btn");
-    if (removeBtn) removeBtn.classList.add("hidden");
+    ['promo-input', 'promo-input-installment'].forEach(id => {
+      const input = document.getElementById(id);
+      if (input) {
+        input.value = "";
+        input.disabled = false;
+        input.classList.remove("bg-green-50", "border-green-300");
+      }
+    });
+
+    ['remove-promo-btn', 'remove-promo-btn-installment'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.classList.add("hidden");
+    });
 
     updatePricingUI(currentSubtotal, 0, currentSubtotal);
-    const promoMsg = document.getElementById("promo-message");
-    if (promoMsg) promoMsg.classList.add("hidden");
+
+    ['promo-message', 'promo-message-installment'].forEach(id => {
+      const msg = document.getElementById(id);
+      if (msg) msg.classList.add("hidden");
+    });
   }
 
   function updatePricingUI(sub, disc, total) {
+    // 1. Full Payment Summary Elements
     const elSub = document.getElementById("detail-subtotal");
     const elVoucher = document.getElementById("detail-voucher");
     const elTotal = document.getElementById("detail-total");
+    const discRow = document.getElementById("discount-row");
+    const discDivider = document.getElementById("discount-divider");
+    const displayPromo = document.getElementById("display-promo-code");
 
     if (elSub) elSub.textContent = `Rp${sub.toLocaleString('id-ID')}`;
     if (elVoucher) elVoucher.textContent = `- Rp${disc.toLocaleString('id-ID')}`;
     if (elTotal) elTotal.textContent = `Rp${total.toLocaleString('id-ID')}`;
-
-    const discRow = document.getElementById("discount-row");
-    const discDivider = document.getElementById("discount-divider");
-    const displayPromo = document.getElementById("display-promo-code");
 
     if (disc > 0) {
       if (displayPromo) displayPromo.textContent = activePromo;
@@ -197,12 +257,65 @@
       }
       if (discDivider) discDivider.classList.add("hidden");
     }
+
+    // 2. Installment Summary Elements (Group 6727)
+    const instFee = document.getElementById("installment-detail-fee");
+    const instSub = document.getElementById("installment-detail-subtotal");
+    const instVoucher = document.getElementById("installment-detail-voucher");
+    const instTotal = document.getElementById("installment-detail-total");
+    const instDiscRow = document.getElementById("installment-discount-row");
+    const instDisplayPromo = document.getElementById("installment-display-promo");
+
+    if (instFee) instFee.textContent = `Rp${courseInstallmentDP.toLocaleString('id-ID')}`;
+    if (instSub) instSub.textContent = `Rp${courseInstallmentDP.toLocaleString('id-ID')}`;
+    if (instVoucher) instVoucher.textContent = `- Rp${disc.toLocaleString('id-ID')}`;
+    if (instTotal) instTotal.textContent = `Rp${total.toLocaleString('id-ID')}`;
+
+    if (disc > 0) {
+      if (instDisplayPromo) instDisplayPromo.textContent = activePromo;
+      if (instDiscRow) {
+        instDiscRow.classList.remove("hidden");
+        instDiscRow.classList.add("flex");
+      }
+    } else {
+      if (instDiscRow) {
+        instDiscRow.classList.add("hidden");
+        instDiscRow.classList.remove("flex");
+      }
+    }
+  }
+
+  function switchPaymentMethod(method) {
+    currentMethod = method;
+    const select = document.getElementById('payment-method-select');
+    if (select) select.value = method;
+
+    const viewFull = document.getElementById('view-full-payment');
+    const viewInst = document.getElementById('view-installment');
+
+    if (method === 'Installment') {
+      if (viewFull) viewFull.classList.add('hidden');
+      if (viewInst) viewInst.classList.remove('hidden');
+      currentSubtotal = courseInstallmentDP;
+    } else {
+      if (viewFull) viewFull.classList.remove('hidden');
+      if (viewInst) viewInst.classList.add('hidden');
+      currentSubtotal = courseFullPrice;
+    }
+
+    // Recalculate voucher against the new currentSubtotal
+    if (activePromo) {
+      checkPromo();
+    } else {
+      updatePricingUI(currentSubtotal, 0, currentSubtotal);
+    }
   }
 
   async function proceedToPayment() {
-    const btn = document.getElementById("btn-pay-now");
-    const text = document.getElementById("btn-pay-now-text");
-    const spinner = document.getElementById("btn-pay-now-spinner");
+    const isInst = currentMethod === 'Installment';
+    const btn = document.getElementById(isInst ? "btn-pay-now-installment" : "btn-pay-now");
+    const text = document.getElementById(isInst ? "btn-pay-now-installment-text" : "btn-pay-now-text");
+    const spinner = document.getElementById(isInst ? "btn-pay-now-installment-spinner" : "btn-pay-now-spinner");
 
     if (btn) btn.disabled = true;
     if (text) text.classList.add("hidden");
@@ -235,7 +348,7 @@
         credentials: 'same-origin',
         body: JSON.stringify({
           courseId: courseId,
-          paymentMethod: 'Full Payment',
+          paymentMethod: currentMethod,
           promoCode: activePromo ? activePromo : null,
           formData: formData
         }),
@@ -272,8 +385,9 @@
         ? window.getPaymentProgressStorageKey()
         : `payment-${userId}-${courseId}-form`;
 
+    const paymentMethodSelect = document.getElementById('payment-method-select');
     const promoInput = document.getElementById('promo-input');
-    if (!promoInput) return;
+    const promoInputInst = document.getElementById('promo-input-installment');
 
     const readDraft = () => {
       const raw = localStorage.getItem(storageKey);
@@ -289,8 +403,8 @@
     let lastSavedPayload = null;
 
     const collectForm2 = () => ({
-      paymentMethod: 'Full Payment',
-      voucherDiscount: (promoInput.value || '').trim().toUpperCase(),
+      paymentMethod: paymentMethodSelect ? paymentMethodSelect.value : currentMethod,
+      voucherDiscount: (getActivePromoInput()?.value || '').trim().toUpperCase(),
     });
 
     const saveForm2IfChanged = () => {
@@ -322,22 +436,53 @@
     const applyForm2 = (form2) => {
       if (!form2) return;
 
+      if (form2.paymentMethod && hasInstallments) {
+        switchPaymentMethod(form2.paymentMethod);
+      }
+
       if (form2.voucherDiscount) {
-        promoInput.value = form2.voucherDiscount;
+        if (promoInput) promoInput.value = form2.voucherDiscount;
+        if (promoInputInst) promoInputInst.value = form2.voucherDiscount;
         handlePromoInput();
       }
     };
 
     const bootstrap = () => {
-      const existingDraft = readDraft();
-      if (existingDraft?.forms?.form2) {
-        applyForm2(existingDraft.forms.form2);
-        lastSavedPayload = JSON.stringify(existingDraft);
+      // 1. Cek parameter URL: ?method=installment (URL parameter menentukan tampilan aktif)
+      const urlMethod = new URLSearchParams(window.location.search).get('method');
+      if (urlMethod && urlMethod.toLowerCase() === 'installment') {
+        switchPaymentMethod('Installment');
+      } else {
+        switchPaymentMethod('Full Payment');
       }
 
-      promoInput.addEventListener('input', saveForm2IfChanged);
-      promoInput.addEventListener('change', saveForm2IfChanged);
-      document.addEventListener('payment:step-changed', saveForm2IfChanged);
+      // 2. Cek voucher draft dari localStorage jika ada
+      const existingDraft = readDraft();
+      if (existingDraft?.forms?.form2?.voucherDiscount) {
+        if (promoInput) promoInput.value = existingDraft.forms.form2.voucherDiscount;
+        if (promoInputInst) promoInputInst.value = existingDraft.forms.form2.voucherDiscount;
+        handlePromoInput();
+      }
+
+      if (promoInput) {
+        promoInput.addEventListener('input', saveForm2IfChanged);
+        promoInput.addEventListener('change', saveForm2IfChanged);
+      }
+      if (promoInputInst) {
+        promoInputInst.addEventListener('input', saveForm2IfChanged);
+        promoInputInst.addEventListener('change', saveForm2IfChanged);
+      }
+      document.addEventListener('payment:step-changed', (e) => {
+        if (e.detail?.step === 2) {
+          const m = new URLSearchParams(window.location.search).get('method');
+          if (m && m.toLowerCase() === 'installment') {
+            switchPaymentMethod('Installment');
+          } else {
+            switchPaymentMethod('Full Payment');
+          }
+        }
+        saveForm2IfChanged();
+      });
 
       saveForm2IfChanged();
     };

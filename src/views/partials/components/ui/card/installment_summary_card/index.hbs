@@ -1,0 +1,140 @@
+{{!--
+  Komponen: Installment Summary Card (Level 2 - Molekul UI)
+  Lokasi: src/views/partials/components/ui/card/installment_summary_card/index.hbs
+  Sesuai Spesifikasi Figma: Group 6727 (Payment Summary Card - Installment)
+
+  Props:
+  - courseTitle : string (nama program/kursus)
+  - downPayment : number (nominal DP program)
+  - month       : number (durasi cicilan, default 3)
+  - pricePerMonth: number (nominal cicilan per bulan dari kolom price)
+  - class       : string (opsional)
+--}}
+
+<div class="w-full xl:w-[480px] xl:max-w-[480px] bg-white rounded-[16px] shadow-[0px_4px_24px_rgba(0,0,0,0.0313726)] p-6 sm:p-8 flex flex-col gap-6 shrink-0 {{class}}">
+
+  <!-- Summary Title Block (Figma: width 416px, height 40px, gap 12px) -->
+  <div class="flex items-center gap-3 w-full h-10">
+    <div class="size-10 rounded-[20px] bg-[#E0F2F9] flex items-center justify-center text-[#3B82F6] shrink-0">
+      <i class="fa-solid fa-file-invoice text-lg text-[#3B82F6]"></i>
+    </div>
+    <h3 class="font-montserrat font-bold text-[18px] leading-[22px] text-[#1B2559]">
+      Payment Summary
+    </h3>
+  </div>
+
+  <!-- Frame 2147229713 (Figma: width 416px, gap 30px) -->
+  <div class="flex flex-col gap-[30px] w-full">
+
+    <!-- Course Detail Box (Figma: min-height 85px, p 16px, gap 12px, bg #F8FAFC, rounded 16px) -->
+    <div class="w-full min-h-[85px] bg-[#F8FAFC] rounded-[16px] p-4 flex items-center gap-3">
+      <div class="size-11 rounded-[12px] bg-[#E0F2F9] flex items-center justify-center text-[#3B82F6] shrink-0">
+        <i class="fa-solid fa-graduation-cap text-lg text-[#3B82F6]"></i>
+      </div>
+      <div class="flex flex-col gap-1 min-w-0 flex-1">
+        <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559] truncate">
+          {{default courseTitle "Program Course"}}
+        </span>
+        <span class="font-montserrat font-medium text-[12px] leading-[15px] text-[#718096]">
+          (Installment Payment - {{default month 3}} month)
+        </span>
+      </div>
+    </div>
+
+    <!-- Pricing Calculations (Figma: gap 16px) -->
+    <div class="flex flex-col gap-4 w-full">
+      <!-- Program Fee (Down Payment) -->
+      <div class="flex justify-between items-center w-full h-[17px]">
+        <span class="font-montserrat font-medium text-[14px] leading-[17px] text-[#718096]">
+          Program Fee
+        </span>
+        <span id="installment-detail-fee" class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559] shrink-0">
+          {{formatRupiah (default downPayment 0)}}
+        </span>
+      </div>
+
+      <!-- Discount Voucher Row -->
+      <div id="installment-discount-row" class="justify-between items-center w-full h-[17px] hidden">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-ticket text-xs text-[#718096]"></i>
+          <span class="font-montserrat font-medium text-[14px] leading-[17px] text-[#718096]">
+            Discount Voucher (<span id="installment-display-promo" class="font-semibold text-emerald-700"></span>)
+          </span>
+        </div>
+        <span id="installment-detail-voucher" class="font-montserrat font-semibold text-[14px] leading-[17px] text-emerald-600 shrink-0">
+          - Rp 0
+        </span>
+      </div>
+
+      <!-- Divider Line -->
+      <div class="border-t border-[#E0E5F2] w-full"></div>
+
+      <!-- Subtotal Row -->
+      <div class="flex justify-between items-center w-full h-5">
+        <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559]">
+          Subtotal
+        </span>
+        <span id="installment-detail-subtotal" class="font-montserrat font-bold text-[16px] leading-[20px] text-[#1B2559] shrink-0">
+          {{formatRupiah (default downPayment 0)}}
+        </span>
+      </div>
+    </div>
+
+    <!-- Installment Plan Box (Figma: height 76px, p 16px, gap 12px, bg #F8FAFC, rounded 16px) -->
+    <div class="w-full bg-[#F8FAFC] rounded-[16px] p-4 flex flex-col gap-3">
+      <div class="flex justify-between items-center w-full h-4">
+        <div class="flex items-center gap-2 text-[#3B82F6]">
+          <i class="fa-regular fa-calendar text-xs text-[#3B82F6]"></i>
+          <span class="font-montserrat font-bold text-[13px] leading-[16px] text-[#1B2559]">
+            Installment Plan ({{default month 3}} months)
+          </span>
+        </div>
+        <span class="font-montserrat font-semibold text-[12px] leading-[15px] text-[#1B2559] shrink-0">
+          {{#if pricePerMonth}}
+            {{formatRupiah pricePerMonth}} /month
+          {{else}}
+            -
+          {{/if}}
+        </span>
+      </div>
+      <p class="font-montserrat font-normal text-[11px] leading-[16px] text-[#718096]">
+        Total payment will be {{formatRupiah (default downPayment 0)}}, split into {{default month 3}} equal installments.
+      </p>
+    </div>
+
+    <!-- Total Block (Figma: height 29px) -->
+    <div class="flex justify-between items-center w-full h-[29px] pt-1">
+      <span class="font-montserrat font-bold text-[20px] leading-[24px] text-[#1B2559]">
+        Total
+      </span>
+      <span id="installment-detail-total" class="font-montserrat font-extrabold text-[24px] leading-[29px] text-[#003060] shrink-0">
+        {{formatRupiah (default downPayment 0)}}
+      </span>
+    </div>
+
+    <!-- CTA: Pay Now Button (Figma: height 46px, bg #003060, rounded 8px, font 15px 700) -->
+    <button
+      type="button"
+      id="btn-pay-now-installment"
+      onclick="proceedToPayment()"
+      class="
+        w-full h-[46px] bg-[#003060] hover:bg-[#082a4d] text-[#F3F3F3]
+        rounded-[8px] font-montserrat font-bold text-[15px] leading-[18px]
+        flex items-center justify-center gap-2.5 transition-all duration-200
+        shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed relative cursor-pointer
+      "
+    >
+      <i class="fa-regular fa-credit-card text-base text-[#F3F3F3]"></i>
+      <span id="btn-pay-now-installment-text">Pay Now</span>
+      <i class="fa-solid fa-arrow-right text-xs text-[#F3F3F3]"></i>
+      <span id="btn-pay-now-installment-spinner" class="hidden absolute inset-0 flex items-center justify-center">
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+    </button>
+
+  </div>
+
+</div>
