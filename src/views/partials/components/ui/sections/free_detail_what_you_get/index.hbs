@@ -1,33 +1,84 @@
-<!-- WHAT YOU'LL GET SECTION -->
-<!-- Menambahkan id="what-you-get" untuk fitur navigasi scroll otomatis -->
-<section id="what-you-get" class="w-full bg-[#fafafa] py-20 font-inter">
-  
-  <div class="max-w-[1537px] mx-auto px-8 lg:px-16 flex flex-col items-center">
-    
-    <!-- 1. Badge Judul (Tengah) -->
-    {{> components/ui/text/section_header/index
-      badge=(default badgeTitle (t 'test.freeProgram.badge.benefit'))
-      badgeClass="px-14 py-2.5 mb-14 font-medium text-base"
-    }}
+{{!--
+  Section: Free Detail What You Get (why-choose)
+  Lokasi: src/views/partials/components/ui/sections/free_detail_what_you_get/index.hbs
+  Level: L2 Section
 
-    <!-- 2. Grid Kartu (Dibuat 2 Kolom) -->
-    <!-- Dibatasi max-w-[800px] agar 4 kartu mengelompok rapi di tengah -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 w-full max-w-[800px]">
-      
-      {{#each course.programBenefits}}
-      <div class="bg-white border border-gray-200 rounded-[12px] py-12 px-8 flex flex-col items-center justify-center text-center hover:shadow-md transition-shadow">
-        <div class="text-black mb-6 flex items-center justify-center h-[50px]">
-          <i class="fas {{this.icon}} text-[42px]"></i>
-        </div>
-        <p class="text-black font-semibold text-[17px]">
-          {{getByLang this.benefit ../lang}}
-        </p>
-        <p class="text-black font-normal text-[14px] mt-2">
-          {{getByLang this.description ../lang}}
-        </p>
-      </div>
-      {{/each}}
+  Props:
+  - course          : object (opsional, data program: course.programBenefits)
+  - course_benefits : array (opsional, data program benefits dari table program_benefits)
+  - lang            : string (opsional, kode bahasa)
+--}}
+
+<section id="what-you-get" class="relative w-full overflow-hidden isolate py-[50px] flex flex-col justify-center items-center gap-[50px] font-inter" style="background: linear-gradient(63.43deg, #264673 33.33%, #2C5C9C 66.67%, #264673 100%);">
+  
+  <div class="pointer-events-none absolute inset-0 w-full max-w-[1728px] mx-auto overflow-hidden" aria-hidden="true">
+    <span class="absolute rounded-full" style="width: 340px; height: 340px; left: -80px; top: -80px; background: rgba(255, 255, 255, 0.0196078); border: 1px solid rgba(255, 255, 255, 0.0509804); filter: blur(1px);"></span>
+    <span class="absolute rounded-full" style="width: 400px; height: 400px; right: -120px; bottom: -100px; background: rgba(255, 255, 255, 0.0156863); border: 1px solid rgba(255, 255, 255, 0.0313726);"></span>
+    <span class="absolute rounded-full" style="width: 120px; height: 120px; left: 200px; top: 40px; border: 1px solid rgba(74, 144, 217, 0.101961);"></span>
+    <span class="absolute rounded-full" style="width: 80px; height: 80px; right: 280px; top: 180px; border: 1px solid rgba(74, 144, 217, 0.0784314);"></span>
+    <span class="absolute rounded-full" style="width: 48px; height: 48px; left: 900px; bottom: 60px; background: rgba(255, 255, 255, 0.0313726); border: 1px solid rgba(255, 255, 255, 0.101961);"></span>
+    <span class="absolute rounded-full" style="width: 32px; height: 32px; left: 60px; top: 300px; border: 1px solid rgba(255, 255, 255, 0.0784314);"></span>
+    <span class="absolute rounded-full" style="width: 6px; height: 6px; left: 120px; top: 90px; background: rgba(255, 255, 255, 0.2);"></span>
+    <span class="absolute rounded-full" style="width: 4px; height: 4px; left: 180px; top: 140px; background: rgba(255, 255, 255, 0.133333);"></span>
+    <span class="absolute rounded-full" style="width: 6px; height: 6px; right: 160px; top: 80px; background: rgba(255, 255, 255, 0.2);"></span>
+    <span class="absolute rounded-full" style="width: 4px; height: 4px; right: 220px; top: 130px; background: rgba(255, 255, 255, 0.133333);"></span>
+    <span class="absolute rounded-full" style="width: 5px; height: 5px; left: 800px; bottom: 100px; background: rgba(74, 144, 217, 0.266667);"></span>
+    <span class="absolute rounded-full" style="width: 4px; height: 4px; left: 400px; top: 30px; background: rgba(255, 255, 255, 0.101961);"></span>
+    <span class="absolute rounded-full" style="width: 6px; height: 6px; right: 400px; bottom: 120px; background: rgba(74, 144, 217, 0.2);"></span>
+    <span class="absolute" style="width: 60px; height: 1px; left: 60px; top: 170px; background: rgba(255, 255, 255, 0.0705882); border-radius: 1px; transform: rotate(-30deg);"></span>
+    <span class="absolute" style="width: 80px; height: 1px; right: 80.5px; top: 250px; background: rgba(255, 255, 255, 0.0588235); border-radius: 1px; transform: rotate(30deg);"></span>
+    <span class="absolute" style="width: 50px; height: 1px; left: 299.74px; bottom: 80px; background: rgba(255, 255, 255, 0.0705882); border-radius: 1px; transform: rotate(15deg);"></span>
+    <span class="absolute" style="width: 80px; height: 80px; right: 70.71px; top: 40px; background: rgba(255, 255, 255, 0.0196078); border-radius: 12px; transform: rotate(15deg);"></span>
+    <span class="absolute" style="width: 60px; height: 60px; left: 40px; bottom: 52.47px; background: rgba(74, 144, 217, 0.0313726); border-radius: 10px; transform: rotate(-12deg);"></span>
+    <span class="absolute" style="width: 40px; height: 40px; left: 686.32px; top: 20px; background: rgba(255, 255, 255, 0.0235294); border-radius: 6px; transform: rotate(20deg);"></span>
+    <span class="absolute" style="width: 20px; height: 2px; left: 1378.59px; top: 320px; background: rgba(255, 255, 255, 0.12549); border-radius: 1px; transform: rotate(45deg);"></span>
+    <span class="absolute" style="width: 20px; height: 2px; left: 1380px; top: 305.86px; background: rgba(255, 255, 255, 0.12549); border-radius: 1px; transform: rotate(-45deg);"></span>
+    <span class="absolute" style="width: 16px; height: 2px; left: 218.59px; bottom: 150px; background: rgba(74, 144, 217, 0.188235); border-radius: 1px; transform: rotate(45deg);"></span>
+    <span class="absolute" style="width: 16px; height: 2px; left: 220px; bottom: 161.31px; background: rgba(74, 144, 217, 0.188235); border-radius: 1px; transform: rotate(-45deg);"></span>
+  </div>
+
+  <div class="relative z-20 flex flex-col items-center gap-[50px] w-full max-w-[1608px] px-4 sm:px-6 lg:px-15">
+    <div class="flex flex-col items-center gap-3 w-full text-center">
+      <span class="font-inter font-bold text-[14px] leading-[120%] text-[#93C5FD] tracking-wider uppercase">
+        KEY ADVANTAGES
+      </span>
+      <h2 class="font-inter font-bold text-[28px] md:text-[32px] leading-[120%] text-white">
+        Why Study at Kesatria Academy?
+      </h2>
     </div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      {{#if (or course_benefits.length course.programBenefits.length)}}
+        {{#each (default course_benefits course.programBenefits)}}
+          {{> components/ui/card/card_why_choose/index
+            title=(default (getByLang this.benefit ../lang) (default (getByLang this.title ../lang) this.title))
+            description=(default (getByLang this.description ../lang) (default this.description ""))
+            icon=this.icon
+          }}
+        {{/each}}
+      {{else}}
+        {{> components/ui/card/card_why_choose/index
+          title="1-on-1 Mentoring"
+          description="Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio."
+          icon="person-connections"
+        }}
+        {{> components/ui/card/card_why_choose/index
+          title="Real-World Portfolio"
+          description="Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes."
+          icon="document-checklist"
+        }}
+        {{> components/ui/card/card_why_choose/index
+          title="Career Support"
+          description="CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network."
+          icon="person"
+        }}
+        {{> components/ui/card/card_why_choose/index
+          title="Competency Certificate"
+          description="Earn an official graduation certificate to prove your practical skills to recruiters."
+          icon="certificate"
+        }}
+      {{/if}}
+    </div>
   </div>
+
 </section>

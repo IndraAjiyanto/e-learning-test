@@ -35,64 +35,31 @@ export const dateHelpers = {
     };
     return d.toLocaleDateString('en-US', options);
   },
-  formatShortDate: (date: string | Date, lang?: string) => {
-    if (!date) return '';
+  formatDateSimple: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => {
+    if (!date) return lang ? 'Not set' : '-';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '-';
     let locale;
     switch (lang) {
-      case 'id':
-        locale = id;
-        break;
       case 'en':
         locale = enUS;
         break;
       case 'ja':
         locale = ja;
         break;
-      default:
-        locale = id;
-    }
-    return format(new Date(date), 'd MMM yyyy', { locale });
-  },
-  formatDateDayMonthYear: (date: string | Date, lang?: string) => {
-    if (!date) return '';
-    let locale;
-    switch (lang) {
       case 'id':
-        locale = id;
-        break;
-      case 'en':
-        locale = enUS;
-        break;
-      case 'ja':
-        locale = ja;
-        break;
       default:
         locale = id;
     }
-    return format(new Date(date), 'd MMMM yyyy', { locale });
+    return format(d, 'd MMMM yyyy', { locale });
   },
-  formatDateDayMonth: (date: string | Date, lang?: string) => {
-    if (!date) return '';
-    let locale;
-    switch (lang) {
-      case 'id':
-        locale = id;
-        break;
-      case 'en':
-        locale = enUS;
-        break;
-      case 'ja':
-        locale = ja;
-        break;
-      default:
-        locale = id;
-    }
-    return format(new Date(date), 'd MMM', { locale });
-  },
-  formatDateYear: (date: string | Date) => {
-    if (!date) return '';
-    return format(new Date(date), 'yyyy');
-  },
+  formatDateDayMonthYear: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => dateHelpers.formatDateSimple(date, lang),
   formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
   formatMinutes: (ms: number) => Math.floor(ms / 60000),
   /**

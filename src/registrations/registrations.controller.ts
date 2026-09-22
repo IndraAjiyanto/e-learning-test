@@ -66,25 +66,61 @@ export class RegistrationsController {
       const registration = await this.registrationsService.create(
         createRegistrationDto,
       );
-      console.log('🔵 [Registration] Result:', registration);
+      const isJson =
+        Boolean(req.xhr) ||
+        Boolean(req.headers.accept?.includes('application/json')) ||
+        req.headers['x-requested-with'] === 'XMLHttpRequest';
+
       if (registration == false) {
         await this.registrationsService.deleteFile(createRegistrationDto.file);
+        if (isJson) {
+          return res.status(400).json({
+            success: false,
+            message: 'You have already registered for this program',
+          });
+        }
         req.flash('info', 'you have already registered for this program');
-        res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
+        return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
+      } else if (!registration) {
+        if (isJson) {
+          return res.status(400).json({
+            success: false,
+            message: 'Registration failed. User or course not found.',
+          });
+        }
+        req.flash('error', 'Registration failed');
+        return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
       } else {
         try {
           await this.registrationsService.addUserToCourse(userId, courseId);
         } catch (error: any) {}
+        if (isJson) {
+          return res.status(200).json({
+            success: true,
+            message: 'Registration successful! You are now enrolled in the program.',
+            redirectUrl: '/users/profile?tab=dashboard',
+          });
+        }
         req.flash(
           'success',
           'Registration successful! You are now enrolled in the program.',
         );
-        res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
+        return res.redirect(`/users/profile?tab=dashboard`);
       }
     } catch (error: any) {
       console.error('🔴 [Registration] Error:', error);
+      const isJson =
+        Boolean(req.xhr) ||
+        Boolean(req.headers.accept?.includes('application/json')) ||
+        req.headers['x-requested-with'] === 'XMLHttpRequest';
+      if (isJson) {
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Registration failed',
+        });
+      }
       req.flash('error', error.message || 'Registration failed');
-      res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
+      return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
     }
   }
 

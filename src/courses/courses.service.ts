@@ -1331,6 +1331,7 @@ export class CoursesService {
   async findProgramBenefit(courseId: string) {
     return await this.programBenefitRepository.find({
       where: { course: { id: courseId } },
+      order: { createdAt: 'ASC' },
     });
   }
 
