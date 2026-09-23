@@ -16,12 +16,13 @@
 
           <!-- Frame 2147229595: Column text -->
           <div class='flex flex-col gap-[2px] flex-1 min-w-0 justify-center items-start'>
-            <!-- Title: Pertemuan/Sylabus NN (Inter Semibold 14/20 #003060) -->
+            <!-- Title: Syllabus Title (Inter Semibold 14/20 #003060) -->
             <div class='w-full h-[20px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] flex items-center truncate'
-                 x-text="'Pertemuan ' + String(item.orderNumber || (index + 1)).padStart(2, '0')"></div>
-            <!-- Subtitle: Description / Topic (Inter Medium 14/23 #737373) -->
+                 x-text="item.title || item.topic || ('Pertemuan ' + String(item.orderNumber || (index + 1)).padStart(2, '0'))"
+                 :title="item.title || item.topic || ''"></div>
+            <!-- Subtitle: Syllabus Description (Inter Medium 14/23 #737373) -->
             <div class='w-full h-[23px] font-inter font-medium text-[14px] leading-[23px] text-[#737373] flex items-center truncate'
-                 x-text="item.topic || item.description || '-'" :title="item.topic || item.description || ''"></div>
+                 x-text="item.description || '-'" :title="item.description || ''"></div>
           </div>
 
           <!-- Button: Delete (44x44 bg-white border border-[#D9D9D9] rounded-8) -->
@@ -78,6 +79,7 @@ function sylabusData() {
         return this.rawSyllabus.map((s, index) => ({
           id: s.id,
           orderNumber: s.syllabusNumber || (index + 1),
+          title: s.title || '',
           topic: s.title || '',
           description: s.description || '',
           isFinal: !!s.isFinal,
