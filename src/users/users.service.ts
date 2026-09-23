@@ -40,19 +40,88 @@ export class UsersService {
     private readonly emailService: EmailService,
   ) {}
 
+  private async generateVerificationToken(user: User): Promise<string> {
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(rawToken)
+      .digest('hex');
+
+    user.verificationToken = hashedToken;
+    user.verificationTokenExpires = new Date(Date.now() + 120000);
+
+    await this.userRepository.save(user);
+    return rawToken;
+  }
+
+  async sendVerificationEmailToUser(user: User): Promise<User> {
+    const rawToken = await this.generateVerificationToken(user);
+
+    try {
+      await this.emailService.sendVerificationEmail(
+        user.email,
+        rawToken,
+        user.username,
+      );
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+
+      user.verificationToken = null;
+      user.verificationTokenExpires = null;
+
+      await this.userRepository.save(user);
+
+      throw new BadRequestException(
+        'Failed to send verification email. Please try again.',
+      );
+    }
+    
+    return user;
+  }
+  async sendAdminVerificationEmailToUser(user: User, rawPassword?: string): Promise<User> {
+    const rawToken = await this.generateVerificationToken(user);
+
+    try {
+      await this.emailService.sendAdminVerificationEmail(
+        user.email,
+        rawToken,
+        user.username,
+        rawPassword,
+      );
+    } catch (error) {
+      console.error('Failed to send admin verification email:', error);
+
+      user.verificationToken = null;
+      user.verificationTokenExpires = null;
+
+      await this.userRepository.save(user);
+
+      throw new BadRequestException(
+        'Failed to send verification email. Please try again.',
+      );
+    }
+    
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const cekEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
-    if (!cekEmail) {
-      const user = await this.userRepository.create({
-        ...createUserDto,
-        isVerified: true,
-      });
-      return await this.userRepository.save(user);
-    } else {
+    if (cekEmail) {
       throw new NotFoundException('Email is already registered');
     }
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      isVerified: false,
+      resetPasswordToken: 'MUST_CHANGE_PASSWORD',
+    });
+    const savedUser = await this.userRepository.save(user);
+
+    await this.sendAdminVerificationEmailToUser(savedUser, createUserDto.password);
+
+    return savedUser;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -275,6 +344,7 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(updatePaaswordDto.newPassword, 10);
     user.password = hashedPassword;
+    user.resetPasswordToken = null;
 
     await this.userRepository.save(user);
 
@@ -414,6 +484,10 @@ export class UsersService {
   }
 
   async verifyEmail(token: string) {
+    if (!token) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
     const user = await this.userRepository
@@ -436,9 +510,19 @@ export class UsersService {
   }
 
   async sendVerificationEmail(token: string) {
-    const user = await this.userRepository.findOne({
-      where: { verificationToken: token },
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    let user = await this.userRepository.findOne({
+      where: { verificationToken: hashedToken },
     });
+    if (!user) {
+      user = await this.userRepository.findOne({
+        where: { verificationToken: token },
+      });
+    }
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -452,27 +536,36 @@ export class UsersService {
         'Verification email already sent. Please check your inbox or wait until token expires.',
       );
     }
-    const resetToken = crypto.randomBytes(32).toString('hex');
 
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
-    user.verificationToken = hashedToken;
-    user.verificationTokenExpires = new Date(Date.now() + 120000);
+    return await this.sendVerificationEmailToUser(user);
+  }
 
-    const newUser = await this.userRepository.save(user);
-
-    try {
-      await this.emailService.sendVerificationEmail(
-        user.email,
-        resetToken,
-        user.username,
-      );
-    } catch (error) {
-      console.error('Failed to send verification email:', error.message);
+  async resendVerificationByAdmin(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    return newUser;
+    if (user.isVerified) {
+      throw new BadRequestException('User is already verified');
+    }
+
+    return await this.sendVerificationEmailToUser(user);
+  }
+
+  async resendVerificationByUser(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.isVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    return await this.sendVerificationEmailToUser(user);
   }
 
   async findUserByTokenPassword(token: string) {
@@ -486,9 +579,19 @@ export class UsersService {
   }
 
   async tokenExpired(token: string) {
-    const user = await this.userRepository.findOne({
-      where: { verificationToken: token },
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    let user = await this.userRepository.findOne({
+      where: { verificationToken: hashedToken },
     });
+    if (!user) {
+      user = await this.userRepository.findOne({
+        where: { verificationToken: token },
+      });
+    }
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -501,15 +604,25 @@ export class UsersService {
       user.verificationTokenExpires &&
       user.verificationTokenExpires > new Date()
     ) {
-      const remainingMs = user.verificationTokenExpires.getTime() - Date.now();
-      return remainingMs;
+      return user.verificationTokenExpires.getTime() - Date.now();
     }
+    return 0;
   }
 
   async findUserByToken(token: string) {
-    const user = await this.userRepository.findOne({
-      where: { verificationToken: token },
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    let user = await this.userRepository.findOne({
+      where: { verificationToken: hashedToken },
     });
+    if (!user) {
+      user = await this.userRepository.findOne({
+        where: { verificationToken: token },
+      });
+    }
     if (!user) {
       throw new NotFoundException('User not found');
     }

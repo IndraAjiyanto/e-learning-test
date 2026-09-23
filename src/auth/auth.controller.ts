@@ -12,6 +12,7 @@ import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserActivityService } from 'src/user_activity/user-activity.service';
+import { flashToastWarning } from 'src/common/utils/toast.util';
 
 @Controller()
 export class AuthController {
@@ -73,21 +74,36 @@ export class AuthController {
       );
 
       if (user!.isVerified === false) {
-        res.redirect(
-          '/users/send-verify-email?token=' + user!.verificationToken,
-        );
-      } else {
         req.login(user, (err) => {
           if (err) {
             req.flash('error', 'Email not verified');
             return res.redirect('/login');
           }
-          this.userActivityService.markActive(user!.id, req.sessionID).catch(() => undefined);
-          if (user!.role === 'user') {
-            res.redirect('/users/profile');
-          } else {
-            res.redirect('/dashboard');
+          return res.redirect('/users/send-verify-email');
+        });
+      } else {
+        req.login(user, (err) => {
+          if (err) {
+            req.flash('error', 'Login failed');
+            return res.redirect('/login');
           }
+          this.userActivityService.markActive(user!.id, req.sessionID).catch(() => undefined);
+          
+          if (user!.resetPasswordToken === 'MUST_CHANGE_PASSWORD') {
+            flashToastWarning(
+              req,
+              'Security Alert',
+              'Please change your temporary password in your profile settings for security.',
+            );
+            if (user!.role === 'user') {
+              return res.redirect('/users/profile?tab=password');
+            }
+          }
+
+          if (user!.role === 'user') {
+            return res.redirect('/users/profile');
+          }
+          return res.redirect('/dashboard');
         });
       }
     } catch (error: any) {
