@@ -82,7 +82,22 @@
               {{/components/ui/super_admin/table/cell}}
 
               {{#> components/ui/super_admin/table/cell variant='action'}}
-                {{> components/ui/super_admin/table/row_actions }}
+                <div class='flex items-center gap-1'>
+                  <template x-if='!user.isVerified'>
+                    <button
+                      type='button'
+                      @click='resendVerification(user)'
+                      :disabled='resendingId === user.id'
+                      title='Resend verification email'
+                      aria-label='Resend verification email'
+                      class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#0284c7] transition-colors hover:bg-[#f0f9ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0284c7]/40 active:bg-[#e0f2fe] disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                      {{!-- lucide: mail --}}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send preview-icon"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+                    </button>
+                  </template>
+                  {{> components/ui/super_admin/table/row_actions }}
+                </div>
               {{/components/ui/super_admin/table/cell}}
             </tr>
           </template>
@@ -159,6 +174,52 @@
         if (page < 1 || page > this.totalPages) return;
         this.currentPage = page;
         await this.fetchUsers();
+      },
+
+      resendingId: null,
+
+      async resendVerification(user) {
+        if (this.resendingId) return;
+        this.resendingId = user.id;
+        try {
+          const res = await fetch(`/users/resend-verification/${user.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const json = await res.json();
+          if (res.ok && json.success) {
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Email Sent',
+                  description: `Verification email has been resent to ${user.email}.`,
+                },
+              }),
+            );
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Resend',
+                  description: json.message || 'Could not send verification email.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Network Error',
+                description: 'Failed to connect to the server.',
+              },
+            }),
+          );
+        } finally {
+          this.resendingId = null;
+        }
       },
     }
   }

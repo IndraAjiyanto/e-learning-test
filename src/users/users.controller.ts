@@ -13,6 +13,7 @@ import {
   UploadedFile,
   Query,
   UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -136,12 +137,54 @@ export class UsersController {
     @Query('token') token: string,
   ) {
     try {
-      const user = await this.usersService.sendVerificationEmail(token);
-      req.flash('success', 'Verification email sent successfully');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      const currentUser = (req as any).user;
+      if (currentUser?.id) {
+        await this.usersService.resendVerificationByUser(currentUser.id);
+        req.flash(
+          'success',
+          'Verification email has been sent. Please check your inbox.',
+        );
+        return res.redirect('/users/send-verify-email');
+      }
+
+      if (token) {
+        await this.usersService.sendVerificationEmail(token);
+        req.flash('success', 'Verification email sent successfully');
+        return res.redirect('/users/send-verify-email');
+      }
+
+      req.flash('error', 'Silakan login untuk mengirim ulang email verifikasi.');
+      return res.redirect('/login');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
-      res.redirect('/users/send-verify-email');
+      return res.redirect('/users/send-verify-email');
+    }
+  }
+
+  @Post('resend-verification')
+  @UseGuards(AuthenticatedGuard)
+  async resendVerificationByUser(
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const currentUser = (req as any).user;
+      if (!currentUser?.id) {
+        return res.redirect('/login');
+      }
+
+      await this.usersService.resendVerificationByUser(currentUser.id);
+      req.flash(
+        'success',
+        'Verification email has been sent. Please check your inbox.',
+      );
+      return res.redirect('/users/send-verify-email');
+    } catch (error: any) {
+      req.flash(
+        'error',
+        error.message || 'Failed to send verification email',
+      );
+      return res.redirect('/users/send-verify-email');
     }
   }
 
@@ -152,12 +195,47 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-      const remainingMs = await this.usersService.tokenExpired(token);
-      const user = await this.usersService.findUserByToken(token);
-      return res.render('verify-email', {
-        remainingMs: remainingMs,
-        user: user,
-      });
+      if (token) {
+        const remainingMs = await this.usersService.tokenExpired(token);
+        const user = await this.usersService.findUserByToken(token);
+        return res.render('verify-email', {
+          remainingMs: remainingMs,
+          user: user,
+        });
+      }
+
+      const currentUser = (req as any).user;
+      if (currentUser?.id) {
+        const user = await this.usersService.findOne(currentUser.id);
+        if (!user) {
+          return res.redirect('/login');
+        }
+        if (user.isVerified) {
+          return res.redirect(
+            user.role === 'user' ? '/users/profile' : '/dashboard',
+          );
+        }
+
+        let remainingMs = 0;
+        if (
+          user.verificationToken &&
+          user.verificationTokenExpires &&
+          user.verificationTokenExpires > new Date()
+        ) {
+          remainingMs = user.verificationTokenExpires.getTime() - Date.now();
+        }
+
+        return res.render('verify-email', {
+          remainingMs: remainingMs,
+          user: user,
+        });
+      }
+
+      req.flash(
+        'error',
+        'Silakan login terlebih dahulu untuk mengakses halaman verifikasi.',
+      );
+      return res.redirect('/login');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
       return res.render('verify-email');
@@ -174,17 +252,16 @@ export class UsersController {
     try {
       await this.usersService.verifyEmail(token);
       req.flash('success', 'Email verified successfully! You can now login.');
-      res.redirect('/users/verify-email-success');
+      return res.redirect('/users/verify-email-success');
     } catch (error: any) {
-      const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      return res.redirect('/login');
     }
   }
 
   @Get('verify-email-success')
   async verifyEmailSuccess(@Res() res: Response) {
-    res.render('verify-email-success');
+    return res.render('verify-email-success');
   }
 
   // ============================================
@@ -214,12 +291,14 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
+      createUserDto.confirm_password =
+        createUserDto.confirm_password || createUserDto.password;
       createUserDto.profile = req.body.uploadedImageUrls?.[0];
       await this.usersService.create(createUserDto);
       flashToast(
         req,
         'User Created',
-        'The new user account has been added successfully.',
+        'The new user account has been created and verification email sent.',
       );
       res.redirect('/users');
     } catch (error: any) {
@@ -574,6 +653,32 @@ export class UsersController {
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete user');
       res.redirect('/users');
+    }
+  }
+
+  @Roles('super_admin')
+  @Post('resend-verification/:id')
+  async resendVerification(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.usersService.resendVerificationByAdmin(id);
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: 'Verification email resent successfully.',
+      });
+    } catch (error: any) {
+      return res
+        .status(
+          typeof error.getStatus === 'function'
+            ? error.getStatus()
+            : HttpStatus.INTERNAL_SERVER_ERROR,
+        )
+        .json({
+          success: false,
+          message: error.message || 'Failed to resend verification email.',
+        });
     }
   }
 }
