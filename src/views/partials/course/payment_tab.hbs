@@ -64,6 +64,7 @@
       searchQuery: '',
       imageSrc: '',
       tabStatus: localStorage.getItem('statusPayment') || 'all',
+      selectedInstallment: null,
       open: false,
 
       async init() {
@@ -86,6 +87,7 @@
 
       async toggleFetchMateri(url, jenis) {
         this.tab = jenis;
+        this.selectedInstallment = null;
         if (!this.tabStatus) {
           this.tabStatus = 'all';
         }

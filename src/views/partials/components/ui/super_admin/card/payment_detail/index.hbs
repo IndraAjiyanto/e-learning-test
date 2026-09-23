@@ -213,6 +213,18 @@
             <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Total Program</span>
             <span class="font-inter font-medium text-sm leading-5 text-[#404040]" x-text="formatCurrency((Number(item.installment?.downPayment || 0) + (item.installment?.price || []).reduce((a, b) => Number(a) + Number(b), 0)) || item.invoice?.final_total || 0)"></span>
           </div>
+
+          <!-- View Detail Action Button (Figma Frame 2147229722 _Button base) -->
+          <div class="pt-2 border-t border-[#E5E5E5] flex justify-center w-full">
+            <a
+              :href="'/payment/' + item.id"
+              class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 w-full h-11 bg-white hover:bg-slate-50 border border-[#003060] rounded-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors text-decoration-none"
+            >
+              <span class="font-inter font-medium text-base leading-6 text-[#003060] text-center">
+                View Detail
+              </span>
+            </a>
+          </div>
         </div>
       </template>
     </div>

@@ -1,0 +1,205 @@
+{{!--
+  Halaman: Detail Pembayaran Installment — Super Admin
+  Lokasi: src/views/super_admin/payments/detail.hbs
+  Level: L4 Page
+  Route: GET /payment/:paymentId
+--}}
+
+<div class="min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]" x-data="installmentDetailPage({{json payment}})">
+  <!-- Container 1052px, Gap 28px -->
+  <div class="mx-auto flex flex-col items-start gap-7 w-full max-w-[1052px]">
+
+    <!-- Title (Heading & Subheading) -->
+    <div class="flex flex-col items-start gap-1 w-full">
+      <h1 class="font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]">
+        Detail Payments
+      </h1>
+      <p class="font-montserrat font-medium text-base leading-5 text-[#718096]">
+        {{#if payment.user.fullname}}{{payment.user.fullname}}{{else}}{{payment.user.username}}{{/if}}
+        —
+        {{#if payment.course.title}}{{payment.course.title}}{{else}}{{payment.course.name}}{{/if}}
+        ({{#if payment.invoice.xendit_invoice_id}}{{payment.invoice.xendit_invoice_id}}{{else if payment.no}}{{payment.no}}{{else}}INV/{{payment.id}}{{/if}})
+      </p>
+    </div>
+
+    <!-- Frame 2147229746: Cards Container, Gap 16px -->
+    <div class="flex flex-col items-start gap-4 w-full">
+
+      <!-- Feature Card 1: Partnership (Payment Transaction Details) -->
+      <div class="box-border flex flex-col items-start p-5 gap-6 w-full bg-white border border-[#D9D9D9] rounded-xl shadow-xs">
+        <!-- Container Header -->
+        <div class="flex flex-row items-center gap-2 w-full h-9">
+          <!-- Circle Icon Background 36x36 -->
+          <div class="flex flex-row justify-center items-center w-9 h-9 bg-[#003060] rounded-full shrink-0">
+            <!-- White Vector Icon -->
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect width="20" height="14" x="2" y="5" rx="2" stroke-width="2"/>
+              <line x1="2" x2="22" y1="10" y2="10" stroke-width="2"/>
+            </svg>
+          </div>
+          <!-- Payment Transaction Details Title -->
+          <h2 class="font-montserrat font-semibold text-base leading-6 text-[#003060]">
+            Payment Transaction Details
+          </h2>
+        </div>
+
+        <!-- Frame 2147229576: Inner Body -->
+        <div class="flex flex-col items-start gap-5 w-full">
+          <div class="flex flex-col items-start gap-2 w-full">
+            <!-- Frame 2147229617: Payment Type Row -->
+            <div class="flex flex-row items-center justify-between w-full min-h-[28px] gap-2 flex-wrap">
+              <span class="font-montserrat font-semibold text-sm leading-5 text-[#171717]">
+                Payment Type
+              </span>
+
+              <div class="flex items-center gap-2">
+                <!-- Badge DP -->
+                <span
+                  class="inline-flex items-center justify-center px-3 py-1 rounded-2xl font-inter font-medium text-sm leading-5"
+                  :class="payment.dpPaidAt || payment.process === 'acc' || payment.process === 'approved'
+                    ? 'bg-[#F0FDF4] text-[#15803D]'
+                    : 'bg-[#FEFCE8] text-[#A16207]'"
+                >
+                  <span x-text="payment.dpPaidAt || payment.process === 'acc' || payment.process === 'approved' ? 'DP Paid' : 'DP Pending'"></span>
+                </span>
+
+                <!-- Badge 2: Installment Duration & CaretDown -->
+                <span class="inline-flex items-center justify-center px-3 py-1 gap-1 rounded-2xl bg-[#E4F1F7] text-[#003060] font-inter font-medium text-sm leading-5">
+                  <span x-text="(payment.installment?.month || 3) + ' Bulan Cicilan'"></span>
+                  <svg class="w-4 h-4 text-[#003060]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Feature Card 1: Partnership (Inner List) -->
+            <div class="flex flex-col items-start px-2 py-1 gap-3 w-full bg-white rounded-xl border border-slate-100">
+              <!-- Frame 2147229582: Header Installment Plan -->
+              <div class="flex flex-row items-center gap-1.5 w-full h-10 border-b border-[#D9D9D9] pb-2">
+                <!-- ClockClockwise Icon -->
+                <svg class="w-5 h-5 text-[#003060] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <span class="font-montserrat font-semibold text-sm leading-5 text-[#003060]">
+                  Installment Plan
+                </span>
+              </div>
+
+              <!-- Terms List (Term 1, Term 2, Term 3...) -->
+              <div class="flex flex-col w-full">
+                <template x-for="(price, idx) in (payment.installment?.price || [400000, 400000, 400000])" :key="idx">
+                  <div class="flex flex-row justify-between items-center w-full min-h-[42px] py-2 border-b border-[#D9D9D9] last:border-b-0 gap-4">
+                    <!-- Left: Term Title & Due Date -->
+                    <div class="flex flex-col items-start gap-px">
+                      <span class="font-montserrat font-semibold text-sm leading-5 text-[#003060]" x-text="'Term ' + (idx + 1)"></span>
+                      <span
+                        class="font-montserrat font-medium text-sm leading-5 text-[#718096]"
+                        x-text="payment.installment?.dueDates && payment.installment.dueDates[idx]
+                          ? ('Due ' + formatDate(payment.installment.dueDates[idx]))
+                          : ('Termin Bulan ke-' + (idx + 1))"
+                      ></span>
+                    </div>
+
+                    <!-- Right: Amount/Month & Status Badge with Dot -->
+                    <div class="flex flex-row items-center justify-end gap-2.5 shrink-0">
+                      <span class="font-montserrat font-semibold text-sm leading-5 text-[#003060]" x-text="formatCurrency(price) + '/Month'"></span>
+
+                      <!-- Status Badges with Dot -->
+                      <!-- Approved / Paid -->
+                      <template x-if="getTermStatus(idx + 1) === 'approved'">
+                        <span class="inline-flex items-center h-[22px] gap-1.5 pl-1.5 pr-2 rounded-2xl bg-[#F0FDF4] text-[#15803D] font-inter font-medium text-xs leading-[18px]">
+                          <span class="flex h-2 w-2 items-center justify-center shrink-0">
+                            <span class="block w-1.5 h-1.5 rounded-full bg-[#22C55E] shrink-0"></span>
+                          </span>
+                          <span>Paid</span>
+                        </span>
+                      </template>
+
+                      <!-- Pending / Process -->
+                      <template x-if="getTermStatus(idx + 1) === 'process'">
+                        <span class="inline-flex items-center h-[22px] gap-1.5 pl-1.5 pr-2 rounded-2xl bg-[#FFF7ED] text-[#A16207] font-inter font-medium text-xs leading-[18px]">
+                          <span class="flex h-2 w-2 items-center justify-center shrink-0">
+                            <span class="block w-1.5 h-1.5 rounded-full bg-[#F97316] shrink-0"></span>
+                          </span>
+                          <span>Pending</span>
+                        </span>
+                      </template>
+
+                      <!-- Unpaid -->
+                      <template x-if="getTermStatus(idx + 1) === 'unpaid' || !getTermStatus(idx + 1)">
+                        <span class="inline-flex items-center h-[22px] gap-1.5 pl-1.5 pr-2 rounded-2xl bg-[#FAFAFA] text-[#404040] font-inter font-medium text-xs leading-[18px] border border-slate-200">
+                          <span class="flex h-2 w-2 items-center justify-center shrink-0">
+                            <span class="block w-1.5 h-1.5 rounded-full bg-[#737373] shrink-0"></span>
+                          </span>
+                          <span>Unpaid</span>
+                        </span>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Card 2: Partnership (Bottom Action Card) -->
+      <div class="box-border flex flex-row justify-between items-center p-5 w-full h-[86px] bg-white border border-[#D9D9D9] rounded-xl shadow-xs">
+        <div class="flex items-center gap-3">
+          <span class="font-inter text-xs text-[#737373] hidden sm:inline">
+            Menampilkan rincian skema termin cicilan peserta
+          </span>
+        </div>
+
+        <!-- Section D: Primary Actions -->
+        <div class="flex flex-row justify-end items-center gap-3">
+          <a
+            href="{{#if payment.course.id}}/program/detail/program/admin/{{payment.course.id}}{{else}}javascript:window.history.back(){{/if}}"
+            class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 w-[177px] h-11 bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all cursor-pointer text-decoration-none"
+          >
+            <span class="font-inter font-semibold text-base leading-6 text-white text-center">
+              Kembali
+            </span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function installmentDetailPage(initialPayment) {
+    return {
+      payment: initialPayment || {},
+
+      formatCurrency(value) {
+        const num = Number(value);
+        if (isNaN(num)) return 'Rp 0';
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 0,
+        }).format(num);
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(value).toLocaleDateString('id-ID', options);
+      },
+
+      getTerm(month) {
+        if (!this.payment.installmentPayments || !Array.isArray(this.payment.installmentPayments)) return null;
+        return this.payment.installmentPayments.find((p) => Number(p.month) === Number(month));
+      },
+
+      getTermStatus(month) {
+        const term = this.getTerm(month);
+        if (!term) return 'unpaid';
+        return term.status || 'process';
+      },
+    };
+  }
+</script>

@@ -592,7 +592,14 @@ export class PaymentsService {
   async findOne(paymentId: string) {
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
-      relations: ['user', 'course', 'invoice'],
+      relations: [
+        'user',
+        'course',
+        'course.category',
+        'invoice',
+        'installment',
+        'installmentPayments',
+      ],
     });
     if (!payment) {
       throw new NotFoundException('Payment not found');
