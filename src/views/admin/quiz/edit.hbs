@@ -21,27 +21,13 @@
         if (window.history.length > 1) {
           window.history.back();
         } else if (this.isSyllabus) {
-          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+          window.location.href = "{{#if quiz.id}}/syllabus/quiz/detail/{{quiz.id}}{{else if courseId}}/program/detail/program/admin/{{courseId}}{{else}}/program{{/if}}";
         } else {
           window.location.href = "{{#if quiz.id}}/quiz/{{quiz.id}}{{else}}/program{{/if}}";
         }
-      },
-      handleSubmit(e) {
-        if (!this.canSubmit()) {
-          e.preventDefault();
-          return;
-        }
-        if (this.isSyllabus) {
-          e.preventDefault();
-          this.loading = true;
-          setTimeout(() => {
-            window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
-          }, 500);
-        } else {
-          this.loading = true;
-        }
       }
-    }'>
+    }'
+    x-init="initGate()">
 
     {{!-- Title: Heading + Sub heading --}}
     <div class='box-border w-full flex flex-col gap-[4px] items-start'>
@@ -54,13 +40,13 @@
     </div>
 
     {{!-- Edit quiz form --}}
-    <form method='POST' action='{{#if isSyllabus}}#{{else}}/quiz/{{quiz.id}}?_method=PATCH{{/if}}'
+    <form method='POST' action='/quiz/{{quiz.id}}?_method=PATCH'
       class='box-border w-full flex flex-col gap-[16px] items-start'
       novalidate
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
       @focusout="markField($event.target)"
-      @submit='handleSubmit($event)'>
+      @submit="submitGate($event, () => canSubmit())">
 
       {{!-- Feature Card 1: Form Inputs Card --}}
       <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[20px] items-start'>

@@ -9,6 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { CoursesModule } from 'src/courses/courses.module';
+import { QuizModule } from 'src/quiz/quiz.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CoursesModule } from 'src/courses/courses.module';
       Quiz,
     ]),
     CoursesModule,
+    QuizModule,
   ],
   controllers: [SyllabusController],
   providers: [SyllabusService],

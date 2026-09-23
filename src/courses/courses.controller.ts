@@ -285,72 +285,39 @@ await this.coursesService.addUserToCourse(userId, courseId);
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/detail-quiz-syllabus/:courseId')
+  @Get('/detail-quiz-syllabus/:id')
   async detailQuizSyllabus(
     @Res() res: Response,
-    @Req() req: Request,
-    @Param('courseId') courseId: string,
+    @Param('id') id: string,
   ) {
-    const course = await this.coursesService.findOne(courseId);
-    return res.render('admin/course/detail_quiz', {
-      user: req.user,
-      course,
-      courseId,
-    });
+    return res.redirect(`/syllabus/quiz/detail/${id}`);
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/edit-quiz-syllabus/:courseId')
+  @Get('/edit-quiz-syllabus/:id')
   async formEditQuizSyllabus(
     @Res() res: Response,
-    @Req() req: Request,
-    @Param('courseId') courseId: string,
+    @Param('id') id: string,
   ) {
-    const course = await this.coursesService.findOne(courseId);
-    return res.render('admin/course/edit_quiz', {
-      user: req.user,
-      course,
-      courseId,
-      isSyllabus: true,
-      quiz: {
-        id: courseId,
-        quizName: 'Final Test for UX Research & Design Thinking',
-        minScore: 80,
-        duration: 60,
-      },
-    });
+    return res.redirect(`/quiz/formEdit/${id}`);
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/create-question-syllabus/:courseId')
+  @Get('/create-question-syllabus/:id')
   async formCreateQuestionSyllabus(
     @Res() res: Response,
-    @Req() req: Request,
-    @Param('courseId') courseId: string,
+    @Param('id') id: string,
   ) {
-    const course = await this.coursesService.findOne(courseId);
-    return res.render('admin/course/create_question', {
-      user: req.user,
-      course,
-      courseId,
-      isSyllabus: true,
-    });
+    return res.redirect(`/question/formCreate/${id}`);
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/edit-question-syllabus/:courseId')
+  @Get('/edit-question-syllabus/:id')
   async formEditQuestionSyllabus(
     @Res() res: Response,
-    @Req() req: Request,
-    @Param('courseId') courseId: string,
+    @Param('id') id: string,
   ) {
-    const course = await this.coursesService.findOne(courseId);
-    return res.render('admin/course/edit_question', {
-      user: req.user,
-      course,
-      courseId,
-      isSyllabus: true,
-    });
+    return res.redirect(`/question/FormEdit/${id}`);
   }
 
   @Roles('admin', 'super_admin')

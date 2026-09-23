@@ -128,7 +128,12 @@ export class SyllabusService {
   async findOne(syllabusId: string) {
     return await this.syllabusRepository.findOne({
       where: { id: syllabusId },
-      relations: ['course', 'quiz', 'quiz.questions'],
+      relations: [
+        'course',
+        'quiz',
+        'quiz.questions',
+        'quiz.questions.answers',
+      ],
     });
   }
 

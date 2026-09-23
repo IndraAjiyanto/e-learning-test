@@ -55,7 +55,7 @@
         if (window.history.length > 1) {
           window.history.back();
         } else if (this.isSyllabus) {
-          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+          window.location.href = "{{#if quiz.id}}/syllabus/quiz/detail/{{quiz.id}}{{else if courseId}}/program/detail/program/admin/{{courseId}}{{else}}/program{{/if}}";
         } else {
           window.location.href = "{{#if quiz.id}}/quiz/{{quiz.id}}{{else}}/program{{/if}}";
         }
@@ -65,15 +65,7 @@
           e.preventDefault();
           return;
         }
-        if (this.isSyllabus) {
-          e.preventDefault();
-          this.loading = true;
-          setTimeout(() => {
-            window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
-          }, 500);
-        } else {
-          this.loading = true;
-        }
+        this.loading = true;
       }
     }'>
 
