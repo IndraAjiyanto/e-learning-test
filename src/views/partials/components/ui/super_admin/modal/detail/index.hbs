@@ -27,7 +27,7 @@
   x-cloak
   @detail-modal:open.window="if ($event.detail.name === {{json name}}) show($event.detail.row)"
   @keydown.escape.window='close()'
-  class='fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur-[16px]'
+  class='fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a]/70 p-4 sm:p-6 backdrop-blur-[16px]'
   @click.self='close()'
 >
   <div
