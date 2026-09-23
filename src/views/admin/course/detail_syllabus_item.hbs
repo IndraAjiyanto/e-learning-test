@@ -50,34 +50,42 @@
 
           {{!-- Frame 2147229599: Title + Badge --}}
           <div class='flex flex-col gap-[10px] items-start flex-1 min-w-0'>
-            {{!-- Session 01 / Title --}}
+            {{!-- Session Title --}}
             <h1 class='w-full font-inter font-bold text-[34px] leading-[38px] tracking-[-0.85px] text-[#003060] truncate'>
-              Session 01
+              {{#if syllabus.title}}
+                {{syllabus.title}}
+              {{else}}
+                Session 01
+              {{/if}}
             </h1>
 
             {{!-- _Badge base: Pertemuan Terakhir --}}
+            {{#if syllabus.isFinal}}
             <div class='h-[22px] bg-[#F5F5F5] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
               <span class='font-inter font-medium text-[12px] leading-[18px] text-[#404040] text-center whitespace-nowrap'>
                 Pertemuan Terakhir
               </span>
             </div>
+            {{/if}}
           </div>
 
           {{!-- Frame 2147229614: Buttons (Delete + Edit Session) --}}
           <div class='shrink-0 flex flex-row items-center gap-[12px]'>
-            {{!-- Delete button (87x44 bg-red-50 border-red-300 text-red-500) --}}
-            <button
-              type='button'
-              @click='handleDelete()'
-              class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
-              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
-                Delete
-              </span>
-            </button>
+            {{!-- Delete button --}}
+            <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
+              <button
+                type='button'
+                onclick='openDeleteModal(this)'
+                class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
+                  Delete
+                </span>
+              </button>
+            </form>
 
-            {{!-- Edit Session button (132x44 bg-brand border-brand text-white) --}}
+            {{!-- Edit Session button --}}
             <a
-              href='/program/edit-syllabus/{{courseId}}'
+              href='/syllabus/formEdit/{{syllabus.id}}'
               class='box-border min-w-[132px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
               <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
                 Edit Session

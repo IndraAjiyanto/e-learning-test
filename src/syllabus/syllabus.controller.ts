@@ -25,7 +25,7 @@ export class SyllabusController {
     private readonly coursesService: CoursesService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: string,
@@ -47,7 +47,49 @@ export class SyllabusController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
+  @Get('course/:courseId')
+  async getByCourse(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+  ) {
+    const syllabusList = await this.syllabusService.findByCourse(courseId);
+    res.json(syllabusList);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('formEdit/:id')
+  async formEdit(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    let syllabus = await this.syllabusService.findOne(id).catch(() => null);
+    if (!syllabus) {
+      const syllabusList = await this.syllabusService
+        .findByCourse(id)
+        .catch(() => []);
+      if (syllabusList && syllabusList.length > 0) {
+        syllabus = syllabusList[0];
+      }
+    }
+    if (!syllabus) {
+      req.flash('error', 'Syllabus not found');
+      return res.redirect('/program');
+    }
+    const maxSyllabus = await this.syllabusService.findCourseSyllabus(
+      syllabus.course?.id,
+    );
+    return res.render('admin/course/edit_syllabus', {
+      user: req.user,
+      syllabus,
+      course: syllabus.course,
+      courseId: syllabus.course?.id,
+      maxSyllabus,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/quiz/:syllabusId')
   async getQuiz(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
@@ -57,7 +99,7 @@ export class SyllabusController {
     res.json(quiz);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':syllabusId')
   async findOne(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
@@ -72,10 +114,12 @@ export class SyllabusController {
     res.render('admin/course/detail_syllabus_item', {
       user: req.user,
       syllabus,
+      course: syllabus.course,
+      courseId: syllabus.course?.id,
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch('update/:syllabusId')
   async update(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
@@ -100,7 +144,18 @@ export class SyllabusController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
+  @Post('update/:syllabusId')
+  async updatePost(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Body() updateSyllabusDto: UpdateSyllabusDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.update(syllabusId, updateSyllabusDto, req, res);
+  }
+
+  @Roles('admin', 'super_admin')
   @Delete(':id/:courseId')
   async remove(
     @Param('id') id: string,

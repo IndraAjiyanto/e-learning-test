@@ -18,7 +18,7 @@
           <div class='flex flex-col gap-[2px] flex-1 min-w-0 justify-center items-start'>
             <!-- Title: Pertemuan/Sylabus NN (Inter Semibold 14/20 #003060) -->
             <div class='w-full h-[20px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] flex items-center truncate'
-                 x-text="'Pertemuan ' + String(index + 1).padStart(2, '0')"></div>
+                 x-text="'Pertemuan ' + String(item.orderNumber || (index + 1)).padStart(2, '0')"></div>
             <!-- Subtitle: Description / Topic (Inter Medium 14/23 #737373) -->
             <div class='w-full h-[23px] font-inter font-medium text-[14px] leading-[23px] text-[#737373] flex items-center truncate'
                  x-text="item.topic || item.description || '-'" :title="item.topic || item.description || ''"></div>
@@ -70,9 +70,22 @@
 function sylabusData() {
   return {
     rawWeeks: [],
+    rawSyllabus: [],
     containerWeekId: '{{containerWeek.id}}',
 
     get items() {
+      if (this.rawSyllabus && this.rawSyllabus.length > 0) {
+        return this.rawSyllabus.map((s, index) => ({
+          id: s.id,
+          orderNumber: s.syllabusNumber || (index + 1),
+          topic: s.title || '',
+          description: s.description || '',
+          isFinal: !!s.isFinal,
+          detailUrl: '/syllabus/' + s.id,
+          deleteUrl: '/syllabus/' + s.id + '/{{course.id}}?_method=DELETE',
+        }));
+      }
+
       if (!this.rawWeeks || this.rawWeeks.length === 0) return [];
       
       const hasSessions = this.rawWeeks.some(w => w.session && w.session.length > 0);
@@ -83,6 +96,7 @@ function sylabusData() {
             w.session.forEach(s => {
               result.push({
                 id: s.id,
+                orderNumber: null,
                 topic: s.topic || '',
                 description: s.location || (s.date ? 'Date: ' + s.date : ''),
                 detailUrl: '/program/detail-syllabus/{{course.id}}',
@@ -97,6 +111,7 @@ function sylabusData() {
       // Fallback if weeks themselves are the syllabus entries
       return this.rawWeeks.map((w) => ({
         id: w.id,
+        orderNumber: w.weekNumber,
         topic: w.description || '',
         description: '',
         detailUrl: '/program/detail-syllabus/{{course.id}}',
@@ -109,6 +124,19 @@ function sylabusData() {
     },
 
     async fetchSylabus() {
+      try {
+        const res = await fetch('/syllabus/course/{{course.id}}');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            this.rawSyllabus = data;
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Fetch syllabus error:', e);
+      }
+
       try {
         const res = await fetch('/program/week/{{course.id}}');
         this.rawWeeks = await res.json();

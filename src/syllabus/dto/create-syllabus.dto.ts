@@ -1,4 +1,5 @@
-import { IsObject, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateSyllabusDto {
   @IsString()
@@ -8,7 +9,16 @@ export class CreateSyllabusDto {
   description: string;
 
   @IsOptional()
-  @IsObject()
-  content: object;
+  content?: any;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true || value === 1 || value === '1')
+  @IsBoolean()
+  isFinal?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => (value !== undefined && value !== '' ? Number(value) : undefined))
+  @IsNumber()
+  syllabusNumber?: number;
 }
 

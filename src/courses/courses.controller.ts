@@ -250,18 +250,13 @@ await this.coursesService.addUserToCourse(userId, courseId);
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/edit-syllabus/:courseId')
+  @Get('/edit-syllabus/:id')
   async formEditSyllabus(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId') courseId: string,
+    @Param('id') id: string,
   ) {
-    const course = await this.coursesService.findOne(courseId);
-    return res.render('admin/course/edit_syllabus', {
-      user: req.user,
-      course,
-      courseId,
-    });
+    return res.redirect(`/syllabus/formEdit/${id}`);
   }
 
   @Roles('admin', 'super_admin')
@@ -561,15 +556,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
       const lastWeek = await this.coursesService.findLastWeek(courseId);
       const caps = capabilitiesForCourse(course);
       if (course.programType === 'non_bootcamp' || caps.structure === 'syllabus') {
-        const containerWeek =
-          await this.coursesService.ensureSyllabusContainer(course);
         return res.render('admin/course/detail_syllabus', {
           user: req.user,
           course,
           lastWeek,
           categoryId,
-          caps,
-          containerWeek,
+          caps
         });
       }
       return res.render('admin/course/detail', {
