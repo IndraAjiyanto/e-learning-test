@@ -311,6 +311,21 @@ await this.coursesService.addUserToCourse(userId, courseId);
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/detail-final-assignment/:courseId')
+  async detailFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId).catch(() => null);
+    return res.render('admin/course/detail_final_assignment', {
+      user: req.user,
+      course,
+      courseId: course?.id || courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/edit-syllabus/:id')
   async formEditSyllabus(
     @Res() res: Response,

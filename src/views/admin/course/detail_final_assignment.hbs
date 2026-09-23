@@ -1,0 +1,310 @@
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start w-full' x-data='detailFinalAssignmentData()'>
+
+    {{!-- Header Section --}}
+    <div class='box-border w-full flex flex-col gap-[12px] items-start'>
+      {{!-- Back Button --}}
+      <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
+        <a :href="backUrl"
+          class='h-[20px] flex flex-row items-center gap-[4px] text-[#718096] hover:text-[#003060] transition-colors'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+            <polyline points='15 18 9 12 15 6'></polyline>
+          </svg>
+          <span class='font-inter font-medium text-[16px] leading-[20px] text-[#718096]'>
+            Back
+          </span>
+        </a>
+      </div>
+
+      {{!-- Title Heading + Sub heading --}}
+      <div class='box-border w-full flex flex-col gap-[4px] items-start'>
+        <h1 class='w-full font-inter font-bold text-[34px] leading-[36px] tracking-[-1px] text-[#003060]'>
+          Final Assignment
+        </h1>
+        <p class='w-full font-inter font-medium text-[16px] leading-[20px] text-[#718096]'>
+          Fill in the information below to add new final assignment
+        </p>
+      </div>
+    </div>
+
+    {{!-- Main 2-Column Content Layout --}}
+    <div class='w-full flex flex-col lg:flex-row items-start gap-[16px]'>
+
+      {{!-- Column 1 (Left): Table Detail Session (Submissions & Review) --}}
+      <div class='box-border w-full lg:w-[554px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[20px] items-start shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'>
+
+        {{!-- Tabs Row: All, Under Review, Approved, Rejected --}}
+        <div class='box-border w-full h-[41px] flex flex-row items-start border-b border-[#D9D9D9] overflow-x-auto'>
+          <button type='button'
+            @click="activeTab = 'all'"
+            :class="activeTab === 'all' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            All
+          </button>
+
+          <button type='button'
+            @click="activeTab = 'process'"
+            :class="activeTab === 'process' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            Under Review
+          </button>
+
+          <button type='button'
+            @click="activeTab = 'approved'"
+            :class="activeTab === 'approved' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            Approved
+          </button>
+
+          <button type='button'
+            @click="activeTab = 'rejected'"
+            :class="activeTab === 'rejected' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            Rejected
+          </button>
+        </div>
+
+        {{!-- Submissions List --}}
+        <div class='box-border w-full flex flex-col gap-[12px]'>
+          <template x-for='sub in filteredSubmissions' :key='sub.id'>
+            <div class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col'>
+
+              {{!-- Accordion Header --}}
+              <div
+                @click='sub.isOpen = !sub.isOpen'
+                class='box-border w-full min-h-[64px] h-[64px] bg-[#FAFAFA] border-b border-[#D9D9D9] px-[14px] py-[8px] flex flex-row items-center gap-[6px] cursor-pointer hover:bg-[#F5F5F5] transition-colors'>
+
+                {{!-- Avatar + Name + Role --}}
+                <div class='flex flex-row items-center gap-[10px] flex-1 min-w-0'>
+                  <div class='w-[32px] h-[32px] rounded-full bg-[#F9F5FF] flex items-center justify-center shrink-0 border border-[#E9D7FE]'>
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#7F56D9' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                      <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'></path>
+                      <circle cx='12' cy='7' r='4'></circle>
+                    </svg>
+                  </div>
+                  <div class='flex flex-col items-start'>
+                    <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#404040]' x-text='sub.studentName'></span>
+                    <span class='font-inter font-normal text-[12px] leading-[18px] text-[#525252]' x-text='sub.role'></span>
+                  </div>
+                </div>
+
+                {{!-- Status Badge --}}
+                <div class='shrink-0 flex items-center'>
+                  <template x-if="sub.status === 'approved'">
+                    <div class='h-[22px] bg-[#F0FDF4] rounded-[16px] px-[8px] py-[2px] flex flex-row items-center gap-[6px]'>
+                      <span class='w-[6px] h-[6px] rounded-full bg-[#22C55E]'></span>
+                      <span class='font-inter font-medium text-[12px] leading-[18px] text-[#15803D]'>Approved</span>
+                    </div>
+                  </template>
+                  <template x-if="sub.status === 'process'">
+                    <div class='h-[22px] bg-[#FEF9C3] rounded-[16px] px-[8px] py-[2px] flex flex-row items-center gap-[6px]'>
+                      <span class='w-[6px] h-[6px] rounded-full bg-[#EAB308]'></span>
+                      <span class='font-inter font-medium text-[12px] leading-[18px] text-[#854D0E]'>Under Review</span>
+                    </div>
+                  </template>
+                  <template x-if="sub.status === 'rejected'">
+                    <div class='h-[22px] bg-[#FEF2F2] rounded-[16px] px-[8px] py-[2px] flex flex-row items-center gap-[6px]'>
+                      <span class='w-[6px] h-[6px] rounded-full bg-[#EF4444]'></span>
+                      <span class='font-inter font-medium text-[12px] leading-[18px] text-[#B91C1C]'>Rejected</span>
+                    </div>
+                  </template>
+                </div>
+
+                {{!-- Collapse Chevron --}}
+                <div class='w-[20px] h-[20px] flex items-center justify-center text-[#525252] transition-transform duration-200' :class="sub.isOpen ? 'rotate-180' : ''">
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                    <polyline points='6 9 12 15 18 9'></polyline>
+                  </svg>
+                </div>
+
+              </div>
+
+              {{!-- Accordion Body --}}
+              <div x-show='sub.isOpen' x-collapse class='box-border w-full p-[14px] bg-[#FFFFFF] flex flex-col gap-[20px]'>
+
+                {{!-- 1. Form Link / File Preview Card --}}
+                <div class='w-full flex flex-col gap-[4px] items-start'>
+                  <label class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#171717]'>
+                    Form link
+                  </label>
+                  <div class='box-border w-full h-[80px] border border-[#E5E5E5] rounded-[12px] px-[20px] py-[16px] flex flex-row items-center gap-[16px] bg-[#FFFFFF]'>
+                    {{!-- PDF Badge --}}
+                    <div class='w-[36px] h-[46px] rounded-[4px] border border-[#D4D4D4] bg-[#FFFFFF] relative flex flex-col justify-end p-1 shrink-0'>
+                      <div class='bg-[#DC2626] rounded-[2px] px-[4px] py-[1px] flex items-center justify-center'>
+                        <span class='font-inter font-semibold text-[10px] leading-[12px] text-white'>PDF</span>
+                      </div>
+                    </div>
+
+                    {{!-- File Info --}}
+                    <div class='flex flex-col gap-[4px] flex-1 min-w-0'>
+                      <span class='font-inter font-semibold text-[16px] leading-[20px] text-[#171717] truncate' x-text='sub.fileName'></span>
+                      <div class='flex flex-row items-center gap-[12px] text-[#737373] text-[14px] font-inter font-medium'>
+                        <span x-text='sub.fileSize'></span>
+                        <span>•</span>
+                        <span class='truncate' x-text='sub.courseTopic'></span>
+                      </div>
+                    </div>
+
+                    {{!-- Download / Action Icon --}}
+                    <a :href="sub.fileUrl || '#'" target='_blank' class='w-[24px] h-[24px] flex items-center justify-center text-[#737373] hover:text-[#003060] transition-colors shrink-0'>
+                      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+                        <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'></path>
+                        <polyline points='7 10 12 15 17 10'></polyline>
+                        <line x1='12' y1='15' x2='12' y2='3'></line>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                {{!-- 2. Submitted Date --}}
+                <div class='w-full flex flex-col gap-[4px] items-start'>
+                  <span class='font-inter font-medium text-[14px] leading-[20px] text-[#171717]'>
+                    Submited Date
+                  </span>
+                  <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]' x-text='sub.submittedDate'></span>
+                </div>
+
+                {{!-- 3. Leave a Comment --}}
+                <div class='w-full flex flex-col gap-[8px] items-start'>
+                  <label class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                    Leave a Comment
+                  </label>
+                  <div class='box-border w-full h-[128px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+                    <textarea
+                      x-model='sub.newComment'
+                      rows='4'
+                      placeholder='Write feedback or comment...'
+                      class='w-full h-[108px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 resize-none focus:ring-0 focus:outline-none'></textarea>
+                  </div>
+                </div>
+
+                {{!-- 4. Action Buttons (Approve / Reject) --}}
+                <div class='w-full flex flex-row items-center gap-[12px]'>
+                  <button
+                    type='button'
+                    @click='approveSubmission(sub)'
+                    class='box-border flex-1 h-[44px] bg-[#16A34A] border border-[#4ADE80] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#15803D] transition-colors'>
+                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF]'>
+                      Approve
+                    </span>
+                  </button>
+
+                  <button
+                    type='button'
+                    @click='rejectSubmission(sub)'
+                    class='box-border flex-1 h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#B91C1C]'>
+                      Reject
+                    </span>
+                  </button>
+                </div>
+
+                {{!-- 5. Comment History --}}
+                <div class='w-full flex flex-col gap-[8px] items-start'>
+                  <span class='font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                    Comment History
+                  </span>
+                  <div class='w-full flex flex-col gap-[12px]'>
+                    <template x-for='(c, idx) in sub.comments' :key='idx'>
+                      <div class='box-border w-full min-h-[84px] bg-[#FAFAFA] border border-[#D4D4D4] border-l-4 border-l-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] p-[12px_14px] flex flex-col justify-center'>
+                        <p class='font-inter font-normal text-[16px] leading-[20px] text-[#171717]' x-text='c'></p>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </template>
+        </div>
+
+      </div>
+
+      {{!-- Column 2 (Right): View Logbook / Final Assignment Brief Preview --}}
+      <div class='box-border w-full lg:w-[482px] border border-[#D9D9D9] rounded-[12px] overflow-hidden flex flex-col bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'>
+
+        {{!-- Top Navy Card Header --}}
+        <div class='box-border w-full min-h-[93px] bg-[#003060] px-[28px] py-[20px] flex flex-col gap-[4px] items-start justify-center'>
+          <h2 class='w-full font-inter font-bold text-[24px] leading-[29px] tracking-[-1px] text-[#FFFFFF]'>
+            Final Assignment
+          </h2>
+          <p class='w-full font-inter font-medium text-[16px] leading-[20px] text-[#F3F3F3]'>
+            Brief & Description
+          </p>
+        </div>
+
+        {{!-- Content Body with Text & Gradient --}}
+        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] relative bg-[#FFFFFF]'>
+          <h3 class='w-full font-inter font-semibold text-[16px] leading-[22px] text-center text-[#000000]'>
+            Perancangan User Experience pada LMS Kesatria Academy dengan Pendekatan UX Research dan Design Thinking
+          </h3>
+
+          <p class='w-full font-inter font-normal text-[12px] leading-[16px] text-[#000000] text-justify pb-[60px]'>
+            Kesatria Academy merupakan sebuah platform e-learning yang dibuat untuk membantu proses pengelolaan program edukasi secara lebih terstruktur dan digital. Sebelum adanya sistem, beberapa proses seperti pendaftaran program, pengelolaan peserta, materi pembelajaran, absensi, logbook, assignment, dan quiz masih dilakukan secara manual. Kondisi tersebut dapat menyebabkan proses pengelolaan menjadi kurang efektif karena informasi dan aktivitas pembelajaran belum berada dalam satu sistem yang terintegrasi. Oleh karena itu, dibutuhkan sebuah platform digital yang tidak hanya mampu menjalankan fungsi bisnis, tetapi juga memiliki user experience yang mudah dipahami oleh pengguna. Sebagai contoh, persona untuk peserta dapat memiliki tujuan untuk mengikuti program secara mudah tanpa harus banyak berkomunikasi secara manual dengan pihak Kesatria Academy. Salah satu pain point yang mungkin muncul adalah peserta kesulitan mengetahui status pendaftaran, pembayaran, jadwal pembelajaran, materi, dan tugas karena informasi sebelumnya tersebar di beberapa media. Dari kondisi tersebut dapat dibuat problem statement seperti: "Peserta membutuhkan sebuah sistem pembelajaran yang menyediakan informasi program, proses pendaftaran, pembayaran, materi, aktivitas pembelajaran, dan progress dalam satu platform agar mereka dapat mengikuti program dengan lebih mudah dan terstruktur." Tahap terakhir dalam Design Thinking adalah Testing. Prototype yang telah dibuat perlu diuji kepada pengguna untuk mengetahui apakah solusi yang dirancang benar-benar dapat digunakan dengan mudah. Testing dapat dilakukan dengan memberikan task tertentu kepada pengguna. Contohnya, kepada peserta dapat diberikan task: Cari program UI/UX Designer. Buka detail program. Lakukan pendaftaran. Lihat status pembayaran. Masuk ke program yang sudah diikuti. Temukan materi pembelajaran. Lakukan absensi. Isi logbook. Kerjakan assignment atau quiz. Selama proses tersebut, researcher dapat mengamati apakah pengguna dapat menyelesaikan task tanpa bantuan, bagian mana yang membuat mereka bingung, berapa banyak kesalahan yang terjadi, dan bagaimana persepsi mereka setelah menyelesaikan task.
+          </p>
+
+          {{!-- Gradient fade overlay on bottom --}}
+          <div class='pointer-events-none absolute bottom-0 inset-x-0 h-[83px] bg-gradient-to-t from-white to-transparent'></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+function detailFinalAssignmentData() {
+  return {
+    activeTab: 'all',
+    backUrl: '/program/detail/program/admin/{{courseId}}',
+
+    submissions: [
+      {
+        id: 1,
+        studentName: 'Ghybran',
+        role: 'UI/UX Designer',
+        status: 'approved',
+        fileName: 'Ghybran_Final_Assigment.pdf',
+        fileSize: '3.4mb',
+        courseTopic: 'UX Research & Design Thinking',
+        fileUrl: '#',
+        submittedDate: '01 September 2026',
+        isOpen: true,
+        newComment: '',
+        comments: [
+          'Dokumentasi UX Research sudah lengkap dan mencakup persona serta user journey.',
+          'Design thinking prototype sudah sesuai problem statement, lanjutkan ke usability testing.',
+          'Format penulisan dan penjabaran hasil testing sudah sangat terstruktur.'
+        ]
+      }
+    ],
+
+    get filteredSubmissions() {
+      if (this.activeTab === 'all') return this.submissions;
+      return this.submissions.filter(s => s.status === this.activeTab);
+    },
+
+    approveSubmission(sub) {
+      sub.status = 'approved';
+      if (sub.newComment.trim()) {
+        sub.comments.unshift(sub.newComment.trim());
+        sub.newComment = '';
+      }
+      alert('Submission status updated to Approved.');
+    },
+
+    rejectSubmission(sub) {
+      sub.status = 'rejected';
+      if (sub.newComment.trim()) {
+        sub.comments.unshift(sub.newComment.trim());
+        sub.newComment = '';
+      }
+      alert('Submission status updated to Rejected.');
+    }
+  };
+}
+</script>
+
