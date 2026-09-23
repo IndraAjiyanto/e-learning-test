@@ -52,15 +52,17 @@
       Full Payment
     </button>
     
-    {{!-- Installment Tab Button --}}
-    <button 
-      type="button"
-      @click="tab = 'installment'"
-      class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer"
-      :class="tab === 'installment' ? 'bg-[#003060] text-white shadow-xs' : 'border border-[#CBD5E1] text-[#64748B] hover:text-[#0B1F3B]'"
-    >
-      Installment
-    </button>
+    {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+      {{!-- Installment Tab Button --}}
+      <button 
+        type="button"
+        @click="tab = 'installment'"
+        class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer"
+        :class="tab === 'installment' ? 'bg-[#003060] text-white shadow-xs' : 'border border-[#CBD5E1] text-[#64748B] hover:text-[#0B1F3B]'"
+      >
+        Installment
+      </button>
+    {{/if}}
   </div>
 
   {{!-- Dynamic Price Section --}}
@@ -94,22 +96,24 @@
       </div>
     </div>
 
-    {{!-- INSTALLMENT PRICE VIEW --}}
-    <div x-show="tab === 'installment'" x-cloak class="flex flex-col items-start gap-1 w-full">
-      <div class="font-inter text-2xl sm:text-[28px] font-extrabold leading-[34px] text-[#0B1F3B]">
-        {{#if (and (eq course.price 0) (eq course.promo 0))}}
-          {{!-- Jika program gratis (Rp 0), cicilan/DP Rp 0 --}}
-          {{formatRupiah 0}}
-        {{else if course.installments.[0].downPayment}}
-          {{!-- Menggunakan kolom downPayment dari table installment --}}
-          {{formatRupiah course.installments.[0].downPayment}}
-        {{else if installments.[0].downPayment}}
-          {{formatRupiah installments.[0].downPayment}}
-        {{else}}
-          {{formatRupiah 0}}
-        {{/if}}
+    {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+      {{!-- INSTALLMENT PRICE VIEW --}}
+      <div x-show="tab === 'installment'" x-cloak class="flex flex-col items-start gap-1 w-full">
+        <div class="font-inter text-2xl sm:text-[28px] font-extrabold leading-[34px] text-[#0B1F3B]">
+          {{#if (and (eq course.price 0) (eq course.promo 0))}}
+            {{!-- Jika program gratis (Rp 0), cicilan/DP Rp 0 --}}
+            {{formatRupiah 0}}
+          {{else if course.installments.[0].downPayment}}
+            {{!-- Menggunakan kolom downPayment dari table installment --}}
+            {{formatRupiah course.installments.[0].downPayment}}
+          {{else if installments.[0].downPayment}}
+            {{formatRupiah installments.[0].downPayment}}
+          {{else}}
+            {{formatRupiah 0}}
+          {{/if}}
+        </div>
       </div>
-    </div>
+    {{/if}}
 
   </div>
 
@@ -127,52 +131,54 @@
   {{!-- Divider (Only shown in Full Payment view) --}}
   <hr x-show="tab === 'full'" class="w-full border-t border-[#E5E7EB]" />
 
-  {{!-- Installment Information Accordion (Only for Installment Tab) --}}
-  <div x-show="tab === 'installment'" x-cloak class="flex flex-col gap-3 w-full">
-    {{!-- Yellow Badge Bar --}}
-    <div 
-      @click="openInstallmentInfo = !openInstallmentInfo"
-      class="flex items-center justify-between rounded-lg bg-[#FEF3C7] border border-[#FDE68A] px-3.5 py-2.5 cursor-pointer select-none transition-colors hover:bg-[#FDE68A]/60"
-    >
-      <div class="flex items-center gap-2 text-[#B7791F]">
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="#B7791F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-          <line x1="7" y1="7" x2="7.01" y2="7"/>
-        </svg>
-        <span class="font-inter text-[13px] font-bold text-[#B7791F]">
-          Installment Information
-        </span>
-      </div>
-
-      <svg 
-        class="size-4 text-[#B7791F] transition-transform duration-200" 
-        :class="openInstallmentInfo ? 'rotate-180' : ''"
-        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+  {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+    {{!-- Installment Information Accordion (Only for Installment Tab) --}}
+    <div x-show="tab === 'installment'" x-cloak class="flex flex-col gap-3 w-full">
+      {{!-- Yellow Badge Bar --}}
+      <div 
+        @click="openInstallmentInfo = !openInstallmentInfo"
+        class="flex items-center justify-between rounded-lg bg-[#FEF3C7] border border-[#FDE68A] px-3.5 py-2.5 cursor-pointer select-none transition-colors hover:bg-[#FDE68A]/60"
       >
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </div>
+        <div class="flex items-center gap-2 text-[#B7791F]">
+          <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="#B7791F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+          <span class="font-inter text-[13px] font-bold text-[#B7791F]">
+            Installment Information
+          </span>
+        </div>
 
-    {{!-- 4 Points List --}}
-    <div x-show="openInstallmentInfo" x-collapse class="flex flex-col gap-1.5 font-inter text-xs sm:text-[13px] leading-relaxed text-[#64748B] pl-1">
-      <div class="flex items-start gap-2">
-        <span class="font-normal text-[#64748B] shrink-0">1.</span>
-        <span>Down Payment (DP) is required as the first payment for enrollment</span>
+        <svg 
+          class="size-4 text-[#B7791F] transition-transform duration-200" 
+          :class="openInstallmentInfo ? 'rotate-180' : ''"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </div>
-      <div class="flex items-start gap-2">
-        <span class="font-normal text-[#64748B] shrink-0">2.</span>
-        <span>No additional fees or interest</span>
-      </div>
-      <div class="flex items-start gap-2">
-        <span class="font-normal text-[#64748B] shrink-0">3.</span>
-        <span>Pay monthly as per schedule below</span>
-      </div>
-      <div class="flex items-start gap-2">
-        <span class="font-normal text-[#64748B] shrink-0">4.</span>
-        <span>Full access after DP payment</span>
+
+      {{!-- 4 Points List --}}
+      <div x-show="openInstallmentInfo" x-collapse class="flex flex-col gap-1.5 font-inter text-xs sm:text-[13px] leading-relaxed text-[#64748B] pl-1">
+        <div class="flex items-start gap-2">
+          <span class="font-normal text-[#64748B] shrink-0">1.</span>
+          <span>Down Payment (DP) is required as the first payment for enrollment</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="font-normal text-[#64748B] shrink-0">2.</span>
+          <span>No additional fees or interest</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="font-normal text-[#64748B] shrink-0">3.</span>
+          <span>Pay monthly as per schedule below</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="font-normal text-[#64748B] shrink-0">4.</span>
+          <span>Full access after DP payment</span>
+        </div>
       </div>
     </div>
-  </div>
+  {{/if}}
 
   {{!-- Schedule Section Box (Shared across both tabs) --}}
   <div class="flex w-full flex-col gap-2.5 rounded-xl bg-[#F9FAFB] p-4 font-inter text-xs text-[#374151]">
@@ -200,8 +206,10 @@
   {{!-- CTA Section (Shared across both tabs) --}}
   <div class="flex w-full flex-col items-center gap-3">
     <a
-      :href="tab === 'installment' ? '{{#if course.id}}/payment/registration/{{course.id}}?method=installment{{else}}#hero{{/if}}' : '{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}'"
-      href="{{#if course.id}}/payment/registration/{{course.id}}{{else}}#hero{{/if}}"
+      {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+        :href="tab === 'installment' ? '{{#if course.id}}/payment/registration/{{course.id}}?method=installment{{else}}#hero{{/if}}' : '{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}'"
+      {{/if}}
+      href="{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}"
       class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#1E3A5F] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#152841] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
     >
       Registration Now
