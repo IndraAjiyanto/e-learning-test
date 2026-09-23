@@ -1,0 +1,431 @@
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start w-full' x-data='detailFinalAssignmentData()'>
+
+    {{!-- Header Section --}}
+    <div class='box-border w-full flex flex-col gap-[12px] items-start'>
+      {{!-- Back Button --}}
+      <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
+        <a :href="backUrl"
+          class='h-[20px] flex flex-row items-center gap-[4px] text-[#718096] hover:text-[#003060] transition-colors'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+            <polyline points='15 18 9 12 15 6'></polyline>
+          </svg>
+          <span class='font-inter font-medium text-[16px] leading-[20px] text-[#718096]'>
+            Back
+          </span>
+        </a>
+      </div>
+
+      {{!-- Title Heading + Sub heading --}}
+      <div class='box-border w-full flex flex-col gap-[4px] items-start'>
+        <h1 class='w-full font-inter font-bold text-[34px] leading-[36px] tracking-[-1px] text-[#003060]'>
+          Final Assignment
+        </h1>
+        <p class='w-full font-inter font-medium text-[16px] leading-[20px] text-[#718096]'>
+          Fill in the information below to add new final assignment
+        </p>
+      </div>
+    </div>
+
+    {{!-- Main 2-Column Content Layout --}}
+    <div class='w-full flex flex-col lg:flex-row items-start gap-[16px]'>
+
+      {{!-- Column 1 (Left): Table Detail Session (Submissions & Review) --}}
+      <div class='box-border w-full lg:w-[554px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[20px] items-start shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'>
+
+        {{!-- Tabs Row: All, Under Review, Approved, Rejected --}}
+        <div class='box-border w-full h-[41px] flex flex-row items-start border-b border-[#D9D9D9] overflow-x-auto'>
+          <button type='button'
+            @click="activeTab = 'all'"
+            :class="activeTab === 'all' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            All
+          </button>
+
+          <button type='button'
+            @click="activeTab = 'process'"
+            :class="activeTab === 'process' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            Under Review
+          </button>
+
+          <button type='button'
+            @click="activeTab = 'approved'"
+            :class="activeTab === 'approved' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            Approved
+          </button>
+
+          <button type='button'
+            @click="activeTab = 'rejected'"
+            :class="activeTab === 'rejected' ? 'border-b-2 border-[#003060] text-[#003060]' : 'border-b-2 border-transparent text-[#718096] hover:text-[#003060]'"
+            class='box-border shrink-0 h-[40px] px-[32px] py-[10px] flex flex-row justify-center items-center font-inter font-semibold text-[14px] leading-[20px] whitespace-nowrap transition-colors'>
+            Rejected
+          </button>
+        </div>
+
+        {{!-- Submissions List --}}
+        <div class='box-border w-full flex flex-col gap-[12px]'>
+          <template x-if='filteredSubmissions.length === 0'>
+            <div class='box-border w-full py-[36px] flex flex-col items-center justify-center gap-[8px] text-center border border-dashed border-[#D9D9D9] rounded-[8px] bg-[#FAFAFA]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='w-[36px] h-[36px]'>
+                <path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'></path>
+                <polyline points='14 2 14 8 20 8'></polyline>
+                <line x1='16' y1='13' x2='8' y2='13'></line>
+                <line x1='16' y1='17' x2='8' y2='17'></line>
+                <polyline points='10 9 9 9 8 9'></polyline>
+              </svg>
+              <span class='font-inter font-medium text-[14px] leading-[20px] text-[#737373]'>
+                Belum ada submission dari peserta.
+              </span>
+            </div>
+          </template>
+
+          <template x-for='sub in filteredSubmissions' :key='sub.id'>
+            <div class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col'>
+
+              {{!-- Accordion Header --}}
+              <div
+                @click='sub.isOpen = !sub.isOpen'
+                class='box-border w-full min-h-[64px] h-[64px] bg-[#FAFAFA] border-b border-[#D9D9D9] px-[14px] py-[8px] flex flex-row items-center gap-[6px] cursor-pointer hover:bg-[#F5F5F5] transition-colors'>
+
+                {{!-- Avatar + Name + Role --}}
+                <div class='flex flex-row items-center gap-[10px] flex-1 min-w-0'>
+                  <div class='w-[32px] h-[32px] rounded-full bg-[#F9F5FF] flex items-center justify-center shrink-0 border border-[#E9D7FE]'>
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#7F56D9' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                      <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'></path>
+                      <circle cx='12' cy='7' r='4'></circle>
+                    </svg>
+                  </div>
+                  <div class='flex flex-col items-start'>
+                    <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#404040]' x-text='sub.studentName'></span>
+                    <span class='font-inter font-normal text-[12px] leading-[18px] text-[#525252]' x-text='sub.role'></span>
+                  </div>
+                </div>
+
+                {{!-- Status Badge --}}
+                <div class='shrink-0 flex items-center'>
+                  <template x-if="sub.status === 'approved'">
+                    <div class='h-[22px] bg-[#F0FDF4] rounded-[16px] px-[8px] py-[2px] flex flex-row items-center gap-[6px]'>
+                      <span class='w-[6px] h-[6px] rounded-full bg-[#22C55E]'></span>
+                      <span class='font-inter font-medium text-[12px] leading-[18px] text-[#15803D]'>Approved</span>
+                    </div>
+                  </template>
+                  <template x-if="sub.status === 'process'">
+                    <div class='h-[22px] bg-[#FEF9C3] rounded-[16px] px-[8px] py-[2px] flex flex-row items-center gap-[6px]'>
+                      <span class='w-[6px] h-[6px] rounded-full bg-[#EAB308]'></span>
+                      <span class='font-inter font-medium text-[12px] leading-[18px] text-[#854D0E]'>Under Review</span>
+                    </div>
+                  </template>
+                  <template x-if="sub.status === 'rejected'">
+                    <div class='h-[22px] bg-[#FEF2F2] rounded-[16px] px-[8px] py-[2px] flex flex-row items-center gap-[6px]'>
+                      <span class='w-[6px] h-[6px] rounded-full bg-[#EF4444]'></span>
+                      <span class='font-inter font-medium text-[12px] leading-[18px] text-[#B91C1C]'>Rejected</span>
+                    </div>
+                  </template>
+                </div>
+
+                {{!-- Collapse Chevron --}}
+                <div class='w-[20px] h-[20px] flex items-center justify-center text-[#525252] transition-transform duration-200' :class="sub.isOpen ? 'rotate-180' : ''">
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                    <polyline points='6 9 12 15 18 9'></polyline>
+                  </svg>
+                </div>
+
+              </div>
+
+              {{!-- Accordion Body --}}
+              <div x-show='sub.isOpen' x-collapse class='box-border w-full p-[14px] bg-[#FFFFFF] flex flex-col gap-[20px]'>
+
+                {{!-- 1. Form Link / File Preview Card --}}
+                <div class='w-full flex flex-col gap-[4px] items-start'>
+                  <label class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#171717]'>
+                    Form link
+                  </label>
+                  <div class='box-border w-full h-[80px] border border-[#E5E5E5] rounded-[12px] px-[20px] py-[16px] flex flex-row items-center gap-[16px] bg-[#FFFFFF]'>
+                    {{!-- PDF Badge --}}
+                    <div class='w-[36px] h-[46px] rounded-[4px] border border-[#D4D4D4] bg-[#FFFFFF] relative flex flex-col justify-end p-1 shrink-0'>
+                      <div class='bg-[#DC2626] rounded-[2px] px-[4px] py-[1px] flex items-center justify-center'>
+                        <span class='font-inter font-semibold text-[10px] leading-[12px] text-white'>PDF</span>
+                      </div>
+                    </div>
+
+                    {{!-- File Info --}}
+                    <div class='flex flex-col gap-[4px] flex-1 min-w-0'>
+                      <span class='font-inter font-semibold text-[16px] leading-[20px] text-[#171717] truncate' x-text='sub.fileName'></span>
+                      <div class='flex flex-row items-center gap-[12px] text-[#737373] text-[14px] font-inter font-medium'>
+                        <span x-text='sub.fileSize'></span>
+                        <span>•</span>
+                        <span class='truncate' x-text='sub.courseTopic'></span>
+                      </div>
+                    </div>
+
+                    {{!-- Download / Action Icon --}}
+                    <a :href="sub.fileUrl || '#'" target='_blank' class='w-[24px] h-[24px] flex items-center justify-center text-[#737373] hover:text-[#003060] transition-colors shrink-0'>
+                      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+                        <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'></path>
+                        <polyline points='7 10 12 15 17 10'></polyline>
+                        <line x1='12' y1='15' x2='12' y2='3'></line>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                {{!-- 2. Submitted Date --}}
+                <div class='w-full flex flex-col gap-[4px] items-start'>
+                  <span class='font-inter font-medium text-[14px] leading-[20px] text-[#171717]'>
+                    Submited Date
+                  </span>
+                  <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]' x-text='sub.submittedDate'></span>
+                </div>
+
+                {{!-- 3. Leave a Comment --}}
+                <div class='w-full flex flex-col gap-[8px] items-start'>
+                  <label class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                    Leave a Comment
+                  </label>
+                  <div class='box-border w-full h-[128px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+                    <textarea
+                      x-model='sub.newComment'
+                      rows='4'
+                      placeholder='Write feedback or comment...'
+                      class='w-full h-[108px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 resize-none focus:ring-0 focus:outline-none'></textarea>
+                  </div>
+                </div>
+
+                {{!-- 4. Action Buttons (Approve / Reject) --}}
+                <div class='w-full flex flex-row items-center gap-[12px]'>
+                  <button
+                    type='button'
+                    @click='approveSubmission(sub)'
+                    class='box-border flex-1 h-[44px] bg-[#16A34A] border border-[#4ADE80] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#15803D] transition-colors'>
+                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF]'>
+                      Approve
+                    </span>
+                  </button>
+
+                  <button
+                    type='button'
+                    @click='rejectSubmission(sub)'
+                    class='box-border flex-1 h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#B91C1C]'>
+                      Reject
+                    </span>
+                  </button>
+                </div>
+
+                {{!-- 5. Comment History --}}
+                <div class='w-full flex flex-col gap-[8px] items-start'>
+                  <span class='font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                    Comment History
+                  </span>
+                  <div class='w-full flex flex-col gap-[12px]'>
+                    <template x-for='(c, idx) in sub.comments' :key='idx'>
+                      <div class='box-border w-full min-h-[84px] bg-[#FAFAFA] border border-[#D4D4D4] border-l-4 border-l-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] p-[12px_14px] flex flex-col justify-center'>
+                        <p class='font-inter font-normal text-[16px] leading-[20px] text-[#171717]' x-text='c'></p>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </template>
+        </div>
+
+      </div>
+
+      {{!-- Column 2 (Right): View Logbook / Final Assignment Brief Preview --}}
+      <div class='box-border w-full lg:w-[482px] border border-[#D9D9D9] rounded-[12px] overflow-hidden flex flex-col bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'>
+
+        {{!-- Top Navy Card Header: Title & Description --}}
+        <div class='box-border w-full min-h-[93px] bg-[#003060] px-[28px] py-[20px] flex flex-col gap-[4px] items-start justify-center'>
+          <h2 class='w-full font-inter font-bold text-[24px] leading-[29px] tracking-[-1px] text-[#FFFFFF]'>
+            {{default finalAssignment.title 'Final Assignment'}}
+          </h2>
+          <p class='w-full font-inter font-medium text-[16px] leading-[20px] text-[#F3F3F3]'>
+            {{default finalAssignment.description 'Brief & Description'}}
+          </p>
+        </div>
+
+        {{!-- Content Body: Render Content Saja --}}
+        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] relative bg-[#FFFFFF] min-h-[200px]' x-data='finalAssignmentContentRenderer()' x-init='init()'>
+          <div class='w-full font-inter text-[14px] leading-[22px] text-[#171717] pb-[40px]' x-html='renderedHtml'></div>
+
+          {{!-- Gradient fade overlay on bottom --}}
+          <div class='pointer-events-none absolute bottom-0 inset-x-0 h-[60px] bg-gradient-to-t from-white to-transparent'></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script id="final_assignment_content_data" type="application/json">
+{{{json finalAssignment.content}}}
+</script>
+
+<script id="final_assignment_submissions_data" type="application/json">
+{{{json submissions}}}
+</script>
+
+<script>
+function detailFinalAssignmentData() {
+  let bootstrapSubmissions = [];
+  try {
+    const raw = document.getElementById('final_assignment_submissions_data');
+    if (raw && raw.textContent) {
+      const parsed = JSON.parse(raw.textContent);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        bootstrapSubmissions = parsed.map(s => ({
+          id: s.id,
+          studentName: s.user?.biodata?.fullName || s.user?.username || 'Student',
+          role: s.user?.role || 'Peserta',
+          status: s.status,
+          fileName: s.filePath ? s.filePath.split('/').pop() : 'Submission_File.pdf',
+          fileSize: 'PDF',
+          courseTopic: 'Final Assignment',
+          fileUrl: s.filePath ? (s.filePath.startsWith('http') ? s.filePath : '/' + s.filePath) : '#',
+          submittedDate: s.createdAt ? new Date(s.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-',
+          isOpen: false,
+          newComment: '',
+          comments: Array.isArray(s.commentHistory)
+            ? s.commentHistory.map(c => typeof c === 'string' ? c : (c.comment + (c.createdAt ? ' (' + new Date(c.createdAt).toLocaleDateString('id-ID') + ')' : '')))
+            : (s.comment ? [s.comment] : []),
+        }));
+      }
+    }
+  } catch (e) {
+    console.error('Error parsing submissions data', e);
+  }
+
+  return {
+    activeTab: 'all',
+    backUrl: '/program/detail/program/admin/{{courseId}}',
+    submissions: bootstrapSubmissions,
+
+    get filteredSubmissions() {
+      if (this.activeTab === 'all') return this.submissions;
+      return this.submissions.filter(s => s.status === this.activeTab);
+    },
+
+    async reviewSubmission(sub, newStatus) {
+      const comment = sub.newComment ? sub.newComment.trim() : '';
+      try {
+        if (!String(sub.id).startsWith('mock-')) {
+          const res = await fetch(`/final-assignment/submission/${sub.id}/review`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus, comment }),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.message || 'Failed to update submission status');
+            return;
+          }
+        }
+        sub.status = newStatus;
+        if (comment) {
+          sub.comments.unshift(comment + ' (Baru saja)');
+          sub.newComment = '';
+        }
+        alert(`Submission status updated to ${newStatus === 'approved' ? 'Approved' : 'Rejected'}.`);
+      } catch (err) {
+        alert('Network error while updating submission');
+      }
+    },
+
+    approveSubmission(sub) {
+      this.reviewSubmission(sub, 'approved');
+    },
+
+    rejectSubmission(sub) {
+      this.reviewSubmission(sub, 'rejected');
+    }
+  };
+}
+
+function finalAssignmentContentRenderer() {
+  return {
+    renderedHtml: '',
+    init() {
+      try {
+        const rawEl = document.getElementById('final_assignment_content_data');
+        if (!rawEl || !rawEl.textContent) {
+          this.renderedHtml = '<p class="text-[#737373] italic">Belum ada konten untuk Final Assignment ini.</p>';
+          return;
+        }
+        let parsed = JSON.parse(rawEl.textContent);
+        if (typeof parsed === 'string') {
+          try {
+            parsed = JSON.parse(parsed);
+          } catch (e) {}
+        }
+        if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+          this.renderedHtml = parsed.blocks.map(function(b) {
+            const d = b.data || {};
+            switch (b.type) {
+              case 'header': {
+                const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+                return '<h' + lvl + ' class="font-bold text-[18px] text-[#003060] mt-3 mb-1">' + (d.text || '') + '</h' + lvl + '>';
+              }
+              case 'paragraph': {
+                return '<p class="leading-[22px] text-[#171717] mb-3">' + (d.text || '') + '</p>';
+              }
+              case 'List':
+              case 'list': {
+                if (d.style === 'checklist') {
+                  const items = (d.items || []).map(function(i) {
+                    const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                    const checked = (typeof i === 'object' && i !== null && i.meta && i.meta.checked);
+                    return '<li class="flex items-start gap-2 my-1">' +
+                      '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                      '<span>' + content + '</span></li>';
+                  }).join('');
+                  return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+                }
+                const items = (d.items || []).map(function(i) {
+                  const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                  return '<li class="my-1">' + content + '</li>';
+                }).join('');
+                return d.style === 'ordered'
+                  ? '<ol class="list-decimal pl-5 space-y-1 mb-3">' + items + '</ol>'
+                  : '<ul class="list-disc pl-5 space-y-1 mb-3">' + items + '</ul>';
+              }
+              case 'checklist': {
+                const items = (d.items || []).map(function(i) {
+                  const content = (typeof i === 'object' && i !== null) ? (i.text || i.content || '') : i;
+                  const checked = (typeof i === 'object' && i !== null && (i.checked || (i.meta && i.meta.checked)));
+                  return '<li class="flex items-start gap-2 my-1">' +
+                    '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                    '<span>' + content + '</span></li>';
+                }).join('');
+                return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+              }
+              case 'image':
+                return '<figure class="my-3"><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" class="max-w-full rounded-lg"/>' +
+                  (d.caption ? '<figcaption class="text-center text-xs text-[#737373] mt-1">' + d.caption + '</figcaption>' : '') + '</figure>';
+              case 'quote':
+                return '<blockquote class="border-l-4 border-[#003060] pl-3 italic my-3 text-[#525252]">' + (d.text || '') + '</blockquote>';
+              case 'code':
+                return '<pre class="bg-gray-100 p-3 rounded-md my-3 overflow-x-auto text-xs"><code>' + (d.code || '') + '</code></pre>';
+              default:
+                return d.text ? '<p class="leading-[22px] mb-3">' + d.text + '</p>' : '';
+            }
+          }).join('');
+        } else if (typeof parsed === 'string' && parsed.trim()) {
+          this.renderedHtml = '<div class="whitespace-pre-line">' + parsed + '</div>';
+        } else {
+          this.renderedHtml = '<p class="text-[#737373] italic">Belum ada konten untuk Final Assignment ini.</p>';
+        }
+      } catch (err) {
+        this.renderedHtml = '<p class="text-[#737373] italic">Belum ada konten untuk Final Assignment ini.</p>';
+      }
+    }
+  };
+}
+</script>
+

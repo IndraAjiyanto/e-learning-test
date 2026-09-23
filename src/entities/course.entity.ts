@@ -8,6 +8,7 @@ import {
   JoinTable,
   OneToMany,
   ManyToOne,
+  OneToOne,
   JoinColumn,
 } from 'typeorm';
 import { Portofolios } from './portofolios.entity';
@@ -28,6 +29,8 @@ import { Participants } from './participants.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
 import { Voucher } from './voucher.entity';
+import { Syllabus } from './syllabus.entity';
+import { FinalAssignment } from './final_assignment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 
@@ -198,6 +201,20 @@ export class Course {
   })
   @Exclude()
   weeks: Weeks[];
+
+  @OneToMany(() => Syllabus, (syllabus) => syllabus.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  syllabus: Syllabus[];
+
+  @OneToOne(() => FinalAssignment, (finalAssignment) => finalAssignment.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  finalAssignment: FinalAssignment;
 
   @OneToMany(() => Alumni, (alumni) => alumni.course, {
     cascade: true,

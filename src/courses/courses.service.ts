@@ -153,7 +153,6 @@ export class CoursesService {
       technologies: technologies,
     });
     const saved = await this.courseRepository.save(course);
-    await this.ensureSyllabusContainer(saved);
     return saved;
   }
 
@@ -1606,8 +1605,6 @@ export class CoursesService {
     }
 
     const saved = await this.courseRepository.save(course);
-    // Program yang baru saja diubah menjadi non-bootcamp juga butuh wadahnya.
-    await this.ensureSyllabusContainer(saved);
     return saved;
   }
 

@@ -33,6 +33,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -41,6 +42,7 @@ export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly usersService: UsersService,
+    private readonly finalAssignmentService: FinalAssignmentService,
   ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
@@ -233,6 +235,202 @@ await this.coursesService.addUserToCourse(userId, courseId);
       category,
       categoryId,
     });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-syllabus/:courseId')
+  async formCreateSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/create_syllabus', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-final-assignment/:courseId')
+  async formCreateFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const existing = await this.finalAssignmentService.findByCourse(courseId);
+    if (existing) {
+      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+    }
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/create_final_assignment', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/create-final-assignment/:courseId')
+  async createFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    try {
+      await this.finalAssignmentService.createOrUpdate(courseId, {
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content,
+      });
+      flashToast(
+        req,
+        'Final Assignment Created',
+        'The new final assignment has been added to the program.',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to create final assignment');
+      return res.redirect(`/program/create-final-assignment/${courseId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-final-assignment/:courseId')
+  async formEditFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    const finalAssignment = await this.finalAssignmentService.findByCourse(courseId);
+    return res.render('admin/course/edit_final_assignment', {
+      user: req.user,
+      course,
+      courseId,
+      finalAssignment,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/edit-final-assignment/:courseId')
+  async updateFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    try {
+      await this.finalAssignmentService.createOrUpdate(courseId, {
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content,
+      });
+      flashToast(
+        req,
+        'Final Assignment Updated',
+        'Final assignment has been updated successfully.',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update final assignment');
+      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/detail-final-assignment/:courseId')
+  async detailFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId).catch(() => null);
+    const finalAssignment = await this.finalAssignmentService.findByCourse(
+      courseId,
+      true,
+    );
+    const submissions = finalAssignment?.id
+      ? await this.finalAssignmentService.getSubmissions(finalAssignment.id)
+      : [];
+    return res.render('admin/course/detail_final_assignment', {
+      user: req.user,
+      course,
+      courseId: course?.id || courseId,
+      finalAssignment,
+      submissions,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-syllabus/:id')
+  async formEditSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/syllabus/formEdit/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/detail-syllabus/:courseId')
+  async detailSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/detail_syllabus_item', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-quiz-syllabus/:id')
+  async formCreateQuizSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/syllabus/quiz/create/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/detail-quiz-syllabus/:id')
+  async detailQuizSyllabus(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/syllabus/quiz/detail/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-quiz-syllabus/:id')
+  async formEditQuizSyllabus(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/quiz/formEdit/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-question-syllabus/:id')
+  async formCreateQuestionSyllabus(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/question/formCreate/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-question-syllabus/:id')
+  async formEditQuestionSyllabus(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/question/FormEdit/${id}`);
   }
 
   @Roles('admin', 'super_admin')
@@ -433,15 +631,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
       const lastWeek = await this.coursesService.findLastWeek(courseId);
       const caps = capabilitiesForCourse(course);
       if (course.programType === 'non_bootcamp' || caps.structure === 'syllabus') {
-        const containerWeek =
-          await this.coursesService.ensureSyllabusContainer(course);
         return res.render('admin/course/detail_syllabus', {
           user: req.user,
           course,
           lastWeek,
           categoryId,
-          caps,
-          containerWeek,
+          caps
         });
       }
       return res.render('admin/course/detail', {

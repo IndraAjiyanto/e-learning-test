@@ -38,11 +38,20 @@
           class='shrink-0 h-[40px] flex flex-row justify-center items-start px-[28px] py-[10px] gap-[4px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
           User
         </button>
+
+        {{!-- Container: Tab Final Assignment (183x40 p-[10px_28px] gap-4, active border-b-2 #003060) --}}
+        <button type='button'
+          @click="toggleFetch('/syllabus/course/{{course.id}}', 'final_assignment')"
+          :class="tab === 'final_assignment' ? 'border-b-2 border-[#003060]' : 'border-b-2 border-transparent'"
+          class='shrink-0 h-[40px] flex flex-row justify-center items-start px-[28px] py-[10px] gap-[4px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+          Final Assignment
+        </button>
       </div>
 
       {{!-- Tab Content Areas --}}
       <div x-show="tab === 'sylabus'" class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
       <div x-show="tab === 'user'" class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
+      <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
 
     </div>
 
@@ -56,7 +65,7 @@ function tabData() {
     tab: localStorage.getItem('activeTabNonBootcamp') || 'sylabus',
     data: [],
     async init() {
-      if(!this.tab || (this.tab !== 'sylabus' && this.tab !== 'user')) {
+      if(!this.tab || (this.tab !== 'sylabus' && this.tab !== 'user' && this.tab !== 'final_assignment')) {
         this.tab = 'sylabus';
         localStorage.setItem('activeTabNonBootcamp', 'sylabus');
       }

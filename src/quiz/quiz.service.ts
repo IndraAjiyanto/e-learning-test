@@ -96,7 +96,7 @@ export class QuizService {
   async findOne(quizId: string) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
-      relations: ['weeks', 'weeks.course'],
+      relations: ['weeks', 'weeks.course', 'syllabus', 'syllabus.course'],
     });
   }
 

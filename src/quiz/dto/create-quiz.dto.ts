@@ -14,7 +14,11 @@ export class CreateQuizDto {
 
   @IsOptional()
   @IsUUID()
-  weeksId: string;
+  weeksId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  syllabusId?: string;
 
   @Type(() => Number)
   @IsInt({ message: 'Duration must be an integer' })

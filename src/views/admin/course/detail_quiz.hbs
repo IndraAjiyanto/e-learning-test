@@ -1,0 +1,291 @@
+{{!--
+  Page: Admin - Detail Quiz (Syllabus / Program context)
+  Path: admin/course/detail_quiz.hbs
+  Route: GET /syllabus/quiz/detail/:id (or /program/detail-quiz-syllabus/:id)
+  Design: Figma node 1883-12901 (font-inter only)
+--}}
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
+    x-data="{
+      openQuestionId: {{#if questions.[0]}}'{{questions.[0].id}}'{{else}}null{{/if}},
+      handleBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '{{#if syllabus}}/syllabus/{{syllabus.id}}{{else if courseId}}/program/detail/program/admin/{{courseId}}{{else}}/program{{/if}}';
+        }
+      },
+      toggleQuestion(id) {
+        this.openQuestionId = this.openQuestionId === id ? null : id;
+      }
+    }">
+
+    {{!-- Feature Card 1: Partnership / Header Card --}}
+    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[14px] items-start'>
+
+      {{!-- Frame 2147229598: Top row (Back button) --}}
+      <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
+        {{!-- Container: Back button --}}
+        <button
+          type='button'
+          @click='handleBack()'
+          class='h-[20px] flex flex-row items-center gap-[4px] text-[#718096] hover:text-[#003060] transition-colors focus:outline-none'>
+          {{!-- SVG chevron-left icon --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+            <polyline points='15 18 9 12 15 6'></polyline>
+          </svg>
+          <span class='font-inter font-medium text-[16px] leading-[20px]'>
+            Back
+          </span>
+        </button>
+      </div>
+
+      {{!-- Frame 2147229617: Header info & actions --}}
+      <div class='box-border w-full flex flex-col gap-[20px] items-start'>
+        
+        {{!-- Frame 2147229601: Title + Action Buttons --}}
+        <div class='box-border w-full flex flex-col sm:flex-row justify-between items-start gap-[12px]'>
+
+          {{!-- Quiz Title --}}
+          <h1 class='w-full sm:max-w-[650px] font-inter font-bold text-[34px] leading-[38px] tracking-[-0.85px] text-[#003060] break-words'>
+            {{default quiz.quizName 'Quiz'}}
+          </h1>
+
+          {{!-- Frame 2147229614: Buttons (Delete + Edit) --}}
+          <div class='shrink-0 flex flex-row items-center gap-[12px]'>
+            {{!-- Delete button --}}
+            <form action='/syllabus/quiz/{{quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
+              <button
+                type='button'
+                onclick="openDeleteModal(this, 'Delete Quiz?', 'Are you sure you want to delete this quiz? All associated questions and scores will be removed permanently.')"
+                class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
+                  Delete
+                </span>
+              </button>
+            </form>
+
+            {{!-- Edit button --}}
+            <a
+              href='/quiz/formEdit/{{quiz.id}}'
+              class='box-border min-w-[106px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+                Edit
+              </span>
+            </a>
+          </div>
+
+        </div>
+
+        {{!-- Frame 2147229574: Metadata grid rows (2 rows x 2 cols) --}}
+        <div class='box-border w-full flex flex-col gap-[12px] items-start'>
+
+          {{!-- Frame 2147229575: Row 1 (Program + Minimum Score) --}}
+          <div class='box-border w-full flex flex-col sm:flex-row gap-[14px] items-start'>
+            
+            {{!-- Col 1: Program --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Program
+              </div>
+              <div class='box-border w-full h-[22px] flex items-center'>
+                <div class='h-[22px] bg-[#F5F5F5] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                  <span class='font-inter font-medium text-[12px] leading-[18px] text-[#404040] text-center whitespace-nowrap'>
+                    {{#if syllabus.isFinal}}Pertemuan Terakhir · {{course.name}}{{else if course.name}}{{course.name}}{{else}}Program{{/if}}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {{!-- Col 2: Minimum Score --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Minimum Score
+              </div>
+              <div class='box-border w-full h-[23px] flex items-center'>
+                <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]'>
+                  {{default quiz.minScore 0}}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {{!-- Frame 2147229576: Row 2 (Syllabus + Duration) --}}
+          <div class='box-border w-full flex flex-col sm:flex-row gap-[14px] items-start'>
+
+            {{!-- Col 1: Syllabus --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Syllabus
+              </div>
+              <div class='box-border w-full h-[23px] flex items-center'>
+                <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373] truncate'>
+                  {{#if syllabus.title}}{{syllabus.title}}{{else if syllabus.syllabusNumber}}Pertemuan {{syllabus.syllabusNumber}}{{else}}-{{/if}}
+                </span>
+              </div>
+            </div>
+
+            {{!-- Col 2: Duration --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Duration
+              </div>
+              <div class='box-border w-full h-[23px] flex items-center'>
+                <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]'>
+                  {{default quiz.duration 0}} minutes
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {{!-- Table Detail Session: Questions Section Card --}}
+    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[10px] items-start'>
+
+      {{!-- Header: Questions : --}}
+      <div class='w-full flex flex-row items-center justify-between'>
+        <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+          Questions ({{#if questions}}{{questions.length}}{{else}}0{{/if}}) :
+        </span>
+        <a
+          href='/question/formCreate/{{quiz.id}}'
+          class='inline-flex items-center gap-[6px] text-[#003060] hover:text-[#002244] font-inter font-semibold text-[14px] leading-[20px] transition-colors'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+            <line x1='12' y1='5' x2='12' y2='19'></line>
+            <line x1='5' y1='12' x2='19' y2='12'></line>
+          </svg>
+          Add Question
+        </a>
+      </div>
+
+      {{!-- Frame 2147229624: List Questions --}}
+      <div class='box-border w-full flex flex-col gap-[16px] items-start'>
+
+        {{#if (and questions questions.length)}}
+          {{#each questions}}
+            <div class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col items-start'>
+              {{!-- Accordion Trigger Header --}}
+              <button
+                type='button'
+                @click="toggleQuestion('{{this.id}}')"
+                class='w-full min-h-[53px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[28px] text-left hover:bg-[#FAFAFA] transition-colors focus:outline-none'
+                :class="openQuestionId === '{{this.id}}' ? 'bg-[#FAFAFA] border-b border-[#D9D9D9]' : 'bg-[#FFFFFF]'">
+                <span class='font-inter font-normal text-[16px] leading-[20px] text-[#171717] flex-1 truncate'>
+                  {{add @index 1}}. {{this.questionText}}
+                </span>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='#525252'
+                  stroke-width='2'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  class='w-[20px] h-[20px] shrink-0 transition-transform duration-200'
+                  :class="openQuestionId === '{{this.id}}' ? 'rotate-180' : ''">
+                  <polyline points='6 9 12 15 18 9'></polyline>
+                </svg>
+              </button>
+
+              {{!-- Accordion Content (Option Answers & Action Buttons) --}}
+              <div x-show="openQuestionId === '{{this.id}}'" x-cloak class='box-border w-full bg-[#FFFFFF] p-[14px] flex flex-col items-end gap-[16px]'>
+                
+                {{#if this.image}}
+                  <div class='w-full flex justify-center py-2'>
+                    <img src='{{this.image}}' alt='Question Image' class='max-h-60 rounded-lg border border-[#E5E5E5] object-contain shadow-sm' />
+                  </div>
+                {{/if}}
+
+                {{!-- Options List --}}
+                <div class='box-border w-full flex flex-col gap-[10px] items-start'>
+                  {{#each this.answers}}
+                    {{#if this.isCorrect}}
+                      {{!-- Option (Correct Answer - Green / Badge) --}}
+                      <div class='box-border w-full min-h-[44px] bg-[#F0FDF4] border border-[#22C55E] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center justify-between gap-[8px]'>
+                        <span class='font-inter font-normal text-[16px] leading-[24px] text-[#15803D] flex-1 break-words'>
+                          {{this.answer}}
+                        </span>
+                        <div class='box-border w-[60px] h-[22px] bg-[#15803D] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                          <span class='font-inter font-medium text-[12px] leading-[18px] text-[#FFFFFF] text-center whitespace-nowrap'>
+                            Benar
+                          </span>
+                        </div>
+                      </div>
+                    {{else}}
+                      {{!-- Standard Option --}}
+                      <div class='box-border w-full min-h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center gap-[8px]'>
+                        <span class='font-inter font-normal text-[16px] leading-[24px] text-[#737373] flex-1 break-words'>
+                          {{this.answer}}
+                        </span>
+                      </div>
+                    {{/if}}
+                  {{/each}}
+                </div>
+
+                {{!-- Question Actions (Delete + Edit) --}}
+                <div class='flex flex-row items-center gap-[12px]'>
+                  {{!-- Delete question button --}}
+                  <form action='/question/{{this.id}}/{{../quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
+                    <button
+                      type='button'
+                      onclick="openDeleteModal(this, 'Delete Question?', 'Are you sure you want to delete this question? This action cannot be undone.')"
+                      class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                      <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
+                        Delete
+                      </span>
+                    </button>
+                  </form>
+
+                  {{!-- Edit question button --}}
+                  <a
+                    href='/question/FormEdit/{{this.id}}'
+                    class='box-border min-w-[107px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
+                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+                      Edit
+                    </span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          {{/each}}
+        {{else}}
+          {{!-- Empty State --}}
+          <div class='w-full py-12 flex flex-col items-center justify-center gap-3 text-center'>
+            <div class='w-12 h-12 rounded-full bg-[#F5F5F5] flex items-center justify-center text-[#737373]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-6 h-6'>
+                <circle cx='12' cy='12' r='10'></circle>
+                <line x1='12' y1='8' x2='12' y2='12'></line>
+                <line x1='12' y1='16' x2='12.01' y2='16'></line>
+              </svg>
+            </div>
+            <p class='font-inter font-medium text-[16px] text-[#737373]'>
+              Belum ada pertanyaan pada quiz ini.
+            </p>
+            <a
+              href='/question/formCreate/{{quiz.id}}'
+              class='inline-flex items-center gap-[6px] px-4 py-2 bg-[#003060] text-white rounded-[8px] font-inter font-semibold text-[14px] hover:bg-[#002244] transition-colors'>
+              Tambah Pertanyaan Pertama
+            </a>
+          </div>
+        {{/if}}
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{{!-- Modal confirm delete --}}
+{{> components/ui/admin/modal/delete_confirm/index
+    title='Delete Confirmation'
+    description='Are you sure you want to proceed with this deletion?'
+    confirmLabel='Delete' }}

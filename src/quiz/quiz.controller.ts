@@ -72,6 +72,9 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
+    if (quiz?.syllabus) {
+      return res.redirect(`/syllabus/quiz/detail/${quiz.id}`);
+    }
     const scores = await this.quizService.findScore(quizId);
     const questions = await this.quizService.findQuestions(quizId);
     res.render('admin/quiz/detail', {

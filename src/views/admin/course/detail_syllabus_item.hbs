@@ -1,0 +1,195 @@
+{{!--
+  Page: Admin - Detail Syllabus (Syllabus Item Detail)
+  Path: admin/course/detail_syllabus_item.hbs
+  Route: GET /program/detail-syllabus/:courseId
+  Design: Figma node 1867-10498 & 1868-11442 (font-inter only)
+--}}
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
+    x-data="{
+      hasQuiz: {{#if (and syllabus.quiz syllabus.quiz.length)}}true{{else}}false{{/if}},
+      handleBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '/program/detail/program/admin/{{courseId}}';
+        }
+      },
+      handleDelete() {
+        if (typeof openDeleteModal === 'function') {
+          openDeleteModal(this, 'Delete Sylabus', 'Are you sure you want to delete this syllabus?');
+        } else if (confirm('Are you sure you want to delete this syllabus?')) {
+          window.location.href = '/program/detail/program/admin/{{courseId}}';
+        }
+      }
+    }">
+
+    {{!-- Feature Card 1: Partnership / Header Card --}}
+    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[14px] items-start'>
+
+      {{!-- Frame 2147229598: Top row (Back button) --}}
+      <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
+        {{!-- Container: Back button --}}
+        <button
+          type='button'
+          @click='handleBack()'
+          class='h-[20px] flex flex-row items-center gap-[4px] text-[#718096] hover:text-[#003060] transition-colors focus:outline-none'>
+          {{!-- SVG chevron-left icon --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+            <polyline points='15 18 9 12 15 6'></polyline>
+          </svg>
+          <span class='font-inter font-medium text-[16px] leading-[20px]'>
+            Back
+          </span>
+        </button>
+      </div>
+
+      {{!-- Frame 2147229617: Main header row (Title + Badge + Actions) --}}
+      <div class='box-border w-full flex flex-col gap-[20px] items-start'>
+        <div class='box-border w-full flex flex-col sm:flex-row justify-between items-start gap-[12px]'>
+
+          {{!-- Frame 2147229599: Title + Badge --}}
+          <div class='flex flex-col gap-[10px] items-start flex-1 min-w-0'>
+            {{!-- Session Title --}}
+            <h1 class='w-full font-inter font-bold text-[34px] leading-[38px] tracking-[-0.85px] text-[#003060] truncate'>
+              {{#if syllabus.title}}
+                {{syllabus.title}}
+              {{else}}
+                Session 01
+              {{/if}}
+            </h1>
+
+            {{!-- _Badge base: Pertemuan Terakhir --}}
+            {{#if syllabus.isFinal}}
+            <div class='h-[22px] bg-[#F5F5F5] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+              <span class='font-inter font-medium text-[12px] leading-[18px] text-[#404040] text-center whitespace-nowrap'>
+                Pertemuan Terakhir
+              </span>
+            </div>
+            {{/if}}
+          </div>
+
+          {{!-- Frame 2147229614: Buttons (Delete + Edit Session) --}}
+          <div class='shrink-0 flex flex-row items-center gap-[12px]'>
+            {{!-- Delete button --}}
+            <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
+              <button
+                type='button'
+                onclick='openDeleteModal(this)'
+                class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
+                  Delete
+                </span>
+              </button>
+            </form>
+
+            {{!-- Edit Session button --}}
+            <a
+              href='/syllabus/formEdit/{{syllabus.id}}'
+              class='box-border min-w-[132px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+                Edit Session
+              </span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    {{!-- Table Detail Week: Quiz Section Card --}}
+    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[20px] items-start'>
+
+      {{!-- Section Title: Quiz --}}
+      <div class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+        Quiz
+      </div>
+
+      {{!-- Kondisi 1: Ketika ada quiz (Figma node 1867-10498) --}}
+      <template x-if='hasQuiz'>
+        {{!-- Button / Row: Quiz Item --}}
+        <div class='box-border w-full min-h-[68px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] p-[8px_14px] flex flex-row items-center gap-[6px] hover:bg-[#FAFAFA] transition-colors'>
+
+          {{!-- Frame 2147229595: Quiz Info --}}
+          <div class='flex flex-col gap-[6px] flex-1 min-w-0 justify-center items-start'>
+            {{!-- Final Assessment Title --}}
+            <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#003060] truncate'>
+              {{#if syllabus.quiz.[0].quizName}}
+                {{syllabus.quiz.[0].quizName}}
+              {{else}}
+                Quiz : {{syllabus.title}}
+              {{/if}}
+            </div>
+
+            {{!-- Frame 2147229596: Badges row --}}
+            <div class='flex flex-row flex-wrap items-start gap-[16px]'>
+              {{!-- Duration --}}
+              <div class='flex flex-row items-center gap-[4px]'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <circle cx='12' cy='12' r='10'></circle>
+                  <polyline points='12 6 12 12 16 14'></polyline>
+                </svg>
+                <span class='font-inter font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'>
+                  {{default syllabus.quiz.[0].duration 0}} menit
+                </span>
+              </div>
+
+              {{!-- Total Questions --}}
+              <div class='flex flex-row items-center gap-[4px]'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <circle cx='12' cy='12' r='10'></circle>
+                  <path d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'></path>
+                  <line x1='12' y1='17' x2='12.01' y2='17'></line>
+                </svg>
+                <span class='font-inter font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'>
+                  {{#if syllabus.quiz.[0].questions}}{{syllabus.quiz.[0].questions.length}}{{else}}0{{/if}} soal
+                </span>
+              </div>
+
+              {{!-- Min Score --}}
+              <div class='flex flex-row items-center gap-[4px]'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'></polygon>
+                </svg>
+                <span class='font-inter font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'>
+                  {{default syllabus.quiz.[0].minScore 0}} min score
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {{!-- _Button base: Detail (81x44 bg-white border-brand text-brand) --}}
+          <a
+            href='/syllabus/quiz/detail/{{syllabus.quiz.[0].id}}'
+            class='box-border w-[81px] shrink-0 h-[44px] bg-[#FFFFFF] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F0F7FF] transition-colors'>
+            <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060] whitespace-nowrap'>
+              Detail
+            </span>
+          </a>
+
+        </div>
+      </template>
+
+      {{!-- Kondisi 2: Ketika belum ada quiz (Figma node 1868-11442) --}}
+      <template x-if='!hasQuiz'>
+        {{!-- _Button base: Add Quiz (1010x44 bg-white border border-[#3B82F6] text-[#3B82F6]) --}}
+        <a
+          href='/syllabus/quiz/create/{{syllabus.id}}'
+          class='box-border w-full shrink-0 h-[44px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F0F7FF] transition-colors'>
+          <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] whitespace-nowrap'>
+            Add Quiz
+          </span>
+        </a>
+      </template>
+
+    </div>
+
+  </div>
+</div>
+
+{{!-- Modal confirm delete --}}
+{{> components/ui/admin/modal/delete_confirm/index
+    title='Delete Sylabus'
+    description='Are you sure you want to delete this sylabus item? Contents inside it will be removed too.'
+    confirmLabel='Delete' }}
