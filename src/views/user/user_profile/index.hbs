@@ -181,7 +181,7 @@
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
   {{> user/app_bar/index user=user sidebarToggle=true }}
 
-  <div class="relative z-10 max-w-full flex-1 min-h-0 flex flex-col mb-0">
+  <div class="relative max-w-full flex-1 min-h-0 flex flex-col mb-0">
 
     {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
     <!-- Mobile Horizontal Scroll Navigation -->

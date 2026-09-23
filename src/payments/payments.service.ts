@@ -324,9 +324,20 @@ export class PaymentsService {
           ? { status: 'processing', statusLabel: 'Processing' }
           : { status: 'failed', statusLabel: 'Failed' };
 
+    const hasInstallments = payments.some((payment) => !!payment.installment);
+    const installmentDetails = hasInstallments
+      ? await this.getUserInstallmentDetail(userId).catch(() => [])
+      : [];
+    const installmentDetailMap = new Map(
+      installmentDetails.map((detail) => [detail.id, detail]),
+    );
+
     const rows = [
       ...payments.map((payment) => {
         const isInstallment = !!payment.installment;
+        const installmentDetail = isInstallment
+          ? installmentDetailMap.get(payment.id) ?? null
+          : null;
         return {
           id: payment.id,
           kind: isInstallment ? 'installment' : 'full',
@@ -340,6 +351,7 @@ export class PaymentsService {
           amount: payment.invoice?.final_total ?? null,
           proof: payment.file ?? null,
           no: payment.no ?? null,
+          installmentDetail,
           ...statusOf(payment.process),
         };
       }),
@@ -354,6 +366,7 @@ export class PaymentsService {
         amount: null,
         proof: registration.file ?? null,
         no: null,
+        installmentDetail: null,
         ...statusOf(registration.process),
       })),
     ];
@@ -458,6 +471,7 @@ export class PaymentsService {
         rows.filter((r) => r.status === 'approved').map((r) => r.month),
       );
 
+      let hasPreviousUnpaid = false;
       const monthlyStatus = schedule.map((amount, i) => {
         const month = i + 1;
         const dpDate = p.dpPaidAt ? new Date(p.dpPaidAt) : new Date();
@@ -478,6 +492,13 @@ export class PaymentsService {
           status = 'due';
         }
 
+        const isDpApproved = p.process === 'approved';
+        const isPaid = status === 'paid';
+        const canPay = isDpApproved && !isPaid && !hasPreviousUnpaid;
+        if (!isPaid) {
+          hasPreviousUnpaid = true;
+        }
+
         return {
           month,
           amount,
@@ -485,6 +506,7 @@ export class PaymentsService {
           status,
           txId: tx?.id || null,
           process: tx?.status || null,
+          canPay,
         };
       });
 
