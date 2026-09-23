@@ -98,19 +98,15 @@
     <div x-show="tab === 'installment'" x-cloak class="flex flex-col items-start gap-1 w-full">
       <div class="font-inter text-2xl sm:text-[28px] font-extrabold leading-[34px] text-[#0B1F3B]">
         {{#if (and (eq course.price 0) (eq course.promo 0))}}
-          {{!-- Jika harga program di BE adalah 0, maka cicilan/DP juga Rp 0 --}}
+          {{!-- Jika program gratis (Rp 0), cicilan/DP Rp 0 --}}
           {{formatRupiah 0}}
-        {{else if (and course.promo course.price (gt course.promo course.price) (gt course.price 0))}}
-          {{!-- Kasus data terbalik: promo adalah Full Payment (100jt) dan price adalah DP cicilan (1jt) --}}
-          {{formatRupiah course.price}}
         {{else if course.installments.[0].downPayment}}
+          {{!-- Menggunakan kolom downPayment dari table installment --}}
           {{formatRupiah course.installments.[0].downPayment}}
         {{else if installments.[0].downPayment}}
           {{formatRupiah installments.[0].downPayment}}
-        {{else if (or (eq course.price 0) (eq course.promo 0))}}
-          {{formatRupiah 0}}
         {{else}}
-          Rp 1.000.000
+          {{formatRupiah 0}}
         {{/if}}
       </div>
     </div>

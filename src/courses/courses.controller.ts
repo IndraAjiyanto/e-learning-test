@@ -13,6 +13,7 @@ import {
   UseFilters,
   Query,
   ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
@@ -805,6 +806,13 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        courseId,
+      )
+    ) {
+      throw new NotFoundException('Course not found');
+    }
     const course = await this.coursesService.findOneCourse(courseId);
     const check_user = await this.coursesService.checkUserInCourse(
       course.id,
@@ -865,17 +873,25 @@ await this.coursesService.addUserToCourse(userId, courseId);
         referalSourceOptions: referalOptions,
       });
     } else {
-      res.render('course/Bdetail', {
+      const course_flows = await this.coursesService.findCourseFlows(course.id);
+      const alumni = await this.coursesService.findCourseAlumni(course.id);
+      const gallery = course.category?.gallery || [];
+      res.render('detail_program/paid_program/index', {
         course,
+        category: course.category,
         user: req.user,
         kelass,
         check_user,
-        // courseQuestions,
-        // course_flows,
-        // mentor,
-        // course_benefits,
+        studentList,
+        courseQuestions,
+        faqs,
+        course_flows,
+        course_benefits,
+        benefit_category: course.category?.benefit_category || [],
         technologies,
         installments,
+        alumni,
+        gallery,
       });
     }
   }
@@ -886,6 +902,14 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        id,
+      )
+    ) {
+      throw new NotFoundException('Course not found');
+    }
+
     let isUserInKelas = false;
     if (!req.user) {
       const course = await this.coursesService.findOneUserCourse(id);
@@ -938,18 +962,24 @@ await this.coursesService.addUserToCourse(userId, courseId);
           referalSourceOptions: referalOptions,
         });
       } else {
+        const course_flows = await this.coursesService.findCourseFlows(id);
+        const alumni = await this.coursesService.findCourseAlumni(id);
+        const gallery = course.category?.gallery || [];
         res.render('detail_program/paid_program/index', {
           course,
+          category: course.category,
           kelass,
           studentList,
           courseQuestions,
-          // course_flows,
-          // mentor,
+          faqs,
+          course_flows,
           course_benefits,
+          benefit_category: course.category?.benefit_category || [],
           technologies,
           installments,
           userCourses,
-          faqs,
+          alumni,
+          gallery,
         });
       }
     } else {
@@ -978,8 +1008,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
           question: cq.questions,
           answer: cq.answers,
         }));
-        // const course_flows = await this.coursesService.findCourseFlows(id);
-        // const mentor = await this.coursesService.findCourseMentors(id);
         const course_benefits =
           await this.coursesService.findProgramBenefit(id);
         course.programBenefits = course_benefits;
@@ -1028,19 +1056,25 @@ await this.coursesService.addUserToCourse(userId, courseId);
             referalSourceOptions: referalOptions,
           });
         } else {
+          const course_flows = await this.coursesService.findCourseFlows(id);
+          const alumni = await this.coursesService.findCourseAlumni(id);
+          const gallery = course.category?.gallery || [];
           res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
+            category: course.category,
             kelass,
             studentList,
             courseQuestions,
             faqs,
-            // course_flows,
-            // mentor,
-            // course_benefits,
+            course_flows,
+            course_benefits,
+            benefit_category: course.category?.benefit_category || [],
             technologies,
             userCourses,
             installments,
+            alumni,
+            gallery,
           });
         }
       }

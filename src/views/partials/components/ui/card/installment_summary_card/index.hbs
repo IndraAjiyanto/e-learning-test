@@ -43,11 +43,13 @@
 
     <!-- Pricing Calculations (Figma: gap 16px) -->
     <div class="flex flex-col gap-4 w-full">
-      <!-- Program Fee (Down Payment) -->
+      <!-- 1. Menampilkan Down Payment (DP) yang dibayar sekarang -->
       <div class="flex justify-between items-center w-full h-[17px]">
-        <span class="font-montserrat font-medium text-[14px] leading-[17px] text-[#718096]">
-          Program Fee
-        </span>
+        <div class="flex items-center gap-2">
+          <span class="font-montserrat font-medium text-[14px] leading-[17px] text-[#718096]">
+            Down Payment (DP)
+          </span>
+        </div>
         <span id="installment-detail-fee" class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559] shrink-0">
           {{formatRupiah (default downPayment 0)}}
         </span>
@@ -69,7 +71,7 @@
       <!-- Divider Line -->
       <div class="border-t border-[#E0E5F2] w-full"></div>
 
-      <!-- Subtotal Row -->
+      <!-- Subtotal Row (DP) -->
       <div class="flex justify-between items-center w-full h-5">
         <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559]">
           Subtotal
@@ -80,9 +82,9 @@
       </div>
     </div>
 
-    <!-- Installment Plan Box (Figma: height 76px, p 16px, gap 12px, bg #F8FAFC, rounded 16px) -->
+    <!-- Installment Plan Box: Informasi cicilan menggunakan data installment kolom price -->
     <div class="w-full bg-[#F8FAFC] rounded-[16px] p-4 flex flex-col gap-3">
-      <div class="flex justify-between items-center w-full h-4">
+      <div class="flex justify-between items-center w-full">
         <div class="flex items-center gap-2 text-[#3B82F6]">
           <i class="fa-regular fa-calendar text-xs text-[#3B82F6]"></i>
           <span class="font-montserrat font-bold text-[13px] leading-[16px] text-[#1B2559]">
@@ -97,9 +99,20 @@
           {{/if}}
         </span>
       </div>
-      <p class="font-montserrat font-normal text-[11px] leading-[16px] text-[#718096]">
-        Total payment will be {{formatRupiah (default downPayment 0)}}, split into {{default month 3}} equal installments.
-      </p>
+      {{#if installmentPrices}}
+        <div class="flex flex-col gap-1.5 pt-2 border-t border-[#E2E8F0]/60">
+          {{#each installmentPrices}}
+            <div class="flex justify-between items-center text-[11px] leading-[15px] text-[#718096]">
+              <span>Cicilan Bulan {{addOne @index}}</span>
+              <span class="font-semibold text-[#1B2559]">{{formatRupiah this}}</span>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="font-montserrat font-normal text-[11px] leading-[16px] text-[#718096]">
+          Bayar Down Payment (DP) sekarang untuk konfirmasi pendaftaran. Sisa pembayaran dicicil per bulan.
+        </p>
+      {{/if}}
     </div>
 
     <!-- Total Block (Figma: height 29px) -->

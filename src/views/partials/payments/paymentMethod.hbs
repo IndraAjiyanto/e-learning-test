@@ -53,6 +53,8 @@
     <div class="w-full xl:w-[480px] xl:max-w-[480px] shrink-0">
       {{> components/ui/card/installment_summary_card/index
         courseTitle=(default course.name "Program Course")
+        basePrice=course.price
+        promoPrice=course.promo
         downPayment=course.installments.[0].downPayment
         month=(default course.installments.[0].month 3)
         pricePerMonth=course.installments.[0].price.[0]
@@ -67,7 +69,7 @@
   const coursePromo = Number('{{course.promo}}') || 0;
   const courseBasePrice = Number('{{course.price}}') || 0;
   const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
-  const courseInstallmentDP = Number('{{course.installments.[0].downPayment}}') || courseBasePrice;
+  const courseInstallmentDP = Number('{{course.installments.[0].downPayment}}') || 0;
   const hasInstallments = Boolean(courseInstallmentDP > 0);
 
   let currentMethod = 'Full Payment';
@@ -232,7 +234,7 @@
 
   function updatePricingUI(sub, disc, total) {
     // 1. Full Payment Summary Elements
-    const elSub = document.getElementById("detail-subtotal");
+    const elSub = document.getElementById("detail-subtotal") || document.getElementById("detail-price");
     const elVoucher = document.getElementById("detail-voucher");
     const elTotal = document.getElementById("detail-total");
     const discRow = document.getElementById("discount-row");
@@ -448,9 +450,11 @@
     };
 
     const bootstrap = () => {
-      // 1. Cek parameter URL: ?method=installment (URL parameter menentukan tampilan aktif)
+      // 1. Tentukan tampilan aktif: jika program memiliki cicilan, tampilkan Installment (kecuali URL meminta full)
       const urlMethod = new URLSearchParams(window.location.search).get('method');
-      if (urlMethod && urlMethod.toLowerCase() === 'installment') {
+      if (urlMethod && urlMethod.toLowerCase() === 'full') {
+        switchPaymentMethod('Full Payment');
+      } else if (hasInstallments) {
         switchPaymentMethod('Installment');
       } else {
         switchPaymentMethod('Full Payment');
@@ -475,7 +479,9 @@
       document.addEventListener('payment:step-changed', (e) => {
         if (e.detail?.step === 2) {
           const m = new URLSearchParams(window.location.search).get('method');
-          if (m && m.toLowerCase() === 'installment') {
+          if (m && m.toLowerCase() === 'full') {
+            switchPaymentMethod('Full Payment');
+          } else if (hasInstallments) {
             switchPaymentMethod('Installment');
           } else {
             switchPaymentMethod('Full Payment');

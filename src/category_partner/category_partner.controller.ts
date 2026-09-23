@@ -16,7 +16,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { CategoryPartnerService } from './category_partner.service';
 import { CreateCategoryPartnerDto } from './dto/create-category_partner.dto';
 import { UpdateCategoryPartnerDto } from './dto/update-category_partner.dto';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('category-partner')
@@ -140,7 +140,10 @@ export class CategoryPartnerController {
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash('error', error.message || 'Category partner failed to remove');
+      const errorMessage =
+        error.message || 'Category partner failed to remove';
+      flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
+      req.flash('error', errorMessage);
 
       return res.redirect('/category-partner');
     }

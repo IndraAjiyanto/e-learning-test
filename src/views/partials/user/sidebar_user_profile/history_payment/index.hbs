@@ -65,12 +65,12 @@
         }}
 
         {{> components/ui/super_admin/form/select_field
-          id='history-method'
-          name='method'
-          field='method'
-          label='Payment Method'
-          options='methodOptions'
-          placeholder='All Methods'
+          id='history-type'
+          name='type'
+          field='type'
+          label='Payment Type'
+          options='typeOptions'
+          placeholder='All Types'
         }}
 
         {{> components/ui/super_admin/form/select_field
@@ -134,9 +134,14 @@
             </span>
             <div class='flex min-w-0 flex-col gap-1.5'>
               <span class='truncate font-inter text-sm font-semibold text-[#171717]' x-text='row.courseName'></span>
-              <template x-if='row.categoryName'>
-                <span class='w-fit rounded-xl bg-[#f9f5ff] px-2 py-0.5 font-inter text-xs font-medium text-[#6941c6]' x-text='row.categoryName'></span>
-              </template>
+              <div class='flex flex-wrap items-center gap-1.5'>
+                <template x-if='row.categoryName'>
+                  <span class='w-fit rounded-xl bg-[#f9f5ff] px-2 py-0.5 font-inter text-xs font-medium text-[#6941c6]' x-text='row.categoryName'></span>
+                </template>
+                <template x-if="row.kind === 'installment' && row.installmentDetail">
+                  <span class='w-fit rounded-xl bg-[#eff8ff] px-2 py-0.5 font-inter text-xs font-medium text-[#175cd3]' x-text="'Cicilan ' + row.installmentDetail.planMonth + 'x (' + row.installmentDetail.progressPercentage + '% Lunas)'"></span>
+                </template>
+              </div>
             </div>
           </div>
 
@@ -242,12 +247,12 @@
     </template>
   {{/components/ui/super_admin/modal/detail/index}}
 
-  {{#> components/ui/super_admin/modal/detail/index name='payment-detail' title='Transaction Detail' maxWidth='max-w-[640px]'}}
-    <div class='flex flex-col gap-5'>
+  {{#> components/ui/super_admin/modal/detail/index name='payment-detail' title='Transaction Detail' maxWidth='max-w-[720px]'}}
+    <div class='flex flex-col gap-6' x-data='installmentAction()'>
       <dl class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
         <div class='flex flex-col gap-1'>
           <dt class='font-inter text-sm font-medium text-[#737373]'>Program</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text='row.courseName'></dd>
+          <dd class='font-inter text-sm font-semibold text-[#171717]' x-text='row.courseName'></dd>
         </div>
         <div class='flex flex-col gap-1'>
           <dt class='font-inter text-sm font-medium text-[#737373]'>Category</dt>
@@ -278,6 +283,135 @@
           <dd class='font-inter text-sm text-[#171717]' x-text='row.statusLabel'></dd>
         </div>
       </dl>
+
+      {{!-- Section Khusus Cicilan / Installment Program --}}
+      <template x-if="row.kind === 'installment' && row.installmentDetail">
+        <div class='flex flex-col gap-5 border-t border-[#e5e5e5] pt-5'>
+          <div class='flex flex-col gap-1'>
+            <h3 class='font-inter text-base font-semibold text-[#171717]'>Program Installment Plan</h3>
+            <p class='font-inter text-xs text-[#737373]'>Rincian jadwal dan pembayaran cicilan program kursus Anda.</p>
+          </div>
+
+          {{!-- Card Ringkasan Finansial Cicilan --}}
+          <div class='grid grid-cols-1 gap-3 rounded-xl border border-[#e5e5e5] bg-[#fcfcfd] p-4 sm:grid-cols-3'>
+            <div class='flex flex-col gap-1'>
+              <span class='font-inter text-xs text-[#737373]'>Total Biaya Program</span>
+              <span class='font-inter text-sm font-bold text-[#171717]' x-text='formatAmount(row.installmentDetail.totalProgramFee)'></span>
+            </div>
+            <div class='flex flex-col gap-1'>
+              <span class='font-inter text-xs text-[#737373]'>Total Terbayar</span>
+              <span class='font-inter text-sm font-bold text-[#15803d]' x-text='formatAmount(row.installmentDetail.paidSoFar)'></span>
+            </div>
+            <div class='flex flex-col gap-1'>
+              <span class='font-inter text-xs text-[#737373]'>Sisa Tagihan</span>
+              <span class='font-inter text-sm font-bold text-[#b45309]' x-text='formatAmount(row.installmentDetail.remainingBalance)'></span>
+            </div>
+          </div>
+
+          {{!-- Progress Bar --}}
+          <div class='flex flex-col gap-1.5'>
+            <div class='flex items-center justify-between font-inter text-xs'>
+              <span class='font-medium text-[#525252]'>Progres Pelunasan</span>
+              <span class='font-semibold text-[#003060]' x-text="row.installmentDetail.progressPercentage + '%'"></span>
+            </div>
+            <div class='h-2.5 w-full overflow-hidden rounded-full bg-[#eaecf0]'>
+              <div class='h-full rounded-full bg-[#003060] transition-all duration-300' :style="'width: ' + row.installmentDetail.progressPercentage + '%'"></div>
+            </div>
+          </div>
+
+          {{!-- List Jadwal Pembayaran Cicilan (kolom price dari table installment) --}}
+          <div class='flex flex-col gap-3'>
+            <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Jadwal Cicilan Bulanan</span>
+
+            <div class='flex flex-col divide-y divide-[#f0f0f0] rounded-xl border border-[#e5e5e5] bg-white'>
+              {{!-- DP Info Row --}}
+              <div class='flex flex-col gap-2 p-3.5 sm:flex-row sm:items-center sm:justify-between'>
+                <div class='flex items-center gap-3'>
+                  <span class='grid size-8 shrink-0 place-items-center rounded-lg bg-[#f0fdf4] font-inter text-xs font-bold text-[#15803d]'>
+                    DP
+                  </span>
+                  <div class='flex flex-col'>
+                    <span class='font-inter text-sm font-semibold text-[#171717]'>Down Payment (Uang Muka)</span>
+                    <span class='font-inter text-xs text-[#737373]' x-text="'Tanggal Bayar: ' + formatDate(row.installmentDetail.dpPaidAt || row.date)"></span>
+                  </div>
+                </div>
+                <div class='flex items-center justify-between gap-4 sm:justify-end'>
+                  <span class='font-inter text-sm font-semibold text-[#171717]' x-text='formatAmount(row.installmentDetail.downPayment)'></span>
+                  <span class='inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-inter text-xs font-medium'
+                    :class="row.process === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : (row.process === 'process' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')">
+                    <span class='size-1.5 rounded-full' :class="row.process === 'approved' ? 'bg-[#22c55e]' : (row.process === 'process' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"></span>
+                    <span x-text="row.process === 'approved' ? 'Lunas' : (row.process === 'process' ? 'Diproses' : 'Gagal')"></span>
+                  </span>
+                </div>
+              </div>
+
+              {{!-- Monthly Installment Rows (berasal dari installment.price) --}}
+              <template x-for='monthItem in row.installmentDetail.monthly' :key='monthItem.month'>
+                <div class='flex flex-col gap-3 p-3.5 sm:flex-row sm:items-center sm:justify-between'>
+                  <div class='flex items-center gap-3'>
+                    <span class='grid size-8 shrink-0 place-items-center rounded-lg font-inter text-xs font-bold'
+                      :class="monthItem.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (monthItem.canPay ? 'bg-[#eff8ff] text-[#175cd3]' : 'bg-[#f5f5f5] text-[#737373]')">
+                      <span x-text="'M' + monthItem.month"></span>
+                    </span>
+                    <div class='flex flex-col'>
+                      <span class='font-inter text-sm font-semibold text-[#171717]' x-text="'Cicilan Bulan ' + monthItem.month"></span>
+                      <span class='font-inter text-xs text-[#737373]' x-text="'Jatuh Tempo: ' + formatDate(monthItem.dueDate)"></span>
+                    </div>
+                  </div>
+
+                  <div class='flex flex-wrap items-center justify-between gap-3 sm:justify-end'>
+                    <span class='font-inter text-sm font-semibold text-[#171717]' x-text='formatAmount(monthItem.amount)'></span>
+
+                    {{!-- Status Badge --}}
+                    <span class='inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-inter text-xs font-medium'
+                      :class="monthItem.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (monthItem.status === 'process' ? 'bg-[#fffbeb] text-[#b45309]' : (monthItem.status === 'due' ? 'bg-[#fef2f2] text-[#b91c1c]' : 'bg-[#f5f5f5] text-[#525252]'))">
+                      <span class='size-1.5 rounded-full'
+                        :class="monthItem.status === 'paid' ? 'bg-[#22c55e]' : (monthItem.status === 'process' ? 'bg-[#f59e0b]' : (monthItem.status === 'due' ? 'bg-[#ef4444]' : 'bg-[#a3a3a3]'))"></span>
+                      <span x-text="monthItem.status === 'paid' ? 'Lunas' : (monthItem.status === 'process' ? 'Menunggu Konfirmasi' : (monthItem.status === 'due' ? 'Jatuh Tempo' : 'Mendatang'))"></span>
+                    </span>
+
+                    {{!-- Action Button: Bayar via Xendit jika canPay --}}
+                    <template x-if='monthItem.canPay'>
+                      <button
+                        type='button'
+                        @click='payMonth(row.id, monthItem.month)'
+                        :disabled='loadingMonth === monthItem.month'
+                        class='inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#003060] px-3.5 font-inter text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-60'
+                      >
+                        <template x-if='loadingMonth === monthItem.month'>
+                          <svg class='h-3.5 w-3.5 animate-spin text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                            <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
+                            <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                          </svg>
+                        </template>
+                        <span x-text="loadingMonth === monthItem.month ? 'Menghubungkan...' : (monthItem.status === 'process' ? 'Lanjutkan Pembayaran' : 'Bayar Cicilan')"></span>
+                      </button>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      {{!-- Proof of Payment section in Detail Modal if available --}}
+      <template x-if='row.proof'>
+        <div class='flex items-center justify-between border-t border-[#e5e5e5] pt-4'>
+          <div class='flex flex-col'>
+            <span class='font-inter text-sm font-semibold text-[#171717]'>Bukti Pembayaran</span>
+            <span class='font-inter text-xs text-[#737373]'>File tanda terima atau slip transfer Anda</span>
+          </div>
+          <button
+            type='button'
+            @click="openDetailModal('payment-proof', row)"
+            class='inline-flex h-9 items-center gap-1.5 rounded-lg border border-[#d4d4d4] bg-white px-3 font-inter text-xs font-semibold text-[#344054] shadow-sm hover:bg-[#f9fafb]'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-3.5 w-3.5'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4'/></svg>
+            Lihat Bukti
+          </button>
+        </div>
+      </template>
     </div>
   {{/components/ui/super_admin/modal/detail/index}}
 </div>
@@ -298,7 +432,7 @@
     // memanggil dirinya sendiri dan daftar berhenti di keadaan loading.
     const baseLoad = base.load;
 
-    const emptyDraft = () => ({ from: '', to: '', status: '', method: '', program: '' });
+    const emptyDraft = () => ({ from: '', to: '', status: '', type: '', program: '' });
 
     const extension = {
       // Semua baris apa adanya dari server. `items` milik clientTable adalah
@@ -327,10 +461,12 @@
         { value: 'failed', label: 'Failed', dot: 'bg-[#ef4444]' },
       ],
 
-      get methodOptions() {
-        const methods = [...new Set(this.source.map((r) => r.method).filter(Boolean))];
-        return [{ value: '', label: 'All Methods' }, ...methods.map((m) => ({ value: m, label: m }))];
-      },
+      typeOptions: [
+        { value: '', label: 'All Types' },
+        { value: 'installment', label: 'Installment' },
+        { value: 'full', label: 'Full Payment' },
+        { value: 'registration', label: 'Registration' },
+      ],
 
       get programOptions() {
         const programs = [...new Set(this.source.map((r) => r.courseName).filter(Boolean))];
@@ -353,11 +489,11 @@
 
       applyFilters() {
         this.applied = { ...this.formData };
-        const { from, to, status, method, program } = this.applied;
+        const { from, to, status, type, program } = this.applied;
 
         this.items = this.source.filter((row) => {
           if (status && row.status !== status) return false;
-          if (method && row.method !== method) return false;
+          if (type && row.kind !== type) return false;
           if (program && row.courseName !== program) return false;
           if (from && new Date(row.date) < new Date(from)) return false;
           // `to` mencakup seluruh hari itu, bukan berhenti di tengah malamnya.
@@ -401,5 +537,46 @@
     // statis, sehingga `rows`, `totalPages`, `methodOptions`, dan `programOptions`
     // tidak akan pernah ikut berubah.
     return Object.defineProperties(base, Object.getOwnPropertyDescriptors(extension));
+  }
+
+  function installmentAction() {
+    return {
+      loadingMonth: null,
+      async payMonth(paymentId, month) {
+        if (this.loadingMonth) return;
+        this.loadingMonth = month;
+        try {
+          const res = await fetch('/api/payment/installment-month', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ paymentId, month }),
+          });
+          const result = await res.json();
+          if (result.status === 'success' && result.redirect_url) {
+            window.location.href = result.redirect_url;
+          } else {
+            alert(result.message || 'Gagal memproses pembayaran cicilan.');
+            this.loadingMonth = null;
+          }
+        } catch (err) {
+          console.error('Pay installment error:', err);
+          alert('Terjadi kesalahan saat memproses pembayaran.');
+          this.loadingMonth = null;
+        }
+      },
+      formatDate(value) {
+        if (!value) return '—';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '—';
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      },
+      formatAmount(value) {
+        const number = Number(value);
+        if (Number.isNaN(number)) return '—';
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+      },
+    };
   }
 </script>
