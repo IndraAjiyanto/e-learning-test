@@ -12,6 +12,7 @@ import { Question } from './question.entity';
 import { Score } from './score.entity';
 import { Weeks } from './weeks.entity';
 import { QuizProgress } from './quiz_progress.entity';
+import { Syllabus } from './syllabus.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
@@ -58,4 +59,11 @@ export class Quiz {
   @ManyToOne(() => Weeks, (week) => week.quiz, { onDelete: 'CASCADE' })
   @Exclude()
   weeks: Weeks;
+
+  @ManyToOne(() => Syllabus, (syllabus) => syllabus.quiz, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @Exclude()
+  syllabus: Syllabus;
 }

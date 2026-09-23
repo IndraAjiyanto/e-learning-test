@@ -29,6 +29,7 @@ import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
 import { UserActivity } from './user_activity.entity';
 import { ActivityLog } from './activity_log.entity';
+import { SyllabusProgress } from './syllabus_progress.entity';
 import { Exclude } from 'class-transformer';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
@@ -165,6 +166,17 @@ export class User {
   })
   @Exclude()
   weekProgress: WeekProgress[];
+
+  @OneToMany(
+    () => SyllabusProgress,
+    (syllabusProgress) => syllabusProgress.user,
+    {
+      cascade: true,
+      onDelete: 'CASCADE',
+    },
+  )
+  @Exclude()
+  syllabusProgress: SyllabusProgress[];
 
   @OneToMany(() => SessionProgress, (sessionProgress) => sessionProgress.user, {
     cascade: true,

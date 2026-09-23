@@ -72,6 +72,7 @@ import { FooterModule } from './footer/footer.module';
 import { FooterMiddleware } from './footer/footer.middleware';
 import { InstallmentReminderModule } from './installment_reminder/installment-reminder.module';
 import { InstallmentPaymentModule } from './installment_payment/installment-payment.module';
+import { SyllabusModule } from './syllabus/syllabus.module';
 import path from 'path';
 
 @Module({
@@ -153,6 +154,7 @@ import path from 'path';
     FooterModule,
     InstallmentReminderModule,
     InstallmentPaymentModule,
+    SyllabusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

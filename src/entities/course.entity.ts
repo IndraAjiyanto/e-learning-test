@@ -28,6 +28,7 @@ import { Participants } from './participants.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
 import { Voucher } from './voucher.entity';
+import { Syllabus } from './syllabus.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 
@@ -198,6 +199,13 @@ export class Course {
   })
   @Exclude()
   weeks: Weeks[];
+
+  @OneToMany(() => Syllabus, (syllabus) => syllabus.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  syllabus: Syllabus[];
 
   @OneToMany(() => Alumni, (alumni) => alumni.course, {
     cascade: true,
