@@ -1,0 +1,202 @@
+{{!--
+  Section: Paid Program Detail Hero (Bootcamp) - Slicing 1:1 CSS Figma
+  Lokasi: src/views/partials/components/ui/sections/paid_detail_hero/index.hbs
+  Container: 1568px, Frame 2147229478 (Side-by-side)
+  Left Column: Responsive max 680px (Tag pill, Main title, Tagline, CTA buttons, Hero quick stats)
+  Right Container: Responsive max 823px visual banner
+  Props: course, category, lang
+--}}
+
+<section id="hero" class="w-full bg-white py-8 sm:py-12 lg:py-16 font-inter overflow-hidden">
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {{!-- Frame 2147229478 --}}
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10 xl:gap-[50px] 2xl:gap-[65px] w-full min-h-[500px]">
+
+      {{!-- Hero Left Content (Max 680px) --}}
+      <div class="flex flex-col items-start gap-6 sm:gap-8 lg:gap-10 w-full lg:flex-1 lg:max-w-[680px] shrink-0 lg:shrink">
+        
+        {{!-- Headline Group --}}
+        <div class="flex flex-col items-start gap-3 sm:gap-4 w-full">
+          
+          {{!-- tag --}}
+          <div class="box-border inline-flex items-center px-4 py-1.5 gap-2 h-[27px] bg-[#F8F9FA] border border-[#E5E7EB] rounded-[100px]">
+            {{!-- Ellipse (8x8 #6EB6E5) --}}
+            <span class="w-2 h-2 rounded-full bg-[#6EB6E5] shrink-0"></span>
+            {{!-- Category / Program Name --}}
+            <span class="font-['Montserrat',sans-serif] font-bold text-[12px] leading-[15px] uppercase tracking-wider text-[#0B1F3B]">
+              {{#if (eq course.checkPaid true)}}
+                Paid Program
+              {{else if (eq course.checkPaid false)}}
+                Free Program
+              {{else if course.checkPaid}}
+                Paid Program
+              {{else if category.name}}
+                {{category.name}}
+              {{else if course.group}}
+                {{course.group}}
+              {{else if course.name}}
+                {{course.name}}
+              {{else}}
+                BOOTCAMP
+              {{/if}}
+            </span>
+          </div>
+
+          {{!-- Main Title (Montserrat 800) --}}
+          <h1 class="w-full font-['Montserrat',sans-serif] font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-[42px] xl:text-[50px] leading-[115%] text-[#0B1F3B] tracking-tight">
+            {{#if course.name}}
+              {{course.name}}
+            {{else if category.name}}
+              {{category.name}}
+            {{else}}
+              UI/UX Design Mastery
+            {{/if}}
+          </h1>
+
+          {{!-- Tagline Description --}}
+          <p class="w-full font-inter font-normal text-sm sm:text-base lg:text-[17px] xl:text-lg leading-[160%] text-[#64748B]">
+            {{default (getByLang course.description lang) (default (getByLang category.description lang) 'Program intensif pembelajaran komprehensif dirancang khusus untuk membimbing Anda menguasai keahlian nyata bersama para mentor industri terbaik.')}}
+          </p>
+        </div>
+
+        {{!-- Action CTA Group --}}
+        <div class="flex flex-row flex-wrap items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
+          {{!-- Button Primary --}}
+          <a
+            href="#pricing"
+            onclick="document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); return false;"
+            class="inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[184px] h-[51px] px-7 bg-[#003060] text-white font-inter font-bold text-base leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] hover:bg-[#002244] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+          >
+            Daftar Sekarang
+          </a>
+
+          {{!-- Button Secondary --}}
+          <a
+            href="{{#if category.contact}}{{waLink category.contact}}{{else}}https://wa.me/{{/if}}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="box-border inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[180px] h-[51px] px-6 border-[1.5px] border-[#003060] bg-transparent text-[#003060] font-inter font-semibold text-base leading-[19px] rounded-[10px] hover:bg-[#003060]/5 active:scale-[0.98] transition-all duration-200"
+          >
+            Konsultasi Gratis
+          </a>
+        </div>
+
+        {{!-- Hero Quick Stats --}}
+        <div class="box-border w-full bg-white border border-[#E2E8F0] shadow-[0px_8px_24px_-8px_rgba(0,0,0,0.05)] rounded-[16px] p-4 sm:p-5 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-3 xl:gap-3.5 items-center">
+          
+          {{!-- Stat Item 1: Tanggal Mulai --}}
+          <div class="flex flex-row items-center gap-3 min-w-0 p-1">
+            <div class="box-border size-10 shrink-0 rounded-[12px] bg-[#F8F9FA] border border-[#E2E8F0] flex items-center justify-center text-[#0B1F3B]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="flex flex-col items-start gap-0.5 min-w-0">
+              <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
+                Tanggal Mulai
+              </span>
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.startDate}}{{formatDateShort course.startDate lang}}{{else}}-{{/if}}">
+                {{#if course.startDate}}
+                  {{formatDateShort course.startDate lang}}
+                {{else}}
+                  -
+                {{/if}}
+              </span>
+            </div>
+          </div>
+
+          {{!-- Stat Item 2: Tanggal Selesai / Durasi --}}
+          <div class="flex flex-row items-center gap-3 min-w-0 p-1">
+            <div class="box-border size-10 shrink-0 rounded-[12px] bg-[#F8F9FA] border border-[#E2E8F0] flex items-center justify-center text-[#0B1F3B]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <path d="m9 16 2 2 4-4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col items-start gap-0.5 min-w-0">
+              <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
+                Tanggal Selesai
+              </span>
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.startEnd}}{{formatDateShort course.startEnd lang}}{{else if course.month}}{{course.month}} Bulan{{else}}-{{/if}}">
+                {{#if course.startEnd}}
+                  {{formatDateShort course.startEnd lang}}
+                {{else if course.month}}
+                  {{course.month}} Bulan
+                {{else}}
+                  -
+                {{/if}}
+              </span>
+            </div>
+          </div>
+
+          {{!-- Stat Item 3: Sistem Belajar --}}
+          <div class="flex flex-row items-center gap-3 min-w-0 p-1">
+            <div class="box-border size-10 shrink-0 rounded-[12px] bg-[#F8F9FA] border border-[#E2E8F0] flex items-center justify-center text-[#0B1F3B]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="flex flex-col items-start gap-0.5 min-w-0">
+              <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
+                Sistem Belajar
+              </span>
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.method}}{{capitalize course.method}}{{else}}Online & Offline{{/if}}">
+                {{#if course.method}}
+                  {{capitalize course.method}}
+                {{else}}
+                  Online & Offline
+                {{/if}}
+              </span>
+            </div>
+          </div>
+
+          {{!-- Stat Item 4: Kuota Kelas --}}
+          <div class="flex flex-row items-center gap-3 min-w-0 p-1">
+            <div class="box-border size-10 shrink-0 rounded-[12px] bg-[#F8F9FA] border border-[#E2E8F0] flex items-center justify-center text-[#0B1F3B]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col items-start gap-0.5 min-w-0">
+              <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
+                Kapasitas Kelas
+              </span>
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.quota}}Maks. {{course.quota}} Siswa{{else}}Maks. 8 Siswa{{/if}}">
+                {{#if course.quota}}
+                  Maks. {{course.quota}} Siswa
+                {{else}}
+                  Maks. 8 Siswa
+                {{/if}}
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {{!-- Hero Right Container (Visual Banner) --}}
+      <div class="w-full lg:flex-1 lg:max-w-[720px] xl:max-w-[823px] h-[280px] sm:h-[380px] lg:h-[460px] xl:h-[529px] rounded-[24px] overflow-hidden relative bg-[#F8F9FA] shadow-sm border border-[#E2E8F0]/60 flex items-center justify-center shrink-0 lg:shrink">
+        <img
+          src="{{#if course.image}}{{course.image}}{{else if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+          alt="{{#if course.name}}{{course.name}}{{else}}Program Visual{{/if}}"
+          onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+          class="w-full h-full object-cover object-center rounded-[24px]"
+        />
+      </div>
+
+    </div>
+  </div>
+</section>
