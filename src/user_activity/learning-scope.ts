@@ -243,6 +243,31 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     match: /^\/logbooks\/(?<logbookId>[^/]+)$/,
     resolve: (ids, _req, ctx) => resolveLogbook(ids, ctx),
   },
+  {
+    name: 'users-profile-learning',
+    method: 'GET',
+    match: /^\/users\/profile$/,
+    resolve: async (_ids, req, ctx) => {
+      const tab = (req.query?.tab as string) || '';
+      const learningTabs = ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'group-class', 'quiz-start'];
+      if (!learningTabs.includes(tab)) return null;
+
+      const byQuery = req.query?.courseId;
+      const courseId = Array.isArray(byQuery) ? byQuery[0] : byQuery;
+      const user = (req as any).user;
+      if (typeof courseId === 'string' && courseId) {
+        return { courseId, label: 'Belajar' };
+      }
+      if (!user?.id) return null;
+      const uc = await ctx.userCourseRepo.findOne({
+        where: { user: { id: user.id } },
+        relations: ['course'],
+      });
+      return uc?.course?.id
+        ? { courseId: uc.course.id, label: 'Belajar' }
+        : null;
+    },
+  },
 ];
 
 /** Mengembalikan rule scope yang cocok dengan method + path, atau null jika di luar scope. */

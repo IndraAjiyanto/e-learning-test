@@ -1455,7 +1455,8 @@ export class CoursesService {
   async findCoursePayments(courseId: string) {
     return await this.paymentRepository.find({
       where: { course: { id: courseId } },
-      relations: ['user', 'course'],
+      relations: ['user', 'course', 'course.category', 'invoice'],
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -1469,7 +1470,15 @@ export class CoursesService {
   async findCoursePaymentInstallments(courseId: string) {
     return await this.paymentRepository.find({
       where: { course: { id: courseId }, installment: Not(IsNull()) },
-      relations: ['user', 'course', 'installment'],
+      relations: [
+        'user',
+        'course',
+        'course.category',
+        'installment',
+        'invoice',
+        'installmentPayments',
+      ],
+      order: { createdAt: 'DESC' },
     });
   }
 

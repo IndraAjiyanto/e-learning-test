@@ -1,43 +1,65 @@
-  <!-- Status Filter Tabs -->
-  <div class="flex justify-center md:justify-start space-x-2 mb-8">
-    <button @click="toggleTabStatus('all')"
-      :class="tabStatus === 'all' ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
-      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
-      <span class="flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-        </svg>
-        All
-      </span>
+<!-- Status Filter Tabs & Search Bar (Super Admin) -->
+<div class="flex flex-col gap-4 w-full">
+  <!-- Status Tabs -->
+  <nav role="tablist" class="flex border-b border-[#D9D9D9] w-full overflow-x-auto">
+    <button
+      type="button"
+      role="tab"
+      @click="toggleTabStatus('all')"
+      :aria-selected="tabStatus === 'all'"
+      :class="tabStatus === 'all'
+        ? 'border-[#003060] text-[#003060]'
+        : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+      class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+    >
+      All
     </button>
-    <button @click="toggleTabStatus('proces')"
-      :class="tabStatus === 'proces' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
-      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
-      <span class="flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        Process
-      </span>
+
+    <button
+      type="button"
+      role="tab"
+      @click="toggleTabStatus('proces')"
+      :aria-selected="tabStatus === 'proces' || tabStatus === 'process'"
+      :class="(tabStatus === 'proces' || tabStatus === 'process')
+        ? 'border-[#003060] text-[#003060]'
+        : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+      class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+    >
+      Process
     </button>
-    <button @click="toggleTabStatus('acc')"
-      :class="tabStatus === 'acc' ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
-      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
-      <span class="flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        Accepted
-      </span>
+
+    <button
+      type="button"
+      role="tab"
+      @click="toggleTabStatus('acc')"
+      :aria-selected="tabStatus === 'acc'"
+      :class="tabStatus === 'acc'
+        ? 'border-[#003060] text-[#003060]'
+        : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+      class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+    >
+      Accepted
     </button>
-    <button @click="toggleTabStatus('rejected')"
-      :class="tabStatus === 'rejected' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
-      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
-      <span class="flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-        Rejected
-      </span>
+
+    <button
+      type="button"
+      role="tab"
+      @click="toggleTabStatus('rejected')"
+      :aria-selected="tabStatus === 'rejected'"
+      :class="tabStatus === 'rejected'
+        ? 'border-[#003060] text-[#003060]'
+        : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+      class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+    >
+      Rejected
     </button>
+  </nav>
+
+  <!-- Search Input Bar -->
+  <div class="w-full">
+    {{> components/ui/super_admin/input/search/index
+      model="searchQuery"
+      placeholder="Search..."
+    }}
   </div>
+</div>
