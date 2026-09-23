@@ -231,7 +231,15 @@ export class UserActivityService {
     // Jika tidak cocok dengan learning scope:
     // Hanya reset courseId jika student membuka halaman non-learning utama secara eksplisit
     // (misal: /dashboard, /users/profile tanpa tab belajar, /logout, dll.)
-    const isExplicitExit = /^\/(dashboard|users\/profile|portfolios|payments|history|alumni|login|register)(\/|$)/i.test(path);
+    const tab = ((req.query?.tab as string) || '').toLowerCase();
+    const isLearningProfile =
+      /^\/users\/profile/i.test(path) &&
+      ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'group-class', 'quiz-start'].includes(tab);
+
+    const isExplicitExit =
+      !isLearningProfile &&
+      /^\/(dashboard|users\/profile|portfolios|payments|history|alumni|login|register)(\/|$)/i.test(path);
+
     if (isExplicitExit) {
       await this.updateActivity(user.id, null, null);
     } else {
@@ -625,7 +633,7 @@ export class UserActivityService {
     const today = new Date();
     const start = startOfDay(subDays(today, 6));
 
-    // Ambil data keaktifan per hari dari user_activity dan attendance 7 hari terakhir
+    // Ambil data login dan user yang aktif belajar per hari selama 7 hari terakhir
     const [loginRows, activeRows] = await Promise.all([
       this.activityRepository.manager.query(
         `
@@ -639,10 +647,25 @@ export class UserActivityService {
       ),
       this.activityRepository.manager.query(
         `
-        SELECT TO_CHAR(a."attendanceTime", 'YYYY-MM-DD') as day, COUNT(DISTINCT a."userId")::int as count
-        FROM attendance a
-        WHERE a."attendanceTime" >= $1
-        GROUP BY TO_CHAR(a."attendanceTime", 'YYYY-MM-DD')
+        SELECT TO_CHAR(activity_day, 'YYYY-MM-DD') as day, COUNT(DISTINCT "userId")::int as count
+        FROM (
+          SELECT a."userId", a."attendanceTime" as activity_day
+          FROM attendance a
+          WHERE a."attendanceTime" >= $1
+          UNION ALL
+          SELECT at."userId", at."createdAt" as activity_day
+          FROM answer_task at
+          WHERE at."createdAt" >= $1
+          UNION ALL
+          SELECT s."userId", s."createdAt" as activity_day
+          FROM scores s
+          WHERE s."createdAt" >= $1
+          UNION ALL
+          SELECT l."userId", l."createdAt" as activity_day
+          FROM logbook l
+          WHERE l."createdAt" >= $1
+        ) combined_learning
+        GROUP BY TO_CHAR(activity_day, 'YYYY-MM-DD')
       `,
         [start],
       ),
@@ -655,12 +678,14 @@ export class UserActivityService {
       activeRows.map((r: any) => [r.day, Number(r.count) || 0]),
     );
 
-    // Hari ini minimal memiliki nilai keaktifan sesuai user_activity aktif
+    // Hari ini minimal memiliki nilai keaktifan sesuai user yang sedang belajar saat ini
     const todayKey = format(today, 'yyyy-MM-dd');
+    const currentLearners = await this.getCurrentlyLearning(30);
     const currentActiveUsers = await this.getActiveParticipants(30);
+
     activeMap.set(
       todayKey,
-      Math.max(activeMap.get(todayKey) ?? 0, currentActiveUsers.length),
+      Math.max(activeMap.get(todayKey) ?? 0, currentLearners.length),
     );
     loginMap.set(
       todayKey,
@@ -702,35 +727,23 @@ export class UserActivityService {
     // 2. User online sekarang
     const activeParticipants = await this.getActiveParticipants(5);
 
-    // 3. Completion rate dan modul diselesaikan
-    const [ucProgress, spProgress] = await Promise.all([
+    // 3. Mentor yang aktif / terdaftar
+    const [mentorUserRows, mentorTableRows] = await Promise.all([
       this.activityRepository.manager.query(`
-        SELECT
-          COUNT(*)::int as total,
-          COUNT(CASE WHEN progress = true THEN 1 END)::int as completed
-        FROM user_courses
+        SELECT COUNT(DISTINCT id)::int as count FROM "user" WHERE role = 'admin'
       `),
       this.activityRepository.manager.query(`
-        SELECT COUNT(*)::int as completed_modules
-        FROM session_progresses
-        WHERE "isAttended" = true
+        SELECT COUNT(DISTINCT id)::int as count FROM mentors
       `),
     ]);
-
-    const totalEnrollments = Number(ucProgress[0]?.total) || 0;
-    const completedCourses = Number(ucProgress[0]?.completed) || 0;
-    const completionPercent =
-      totalEnrollments > 0
-        ? Math.round((completedCourses / totalEnrollments) * 100)
-        : 0;
-    const completedModules = Number(spProgress[0]?.completed_modules) || 0;
+    const adminMentorCount = Number(mentorUserRows[0]?.count) || 0;
+    const mentorTableCount = Number(mentorTableRows[0]?.count) || 0;
+    const activeMentors = Math.max(adminMentorCount, mentorTableCount);
 
     return {
       activeToday: Number(activeTodayRows?.count ?? 0),
       onlineNow: activeParticipants.length,
-      completionValue: completedCourses,
-      completionPercent: `${completionPercent}%`,
-      completedModules,
+      activeMentors,
     };
   }
 }

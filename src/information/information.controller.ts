@@ -28,6 +28,7 @@ export class InformationController {
       summary,
       totalUsers: summary.activeToday,
       activeUsers: summary.onlineNow,
+      activeMentors: summary.activeMentors,
       chartData: weekly.map((w) => ({
         day: w.label,
         loginHeight: Math.max(w.login > 0 ? 4 : 0, w.loginH),
