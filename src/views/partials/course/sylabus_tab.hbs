@@ -85,7 +85,7 @@ function sylabusData() {
                 id: s.id,
                 topic: s.topic || '',
                 description: s.location || (s.date ? 'Date: ' + s.date : ''),
-                detailUrl: '/session/' + s.id,
+                detailUrl: '/program/detail-syllabus/{{course.id}}',
                 deleteUrl: '/session/' + s.id + '/' + w.id + '?_method=DELETE',
               });
             });
@@ -99,7 +99,7 @@ function sylabusData() {
         id: w.id,
         topic: w.description || '',
         description: '',
-        detailUrl: '/week/' + w.id,
+        detailUrl: '/program/detail-syllabus/{{course.id}}',
         deleteUrl: '/week/' + w.id + '/{{course.id}}?_method=DELETE',
       }));
     },

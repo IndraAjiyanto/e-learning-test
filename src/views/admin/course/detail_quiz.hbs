@@ -1,0 +1,325 @@
+{{!--
+  Page: Admin - Detail Quiz (Syllabus / Program context)
+  Path: admin/course/detail_quiz.hbs
+  Route: GET /program/detail-quiz-syllabus/:courseId
+  Design: Figma node 1883-12901 (font-inter only)
+--}}
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
+    x-data="{
+      openQuestionId: 3,
+      handleBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '/program/detail-syllabus/{{courseId}}';
+        }
+      },
+      handleDelete() {
+        if (typeof openDeleteModal === 'function') {
+          openDeleteModal(this, 'Delete Quiz', 'Are you sure you want to delete this quiz?');
+        } else if (confirm('Are you sure you want to delete this quiz?')) {
+          window.location.href = '/program/detail-syllabus/{{courseId}}';
+        }
+      },
+      toggleQuestion(id) {
+        this.openQuestionId = this.openQuestionId === id ? null : id;
+      }
+    }">
+
+    {{!-- Feature Card 1: Partnership / Header Card --}}
+    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[14px] items-start'>
+
+      {{!-- Frame 2147229598: Top row (Back button) --}}
+      <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
+        {{!-- Container: Back button --}}
+        <button
+          type='button'
+          @click='handleBack()'
+          class='h-[20px] flex flex-row items-center gap-[4px] text-[#718096] hover:text-[#003060] transition-colors focus:outline-none'>
+          {{!-- SVG chevron-left icon --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+            <polyline points='15 18 9 12 15 6'></polyline>
+          </svg>
+          <span class='font-inter font-medium text-[16px] leading-[20px]'>
+            Back
+          </span>
+        </button>
+      </div>
+
+      {{!-- Frame 2147229617: Header info & actions --}}
+      <div class='box-border w-full flex flex-col gap-[20px] items-start'>
+        
+        {{!-- Frame 2147229601: Title + Action Buttons --}}
+        <div class='box-border w-full flex flex-col sm:flex-row justify-between items-start gap-[12px]'>
+
+          {{!-- Final Test Title --}}
+          <h1 class='w-full sm:max-w-[498px] font-inter font-bold text-[34px] leading-[38px] tracking-[-0.85px] text-[#003060]'>
+            Final Test for UX Research & Design Thinking
+          </h1>
+
+          {{!-- Frame 2147229614: Buttons (Delete + Edit) --}}
+          <div class='shrink-0 flex flex-row items-center gap-[12px]'>
+            {{!-- Delete button (87x44 bg-red-50 border-red-300 text-red-500) --}}
+            <button
+              type='button'
+              @click='handleDelete()'
+              class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
+                Delete
+              </span>
+            </button>
+
+            {{!-- Edit button (106x44 bg-brand border-brand text-white) --}}
+            <a
+              href='/program/edit-quiz-syllabus/{{courseId}}'
+              class='box-border min-w-[106px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+                Edit
+              </span>
+            </a>
+          </div>
+
+        </div>
+
+        {{!-- Frame 2147229574: Metadata grid rows (2 rows x 2 cols) --}}
+        <div class='box-border w-full flex flex-col gap-[12px] items-start'>
+
+          {{!-- Frame 2147229575: Row 1 (Program + Minimum Score) --}}
+          <div class='box-border w-full flex flex-col sm:flex-row gap-[14px] items-start'>
+            
+            {{!-- Col 1: Program --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Program
+              </div>
+              <div class='box-border w-full h-[22px] flex items-center'>
+                <div class='h-[22px] bg-[#F5F5F5] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                  <span class='font-inter font-medium text-[12px] leading-[18px] text-[#404040] text-center whitespace-nowrap'>
+                    Pertemuan Terakhir
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {{!-- Col 2: Minimum Score --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Minimum Score
+              </div>
+              <div class='box-border w-full h-[23px] flex items-center'>
+                <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]'>
+                  Memahami dasar dasar uiux design
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {{!-- Frame 2147229576: Row 2 (Syllabus + Duration) --}}
+          <div class='box-border w-full flex flex-col sm:flex-row gap-[14px] items-start'>
+
+            {{!-- Col 1: Syllabus --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Syllabus
+              </div>
+              <div class='box-border w-full h-[23px] flex items-center'>
+                <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]'>
+                  Pertemuan 01
+                </span>
+              </div>
+            </div>
+
+            {{!-- Col 2: Duration --}}
+            <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
+              <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+                Duration
+              </div>
+              <div class='box-border w-full h-[23px] flex items-center'>
+                <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373]'>
+                  60 minutes
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {{!-- Table Detail Session: Questions Section Card --}}
+    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[10px] items-start'>
+
+      {{!-- Header: Questions : --}}
+      <div class='w-full flex flex-row items-center justify-between'>
+        <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+          Questions :
+        </span>
+        <a
+          href='/program/create-question-syllabus/{{courseId}}'
+          class='inline-flex items-center gap-[6px] text-[#003060] hover:text-[#002244] font-inter font-semibold text-[14px] leading-[20px] transition-colors'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+            <line x1='12' y1='5' x2='12' y2='19'></line>
+            <line x1='5' y1='12' x2='19' y2='12'></line>
+          </svg>
+          Add Question
+        </a>
+      </div>
+
+      {{!-- Frame 2147229624: List Questions --}}
+      <div class='box-border w-full flex flex-col gap-[16px] items-start'>
+
+        {{!-- Question Item 1 (Collapsed) --}}
+        <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px]'>
+          <button
+            type='button'
+            @click='toggleQuestion(1)'
+            class='w-full min-h-[54px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[28px] text-left hover:bg-[#FAFAFA] rounded-[8px] transition-colors focus:outline-none'>
+            <span class='font-inter font-normal text-[16px] leading-[20px] text-[#171717] flex-1 truncate'>
+              1. Apa kepanjangan dari UI dan UX dalam desain produk digital?
+            </span>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='#525252'
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              class='w-[20px] h-[20px] shrink-0 transition-transform duration-200'
+              :class="openQuestionId === 1 ? 'rotate-180' : ''">
+              <polyline points='6 9 12 15 18 9'></polyline>
+            </svg>
+          </button>
+        </div>
+
+        {{!-- Question Item 2 (Collapsed) --}}
+        <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px]'>
+          <button
+            type='button'
+            @click='toggleQuestion(2)'
+            class='w-full min-h-[54px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[28px] text-left hover:bg-[#FAFAFA] rounded-[8px] transition-colors focus:outline-none'>
+            <span class='font-inter font-normal text-[16px] leading-[20px] text-[#171717] flex-1 truncate'>
+              2. Manakah dari pilihan berikut yang merupakan tahapan pertama dalam metode Design Thinking?
+            </span>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='#525252'
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              class='w-[20px] h-[20px] shrink-0 transition-transform duration-200'
+              :class="openQuestionId === 2 ? 'rotate-180' : ''">
+              <polyline points='6 9 12 15 18 9'></polyline>
+            </svg>
+          </button>
+        </div>
+
+        {{!-- Question Item 3 (Expanded / Active with Answers) --}}
+        <div class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col items-start'>
+          {{!-- Accordion Trigger Header --}}
+          <button
+            type='button'
+            @click='toggleQuestion(3)'
+            class='w-full min-h-[53px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[28px] text-left bg-[#FAFAFA] border-b border-[#D9D9D9] transition-colors focus:outline-none'>
+            <span class='font-inter font-normal text-[16px] leading-[20px] text-[#171717] flex-1 truncate'>
+              3. Apa tujuan utama dari tahap Empathize dalam proses Design Thinking?
+            </span>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='#525252'
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              class='w-[20px] h-[20px] shrink-0 transition-transform duration-200'
+              :class="openQuestionId === 3 ? 'rotate-180' : ''">
+              <polyline points='6 9 12 15 18 9'></polyline>
+            </svg>
+          </button>
+
+          {{!-- Accordion Content (Option Answers & Action Buttons) --}}
+          <div x-show='openQuestionId === 3' class='box-border w-full bg-[#FFFFFF] p-[14px] flex flex-col items-end gap-[16px]'>
+            
+            {{!-- Frame 2147229623: Options List --}}
+            <div class='box-border w-full flex flex-col gap-[10px] items-start'>
+              
+              {{!-- Option 1 --}}
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center gap-[8px]'>
+                <span class='font-inter font-normal text-[16px] leading-[24px] text-[#737373] truncate'>
+                  Menguji prototipe kepada calon pengguna akhir
+                </span>
+              </div>
+
+              {{!-- Option 2 (Correct Answer - Green / Badge) --}}
+              <div class='box-border w-full h-[44px] bg-[#F0FDF4] border border-[#22C55E] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center justify-between gap-[8px]'>
+                <span class='font-inter font-normal text-[16px] leading-[24px] text-[#15803D] truncate flex-1'>
+                  Memahami kebutuhan, perasaan, dan kendala pengguna
+                </span>
+                <div class='box-border w-[60px] h-[22px] bg-[#15803D] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                  <span class='font-inter font-medium text-[12px] leading-[18px] text-[#FFFFFF] text-center whitespace-nowrap'>
+                    Benar
+                  </span>
+                </div>
+              </div>
+
+              {{!-- Option 3 --}}
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center gap-[8px]'>
+                <span class='font-inter font-normal text-[16px] leading-[24px] text-[#737373] truncate'>
+                  Membuat visual antarmuka dengan software desain
+                </span>
+              </div>
+
+              {{!-- Option 4 --}}
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex flex-row items-center gap-[8px]'>
+                <span class='font-inter font-normal text-[16px] leading-[24px] text-[#737373] truncate'>
+                  Menentukan arsitektur teknologi backend sistem
+                </span>
+              </div>
+
+            </div>
+
+            {{!-- Frame 2147229614: Question Actions (Delete + Edit) --}}
+            <div class='flex flex-row items-center gap-[12px]'>
+              {{!-- Delete question button (87x44 bg-red-50 border-red-300 text-red-500) --}}
+              <button
+                type='button'
+                class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
+                  Delete
+                </span>
+              </button>
+
+              {{!-- Edit question button (107x44 bg-brand border-brand text-white) --}}
+              <a
+                href='/program/edit-question-syllabus/{{courseId}}'
+                class='box-border min-w-[107px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
+                <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+                  Edit
+                </span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{{!-- Modal confirm delete --}}
+{{> components/ui/admin/modal/delete_confirm/index
+    title='Delete Quiz'
+    description='Are you sure you want to delete this quiz? Questions and scores will be removed too.'
+    confirmLabel='Delete' }}
+

@@ -1,7 +1,7 @@
 {{!--
-  Page: Admin - Create Quiz
-  Path: admin/quiz/create.hbs
-  Route: GET /quiz/formCreate/:weeksId -> POST /quiz/:weeksId (create)
+  Page: Admin - Create Quiz (Course Syllabus Context)
+  Path: admin/course/create_quiz.hbs
+  Route: GET /program/create-quiz-syllabus/:courseId
   Design: Figma node 1883-12963
 --}}
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
@@ -19,8 +19,19 @@
         if (window.history.length > 1) {
           window.history.back();
         } else {
-          window.location.href = "{{#if weeksId}}/week/{{weeksId}}{{else}}/program{{/if}}";
+          window.location.href = "{{#if courseId}}/program/detail-syllabus/{{courseId}}{{else}}/program{{/if}}";
         }
+      },
+      handleSubmit(e) {
+        if (!this.canSubmit()) {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+        this.loading = true;
+        setTimeout(() => {
+          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+        }, 500);
       }
     }'>
 
@@ -35,13 +46,13 @@
     </div>
 
     {{!-- Create program form --}}
-    <form method='POST' action='{{#if weeksId}}/quiz/{{weeksId}}{{else}}#{{/if}}'
+    <form method='POST' action='#'
       class='box-border w-full flex flex-col gap-[16px] items-start'
       novalidate
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
       @focusout="markField($event.target)"
-      @submit="submitGate($event, () => canSubmit())">
+      @submit='handleSubmit($event)'>
 
       {{!-- Feature Card 1: Form Inputs Card --}}
       <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[20px] items-start'>
@@ -126,7 +137,7 @@
           {{!-- Create Quiz submit button --}}
           <button
             type='submit'
-            :disabled='loading'
+            :disabled='loading || !canSubmit()'
             class='box-border min-w-[128px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
             <span x-show='!loading' class='font-["Inter"] font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
               Create Quiz

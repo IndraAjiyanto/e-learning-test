@@ -2,66 +2,347 @@
   Page: Admin — Create Question
   Path: admin/questions/create.hbs
   Route: GET /question/formCreate/:quizId -> POST /question/:quizId (create)
-  Data: { user, quiz }
-  Komponen (reuse): text/page-header, form/form-card (noNumber), form/form-field,
-          form/form-label, form/textarea-input, form/question-photo-upload,
-          form/answer-option-row, button/primary-button, button/secondary-button.
+         GET /program/create-question-syllabus/:courseId (syllabus mock context)
+  Design: Figma node 1883-14077 (font-inter only)
 --}}
-<div class='py-10 px-6'>
-  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px]'
-    x-data="{
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start'
+    x-data='{
       ...adminFormGate(),
-      questionPreviewUrl: null,
       loading: false,
+      isSyllabus: {{#if isSyllabus}}true{{else}}false{{/if}},
+      questionPreviewUrl: null,
+      questionText: "",
+      optionA: "",
+      optionB: "",
+      optionC: "",
+      optionD: "",
+      selectedAnswer: null,
 
       questionClearFile() {
         this.questionPreviewUrl = null;
-        this.$refs.questionFile.value = null;
+        if (this.$refs.questionFile) this.$refs.questionFile.value = null;
+      },
+      handleFileChange(event) {
+        const file = event.target.files?.[0];
+        if (file) {
+          this.questionPreviewUrl = URL.createObjectURL(file);
+        }
+      },
+      handleFileDrop(event) {
+        const file = event.dataTransfer?.files?.[0];
+        if (file && (file.type === "image/jpeg" || file.type === "image/jpg" || file.type === "image/png")) {
+          if (this.$refs.questionFile) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            this.$refs.questionFile.files = dt.files;
+          }
+          this.questionPreviewUrl = URL.createObjectURL(file);
+        }
+      },
+      canSubmit() {
+        return (
+          this.questionText.trim() !== "" &&
+          this.optionA.trim() !== "" &&
+          this.optionB.trim() !== "" &&
+          this.optionC.trim() !== "" &&
+          this.optionD.trim() !== "" &&
+          this.selectedAnswer !== null &&
+          this.selectedAnswer !== undefined
+        );
+      },
+      handleCancel() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else if (this.isSyllabus) {
+          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+        } else {
+          window.location.href = "{{#if quiz.id}}/quiz/{{quiz.id}}{{else}}/program{{/if}}";
+        }
+      },
+      handleSubmit(e) {
+        if (!this.canSubmit()) {
+          e.preventDefault();
+          return;
+        }
+        if (this.isSyllabus) {
+          e.preventDefault();
+          this.loading = true;
+          setTimeout(() => {
+            window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+          }, 500);
+        } else {
+          this.loading = true;
+        }
       }
-    }"
-    x-init="recomputeFormValid()"
-    @input="recomputeFormValid()"
-    @change="recomputeFormValid()">
+    }'>
 
-    {{!-- Title --}}
-    {{> components/ui/admin/text/page-header title="Create Question" subtitle="Add a new question to the logbook and mark the correct answer"}}
+    {{!-- Title: Heading + Sub heading --}}
+    <div class='box-border w-full flex flex-col gap-[4px] items-start'>
+      <h1 class='w-full font-inter font-bold text-[34px] leading-[36px] tracking-[-1px] text-[#003060]'>
+        Create Question
+      </h1>
+      <p class='w-full font-inter font-medium text-[16px] leading-[20px] text-[#718096]'>
+        Fill in the information below to create a question.
+      </p>
+    </div>
 
-    {{!-- Form --}}
-    <form method='POST' action='/question/{{quiz.id}}' enctype='multipart/form-data'
-      class='flex flex-col gap-[16px] w-full'
-      novalidate @focusout="markField($event.target)" @submit='submitGate($event)'>
+    {{!-- Create question form --}}
+    <form method='POST' action='{{#if isSyllabus}}#{{else}}/question/{{quiz.id}}{{/if}}'
+      enctype='multipart/form-data'
+      class='box-border w-full flex flex-col gap-[16px] items-start'
+      novalidate
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @focusout="markField($event.target)"
+      @submit='handleSubmit($event)'>
 
-      {{!-- Feature Card --}}
-      {{#> components/ui/admin/form/form-card noNumber=true}}
+      {{!-- Form Logbook: Card Container --}}
+      <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[20px] items-start'>
 
-        {{!-- Upload Gambar (optional) --}}
-        {{> components/ui/admin/form/question-photo-upload}}
+        {{!-- Upload Gambar (optional) Container --}}
+        <div class='box-border w-full flex flex-col gap-[8px] items-start'>
+          <label class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+            Upload Gambar (optional)
+          </label>
 
-        {{!-- Question --}}
-        {{#> components/ui/admin/form/form-field label="Question*" for="questionText"}}
-          {{> components/ui/admin/form/textarea-input
-            id="questionText" name="questionText" rows="4" required=true
-            placeholder="Enter your question here"
-          }}
-        {{/components/ui/admin/form/form-field}}
+          <input
+            type='file'
+            id='question_image'
+            name='image'
+            x-ref='questionFile'
+            accept='image/jpeg,image/jpg,image/png'
+            class='hidden'
+            @change='handleFileChange($event)'
+          />
 
-        {{!-- Answer Options --}}
-        <div class='flex flex-col gap-[12px] w-full'>
-          {{> components/ui/admin/form/answer-option-row label="A" value="0"}}
-          {{> components/ui/admin/form/answer-option-row label="B" value="1"}}
-          {{> components/ui/admin/form/answer-option-row label="C" value="2"}}
-          {{> components/ui/admin/form/answer-option-row label="D" value="3"}}
+          {{!-- Drag and drop / browse button container (1010px x 200px) --}}
+          <label
+            for='question_image'
+            @dragover.prevent
+            @dragleave.prevent
+            @drop.prevent='handleFileDrop($event)'
+            class='box-border w-full h-[200px] bg-[#F8F9FA] border border-[#D9D9D9] rounded-[8px] p-[8px_16px] flex flex-col justify-center items-center gap-[10px] cursor-pointer hover:bg-[#EFF3F6] transition-colors relative overflow-hidden'>
+            
+            <template x-if='!questionPreviewUrl'>
+              <div class='w-full max-w-[976px] flex flex-col items-center gap-[8px]'>
+                {{!-- Image upload icon (40x40) --}}
+                <div class='w-[40px] h-[40px] flex items-center justify-center text-[#718096]'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='w-[36px] h-[36px]'>
+                    <rect width='18' height='18' x='3' y='3' rx='2' ry='2'></rect>
+                    <circle cx='9' cy='9' r='2'></circle>
+                    <path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'></path>
+                  </svg>
+                </div>
+                <p class='w-full font-inter font-medium text-[12px] leading-[16px] text-center text-[#718096]'>
+                  Drag &amp; Drop your Image here or click to browse
+                </p>
+                <p class='w-full font-inter font-medium text-[10px] leading-[12px] text-center text-[#ADB7C5]'>
+                  JPEG, JPG, PNG &middot; Max 5 MB
+                </p>
+              </div>
+            </template>
+
+            <template x-if='questionPreviewUrl'>
+              <div class='w-full h-full relative flex items-center justify-center'>
+                <img :src='questionPreviewUrl' alt='Question Image Preview' class='max-h-full max-w-full object-contain rounded-[6px]' />
+                <button
+                  type='button'
+                  @click.prevent='questionClearFile()'
+                  class='absolute top-2 right-2 bg-white/90 hover:bg-white text-[#EF4444] rounded-full p-1 shadow-md transition-colors'
+                  title='Remove image'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+                    <line x1='18' y1='6' x2='6' y2='18'></line>
+                    <line x1='6' y1='6' x2='18' y2='18'></line>
+                  </svg>
+                </button>
+              </div>
+            </template>
+          </label>
         </div>
 
-      {{/components/ui/admin/form/form-card}}
-
-      {{!-- Action row --}}
-      {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-col sm:flex-row justify-end sm:justify-between items-stretch sm:items-center gap-[12px] w-full'>
-          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/quiz/' quiz.id) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Question' type='submit' loading='loading' width='163'}}
+        {{!-- Question* Textarea Container --}}
+        <div class='box-border w-full flex flex-col gap-[8px] items-start'>
+          <label for='questionText' class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+            Question*
+          </label>
+          <div class='box-border w-full h-[128px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] p-[10px_14px] flex flex-row items-start focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+            <textarea
+              id='questionText'
+              name='questionText'
+              x-model='questionText'
+              required
+              rows='4'
+              placeholder='Enter question...'
+              class='w-full h-[108px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none resize-none p-0 focus:ring-0 focus:outline-none'></textarea>
+          </div>
+          <p x-show="String(questionText).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Question is required.</p>
         </div>
-      {{/components/ui/admin/form/form-card}}
+
+        {{!-- Frame 2147229625: Answer Options --}}
+        <div class='box-border w-full flex flex-col gap-[14px] items-start'>
+
+          {{!-- Option A --}}
+          <div class='box-border w-full flex flex-row items-start gap-[12px]'>
+            <input
+              type='radio'
+              name='answers'
+              id='answer_0'
+              value='0'
+              x-model='selectedAnswer'
+              required
+              class='w-[20px] h-[20px] rounded-full border border-[#D4D4D4] accent-[#003060] text-[#003060] cursor-pointer mt-[28px] shrink-0'
+            />
+            <div class='box-border flex-1 flex flex-col gap-[8px] items-start'>
+              <label for='option_a' class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                Option A*
+              </label>
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex items-center focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+                <input
+                  id='option_a'
+                  type='text'
+                  name='options'
+                  x-model='optionA'
+                  required
+                  placeholder='Enter option A...'
+                  class='w-full h-[24px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 focus:ring-0 focus:outline-none'
+                />
+              </div>
+              <p x-show="String(optionA).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Option A is required.</p>
+            </div>
+          </div>
+
+          {{!-- Option B --}}
+          <div class='box-border w-full flex flex-row items-start gap-[12px]'>
+            <input
+              type='radio'
+              name='answers'
+              id='answer_1'
+              value='1'
+              x-model='selectedAnswer'
+              required
+              class='w-[20px] h-[20px] rounded-full border border-[#D4D4D4] accent-[#003060] text-[#003060] cursor-pointer mt-[28px] shrink-0'
+            />
+            <div class='box-border flex-1 flex flex-col gap-[8px] items-start'>
+              <label for='option_b' class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                Option B*
+              </label>
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex items-center focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+                <input
+                  id='option_b'
+                  type='text'
+                  name='options'
+                  x-model='optionB'
+                  required
+                  placeholder='Enter option B...'
+                  class='w-full h-[24px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 focus:ring-0 focus:outline-none'
+                />
+              </div>
+              <p x-show="String(optionB).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Option B is required.</p>
+            </div>
+          </div>
+
+          {{!-- Option C --}}
+          <div class='box-border w-full flex flex-row items-start gap-[12px]'>
+            <input
+              type='radio'
+              name='answers'
+              id='answer_2'
+              value='2'
+              x-model='selectedAnswer'
+              required
+              class='w-[20px] h-[20px] rounded-full border border-[#D4D4D4] accent-[#003060] text-[#003060] cursor-pointer mt-[28px] shrink-0'
+            />
+            <div class='box-border flex-1 flex flex-col gap-[8px] items-start'>
+              <label for='option_c' class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                Option C*
+              </label>
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex items-center focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+                <input
+                  id='option_c'
+                  type='text'
+                  name='options'
+                  x-model='optionC'
+                  required
+                  placeholder='Enter option C...'
+                  class='w-full h-[24px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 focus:ring-0 focus:outline-none'
+                />
+              </div>
+              <p x-show="String(optionC).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Option C is required.</p>
+            </div>
+          </div>
+
+          {{!-- Option D --}}
+          <div class='box-border w-full flex flex-row items-start gap-[12px]'>
+            <input
+              type='radio'
+              name='answers'
+              id='answer_3'
+              value='3'
+              x-model='selectedAnswer'
+              required
+              class='w-[20px] h-[20px] rounded-full border border-[#D4D4D4] accent-[#003060] text-[#003060] cursor-pointer mt-[28px] shrink-0'
+            />
+            <div class='box-border flex-1 flex flex-col gap-[8px] items-start'>
+              <label for='option_d' class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
+                Option D*
+              </label>
+              <div class='box-border w-full h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[14px] py-[10px] flex items-center focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors'>
+                <input
+                  id='option_d'
+                  type='text'
+                  name='options'
+                  x-model='optionD'
+                  required
+                  placeholder='Enter option D...'
+                  class='w-full h-[24px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 focus:ring-0 focus:outline-none'
+                />
+              </div>
+              <p x-show="String(optionD).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Option D is required.</p>
+            </div>
+          </div>
+
+          {{!-- Helper text below options --}}
+          <p class='w-full font-inter font-normal text-[16px] leading-[24px] text-[#737373]'>
+            *Select the radio button next to the option to mark the correct answer.
+          </p>
+          <p x-show="selectedAnswer === null || selectedAnswer === undefined" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Please select the correct answer.</p>
+
+        </div>
+
+      </div>
+
+      {{!-- Feature Card 1: Partnership / Action Bar --}}
+      <div class='box-border w-full h-[86px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-row justify-end items-center gap-[24px]'>
+        <div class='flex flex-row items-center gap-[12px]'>
+          {{!-- Cancel button --}}
+          <button
+            type='button'
+            @click='handleCancel()'
+            class='box-border w-[90px] h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors'>
+            <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060]'>
+              Cancel
+            </span>
+          </button>
+
+          {{!-- Save Question button --}}
+          <button
+            type='submit'
+            :disabled='loading || !canSubmit()'
+            class='box-border w-[163px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
+            <span x-show='!loading' class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+              Save Question
+            </span>
+            <span x-show='loading' style='display: none;' class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] flex items-center gap-2 whitespace-nowrap'>
+              <svg class='animate-spin h-4 w-4 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
+                <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8H4z'></path>
+              </svg>
+              Saving...
+            </span>
+          </button>
+        </div>
+      </div>
 
     </form>
   </div>

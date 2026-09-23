@@ -1,8 +1,7 @@
 {{!--
-  Page: Admin — Edit Question
-  Path: admin/questions/edit.hbs
-  Route: GET /question/FormEdit/:questionId -> PATCH /question/:questionId/:quizId (update)
-         GET /program/edit-question-syllabus/:courseId (syllabus mock context)
+  Page: Admin — Edit Question (Course Syllabus Context)
+  Path: admin/course/edit_question.hbs
+  Route: GET /program/edit-question-syllabus/:courseId
   Design: Figma node 1883-14160 (font-inter only)
 --}}
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
@@ -10,21 +9,15 @@
     x-data='{
       ...adminFormGate(),
       loading: false,
-      isSyllabus: {{#if isSyllabus}}true{{else}}false{{/if}},
       questionPreviewUrl: null,
-      questionOldPhoto: {{#if question.image}}"{{question.image}}"{{else}}null{{/if}},
-      questionText: {{#if question.questionText}}{{json question.questionText}}{{else if isSyllabus}}"Apa tujuan utama dari User Research dalam proses desain?"{{else}}""{{/if}},
-      optionA: {{#if question.answers.[0].answer}}{{json question.answers.[0].answer}}{{else if isSyllabus}}"Memilih warna yang paling disukai desainer"{{else}}""{{/if}},
-      optionB: {{#if question.answers.[1].answer}}{{json question.answers.[1].answer}}{{else if isSyllabus}}"Memahami kebutuhan, perilaku, dan motivasi pengguna"{{else}}""{{/if}},
-      optionC: {{#if question.answers.[2].answer}}{{json question.answers.[2].answer}}{{else if isSyllabus}}"Membuat visual antarmuka dengan software desain"{{else}}""{{/if}},
-      optionD: {{#if question.answers.[3].answer}}{{json question.answers.[3].answer}}{{else if isSyllabus}}"Menentukan arsitektur teknologi backend sistem"{{else}}""{{/if}},
-      selectedAnswer: {{#if isSyllabus}}1{{else}}{{#each question.answers}}{{#if this.isCorrect}}{{@index}}{{/if}}{{/each}}{{/if}},
+      questionOldPhoto: null,
+      questionText: "Apa tujuan utama dari User Research dalam proses desain?",
+      optionA: "Memilih warna yang paling disukai desainer",
+      optionB: "Memahami kebutuhan, perilaku, dan motivasi pengguna",
+      optionC: "Membuat visual antarmuka dengan software desain",
+      optionD: "Menentukan arsitektur teknologi backend sistem",
+      selectedAnswer: 1,
 
-      init() {
-        if (this.selectedAnswer === undefined || this.selectedAnswer === "") {
-          this.selectedAnswer = 1;
-        }
-      },
       questionClearFile() {
         this.questionPreviewUrl = null;
         this.questionOldPhoto = null;
@@ -61,10 +54,8 @@
       handleCancel() {
         if (window.history.length > 1) {
           window.history.back();
-        } else if (this.isSyllabus) {
-          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
         } else {
-          window.location.href = "{{#if question.quiz.id}}/quiz/{{question.quiz.id}}{{else}}/program{{/if}}";
+          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
         }
       },
       handleSubmit(e) {
@@ -72,15 +63,11 @@
           e.preventDefault();
           return;
         }
-        if (this.isSyllabus) {
-          e.preventDefault();
-          this.loading = true;
-          setTimeout(() => {
-            window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
-          }, 500);
-        } else {
-          this.loading = true;
-        }
+        e.preventDefault();
+        this.loading = true;
+        setTimeout(() => {
+          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+        }, 500);
       }
     }'>
 
@@ -95,7 +82,7 @@
     </div>
 
     {{!-- Edit question form --}}
-    <form method='POST' action='{{#if isSyllabus}}#{{else}}/question/{{question.id}}/{{question.quiz.id}}?_method=PATCH{{/if}}'
+    <form method='POST' action='#'
       enctype='multipart/form-data'
       class='box-border w-full flex flex-col gap-[16px] items-start'
       novalidate
@@ -103,7 +90,6 @@
       @change="recomputeFormValid()"
       @focusout="markField($event.target)"
       @submit='handleSubmit($event)'>
-      <input type='hidden' name='_method' value='PATCH'>
 
       {{!-- Form Logbook: Card Container --}}
       <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[20px] items-start'>
@@ -232,7 +218,7 @@
                 <input
                   id='option_a'
                   type='text'
-                  name='answer'
+                  name='options'
                   x-model='optionA'
                   required
                   placeholder='Enter option A...'
@@ -266,7 +252,7 @@
                 <input
                   id='option_b'
                   type='text'
-                  name='answer'
+                  name='options'
                   x-model='optionB'
                   required
                   placeholder='Enter option B...'
@@ -300,7 +286,7 @@
                 <input
                   id='option_c'
                   type='text'
-                  name='answer'
+                  name='options'
                   x-model='optionC'
                   required
                   placeholder='Enter option C...'
@@ -334,7 +320,7 @@
                 <input
                   id='option_d'
                   type='text'
-                  name='answer'
+                  name='options'
                   x-model='optionD'
                   required
                   placeholder='Enter option D...'
@@ -390,3 +376,4 @@
     </form>
   </div>
 </div>
+

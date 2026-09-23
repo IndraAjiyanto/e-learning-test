@@ -1,47 +1,58 @@
 {{!--
-  Page: Admin - Create Quiz
-  Path: admin/quiz/create.hbs
-  Route: GET /quiz/formCreate/:weeksId -> POST /quiz/:weeksId (create)
-  Design: Figma node 1883-12963
+  Page: Admin - Edit Quiz (Course Syllabus Context)
+  Path: admin/course/edit_quiz.hbs
+  Route: GET /program/edit-quiz-syllabus/:courseId
+  Design: Figma node 1883-13019
 --}}
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start'
     x-data='{
       ...adminFormGate(),
       loading: false,
-      title: "",
-      minScore: "",
-      duration: "",
+      title: "Final Test for UX Research & Design Thinking",
+      minScore: 80,
+      duration: 60,
       canSubmit() {
-        return this.title.trim() !== "" && String(this.minScore).trim() !== "" && String(this.duration).trim() !== "" && !isNaN(Number(this.minScore)) && !isNaN(Number(this.duration));
+        return String(this.title).trim() !== "" && String(this.minScore).trim() !== "" && String(this.duration).trim() !== "" && !isNaN(Number(this.minScore)) && !isNaN(Number(this.duration));
       },
       handleCancel() {
         if (window.history.length > 1) {
           window.history.back();
         } else {
-          window.location.href = "{{#if weeksId}}/week/{{weeksId}}{{else}}/program{{/if}}";
+          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
         }
+      },
+      handleSubmit(e) {
+        if (!this.canSubmit()) {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+        this.loading = true;
+        setTimeout(() => {
+          window.location.href = "{{#if courseId}}/program/detail-quiz-syllabus/{{courseId}}{{else}}/program{{/if}}";
+        }, 500);
       }
     }'>
 
     {{!-- Title: Heading + Sub heading --}}
     <div class='box-border w-full flex flex-col gap-[4px] items-start'>
       <h1 class='w-full font-["Inter"] font-bold text-[34px] leading-[36px] tracking-[-1px] text-[#003060]'>
-        Create Quiz
+        Edit Quiz
       </h1>
       <p class='w-full font-["Inter"] font-medium text-[16px] leading-[20px] text-[#718096]'>
-        Fill in the information below to create a quiz.
+        Fill in the information below to edit a quiz.
       </p>
     </div>
 
-    {{!-- Create program form --}}
-    <form method='POST' action='{{#if weeksId}}/quiz/{{weeksId}}{{else}}#{{/if}}'
+    {{!-- Edit quiz form --}}
+    <form method='POST' action='#'
       class='box-border w-full flex flex-col gap-[16px] items-start'
       novalidate
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
       @focusout="markField($event.target)"
-      @submit="submitGate($event, () => canSubmit())">
+      @submit='handleSubmit($event)'>
 
       {{!-- Feature Card 1: Form Inputs Card --}}
       <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[20px] items-start'>
@@ -62,7 +73,7 @@
               class='w-full h-[24px] font-["Inter"] font-normal text-[16px] leading-[24px] text-[#171717] placeholder-[#737373] bg-transparent border-none outline-none p-0 focus:ring-0 focus:outline-none'
             />
           </div>
-          <p x-show="title.trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-['Inter']">Title is required and cannot be empty.</p>
+          <p x-show="String(title).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-['Inter']">Title is required and cannot be empty.</p>
         </div>
 
         {{!-- Frame 2147229580: Minimum Score* & Duration (minute)* Row --}}
@@ -123,20 +134,20 @@
             </span>
           </button>
 
-          {{!-- Create Quiz submit button --}}
+          {{!-- Update Quiz submit button --}}
           <button
             type='submit'
-            :disabled='loading'
-            class='box-border min-w-[128px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
+            :disabled='loading || !canSubmit()'
+            class='box-border w-[147px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
             <span x-show='!loading' class='font-["Inter"] font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
-              Create Quiz
+              Update Quiz
             </span>
             <span x-show='loading' style='display: none;' class='font-["Inter"] font-semibold text-[16px] leading-[24px] text-[#FFFFFF] flex items-center gap-2 whitespace-nowrap'>
               <svg class='animate-spin h-4 w-4 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
                 <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
                 <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8H4z'></path>
               </svg>
-              Creating...
+              Updating...
             </span>
           </button>
         </div>
@@ -145,3 +156,4 @@
     </form>
   </div>
 </div>
+
