@@ -138,15 +138,14 @@
         </div>
       </div>
 
-      <!-- _Button base: Create Final Assignment (1010x44 bg-white border border-[#3B82F6] shadow-xs rounded-8) -->
-      <button
-        type='button'
-        @click='handleCreateFinalAssignment()'
+      <!-- Button: Create Final Assignment (1010x44 bg-white border border-[#3B82F6] shadow-xs rounded-8) -->
+      <a
+        href='/program/create-final-assignment/{{course.id}}'
         class='box-border w-full shrink-0 h-[44px] flex flex-row justify-center items-center px-[18px] py-[10px] gap-[8px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'>
         <span class='h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] flex items-center justify-center whitespace-nowrap'>
           Create Final Assignment
         </span>
-      </button>
+      </a>
 
     </div>
   </template>
@@ -171,7 +170,7 @@ function finalAssignmentData() {
       questionCount: 50,
       minScore: 100,
       detailUrl: '#',
-      editUrl: '#',
+      editUrl: '/program/edit-final-assignment/{{course.id}}',
       deleteUrl: '#',
     },
 
@@ -275,12 +274,7 @@ function finalAssignmentData() {
     },
 
     handleCreateFinalAssignment() {
-      const targetId = this.selectedSyllabusId || (this.syllabusOptions[0]?.id);
-      if (targetId && !targetId.startsWith('mock')) {
-        window.location.href = '/syllabus/quiz/create/' + targetId;
-      } else {
-        alert('Fitur create final assignment akan aktif saat backend syllabus/quiz terhubung.');
-      }
+      window.location.href = '/program/create-final-assignment/{{course.id}}';
     },
 
     async fetchFinalAssignment() {

@@ -251,6 +251,66 @@ await this.coursesService.addUserToCourse(userId, courseId);
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/create-final-assignment/:courseId')
+  async formCreateFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/create_final_assignment', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/create-final-assignment/:courseId')
+  async createFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    flashToast(
+      req,
+      'Final Assignment Created',
+      'The new final assignment has been added to the program.',
+    );
+    return res.redirect(`/program/detail/program/admin/${courseId}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-final-assignment/:courseId')
+  async formEditFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/edit_final_assignment', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/edit-final-assignment/:courseId')
+  async updateFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    flashToast(
+      req,
+      'Final Assignment Updated',
+      'Final assignment has been updated successfully.',
+    );
+    return res.redirect(`/program/detail/program/admin/${courseId}`);
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/edit-syllabus/:id')
   async formEditSyllabus(
     @Res() res: Response,
