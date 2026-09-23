@@ -8,6 +8,30 @@
   <!-- Hidden input for payment method (Full Payment | Installment) -->
   <input type="hidden" id="payment-method-select" name="paymentMethod" value="Full Payment" />
 
+  <!-- Payment Method Selection Toggle -->
+  <div class="w-full max-w-[420px] mb-8 select-none">
+    <div class="flex w-full items-center rounded-full bg-[#F1F5F9] p-1">
+      <button
+        type="button"
+        id="toggle-btn-full"
+        onclick="switchPaymentMethod('Full Payment')"
+        class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer bg-[#003060] text-white shadow-xs"
+      >
+        Full Payment
+      </button>
+      {{#if course.installments.length}}
+      <button
+        type="button"
+        id="toggle-btn-installment"
+        onclick="switchPaymentMethod('Installment')"
+        class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer text-[#64748B] hover:text-[#0B1F3B]"
+      >
+        Installment
+      </button>
+      {{/if}}
+    </div>
+  </div>
+
   <!-- 1. FULL PAYMENT VIEW -->
   <div id="view-full-payment" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start w-full">
     <!-- Left Column: Full Payment Info & Voucher Input -->
@@ -70,7 +94,7 @@
   const courseBasePrice = Number('{{course.price}}') || 0;
   const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
   const courseInstallmentDP = Number('{{course.installments.[0].downPayment}}') || 0;
-  const hasInstallments = Boolean(courseInstallmentDP > 0);
+  const hasInstallments = Boolean({{ternary course.installments.length 'true' 'false'}} && courseInstallmentDP > 0);
 
   let currentMethod = 'Full Payment';
   let currentSubtotal = courseFullPrice;
@@ -294,15 +318,26 @@
 
     const viewFull = document.getElementById('view-full-payment');
     const viewInst = document.getElementById('view-installment');
+    const btnFull = document.getElementById('toggle-btn-full');
+    const btnInst = document.getElementById('toggle-btn-installment');
+
+    const activeClasses = "flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer bg-[#003060] text-white shadow-xs";
+    const inactiveClasses = "flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer text-[#64748B] hover:text-[#0B1F3B]";
 
     if (method === 'Installment') {
       if (viewFull) viewFull.classList.add('hidden');
       if (viewInst) viewInst.classList.remove('hidden');
       currentSubtotal = courseInstallmentDP;
+
+      if (btnFull) btnFull.className = inactiveClasses;
+      if (btnInst) btnInst.className = activeClasses;
     } else {
       if (viewFull) viewFull.classList.remove('hidden');
       if (viewInst) viewInst.classList.add('hidden');
       currentSubtotal = courseFullPrice;
+
+      if (btnFull) btnFull.className = activeClasses;
+      if (btnInst) btnInst.className = inactiveClasses;
     }
 
     // Recalculate voucher against the new currentSubtotal
@@ -450,10 +485,12 @@
     };
 
     const bootstrap = () => {
-      // 1. Tentukan tampilan aktif: jika program memiliki cicilan, tampilkan Installment (kecuali URL meminta full)
+      // 1. Tentukan tampilan aktif: jika URL menentukan method atau fallback ke ketersediaan installment
       const urlMethod = new URLSearchParams(window.location.search).get('method');
       if (urlMethod && urlMethod.toLowerCase() === 'full') {
         switchPaymentMethod('Full Payment');
+      } else if (urlMethod && urlMethod.toLowerCase() === 'installment' && hasInstallments) {
+        switchPaymentMethod('Installment');
       } else if (hasInstallments) {
         switchPaymentMethod('Installment');
       } else {
@@ -481,8 +518,10 @@
           const m = new URLSearchParams(window.location.search).get('method');
           if (m && m.toLowerCase() === 'full') {
             switchPaymentMethod('Full Payment');
-          } else if (hasInstallments) {
+          } else if (m && m.toLowerCase() === 'installment' && hasInstallments) {
             switchPaymentMethod('Installment');
+          } else if (hasInstallments) {
+            switchPaymentMethod(currentMethod || 'Installment');
           } else {
             switchPaymentMethod('Full Payment');
           }
