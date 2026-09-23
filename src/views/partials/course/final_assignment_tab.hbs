@@ -1,0 +1,322 @@
+<!-- ===================== TAB FINAL ASSIGNMENT ===================== -->
+{{!--
+  Tab: Final Assignment — Non Bootcamp / Syllabus
+  Path: partials/course/final_assignment_tab.hbs
+  Dipakai: admin/course/detail_syllabus.hbs (x-show="tab === 'final_assignment'")
+  Design: Figma node 1932-5180 (Create Final Assignment) & 1932-5178 (Final Assignment)
+--}}
+
+<div class='flex flex-col gap-[12px] w-full'>
+
+  {{!-- Preview State Switcher (Memudahkan review kedua state Figma tanpa backend) --}}
+  <div class='flex flex-row items-center justify-between py-1.5 px-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[8px] text-[12px] text-[#64748B]'>
+    <span class='font-inter'>Preview State (tanpa backend):</span>
+    <div class='flex flex-row gap-1.5'>
+      <button type='button'
+        @click="previewMode = 'filled'"
+        :class="previewMode === 'filled' ? 'bg-[#003060] text-white font-semibold' : 'bg-white text-[#64748B] border border-[#CBD5E1] hover:bg-[#F1F5F9]'"
+        class='px-2.5 py-1 rounded-[6px] transition-colors'>
+        State Terisi (1932-5178)
+      </button>
+      <button type='button'
+        @click="previewMode = 'empty'"
+        :class="previewMode === 'empty' ? 'bg-[#003060] text-white font-semibold' : 'bg-white text-[#64748B] border border-[#CBD5E1] hover:bg-[#F1F5F9]'"
+        class='px-2.5 py-1 rounded-[6px] transition-colors'>
+        State Kosong / Create (1932-5180)
+      </button>
+    </div>
+  </div>
+
+  {{!-- State 1: Ketika sudah ada final assignment (Figma node 1932-5178) --}}
+  <template x-if='finalAssignments && finalAssignments.length > 0'>
+    <div class='flex flex-col gap-[10px] w-full'>
+      <template x-for='(item, index) in finalAssignments' :key='item.id'>
+        <!-- Row: 1010x68 bg-white border border-[#D9D9D9] rounded-8 p-[8px_14px] gap-6 -->
+        <div class='box-border w-full shrink-0 min-h-[68px] h-fit sm:h-[68px] flex flex-col sm:flex-row items-start sm:items-center p-[8px_14px] gap-[12px] sm:gap-[6px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FAFAFA] transition-colors'>
+
+          <!-- Frame 2147229595: Quiz Info -->
+          <div class='flex flex-col gap-[6px] flex-1 min-w-0 justify-center items-start'>
+            <!-- Final Assessment Title -->
+            <div class='w-full font-montserrat font-semibold text-[14px] leading-[20px] text-[#003060] truncate'
+                 x-text="item.quizName"
+                 :title="item.quizName"></div>
+
+            <!-- Frame 2147229596: Badges row -->
+            <div class='flex flex-row flex-wrap items-center gap-[16px]'>
+              <!-- Frame 2147229593: Duration (Clock) -->
+              <div class='flex flex-row items-center gap-[4px]'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'>
+                  <circle cx='12' cy='12' r='10'></circle>
+                  <polyline points='12 6 12 12 16 14'></polyline>
+                </svg>
+                <span class='font-montserrat font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'
+                      x-text="(item.duration || 0) + ' menit'"></span>
+              </div>
+
+              <!-- Frame 2147229592: Total Questions (Soal) -->
+              <div class='flex flex-row items-center gap-[4px]'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'>
+                  <circle cx='12' cy='12' r='10'></circle>
+                  <path d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'></path>
+                  <line x1='12' y1='17' x2='12.01' y2='17'></line>
+                </svg>
+                <span class='font-montserrat font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'
+                      x-text="(item.questionCount || 0) + ' soal'"></span>
+              </div>
+
+              <!-- Frame 2147229594: Score -->
+              <div class='flex flex-row items-center gap-[4px]'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'>
+                  <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'></polygon>
+                </svg>
+                <span class='font-montserrat font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'
+                      x-text="(item.minScore !== undefined && item.minScore !== null ? item.minScore : 100) + ' score'"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class='flex flex-row items-center gap-[6px] shrink-0 self-end sm:self-center'>
+            <!-- Button: Edit (44x44 bg-white border border-[#D9D9D9] rounded-8) -->
+            <a :href="item.editUrl"
+              class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#F5F5F5] transition-colors'
+              title='Edit Final Assignment' aria-label='Edit Final Assignment'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+                <path d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z'></path>
+              </svg>
+            </a>
+
+            <!-- Button: Delete (44x44 bg-white border border-[#D9D9D9] rounded-8) -->
+            <form :action="item.deleteUrl" method='POST' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+              <button type='button'
+                onclick="openDeleteModal(this, 'Delete Final Assignment', 'Are you sure you want to delete this final assignment? All associated questions will be removed permanently.')"
+                class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+                title='Delete Final Assignment' aria-label='Delete Final Assignment'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <path d='M3 6h18'/>
+                  <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
+                  <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
+                  <line x1='10' y1='11' x2='10' y2='17'/>
+                  <line x1='14' y1='11' x2='14' y2='17'/>
+                </svg>
+              </button>
+            </form>
+
+            <!-- _Button base: Detail (81x44 bg-white border border-[#003060] shadow-xs rounded-8 p-[10px_18px] Inter Semibold 16/24 #003060) -->
+            <a :href="item.detailUrl"
+              class='box-border w-[81px] shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'
+              title='Final Assignment Detail' aria-label='Final Assignment Detail'>
+              <span class='w-[45px] h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#003060] flex items-center justify-center whitespace-nowrap'>Detail</span>
+            </a>
+          </div>
+
+        </div>
+      </template>
+    </div>
+  </template>
+
+  {{!-- State 2: Ketika belum ada final assignment (Figma node 1932-5180) --}}
+  <template x-if='!finalAssignments || finalAssignments.length === 0'>
+    <!-- Frame 2147229615: Input + Create Button -->
+    <div class='box-border w-full flex flex-col gap-[12px] items-start'>
+
+      <!-- Input: Dropdown to select syllabus (1010x44 bg-white border border-[#D4D4D4] rounded-8) -->
+      <div class='relative box-border w-full h-[44px] flex flex-row items-center bg-[#FFFFFF] border border-[#D4D4D4] rounded-[8px] focus-within:border-[#3B82F6]'>
+        <select
+          x-model='selectedSyllabusId'
+          class='box-border w-full h-full bg-transparent px-[14px] py-[10px] pr-[40px] font-inter font-normal text-[16px] leading-[24px] text-[#171717] focus:outline-none appearance-none cursor-pointer'>
+          <option value='' disabled :selected="!selectedSyllabusId" class='text-[#A3A3A3]'>Select syllabus for Final Assignment...</option>
+          <template x-for='s in syllabusOptions' :key='s.id'>
+            <option :value='s.id' :selected="s.id === selectedSyllabusId" x-text="(s.isFinal ? '[Final] ' : '') + s.title"></option>
+          </template>
+        </select>
+        <!-- Frame: 20x20 Chevron Down icon #A3A3A3 -->
+        <div class='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-[14px] text-[#A3A3A3]'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+            <path d='m6 9 6 6 6-6'/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- _Button base: Create Final Assignment (1010x44 bg-white border border-[#3B82F6] shadow-xs rounded-8) -->
+      <button
+        type='button'
+        @click='handleCreateFinalAssignment()'
+        class='box-border w-full shrink-0 h-[44px] flex flex-row justify-center items-center px-[18px] py-[10px] gap-[8px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'>
+        <span class='h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] flex items-center justify-center whitespace-nowrap'>
+          Create Final Assignment
+        </span>
+      </button>
+
+    </div>
+  </template>
+
+</div>
+
+<script>
+function finalAssignmentData() {
+  return {
+    rawSyllabus: [],
+    rawWeeks: [],
+    selectedSyllabusId: '',
+    loading: false,
+    // Preview mode untuk pengujian UI tanpa backend
+    previewMode: 'filled', // 'filled' | 'empty' | 'auto'
+
+    // Mock data sesuai referensi Figma node 1932-5178
+    mockItem: {
+      id: 'mock-final-assessment',
+      quizName: 'Final Assesment : UX Research & Design Thinking',
+      duration: 2,
+      questionCount: 50,
+      minScore: 100,
+      detailUrl: '#',
+      editUrl: '#',
+      deleteUrl: '#',
+    },
+
+    get finalAssignments() {
+      if (this.previewMode === 'empty') return [];
+      if (this.previewMode === 'filled') return [this.mockItem];
+
+      const list = [];
+      const courseName = '{{course.name}}' || '';
+
+      if (this.rawSyllabus && this.rawSyllabus.length > 0) {
+        // 1. Cek syllabus yang isFinal === true
+        this.rawSyllabus.forEach(s => {
+          if (s.quiz && Array.isArray(s.quiz)) {
+            s.quiz.forEach(q => {
+              const isFinalQuiz = s.isFinal || 
+                (q.quizName && (q.quizName.toLowerCase().includes('final') || q.quizName.toLowerCase().includes('assign')));
+              if (isFinalQuiz) {
+                list.push({
+                  id: q.id,
+                  syllabusId: s.id,
+                  quizName: q.quizName || ('Final Assesment : ' + (courseName || s.title || 'Course')),
+                  duration: q.duration || 0,
+                  questionCount: (q.questions && q.questions.length) || 0,
+                  minScore: q.minScore !== undefined && q.minScore !== null ? q.minScore : 100,
+                  detailUrl: '/syllabus/quiz/detail/' + q.id,
+                  editUrl: '/quiz/formEdit/' + q.id,
+                  deleteUrl: '/syllabus/quiz/' + q.id + '?_method=DELETE',
+                });
+              }
+            });
+          }
+        });
+
+        // 2. Jika belum ada yang ditandai isFinal secara eksplisit, ambil quiz dari syllabus terakhir
+        if (list.length === 0) {
+          const lastSyllabus = this.rawSyllabus[this.rawSyllabus.length - 1];
+          if (lastSyllabus && lastSyllabus.quiz && lastSyllabus.quiz.length > 0) {
+            lastSyllabus.quiz.forEach(q => {
+              list.push({
+                id: q.id,
+                syllabusId: lastSyllabus.id,
+                quizName: q.quizName || ('Final Assesment : ' + (courseName || lastSyllabus.title || 'Course')),
+                duration: q.duration || 0,
+                questionCount: (q.questions && q.questions.length) || 0,
+                minScore: q.minScore !== undefined && q.minScore !== null ? q.minScore : 100,
+                detailUrl: '/syllabus/quiz/detail/' + q.id,
+                editUrl: '/quiz/formEdit/' + q.id,
+                deleteUrl: '/syllabus/quiz/' + q.id + '?_method=DELETE',
+              });
+            });
+          }
+        }
+      }
+
+      // 3. Fallback jika berbasis weeks
+      if (list.length === 0 && this.rawWeeks && this.rawWeeks.length > 0) {
+        this.rawWeeks.forEach(w => {
+          if (w.quiz && Array.isArray(w.quiz)) {
+            w.quiz.forEach(q => {
+              list.push({
+                id: q.id,
+                syllabusId: w.id,
+                quizName: q.quizName || ('Final Assesment : ' + (courseName || w.description || 'Course')),
+                duration: q.duration || 0,
+                questionCount: (q.questions && q.questions.length) || 0,
+                minScore: q.minScore !== undefined && q.minScore !== null ? q.minScore : 100,
+                detailUrl: '/syllabus/quiz/detail/' + q.id,
+                editUrl: '/quiz/formEdit/' + q.id,
+                deleteUrl: '/syllabus/quiz/' + q.id + '?_method=DELETE',
+              });
+            });
+          }
+        });
+      }
+
+      // Default jika belum ada data backend, tampilkan mockItem
+      return list.length > 0 ? list : [this.mockItem];
+    },
+
+    get syllabusOptions() {
+      if (this.rawSyllabus && this.rawSyllabus.length > 0) {
+        return this.rawSyllabus.map((s, idx) => ({
+          id: s.id,
+          title: s.title || ('Pertemuan ' + (s.syllabusNumber || (idx + 1))),
+          isFinal: !!s.isFinal,
+        }));
+      }
+      if (this.rawWeeks && this.rawWeeks.length > 0) {
+        return this.rawWeeks.map((w, idx) => ({
+          id: w.id,
+          title: w.description || ('Week ' + (w.weekNumber || (idx + 1))),
+          isFinal: !!w.isFinal,
+        }));
+      }
+      // Mock options fallback
+      return [
+        { id: 'mock-1', title: 'Pertemuan 01 - Pengenalan UX', isFinal: false },
+        { id: 'mock-2', title: 'Pertemuan 02 - Design Thinking', isFinal: true },
+      ];
+    },
+
+    handleCreateFinalAssignment() {
+      const targetId = this.selectedSyllabusId || (this.syllabusOptions[0]?.id);
+      if (targetId && !targetId.startsWith('mock')) {
+        window.location.href = '/syllabus/quiz/create/' + targetId;
+      } else {
+        alert('Fitur create final assignment akan aktif saat backend syllabus/quiz terhubung.');
+      }
+    },
+
+    async fetchFinalAssignment() {
+      this.loading = true;
+      try {
+        const res = await fetch('/syllabus/course/{{course.id}}');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            this.rawSyllabus = data;
+            const finalItem = data.find(s => s.isFinal) || data[data.length - 1];
+            if (finalItem && !this.selectedSyllabusId) {
+              this.selectedSyllabusId = finalItem.id;
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        // Backend belum siap, abaikan error dan gunakan mock
+      } finally {
+        this.loading = false;
+      }
+
+      try {
+        const res = await fetch('/program/week/{{course.id}}');
+        if (res.ok) {
+          this.rawWeeks = await res.json();
+          if (this.rawWeeks.length > 0 && !this.selectedSyllabusId) {
+            this.selectedSyllabusId = this.rawWeeks[0].id;
+          }
+        }
+      } catch (e) {
+        this.rawWeeks = [];
+      }
+    }
+  }
+}
+</script>
+

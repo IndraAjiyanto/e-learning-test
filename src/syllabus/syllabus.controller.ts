@@ -232,6 +232,10 @@ export class SyllabusController {
       const syllabusId = quiz?.syllabus?.id;
       await this.quizService.remove(quizId);
       flashToast(req, 'Quiz Deleted', 'The quiz has been permanently removed.');
+      const referer = req.headers.referer;
+      if (referer && referer.includes('/program/detail/program/admin/')) {
+        return res.redirect(referer);
+      }
       if (syllabusId) {
         return res.redirect(`/syllabus/${syllabusId}`);
       }

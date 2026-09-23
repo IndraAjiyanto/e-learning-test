@@ -130,7 +130,7 @@ export class SyllabusService {
     return await this.syllabusRepository.find({
       where: { course: { id: courseId } },
       order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
-      relations: ['quiz'],
+      relations: ['quiz', 'quiz.questions'],
     });
   }
 
