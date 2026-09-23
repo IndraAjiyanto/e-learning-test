@@ -3,119 +3,145 @@
   Lokasi: src/views/partials/components/ui/super_admin/program/payment_tab/index.hbs
   Level: L2 Section (scoped super_admin)
 
-  Panel tab "Payment" di halaman detail program. Berbeda dari tab lain yang berupa
-  tabel: isinya grid kartu pengajuan, karena tiap baris punya bukti transfer dan
-  dua aksi keputusan — bukan sekadar data yang dibaca.
-
-  Dua tingkat penyaringan:
-  - sub-tab sumber data (Full Payment / Installment / Registration) yang tiap
-    pergantiannya MENGAMBIL data baru, jadi tombolnya memakai tabs/fetch
-  - filter status (All / Process / Accepted / Rejected) yang hanya menyaring data
-    yang sudah ada, jadi tombolnya memakai tabs/panel dengan state 'tabStatus'
-
-  Program gratis tidak punya pengajuan pembayaran: hanya sub-tab Registration yang
-  dirender dan dipakai sebagai sumber awal.
-
-  Halaman pemanggil WAJIB memuat sekali:
-  - components/ui/super_admin/table/formatters  (formatDate)
-
-  modal/detail dipanggil oleh komponen ini sendiri (kanal 'payment-proof').
+  Panel tab "Payment" di halaman detail program Super Admin sesuai token Figma:
+  1. Top Segmented Switch: Full Payment & Installment (44px, border & active #003060)
+  2. Card Wrapper: White (#FFFFFF, border #D9D9D9, radius 12px, p-3 sm:p-5)
+  3. Sub-tabs Status: All, Process, Accepted, Rejected (Montserrat 14px, underline #003060)
+  4. Search bar: 44px outline
+  5. Payment Cards Grid: 2 Kolom kartu detail pembayaran
 
   Props:
-  - courseId  : string (wajib) — dipakai untuk semua endpoint
+  - courseId  : string (wajib) — ID kursus
   - checkPaid : boolean (wajib) — true bila program berbayar
 --}}
 <div
-  class='flex flex-col gap-5'
-  x-data='paymentTab({{json courseId}}, {{#if checkPaid}}true{{else}}false{{/if}})'
-  x-init='init()'
+  class="flex flex-col gap-3 w-full"
+  x-data="paymentTab({{json courseId}}, {{#if checkPaid}}true{{else}}false{{/if}})"
+  x-init="init()"
 >
-  <nav role='tablist' aria-label='Payment source' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
-    {{#if checkPaid}}
-      {{> components/ui/super_admin/tabs/fetch/index
-        name='payment'
-        label='Full Payment'
-        url=(concat '/program/payment/' courseId)
-      }}
-      {{> components/ui/super_admin/tabs/fetch/index
-        name='installment'
-        label='Installment'
-        url=(concat '/program/paymentInstallment/' courseId)
-      }}
-    {{else}}
-      {{> components/ui/super_admin/tabs/fetch/index
-        name='register'
-        label='Registration'
-        url=(concat '/program/register/' courseId)
-      }}
-    {{/if}}
-  </nav>
+  <!-- 1. Top Segmented Tab Toggle (Full Payment vs Installment) -->
+  {{#if checkPaid}}
+    {{> components/ui/super_admin/tabs/toggle/index
+      tab1Label="Full Payment"
+      tab1Value="payment"
+      tab1Url=(concat '/program/payment/' courseId)
+      tab2Label="Installment"
+      tab2Value="installment"
+      tab2Url=(concat '/program/paymentInstallment/' courseId)
+      state="tab"
+    }}
+  {{else}}
+    <button
+      type="button"
+      class="w-full flex items-center justify-center h-11 px-4 bg-[#003060] text-white border border-[#003060] rounded-lg font-inter font-semibold text-base leading-6 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]"
+    >
+      Registration
+    </button>
+  {{/if}}
 
-  <nav role='tablist' aria-label='Payment status' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
-    {{> components/ui/super_admin/tabs/panel/index name='all' label='All' state='tabStatus' }}
-    {{> components/ui/super_admin/tabs/panel/index name='proces' label='Process' state='tabStatus' }}
-    {{> components/ui/super_admin/tabs/panel/index name='acc' label='Accepted' state='tabStatus' }}
-    {{> components/ui/super_admin/tabs/panel/index name='rejected' label='Rejected' state='tabStatus' }}
-  </nav>
+  <!-- 2. Main Content Card Wrapper (Table Detail Week) -->
+  <div class="w-full bg-white border border-[#D9D9D9] rounded-xl p-3 sm:p-5 flex flex-col gap-5">
+    <!-- Status Filter Sub-Tabs & Search Bar -->
+    <div class="flex flex-col gap-4 w-full">
+      <!-- Status Tabs -->
+      <nav role="tablist" class="flex border-b border-[#D9D9D9] w-full overflow-x-auto">
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'all'"
+          :aria-selected="tabStatus === 'all'"
+          :class="tabStatus === 'all'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          All
+        </button>
 
-  <template x-if='loading'>
-    <p class='py-16 text-center font-inter text-sm leading-5 text-[#a3a3a3]'>Loading submissions…</p>
-  </template>
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'proces'"
+          :aria-selected="tabStatus === 'proces' || tabStatus === 'process'"
+          :class="(tabStatus === 'proces' || tabStatus === 'process')
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          Process
+        </button>
 
-  <template x-if='!loading && visibleItems.length === 0'>
-    <p class='py-16 text-center font-inter text-sm leading-5 text-[#a3a3a3]'>No submissions found.</p>
-  </template>
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'acc'"
+          :aria-selected="tabStatus === 'acc'"
+          :class="tabStatus === 'acc'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          Accepted
+        </button>
 
-  {{!-- Satu grid per sub-tab, di-x-show dari luar: kartunya beda rute aksi & label,
-       dan nilai itu ditentukan saat render Handlebars, bukan saat runtime. --}}
-  <div x-show="tab === 'payment'" class='grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3'>
-    <template x-for='item in visibleItems' :key='item.id'>
-      {{> components/ui/super_admin/card/payment/index
-        actionBase='payment'
-        label="'PAYMENT'"
-        showNo=true
-      }}
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'rejected'"
+          :aria-selected="tabStatus === 'rejected'"
+          :class="tabStatus === 'rejected'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          Rejected
+        </button>
+      </nav>
+
+      <!-- Search Input Bar -->
+      <div class="w-full">
+        {{> components/ui/super_admin/input/search/index
+          model="searchQuery"
+          placeholder="Search..."
+        }}
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <template x-if="loading">
+      <div class="py-16 text-center">
+        <p class="font-inter text-sm leading-5 text-[#A3A3A3]">Loading submissions…</p>
+      </div>
     </template>
-  </div>
 
-  <div x-show="tab === 'installment'" class='grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3'>
-    <template x-for='item in visibleItems' :key='item.id'>
-      {{> components/ui/super_admin/card/payment/index
-        actionBase='payment'
-        label="(item.installment?.month ?? '-') + ' MONTH PAYMENT'"
-        showNo=true
-      }}
+    <!-- Empty State -->
+    <template x-if="!loading && visibleItems.length === 0">
+      <div class="py-16 text-center w-full">
+        <div class="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-slate-700 mb-1">No Submissions Found</h3>
+        <p class="text-sm text-slate-500">No payment transactions match the selected filter or search query.</p>
+      </div>
     </template>
-  </div>
 
-  <div x-show="tab === 'register'" class='grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3'>
-    <template x-for='item in visibleItems' :key='item.id'>
-      {{> components/ui/super_admin/card/payment/index
-        actionBase='registration'
-        label="'REGISTRATION'"
-      }}
-    </template>
+    <!-- 2-Column Grid of Payment Detail Cards -->
+    <div x-show="!loading && visibleItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+      <template x-for="item in visibleItems" :key="item.id">
+        {{> components/ui/super_admin/card/payment_detail/index}}
+      </template>
+    </div>
   </div>
 </div>
-
-{{#> components/ui/super_admin/modal/detail/index
-  name='payment-proof'
-  title='Payment Proof'
-  maxWidth='max-w-[900px]'
-}}
-  <img
-    :src='row.file'
-    alt='Payment proof'
-    class='max-h-[70vh] w-full rounded-xl border border-[#e5e5e5] bg-[#fafafa] object-contain'
-  />
-{{/components/ui/super_admin/modal/detail/index}}
 
 <script>
   function paymentTab(courseId, checkPaid) {
     return {
-      // Sub-tab aktif. Program gratis hanya punya 'register'.
       tab: checkPaid ? 'payment' : 'register',
       tabStatus: 'all',
+      searchQuery: '',
       items: [],
       loading: true,
 
@@ -127,7 +153,6 @@
         this.toggleFetch(url, this.tab);
       },
 
-      // Nama & tanda tangan ini adalah kontrak tabs/fetch: toggleFetch(url, name).
       async toggleFetch(url, name) {
         this.tab = name;
         this.loading = true;
@@ -139,7 +164,6 @@
           const data = await response.json();
           this.items = Array.isArray(data) ? data : [];
         } catch (error) {
-          // Grid dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
           console.error('Failed to load payment submissions:', error);
           this.items = [];
         } finally {
@@ -147,12 +171,74 @@
         }
       },
 
-      // Penyaringan status dilakukan di sini, bukan lewat x-show per kartu:
-      // dengan x-show kartu yang tersembunyi tetap dirender, dan pesan
-      // "No submissions found" tidak pernah muncul saat sebuah status kosong.
       get visibleItems() {
-        if (this.tabStatus === 'all') return this.items;
-        return this.items.filter((item) => item.process === this.tabStatus);
+        if (!Array.isArray(this.items)) return [];
+        return this.items.filter((item) => {
+          // Status filter
+          const status = (item.process || '').toLowerCase();
+          let matchesStatus = true;
+          if (this.tabStatus === 'acc') {
+            matchesStatus = status === 'acc' || status === 'approved';
+          } else if (this.tabStatus === 'proces' || this.tabStatus === 'process') {
+            matchesStatus = status === 'proces' || status === 'process';
+          } else if (this.tabStatus === 'rejected') {
+            matchesStatus = status === 'rejected';
+          }
+
+          if (!matchesStatus) return false;
+
+          // Search query filter
+          if (!this.searchQuery || this.searchQuery.trim() === '') return true;
+          const q = this.searchQuery.toLowerCase().trim();
+          const username = (item.user_fullname || item.user?.username || '').toLowerCase();
+          const email = (item.user_email || item.user?.email || '').toLowerCase();
+          const invoiceNo = (item.invoice?.xendit_invoice_id || item.no || '').toLowerCase();
+          const phone = (item.user_no || item.user?.no || '').toLowerCase();
+          const keyword = (item.referalSource || item.keyword || '').toLowerCase();
+
+          return (
+            username.includes(q) ||
+            email.includes(q) ||
+            invoiceNo.includes(q) ||
+            phone.includes(q) ||
+            keyword.includes(q)
+          );
+        });
+      },
+
+      formatCurrency(value) {
+        const num = Number(value);
+        if (isNaN(num)) return 'Rp 0';
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 0,
+        }).format(num);
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(value).toLocaleDateString('id-ID', options);
+      },
+
+      getTerm(item, month) {
+        if (!item.installmentPayments || !Array.isArray(item.installmentPayments)) return null;
+        return item.installmentPayments.find((p) => Number(p.month) === Number(month));
+      },
+
+      getTermStatus(item, month) {
+        const term = this.getTerm(item, month);
+        if (!term) return 'unpaid';
+        return term.status || 'process';
+      },
+
+      getTermStatusLabel(item, month) {
+        const status = this.getTermStatus(item, month);
+        if (status === 'approved') return 'Lunas';
+        if (status === 'process') return 'Diproses';
+        if (status === 'rejected') return 'Ditolak';
+        return 'Belum Bayar';
       },
     };
   }
