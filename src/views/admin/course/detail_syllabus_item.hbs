@@ -7,7 +7,7 @@
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
     x-data="{
-      hasQuiz: false,
+      hasQuiz: {{#if (and syllabus.quiz syllabus.quiz.length)}}true{{else}}false{{/if}},
       handleBack() {
         if (window.history.length > 1) {
           window.history.back();
@@ -115,23 +115,27 @@
           <div class='flex flex-col gap-[6px] flex-1 min-w-0 justify-center items-start'>
             {{!-- Final Assessment Title --}}
             <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#003060] truncate'>
-              Final Assesment : UX Research & Design Thinking
+              {{#if syllabus.quiz.[0].quizName}}
+                {{syllabus.quiz.[0].quizName}}
+              {{else}}
+                Quiz : {{syllabus.title}}
+              {{/if}}
             </div>
 
-            {{!-- Frame 2147229596: Badges row (2 menit | 50 soal | 100 score) --}}
+            {{!-- Frame 2147229596: Badges row --}}
             <div class='flex flex-row flex-wrap items-start gap-[16px]'>
-              {{!-- Frame 2147229593: Duration (2 menit) --}}
+              {{!-- Duration --}}
               <div class='flex flex-row items-center gap-[4px]'>
                 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
                   <circle cx='12' cy='12' r='10'></circle>
                   <polyline points='12 6 12 12 16 14'></polyline>
                 </svg>
                 <span class='font-inter font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'>
-                  2 menit
+                  {{default syllabus.quiz.[0].duration 0}} menit
                 </span>
               </div>
 
-              {{!-- Frame 2147229592: Total Questions (50 soal) --}}
+              {{!-- Total Questions --}}
               <div class='flex flex-row items-center gap-[4px]'>
                 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
                   <circle cx='12' cy='12' r='10'></circle>
@@ -139,17 +143,17 @@
                   <line x1='12' y1='17' x2='12.01' y2='17'></line>
                 </svg>
                 <span class='font-inter font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'>
-                  50 soal
+                  {{#if syllabus.quiz.[0].questions}}{{syllabus.quiz.[0].questions.length}}{{else}}0{{/if}} soal
                 </span>
               </div>
 
-              {{!-- Frame 2147229594: Max Score (100 score) --}}
+              {{!-- Min Score --}}
               <div class='flex flex-row items-center gap-[4px]'>
                 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
                   <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'></polygon>
                 </svg>
                 <span class='font-inter font-normal text-[14px] leading-[20px] text-[#718096] whitespace-nowrap'>
-                  100 score
+                  {{default syllabus.quiz.[0].minScore 0}} min score
                 </span>
               </div>
             </div>
@@ -171,7 +175,7 @@
       <template x-if='!hasQuiz'>
         {{!-- _Button base: Add Quiz (1010x44 bg-white border border-[#3B82F6] text-[#3B82F6]) --}}
         <a
-          href='/program/create-quiz-syllabus/{{courseId}}'
+          href='/syllabus/quiz/create/{{syllabus.id}}'
           class='box-border w-full shrink-0 h-[44px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F0F7FF] transition-colors'>
           <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] whitespace-nowrap'>
             Add Quiz

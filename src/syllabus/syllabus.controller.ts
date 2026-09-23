@@ -13,6 +13,7 @@ import {
 import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
+import { CreateQuizDto } from 'src/quiz/dto/create-quiz.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { CoursesService } from 'src/courses/courses.service';
@@ -97,6 +98,57 @@ export class SyllabusController {
   ) {
     const quiz = await this.syllabusService.findQuiz(syllabusId);
     res.json(quiz);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('quiz/create/:id')
+  async formCreateQuiz(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    let syllabus = await this.syllabusService.findOne(id).catch(() => null);
+    if (!syllabus) {
+      const syllabusList = await this.syllabusService
+        .findByCourse(id)
+        .catch(() => []);
+      if (syllabusList && syllabusList.length > 0) {
+        syllabus = syllabusList[0];
+      }
+    }
+    if (!syllabus) {
+      req.flash('error', 'Syllabus not found');
+      return res.redirect('/program');
+    }
+    return res.render('admin/course/create_quiz', {
+      user: req.user,
+      syllabus,
+      syllabusId: syllabus.id,
+      course: syllabus.course,
+      courseId: syllabus.course?.id,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('quiz/:syllabusId')
+  async createQuiz(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Body() createQuizDto: CreateQuizDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.syllabusService.createQuiz(syllabusId, createQuizDto);
+      flashToast(
+        req,
+        'Quiz Created',
+        'The new quiz has been added to this syllabus.',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to create quiz');
+      res.redirect(`/syllabus/${syllabusId}`);
+    }
   }
 
   @Roles('admin', 'super_admin')

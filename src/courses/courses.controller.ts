@@ -275,18 +275,13 @@ await this.coursesService.addUserToCourse(userId, courseId);
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/create-quiz-syllabus/:courseId')
+  @Get('/create-quiz-syllabus/:id')
   async formCreateQuizSyllabus(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId') courseId: string,
+    @Param('id') id: string,
   ) {
-    const course = await this.coursesService.findOne(courseId);
-    return res.render('admin/course/create_quiz', {
-      user: req.user,
-      course,
-      courseId,
-    });
+    return res.redirect(`/syllabus/quiz/create/${id}`);
   }
 
   @Roles('admin', 'super_admin')

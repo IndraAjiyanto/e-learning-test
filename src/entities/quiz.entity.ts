@@ -56,7 +56,10 @@ export class Quiz {
   @Exclude()
   quizProgresses: QuizProgress[];
 
-  @ManyToOne(() => Weeks, (week) => week.quiz, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Weeks, (week) => week.quiz, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @Exclude()
   weeks: Weeks;
 
