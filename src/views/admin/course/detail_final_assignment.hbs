@@ -66,6 +66,21 @@
 
         {{!-- Submissions List --}}
         <div class='box-border w-full flex flex-col gap-[12px]'>
+          <template x-if='filteredSubmissions.length === 0'>
+            <div class='box-border w-full py-[36px] flex flex-col items-center justify-center gap-[8px] text-center border border-dashed border-[#D9D9D9] rounded-[8px] bg-[#FAFAFA]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='w-[36px] h-[36px]'>
+                <path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'></path>
+                <polyline points='14 2 14 8 20 8'></polyline>
+                <line x1='16' y1='13' x2='8' y2='13'></line>
+                <line x1='16' y1='17' x2='8' y2='17'></line>
+                <polyline points='10 9 9 9 8 9'></polyline>
+              </svg>
+              <span class='font-inter font-medium text-[14px] leading-[20px] text-[#737373]'>
+                Belum ada submission dari peserta.
+              </span>
+            </div>
+          </template>
+
           <template x-for='sub in filteredSubmissions' :key='sub.id'>
             <div class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col'>
 
@@ -224,28 +239,22 @@
       {{!-- Column 2 (Right): View Logbook / Final Assignment Brief Preview --}}
       <div class='box-border w-full lg:w-[482px] border border-[#D9D9D9] rounded-[12px] overflow-hidden flex flex-col bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'>
 
-        {{!-- Top Navy Card Header --}}
+        {{!-- Top Navy Card Header: Title & Description --}}
         <div class='box-border w-full min-h-[93px] bg-[#003060] px-[28px] py-[20px] flex flex-col gap-[4px] items-start justify-center'>
           <h2 class='w-full font-inter font-bold text-[24px] leading-[29px] tracking-[-1px] text-[#FFFFFF]'>
-            Final Assignment
+            {{default finalAssignment.title 'Final Assignment'}}
           </h2>
           <p class='w-full font-inter font-medium text-[16px] leading-[20px] text-[#F3F3F3]'>
-            Brief & Description
+            {{default finalAssignment.description 'Brief & Description'}}
           </p>
         </div>
 
-        {{!-- Content Body with Text & Gradient --}}
-        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] relative bg-[#FFFFFF]'>
-          <h3 class='w-full font-inter font-semibold text-[16px] leading-[22px] text-center text-[#000000]'>
-            Perancangan User Experience pada LMS Kesatria Academy dengan Pendekatan UX Research dan Design Thinking
-          </h3>
-
-          <p class='w-full font-inter font-normal text-[12px] leading-[16px] text-[#000000] text-justify pb-[60px]'>
-            Kesatria Academy merupakan sebuah platform e-learning yang dibuat untuk membantu proses pengelolaan program edukasi secara lebih terstruktur dan digital. Sebelum adanya sistem, beberapa proses seperti pendaftaran program, pengelolaan peserta, materi pembelajaran, absensi, logbook, assignment, dan quiz masih dilakukan secara manual. Kondisi tersebut dapat menyebabkan proses pengelolaan menjadi kurang efektif karena informasi dan aktivitas pembelajaran belum berada dalam satu sistem yang terintegrasi. Oleh karena itu, dibutuhkan sebuah platform digital yang tidak hanya mampu menjalankan fungsi bisnis, tetapi juga memiliki user experience yang mudah dipahami oleh pengguna. Sebagai contoh, persona untuk peserta dapat memiliki tujuan untuk mengikuti program secara mudah tanpa harus banyak berkomunikasi secara manual dengan pihak Kesatria Academy. Salah satu pain point yang mungkin muncul adalah peserta kesulitan mengetahui status pendaftaran, pembayaran, jadwal pembelajaran, materi, dan tugas karena informasi sebelumnya tersebar di beberapa media. Dari kondisi tersebut dapat dibuat problem statement seperti: "Peserta membutuhkan sebuah sistem pembelajaran yang menyediakan informasi program, proses pendaftaran, pembayaran, materi, aktivitas pembelajaran, dan progress dalam satu platform agar mereka dapat mengikuti program dengan lebih mudah dan terstruktur." Tahap terakhir dalam Design Thinking adalah Testing. Prototype yang telah dibuat perlu diuji kepada pengguna untuk mengetahui apakah solusi yang dirancang benar-benar dapat digunakan dengan mudah. Testing dapat dilakukan dengan memberikan task tertentu kepada pengguna. Contohnya, kepada peserta dapat diberikan task: Cari program UI/UX Designer. Buka detail program. Lakukan pendaftaran. Lihat status pembayaran. Masuk ke program yang sudah diikuti. Temukan materi pembelajaran. Lakukan absensi. Isi logbook. Kerjakan assignment atau quiz. Selama proses tersebut, researcher dapat mengamati apakah pengguna dapat menyelesaikan task tanpa bantuan, bagian mana yang membuat mereka bingung, berapa banyak kesalahan yang terjadi, dan bagaimana persepsi mereka setelah menyelesaikan task.
-          </p>
+        {{!-- Content Body: Render Content Saja --}}
+        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] relative bg-[#FFFFFF] min-h-[200px]' x-data='finalAssignmentContentRenderer()' x-init='init()'>
+          <div class='w-full font-inter text-[14px] leading-[22px] text-[#171717] pb-[40px]' x-html='renderedHtml'></div>
 
           {{!-- Gradient fade overlay on bottom --}}
-          <div class='pointer-events-none absolute bottom-0 inset-x-0 h-[83px] bg-gradient-to-t from-white to-transparent'></div>
+          <div class='pointer-events-none absolute bottom-0 inset-x-0 h-[60px] bg-gradient-to-t from-white to-transparent'></div>
         </div>
 
       </div>
@@ -255,54 +264,166 @@
   </div>
 </div>
 
+<script id="final_assignment_content_data" type="application/json">
+{{{json finalAssignment.content}}}
+</script>
+
+<script id="final_assignment_submissions_data" type="application/json">
+{{{json submissions}}}
+</script>
+
 <script>
 function detailFinalAssignmentData() {
+  let bootstrapSubmissions = [];
+  try {
+    const raw = document.getElementById('final_assignment_submissions_data');
+    if (raw && raw.textContent) {
+      const parsed = JSON.parse(raw.textContent);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        bootstrapSubmissions = parsed.map(s => ({
+          id: s.id,
+          studentName: s.user?.biodata?.fullName || s.user?.username || 'Student',
+          role: s.user?.role || 'Peserta',
+          status: s.status,
+          fileName: s.filePath ? s.filePath.split('/').pop() : 'Submission_File.pdf',
+          fileSize: 'PDF',
+          courseTopic: 'Final Assignment',
+          fileUrl: s.filePath ? (s.filePath.startsWith('http') ? s.filePath : '/' + s.filePath) : '#',
+          submittedDate: s.createdAt ? new Date(s.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-',
+          isOpen: false,
+          newComment: '',
+          comments: Array.isArray(s.commentHistory)
+            ? s.commentHistory.map(c => typeof c === 'string' ? c : (c.comment + (c.createdAt ? ' (' + new Date(c.createdAt).toLocaleDateString('id-ID') + ')' : '')))
+            : (s.comment ? [s.comment] : []),
+        }));
+      }
+    }
+  } catch (e) {
+    console.error('Error parsing submissions data', e);
+  }
+
   return {
     activeTab: 'all',
     backUrl: '/program/detail/program/admin/{{courseId}}',
-
-    submissions: [
-      {
-        id: 1,
-        studentName: 'Ghybran',
-        role: 'UI/UX Designer',
-        status: 'approved',
-        fileName: 'Ghybran_Final_Assigment.pdf',
-        fileSize: '3.4mb',
-        courseTopic: 'UX Research & Design Thinking',
-        fileUrl: '#',
-        submittedDate: '01 September 2026',
-        isOpen: true,
-        newComment: '',
-        comments: [
-          'Dokumentasi UX Research sudah lengkap dan mencakup persona serta user journey.',
-          'Design thinking prototype sudah sesuai problem statement, lanjutkan ke usability testing.',
-          'Format penulisan dan penjabaran hasil testing sudah sangat terstruktur.'
-        ]
-      }
-    ],
+    submissions: bootstrapSubmissions,
 
     get filteredSubmissions() {
       if (this.activeTab === 'all') return this.submissions;
       return this.submissions.filter(s => s.status === this.activeTab);
     },
 
-    approveSubmission(sub) {
-      sub.status = 'approved';
-      if (sub.newComment.trim()) {
-        sub.comments.unshift(sub.newComment.trim());
-        sub.newComment = '';
+    async reviewSubmission(sub, newStatus) {
+      const comment = sub.newComment ? sub.newComment.trim() : '';
+      try {
+        if (!String(sub.id).startsWith('mock-')) {
+          const res = await fetch(`/final-assignment/submission/${sub.id}/review`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus, comment }),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.message || 'Failed to update submission status');
+            return;
+          }
+        }
+        sub.status = newStatus;
+        if (comment) {
+          sub.comments.unshift(comment + ' (Baru saja)');
+          sub.newComment = '';
+        }
+        alert(`Submission status updated to ${newStatus === 'approved' ? 'Approved' : 'Rejected'}.`);
+      } catch (err) {
+        alert('Network error while updating submission');
       }
-      alert('Submission status updated to Approved.');
+    },
+
+    approveSubmission(sub) {
+      this.reviewSubmission(sub, 'approved');
     },
 
     rejectSubmission(sub) {
-      sub.status = 'rejected';
-      if (sub.newComment.trim()) {
-        sub.comments.unshift(sub.newComment.trim());
-        sub.newComment = '';
+      this.reviewSubmission(sub, 'rejected');
+    }
+  };
+}
+
+function finalAssignmentContentRenderer() {
+  return {
+    renderedHtml: '',
+    init() {
+      try {
+        const rawEl = document.getElementById('final_assignment_content_data');
+        if (!rawEl || !rawEl.textContent) {
+          this.renderedHtml = '<p class="text-[#737373] italic">Belum ada konten untuk Final Assignment ini.</p>';
+          return;
+        }
+        let parsed = JSON.parse(rawEl.textContent);
+        if (typeof parsed === 'string') {
+          try {
+            parsed = JSON.parse(parsed);
+          } catch (e) {}
+        }
+        if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+          this.renderedHtml = parsed.blocks.map(function(b) {
+            const d = b.data || {};
+            switch (b.type) {
+              case 'header': {
+                const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+                return '<h' + lvl + ' class="font-bold text-[18px] text-[#003060] mt-3 mb-1">' + (d.text || '') + '</h' + lvl + '>';
+              }
+              case 'paragraph': {
+                return '<p class="leading-[22px] text-[#171717] mb-3">' + (d.text || '') + '</p>';
+              }
+              case 'List':
+              case 'list': {
+                if (d.style === 'checklist') {
+                  const items = (d.items || []).map(function(i) {
+                    const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                    const checked = (typeof i === 'object' && i !== null && i.meta && i.meta.checked);
+                    return '<li class="flex items-start gap-2 my-1">' +
+                      '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                      '<span>' + content + '</span></li>';
+                  }).join('');
+                  return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+                }
+                const items = (d.items || []).map(function(i) {
+                  const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                  return '<li class="my-1">' + content + '</li>';
+                }).join('');
+                return d.style === 'ordered'
+                  ? '<ol class="list-decimal pl-5 space-y-1 mb-3">' + items + '</ol>'
+                  : '<ul class="list-disc pl-5 space-y-1 mb-3">' + items + '</ul>';
+              }
+              case 'checklist': {
+                const items = (d.items || []).map(function(i) {
+                  const content = (typeof i === 'object' && i !== null) ? (i.text || i.content || '') : i;
+                  const checked = (typeof i === 'object' && i !== null && (i.checked || (i.meta && i.meta.checked)));
+                  return '<li class="flex items-start gap-2 my-1">' +
+                    '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                    '<span>' + content + '</span></li>';
+                }).join('');
+                return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+              }
+              case 'image':
+                return '<figure class="my-3"><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" class="max-w-full rounded-lg"/>' +
+                  (d.caption ? '<figcaption class="text-center text-xs text-[#737373] mt-1">' + d.caption + '</figcaption>' : '') + '</figure>';
+              case 'quote':
+                return '<blockquote class="border-l-4 border-[#003060] pl-3 italic my-3 text-[#525252]">' + (d.text || '') + '</blockquote>';
+              case 'code':
+                return '<pre class="bg-gray-100 p-3 rounded-md my-3 overflow-x-auto text-xs"><code>' + (d.code || '') + '</code></pre>';
+              default:
+                return d.text ? '<p class="leading-[22px] mb-3">' + d.text + '</p>' : '';
+            }
+          }).join('');
+        } else if (typeof parsed === 'string' && parsed.trim()) {
+          this.renderedHtml = '<div class="whitespace-pre-line">' + parsed + '</div>';
+        } else {
+          this.renderedHtml = '<p class="text-[#737373] italic">Belum ada konten untuk Final Assignment ini.</p>';
+        }
+      } catch (err) {
+        this.renderedHtml = '<p class="text-[#737373] italic">Belum ada konten untuk Final Assignment ini.</p>';
       }
-      alert('Submission status updated to Rejected.');
     }
   };
 }

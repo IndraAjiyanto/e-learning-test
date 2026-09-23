@@ -118,7 +118,35 @@ function editFinalAssignmentForm() {
     description: bootstrapData.description || '',
     loading: false,
     editorInstance: null,
-    initialContent: bootstrapData.content,
+    getCleanInitialData() {
+      const raw = bootstrapData.content;
+      if (!raw) return undefined;
+      try {
+        let parsed = typeof raw === 'string' ? JSON.parse(raw) : JSON.parse(JSON.stringify(raw));
+        if (typeof parsed === 'string') {
+          try { parsed = JSON.parse(parsed); } catch (e) {}
+        }
+        if (!parsed || !Array.isArray(parsed.blocks)) return undefined;
+
+        parsed.blocks = parsed.blocks.map(function(block) {
+          if (!block) return block;
+          const b = { ...block };
+          if (b.type === 'List') {
+            b.type = 'list';
+          } else if (b.type === 'checklist') {
+            b.type = 'list';
+            b.data = b.data || {};
+            b.data.style = 'checklist';
+          }
+          return b;
+        });
+
+        return parsed;
+      } catch (e) {
+        console.error('[Final Assignment] Failed to clean initial data:', e);
+        return undefined;
+      }
+    },
 
     init() {
       let isInitializing = false;
@@ -140,7 +168,7 @@ function editFinalAssignmentForm() {
           this.editorInstance = new window.EditorJS({
             holder: 'final_assignment_editorjs',
             placeholder: 'Type "/" for commands...',
-            data: this.initialContent && typeof this.initialContent === 'object' ? this.initialContent : undefined,
+            data: this.getCleanInitialData(),
             tools: {
               header: {
                 class: window.EditorTools.Header,

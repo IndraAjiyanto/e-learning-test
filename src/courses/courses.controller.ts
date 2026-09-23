@@ -33,6 +33,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -41,6 +42,7 @@ export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly usersService: UsersService,
+    private readonly finalAssignmentService: FinalAssignmentService,
   ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
@@ -257,6 +259,10 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const existing = await this.finalAssignmentService.findByCourse(courseId);
+    if (existing) {
+      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+    }
     const course = await this.coursesService.findOne(courseId);
     return res.render('admin/course/create_final_assignment', {
       user: req.user,
@@ -272,12 +278,22 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
-    flashToast(
-      req,
-      'Final Assignment Created',
-      'The new final assignment has been added to the program.',
-    );
-    return res.redirect(`/program/detail/program/admin/${courseId}`);
+    try {
+      await this.finalAssignmentService.createOrUpdate(courseId, {
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content,
+      });
+      flashToast(
+        req,
+        'Final Assignment Created',
+        'The new final assignment has been added to the program.',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to create final assignment');
+      return res.redirect(`/program/create-final-assignment/${courseId}`);
+    }
   }
 
   @Roles('admin', 'super_admin')
@@ -288,10 +304,12 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Param('courseId') courseId: string,
   ) {
     const course = await this.coursesService.findOne(courseId);
+    const finalAssignment = await this.finalAssignmentService.findByCourse(courseId);
     return res.render('admin/course/edit_final_assignment', {
       user: req.user,
       course,
       courseId,
+      finalAssignment,
     });
   }
 
@@ -302,12 +320,22 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
-    flashToast(
-      req,
-      'Final Assignment Updated',
-      'Final assignment has been updated successfully.',
-    );
-    return res.redirect(`/program/detail/program/admin/${courseId}`);
+    try {
+      await this.finalAssignmentService.createOrUpdate(courseId, {
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content,
+      });
+      flashToast(
+        req,
+        'Final Assignment Updated',
+        'Final assignment has been updated successfully.',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update final assignment');
+      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+    }
   }
 
   @Roles('admin', 'super_admin')
@@ -318,10 +346,19 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Param('courseId') courseId: string,
   ) {
     const course = await this.coursesService.findOne(courseId).catch(() => null);
+    const finalAssignment = await this.finalAssignmentService.findByCourse(
+      courseId,
+      true,
+    );
+    const submissions = finalAssignment?.id
+      ? await this.finalAssignmentService.getSubmissions(finalAssignment.id)
+      : [];
     return res.render('admin/course/detail_final_assignment', {
       user: req.user,
       course,
       courseId: course?.id || courseId,
+      finalAssignment,
+      submissions,
     });
   }
 

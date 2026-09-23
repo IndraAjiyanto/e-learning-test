@@ -30,6 +30,7 @@ import { Registration } from './registration.entity';
 import { UserActivity } from './user_activity.entity';
 import { ActivityLog } from './activity_log.entity';
 import { SyllabusProgress } from './syllabus_progress.entity';
+import { UserAssignment } from './user_assignment.entity';
 import { Exclude } from 'class-transformer';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
@@ -138,6 +139,13 @@ export class User {
   })
   @Exclude()
   userAnswers: UserAnswer[];
+
+  @OneToMany(() => UserAssignment, (userAssignment) => userAssignment.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  userAssignments: UserAssignment[];
 
   @OneToMany(() => AnswerTask, (answerTask) => answerTask.user, {
     cascade: true,
