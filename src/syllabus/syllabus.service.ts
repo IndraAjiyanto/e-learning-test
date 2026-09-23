@@ -56,6 +56,15 @@ export class SyllabusService {
       createSyllabusDto.syllabusNumber ??
       (await this.getSyllabusNumber(courseId));
 
+    const hasFinal = await this.syllabusRepository.findOne({
+      where: { course: { id: courseId }, isFinal: true },
+    });
+    if (hasFinal) {
+      throw new BadRequestException(
+        'Syllabus for this program is already finalized, cannot add a new syllabus',
+      );
+    }
+
     if (syllabusNumber > 1) {
       const previousSyllabus = await this.syllabusRepository.findOne({
         where: { course: { id: courseId }, syllabusNumber: syllabusNumber - 1 },

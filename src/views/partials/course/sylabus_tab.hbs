@@ -17,9 +17,18 @@
           <!-- Frame 2147229595: Column text -->
           <div class='flex flex-col gap-[2px] flex-1 min-w-0 justify-center items-start'>
             <!-- Title: Syllabus Title (Inter Semibold 14/20 #003060) -->
-            <div class='w-full h-[20px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] flex items-center truncate'
-                 x-text="item.title || item.topic || ('Pertemuan ' + String(item.orderNumber || (index + 1)).padStart(2, '0'))"
-                 :title="item.title || item.topic || ''"></div>
+            <div class='w-full h-[20px] flex flex-row items-center gap-[8px]'>
+              <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#003060] truncate'
+                   x-text="item.title || item.topic || ('Pertemuan ' + String(item.orderNumber || (index + 1)).padStart(2, '0'))"
+                   :title="item.title || item.topic || ''"></span>
+              <template x-if="item.isFinal">
+                <span class='box-border h-[20px] bg-[#DCFCE7] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                  <span class='font-inter font-medium text-[11px] leading-[16px] text-[#15803D] whitespace-nowrap'>
+                    Final
+                  </span>
+                </span>
+              </template>
+            </div>
             <!-- Subtitle: Syllabus Description (Inter Medium 14/23 #737373) -->
             <div class='w-full h-[23px] font-inter font-medium text-[14px] leading-[23px] text-[#737373] flex items-center truncate'
                  x-text="item.description || '-'" :title="item.description || ''"></div>
@@ -61,10 +70,12 @@
   </template>
 
   <!-- _Button base: Add Sylabus (w-full h-44 bg-white border border-[#3B82F6] shadow-xs rounded-8 p-[10px_18px] Inter Semibold 16/24 #3B82F6) -->
-  <a :href="addUrl"
-    class='box-border w-full shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'>
-    <span class='h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] flex items-center justify-center whitespace-nowrap'>Add Sylabus</span>
-  </a>
+  <template x-if="!hasFinalSyllabus">
+    <a :href="addUrl"
+      class='box-border w-full shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'>
+      <span class='h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] flex items-center justify-center whitespace-nowrap'>Add Sylabus</span>
+    </a>
+  </template>
 </div>
 
 <script>
@@ -73,6 +84,21 @@ function sylabusData() {
     rawWeeks: [],
     rawSyllabus: [],
     containerWeekId: '{{containerWeek.id}}',
+
+    get hasFinalSyllabus() {
+      if (this.rawSyllabus && this.rawSyllabus.length > 0) {
+        return this.rawSyllabus.some(s => s.isFinal === true || s.isFinal === 'true' || s.isFinal === 1);
+      }
+      if (this.rawWeeks && this.rawWeeks.length > 0) {
+        return this.rawWeeks.some(w => {
+          if (w.session && Array.isArray(w.session)) {
+            return w.session.some(s => s.isFinal === true || s.isFinal === 'true' || s.isFinal === 1);
+          }
+          return w.isFinal === true || w.isFinal === 'true' || w.isFinal === 1;
+        });
+      }
+      return false;
+    },
 
     get items() {
       if (this.rawSyllabus && this.rawSyllabus.length > 0) {
