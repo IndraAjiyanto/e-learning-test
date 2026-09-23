@@ -71,3 +71,32 @@ export function readFlashToastError(req: Request): ToastPayload | null {
     return null;
   }
 }
+
+const TOAST_WARNING_FLASH_KEY = 'toastWarning';
+
+/**
+ * Kirim toast warning untuk komponen ui/super_admin/toast/warning.
+ */
+export function flashToastWarning(
+  req: Request,
+  title: string,
+  description: string,
+): void {
+  req.flash(TOAST_WARNING_FLASH_KEY, JSON.stringify({ title, description }));
+}
+
+/** Baca flash toast warning (sekali pakai); null bila kosong atau bukan JSON valid. */
+export function readFlashToastWarning(req: Request): ToastPayload | null {
+  const [raw] = req.flash(TOAST_WARNING_FLASH_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<ToastPayload>;
+    if (!parsed?.title) return null;
+
+    return { title: parsed.title, description: parsed.description ?? '' };
+  } catch {
+    return null;
+  }
+}
+

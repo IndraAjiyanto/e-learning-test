@@ -22,7 +22,11 @@ export class EmailService {
     verificationToken: string,
     username: string,
   ) {
-    const verificationUrl = `${process.env.APP_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}&email=${to}`;
+    const baseUrl = (process.env.APP_URL || 'http://localhost:3002').replace(
+      /\/users\/?$/,
+      '',
+    );
+    const verificationUrl = `${baseUrl}/users/verify-email?token=${verificationToken}&email=${to}`;
     const mailOptions = {
       from: `"${process.env.MAIL_FROM_NAME || 'Kesatria Academy'}" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
       to,
@@ -113,6 +117,115 @@ export class EmailService {
             </td>
           </tr>
 
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`,
+    };
+    await this.transporter.sendMail(mailOptions);
+  }
+
+  async sendAdminVerificationEmail(
+    to: string,
+    verificationToken: string,
+    username: string,
+    rawPassword?: string,
+  ) {
+    const baseUrl = (process.env.APP_URL || 'http://localhost:3002').replace(
+      /\/users\/?$/,
+      '',
+    );
+    const verificationUrl = `${baseUrl}/users/verify-email?token=${verificationToken}&email=${to}`;
+    const mailOptions = {
+      from: `"${process.env.MAIL_FROM_NAME || 'Kesatria Academy'}" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+      to,
+      subject: 'Welcome to Kesatria Academy - Your Account Details',
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Account Details</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 0;">
+        <table role="presentation" style="width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 8px 8px 0 0;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Kesatria Academy</h1>
+              <p style="margin: 10px 0 0; color: #e2e8f0; font-size: 14px;">Welcome to Your New Account!</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h2 style="margin: 0 0 20px; color: #1e293b; font-size: 24px; font-weight: 600;">
+                Hello ${username},
+              </h2>
+              
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                An administrator has created an account for you at Kesatria Academy. Below are your account credentials:
+              </p>
+
+              <div style="padding: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin: 24px 0;">
+                <p style="margin: 0 0 10px; color: #1e293b; font-size: 16px;">
+                  <strong>Email:</strong> ${to}
+                </p>
+                <p style="margin: 0 0 10px; color: #1e293b; font-size: 16px;">
+                  <strong>Username:</strong> ${username}
+                </p>
+                <p style="margin: 0; color: #1e293b; font-size: 16px;">
+                  <strong>Password:</strong> <span style="font-family: monospace; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${rawPassword}</span>
+                </p>
+              </div>
+
+              <p style="margin: 0 0 24px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Before you can log in, you must verify your email address by clicking the button below:
+              </p>
+
+              <table role="presentation" style="margin: 0 0 24px; border-collapse: collapse;">
+                <tr>
+                  <td align="center" style="border-radius: 6px; background-color: #2563eb;">
+                    <a href="${verificationUrl}" style="display: inline-block; padding: 14px 28px; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+                      Verify Email Address
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="padding: 20px; background-color: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px; margin: 24px 0;">
+                <p style="margin: 0; color: #b45309; font-size: 14px; line-height: 1.6;">
+                  <strong>⚠️ Security Notice:</strong> For your security, you will be required to change your password immediately upon your first login.
+                </p>
+              </div>
+
+              <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">
+                Best regards,<br>
+                <strong>Kesatria Academy Team</strong>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f8fafc; border-radius: 0 0 8px 8px; text-align: center;">
+              <p style="margin: 0 0 8px; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} Kesatria Academy. All rights reserved.
+              </p>
+              <p style="margin: 0; color: #cbd5e1; font-size: 12px;">
+                Student Service Center - Your Learning Partner
+              </p>
+            </td>
+          </tr>
         </table>
       </td>
     </tr>
