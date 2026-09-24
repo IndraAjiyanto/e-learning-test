@@ -85,26 +85,60 @@
                   {{#> components/ui/super_admin/table/cell variant='action'}}
                     <div class='flex items-center gap-1'>
                       <a
-                      :href="'/category/' + row.id"
-                      title='View category'
-                      aria-label='View category'
-                      class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
-                    >
-                      {{!-- lucide: eye --}}
-                      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
-                        <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
-                        <circle cx='12' cy='12' r='3' />
-                      </svg>
+                        :href="'/category/' + row.id"
+                        title='View category'
+                        aria-label='View category'
+                        class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+                      >
+                        {{!-- lucide: eye --}}
+                        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                          <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
+                          <circle cx='12' cy='12' r='3' />
+                        </svg>
                       </a>
 
-                      {{!-- Edit + delete memakai komponen aksi baris yang sama dengan
-                           halaman super admin lain; tombol delete hanya membuka modal
-                           konfirmasi, form-nya baru dikirim setelah user menekan Delete. --}}
-                      {{> components/ui/super_admin/table/row_actions
-                        entity='category'
-                        editHref="'/category/formEdit/' + row.id"
-                        deleteAction="'/category/' + row.id + '?_method=DELETE'"
-                      }}
+                      <a
+                        :href="'/category/formEdit/' + row.id"
+                        title='Edit category'
+                        aria-label='Edit category'
+                        class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+                      >
+                        {{!-- lucide: square-pen --}}
+                        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                          <path d='M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7' />
+                          <path d='M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z' />
+                        </svg>
+                      </a>
+
+                      <form :action="'/category/' + row.id + '?_method=DELETE'" method='post'>
+                        <button
+                          type='button'
+                          @click="
+                            if ((row.courses || []).length > 0) {
+                              window.dispatchEvent(new CustomEvent('toast:error', {
+                                detail: {
+                                  title: 'Gagal Menghapus Kategori',
+                                  description: 'Kategori &quot;' + row.name + '&quot; tidak dapat dihapus karena masih memiliki ' + (row.courses || []).length + ' program. Hapus atau pindahkan program tersebut terlebih dahulu.'
+                                }
+                              }));
+                            } else {
+                              openDeleteModal($el);
+                            }
+                          "
+                          title='Delete category'
+                          aria-label='Delete category'
+                          class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
+                        >
+                          {{!-- lucide: trash-2 --}}
+                          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                            <path d='M3 6h18' />
+                            <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+                            <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+                            <line x1='10' x2='10' y1='11' y2='17' />
+                            <line x1='14' x2='14' y1='11' y2='17' />
+                          </svg>
+                        </button>
+                      </form>
                     </div>
                   {{/components/ui/super_admin/table/cell}}
                 </tr>

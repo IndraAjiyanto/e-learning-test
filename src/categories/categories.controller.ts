@@ -21,7 +21,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -360,9 +360,11 @@ export class CategoriesController {
   ) {
     try {
       const category = await this.categoriesService.findOne(categoryId);
-      await this.categoriesService.deleteFile(category.icon);
-      await this.categoriesService.deleteFile(category.hero_section_image);
       await this.categoriesService.remove(categoryId);
+      if (category.icon) await this.categoriesService.deleteFile(category.icon);
+      if (category.hero_section_image) {
+        await this.categoriesService.deleteFile(category.hero_section_image);
+      }
       flashToast(
         req,
         'Category Deleted',
@@ -370,7 +372,9 @@ export class CategoriesController {
       );
       res.redirect('/category');
     } catch (error: any) {
-      req.flash('error', error.message || 'category failed to delete');
+      const errorMessage = error.message || 'category failed to delete';
+      flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
+      req.flash('error', errorMessage);
       res.redirect('/category');
     }
   }
