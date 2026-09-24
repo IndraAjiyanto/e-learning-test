@@ -464,7 +464,7 @@
         <div
           x-show="isProgramSection"
           {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
-          class="px-4 pt-4 sm:px-8 sm:pt-6"
+          class="px-4 pt-4 sm:px-8 sm:pt-6 max-w-[1334px] mx-auto w-full"
         >
           <!-- Page Header -->
           <div class="mb-5 flex flex-col gap-1">
@@ -632,7 +632,7 @@
         <template id="learning-skeleton-source">
           {{> components/ui/learning/skeleton/index }}
         </template>
-        <div x-show="activeSection === 'uiux'" id="start-learning-container"{{#unless (eq initialSection 'uiux')}} style="display:none"{{/unless}}>
+        <div x-show="activeSection === 'uiux'" id="start-learning-container" class="max-w-[1334px] mx-auto w-full"{{#unless (eq initialSection 'uiux')}} style="display:none"{{/unless}}>
           {{> components/ui/learning/skeleton/index }}
         </div>
 

@@ -13,7 +13,7 @@
 {{/if}}
 
 {{!-- Learning workspace --}}
-<div class="w-full max-w-[1268px] mx-auto flex flex-col items-start gap-[18px] py-5 px-4 sm:px-6 lg:pr-6 lg:pl-0 bg-white font-inter">
+<div class="w-full max-w-[1268px] mx-auto flex flex-col items-start mt-8 rounded-2xl gap-[18px] py-5 bg-white font-inter">
 
   {{!-- Learning schedule --}}
   <div class="w-full flex flex-col items-start gap-6">
@@ -70,7 +70,7 @@
               type="button"
               @click="toggle()"
               :aria-expanded="openMinggu"
-              class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:min-h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
+              class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
             >
               {{!-- Status icon --}}
               <div class="w-12 h-12 rounded-full bg-[#E9F0FF] flex items-center justify-center shrink-0">
@@ -218,7 +218,7 @@
                         <a
                           :href="(session.attendances && session.attendances.length > 0) ? ('/learning-material/pdf/' + session.id) : '#'"
                           :class="(session.attendances && session.attendances.length > 0) ? 'hover:border-[#1C2D4A] hover:bg-[#EEF1F8] cursor-pointer' : 'cursor-default'"
-                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
+                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
                         >
                           <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
                             <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -251,7 +251,7 @@
                         <a
                           :href="(session.attendances && session.attendances.length > 0) ? ('/learning-material/video/' + session.id) : '#'"
                           :class="(session.attendances && session.attendances.length > 0) ? 'hover:border-[#1C2D4A] hover:bg-[#EEF1F8] cursor-pointer' : 'cursor-default'"
-                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
+                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
                         >
                           <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
                             <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -279,7 +279,7 @@
                         <a
                           :href="(session.attendances && session.attendances.length > 0) ? ('/learning-material/ppt/' + session.id) : '#'"
                           :class="(session.attendances && session.attendances.length > 0) ? 'hover:border-[#1C2D4A] hover:bg-[#EEF1F8] cursor-pointer' : 'cursor-default'"
-                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
+                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
                         >
                           <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
                             <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -482,7 +482,7 @@
           type="button"
           @click="toggle()"
           :aria-expanded="openMinggu"
-          class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:min-h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
+          class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
         >
           <div class="w-12 h-12 rounded-full bg-[#E9F0FF] flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -562,7 +562,7 @@
                 <span class="font-inter font-semibold text-sm leading-[17px] text-[#17345E]">Materials (Locked)</span>
               </div>
               <div class="w-full flex flex-col sm:flex-row items-stretch sm:items-start gap-3">
-                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
                   <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
                     <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -578,7 +578,7 @@
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                   </svg>
                 </div>
-                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
                   <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
                     <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polygon points="23 7 16 12 23 17 23 7"></polygon>
@@ -591,7 +591,7 @@
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                   </svg>
                 </div>
-                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
                   <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
                     <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2 3h20"></path>
@@ -737,7 +737,7 @@
     {{/if}}
 
     {{!-- Pagination --}}
-    <div class="w-full flex flex-row justify-between items-center px-6 sm:px-8 py-3 min-h-[56px] bg-white border border-[#D9D9D9] rounded-[16px] mt-2">
+    <div class="w-full flex flex-row justify-between items-center px-6 sm:px-8 py-3 h-14 bg-white border border-[#D9D9D9] rounded-[16px] mt-2">
       <span class="font-inter font-medium text-sm leading-[17px] text-[#003060]">
         {{#if minggu.length}}
           Showing 1-{{minggu.length}} of {{minggu.length}} weeks
