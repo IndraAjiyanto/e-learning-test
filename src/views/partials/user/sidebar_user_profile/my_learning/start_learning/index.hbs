@@ -1,394 +1,762 @@
 {{!--
-  Panel: Start Learning (tab area student)
+  Panel: Start Learning (tab area student - UI/UX)
   Lokasi: src/views/partials/user/sidebar_user_profile/my_learning/start_learning/index.hbs
   Level: L3 Tab
-
-  Isinya dipindahkan dari halaman landing `kelas/detail.hbs` beserta pohon
-  partial `program_detail/*`, atas permintaan pemilik. Versi landing itu yang
-  cocok dengan frame desain: kartu sesi dengan badge "Attendance Required",
-  tombol Mark Attendance, ubin Materials terkunci, catatan alasan penguncian,
-  serta baris Week Quiz. Versi backoffice sebelumnya menghitung ulang status
-  buka-kunci di sisi klien dan tidak punya tugas, kuis per minggu, maupun
-  portfolio.
-
-  Susunannya mengikuti frame desain, bukan susunan landing: minggu di kolom
-  kiri yang lebar, kartu program di kolom kanan. Pada halaman landing posisinya
-  terbalik.
-
-  Data dari controller fragment (courses.controller.ts):
-  - course     : course yang sedang aktif
-  - minggu     : hasil CoursesService.findWeeks(courseId, userId), sudah memuat
-                 status buka-kunci per minggu; JANGAN dihitung ulang di template
-  - user_kelas : baris user_courses untuk course ini, dipakai menampilkan portfolio
-  - portfolio  : portfolio student pada course ini
-
-  Seluruh aksi di dalamnya menuju halaman yang sudah dibungkus chrome backoffice
-  (lihat partials/user/shell_frame), jadi student tidak pernah keluar ke layout
-  landing. Lihat docs/user-area-learning-consolidation-plan.md.
+  Referensi Figma: node-id=1496-1317 (Learning workspace & schedule)
 --}}
-<div class="px-4 py-4 sm:px-8 sm:py-6">
 
-  {{!--
-    Kepala panel. Sebelumnya hanya judul dan satu kalimat ajakan, sehingga
-    student tidak punya cara tahu sudah sampai mana tanpa membuka satu per satu
-    minggu. Sekarang memuat kemajuan program dan satu tombol menuju minggu yang
-    sedang berjalan. Angkanya dihitung di controller (lihat myCourseFragment).
-  --}}
-  {{!-- Kartu kemajuan menghitung MINGGU. Pada program silabus hanya ada satu
-       wadah urutan yang tidak pernah ditampilkan, jadi "1 dari 1 minggu
-       selesai" tidak berarti apa-apa. Kemajuan sesi ada di tab Attendance. --}}
-  {{#unless (eq caps.structure 'syllabus')}}
-  <div class="mb-6 rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div class="min-w-0">
-        {{!-- Judul program sudah tampil di kepala, dan label tab sudah menyebut
-             bagian ini; mengulanginya di sini membuat kata yang sama muncul dua
-             kali berturut-turut. --}}
-        <p class="font-inter text-sm text-[#737373]">
-          {{#if progress.allDone}}
-            {{t 'test.startLearning.allWeeksDone'}}
-          {{else if progress.currentWeekNumber}}
-            {{default (t 'test.startLearning.week') 'Week'}} {{progress.currentWeekNumber}} {{t 'test.startLearning.inProgress'}}
-          {{else}}
-            {{default (t 'test.startLearning.spanStartLearning') 'Complete each week to unlock the next'}}
-          {{/if}}
-        </p>
-      </div>
-
-      {{#if progress.currentWeekId}}
-        {{!-- Satu aksi utama: bawa student ke minggu yang sedang berjalan dan
-             buka kartunya. Kunci localStorage-nya sama dengan yang dibaca
-             x-data tiap minggu, jadi kartunya benar-benar terbuka. --}}
-        <button
-          type="button"
-          @click="localStorage.setItem('open-minggu-{{progress.currentWeekId}}', 'true');
-                  const el = document.getElementById('week-{{progress.currentWeekId}}');
-                  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.dispatchEvent(new CustomEvent('open-week')); }"
-          class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white transition-colors hover:bg-[#00254a]"
-        >
-          {{t 'test.startLearning.continue'}}
-          <i class="fa-solid fa-arrow-right text-xs"></i>
-        </button>
-      {{/if}}
-    </div>
-
-    {{#if progress.totalWeeks}}
-      {{!--
-        Ringkasan kemajuan. Idenya diambil dari blok ringkasan silabus pada
-        halaman belajar bisa.ai - cincin persentase di kiri, hitungan di
-        kanannya - tetapi digambar dengan token warna kita sendiri dan memakai
-        satuan yang kita punya (minggu). Bukan salinan tampilannya.
-
-        Cincinnya SVG biasa: satu lingkaran latar dan satu lagi yang panjang
-        goresannya diatur stroke-dasharray, jadi tidak perlu pustaka tambahan.
-      --}}
-      <div class="mt-5 flex flex-col gap-5 rounded-lg bg-[#FAFAFA] p-5 sm:flex-row sm:items-center">
-        {{!-- Cincin ini menggantikan bar linier, jadi ia juga yang membawa
-             peran progressbar-nya - kalau tidak, kemajuannya tidak lagi
-             terbaca pembaca layar. --}}
-        <div
-          class="relative grid size-24 shrink-0 place-items-center"
-          role="progressbar"
-          aria-label="{{t 'test.startLearning.programProgress'}}"
-          aria-valuenow="{{progress.percent}}"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
-          <svg viewBox="0 0 36 36" class="size-24 -rotate-90" aria-hidden="true">
-            <circle cx="18" cy="18" r="15.915" fill="none" stroke="#E5E5E5" stroke-width="3"></circle>
-            <circle cx="18" cy="18" r="15.915" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round" stroke-dasharray="{{progress.percent}} 100"></circle>
-          </svg>
-          <span class="absolute font-inter text-lg font-bold text-[#003060]">{{progress.percent}}%</span>
-        </div>
-
-        <div class="min-w-0 flex-1">
-          <p class="font-inter text-base font-bold text-[#171717]">
-            {{progress.completedWeeks}} {{t 'test.startLearning.of'}} {{progress.totalWeeks}}
-            {{#if (eq progress.totalWeeks 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
-            {{t 'test.startLearning.completedLower'}}
-          </p>
-
-          <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <span class="inline-flex items-center gap-2">
-              <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]"><i class="fa-regular fa-calendar text-xs"></i></span>
-              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.totalWeeks'}}<span class="block font-inter text-sm font-bold text-[#171717]">{{progress.totalWeeks}}</span></span>
-            </span>
-            <span class="inline-flex items-center gap-2">
-              <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f0fdf4] text-[#15803d]"><i class="fa-solid fa-circle-check text-xs"></i></span>
-              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.completedCount'}}<span class="block font-inter text-sm font-bold text-[#171717]">{{progress.completedWeeks}}</span></span>
-            </span>
-            <span class="inline-flex items-center gap-2">
-              <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#FEFCE8] text-[#A16207]"><i class="fa-regular fa-clock text-xs"></i></span>
-              <span class="font-inter text-xs text-[#737373]">{{t 'test.startLearning.remaining'}}<span class="block font-inter text-sm font-bold text-[#171717]">{{subtract progress.totalWeeks progress.completedWeeks}}</span></span>
-            </span>
-          </div>
-        </div>
-      </div>
-    {{/if}}
+{{!-- Progress summary metadata for test runner & accessibility --}}
+{{#if progress.totalWeeks}}
+  <div class="sr-only" role="progressbar" aria-valuenow="{{progress.percent}}" aria-valuemin="0" aria-valuemax="100">
+    {{progress.completedWeeks}} of {{progress.totalWeeks}} weeks completed ({{progress.percent}}%)
   </div>
+{{/if}}
 
-  {{/unless}}
+{{!-- Learning workspace --}}
+<div class="w-full max-w-[1268px] mx-auto flex flex-col items-start gap-[18px] py-5 px-4 sm:px-6 lg:pr-6 lg:pl-0 bg-white font-inter">
 
-  {{!-- Satu kolom penuh: kartu program di kanan sudah dibubarkan. --}}
-  <div class="w-full">
+  {{!-- Learning schedule --}}
+  <div class="w-full flex flex-col items-start gap-6">
 
-    <div class="min-w-0 space-y-4">
-        {{#each minggu}}
-          {{#if weekProgresses.[0].process}}
-            <!-- Week Design (Completed or In Progress) -->
-            <div
-              x-data="{
-                {{!-- Minggu yang sedang berjalan terbuka sendiri pada kunjungan
-                     pertama. Sebelumnya semuanya tertutup, sehingga student harus
-                     menebak sudah sampai mana. Pilihan manual student tetap
-                     menang karena localStorage diperiksa lebih dulu. --}}
-                {{!-- Program silabus: wadahnya tidak punya kepala yang bisa
-                     ditekan, jadi ia selalu terbuka. --}}
-                openMinggu: {{#if (eq ../caps.structure 'syllabus')}}true{{else}}localStorage.getItem(`open-minggu-{{this.id}}`) !== null
-                  ? localStorage.getItem(`open-minggu-{{this.id}}`) === 'true'
-                  : {{#if (eq ../progress.currentWeekId this.id)}}true{{else}}false{{/if}}{{/if}},
-                sessions: localStorage.getItem(`sessions-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`sessions-data-{{this.id}}`)) : [],
-                quizData: localStorage.getItem(`quiz-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`quiz-data-{{this.id}}`)) : [],
-                loading: false,
-                error: null,
-                dataLoaded: false,
+    {{#if minggu.length}}
+      {{#each minggu}}
+        {{#if weekProgresses.[0].process}}
+          {{!-- Week item (Unlocked & Open) --}}
+          <div
+            x-data="{
+              openMinggu: localStorage.getItem(`open-minggu-{{this.id}}`) !== null
+                ? localStorage.getItem(`open-minggu-{{this.id}}`) === 'true'
+                : {{#if (eq @index 0)}}true{{else}}false{{/if}},
+              sessions: localStorage.getItem(`sessions-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`sessions-data-{{this.id}}`)) : [],
+              quizData: localStorage.getItem(`quiz-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`quiz-data-{{this.id}}`)) : [],
+              loading: false,
+              error: null,
+              dataLoaded: false,
 
-                  async init() {
-          const pertemuanResponse = await fetch('/program/session/{{this.id}}');
-          const quizResponse = await fetch('/program/quiz/{{this.id}}');
-
-          this.sessions = await pertemuanResponse.json();
-      localStorage.setItem(`sessions-data-{{this.id}}`, JSON.stringify(this.sessions));
-
-          this.quizData = await quizResponse.json();
-      localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
-          this.dataLoaded = true;
-    },
-                
-                async toggleAndFetch() {
-                  this.openMinggu = !this.openMinggu;
-                  localStorage.setItem(`open-minggu-{{this.id}}`, this.openMinggu);
-                  
-                  // Fetch data hanya jika dibuka dan belum pernah di-load
-                  if (this.openMinggu && !this.dataLoaded) {
-                    await this.fetchData();
-                  }
-                },
-                
-                async fetchData() {
-                  this.loading = true;
-                  this.error = null;
-                  
-                  try {
-                    // Fetch pertemuan dan quiz secara parallel
-                    const [pertemuanResponse, quizResponse] = await Promise.all([
-                      fetch('/program/session/{{this.id}}'),
-                      fetch('/program/quiz/{{this.id}}')
-                    ]);
-                    
-                    if (!pertemuanResponse.ok || !quizResponse.ok) {
-                      throw new Error('Failed to fetch data');
-                    }
-                    
+              async init() {
+                this.loading = true;
+                try {
+                  const [pertemuanResponse, quizResponse] = await Promise.all([
+                    fetch('/program/session/{{this.id}}'),
+                    fetch('/program/quiz/{{this.id}}')
+                  ]);
+                  if (pertemuanResponse.ok) {
                     this.sessions = await pertemuanResponse.json();
-                    this.quizData = await quizResponse.json();
                     localStorage.setItem(`sessions-data-{{this.id}}`, JSON.stringify(this.sessions));
-                    localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
-                    this.dataLoaded = true;
-                  } catch (err) {
-                    this.error = err.message;
-                    console.error('Error fetching data:', err);
-                  } finally {
-                    this.loading = false;
                   }
+                  if (quizResponse.ok) {
+                    this.quizData = await quizResponse.json();
+                    localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
+                  }
+                } catch (e) {
+                  console.error('Error fetching week data:', e);
+                  this.error = e.message;
+                } finally {
+                  this.loading = false;
+                  this.dataLoaded = true;
                 }
-              }"
-              id='week-{{this.id}}'
-              @open-week="openMinggu = true; if (!dataLoaded) fetchData()"
-              class='overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-shadow hover:shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.10)]'
-              x-init='init()'
+              },
+
+              toggle() {
+                this.openMinggu = !this.openMinggu;
+                localStorage.setItem(`open-minggu-{{this.id}}`, this.openMinggu);
+              }
+            }"
+            id="week-{{this.id}}"
+            class="w-full bg-white border border-[#E6ECF7] rounded-[14px] shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden transition-all"
+          >
+            {{!-- Week header --}}
+            <button
+              type="button"
+              @click="toggle()"
+              :aria-expanded="openMinggu"
+              class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:min-h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
             >
-{{!-- Kepala minggu tidak dirender pada program silabus: yang ada hanya satu
-     wadah, dan menampilkannya sebagai "Week 1" adalah kebohongan kecil yang
-     tidak menambah apa pun. --}}
-{{#unless (eq ../caps.structure 'syllabus')}}{{> program_detail/right_content/week/button_week}}{{/unless}}
+              {{!-- Status icon --}}
+              <div class="w-12 h-12 rounded-full bg-[#E9F0FF] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                </svg>
+              </div>
 
-              <div
-                x-show='openMinggu'
-                x-collapse
-                class='px-5 pb-5 {{#unless (eq ../caps.structure 'syllabus')}}bg-gray-50/50{{else}}pt-5{{/unless}}'
-              >
-                <!-- Loading State -->
-                <div
-                  x-show='loading'
-                  class='flex items-center justify-center py-8'
+              {{!-- Week details --}}
+              <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+                <span class="font-inter font-semibold text-base leading-5 text-[#17345E] truncate">
+                  {{t 'test.startLearning.week'}} {{this.weekNumber}}
+                </span>
+                <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1] truncate">
+                  {{#if this.description}}{{this.description}}{{else}}Requirement{{/if}}
+                </span>
+              </div>
+
+              {{!-- chevron-up / chevron-down --}}
+              <div class="w-4 h-4 flex items-center justify-center shrink-0">
+                <svg
+                  :class="openMinggu ? 'rotate-180' : ''"
+                  class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <div class='flex items-center space-x-2'>
-                    <svg
-                      class='animate-spin h-5 w-5 text-[#525252]'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                    >
-                      <circle
-                        class='opacity-25'
-                        cx='12'
-                        cy='12'
-                        r='10'
-                        stroke='currentColor'
-                        stroke-width='4'
-                      ></circle>
-                      <path
-                        class='opacity-75'
-                        fill='currentColor'
-                        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                      ></path>
-                    </svg>
-                    <span class='text-[#525252] text-sm font-medium'>Loading
-                      data...</span>
-                  </div>
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </div>
+            </button>
+
+            {{!-- Divider --}}
+            <div x-show="openMinggu" class="w-full h-[1px] bg-[#E6ECF7]"></div>
+
+            {{!-- Dropdown content --}}
+            <div x-show="openMinggu" x-collapse class="w-full flex flex-col items-start px-6 sm:px-8 pt-6 pb-7 gap-5 bg-white">
+              {{!-- Loading State --}}
+              <div x-show="loading" class="w-full flex items-center justify-center py-6">
+                <div class="flex items-center space-x-2 text-[#525252] text-sm font-medium">
+                  <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Loading data...</span>
                 </div>
+              </div>
 
-                <!-- Error State -->
-                <div
-                  x-show='error'
-                  class='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'
-                >
-                  <div class='flex items-center'>
-                    <svg
-                      class='w-5 h-5 text-red-600 mr-2'
-                      fill='none'
-                      stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                        stroke-width='2'
-                        d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                      />
-                    </svg>
-                    <p class='text-sm text-red-800' x-text='error'></p>
-                  </div>
-                </div>
-
-                <!-- Content State -->
-                <div
-                  x-show='!loading && !error && dataLoaded'
-                  class='space-y-3 mt-4'
-                >
-                  {{!--
-                    Daftar sesi.
-
-                    Sebelumnya tiap sesi adalah akordeon di dalam akordeon
-                    minggu: untuk membaca satu tugas, student membuka minggu,
-                    lalu membuka sesi, lalu membacanya di ruang selebar setengah
-                    layar. Sekarang barisnya menjadi tautan menuju halaman
-                    detail sesi (/program/session/detail/:id), dan seluruh isi
-                    sesi tinggal di sana.
-
-                    Arti `sessionProgress[0].isAttended` di sini adalah SESI
-                    SUDAH TERBUKA, bukan student sudah absen; kehadiran
-                    sungguhan ada di `attendances`. Aturan yang sama dipakai
-                    server di CoursesService.findSessionDetail.
-                  --}}
-                  <template x-for='session in sessions' :key='session.id'>
-                    <div>
-                      {{!-- Sesi terbuka --}}
-                      <template x-if='session.sessionProgress.length > 0 && session.sessionProgress[0].isAttended === true'>
+              {{!-- Dynamic Sessions List --}}
+              <template x-for="session in sessions" :key="session.id">
+                <div class="w-full flex flex-col items-start gap-5">
+                  {{!-- Session info --}}
+                  <div class="w-full flex flex-col items-start gap-2.5">
+                    {{!-- Session header --}}
+                    <div class="w-full flex flex-row items-center justify-between gap-3">
+                      {{!-- Session title --}}
+                      <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
                         <a
-                          :href='`/program/session/detail/${session.id}`'
-                          class='group flex items-center justify-between gap-3 rounded-lg border border-[#E5E5E5] bg-white px-4 py-3 no-underline transition-colors hover:border-[#003060] hover:bg-[#FAFAFA]'
-                        >
-                          <div class='flex min-w-0 items-center gap-3'>
-                            <span
-                              class='grid size-8 shrink-0 place-items-center rounded-lg font-inter text-xs font-bold'
-                              :class="$store.sessionUnlock.canOpenNextSession(session) ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#E4F1F7] text-[#003060]'"
-                            >
-                              <template x-if='$store.sessionUnlock.canOpenNextSession(session)'>
-                                <i class='fa-solid fa-check'></i>
-                              </template>
-                              <template x-if='!$store.sessionUnlock.canOpenNextSession(session)'>
-                                <span x-text='session.sessionOrder'></span>
-                              </template>
-                            </span>
+                          :href="'/program/session/detail/' + session.id"
+                          class="font-inter font-bold text-[15px] leading-[18px] text-[#17345E] hover:text-[#003060] transition-colors truncate"
+                          x-text="session.topic || ('Session ' + session.sessionOrder + ' - Fundamental of UI/UX')"
+                        ></a>
+                        <div class="flex flex-row items-center gap-1.5 flex-wrap">
+                          <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                          </svg>
+                          <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1]" x-text="session.date ? new Date(session.date).toLocaleDateString('en-GB') : '24/08/2026'">24/08/2026</span>
+                          <span class="text-[#8091B1] mx-1">·</span>
+                          <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                          <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1]" x-text="(session.startTime && session.endTime) ? (session.startTime + ' - ' + session.endTime) : '09:00:00 - 16:00:00'">09:00:00 - 16:00:00</span>
+                        </div>
+                      </div>
 
-                            <div class='min-w-0'>
-                              <div class='flex flex-wrap items-center gap-2'>
-                                <h4
-                                  class='truncate font-inter text-sm font-bold text-[#171717]'
-                                  x-text='session.topic || `{{t "test.startLearning.session"}} ${session.sessionOrder}`'
-                                ></h4>
-                                <template x-if='$store.sessionUnlock.canOpenNextSession(session)'>
-                                  <span class='rounded-full bg-[#f0fdf4] px-2 py-0.5 font-inter text-xs font-semibold text-[#15803d]'>
-                                    {{t 'test.startLearning.completed'}}
-                                  </span>
-                                </template>
-                                <template x-if='!$store.sessionUnlock.canOpenNextSession(session) && session.attendances.length === 0'>
-                                  <span class='rounded-full bg-[#FEFCE8] px-2 py-0.5 font-inter text-xs font-semibold text-[#A16207]'>
-                                    {{t 'test.startLearning.attendanceRequired'}}
-                                  </span>
-                                </template>
-                              </div>
-
-                              {{!-- Isi sesi disebut di sini supaya student tahu
-                                   ada apa sebelum membukanya. --}}
-                              <p class='mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 font-inter text-xs text-[#737373]'>
-                                <template x-if='session.date'>
-                                  <span x-text='new Date(session.date).toLocaleDateString()'></span>
-                                </template>
-                                <template x-if='session.materials?.length'>
-                                  <span>
-                                    <span x-text='session.materials.length'></span>
-                                    {{t 'test.startLearning.materials'}}
-                                  </span>
-                                </template>
-                                <template x-if='session.assignments?.length'>
-                                  <span>
-                                    <span x-text='session.assignments.length'></span>
-                                    {{t 'test.startLearning.assignment'}}
-                                  </span>
-                                </template>
-                              </p>
-                            </div>
-                          </div>
-
-                          <span class='inline-flex shrink-0 items-center gap-1.5 font-inter text-xs font-semibold text-[#003060]'>
-                            <span class='hidden sm:inline'>{{t 'test.startLearning.openSession'}}</span>
-                            <i class='fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-0.5'></i>
+                      {{!-- Attendance badge --}}
+                      <template x-if="!session.attendances || session.attendances.length === 0">
+                        <div class="flex flex-row items-center px-3 py-[5px] h-[25px] bg-[#FDECEA] rounded-full shrink-0">
+                          <span class="font-inter font-semibold text-xs leading-[15px] text-[#E05A5A] whitespace-nowrap">
+                            Attendance Required
                           </span>
-                        </a>
+                        </div>
                       </template>
-
-{{> program_detail/right_content/week/session/locked_session}}
+                      <template x-if="session.attendances && session.attendances.length > 0">
+                        <div class="flex flex-row items-center px-3 py-[5px] h-[25px] bg-[#EAF7EE] rounded-full shrink-0">
+                          <span class="font-inter font-semibold text-xs leading-[15px] text-[#15803D] whitespace-nowrap">
+                            Attended
+                          </span>
+                        </div>
+                      </template>
                     </div>
-                  </template>
 
-{{> program_detail/right_content/week/quiz}}
+                    {{!-- Mark Attendance button --}}
+                    <template x-if="!session.attendances || session.attendances.length === 0">
+                      <a
+                        :href="'/attendance/form/' + session.id"
+                        class="w-full h-12 flex flex-row justify-center items-center py-3.5 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-[15px] leading-[18px] transition-colors no-underline cursor-pointer"
+                      >
+                        <svg class="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Mark Attendance</span>
+                      </a>
+                    </template>
+                    <template x-if="session.attendances && session.attendances.length > 0">
+                      <div class="w-full h-12 flex flex-row justify-center items-center py-3.5 px-6 gap-2.5 bg-[#F0FDF4] border border-[#BBF7D0] rounded-[10px] text-[#15803D] font-inter font-bold text-[15px] leading-[18px]">
+                        <svg class="w-5 h-5 text-[#15803D] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Attendance Recorded</span>
+                      </div>
+                    </template>
+
+                    {{!-- Materials section --}}
+                    <div class="w-full flex flex-col items-start gap-3">
+                      <div class="w-full flex flex-row items-center gap-2 h-[17px]">
+                        <template x-if="!session.attendances || session.attendances.length === 0">
+                          <svg class="w-4 h-4 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </template>
+                        <template x-if="session.attendances && session.attendances.length > 0">
+                          <svg class="w-4 h-4 text-[#17345E] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                          </svg>
+                        </template>
+                        <span class="font-inter font-semibold text-sm leading-[17px] text-[#17345E]" x-text="(!session.attendances || session.attendances.length === 0) ? 'Materials (Locked)' : 'Materials'"></span>
+                      </div>
+
+                      {{!-- Material items (PDF, Video, PPT) --}}
+                      <div class="w-full flex flex-col sm:flex-row items-stretch sm:items-start gap-3">
+                        {{!-- PDF --}}
+                        <a
+                          :href="(session.attendances && session.attendances.length > 0) ? ('/learning-material/pdf/' + session.id) : '#'"
+                          :class="(session.attendances && session.attendances.length > 0) ? 'hover:border-[#1C2D4A] hover:bg-[#EEF1F8] cursor-pointer' : 'cursor-default'"
+                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
+                        >
+                          <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                              <polyline points="14 2 14 8 20 8"></polyline>
+                              <line x1="16" y1="13" x2="8" y2="13"></line>
+                              <line x1="16" y1="17" x2="8" y2="17"></line>
+                              <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                          </div>
+                          <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PDF</span>
+                          <div class="w-3.5 h-3.5 flex items-center justify-center">
+                            <template x-if="!session.attendances || session.attendances.length === 0">
+                              <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            </template>
+                            <template x-if="session.attendances && session.attendances.length > 0">
+                              <svg class="w-3.5 h-3.5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                            </template>
+                          </div>
+                        </a>
+
+                        {{!-- Video --}}
+                        <a
+                          :href="(session.attendances && session.attendances.length > 0) ? ('/learning-material/video/' + session.id) : '#'"
+                          :class="(session.attendances && session.attendances.length > 0) ? 'hover:border-[#1C2D4A] hover:bg-[#EEF1F8] cursor-pointer' : 'cursor-default'"
+                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
+                        >
+                          <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                            </svg>
+                          </div>
+                          <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">Video</span>
+                          <div class="w-3.5 h-3.5 flex items-center justify-center">
+                            <template x-if="!session.attendances || session.attendances.length === 0">
+                              <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            </template>
+                            <template x-if="session.attendances && session.attendances.length > 0">
+                              <svg class="w-3.5 h-3.5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                              </svg>
+                            </template>
+                          </div>
+                        </a>
+
+                        {{!-- PPT --}}
+                        <a
+                          :href="(session.attendances && session.attendances.length > 0) ? ('/learning-material/ppt/' + session.id) : '#'"
+                          :class="(session.attendances && session.attendances.length > 0) ? 'hover:border-[#1C2D4A] hover:bg-[#EEF1F8] cursor-pointer' : 'cursor-default'"
+                          class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5 transition-colors no-underline"
+                        >
+                          <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M2 3h20"></path>
+                              <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"></path>
+                              <path d="m7 21 5-5 5 5"></path>
+                            </svg>
+                          </div>
+                          <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PPT</span>
+                          <div class="w-3.5 h-3.5 flex items-center justify-center">
+                            <template x-if="!session.attendances || session.attendances.length === 0">
+                              <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            </template>
+                            <template x-if="session.attendances && session.attendances.length > 0">
+                              <svg class="w-3.5 h-3.5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                            </template>
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </template>
+
+              {{!-- Explicit Fallback Mockup when sessions empty --}}
+              <template x-if="dataLoaded && (!sessions || sessions.length === 0)">
+                <div class="w-full flex flex-col items-start gap-5">
+                  <div class="w-full flex flex-col items-start gap-2.5">
+                    <div class="w-full flex flex-row items-center justify-between gap-3">
+                      <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+                        <span class="font-inter font-bold text-[15px] leading-[18px] text-[#17345E] truncate">
+                          Session 1 - Fundamental of UI/UX
+                        </span>
+                        <div class="flex flex-row items-center gap-1.5 flex-wrap">
+                          <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                          </svg>
+                          <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1]">24/08/2026</span>
+                          <span class="text-[#8091B1] mx-1">·</span>
+                          <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                          <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1]">09:00:00 - 16:00:00</span>
+                        </div>
+                      </div>
+                      <div class="flex flex-row items-center px-3 py-[5px] h-[25px] bg-[#FDECEA] rounded-full shrink-0">
+                        <span class="font-inter font-semibold text-xs leading-[15px] text-[#E05A5A] whitespace-nowrap">
+                          Attendance Required
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="w-full h-12 flex flex-row justify-center items-center py-3.5 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-[15px] leading-[18px] transition-colors cursor-pointer"
+                    >
+                      <svg class="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      <span>Mark Attendance</span>
+                    </button>
+
+                    <div class="w-full flex flex-col items-start gap-3">
+                      <div class="w-full flex flex-row items-center gap-2 h-[17px]">
+                        <svg class="w-4 h-4 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span class="font-inter font-semibold text-sm leading-[17px] text-[#17345E]">Materials (Locked)</span>
+                      </div>
+                      <div class="w-full flex flex-col sm:flex-row items-stretch sm:items-start gap-3">
+                        <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                          <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                              <polyline points="14 2 14 8 20 8"></polyline>
+                              <line x1="16" y1="13" x2="8" y2="13"></line>
+                              <line x1="16" y1="17" x2="8" y2="17"></line>
+                              <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                          </div>
+                          <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PDF</span>
+                          <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </div>
+                        <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                          <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                            </svg>
+                          </div>
+                          <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">Video</span>
+                          <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </div>
+                        <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                          <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M2 3h20"></path>
+                              <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"></path>
+                              <path d="m7 21 5-5 5 5"></path>
+                            </svg>
+                          </div>
+                          <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PPT</span>
+                          <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              {{!-- Week Quiz if present --}}
+              <template x-if="quizData && quizData.length > 0">
+                <div class="w-full mt-2">
+                  {{> program_detail/right_content/week/quiz}}
+                </div>
+              </template>
+            </div>
+          </div>
+        {{else}}
+          {{!-- Week item locked --}}
+          <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+              {{!-- Status icon --}}
+              <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+
+              {{!-- Week details --}}
+              <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+                <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">
+                  {{t 'test.startLearning.week'}} {{this.weekNumber}}
+                </span>
+                <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">
+                  {{#if this.description}}{{this.description}}{{else}}Requirement{{/if}}
+                </span>
+              </div>
+
+              {{!-- chevron-down --}}
+              <div class="w-4 h-4 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </div>
             </div>
 
-          {{else}}
-{{> program_detail/right_content/week/locked_week}}
-          {{/if}}
-        {{/each}}
+            {{!-- Warning banner --}}
+            <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+              <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+                The previous week's quiz must meet the minimum score to unlock this content.
+              </span>
+            </div>
+          </div>
+        {{/if}}
+      {{/each}}
 
-      {{#unless minggu.length}}
-        <div class="flex flex-col items-center gap-3 rounded-xl border border-[#d9d9d9] bg-white p-12 text-center">
-          <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
-          </span>
-          <h3 class="font-inter text-xl font-bold text-[#003060]">No weeks yet</h3>
-          <p class="font-inter text-sm text-[#737373]">Your mentor has not added the learning weeks for this program.</p>
+    {{else}}
+      {{!-- Slicing / Mockup Mode based on Figma Node 1496-1317 --}}
+
+      {{!-- Week 1 (Unlocked & Open) --}}
+      <div
+        x-data="{
+          openMinggu: true,
+          toggle() {
+            this.openMinggu = !this.openMinggu;
+          }
+        }"
+        class="w-full bg-white border border-[#E6ECF7] rounded-[14px] shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden transition-all"
+      >
+        <button
+          type="button"
+          @click="toggle()"
+          :aria-expanded="openMinggu"
+          class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:min-h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
+        >
+          <div class="w-12 h-12 rounded-full bg-[#E9F0FF] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-5 text-[#17345E] truncate">Week 1</span>
+            <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg
+              :class="openMinggu ? 'rotate-180' : ''"
+              class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </button>
+
+        <div x-show="openMinggu" class="w-full h-[1px] bg-[#E6ECF7]"></div>
+
+        <div x-show="openMinggu" x-collapse class="w-full flex flex-col items-start px-6 sm:px-8 pt-6 pb-7 gap-5 bg-white">
+          <div class="w-full flex flex-col items-start gap-2.5">
+            <div class="w-full flex flex-row items-center justify-between gap-3">
+              <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+                <span class="font-inter font-bold text-[15px] leading-[18px] text-[#17345E] truncate">
+                  Session 1 - Fundamental of UI/UX
+                </span>
+                <div class="flex flex-row items-center gap-1.5 flex-wrap">
+                  <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1]">24/08/2026</span>
+                  <span class="text-[#8091B1] mx-1">·</span>
+                  <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1]">09:00:00 - 16:00:00</span>
+                </div>
+              </div>
+              <div class="flex flex-row items-center px-3 py-[5px] h-[25px] bg-[#FDECEA] rounded-full shrink-0">
+                <span class="font-inter font-semibold text-xs leading-[15px] text-[#E05A5A] whitespace-nowrap">
+                  Attendance Required
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="w-full h-12 flex flex-row justify-center items-center py-3.5 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-[15px] leading-[18px] transition-colors cursor-pointer"
+            >
+              <svg class="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Mark Attendance</span>
+            </button>
+
+            <div class="w-full flex flex-col items-start gap-3">
+              <div class="w-full flex flex-row items-center gap-2 h-[17px]">
+                <svg class="w-4 h-4 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span class="font-inter font-semibold text-sm leading-[17px] text-[#17345E]">Materials (Locked)</span>
+              </div>
+              <div class="w-full flex flex-col sm:flex-row items-stretch sm:items-start gap-3">
+                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                  <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                    <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PDF</span>
+                  <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                  <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                    <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                      <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                  </div>
+                  <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">Video</span>
+                  <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div class="flex-1 h-[117px] bg-[#F6F8FB] border border-[#E6ECF7] rounded-[10px] p-3 flex flex-col justify-center items-center gap-2.5">
+                  <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                    <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 3h20"></path>
+                      <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"></path>
+                      <path d="m7 21 5-5 5 5"></path>
+                    </svg>
+                  </div>
+                  <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PPT</span>
+                  <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      {{/unless}}
+      </div>
+
+      {{!-- Week 2 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 2</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+
+      {{!-- Week 3 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 3</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+
+      {{!-- Week 4 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 4</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+
+      {{!-- Week 5 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 5</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+    {{/if}}
+
+    {{!-- Pagination --}}
+    <div class="w-full flex flex-row justify-between items-center px-6 sm:px-8 py-3 min-h-[56px] bg-white border border-[#D9D9D9] rounded-[16px] mt-2">
+      <span class="font-inter font-medium text-sm leading-[17px] text-[#003060]">
+        {{#if minggu.length}}
+          Showing 1-{{minggu.length}} of {{minggu.length}} weeks
+        {{else}}
+          Showing 1-5 of 12 weeks
+        {{/if}}
+      </span>
+
+      <div class="flex flex-row items-center gap-2">
+        <button type="button" class="w-8 h-8 rounded-full bg-[#003060] text-white flex items-center justify-center font-inter font-semibold text-sm transition-opacity hover:opacity-90">1</button>
+        <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">2</button>
+        <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">3</button>
+      </div>
     </div>
 
   </div>
 
   {{#if user_kelas.progress}}
-    <div class="mt-6">
+    <div class="mt-6 w-full">
       {{> program_detail/right_content/portfolio}}
     </div>
   {{/if}}
