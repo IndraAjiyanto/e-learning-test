@@ -151,10 +151,11 @@
         {{> components/ui/super_admin/tabs/panel/index name='benefit' label='Benefit' }}
         {{> components/ui/super_admin/tabs/panel/index name='participants' label='Participants' }}
         {{> components/ui/super_admin/tabs/panel/index name='flow' label='Flow' }}
-        {{> components/ui/super_admin/tabs/panel/index name='faq' label='FAQ' }}
-        {{> components/ui/super_admin/tabs/panel/index name='payment' label='Payment' }}
         {{#if course.checkPaid}}
+          {{> components/ui/super_admin/tabs/panel/index name='payment' label='Payment' }}
           {{> components/ui/super_admin/tabs/panel/index name='installment' label='Installment' }}
+        {{else}}
+          {{> components/ui/super_admin/tabs/panel/index name='registration' label='Registration' }}
         {{/if}}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
@@ -167,9 +168,11 @@
       <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
       {{#if course.checkPaid}}
+        <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
         <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+      {{else}}
+        <div x-show="tab === 'registration'">{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
       {{/if}}
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
@@ -200,13 +203,15 @@
   function tabData() {
     const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
     return {
-      tab: localStorage.getItem('activeTabProgram') || 'benefit',
+      tab: localStorage.getItem('activeTabProgram') || (isPaid ? 'payment' : 'registration'),
 
       init() {
         this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
 
-        if (!isPaid && this.tab === 'installment') {
-          this.tab = 'benefit';
+        if (!isPaid && (this.tab === 'installment' || this.tab === 'payment')) {
+          this.tab = 'registration';
+        } else if (isPaid && this.tab === 'registration') {
+          this.tab = 'payment';
         }
       },
     };

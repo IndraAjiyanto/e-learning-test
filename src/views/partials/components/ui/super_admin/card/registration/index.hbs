@@ -1,0 +1,65 @@
+{{!--
+  Komponen: Registration Card (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/card/registration/index.hbs
+  Level: L2 Molekul (scoped super_admin)
+
+  Kartu pendaftar Free Program sesuai token Figma:
+  - Container: bg #F6F7F8, radius 14px, p-2.5 sm:p-3, border hover:slate-300
+  - Header: Nomor Urut (e.g. 01, 02) & Badge status dot (Accepted / Process / Rejected)
+  - Card dalam: White (#FFFFFF), shadow 0px 1px 6px rgba(0,0,0,0.04), radius 8px, p-3
+  - Info 2 Kolom:
+    - Row 1: Name, Email
+    - Row 2: Current Status, Keyword (referal_source)
+  - Interaksi: Klik untuk membuka modal detail & aksi verifikasi pendaftaran
+--}}
+<div
+  role="button"
+  tabindex="0"
+  @click="openDetailModal('registration-detail', item)"
+  @keydown.enter="openDetailModal('registration-detail', item)"
+  @keydown.space.prevent="openDetailModal('registration-detail', item)"
+  class="group w-full bg-[#F6F7F8] hover:bg-[#F0F2F5] rounded-[14px] p-2.5 sm:p-3 flex flex-col gap-3 border border-transparent hover:border-slate-300 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]"
+>
+  <!-- Header: Number & Status Badge -->
+  <div class="flex items-center justify-between gap-2 px-1">
+    <span
+      class="font-inter font-semibold text-[13px] leading-5 text-black tracking-[-0.325px]"
+      x-text="item.no || String(index + 1).padStart(2, '0')"
+    ></span>
+
+    <!-- Badge Status (Figma token) -->
+    {{> components/ui/super_admin/badge/index
+      dot=true
+      text='(item.process === "acc" || item.process === "approved") ? "Accepted" : (item.process === "proces" || item.process === "process") ? "Process" : "Rejected"'
+      classExpr="(item.process === 'acc' || item.process === 'approved') ? 'bg-[#F0FDF4] text-[#15803D]' : (item.process === 'proces' || item.process === 'process') ? 'bg-[#FEFCE8] text-[#A16207]' : 'bg-[#FEF2F2] text-[#B91C1C]'"
+      dotClassExpr="(item.process === 'acc' || item.process === 'approved') ? 'bg-[#22C55E]' : (item.process === 'proces' || item.process === 'process') ? 'bg-[#EAB308]' : 'bg-[#EF4444]'"
+    }}
+  </div>
+
+  <!-- Inner White Card (Frame 2147229722) -->
+  <div class="bg-white rounded-lg p-3 shadow-[0px_1px_6px_rgba(0,0,0,0.04)] flex flex-col gap-2.5 group-hover:shadow-[0px_2px_8px_rgba(0,0,0,0.08)] transition-shadow">
+    <!-- Row 1: Name & Email -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Name</span>
+        <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="item.user_fullname || item.user?.fullname || item.user?.username || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Email</span>
+        <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="item.user_email || item.user?.email || '—'"></span>
+      </div>
+    </div>
+
+    <!-- Row 2: Current Status & Keyword -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Current Status</span>
+        <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="item.current_status || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Keyword</span>
+        <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="item.referal_source || item.referalSource || item.keyword || '—'"></span>
+      </div>
+    </div>
+  </div>
+</div>
