@@ -1613,6 +1613,14 @@ export class CoursesService {
     if (!course) {
       throw new NotFoundException('Program not found');
     }
+
+    const participantCount = course.userCourses?.length || 0;
+    if (participantCount > 0) {
+      throw new BadRequestException(
+        `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
+      );
+    }
+
     return await this.courseRepository.remove(course);
   }
 
