@@ -1,0 +1,32 @@
+{{!--
+  Komponen: Form Action Card (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/action_card.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Kartu aksi di bawah form (lebar 1052px, tinggi 86px di desktop, padding 20px, border #D9D9D9, radius 12px)
+  berisi tombol Cancel dan Submit rata kanan dengan gap 12px sesuai token Figma.
+
+  Props:
+  - cancelHref  : string (wajib) — tautan tombol Cancel
+  - cancelLabel : string (default 'Cancel')
+  - submitLabel : string (default 'Save')
+  - submitType  : string (default 'submit')
+  - disabled    : string (opsional) — ekspresi Alpine untuk men-disable tombol submit (mis. '!dirty')
+--}}
+<div class='box-border flex w-full max-w-[1052px] flex-col-reverse items-stretch justify-end gap-3 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:h-[86px] sm:flex-row sm:items-center sm:gap-3'>
+  {{> components/ui/super_admin/form/button
+    as='link'
+    variant='secondary'
+    href=cancelHref
+    label=(default cancelLabel 'Cancel')
+    loading=true
+  }}
+
+  {{> components/ui/super_admin/form/button
+    type=(default submitType 'submit')
+    variant='primary'
+    label=(default submitLabel 'Save')
+    loading=true
+    disabled=disabled
+  }}
+</div>
