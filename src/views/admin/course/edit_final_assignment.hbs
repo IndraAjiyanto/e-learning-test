@@ -172,7 +172,13 @@ function editFinalAssignmentForm() {
             tools: {
               header: {
                 class: window.EditorTools.Header,
-                inlineToolbar: ['link']
+                inlineToolbar: true,
+                shortcut: 'CMD+SHIFT+H',
+                config: {
+                  placeholder: 'Enter a heading...',
+                  levels: [1, 2, 3, 4, 5, 6],
+                  defaultLevel: 2
+                }
               },
               paragraph: {
                 class: window.EditorTools.Paragraph,
@@ -249,6 +255,46 @@ function editFinalAssignmentForm() {
   }
   #final_assignment_editorjs .ce-toolbar__content {
     max-width: 100% !important;
+  }
+  #final_assignment_editorjs .ce-header {
+    font-family: 'Inter', sans-serif !important;
+    color: #171717 !important;
+    margin: 0 !important;
+    padding: 0.4em 0 !important;
+  }
+  #final_assignment_editorjs h1.ce-header {
+    font-size: 28px !important;
+    line-height: 36px !important;
+    font-weight: 700 !important;
+  }
+  #final_assignment_editorjs h2.ce-header {
+    font-size: 24px !important;
+    line-height: 32px !important;
+    font-weight: 700 !important;
+  }
+  #final_assignment_editorjs h3.ce-header {
+    font-size: 20px !important;
+    line-height: 28px !important;
+    font-weight: 600 !important;
+  }
+  #final_assignment_editorjs h4.ce-header {
+    font-size: 18px !important;
+    line-height: 26px !important;
+    font-weight: 600 !important;
+  }
+  #final_assignment_editorjs h5.ce-header {
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 600 !important;
+  }
+  #final_assignment_editorjs h6.ce-header {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 600 !important;
+  }
+  #final_assignment_editorjs .ce-header[data-placeholder]:empty::before {
+    color: #737373 !important;
+    font-weight: 400 !important;
   }
   #final_assignment_editorjs .ce-paragraph {
     font-family: 'Inter', sans-serif !important;
