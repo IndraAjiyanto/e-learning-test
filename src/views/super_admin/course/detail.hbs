@@ -153,6 +153,9 @@
         {{> components/ui/super_admin/tabs/panel/index name='flow' label='Flow' }}
         {{> components/ui/super_admin/tabs/panel/index name='faq' label='FAQ' }}
         {{> components/ui/super_admin/tabs/panel/index name='payment' label='Payment' }}
+        {{#if course.checkPaid}}
+          {{> components/ui/super_admin/tabs/panel/index name='installment' label='Installment' }}
+        {{/if}}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
@@ -165,6 +168,9 @@
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
+      {{#if course.checkPaid}}
+        <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+      {{/if}}
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
@@ -192,14 +198,16 @@
 
 <script>
   function tabData() {
+    const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
     return {
       tab: localStorage.getItem('activeTabProgram') || 'benefit',
 
       init() {
         this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
 
-        // Tab installment kini sudah dilebur ke dalam tab payment
-        if (this.tab === 'installment') this.tab = 'payment';
+        if (!isPaid && this.tab === 'installment') {
+          this.tab = 'benefit';
+        }
       },
     };
   }
