@@ -42,10 +42,12 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
       const isAjax =
         request.xhr ||
         (request.headers.accept &&
-          request.headers.accept.includes('application/json'));
+          request.headers.accept.includes('application/json')) ||
+        request.path?.includes('upload-image') ||
+        request.path?.includes('fetch-image');
 
       if (isAjax) {
-        return response.status(400).json({ success: false, message: message });
+        return response.status(400).json({ success: 0, message: message });
       }
 
       (request as any).flash('error', message);

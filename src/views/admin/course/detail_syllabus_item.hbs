@@ -2,7 +2,6 @@
   Page: Admin - Detail Syllabus (Syllabus Item Detail)
   Path: admin/course/detail_syllabus_item.hbs
   Route: GET /program/detail-syllabus/:courseId
-  Design: Figma node 1867-10498 & 1868-11442 (font-inter only)
 --}}
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
@@ -24,8 +23,8 @@
       }
     }">
 
-    {{!-- Feature Card 1: Partnership / Header Card --}}
-    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[14px] items-start'>
+    {{!-- Feature Card 1: Header Card --}}
+    {{#> components/ui/admin/form/form-card noNumber=true class="gap-[14px]"}}
 
       {{!-- Frame 2147229598: Top row (Back button) --}}
       <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
@@ -96,17 +95,17 @@
         </div>
       </div>
 
-    </div>
+    {{/components/ui/admin/form/form-card}}
 
-    {{!-- Table Detail Week: Quiz Section Card --}}
-    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[20px] items-start'>
+    {{!-- Quiz Section Card --}}
+    {{#> components/ui/admin/form/form-card noNumber=true class="p-[12px_20px_20px]"}}
 
       {{!-- Section Title: Quiz --}}
       <div class='w-full font-inter font-medium text-[14px] leading-[20px] text-[#404040]'>
         Quiz
       </div>
 
-      {{!-- Kondisi 1: Ketika ada quiz (Figma node 1867-10498) --}}
+      {{!-- Kondisi 1: Ketika ada quiz --}}
       <template x-if='hasQuiz'>
         {{!-- Button / Row: Quiz Item --}}
         <div class='box-border w-full min-h-[68px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] p-[8px_14px] flex flex-row items-center gap-[6px] hover:bg-[#FAFAFA] transition-colors'>
@@ -171,9 +170,8 @@
         </div>
       </template>
 
-      {{!-- Kondisi 2: Ketika belum ada quiz (Figma node 1868-11442) --}}
+      {{!-- Kondisi 2: Ketika belum ada quiz --}}
       <template x-if='!hasQuiz'>
-        {{!-- _Button base: Add Quiz (1010x44 bg-white border border-[#3B82F6] text-[#3B82F6]) --}}
         <a
           href='/syllabus/quiz/create/{{syllabus.id}}'
           class='box-border w-full shrink-0 h-[44px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F0F7FF] transition-colors'>
@@ -183,7 +181,7 @@
         </a>
       </template>
 
-    </div>
+    {{/components/ui/admin/form/form-card}}
 
   </div>
 </div>
