@@ -22,204 +22,238 @@
 >
   <div class='flex flex-col gap-7'>
 
-    <div class='flex flex-col gap-1'>
-      {{> components/ui/super_admin/page_header/index
-        titleTag='h2'
-        title='Payment History'
-      }}
-      {{> components/ui/super_admin/description/index
-        text='View and manage your payment history.'
-      }}
+    <!-- Page Header (Figma token) -->
+    <div class="flex flex-col gap-1 w-full">
+      <h2 class="font-montserrat font-bold text-[28px] sm:text-[34px] leading-[36px] sm:leading-[42px] text-[#003060]">
+        Payment History
+      </h2>
+      <p class="font-montserrat font-medium text-sm sm:text-[15px] leading-5 sm:leading-[21px] text-[#003060]">
+        View and manage your payment history.
+      </p>
     </div>
 
-    {{!-- Kartu filter --}}
-    <div class='flex flex-col gap-4 rounded-xl border border-[#d9d9d9] bg-white p-5'>
-      <div class='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5'>
-        <div class='flex flex-col gap-1.5 xl:col-span-2'>
-          <label class='font-inter text-sm font-medium leading-5 text-[#404040]'>Date Range</label>
-          <div class='flex items-center gap-2'>
-            <input
-              type='date'
-              x-model='draft.from'
-              aria-label='From date'
-              class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
-            />
-            <span class='shrink-0 font-inter text-sm text-[#737373]'>–</span>
-            <input
-              type='date'
-              x-model='draft.to'
-              aria-label='To date'
-              class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
-            />
+    <!-- Filter Panel Container (Figma Filter panel) -->
+    <div class="w-full bg-white border border-[#D8E6F6] rounded-xl p-[20px_16px_16px] sm:p-[24px_22px_18px_22px] shadow-[0px_3px_12px_rgba(23,59,104,0.0627)] flex flex-col gap-[18px]">
+      <!-- Filter controls row (Figma Filter controls) -->
+      <div class="flex flex-wrap items-end gap-4 xl:gap-[22px] w-full">
+        <!-- 1. Date range -->
+        <div class="flex flex-col gap-2 min-w-[200px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Date range</label>
+          <div class="relative w-full" x-data="{ openDate: false }" @click.outside="openDate = false" @keydown.escape="openDate = false">
+            <button
+              type="button"
+              @click="openDate = !openDate"
+              class="w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm text-left flex items-center justify-between transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="(formData.from || formData.to) ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <span class="truncate" x-text="dateRangeDisplay"></span>
+              <span class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+                <svg class="w-2.5 h-2.5 transition-transform" :class="openDate ? 'rotate-180' : ''" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+
+            <!-- Popover Date Range Picker -->
+            <div
+              x-show="openDate"
+              x-cloak
+              x-transition
+              class="absolute left-0 top-[calc(100%+6px)] z-30 w-72 p-3 bg-white border border-[#E5E5E5] rounded-xl shadow-[0px_4px_16px_rgba(0,0,0,0.1)] flex flex-col gap-2.5"
+            >
+              <div class="flex flex-col gap-1">
+                <span class="font-montserrat text-xs font-medium text-[#003060]">From Date</span>
+                <input
+                  type="date"
+                  x-model="formData.from"
+                  class="h-9 px-2.5 border border-[#D9D9D9] rounded-lg font-montserrat text-xs text-[#171717] focus:border-[#003060] focus:outline-none"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="font-montserrat text-xs font-medium text-[#003060]">To Date</span>
+                <input
+                  type="date"
+                  x-model="formData.to"
+                  class="h-9 px-2.5 border border-[#D9D9D9] rounded-lg font-montserrat text-xs text-[#171717] focus:border-[#003060] focus:outline-none"
+                />
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t border-[#F0F0F0]">
+                <button
+                  type="button"
+                  @click="formData.from = ''; formData.to = ''"
+                  class="font-inter text-xs text-[#6280A5] hover:underline"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  @click="openDate = false"
+                  class="px-3 py-1 bg-[#003060] text-white rounded font-montserrat text-xs font-medium hover:bg-[#00254a]"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        {{> components/ui/super_admin/form/select_field
-          id='history-status'
-          name='status'
-          field='status'
-          label='Payment Status'
-          options='statusOptions'
-          variant='dropdown'
-          placeholder='All Status'
-        }}
+        <!-- 2. Payment status -->
+        <div class="flex flex-col gap-2 min-w-[170px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Payment status</label>
+          <div class="relative w-full">
+            <select
+              x-model="formData.status"
+              class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="formData.status ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <template x-for="opt in statusOptions" :key="opt.value">
+                <option :value="opt.value" x-text="opt.label"></option>
+              </template>
+            </select>
+            <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
 
-        {{> components/ui/super_admin/form/select_field
-          id='history-type'
-          name='type'
-          field='type'
-          label='Payment Type'
-          options='typeOptions'
-          placeholder='All Types'
-        }}
+        <!-- 3. Payment method -->
+        <div class="flex flex-col gap-2 min-w-[170px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Payment method</label>
+          <div class="relative w-full">
+            <select
+              x-model="formData.method"
+              class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="formData.method ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <template x-for="opt in methodOptions" :key="opt.value">
+                <option :value="opt.value" x-text="opt.label"></option>
+              </template>
+            </select>
+            <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
 
-        {{> components/ui/super_admin/form/select_field
-          id='history-program'
-          name='program'
-          field='program'
-          label='Program / Course'
-          options='programOptions'
-          placeholder='All Programs'
-        }}
+        <!-- 4. Program course -->
+        <div class="flex flex-col gap-2 min-w-[180px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Program course</label>
+          <div class="relative w-full">
+            <select
+              x-model="formData.program"
+              class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="formData.program ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <template x-for="opt in programOptions" :key="opt.value">
+                <option :value="opt.value" x-text="opt.label"></option>
+              </template>
+            </select>
+            <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Actions (Apply & Reset) -->
+        <div class="flex items-center gap-3.5 pb-0.5 shrink-0">
+          <button
+            type="button"
+            @click="applyFilters()"
+            class="h-[42px] px-6 bg-[#003060] hover:bg-[#00254a] active:bg-[#001f3f] text-white rounded-lg font-montserrat font-semibold text-sm leading-5 transition-colors shadow-sm flex items-center justify-center shrink-0"
+          >
+            Save Changes
+          </button>
+          <button
+            type="button"
+            @click="resetFilters()"
+            class="inline-flex items-center gap-2 text-[#6280A5] hover:text-[#003060] transition-colors shrink-0 group focus-visible:outline-none"
+          >
+            <svg class="w-3.5 h-3.5 text-[#6280A5] group-hover:rotate-180 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            <span class="font-inter font-normal text-[11px] leading-[13px] text-[#6280A5] group-hover:text-[#003060]">
+              Reset
+            </span>
+          </button>
+        </div>
       </div>
 
-      <div class='flex flex-wrap items-center gap-3'>
-        {{> components/ui/super_admin/form/button
-          label='Apply Filter'
-          atClick='applyFilters()'
-        }}
-        <button
-          type='button'
-          @click='resetFilters()'
-          class='inline-flex items-center gap-2 font-inter text-sm font-medium text-[#003060] transition-colors hover:text-[#00254a]'
-        >
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/><path d='M3 3v5h5'/></svg>
-          Reset Filter
-        </button>
+      <!-- Search bar row (Figma Search bar row) -->
+      <div class="relative w-full h-10">
+        <div class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-[#718096]">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+        </div>
+        <input
+          type="search"
+          x-model="searchInput"
+          @input.debounce.250ms="handleSearch()"
+          aria-label="Search transactions"
+          placeholder="Search..."
+          class="w-full h-10 bg-white border border-[#D9D9D9] rounded-lg pl-11 pr-4 font-montserrat font-normal text-sm leading-5 text-[#171717] placeholder-[#718096] transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+        />
       </div>
     </div>
 
-    {{!-- Pencarian --}}
-    <div class='relative'>
-      <span class='pointer-events-none absolute left-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-[#737373]'>
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
-      </span>
-      <input
-        type='search'
-        x-model='searchInput'
-        @input='handleSearch()'
-        aria-label='Search transactions'
-        placeholder='Search transactions by program name or invoice...'
-        class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-10 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
-      />
-    </div>
-
-    {{!-- Daftar transaksi --}}
-    <div class='flex flex-col gap-3'>
-      <template x-if='loading'>
-        <div class='rounded-xl border border-[#d9d9d9] bg-white p-8 text-center font-inter text-sm text-[#737373]'>
+    <!-- Transaction list (Frame 2147229710) -->
+    <div class="flex flex-col gap-[9px] w-full">
+      <!-- Loading State -->
+      <template x-if="loading">
+        <div class="rounded-xl border border-[#D8E6F6] bg-white p-8 text-center font-montserrat text-sm text-[#718096]">
           Loading your payment history...
         </div>
       </template>
 
-      <template x-for='row in rows' :key='row.kind + row.id'>
-        <div class='flex flex-col gap-4 rounded-xl border border-[#d9d9d9] bg-white p-4 lg:flex-row lg:items-center lg:gap-6 lg:p-5'>
-
-          <div class='flex min-w-0 flex-1 items-center gap-4'>
-            <span
-              class='grid size-12 shrink-0 place-items-center rounded-lg'
-              :class="row.kind === 'registration' ? 'bg-[#eef4ff] text-[#3538cd]' : 'bg-[#f4f3ff] text-[#5925dc]'"
-            >
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/></svg>
-            </span>
-            <div class='flex min-w-0 flex-col gap-1.5'>
-              <span class='truncate font-inter text-sm font-semibold text-[#171717]' x-text='row.courseName'></span>
-              <div class='flex flex-wrap items-center gap-1.5'>
-                <template x-if='row.categoryName'>
-                  <span class='w-fit rounded-xl bg-[#f9f5ff] px-2 py-0.5 font-inter text-xs font-medium text-[#6941c6]' x-text='row.categoryName'></span>
-                </template>
-                <template x-if="row.kind === 'installment' && row.installmentDetail">
-                  <span class='w-fit rounded-xl bg-[#eff8ff] px-2 py-0.5 font-inter text-xs font-medium text-[#175cd3]' x-text="'Cicilan ' + row.installmentDetail.planMonth + 'x (' + row.installmentDetail.progressPercentage + '% Lunas)'"></span>
-                </template>
-              </div>
-            </div>
-          </div>
-
-          <div class='grid grid-cols-2 gap-4 lg:flex lg:shrink-0 lg:items-center lg:gap-8'>
-            <div class='flex flex-col gap-1 lg:w-36'>
-              <span class='font-inter text-xs text-[#737373]'>Payment date</span>
-              <span class='font-inter text-sm text-[#171717]' x-text='formatDate(row.date)'></span>
-            </div>
-            <div class='flex flex-col gap-1 lg:w-36'>
-              <span class='font-inter text-xs text-[#737373]'>Payment Method</span>
-              <span class='font-inter text-sm text-[#171717]' x-text='row.method'></span>
-            </div>
-            <div class='flex flex-col gap-1 lg:w-28'>
-              <span class='font-inter text-xs text-[#737373]'>Status</span>
-              {{!-- w-fit: pill-nya anak dari flex-col, jadi tanpa ini ia
-                   melar selebar kolom dan tidak lagi terbaca sebagai pill
-                   seperti pada frame desain. --}}
-              {{> components/ui/super_admin/badge/index
-                text='row.statusLabel'
-                class='w-fit'
-                dot=true
-                classExpr="row.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (row.status === 'processing' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')"
-                dotClassExpr="row.status === 'paid' ? 'bg-[#22c55e]' : (row.status === 'processing' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"
-              }}
-            </div>
-          </div>
-
-          <div class='flex shrink-0 flex-wrap items-center gap-3'>
-            <template x-if='row.proof'>
-              <button
-                type='button'
-                @click="openDetailModal('payment-proof', row)"
-                class='inline-flex h-11 items-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f9fafb]'
-              >
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4'/></svg>
-                View proof
-              </button>
-            </template>
-            <button
-              type='button'
-              @click="openDetailModal('payment-detail', row)"
-              class='inline-flex h-11 items-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-4 font-inter text-sm font-semibold text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#00254a]'
-            >
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M5 12h14'/><path d='m12 5 7 7-7 7'/></svg>
-              View Detail
-            </button>
-          </div>
+      <!-- Empty State -->
+      <template x-if="!loading && filtered.length === 0">
+        <div class="flex flex-col items-center gap-3 rounded-xl border border-[#D8E6F6] bg-white p-12 text-center">
+          <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+          </span>
+          <h3 class="font-montserrat text-xl font-bold text-[#003060]">No transactions found</h3>
+          <p class="font-montserrat text-sm text-[#718096]">Try adjusting your filters or search keyword.</p>
+          <button
+            type="button"
+            @click="resetFilters()"
+            class="mt-1 inline-flex h-11 items-center rounded-lg bg-[#003060] px-4 font-montserrat text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+          >
+            Reset Filters
+          </button>
         </div>
       </template>
 
-      <template x-if='!loading && filtered.length === 0'>
-        <div class='flex flex-col items-center gap-3 rounded-xl border border-[#d9d9d9] bg-white p-12 text-center'>
-          <span class='grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]'>
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.3-4.3'/></svg>
-          </span>
-          <h3 class='font-inter text-xl font-bold text-[#003060]'>No transactions found</h3>
-          <p class='font-inter text-sm text-[#737373]'>Try adjusting your filters or search keyword.</p>
-          <button
-            type='button'
-            @click='resetFilters()'
-            class='mt-1 inline-flex h-11 items-center rounded-lg bg-[#003060] px-4 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]'
-          >Reset Filters</button>
-        </div>
+      <!-- Rows using transaction_card component -->
+      <template x-for="row in rows" :key="row.kind + row.id">
+        {{> components/ui/card/transaction_card/index }}
       </template>
     </div>
 
-    {{!-- Pagination --}}
-    <template x-if='filtered.length > 0'>
-      <div class='flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#d9d9d9] bg-white px-5 py-4'>
-        <span class='font-inter text-sm text-[#737373]' x-text='rangeLabel'></span>
-        <div class='flex items-center gap-2'>
-          <template x-for='page in totalPages' :key='page'>
+    <!-- Pagination (Figma Pagination) -->
+    <template x-if="filtered.length > 0">
+      <div class="box-border flex flex-wrap items-center justify-between gap-4 w-full min-h-[56px] px-6 sm:px-8 py-3 bg-white border border-[#D9D9D9] rounded-2xl">
+        <span class="font-montserrat font-medium text-sm leading-[17px] text-[#003060]" x-text="rangeLabel"></span>
+        <div class="flex items-center gap-2">
+          <template x-for="page in totalPages" :key="page">
             <button
-              type='button'
-              @click='changePage(page)'
-              :class="page === currentPage ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white text-[#344054] border-[#d4d4d4] hover:bg-[#f9fafb]'"
-              class='grid size-9 place-items-center rounded-lg border font-inter text-sm font-medium transition-colors'
-              x-text='page'
+              type="button"
+              @click="changePage(page)"
+              :class="page === currentPage
+                ? 'bg-[#003060] text-white border-transparent shadow-sm'
+                : 'bg-white text-[#003060] border border-[#D9D9D9] hover:bg-slate-50'"
+              class="flex flex-col justify-center items-center w-8 h-8 rounded-full font-montserrat font-semibold text-sm leading-[17px] transition-colors focus-visible:outline-none"
+              x-text="page"
             ></button>
           </template>
         </div>
@@ -228,192 +262,8 @@
 
   </div>
 
-  {{#> components/ui/super_admin/modal/detail/index name='payment-proof' title='Payment Proof' maxWidth='max-w-[640px]'}}
-    <template x-if='row.proof'>
-      <div class='flex flex-col gap-4'>
-        <img
-          :src='row.proof'
-          alt='Payment proof'
-          class='w-full rounded-lg border border-[#e5e5e5] object-contain'
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-        />
-        <a
-          :href='row.proof'
-          target='_blank'
-          rel='noopener'
-          class='hidden items-center justify-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 py-3 font-inter text-sm font-semibold text-[#344054] hover:bg-[#f9fafb]'
-        >Open the uploaded file</a>
-      </div>
-    </template>
-  {{/components/ui/super_admin/modal/detail/index}}
-
-  {{#> components/ui/super_admin/modal/detail/index name='payment-detail' title='Transaction Detail' maxWidth='max-w-[720px]'}}
-    <div class='flex flex-col gap-6' x-data='installmentAction()'>
-      <dl class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Program</dt>
-          <dd class='font-inter text-sm font-semibold text-[#171717]' x-text='row.courseName'></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Category</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text="row.categoryName || '—'"></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Transaction type</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text='kindLabel(row.kind)'></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Invoice number</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text="row.no || '—'"></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Payment date</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text='formatDate(row.date)'></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Payment method</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text='row.method'></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Amount</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text="row.amount ? formatAmount(row.amount) : '—'"></dd>
-        </div>
-        <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Status</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text='row.statusLabel'></dd>
-        </div>
-      </dl>
-
-      {{!-- Section Khusus Cicilan / Installment Program --}}
-      <template x-if="row.kind === 'installment' && row.installmentDetail">
-        <div class='flex flex-col gap-5 border-t border-[#e5e5e5] pt-5'>
-          <div class='flex flex-col gap-1'>
-            <h3 class='font-inter text-base font-semibold text-[#171717]'>Program Installment Plan</h3>
-            <p class='font-inter text-xs text-[#737373]'>Rincian jadwal dan pembayaran cicilan program kursus Anda.</p>
-          </div>
-
-          {{!-- Card Ringkasan Finansial Cicilan --}}
-          <div class='grid grid-cols-1 gap-3 rounded-xl border border-[#e5e5e5] bg-[#fcfcfd] p-4 sm:grid-cols-3'>
-            <div class='flex flex-col gap-1'>
-              <span class='font-inter text-xs text-[#737373]'>Total Biaya Program</span>
-              <span class='font-inter text-sm font-bold text-[#171717]' x-text='formatAmount(row.installmentDetail.totalProgramFee)'></span>
-            </div>
-            <div class='flex flex-col gap-1'>
-              <span class='font-inter text-xs text-[#737373]'>Total Terbayar</span>
-              <span class='font-inter text-sm font-bold text-[#15803d]' x-text='formatAmount(row.installmentDetail.paidSoFar)'></span>
-            </div>
-            <div class='flex flex-col gap-1'>
-              <span class='font-inter text-xs text-[#737373]'>Sisa Tagihan</span>
-              <span class='font-inter text-sm font-bold text-[#b45309]' x-text='formatAmount(row.installmentDetail.remainingBalance)'></span>
-            </div>
-          </div>
-
-          {{!-- Progress Bar --}}
-          <div class='flex flex-col gap-1.5'>
-            <div class='flex items-center justify-between font-inter text-xs'>
-              <span class='font-medium text-[#525252]'>Progres Pelunasan</span>
-              <span class='font-semibold text-[#003060]' x-text="row.installmentDetail.progressPercentage + '%'"></span>
-            </div>
-            <div class='h-2.5 w-full overflow-hidden rounded-full bg-[#eaecf0]'>
-              <div class='h-full rounded-full bg-[#003060] transition-all duration-300' :style="'width: ' + row.installmentDetail.progressPercentage + '%'"></div>
-            </div>
-          </div>
-
-          {{!-- List Jadwal Pembayaran Cicilan (kolom price dari table installment) --}}
-          <div class='flex flex-col gap-3'>
-            <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Jadwal Cicilan Bulanan</span>
-
-            <div class='flex flex-col divide-y divide-[#f0f0f0] rounded-xl border border-[#e5e5e5] bg-white'>
-              {{!-- DP Info Row --}}
-              <div class='flex flex-col gap-2 p-3.5 sm:flex-row sm:items-center sm:justify-between'>
-                <div class='flex items-center gap-3'>
-                  <span class='grid size-8 shrink-0 place-items-center rounded-lg bg-[#f0fdf4] font-inter text-xs font-bold text-[#15803d]'>
-                    DP
-                  </span>
-                  <div class='flex flex-col'>
-                    <span class='font-inter text-sm font-semibold text-[#171717]'>Down Payment (Uang Muka)</span>
-                    <span class='font-inter text-xs text-[#737373]' x-text="'Tanggal Bayar: ' + formatDate(row.installmentDetail.dpPaidAt || row.date)"></span>
-                  </div>
-                </div>
-                <div class='flex items-center justify-between gap-4 sm:justify-end'>
-                  <span class='font-inter text-sm font-semibold text-[#171717]' x-text='formatAmount(row.installmentDetail.downPayment)'></span>
-                  <span class='inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-inter text-xs font-medium'
-                    :class="row.process === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : (row.process === 'process' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')">
-                    <span class='size-1.5 rounded-full' :class="row.process === 'approved' ? 'bg-[#22c55e]' : (row.process === 'process' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"></span>
-                    <span x-text="row.process === 'approved' ? 'Lunas' : (row.process === 'process' ? 'Diproses' : 'Gagal')"></span>
-                  </span>
-                </div>
-              </div>
-
-              {{!-- Monthly Installment Rows (berasal dari installment.price) --}}
-              <template x-for='monthItem in row.installmentDetail.monthly' :key='monthItem.month'>
-                <div class='flex flex-col gap-3 p-3.5 sm:flex-row sm:items-center sm:justify-between'>
-                  <div class='flex items-center gap-3'>
-                    <span class='grid size-8 shrink-0 place-items-center rounded-lg font-inter text-xs font-bold'
-                      :class="monthItem.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (monthItem.canPay ? 'bg-[#eff8ff] text-[#175cd3]' : 'bg-[#f5f5f5] text-[#737373]')">
-                      <span x-text="'M' + monthItem.month"></span>
-                    </span>
-                    <div class='flex flex-col'>
-                      <span class='font-inter text-sm font-semibold text-[#171717]' x-text="'Cicilan Bulan ' + monthItem.month"></span>
-                      <span class='font-inter text-xs text-[#737373]' x-text="'Jatuh Tempo: ' + formatDate(monthItem.dueDate)"></span>
-                    </div>
-                  </div>
-
-                  <div class='flex flex-wrap items-center justify-between gap-3 sm:justify-end'>
-                    <span class='font-inter text-sm font-semibold text-[#171717]' x-text='formatAmount(monthItem.amount)'></span>
-
-                    {{!-- Status Badge --}}
-                    <span class='inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-inter text-xs font-medium'
-                      :class="monthItem.status === 'paid' ? 'bg-[#f0fdf4] text-[#15803d]' : (monthItem.status === 'process' ? 'bg-[#fffbeb] text-[#b45309]' : (monthItem.status === 'due' ? 'bg-[#fef2f2] text-[#b91c1c]' : 'bg-[#f5f5f5] text-[#525252]'))">
-                      <span class='size-1.5 rounded-full'
-                        :class="monthItem.status === 'paid' ? 'bg-[#22c55e]' : (monthItem.status === 'process' ? 'bg-[#f59e0b]' : (monthItem.status === 'due' ? 'bg-[#ef4444]' : 'bg-[#a3a3a3]'))"></span>
-                      <span x-text="monthItem.status === 'paid' ? 'Lunas' : (monthItem.status === 'process' ? 'Menunggu Konfirmasi' : (monthItem.status === 'due' ? 'Jatuh Tempo' : 'Mendatang'))"></span>
-                    </span>
-
-                    {{!-- Action Button: Bayar via Xendit jika canPay --}}
-                    <template x-if='monthItem.canPay'>
-                      <button
-                        type='button'
-                        @click='payMonth(row.id, monthItem.month)'
-                        :disabled='loadingMonth === monthItem.month'
-                        class='inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#003060] px-3.5 font-inter text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#00254a] disabled:cursor-not-allowed disabled:opacity-60'
-                      >
-                        <template x-if='loadingMonth === monthItem.month'>
-                          <svg class='h-3.5 w-3.5 animate-spin text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                            <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
-                            <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                          </svg>
-                        </template>
-                        <span x-text="loadingMonth === monthItem.month ? 'Menghubungkan...' : (monthItem.status === 'process' ? 'Lanjutkan Pembayaran' : 'Bayar Cicilan')"></span>
-                      </button>
-                    </template>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-      </template>
-
-      {{!-- Proof of Payment section in Detail Modal if available --}}
-      <template x-if='row.proof'>
-        <div class='flex items-center justify-between border-t border-[#e5e5e5] pt-4'>
-          <div class='flex flex-col'>
-            <span class='font-inter text-sm font-semibold text-[#171717]'>Bukti Pembayaran</span>
-            <span class='font-inter text-xs text-[#737373]'>File tanda terima atau slip transfer Anda</span>
-          </div>
-          <button
-            type='button'
-            @click="openDetailModal('payment-proof', row)"
-            class='inline-flex h-9 items-center gap-1.5 rounded-lg border border-[#d4d4d4] bg-white px-3 font-inter text-xs font-semibold text-[#344054] shadow-sm hover:bg-[#f9fafb]'
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-3.5 w-3.5'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4'/></svg>
-            Lihat Bukti
-          </button>
-        </div>
-      </template>
-    </div>
-  {{/components/ui/super_admin/modal/detail/index}}
+  {{!-- View Detail Modal (Figma & Stitch LMS Kesatria UI Viewer design with backdrop blur) --}}
+  {{> components/ui/modal/transaction_detail/index user=user }}
 </div>
 
 {{> components/ui/super_admin/table/client_table }}
@@ -432,15 +282,14 @@
     // memanggil dirinya sendiri dan daftar berhenti di keadaan loading.
     const baseLoad = base.load;
 
-    const emptyDraft = () => ({ from: '', to: '', status: '', type: '', program: '' });
+    const emptyDraft = () => ({ from: '', to: '', status: '', method: '', program: '' });
 
     const extension = {
       // Semua baris apa adanya dari server. `items` milik clientTable adalah
       // hasil filter yang sedang aktif, jadi sumbernya harus disimpan terpisah.
       source: [],
 
-      // select_field super admin membaca formData/formErrors dan memanggil
-      // validateField/touch. Filter tidak punya validasi, jadi keduanya no-op.
+      // formData membaca draft filter saat ini
       formData: emptyDraft(),
       formErrors: {},
       validateField() {},
@@ -456,21 +305,34 @@
 
       statusOptions: [
         { value: '', label: 'All Status' },
-        { value: 'paid', label: 'Paid', dot: 'bg-[#22c55e]' },
-        { value: 'processing', label: 'Processing', dot: 'bg-[#f59e0b]' },
-        { value: 'failed', label: 'Failed', dot: 'bg-[#ef4444]' },
+        { value: 'paid', label: 'Paid' },
+        { value: 'processing', label: 'Processing' },
+        { value: 'failed', label: 'Failed' },
       ],
 
-      typeOptions: [
-        { value: '', label: 'All Types' },
-        { value: 'installment', label: 'Installment' },
-        { value: 'full', label: 'Full Payment' },
-        { value: 'registration', label: 'Registration' },
-      ],
+      get methodOptions() {
+        const rawMethods = this.source.map((r) => r.method).filter(Boolean);
+        const uniqueMethods = [...new Set(rawMethods)];
+        return [
+          { value: '', label: 'All Methods' },
+          ...uniqueMethods.map((m) => ({ value: m, label: m })),
+        ];
+      },
 
       get programOptions() {
         const programs = [...new Set(this.source.map((r) => r.courseName).filter(Boolean))];
         return [{ value: '', label: 'All Programs' }, ...programs.map((p) => ({ value: p, label: p }))];
+      },
+
+      get dateRangeDisplay() {
+        if (this.formData.from && this.formData.to) {
+          return this.formatDate(this.formData.from) + ' – ' + this.formatDate(this.formData.to);
+        } else if (this.formData.from) {
+          return 'From ' + this.formatDate(this.formData.from);
+        } else if (this.formData.to) {
+          return 'Until ' + this.formatDate(this.formData.to);
+        }
+        return 'Select date range';
       },
 
       get rangeLabel() {
@@ -489,11 +351,11 @@
 
       applyFilters() {
         this.applied = { ...this.formData };
-        const { from, to, status, type, program } = this.applied;
+        const { from, to, status, method, program } = this.applied;
 
         this.items = this.source.filter((row) => {
           if (status && row.status !== status) return false;
-          if (type && row.kind !== type) return false;
+          if (method && row.method !== method) return false;
           if (program && row.courseName !== program) return false;
           if (from && new Date(row.date) < new Date(from)) return false;
           // `to` mencakup seluruh hari itu, bukan berhenti di tengah malamnya.
@@ -537,46 +399,5 @@
     // statis, sehingga `rows`, `totalPages`, `methodOptions`, dan `programOptions`
     // tidak akan pernah ikut berubah.
     return Object.defineProperties(base, Object.getOwnPropertyDescriptors(extension));
-  }
-
-  function installmentAction() {
-    return {
-      loadingMonth: null,
-      async payMonth(paymentId, month) {
-        if (this.loadingMonth) return;
-        this.loadingMonth = month;
-        try {
-          const res = await fetch('/api/payment/installment-month', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ paymentId, month }),
-          });
-          const result = await res.json();
-          if (result.status === 'success' && result.redirect_url) {
-            window.location.href = result.redirect_url;
-          } else {
-            alert(result.message || 'Gagal memproses pembayaran cicilan.');
-            this.loadingMonth = null;
-          }
-        } catch (err) {
-          console.error('Pay installment error:', err);
-          alert('Terjadi kesalahan saat memproses pembayaran.');
-          this.loadingMonth = null;
-        }
-      },
-      formatDate(value) {
-        if (!value) return '—';
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return '—';
-        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      },
-      formatAmount(value) {
-        const number = Number(value);
-        if (Number.isNaN(number)) return '—';
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-      },
-    };
   }
 </script>
