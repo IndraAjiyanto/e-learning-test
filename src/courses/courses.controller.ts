@@ -26,7 +26,7 @@ import {
 } from './mappers/create-course.mapper';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -1347,8 +1347,8 @@ await this.coursesService.addUserToCourse(userId, courseId);
         req.flash('error', 'Program not found');
         return res.redirect(previous || '/program');
       }
-      await this.coursesService.deleteFile(course.image);
       await this.coursesService.remove(courseId);
+      await this.coursesService.deleteFile(course.image);
       flashToast(
         req,
         'Program Deleted',
@@ -1356,8 +1356,13 @@ await this.coursesService.addUserToCourse(userId, courseId);
       );
       return res.redirect(previous || '/program');
     } catch (error: any) {
+      flashToastError(
+        req,
+        'Gagal Menghapus Program',
+        error.message || 'Failed to remove program',
+      );
       req.flash('error', error.message || 'Failed to remove program');
-      return res.redirect(previous || '/program');
+      return res.redirect(previous || `/program/detail/program/admin/${courseId}`);
     }
   }
 
