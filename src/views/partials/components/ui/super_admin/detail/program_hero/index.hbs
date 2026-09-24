@@ -77,14 +77,32 @@
       </div>
 
       <div class='flex flex-wrap items-center gap-3'>
-        <form action='/program/{{course.id}}?_method=DELETE' method='post' x-data>
+        <form
+          action='/program/{{course.id}}?_method=DELETE'
+          method='post'
+          x-data="{
+            hasUsers: {{default course.userCourses.length 0}},
+            handleDelete(btn) {
+              if (this.hasUsers > 0) {
+                window.dispatchEvent(new CustomEvent('toast:error', {
+                  detail: {
+                    title: 'Gagal Menghapus Program',
+                    description: 'program &quot;{{course.name}}&quot; tidak dapat dihapus karena masih memiliki ' + this.hasUsers + ' peserta. Hapus peserta tersebut terlebih dahulu.'
+                  }
+                }));
+              } else {
+                openDeleteModal(btn);
+              }
+            }
+          }"
+        >
           {{!-- Controller memakai `previous` untuk redirect balik ke list yang sama setelah hapus. --}}
           <input type='hidden' name='previous' :value="localStorage.getItem('kelasPrevUrl') || '/program'" />
 
           {{> components/ui/super_admin/form/button
             variant='danger-soft'
             label='Delete'
-            onclick='openDeleteModal(this)'
+            atClick='handleDelete($el)'
           }}
         </form>
 
