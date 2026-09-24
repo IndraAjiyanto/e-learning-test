@@ -15,12 +15,21 @@
 {{!-- Learning workspace --}}
 <div class="w-full max-w-[1268px] mx-auto flex flex-col items-start mt-8 rounded-2xl gap-[18px] py-5 bg-white font-inter">
 
-  {{!-- Learning schedule --}}
-  <div class="w-full flex flex-col items-start gap-6">
+{{!-- Learning schedule --}}
+    <div
+      class="w-full flex flex-col items-start gap-6"
+      x-data="{
+        weekPage: 1,
+        perPage: 5,
+        get totalWeeks() { return {{minggu.length}}; },
+        get totalPages() { return Math.max(1, Math.ceil(this.totalWeeks / this.perPage)); }
+      }"
+    >
 
-    {{#if minggu.length}}
-      {{#each minggu}}
-        {{#if (or weekProgresses.[0].process progres_minggu.[0].proses (eq @index 0))}}
+      {{#if minggu.length}}
+        {{#each minggu}}
+          <template x-if="Math.floor({{@index}} / 5) + 1 === weekPage">
+          {{#if (or weekProgresses.[0].process progres_minggu.[0].proses (eq @index 0))}}
           {{!-- Week item (Unlocked & Open) --}}
           <div
             x-data="{
@@ -694,9 +703,10 @@
             </div>
           </div>
         {{/if}}
-      {{/each}}
+          </template>
+        {{/each}}
 
-    {{else}}
+      {{else}}
       {{!-- Slicing / Mockup Mode based on Figma Node 1496-1317 --}}
 
       {{!-- Week 1 (Unlocked & Open) --}}
@@ -1025,19 +1035,35 @@
 
     {{!-- Pagination --}}
     <div class="w-full flex flex-row justify-between items-center px-6 sm:px-8 py-3 h-14 bg-white border border-[#D9D9D9] rounded-[16px] mt-2">
-      <span class="font-inter font-medium text-sm leading-[17px] text-[#003060]">
-        {{#if minggu.length}}
-          Showing 1-{{minggu.length}} of {{minggu.length}} weeks
-        {{else}}
-          Showing 1-5 of 12 weeks
-        {{/if}}
-      </span>
+      {{#if minggu.length}}
+        <span
+          class="font-inter font-medium text-sm leading-[17px] text-[#003060]"
+          x-text="`Showing ${(weekPage - 1) * 5 + 1}-${Math.min(weekPage * 5, {{minggu.length}})} of {{minggu.length}} weeks`"
+        >Showing 1-{{#if (gt minggu.length 5)}}5{{else}}{{minggu.length}}{{/if}} of {{minggu.length}} weeks</span>
 
-      <div class="flex flex-row items-center gap-2">
-        <button type="button" class="w-8 h-8 rounded-full bg-[#003060] text-white flex items-center justify-center font-inter font-semibold text-sm transition-opacity hover:opacity-90">1</button>
-        <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">2</button>
-        <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">3</button>
-      </div>
+        <div class="flex flex-row items-center gap-2">
+          <template x-for="page in totalPages" :key="page">
+            <button
+              type="button"
+              @click="weekPage = page"
+              :class="weekPage === page
+                ? 'w-8 h-8 rounded-full bg-[#003060] text-white flex items-center justify-center font-inter font-semibold text-sm transition-opacity hover:opacity-90'
+                : 'w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50'"
+              x-text="page"
+            ></button>
+          </template>
+        </div>
+      {{else}}
+        <span class="font-inter font-medium text-sm leading-[17px] text-[#003060]">
+          Showing 1-5 of 12 weeks
+        </span>
+
+        <div class="flex flex-row items-center gap-2">
+          <button type="button" class="w-8 h-8 rounded-full bg-[#003060] text-white flex items-center justify-center font-inter font-semibold text-sm transition-opacity hover:opacity-90">1</button>
+          <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">2</button>
+          <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">3</button>
+        </div>
+      {{/if}}
     </div>
 
   </div>
