@@ -1,78 +1,112 @@
 {{!--
   Komponen: Hero Quick Stats
   Lokasi: src/views/partials/components/ui/card/hero_quick_stats/index.hbs
-  Level: L1 Atomik
+  Level: L1 Atomik / Composite Card
 
+  Figma Specification: Frame 2147229478 -> Hero Quick Stats (700x155px)
   Props:
-  - course : object (wajib, data program: startDate, method, quota)
+  - course : object (wajib: startDate, startEnd/endDate, method, quota)
   - lang   : string (opsional, kode bahasa)
 --}}
 
-<div class="box-border flex flex-col sm:flex-row justify-between items-start sm:items-center px-6 py-5 gap-4 sm:gap-4 w-full max-w-[680px] min-h-[106px] bg-white border border-[#E2E8F0] shadow-[0px_8px_24px_-8px_rgba(0,0,0,0.05)] rounded-[16px]">
+<div class="box-border flex flex-col justify-center items-stretch p-5 sm:px-6 sm:py-5 gap-4 w-full max-w-[700px] min-h-[155px] bg-white border border-[#E2E8F0] shadow-[0px_8px_24px_-8px_rgba(0,0,0,0.05)] rounded-[16px]">
   
-  {{!-- Stat Item 1: Tanggal Mulai --}}
-  <div class="flex flex-row items-center gap-3 flex-1 w-full sm:w-auto">
-    <div class="flex items-center justify-center size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
-      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
+  {{!-- Row 1 (Frame 2147229721): Tanggal Mulai & Tanggal Selesai --}}
+  <div class="flex flex-col sm:flex-row items-start sm:items-center p-0 gap-4 sm:gap-4 w-full min-h-[44px]">
+    
+    {{!-- Stat Item 1: Tanggal Mulai --}}
+    <div class="flex flex-row items-center p-0 gap-3 w-full sm:w-[244px] shrink-0">
+      <div class="box-border flex flex-col justify-center items-center p-0 size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
+        <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
+          {{#if (eq lang 'id')}}Tanggal Mulai{{else if (eq lang 'ja')}}開始日{{else}}Tanggal Mulai{{/if}}
+        </span>
+        <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
+          {{#if course.startDate}}{{formatDateShort course.startDate lang}}{{else}}16 Sep 2026{{/if}}
+        </span>
+      </div>
     </div>
-    <div class="flex flex-col items-start gap-1.5 flex-1 min-w-0">
-      <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-        {{#if (eq lang 'id')}}Tanggal Mulai{{else if (eq lang 'ja')}}開始日{{else}}Tanggal Mulai{{/if}}
-      </span>
-      <span class="font-inter font-bold text-[18px] lg:text-[20px] leading-[24px] text-[#0B1F3B]">
-        {{#if course.startDate}}{{formatDate course.startDate lang}}{{else}}16 Sep 2026{{/if}}
-      </span>
+
+    {{!-- Separator 1 --}}
+    <div class="hidden sm:block w-px h-11 bg-[#E2E8F0] shrink-0"></div>
+    <div class="block sm:hidden w-full h-px bg-[#E2E8F0] shrink-0"></div>
+
+    {{!-- Stat Item - End Date: Tanggal Selesai --}}
+    <div class="flex flex-row items-center p-0 gap-3 flex-1 min-w-0 w-full sm:w-auto">
+      <div class="box-border flex flex-col justify-center items-center p-0 size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
+        <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
+          {{#if (eq lang 'id')}}Tanggal Selesai{{else if (eq lang 'ja')}}終了日{{else}}Tanggal Selesai{{/if}}
+        </span>
+        <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
+          {{#if course.startEnd}}{{formatDateShort course.startEnd lang}}{{else if course.endDate}}{{formatDateShort course.endDate lang}}{{else}}16 Des 2026{{/if}}
+        </span>
+      </div>
     </div>
+
   </div>
 
-  {{!-- Separator 1 --}}
-  <div class="w-full h-px sm:w-px sm:h-11 bg-[#E2E8F0] shrink-0"></div>
+  {{!-- Row 2 (Group 6772): Learning System & Class Capacity --}}
+  <div class="flex flex-col sm:flex-row items-start sm:items-center p-0 gap-4 sm:gap-4 w-full min-h-[44px]">
 
-  {{!-- Stat Item 2: Learning System --}}
-  <div class="flex flex-row items-center gap-3 flex-1 w-full sm:w-auto">
-    <div class="flex items-center justify-center size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
-      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-        <line x1="8" y1="21" x2="16" y2="21"></line>
-        <line x1="12" y1="17" x2="12" y2="21"></line>
-      </svg>
+    {{!-- Stat Item 2: Learning System --}}
+    <div class="flex flex-row items-center p-0 gap-3 w-full sm:w-[244px] shrink-0">
+      <div class="box-border flex flex-col justify-center items-center p-0 size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </div>
+      <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
+        <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
+          Learning System
+        </span>
+        <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
+          {{#if course.method}}{{course.method}}{{else}}Online &amp; Offline{{/if}}
+        </span>
+      </div>
     </div>
-    <div class="flex flex-col items-start gap-1.5 flex-1 min-w-0">
-      <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-        Learning System
-      </span>
-      <span class="font-inter font-bold text-[18px] lg:text-[20px] leading-[24px] text-[#0B1F3B]">
-        {{#if course.method}}{{course.method}}{{else}}Online &amp; Offline{{/if}}
-      </span>
-    </div>
-  </div>
 
-  {{!-- Separator 2 --}}
-  <div class="w-full h-px sm:w-px sm:h-11 bg-[#E2E8F0] shrink-0"></div>
+    {{!-- Separator 2 --}}
+    <div class="hidden sm:block w-px h-11 bg-[#E2E8F0] shrink-0"></div>
+    <div class="block sm:hidden w-full h-px bg-[#E2E8F0] shrink-0"></div>
 
-  {{!-- Stat Item 3: Class Capacity --}}
-  <div class="flex flex-row items-center gap-3 flex-1 w-full sm:w-auto">
-    <div class="flex items-center justify-center size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
-      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-      </svg>
+    {{!-- Stat Item 3: Class Capacity --}}
+    <div class="flex flex-row items-center p-0 gap-3 flex-1 min-w-0 w-full sm:w-auto">
+      <div class="box-border flex flex-col justify-center items-center p-0 size-10 shrink-0 bg-[#F8F9FA] border border-[#E2E8F0] rounded-[12px]">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
+        <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
+          Class Capacity
+        </span>
+        <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
+          Maximum {{default course.quota '8'}} Students
+        </span>
+      </div>
     </div>
-    <div class="flex flex-col items-start gap-1.5 flex-1 min-w-0">
-      <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-        Class Capacity
-      </span>
-      <span class="font-inter font-bold text-[18px] lg:text-[20px] leading-[24px] text-[#0B1F3B]">
-        Maximum {{default course.quota '8'}} Students
-      </span>
-    </div>
+
   </div>
 
 </div>
+
