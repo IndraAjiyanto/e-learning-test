@@ -2,7 +2,6 @@
   Page: Admin - Detail Quiz (Syllabus / Program context)
   Path: admin/course/detail_quiz.hbs
   Route: GET /syllabus/quiz/detail/:id (or /program/detail-quiz-syllabus/:id)
-  Design: Figma node 1883-12901 (font-inter only)
 --}}
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
@@ -20,8 +19,8 @@
       }
     }">
 
-    {{!-- Feature Card 1: Partnership / Header Card --}}
-    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[20px] flex flex-col gap-[14px] items-start'>
+    {{!-- Feature Card 1: Header Card --}}
+    {{#> components/ui/admin/form/form-card noNumber=true class="gap-[14px]"}}
 
       {{!-- Frame 2147229598: Top row (Back button) --}}
       <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
@@ -144,10 +143,10 @@
 
       </div>
 
-    </div>
+    {{/components/ui/admin/form/form-card}}
 
-    {{!-- Table Detail Session: Questions Section Card --}}
-    <div class='box-border w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-[12px] p-[12px_20px_20px] flex flex-col gap-[10px] items-start'>
+    {{!-- Questions Section Card --}}
+    {{#> components/ui/admin/form/form-card noNumber=true class="p-[12px_20px_20px] gap-[10px]"}}
 
       {{!-- Header: Questions : --}}
       <div class='w-full flex flex-row items-center justify-between'>
@@ -279,7 +278,7 @@
 
       </div>
 
-    </div>
+    {{/components/ui/admin/form/form-card}}
 
   </div>
 </div>

@@ -98,6 +98,79 @@ export class CoursesController {
     }
   }
 
+  @Roles('admin', 'super_admin', 'user')
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('image', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    allowedTypes: [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ],
+    folder: 'course',
+    maxSize: 10 * 1024 * 1024,
+    skipTransformation: true,
+  })
+  async uploadImage(@Res() res: Response, @Req() req: Request) {
+    try {
+      const imageUrl = req.body.uploadedImageUrls?.[0];
+      if (!imageUrl) {
+        return res
+          .status(400)
+          .json({ success: 0, message: 'Image upload failed' });
+      }
+      return res.json({ success: 1, file: { url: imageUrl } });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: 0,
+        message: error.message || 'Image upload failed',
+      });
+    }
+  }
+
+  @Roles('admin', 'super_admin', 'user')
+  @Post('fetch-image')
+  async fetchImage(@Body() body: { url?: string }, @Res() res: Response) {
+    if (!body?.url) {
+      return res
+        .status(400)
+        .json({ success: 0, message: 'No image URL provided' });
+    }
+    return res.json({
+      success: 1,
+      file: {
+        url: body.url,
+      },
+    });
+  }
+
+  @Roles('admin', 'super_admin', 'user')
+  @Get('fetch-link')
+  async fetchLink(@Query('url') url: string, @Res() res: Response) {
+    const rawUrl = url || '';
+    let title = rawUrl;
+    try {
+      if (rawUrl) {
+        title = new URL(rawUrl).hostname;
+      }
+    } catch (_) {}
+
+    return res.json({
+      success: 1,
+      link: rawUrl,
+      meta: {
+        title,
+        description: '',
+        image: { url: '' },
+      },
+    });
+  }
+
   @Roles('admin', 'super_admin')
   @Post(':categoryId')
   @UseInterceptors(
