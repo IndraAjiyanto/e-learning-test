@@ -62,18 +62,12 @@
           </p>
         </div>
 
-        {{!-- hero-ctas: Primary & Secondary Buttons (Figma spec: 390px x 52px, gap 12px) --}}
-        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-[390px] h-auto sm:h-[52px]">
+        {{!-- hero-ctas: Primary Button --}}
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
           {{!-- Primary CTA: Daftar Sekarang (Detail) / View Program (Category) --}}
           {{> components/ui/button/view_program/index
               href=(ternary course.id (concat '/payment/registration/' course.id) '#programs')
               text=(ternary course.id "Daftar Sekarang" "View Program")
-          }}
-
-          {{!-- Secondary CTA: Watch overview --}}
-          {{> components/ui/button/watch_overview/index
-              xClick="videoModalOpen = true"
-              text="Watch overview"
           }}
         </div>
 

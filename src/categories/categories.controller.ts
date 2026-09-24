@@ -146,8 +146,8 @@ export class CategoriesController {
     if (category?.type === 'Special Program') {
       const isJapan = Boolean(
         category.name &&
-          (category.name.toLowerCase().includes('japan') ||
-            category.name === 'LPK'),
+        (category.name.toLowerCase().includes('japan') ||
+          category.name === 'LPK'),
       );
       res.render('special_program', {
         category,
