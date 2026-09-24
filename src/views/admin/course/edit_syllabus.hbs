@@ -177,14 +177,14 @@ function editSyllabusForm() {
                 class: window.EditorTools.ImageTool,
                 config: {
                   endpoints: {
-                    byFile: '/course/upload-image',
-                    byUrl: '/course/fetch-image'
+                    byFile: '/program/upload-image',
+                    byUrl: '/program/fetch-image'
                   }
                 }
               },
               linkTool: {
                 class: window.EditorTools.LinkTool,
-                config: { endpoint: '/course/fetch-link' }
+                config: { endpoint: '/program/fetch-link' }
               }
             }
           });
