@@ -22,130 +22,153 @@
                 Dipakai halaman Edit: durasi skema yang sudah ada tidak diganti,
                 dan backend mengunci nilainya lewat @IsEnum([3]).
 --}}
-<div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
-  {{#if lockMonth}}
-    <div class='flex flex-col gap-1.5'>
-      <label
-        for='month'
-        class='font-inter text-sm font-medium leading-5 text-[#404040]'
-      >Installment Period<span class='text-[#dc2626]'>*</span></label>
+<div class='box-border flex w-full max-w-[1052px] flex-col gap-7 rounded-xl border border-[#d9d9d9] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'>
+  <div class='flex w-full flex-col gap-5'>
+    {{#if lockMonth}}
+      <div class='flex flex-col gap-2'>
+        <label
+          for='month'
+          class='font-inter text-sm font-medium leading-5 text-[#404040]'
+        >Installment Period<span class='text-[#dc2626]'>*</span></label>
 
-      <input type='hidden' id='month' name='month' x-model='formData.month' />
+        <input type='hidden' id='month' name='month' x-model='formData.month' />
 
-      <div
-        aria-disabled='true'
-        x-text="formData.month + ' Months'"
-        class='flex h-11 w-full items-center rounded-lg border border-[#d4d4d4] bg-[#f5f5f5] px-3.5 py-2.5 font-inter text-base leading-6 text-[#737373] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
-      ></div>
+        <div
+          aria-disabled='true'
+          x-text="formData.month + ' Months'"
+          class='flex h-11 w-full items-center rounded-lg border border-[#d4d4d4] bg-[#f5f5f5] px-3.5 py-2.5 font-inter text-base leading-6 text-[#737373] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]'
+        ></div>
 
-      <p class='font-inter text-sm leading-5 text-[#525252]'>
-        The duration of an existing plan cannot be changed.
-      </p>
-    </div>
-  {{else}}
-    {{> components/ui/super_admin/form/select_field
-      id='month'
-      name='month'
-      field='month'
-      label='Installment Period'
-      placeholder='Select a period'
-      hint='How many monthly payments this plan is split into.'
-      options='monthOptions'
+        <p class='font-inter text-sm leading-5 text-[#525252]'>
+          The duration of an existing plan cannot be changed.
+        </p>
+      </div>
+    {{else}}
+      {{> components/ui/super_admin/form/select_field
+        id='month'
+        name='month'
+        field='month'
+        label='Installment Period'
+        placeholder='Select a period'
+        hint='How many monthly payments this plan is split into.'
+        options='monthOptions'
+        required=true
+      }}
+    {{/if}}
+
+    {{> components/ui/super_admin/form/text_field
+      id='downPayment'
+      name='downPayment'
+      field='downPayment'
+      label='Down Payment (DP)'
+      placeholder='Enter down payment amount'
+      hint='Paid up front, before the monthly payments start.'
+      numeric=true
+      autocomplete='off'
       required=true
     }}
-  {{/if}}
 
-  {{> components/ui/super_admin/form/text_field
-    id='downPayment'
-    name='downPayment'
-    field='downPayment'
-    label='Down Payment (DP)'
-    placeholder='Enter down payment amount'
-    hint='Paid up front, before the monthly payments start.'
-    numeric=true
-    autocomplete='off'
-    required=true
-  }}
+    <div class='flex flex-col gap-5 pt-1'>
+      <div class='flex flex-col gap-2'>
+        <h2 class='font-montserrat text-base font-semibold leading-5 text-[#003060]'>Monthly Schedule</h2>
+        <p class='font-montserrat text-sm font-medium leading-[23px] text-[#737373]'>
+          Set the amount and the due date of each monthly payment
+        </p>
+      </div>
 
-  <div class='flex flex-col gap-2.5'>
-    <div class='flex flex-col gap-1'>
-      <h2 class='font-inter text-xl font-semibold leading-7 text-[#171717]'>Monthly Schedule</h2>
-      <p class='font-inter text-base leading-5 text-[#718096]'>
-        Set the amount and the due date of each monthly payment
-      </p>
-    </div>
+      <template x-for='index in rows()' :key='index'>
+        <div class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+          <div class='flex flex-col gap-2'>
+            <label
+              :for="'price-' + index"
+              class='font-inter text-sm font-medium leading-5 text-[#404040]'
+              x-text="'Month ' + (index + 1) + ' Price'"
+            ></label>
 
-    <template x-for='index in rows()' :key='index'>
-      <div class='flex flex-col gap-1.5'>
-        <span
-          class='font-inter text-sm font-medium leading-5 text-[#404040]'
-          x-text="'Month ' + (index + 1)"
-        ></span>
-
-        <div class='grid grid-cols-1 gap-2.5 sm:grid-cols-2'>
-          <div class='flex flex-col gap-1.5'>
-            <input
-              type='text'
-              inputmode='numeric'
-              :id="'price-' + index"
-              :aria-label="'Payment amount for month ' + (index + 1)"
-              :aria-invalid="formErrors.price[index] ? 'true' : 'false'"
-              placeholder='Enter amount'
-              x-model='formData.price[index]'
-              @input='validateRow("price", index, $event.target.value)'
-              @blur='touchRow("price", index)'
-              x-data='{ seen: false }'
-              x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
-              :class="formErrors.price[index]
-                ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-                : seen
-                  ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
-                  : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
-              class='h-11 w-full rounded-lg border bg-white px-3.5 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2'
-            />
-            <input
-              type='hidden'
-              name='price[]'
-              :value="String(formData.price[index] ?? '').replace(/\D/g, '')"
-            />
-            <p
-              x-show='formErrors.price[index]'
-              x-cloak
-              x-text='formErrors.price[index]'
-              class='font-inter text-sm leading-5 text-[#ef4444]'
-            ></p>
+            <div class='flex flex-col gap-1.5'>
+              <input
+                type='text'
+                inputmode='numeric'
+                :id="'price-' + index"
+                :aria-label="'Payment amount for month ' + (index + 1)"
+                :aria-invalid="formErrors.price[index] ? 'true' : 'false'"
+                placeholder='Enter amount'
+                x-model='formData.price[index]'
+                @input='validateRow("price", index, $event.target.value)'
+                @blur='touchRow("price", index)'
+                x-data='{ seen: false }'
+                x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
+                :class="formErrors.price[index]
+                  ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
+                  : seen
+                    ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+                    : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+                class='h-11 w-full rounded-lg border bg-white px-3.5 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] focus:outline-none focus:ring-2'
+              />
+              <input
+                type='hidden'
+                name='price[]'
+                :value="String(formData.price[index] ?? '').replace(/\D/g, '')"
+              />
+              <p
+                x-show='formErrors.price[index]'
+                x-cloak
+                x-text='formErrors.price[index]'
+                class='font-inter text-sm leading-5 text-[#ef4444]'
+              ></p>
+            </div>
           </div>
 
-          <div class='flex flex-col gap-1.5'>
-            <input
-              type='date'
-              name='dueDates[]'
-              :id="'dueDates-' + index"
-              :aria-label="'Due date for month ' + (index + 1)"
-              :aria-invalid="formErrors.dueDates[index] ? 'true' : 'false'"
-              x-model='formData.dueDates[index]'
-              @input='validateRow("dueDates", index, $event.target.value)'
-              @change='touchRow("dueDates", index)'
-              @blur='touchRow("dueDates", index)'
-              x-data='{ seen: false }'
-              x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
-              :class="formErrors.dueDates[index]
-                ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-                : seen
-                  ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
-                  : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
-              class='h-11 w-full rounded-lg border bg-white px-3.5 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2'
-            />
-            <p
-              x-show='formErrors.dueDates[index]'
-              x-cloak
-              x-text='formErrors.dueDates[index]'
-              class='font-inter text-sm leading-5 text-[#ef4444]'
-            ></p>
+          <div class='flex flex-col gap-2'>
+            <label
+              :for="'dueDates-' + index"
+              class='font-inter text-sm font-medium leading-5 text-[#404040]'
+            >Date<span class='text-[#dc2626]'>*</span></label>
+
+            <div class='flex flex-col gap-1.5'>
+              <div class='relative w-full'>
+                <input
+                  type='date'
+                  name='dueDates[]'
+                  :id="'dueDates-' + index"
+                  :aria-label="'Due date for month ' + (index + 1)"
+                  :aria-invalid="formErrors.dueDates[index] ? 'true' : 'false'"
+                  x-model='formData.dueDates[index]'
+                  @input='validateRow("dueDates", index, $event.target.value)'
+                  @change='touchRow("dueDates", index)'
+                  @blur='touchRow("dueDates", index)'
+                  @click='$el.showPicker ? $el.showPicker() : null'
+                  x-data='{ seen: false }'
+                  x-init="$el.form?.addEventListener('submit', () => seen = true); $el.addEventListener('blur', () => seen = true)"
+                  :class="formErrors.dueDates[index]
+                    ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
+                    : seen
+                      ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+                      : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+                  class='h-11 w-full cursor-pointer rounded-lg border bg-white pl-3.5 pr-10 py-2.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2 [&::-webkit-calendar-picker-indicator]:hidden'
+                />
+                <span
+                  :class="formErrors.dueDates[index] ? 'text-[#ef4444]' : 'text-[#737373]'"
+                  class='pointer-events-none absolute right-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center supports-[-moz-orient:inline]:hidden'
+                  aria-hidden='true'
+                >
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+                    <rect width='18' height='18' x='3' y='4' rx='2' />
+                    <path d='M16 2v4M8 2v4M3 10h18' />
+                  </svg>
+                </span>
+              </div>
+              <p
+                x-show='formErrors.dueDates[index]'
+                x-cloak
+                x-text='formErrors.dueDates[index]'
+                class='font-inter text-sm leading-5 text-[#ef4444]'
+              ></p>
+            </div>
           </div>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 
   {{#if @partial-block}}

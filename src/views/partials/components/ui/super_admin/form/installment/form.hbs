@@ -205,10 +205,9 @@
           });
         },
 
-        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
         submitForm(event) {
           this.validateAll();
-          if (this.hasFormErrors()) {
+          if (!this.canSubmit() || this.hasFormErrors()) {
             this.revealFirstInvalid();
             return;
           }
