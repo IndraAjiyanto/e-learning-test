@@ -67,65 +67,38 @@
 --}}
 
 <div class="block lg:flex min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-76px)] items-center justify-center px-5 py-10 font-inter lg:px-6 lg:py-12">
-  <div class="w-full max-w-sm mx-auto p-6 bg-white border border-[#D9D9D9] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:max-w-[460px] lg:p-9 lg:bg-[#FFFFFF87] lg:border-[#FFFFFF17] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
+  {{#if showCountdown}}
+    {{!-- CARD KHUSUS HITUNG MUNDUR (FIGMA 822px x 569px, warna disamakan dengan auth card #FFFFFF87, border #ffffff) --}}
+    <div class="w-full max-w-sm mx-auto p-6 bg-white border border-[#ffffff] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:w-[822px] lg:max-w-[822px] lg:h-[569px] lg:min-h-[569px] lg:p-0 flex flex-col justify-start items-center lg:bg-[#FFFFFF87] lg:border-[#ffffff] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
 
-    {{!-- ICON / LOGO --}}
-    {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-      <div class="flex justify-center w-full mt-32">
-        {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto text-[#003060]") wrapperClass="text-[#003060]" }}
+      {{!-- 1. LOGO KESATRIA ACADEMY (Mask group / Frame 1618876400: top 42px, 202.71px x 110.45px) --}}
+      <div class="w-full flex justify-center pt-6 lg:pt-[42px]">
+        {{> components/ui/icon/logo_kesatria/index class="w-[150px] lg:w-[202.71px] h-auto lg:h-[110.45px]" wrapperClass="text-[#003060]" }}
       </div>
-    {{else}}
-      {{> components/ui/icon/logo_kesatria/index class=(default logoClass "w-[128px] h-auto lg:w-[160px] lg:h-auto") wrapperClass="mb-3 lg:mb-5" }}
-    {{/if}}
 
-    {{!-- ICON KHUSUS (Email / Success) --}}
-    {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-      <div class="flex items-center justify-center {{#if (eq variant 'verify-email-success')}}-mt-32{{else}}-mt-40{{/if}}">
-        {{#if (eq variant 'verify-email-success')}}
-          {{!-- Success Icon SVG --}}
-          <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="-2 -2 78 78" fill="none">
-            <path d="M39 3 C42.8 3 45.2 7.8 48.8 8.6 C52.4 9.4 55.9 6.4 58.9 8.4 C61.9 10.4 61.1 14.9 63.8 17.6 C66.5 20.3 71 19.5 73 22.5 C75 25.5 72 29 72.8 32.6 C73.6 36.2 78 38.6 78 42.4 C78 46.2 73.6 48.6 72.8 52.2 C72 55.8 75 59.3 73 62.3 C71 65.3 66.5 64.5 63.8 67.2 C61.1 69.9 61.9 74.4 58.9 76.4 C55.9 78.4 52.4 75.4 48.8 76.2 C45.2 77 42.8 81.8 39 81.8 C35.2 81.8 32.8 77 29.2 76.2 C25.6 75.4 22.1 78.4 19.1 76.4 C16.1 74.4 16.9 69.9 14.2 67.2 C11.5 64.5 7 65.3 5 62.3 C3 59.3 6 55.8 5.2 52.2 C4.4 48.6 0 46.2 0 42.4 C0 38.6 4.4 36.2 5.2 32.6 C6 29 3 25.5 5 22.5 C7 19.5 11.5 20.3 14.2 17.6 C16.9 14.9 16.1 10.4 19.1 8.4 C22.1 6.4 25.6 9.4 29.2 8.6 C32.8 7.8 35.2 3 39 3Z" transform="translate(-2 -5)" stroke="#00B51A" stroke-width="2.5" stroke-linejoin="round"/>
-            <path d="M29 40L35 46L47 34" stroke="#00B51A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      {{!-- 2. FRAME 251 / FRAME 240 / FRAME 2147229440 (top 190.95px, height 208px, gap 20px) --}}
+      <div class="w-full max-w-[522px] mx-auto mt-5 lg:mt-[38.5px] flex flex-col items-center gap-[20px] text-center px-4 lg:px-0">
+        {{!-- si:mail-line (66x66) --}}
+        <div class="w-[66px] h-[66px] flex items-center justify-center shrink-0">
+          <svg width="66" height="66" viewBox="0 0 66 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5.5" y="11" width="55" height="44" rx="4" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M5.5 13L33 35L60.5 13" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        {{else}}
-          {{!-- Email Icon SVG --}}
-          <svg xmlns="http://www.w3.org/2000/svg" width="120" height="72" viewBox="0 0 40 40" preserveAspectRatio="none">
-            <path d="M12 11.5H28C29.66 11.5 31 12.84 31 14.5V32C31 33.66 29.66 35 28 35H12C10.34 35 9 33.66 9 32V14.5C9 12.84 10.34 11.5 12 11.5Z" fill="none" stroke="#000000" stroke-width="2"/>
-            <path d="M11 15L20 22L29 15" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        {{/if}}
+        </div>
+
+        {{!-- Check Your Email! (522px x 36px, Inter 600, 30px/36px, #192E5B) --}}
+        <h2 class="w-full max-w-[522px] h-auto lg:h-[36px] font-inter font-semibold text-[24px] leading-[30px] lg:text-[30px] lg:leading-[36px] text-center text-[#192E5B] m-0">
+          {{default title "Check Your Email!"}}
+        </h2>
+
+        {{!-- Description (412px x 66px, Inter 400, 18px/22px, rgba(45, 45, 45, 0.8)) --}}
+        <p class="w-full max-w-[412px] h-auto lg:h-[66px] font-inter font-normal text-[15px] leading-[20px] lg:text-[18px] lg:leading-[22px] text-center text-[#2D2D2DCC] m-0">
+          {{default description "A verification link has been sent to your email address. Please click the link to verify and activate your account."}}
+        </p>
       </div>
-    {{/if}}
 
-    {{!-- TITLE --}}
-    {{#if (eq variant 'verify-email-success')}}
-      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") color="text-[#12BD26]" font="inter" fontWeight="font-semibold" class="mb-1 text-center text-xl leading-snug lg:mb-2 lg:text-2xl" }}
-    {{else if (or (eq variant 'verify-email'))}}
-      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") font="inter" fontWeight="font-semibold" class="mb-1 text-center text-xl leading-snug lg:mb-2 lg:text-2xl" }}
-    {{else}}
-      {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") font="inter" fontWeight="font-semibold" class="mb-1 text-center text-xl leading-snug lg:mb-2 lg:text-2xl" }}
-    {{/if}}
-
-    {{!-- DESCRIPTION --}}
-    {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-      {{> components/ui/text/description/index text=(default description "Welcome back!") color="text-[#2D2D2DCC]" font="inter" class=(concat "mb-4 text-center text-sm leading-relaxed lg:mb-5 " (default descriptionClass "")) }}
-    {{else}}
-      {{> components/ui/text/description/index text=(default description "Welcome back!") color="text-[#2D2D2DCC]" font="inter" class=(concat "mb-5 text-center text-sm leading-relaxed lg:mb-7 " (default descriptionClass "")) }}
-    {{/if}}
-
-    {{!-- ALERT SUCCESS --}}
-    {{#if success}}
-      {{> components/ui/alert/index type="success" message=success dismissible=true class="mb-4 lg:mb-6" }}
-    {{/if}}
-
-    {{!-- ALERT ERROR --}}
-    {{#if error}}
-      {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 lg:mb-6" }}
-    {{/if}}
-
-    {{!-- COUNTDOWN TIMER (untuk verify-email) --}}
-    {{#if showCountdown}}
-      <div class="flex flex-col items-center gap-3 w-full mb-4 lg:mb-6">
+      {{!-- 3. FRAME 2147229431 (Countdown Container: top 437px, width 560px, height 90px) --}}
+      <div class="w-full max-w-[560px] h-[90px] mx-auto mt-5 lg:mt-[38px] mb-6 lg:mb-[42px] px-2 lg:px-0">
         <div class="my-countdown simply-countdown"></div>
       </div>
 
@@ -140,18 +113,232 @@
           minutes: target.getMinutes(),
           seconds: target.getSeconds(),
           words: {
-            days: { root: '{{countdownDayText}}', lambda: (root, n) => root },
-            hours: { root: '{{countdownHourText}}', lambda: (root, n) => root },
-            minutes: { root: '{{countdownMinuteText}}', lambda: (root, n) => root },
-            seconds: { root: '{{countdownSecondText}}', lambda: (root, n) => root }
+            days: { root: '{{default countdownDayText "DAY"}}', lambda: (root, n) => root },
+            hours: { root: '{{default countdownHourText "HOUR"}}', lambda: (root, n) => root },
+            minutes: { root: '{{default countdownMinuteText "MINUTE"}}', lambda: (root, n) => root },
+            seconds: { root: '{{default countdownSecondText "SECOND"}}', lambda: (root, n) => root }
           },
           onEnd: () => location.reload()
         });
       </script>
-    {{/if}}
 
-    {{!-- FORM --}}
-    {{#unless (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+    </div>
+
+  {{else if (eq variant 'reset-password')}}
+    {{!-- CARD KHUSUS RESET PASSWORD (FIGMA Group 121 / Frame 235: 822px x 739px, border #ffffff) --}}
+    <div class="w-full max-w-sm sm:max-w-md mx-auto p-6 sm:p-8 bg-white border border-[#ffffff] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:w-[822px] lg:max-w-[822px] lg:min-h-[739px] lg:p-0 flex flex-col justify-start items-center lg:bg-[#FFFFFF87] lg:border-[#ffffff] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
+
+      {{!-- 1. LOGO KESATRIA ACADEMY (top 42px, 202.71px x 110.45px) --}}
+      <div class="w-full flex justify-center pt-2 sm:pt-4 lg:pt-[42px]">
+        {{> components/ui/icon/logo_kesatria/index class="w-[140px] sm:w-[160px] lg:w-[202.71px] h-auto lg:h-[110.45px]" wrapperClass="text-[#003060]" }}
+      </div>
+
+      {{!-- 2. CONTENT AREA (Frame 251: width 720px, top 190.95px, gap 24px) --}}
+      <div class="w-full max-w-[720px] mx-auto mt-4 sm:mt-6 lg:mt-[38.5px] px-0 lg:px-0 flex flex-col items-center pb-2 sm:pb-4 lg:pb-12">
+        {{!-- Title: Reset Password (522px x 36px, Inter 600, 30px/36px, #192E5B) --}}
+        <h2 class="w-full max-w-[522px] h-auto font-inter font-semibold text-[22px] sm:text-[26px] leading-tight lg:text-[30px] lg:leading-[36px] text-center text-[#192E5B] m-0 mb-1.5 sm:mb-2 lg:mb-[10px]">
+          {{default title (t 'test.resetPassword.resetPassword')}}
+        </h2>
+
+        {{!-- Subtitle (574px x 22px, Inter 400, 18px/22px, rgba(45, 45, 45, 0.8)) --}}
+        <p class="w-full max-w-[574px] h-auto font-inter font-normal text-xs sm:text-sm lg:text-[18px] leading-relaxed lg:leading-[22px] text-center text-[#2D2D2DCC] m-0 mb-5 sm:mb-6 lg:mb-[24px]">
+          {{default description (t 'test.resetPassword.description')}}
+        </p>
+
+        {{!-- Alert Success & Error --}}
+        {{#if success}}
+          {{> components/ui/alert/index type="success" message=success dismissible=true class="w-full mb-4 lg:mb-6" }}
+        {{/if}}
+        {{#if error}}
+          {{> components/ui/alert/index type="error" message=error dismissible=true class="w-full mb-4 lg:mb-6" }}
+        {{/if}}
+
+        {{!-- Form (Frame 2147229441: width 720px, gap 24px) --}}
+        <form action="{{default action '/users/reset-password'}}" method="{{default method 'post'}}"
+          x-data="{
+            loading: false,
+            showPassword: false,
+            showConfirmPassword: false,
+            password: '',
+            confirmPassword: '',
+            get hasLength() { return this.password.length >= 8 },
+            get hasUpper() { return /[A-Z]/.test(this.password) },
+            get hasLower() { return /[a-z]/.test(this.password) },
+            get hasNumber() { return /[0-9]/.test(this.password) },
+            get hasSpecial() { return /[^A-Za-z0-9]/.test(this.password) },
+            get isPasswordValid() { return this.hasLength && this.hasUpper && this.hasLower && this.hasNumber && this.hasSpecial },
+            get isConfirmValid() { return this.confirmPassword.length > 0 && this.confirmPassword === this.password }
+          }"
+          @submit="loading = true"
+          class="w-full flex flex-col gap-4 sm:gap-5 lg:gap-[24px]">
+
+          {{#if token}}
+            <input type="hidden" name="token" value="{{token}}">
+          {{/if}}
+
+          {{!-- Field 1: New Password (Frame: 720px x 93px, Label 20px, Box 59px) --}}
+          <div class="w-full flex flex-col gap-1.5 sm:gap-2 lg:gap-[10px]">
+            <label for="new_password" class="block font-inter text-sm sm:text-base lg:text-[20px] font-medium leading-snug lg:leading-[24px] text-[#2D2D2D]">
+              {{default passwordLabel (t 'test.resetPassword.newPassword')}}
+            </label>
+            <div class="relative w-full h-[48px] sm:h-[52px] lg:h-[59px] bg-white rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center border border-transparent focus-within:border-[#003060] transition-all">
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                id="new_password"
+                name="password"
+                x-model="password"
+                required
+                placeholder="{{default passwordPlaceholder (t 'test.resetPassword.placeholderNewPassword')}}"
+                autocomplete="new-password"
+                class="w-full h-full bg-transparent px-3.5 sm:px-4 lg:px-[23px] pr-11 lg:pr-12 font-inter text-sm sm:text-[15px] leading-[18px] text-[#2D2D2D] placeholder:text-xs sm:placeholder:text-[15px] placeholder:text-[#2D2D2DCC] focus:outline-none rounded-[6px]"
+              />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute right-2 sm:right-3 lg:right-4 flex items-center justify-center w-8 sm:w-9 h-8 sm:h-9 text-[#2D2D2D99] hover:text-[#003060] transition-colors"
+                aria-label="Toggle password visibility"
+              >
+                <i class="fas text-sm sm:text-base lg:text-[20px]" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              </button>
+            </div>
+
+            {{!-- Password requirement checklist --}}
+            <ul class="mt-1 space-y-0.5 sm:space-y-1 font-inter text-[11px] sm:text-xs">
+              <li class="flex items-center gap-1.5" :class="hasLength ? 'text-green-600' : 'text-gray-500'">
+                <i class="fas text-[9px] sm:text-[10px]" :class="hasLength ? 'fa-check-circle' : 'fa-circle'"></i>
+                {{default lengthText (t 'test.passwordChecklist.length')}}
+              </li>
+              <li class="flex items-center gap-1.5" :class="hasUpper ? 'text-green-600' : 'text-gray-500'">
+                <i class="fas text-[9px] sm:text-[10px]" :class="hasUpper ? 'fa-check-circle' : 'fa-circle'"></i>
+                {{default uppercaseText (t 'test.passwordChecklist.uppercase')}}
+              </li>
+              <li class="flex items-center gap-1.5" :class="hasLower ? 'text-green-600' : 'text-gray-500'">
+                <i class="fas text-[9px] sm:text-[10px]" :class="hasLower ? 'fa-check-circle' : 'fa-circle'"></i>
+                {{default lowercaseText (t 'test.passwordChecklist.lowercase')}}
+              </li>
+              <li class="flex items-center gap-1.5" :class="hasNumber ? 'text-green-600' : 'text-gray-500'">
+                <i class="fas text-[9px] sm:text-[10px]" :class="hasNumber ? 'fa-check-circle' : 'fa-circle'"></i>
+                {{default numberText (t 'test.passwordChecklist.number')}}
+              </li>
+              <li class="flex items-center gap-1.5" :class="hasSpecial ? 'text-green-600' : 'text-gray-500'">
+                <i class="fas text-[9px] sm:text-[10px]" :class="hasSpecial ? 'fa-check-circle' : 'fa-circle'"></i>
+                {{default specialText (t 'test.passwordChecklist.special')}}
+              </li>
+            </ul>
+          </div>
+
+          {{!-- Field 2: Confirm New Password (Frame: 720px x 93px, Label 20px, Box 59px) --}}
+          <div class="w-full flex flex-col gap-1.5 sm:gap-2 lg:gap-[10px]">
+            <label for="confirm_new_password" class="block font-inter text-sm sm:text-base lg:text-[20px] font-medium leading-snug lg:leading-[24px] text-[#2D2D2D]">
+              {{default confirmPasswordLabel (t 'test.resetPassword.confirmNewPassword')}}
+            </label>
+            <div class="relative w-full h-[48px] sm:h-[52px] lg:h-[59px] bg-white rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center border border-transparent focus-within:border-[#003060] transition-all">
+              <input
+                :type="showConfirmPassword ? 'text' : 'password'"
+                id="confirm_new_password"
+                name="confirmPassword"
+                x-model="confirmPassword"
+                required
+                placeholder="{{default confirmPasswordPlaceholder (t 'test.resetPassword.placeholderConfirmPassword')}}"
+                autocomplete="new-password"
+                class="w-full h-full bg-transparent px-3.5 sm:px-4 lg:px-[23px] pr-11 lg:pr-12 font-inter text-sm sm:text-[15px] leading-[18px] text-[#2D2D2D] placeholder:text-xs sm:placeholder:text-[15px] placeholder:text-[#2D2D2DCC] focus:outline-none rounded-[6px]"
+              />
+              <button
+                type="button"
+                @click="showConfirmPassword = !showConfirmPassword"
+                class="absolute right-2 sm:right-3 lg:right-4 flex items-center justify-center w-8 sm:w-9 h-8 sm:h-9 text-[#2D2D2D99] hover:text-[#003060] transition-colors"
+                aria-label="Toggle password visibility"
+              >
+                <i class="fas text-sm sm:text-base lg:text-[20px]" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              </button>
+            </div>
+
+            <p x-show="confirmPassword.length > 0" class="mt-1 text-xs font-inter" :class="isConfirmValid ? 'text-green-600' : 'text-red-500'">
+              <span x-text="isConfirmValid ? '{{default matchText (t 'test.passwordChecklist.match')}}' : '{{default noMatchText (t 'test.passwordChecklist.noMatch')}}'"></span>
+            </p>
+          </div>
+
+          {{!-- Submit Button --}}
+          {{> components/ui/button/submit/index
+            text=(default submitText (t 'test.resetPassword.resetButton'))
+            class="w-full h-11 sm:h-12 lg:h-[54px] mt-2 text-sm sm:text-base lg:text-[18px] font-semibold"
+          }}
+        </form>
+
+        {{!-- Back to Login Link --}}
+        <div class="mt-4 sm:mt-5 text-center">
+          <p class="font-sans text-xs sm:text-sm text-[#2D2D2D]">
+            {{default bottomTitle (t 'test.resetPassword.backTo')}}
+            {{> components/ui/text/link/index
+              text=(default bottomLinkText (t 'test.resetPassword.login'))
+              href=(default bottomLinkUrl "/login")
+              size="sm"
+              weight="semibold"
+              class="ml-1"
+            }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+  {{else}}
+    {{!-- CARD REGULER AUTH (LOGIN / REGISTER / FORGOT) — 100% PERSIS SEPERTI SEBELUMNYA (460px) --}}
+    <div class="w-full max-w-sm mx-auto p-6 bg-white border border-[#D9D9D9] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:max-w-[460px] lg:p-9 lg:bg-[#FFFFFF87] lg:border-[#FFFFFF17] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
+
+      {{!-- ICON / LOGO --}}
+      {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+        <div class="flex justify-center w-full mt-32">
+          {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto text-[#003060]") wrapperClass="text-[#003060]" }}
+        </div>
+      {{else}}
+        {{> components/ui/icon/logo_kesatria/index class=(default logoClass "w-[128px] h-auto lg:w-[160px] lg:h-auto") wrapperClass="mb-3 lg:mb-5" }}
+      {{/if}}
+
+      {{!-- ICON KHUSUS (Email / Success) --}}
+      {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+        <div class="flex items-center justify-center {{#if (eq variant 'verify-email-success')}}-mt-32{{else}}-mt-40{{/if}}">
+          {{#if (eq variant 'verify-email-success')}}
+            {{!-- Success Icon SVG --}}
+            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="-2 -2 78 78" fill="none">
+              <path d="M39 3 C42.8 3 45.2 7.8 48.8 8.6 C52.4 9.4 55.9 6.4 58.9 8.4 C61.9 10.4 61.1 14.9 63.8 17.6 C66.5 20.3 71 19.5 73 22.5 C75 25.5 72 29 72.8 32.6 C73.6 36.2 78 38.6 78 42.4 C78 46.2 73.6 48.6 72.8 52.2 C72 55.8 75 59.3 73 62.3 C71 65.3 66.5 64.5 63.8 67.2 C61.1 69.9 61.9 74.4 58.9 76.4 C55.9 78.4 52.4 75.4 48.8 76.2 C45.2 77 42.8 81.8 39 81.8 C35.2 81.8 32.8 77 29.2 76.2 C25.6 75.4 22.1 78.4 19.1 76.4 C16.1 74.4 16.9 69.9 14.2 67.2 C11.5 64.5 7 65.3 5 62.3 C3 59.3 6 55.8 5.2 52.2 C4.4 48.6 0 46.2 0 42.4 C0 38.6 4.4 36.2 5.2 32.6 C6 29 3 25.5 5 22.5 C7 19.5 11.5 20.3 14.2 17.6 C16.9 14.9 16.1 10.4 19.1 8.4 C22.1 6.4 25.6 9.4 29.2 8.6 C32.8 7.8 35.2 3 39 3Z" transform="translate(-2 -5)" stroke="#00B51A" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M29 40L35 46L47 34" stroke="#00B51A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {{else}}
+            {{!-- Email Icon SVG --}}
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="72" viewBox="0 0 40 40" preserveAspectRatio="none">
+              <path d="M12 11.5H28C29.66 11.5 31 12.84 31 14.5V32C31 33.66 29.66 35 28 35H12C10.34 35 9 33.66 9 32V14.5C9 12.84 10.34 11.5 12 11.5Z" fill="none" stroke="#000000" stroke-width="2"/>
+              <path d="M11 15L20 22L29 15" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {{/if}}
+        </div>
+      {{/if}}
+
+      {{!-- TITLE --}}
+      {{#if (eq variant 'verify-email-success')}}
+        {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") color="text-[#12BD26]" font="inter" fontWeight="font-semibold" class="mb-1 text-center text-xl leading-snug lg:mb-2 lg:text-2xl" }}
+      {{else}}
+        {{> components/ui/text/sub_title/index text=(default title "Login") size=(default titleSize "md") font="inter" fontWeight="font-semibold" class="mb-1 text-center text-xl leading-snug lg:mb-2 lg:text-2xl" }}
+      {{/if}}
+
+      {{!-- DESCRIPTION --}}
+      {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
+        {{> components/ui/text/description/index text=(default description "Welcome back!") color="text-[#2D2D2DCC]" font="inter" class=(concat "mb-4 text-center text-sm leading-relaxed lg:mb-5 " (default descriptionClass "")) }}
+      {{else}}
+        {{> components/ui/text/description/index text=(default description "Welcome back!") color="text-[#2D2D2DCC]" font="inter" class=(concat "mb-5 text-center text-sm leading-relaxed lg:mb-7 " (default descriptionClass "")) }}
+      {{/if}}
+
+      {{!-- ALERT SUCCESS --}}
+      {{#if success}}
+        {{> components/ui/alert/index type="success" message=success dismissible=true class="mb-4 lg:mb-6" }}
+      {{/if}}
+
+      {{!-- ALERT ERROR --}}
+      {{#if error}}
+        {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 lg:mb-6" }}
+      {{/if}}
+
+      {{!-- FORM --}}
+      {{#unless (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
       {{#if (eq variant 'register')}}
         <form action="{{default action '/login'}}" method="{{default method 'post'}}" x-data="{
           loading: false,
@@ -171,8 +358,8 @@
         <form action="{{default action '/login'}}" method="{{default method 'post'}}" x-data="{ loading: false }" @submit="loading = true" class="space-y-4 lg:space-y-5">
       {{/if}}
 
-      {{!-- NAME FIELD (register/reset) --}}
-      {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
+      {{!-- NAME FIELD (register) --}}
+      {{#if (eq variant 'register')}}
         <div>
           <label class="mb-2 block font-inter text-sm font-medium text-[#2D2D2D]">{{default nameLabel 'Name'}}</label>
           <div class="relative">
@@ -204,7 +391,7 @@
 
       {{!-- PASSWORD FIELD (kecuali forgot-password) --}}
       {{#unless (eq variant 'forgot-password')}}
-        {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
+        {{#if (eq variant 'register')}}
           {{!-- Password dengan validasi untuk register dan reset-password --}}
           {{> components/ui/input/password/validated
             label=(default passwordLabel "Password")
@@ -225,8 +412,8 @@
         {{/if}}
       {{/unless}}
 
-      {{!-- CONFIRM PASSWORD FIELD (register/reset-password) --}}
-      {{#if (or (eq variant 'register') (eq variant 'reset-password'))}}
+      {{!-- CONFIRM PASSWORD FIELD (register) --}}
+      {{#if (eq variant 'register')}}
         {{!-- Confirm password dengan validasi untuk register dan reset-password --}}
         {{> components/ui/input/password/confirm
           label=(default confirmPasswordLabel "Confirm Password")
@@ -301,5 +488,6 @@
       </div>
     {{/if}}
 
-  </div>
+    </div>
+  {{/if}}
 </div>
