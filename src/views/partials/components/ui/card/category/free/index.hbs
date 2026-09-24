@@ -47,14 +47,18 @@
             {{method}}
           </span>
         {{/if}}
-        {{#if day}}
+        {{#if (or (eq checkPaid false) day)}}
           <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
-            {{day}} {{default (t 'test.categoryFreeProgram.program.day') 'Day'}}
+            {{default day 1}} {{default (t 'test.categoryFreeProgram.program.day') 'Day'}}
+          </span>
+        {{else if (or (eq checkPaid true) month)}}
+          <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
+            {{default month 1}} {{default (t 'test.categoryPaidProgram.program.month') 'Month'}}
           </span>
         {{/if}}
         {{#if quota}}
           <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
-            {{quota}} {{default (t 'test.categoryFreeProgram.program.students') 'Students'}}
+            {{quota}} Quota
           </span>
         {{/if}}
         {{#unless method}}

@@ -223,7 +223,7 @@ export class CoursesController {
     @Body('userId') userId: string,
   ) {
     try {
-await this.coursesService.addUserToCourse(userId, courseId);
+      await this.coursesService.addUserToCourse(userId, courseId);
       flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
@@ -377,7 +377,8 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Param('courseId') courseId: string,
   ) {
     const course = await this.coursesService.findOne(courseId);
-    const finalAssignment = await this.finalAssignmentService.findByCourse(courseId);
+    const finalAssignment =
+      await this.finalAssignmentService.findByCourse(courseId);
     return res.render('admin/course/edit_final_assignment', {
       user: req.user,
       course,
@@ -418,7 +419,9 @@ await this.coursesService.addUserToCourse(userId, courseId);
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
-    const course = await this.coursesService.findOne(courseId).catch(() => null);
+    const course = await this.coursesService
+      .findOne(courseId)
+      .catch(() => null);
     const finalAssignment = await this.finalAssignmentService.findByCourse(
       courseId,
       true,
@@ -472,19 +475,13 @@ await this.coursesService.addUserToCourse(userId, courseId);
 
   @Roles('admin', 'super_admin')
   @Get('/detail-quiz-syllabus/:id')
-  async detailQuizSyllabus(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
+  async detailQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
     return res.redirect(`/syllabus/quiz/detail/${id}`);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/edit-quiz-syllabus/:id')
-  async formEditQuizSyllabus(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
+  async formEditQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
     return res.redirect(`/quiz/formEdit/${id}`);
   }
 
@@ -703,13 +700,16 @@ await this.coursesService.addUserToCourse(userId, courseId);
       }
       const lastWeek = await this.coursesService.findLastWeek(courseId);
       const caps = capabilitiesForCourse(course);
-      if (course.programType === 'non_bootcamp' || caps.structure === 'syllabus') {
+      if (
+        course.programType === 'non_bootcamp' ||
+        caps.structure === 'syllabus'
+      ) {
         return res.render('admin/course/detail_syllabus', {
           user: req.user,
           course,
           lastWeek,
           categoryId,
-          caps
+          caps,
         });
       }
       return res.render('admin/course/detail', {
@@ -760,7 +760,8 @@ await this.coursesService.addUserToCourse(userId, courseId);
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    const initialSection = String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+    const initialSection =
+      String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
     // Apakah program ini sudah tuntas.
     //
     // `userWithCourses` di atas bukan baris pendaftaran sungguhan - ia dirakit
@@ -962,7 +963,7 @@ await this.coursesService.addUserToCourse(userId, courseId);
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
-        // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
     const stats = await this.coursesService.findLearningStats(
       activeCourse?.id,
       id,
@@ -975,13 +976,16 @@ await this.coursesService.addUserToCourse(userId, courseId);
       id,
     );
 
-    return res.render('partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index', {
-      course: activeCourse,
-      stats,
-      weekSummaries,
-      caps: capabilitiesForCourse(activeCourse),
-      layout: false,
-    });
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index',
+      {
+        course: activeCourse,
+        stats,
+        weekSummaries,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
   }
 
   @Roles('user')
@@ -1059,8 +1063,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
       });
     } else {
       const course_flows = await this.coursesService.findCourseFlows(course.id);
-      const alumni = await this.coursesService.findCourseAlumni(course.id);
-      const gallery = course.category?.gallery || [];
       res.render('detail_program/paid_program/index', {
         course,
         category: course.category,
@@ -1075,8 +1077,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
         benefit_category: course.category?.benefit_category || [],
         technologies,
         installments,
-        alumni,
-        gallery,
       });
     }
   }
@@ -1148,8 +1148,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
         });
       } else {
         const course_flows = await this.coursesService.findCourseFlows(id);
-        const alumni = await this.coursesService.findCourseAlumni(id);
-        const gallery = course.category?.gallery || [];
         res.render('detail_program/paid_program/index', {
           course,
           category: course.category,
@@ -1163,8 +1161,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
           technologies,
           installments,
           userCourses,
-          alumni,
-          gallery,
         });
       }
     } else {
@@ -1242,8 +1238,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
           });
         } else {
           const course_flows = await this.coursesService.findCourseFlows(id);
-          const alumni = await this.coursesService.findCourseAlumni(id);
-          const gallery = course.category?.gallery || [];
           res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
@@ -1258,8 +1252,6 @@ await this.coursesService.addUserToCourse(userId, courseId);
             technologies,
             userCourses,
             installments,
-            alumni,
-            gallery,
           });
         }
       }
@@ -1435,7 +1427,9 @@ await this.coursesService.addUserToCourse(userId, courseId);
         error.message || 'Failed to remove program',
       );
       req.flash('error', error.message || 'Failed to remove program');
-      return res.redirect(previous || `/program/detail/program/admin/${courseId}`);
+      return res.redirect(
+        previous || `/program/detail/program/admin/${courseId}`,
+      );
     }
   }
 

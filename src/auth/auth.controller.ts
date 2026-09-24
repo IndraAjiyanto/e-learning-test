@@ -87,8 +87,10 @@ export class AuthController {
             req.flash('error', 'Login failed');
             return res.redirect('/login');
           }
-          this.userActivityService.markActive(user!.id, req.sessionID).catch(() => undefined);
-          
+          this.userActivityService
+            .markActive(user!.id, req.sessionID)
+            .catch(() => undefined);
+
           if (user!.resetPasswordToken === 'MUST_CHANGE_PASSWORD') {
             flashToastWarning(
               req,
@@ -116,7 +118,9 @@ export class AuthController {
   async logout(@Req() req: any, @Res() res: Response) {
     const userId = req.user?.id;
     if (userId) {
-      await this.userActivityService.markInactive(userId).catch(() => undefined);
+      await this.userActivityService
+        .markInactive(userId)
+        .catch(() => undefined);
     }
     req.logout((err) => {
       if (err) {

@@ -60,21 +60,80 @@
 
     {{!-- tags-row --}}
     <div class="mt-3.5 flex flex-wrap items-center gap-2">
-      {{#each tags}}
-        {{> components/ui/text/badge/index
-            text=this
-            bgColor="bg-white"
-            borderColor="border-[#E5E7EB]"
-            color="text-[#0B1F3B]"
-            shadowClass="shadow-none"
-            fontWeight="font-semibold"
-            textSize="text-xs"
-            class="!px-3 !py-1 !rounded-full !text-[#0B1F3B]"
-        }}
-        {{#unless @last}}
-          <span class="select-none font-inter text-xs font-semibold leading-none text-[#9CA3AF]">·</span>
-        {{/unless}}
-      {{/each}}
+      {{#if tags}}
+        {{#each tags}}
+          {{> components/ui/text/badge/index
+              text=this
+              bgColor="bg-white"
+              borderColor="border-[#E5E7EB]"
+              color="text-[#0B1F3B]"
+              shadowClass="shadow-none"
+              fontWeight="font-semibold"
+              textSize="text-xs"
+              class="!px-3 !py-1 !rounded-full !text-[#0B1F3B]"
+          }}
+          {{#unless @last}}
+            <span class="select-none font-inter text-xs font-semibold leading-none text-[#9CA3AF]">·</span>
+          {{/unless}}
+        {{/each}}
+      {{else}}
+        {{#if method}}
+          {{> components/ui/text/badge/index
+              text=method
+              bgColor="bg-white"
+              borderColor="border-[#E5E7EB]"
+              color="text-[#0B1F3B]"
+              shadowClass="shadow-none"
+              fontWeight="font-semibold"
+              textSize="text-xs"
+              class="!px-3 !py-1 !rounded-full !text-[#0B1F3B]"
+          }}
+          {{#if (or day month quota)}}
+            <span class="select-none font-inter text-xs font-semibold leading-none text-[#9CA3AF]">·</span>
+          {{/if}}
+        {{/if}}
+        {{#if (or (eq checkPaid false) day)}}
+          {{> components/ui/text/badge/index
+              text=(concat (default day 1) " Day")
+              bgColor="bg-white"
+              borderColor="border-[#E5E7EB]"
+              color="text-[#0B1F3B]"
+              shadowClass="shadow-none"
+              fontWeight="font-semibold"
+              textSize="text-xs"
+              class="!px-3 !py-1 !rounded-full !text-[#0B1F3B]"
+          }}
+          {{#if quota}}
+            <span class="select-none font-inter text-xs font-semibold leading-none text-[#9CA3AF]">·</span>
+          {{/if}}
+        {{else if (or (eq checkPaid true) month)}}
+          {{> components/ui/text/badge/index
+              text=(concat (default month 1) " Month")
+              bgColor="bg-white"
+              borderColor="border-[#E5E7EB]"
+              color="text-[#0B1F3B]"
+              shadowClass="shadow-none"
+              fontWeight="font-semibold"
+              textSize="text-xs"
+              class="!px-3 !py-1 !rounded-full !text-[#0B1F3B]"
+          }}
+          {{#if quota}}
+            <span class="select-none font-inter text-xs font-semibold leading-none text-[#9CA3AF]">·</span>
+          {{/if}}
+        {{/if}}
+        {{#if quota}}
+          {{> components/ui/text/badge/index
+              text=(concat quota " Quota")
+              bgColor="bg-white"
+              borderColor="border-[#E5E7EB]"
+              color="text-[#0B1F3B]"
+              shadowClass="shadow-none"
+              fontWeight="font-semibold"
+              textSize="text-xs"
+              class="!px-3 !py-1 !rounded-full !text-[#0B1F3B]"
+          }}
+        {{/if}}
+      {{/if}}
     </div>
 
     {{!-- description --}}

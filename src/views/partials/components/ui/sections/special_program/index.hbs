@@ -23,11 +23,11 @@
           {{> components/ui/card/program_showcase/index
               id=this.id
               image=this.image
-              icon="fa-solid fa-graduation-cap"
+              icon=(default this.icon "fa-solid fa-graduation-cap")
               title=this.name
               description=(default (getByLang this.description ../lang) "A structured journey from fundamentals to workplace readiness and long-term career opportunities.")
               tag1=(ternary this.method this.method (ternary ../isJapan "Language" "Practical"))
-              tag2=(ternary this.month (concat this.month " Month") (ternary ../isJapan "Culture" "Mentoring"))
+              tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " Day") (concat (default this.month 1) " Month"))
               tag3=(ternary this.quota (concat this.quota " Quota") (ternary ../isJapan "Career" "Career"))
               href=(concat '/program/' this.id)
           }}
