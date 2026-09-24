@@ -18,32 +18,7 @@
 {{!-- Section 6: Pricing / Informasi Investasi (Order 5) --}}
 {{> components/ui/sections/paid_pricing/index course=course category=course.category installments=installments lang=lang}}
 
-{{!-- Section 7: Alumni Success (Order 6) --}}
-{{> components/ui/sections/alumni/index
-    headerVariant="paid"
-    showMobile=false
-    badgeText="ALUMNI SUCCESS"
-    titleText="Real Stories, Real Placement"
-    descText="Discover how our graduates transitioned into major engineering roles across the global industry."
-    alumni=alumni
-    category=course.category
-    lang=lang
-}}
 
-{{!-- Section 8: Life at Kesatria Academy / Gallery (Order 7) --}}
-{{> components/ui/sections/gallery/index
-    renderMobile=false
-    showBadge=true
-    showDivider=true
-    showBottomLink=true
-    badgeText="ACADEMY IN ACTION"
-    titleText="Life at Kesatria Academy"
-    descText="Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons."
-    linkText="See All Our Gallery"
-    gallery=gallery
-    desktopSectionClass="w-full bg-[#F8F9FA] py-16 sm:py-20 lg:py-24 font-inter"
-    desktopWrapperClass="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
-}}
 
 {{!-- Section 9: FAQ (Order 8) --}}
 {{> components/ui/sections/faq/index
