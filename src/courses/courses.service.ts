@@ -644,7 +644,8 @@ export class CoursesService {
       week: session.weeks,
       course: session.weeks.course,
       previous,
-      next: index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : null,
+      next:
+        index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : null,
       position: index + 1,
       totalSessions: siblings.length,
       unlocked,
@@ -822,7 +823,10 @@ export class CoursesService {
         total: logbooksTotal,
         approved: logbooksApproved,
         rejected: logbooksRejected,
-        inReview: Math.max(0, logbooksTotal - logbooksApproved - logbooksRejected),
+        inReview: Math.max(
+          0,
+          logbooksTotal - logbooksApproved - logbooksRejected,
+        ),
         percent: pct(logbooksApproved, logbooksTotal),
       },
     };
@@ -882,7 +886,9 @@ export class CoursesService {
       quizzesPassed,
     ] = await Promise.all([
       perWeek(
-        forCourse(em.createQueryBuilder(Session, 's').innerJoin('s.weeks', 'w')),
+        forCourse(
+          em.createQueryBuilder(Session, 's').innerJoin('s.weeks', 'w'),
+        ),
         's.id',
       ),
       perWeek(
@@ -1353,7 +1359,6 @@ export class CoursesService {
       where: { id: courseId },
       relations: [
         'category',
-        'category.gallery',
         'category.benefit_category',
         'category.courseTypes',
         'courseType',
@@ -1376,7 +1381,6 @@ export class CoursesService {
       where: { id: courseId, launch: true },
       relations: [
         'category',
-        'category.gallery',
         'category.benefit_category',
         'courseType',
         'userCourses',

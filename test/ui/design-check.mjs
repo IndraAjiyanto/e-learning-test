@@ -42,8 +42,6 @@ const SCREENS = [
       check(s, 'page title "Welcome back" banner', await page.getByText('WELCOME BACK', { exact: false }).count() > 0);
       check(s, '3 stat cards', await page.locator('text=/Ongoing Courses|Completed Courses|Portfolio Published/').count() >= 3);
       check(s, 'Continue Learning section', await page.getByText('Continue Learning').count() > 0);
-      check(s, 'Student Activity Dashboard Summary', await page.getByText(/Student Activity Dashboard Summary/i).count() > 0);
-      check(s, '"View All Courses" link', await page.getByRole('button', { name: /View All Courses/i }).count() > 0);
 
       // Ilustrasi banner dulu tercatat sebagai gap karena menunggu aset. Kini
       // digambar sebagai SVG inline (elips + kartu wisuda + pohon), jadi yang

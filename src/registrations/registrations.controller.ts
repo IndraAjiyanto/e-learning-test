@@ -145,7 +145,7 @@ export class RegistrationsController {
       if (!registration) {
         return null;
       }
-      if (processStatus === 'approved') {
+      if (processStatus === 'approved' || processStatus === 'acc') {
         updateRegistrationDto.file = registration['file'];
         updateRegistrationDto.userId = registration['user']['id'];
         updateRegistrationDto.courseId = registration['course']['id'];
@@ -182,7 +182,7 @@ export class RegistrationsController {
         } catch (error: any) {}
         req.flash('success', 'Process successfully changed to rejected');
         res.redirect(
-          `/program/detail/program/admin/${[registration]['course']['id']}`,
+          `/program/detail/program/admin/${registration['course']['id']}`,
         );
       }
     } catch (error: any) {

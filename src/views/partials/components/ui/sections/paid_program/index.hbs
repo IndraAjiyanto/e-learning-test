@@ -29,79 +29,60 @@
     }}
 
     {{!-- program-cards grid --}}
-    <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center">
-
-      {{!-- Card 1: Japan Program (graduation-cap) --}}
-      {{#with (lookup courses 0)}}
-        {{> components/ui/card/category/paid/index
-            id=this.id
-            group=this.group
-            image=this.image
-            defaultImage="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
-            name=(default this.name (default ../category.name "Japan Program"))
+    {{#if courses.length}}
+      <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
+        {{#each courses}}
+          {{> components/ui/card/program_showcase/index
+              id=this.id
+              image=this.image
+              icon=(default this.icon "fa-solid fa-graduation-cap")
+              title=this.name
+              description=(default (getByLang this.description ../lang) (default this.description "A structured journey from fundamentals to workplace readiness and long-term career opportunities."))
+              tag1=(ternary this.method this.method "Online")
+              tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " Day") (concat (default this.month 1) " Month"))
+              tag3=(ternary this.quota (concat this.quota " Quota") "20 Quota")
+              href=(concat '/program/' this.id)
+          }}
+        {{/each}}
+      </div>
+    {{else}}
+      {{!-- 3 Fallback Cards --}}
+      <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
+        {{> components/ui/card/program_showcase/index
+            id="#"
+            title=(default category.name "Japan Program")
+            icon="fa-solid fa-graduation-cap"
+            image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
+            tag1="Online"
+            tag2="3 Month"
+            tag3="20 Quota"
             description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
-            icon="fa-graduation-cap"
-            tags=(array "Language" "Culture" "Career")
+            href="#programs"
         }}
-      {{else}}
-        {{> components/ui/card/category/paid/index
+        {{> components/ui/card/program_showcase/index
             id="#"
-            image=""
-            defaultImage="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
-            name=(default category.name "Japan Program")
-            description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
-            icon="fa-graduation-cap"
-            tags=(array "Language" "Culture" "Career")
-        }}
-      {{/with}}
-
-      {{!-- Card 2: Japan Program (eye) --}}
-      {{#with (lookup courses 1)}}
-        {{> components/ui/card/category/paid/index
-            id=this.id
-            image=this.image
-            defaultImage="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
-            name=(default this.name (default ../category.name "Japan Program"))
+            title="Japanese Language Training"
+            icon="eye"
+            image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
+            tag1="Online"
+            tag2="3 Month"
+            tag3="20 Quota"
             description="Build strong communication skills through structured lessons and interactive practice."
-            icon="fa-eye"
-            tags=(array "Speaking" "Listening" "Reading" "Writing")
+            href="#programs"
         }}
-      {{else}}
-        {{> components/ui/card/category/paid/index
+        {{> components/ui/card/program_showcase/index
             id="#"
-            image=""
-            defaultImage="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
-            name=(default category.name "Japan Program")
-            description="Build strong communication skills through structured lessons and interactive practice."
-            icon="fa-eye"
-            tags=(array "Speaking" "Listening" "Reading" "Writing")
-        }}
-      {{/with}}
-
-      {{!-- Card 3: Career & Study Support (users) --}}
-      {{#with (lookup courses 2)}}
-        {{> components/ui/card/category/paid/index
-            id=this.id
-            image=this.image
-            defaultImage="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
-            name=(default this.name "Career & Study Support")
+            title="Career & Study Support"
+            icon="users"
+            image="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
+            tag1="Online"
+            tag2="3 Month"
+            tag3="20 Quota"
             description="Receive support for applications, interviews, and planning your path in Japan."
-            icon="fa-users"
-            tags=(array "Applications" "Interviews" "Planning")
+            href="#programs"
         }}
-      {{else}}
-        {{> components/ui/card/category/paid/index
-            id="#"
-            image=""
-            defaultImage="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
-            name="Career & Study Support"
-            description="Receive support for applications, interviews, and planning your path in Japan."
-            icon="fa-users"
-            tags=(array "Applications" "Interviews" "Planning")
-        }}
-      {{/with}}
-
-    </div>
+      </div>
+    {{/if}}
 
   </div>
 </section>

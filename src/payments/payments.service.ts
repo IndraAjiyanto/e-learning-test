@@ -309,11 +309,11 @@ export class PaymentsService {
     const [payments, registrations] = await Promise.all([
       this.paymentRepository.find({
         where: { user: { id: userId } },
-        relations: ['course', 'course.category', 'installment', 'invoice'],
+        relations: ['user', 'user.biodata', 'course', 'course.category', 'installment', 'invoice'],
       }),
       this.registrationRepository.find({
         where: { user: { id: userId } },
-        relations: ['course', 'course.category'],
+        relations: ['user', 'user.biodata', 'course', 'course.category'],
       }),
     ]);
 
@@ -338,6 +338,14 @@ export class PaymentsService {
         const installmentDetail = isInstallment
           ? installmentDetailMap.get(payment.id) ?? null
           : null;
+        const subtotal = payment.invoice?.subtotal
+          ? Number(payment.invoice.subtotal)
+          : (payment.course?.price ? Number(payment.course.price) : (payment.invoice?.final_total ? Number(payment.invoice.final_total) : null));
+        const discount = payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0;
+        const amount = payment.invoice?.final_total
+          ? Number(payment.invoice.final_total)
+          : (subtotal !== null ? Math.max(0, subtotal - discount) : null);
+
         return {
           id: payment.id,
           kind: isInstallment ? 'installment' : 'full',
@@ -348,27 +356,44 @@ export class PaymentsService {
           method:
             payment.invoice?.payment_method ||
             (isInstallment ? 'Installment' : 'Full Payment'),
-          amount: payment.invoice?.final_total ?? null,
+          amount,
+          subtotal,
+          discount,
           proof: payment.file ?? null,
           no: payment.no ?? null,
+          paymentLink: payment.invoice?.xendit_invoice_url ?? null,
+          keyword: payment.referalSource || (isInstallment ? 'Installment Plan' : 'Online Course'),
+          userName: payment.user_fullname || payment.user?.biodata?.fullName || payment.user?.username || null,
+          userEmail: payment.user_email || payment.user?.email || null,
+          userPhone: payment.user_no || payment.user?.biodata?.no || null,
           installmentDetail,
           ...statusOf(payment.process),
         };
       }),
-      ...registrations.map((registration) => ({
-        id: registration.id,
-        kind: 'registration',
-        courseId: registration.course?.id ?? null,
-        courseName: registration.course?.name ?? 'Program',
-        categoryName: registration.course?.category?.name ?? null,
-        date: registration.createdAt,
-        method: 'Registration',
-        amount: null,
-        proof: registration.file ?? null,
-        no: null,
-        installmentDetail: null,
-        ...statusOf(registration.process),
-      })),
+      ...registrations.map((registration) => {
+        const subtotal = registration.course?.price ? Number(registration.course.price) : null;
+        return {
+          id: registration.id,
+          kind: 'registration',
+          courseId: registration.course?.id ?? null,
+          courseName: registration.course?.name ?? 'Program',
+          categoryName: registration.course?.category?.name ?? null,
+          date: registration.createdAt,
+          method: 'Registration',
+          amount: subtotal,
+          subtotal,
+          discount: 0,
+          proof: registration.file ?? null,
+          no: null,
+          paymentLink: null,
+          keyword: registration.referal_source || 'Registration',
+          userName: registration.user_fullname || registration.user?.biodata?.fullName || registration.user?.username || null,
+          userEmail: registration.user_email || registration.user?.email || null,
+          userPhone: registration.user_no || registration.user?.biodata?.no || null,
+          installmentDetail: null,
+          ...statusOf(registration.process),
+        };
+      }),
     ];
 
     return rows.sort(
