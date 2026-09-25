@@ -6,7 +6,9 @@
  trail=(array
       (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
       (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
-      (obj 'label' (t 'test.startLearning.startLearning') 'href' (concat '/program/' session.weeks.course.id))
+      (obj
+        'label' (t 'test.startLearning.startLearning')
+        'href' (concat '/program/myProgram/' user.id '?courseId=' assignment.session.weeks.course.id))
       (obj 'label' (t 'test.startLearning.assignment')))
       }}
 
