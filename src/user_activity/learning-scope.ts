@@ -6,6 +6,7 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 
 export interface ScopeContext {
   sessionRepo: Repository<Session>;
@@ -14,6 +15,7 @@ export interface ScopeContext {
   logbookRepo: Repository<Logbook>;
   materialRepo: Repository<Material>;
   userCourseRepo: Repository<UserCourse>;
+  syllabusRepo?: Repository<Syllabus>;
 }
 
 export interface ScopeResolution {
@@ -105,6 +107,21 @@ async function resolveLogbook(
   return courseId ? { courseId, label: 'Logbook' } : null;
 }
 
+async function resolveSyllabus(
+  ids: Record<string, string>,
+  ctx: ScopeContext,
+  label: string,
+): Promise<ScopeResolution | null> {
+  const id = ids.syllabusId;
+  if (!id || !ctx.syllabusRepo) return null;
+  const syllabus = await ctx.syllabusRepo.findOne({
+    where: { id },
+    relations: ['course'],
+  });
+  const courseId = syllabus?.course?.id;
+  return courseId ? { courseId, label } : null;
+}
+
 /**
  * Daftar endpoint yang dianggap berada dalam "scope proses pembelajaran".
  * Selama user (role 'user') membuka endpoint ini, dia dihitung sebagai
@@ -116,6 +133,12 @@ async function resolveLogbook(
  * named group pada `match`.
  */
 export const LEARNING_SCOPE: LearningScopeRule[] = [
+  {
+    name: 'syllabus-detail',
+    method: 'GET',
+    match: /^\/syllabus\/learn\/(?<syllabusId>[^/]+)$/,
+    resolve: (ids, _req, ctx) => resolveSyllabus(ids, ctx, 'Silabus'),
+  },
   {
     name: 'material-viewer',
     method: 'GET',
@@ -187,9 +210,12 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
   {
     name: 'program-course-detail',
     method: 'GET',
-    match: /^\/program\/(?:program\/detail\/|detail\/)?(?<courseId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i,
+    match:
+      /^\/program\/(?:program\/detail\/|detail\/)?(?<courseId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i,
     resolve: async (ids) =>
-      ids.courseId ? { courseId: ids.courseId, label: 'Melihat Program' } : null,
+      ids.courseId
+        ? { courseId: ids.courseId, label: 'Melihat Program' }
+        : null,
   },
   {
     name: 'program-session',
@@ -249,7 +275,15 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     match: /^\/users\/profile$/,
     resolve: async (_ids, req, ctx) => {
       const tab = (req.query?.tab as string) || '';
-      const learningTabs = ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'group-class', 'quiz-start'];
+      const learningTabs = [
+        'uiux',
+        'presentation',
+        'assignment',
+        'quiz',
+        'logbook',
+        'group-class',
+        'quiz-start',
+      ];
       if (!learningTabs.includes(tab)) return null;
 
       const byQuery = req.query?.courseId;

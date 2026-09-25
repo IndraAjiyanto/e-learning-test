@@ -1,0 +1,266 @@
+{{!--
+  Halaman: Detail Silabus (area student, program non_bootcamp)
+  Rute   : GET /syllabus/learn/:syllabusId  (syllabus.controller.ts)
+
+  Menampilkan konten (dasar teori) milik silabus dan kartu quiz di sampingnya.
+  Konten disimpan sebagai EditorJS JSON (syllabus.content); dirender di sisi
+  klien lewat blok data JSON + fungsi syllabusTheoryContent(), mengikuti pola
+  yang sama seperti konten Final Assignment.
+--}}
+<script id="syllabus_theory_data" type="application/json">{{{json syllabus.content}}}</script>
+
+{{#> user/shell_frame/index
+  user=user
+  active='learning'
+  pageTitle='Silabus'
+  back=(concat '/users/profile?tab=uiux&courseId=' course.id)
+}}
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8 font-inter">
+  <div class="max-w-[1440px] mx-auto flex flex-col gap-8 items-start">
+
+    <div class="flex flex-col gap-2 items-start">
+      <h1 class="font-bold text-[32px] leading-[39px] text-[#003060]">
+        {{syllabus.title}}
+      </h1>
+      <p class="font-medium text-[14px] leading-[17px] text-[#718096]">
+        {{default next.title (default course.name syllabus.description)}}
+      </p>
+    </div>
+
+    <div class="w-full bg-white rounded-[22px]">
+      <div class="flex flex-col gap-[18px] p-5 py-[20px] sm:px-6 lg:px-7 lg:pb-7">
+        <div class="w-full grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+
+          <section
+            class="box-border flex flex-col items-start gap-6 p-6 sm:p-8 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0"
+            x-data="syllabusTheoryContent()"
+          >
+            <div class="w-full flex flex-row items-center gap-3">
+              <span class="grid place-items-center w-[18px] h-[18px] shrink-0">
+                <i class="fa-solid fa-bookmark text-[#3182CE] text-[18px]"></i>
+              </span>
+              <h2 class="font-bold text-[18px] leading-[22px] text-[#003060]">
+                Dasar Teori
+              </h2>
+            </div>
+
+            <div class="w-full syllabus-theory-content" x-html="renderedHtml"></div>
+          </section>
+
+          <aside class="flex flex-col items-start gap-6">
+            <section class="box-border w-full bg-white border border-[#D9D9D9] rounded-[16px] p-6 flex flex-col items-center gap-5">
+              {{#if quiz}}
+                <span class="inline-flex items-center gap-1.5 px-3 py-[6px] rounded-[100px] {{#if quizStatus.isPassed}}bg-[#F0FDF4] text-[#15803D]{{else if quizStatus.hasAttempt}}bg-[#FEF2F2] text-[#B42318]{{else}}bg-[#FEF3C7] text-[#D97706]{{/if}}">
+                  <i class="fa-solid fa-award text-[14px]"></i>
+                  {{#if quizStatus.isPassed}}Lulus{{else if quizStatus.hasAttempt}}Belum Lulus{{else}}Belum dikerjakan{{/if}}
+                </span>
+
+                <p class="font-medium text-[12px] leading-[18px] text-center text-[#718096]">
+                  {{#if quizStatus.isPassed}}
+                    Selamat, kamu sudah lulus quiz silabus ini. Nilai minimal {{minScore}} untuk lulus.
+                  {{else if quizStatus.hasAttempt}}
+                    Skor terbaik kamu {{quizStatus.bestScore}}. Kerjakan ulang untuk mencapai nilai minimal {{minScore}}.
+                  {{else}}
+                    Kerjakan quiz silabus ini untuk menandai modul sebagai lulus.
+                  {{/if}}
+                </p>
+
+                <a
+                  href="/quiz/form/{{quiz.id}}"
+                  class="inline-flex w-full h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-6 font-semibold text-[14px] leading-[20px] text-white no-underline hover:bg-[#00254a] transition-colors"
+                >
+                  {{#if quizStatus.isPassed}}Lihat Quiz{{else if quizStatus.hasAttempt}}Kerjakan Ulang{{else}}Kerjakan Quiz{{/if}}
+                </a>
+
+                {{#if next}}
+                  <p class="font-medium text-[11px] leading-[16px] text-center text-[#718096]">
+                    Setelah lulus, lanjut ke: {{next.title}}
+                  </p>
+                {{/if}}
+              {{else}}
+                <span class="grid place-items-center w-11 h-11 rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+                  <i class="fa-solid fa-circle-question text-base"></i>
+                </span>
+                <p class="font-medium text-[12px] leading-[18px] text-center text-[#718096]">
+                  Quiz belum tersedia untuk silabus ini.
+                </p>
+              {{/if}}
+            </section>
+
+            <section class="box-border w-full bg-white border border-[#D9D9D9] rounded-[16px] p-6 flex flex-col items-start gap-5">
+              <div class="w-full flex flex-row items-center gap-2">
+                <span class="grid place-items-center w-4 h-4 shrink-0">
+                  <i class="fa-solid fa-circle-info text-[#003060] text-[16px]"></i>
+                </span>
+                <h3 class="font-bold text-[14px] leading-[17px] text-[#003060]">
+                  Cara Belajar
+                </h3>
+              </div>
+
+              <ul class="flex flex-col items-start gap-3 font-normal text-[12px] leading-[18px] text-[#718096]">
+                <li class="flex flex-row items-start gap-2">
+                  <span class="w-[4px] shrink-0">•</span>
+                  <span>Tonton video dan baca dasar teori di samping</span>
+                </li>
+                <li class="flex flex-row items-start gap-2">
+                  <span class="w-[4px] shrink-0">•</span>
+                  <span>Kerjakan quiz, nilai minimal {{default minScore 70}} untuk lulus</span>
+                </li>
+                <li class="flex flex-row items-start gap-2">
+                  <span class="w-[4px] shrink-0">•</span>
+                  <span>Setelah lulus, silabus berikutnya otomatis terbuka</span>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{/user/shell_frame/index}}
+
+<script>
+function syllabusTheoryContent() {
+  function blockToHtml(b) {
+    const d = b.data || {};
+    const type = (b.type || '').toLowerCase();
+    const itemText = (i) => (typeof i === 'object' && i !== null) ? (i.content || i.text || '') : (i || '');
+    const listItems = (d.items || []).map(itemText).map((c) => '<li>' + c + '</li>').join('');
+    switch (type) {
+      case 'header': {
+        const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+        return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
+      }
+      case 'paragraph':
+        return '<p>' + (d.text || '') + '</p>';
+      case 'list': {
+        if (d.style === 'ordered') {
+          return '<ol>' + listItems + '</ol>';
+        }
+        return '<ul>' + listItems + '</ul>';
+      }
+      case 'image':
+        return '<figure><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" /><figcaption>' + (d.caption || '') + '</figcaption></figure>';
+      case 'quote':
+        return '<blockquote>' + (d.text || '') + '</blockquote>';
+      case 'code':
+        return '<pre><code>' + (d.code || '') + '</code></pre>';
+      case 'delimiter':
+        return '<hr />';
+      default:
+        return d.text ? '<p>' + d.text + '</p>' : '';
+    }
+  }
+
+  return {
+    renderedHtml: '',
+    init() {
+      const empty = '<p class="italic">Belum ada konten untuk silabus ini.</p>';
+      const rawEl = document.getElementById('syllabus_theory_data');
+      if (!rawEl || !rawEl.textContent) {
+        this.renderedHtml = empty;
+        return;
+      }
+      let parsed = null;
+      try {
+        parsed = JSON.parse(rawEl.textContent);
+      } catch (e) {
+        parsed = null;
+      }
+      if (typeof parsed === 'string') {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch (e) {
+          parsed = null;
+        }
+      }
+      if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+        this.renderedHtml = parsed.blocks.map(blockToHtml).join('');
+      } else {
+        this.renderedHtml = empty;
+      }
+    },
+  };
+}
+</script>
+
+<style>
+  .syllabus-theory-content {
+    font-family: 'Inter', sans-serif;
+    line-height: 24px;
+  }
+  .syllabus-theory-content h1 {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 700;
+    color: #003060;
+    margin: 18px 0 8px;
+  }
+  .syllabus-theory-content h2 {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
+    color: #003060;
+    margin: 16px 0 6px;
+  }
+  .syllabus-theory-content h3 {
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 600;
+    color: #003060;
+    margin: 14px 0 6px;
+  }
+  .syllabus-theory-content h4,
+  .syllabus-theory-content h5,
+  .syllabus-theory-content h6 {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 600;
+    color: #003060;
+    margin: 12px 0 6px;
+  }
+  .syllabus-theory-content p {
+    font-size: 14px;
+    line-height: 24px;
+    color: #2D3748;
+    margin: 0 0 20px;
+  }
+  .syllabus-theory-content ul,
+  .syllabus-theory-content ol {
+    font-size: 14px;
+    line-height: 24px;
+    color: #2D3748;
+    margin: 0 0 20px;
+  }
+  .syllabus-theory-content ul { list-style: disc; padding-left: 20px; }
+  .syllabus-theory-content ol { list-style: decimal; padding-left: 20px; }
+  .syllabus-theory-content blockquote {
+    border-left: 4px solid #3182CE;
+    padding-left: 12px;
+    font-style: italic;
+    margin: 0 0 20px;
+    color: #525252;
+  }
+  .syllabus-theory-content figure { margin: 0 0 20px; }
+  .syllabus-theory-content figure img { max-width: 100%; border-radius: 8px; }
+  .syllabus-theory-content figure figcaption {
+    text-align: center;
+    font-size: 12px;
+    color: #737373;
+    margin-top: 4px;
+  }
+  .syllabus-theory-content pre {
+    background: #F5F5F5;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 12px;
+    margin: 0 0 20px;
+  }
+  .syllabus-theory-content hr {
+    border: none;
+    border-top: 2px solid #E5E5E5;
+    margin: 20px 0;
+  }
+</style>
