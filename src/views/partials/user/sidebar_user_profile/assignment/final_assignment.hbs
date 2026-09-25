@@ -19,6 +19,17 @@
   lihat src/courses/program-type.ts.
 
   Data dari controller: course, caps, finalAssignment, finalAssignmentSubmission.
+  `stats` null di cabang ini, jadi hitungan kepala tab dihitung sendiri di
+  bawah: satu final assignment berarti total 1, dan approved hanya kalau
+  submission-nya sudah disetujui mentor.
+
+  Kepala tab memakai komponen `tab_summary` yang sama dengan weeks.hbs, bukan
+  kartu judul + satu paragraf. Alasannya ukuran: kartu dua baris itu 96px,
+  sedangkan kepala tab yang memakai tab_summary 188px - program ini terlihat
+  jauh lebih pendek dan tidak seperti tab yang lain, padahal isinya sama-sama
+  daftar tugas. Satu komponen, satu bentuk, dan angkanya jujur: program yang
+  belum punya final assignment tetap menampilkan 0 - 0 - 0, seperti weeks.hbs
+  pada program yang belum punya minggu.
 
   Status di sini digambar di server, bukan oleh Alpine. Tab ini masuk lewat
   innerHTML, jadi komponen `status_pill` yang isinya berupa ekspresi Alpine
@@ -26,12 +37,28 @@
   pernah jalan di markup yang disuntik. Bentuk pilnya mengikuti halaman sesi
   (src/views/user/learning/session.hbs).
 --}}
-<div class="w-full px-4 py-4 sm:px-8 sm:py-6">
+{{!--
+  Wadah ini ikut lebar dan padding yang sama dengan baris tab navigasi di
+  src/views/user/user_profile/index.hbs (`max-w-[1334px] mx-auto w-full
+  px-4 sm:px-8`). `#assignment-container` sendiri tidak membatasi lebar, jadi
+  tanpa max-width di sini panelnya melebar sampai tepi kolom konten - kartu
+  dan kepala tab_summary jadi lebih lebar dari deretan tab di atasnya.
+--}}
+<div class="w-full max-w-[1334px] mx-auto px-4 py-4 sm:px-8 sm:py-6">
 
-  <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
-    <h2 class="font-montserrat text-base font-bold text-[#171717]">{{t 'test.startLearning.finalAssignment'}}</h2>
-    <p class="mt-0.5 font-inter text-sm text-[#737373]">{{t 'test.startLearning.finalAssignmentIntro'}}</p>
-  </div>
+  {{> components/ui/learning/tab_summary/index
+      percent=(ternary (eq finalAssignmentSubmission.status 'approved') 100 0)
+      label=(concat
+        (ternary (eq finalAssignmentSubmission.status 'approved') 1 0)
+        ' ' (t 'test.startLearning.of') ' '
+        (ternary finalAssignment 1 0)
+        ' ' (t 'test.startLearning.assignmentsApprovedSuffix'))
+      hint=(t 'test.startLearning.finalAssignmentIntro')
+      items=(array
+        (obj 'label' (t 'test.startLearning.totalCount') 'value' (ternary finalAssignment 1 0) 'tone' 'navy')
+        (obj 'label' (t 'test.startLearning.submitted') 'value' (ternary finalAssignmentSubmission 1 0) 'tone' 'green')
+        (obj 'label' (t 'test.startLearning.notSubmittedCount') 'value' (ternary finalAssignmentSubmission 0 (ternary finalAssignment 1 0)) 'tone' 'amber')
+      ) }}
 
   {{#if finalAssignment}}
     <a
@@ -76,7 +103,9 @@
     {{!--
       Program non_bootcamp selalu punya tempat untuk satu final assignment,
       tapi admin belum mengisinya. Tanpa penjelas, peserta akan mengira tab
-      ini yang rusak.
+      ini yang rusak. Batasnya dipakai garis putus-putus supaya terbaca
+      sebagai "belum ada isi", bukan "salah" - dan p-12-nya sama dengan
+      keadaan kosong di weeks.hbs.
     --}}
     <div class="mt-4 flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-[#d9d9d9] bg-white p-12 text-center">
       <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
