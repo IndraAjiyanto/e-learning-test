@@ -2,7 +2,13 @@
      belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
-{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.pdfMaterial') back=(concat '/program/' session.weeks.course.id)}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.pdfMaterial') back=false
+    trail=(array
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+      (obj 'label' (t 'test.startLearning.startLearning') 'href' (concat '/program/' session.weeks.course.id))
+      (obj 'label' (t 'test.startLearning.pdfMaterial')))
+}}
 <div
   class='max-w-7xl mx-auto px-4 py-8'
   {{!-- Berkas yang langsung terbuka: yang ditautkan dari halaman sesi lewat
@@ -11,8 +17,6 @@
   x-data="{ pdfSrc: {{json selected.file}}, materiJudul: {{json selected.title}}, missing: {{#if selectedMissing}}true{{else}}false{{/if}} }"
 >
 
-  <div class='mb-8'>
-  </div>
 
   <div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
 
