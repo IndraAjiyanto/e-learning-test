@@ -112,7 +112,7 @@
       --}}
       <div class="px-4 pt-4 sm:px-8 sm:pt-6">
         {{> components/ui/backoffice/page_nav/index
-            back=(default back (concat '/users/profile?tab=' (default active 'dashboard')))
+            back=(ternary (eq back false) '' (default back (concat '/users/profile?tab=' (default active 'dashboard'))))
             trail=(default trail (array
               (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
               (obj 'label' (lookup (obj
