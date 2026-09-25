@@ -8,6 +8,7 @@ import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { Score } from 'src/entities/score.entity';
 import { CoursesModule } from 'src/courses/courses.module';
 import { QuizModule } from 'src/quiz/quiz.module';
 
@@ -20,6 +21,7 @@ import { QuizModule } from 'src/quiz/quiz.module';
       User,
       UserCourse,
       Quiz,
+      Score,
     ]),
     CoursesModule,
     QuizModule,
@@ -29,4 +31,3 @@ import { QuizModule } from 'src/quiz/quiz.module';
   exports: [SyllabusService],
 })
 export class SyllabusModule {}
-

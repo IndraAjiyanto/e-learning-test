@@ -377,13 +377,10 @@
       <div class="flex-1 w-full min-w-0 min-h-0 overflow-y-auto">
 
         {{!--
-          Remah dan tombol kembali untuk panel di dalam shell.
+          Remah untuk panel di dalam shell.
 
           Halaman berdiri sendiri mendapatkannya dari shell_frame; panel di sini
           bukan halaman tersendiri, jadi barisnya dirakit dari `activeSection`.
-          Tombol kembali hanya muncul untuk panel yang memang berada DI DALAM
-          sebuah program (Start Learning dan turunannya) - pada tab tingkat atas
-          tidak ada tempat untuk kembali, jadi tombolnya tidak dirender.
         --}}
         <div
           class="px-4 pt-4 sm:px-8 sm:pt-6"
@@ -410,22 +407,7 @@
             get label() { return this.labels[this.activeSection] || this.labels.dashboard; }
           }"
         >
-          {{!-- min-h-9 menyamai tinggi tombol kembali. Tanpa ini, barisnya
-               tumbuh 16px begitu tombolnya muncul, dan seluruh isi halaman
-               ikut terdorong turun - itulah lompatan yang tersisa setelah
-               skeleton dipasang. --}}
-          <div class="flex min-h-9 flex-wrap items-center gap-x-3 gap-y-2">
-            <button
-              type="button"
-              x-show="isNested"
-              {{#unless (or (eq initialSection 'uiux') (eq initialSection 'assignment') (eq initialSection 'presentation') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class'))}}style="display:none"{{/unless}}
-              @click="toggleActiveSection('learning')"
-              class="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
-            >
-              <i class="fa-solid fa-arrow-left text-xs"></i>
-              {{t 'test.common.back'}}
-            </button>
-
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <nav aria-label="{{t 'test.common.breadcrumb'}}" class="min-w-0">
               <template x-if="isNested">
                 <ol class="flex flex-wrap items-center gap-2 font-inter text-xs text-[#718096]">

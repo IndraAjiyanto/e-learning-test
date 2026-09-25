@@ -819,6 +819,32 @@ export class CoursesController {
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    if (!activeCourse) {
+      return res.send('');
+    }
+
+    const isNonBootcamp =
+      activeCourse.programType === 'non_bootcamp' ||
+      (activeCourse as any).program_type === 'non_bootcamp';
+
+    if (isNonBootcamp) {
+      const syllabuses = await this.coursesService.findSyllabusForUser(
+        activeCourse.id,
+        id,
+      );
+
+      return res.render(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/non_bootcamp',
+        {
+          course: activeCourse,
+          syllabuses,
+          user: req.user,
+          caps: capabilitiesForCourse(activeCourse),
+          layout: false,
+        },
+      );
+    }
+
     // Panel ini kini merender komposisi program_detail yang dipindahkan dari
     // halaman landing, jadi datanya harus sama persis dengan yang dulu disiapkan
     // untuk kelas/detail.hbs: status buka-kunci per minggu dari findWeeks(),

@@ -52,10 +52,7 @@ export class SyllabusController {
 
   @Roles('admin', 'super_admin')
   @Get('course/:courseId')
-  async getByCourse(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-  ) {
+  async getByCourse(@Param('courseId') courseId: string, @Res() res: Response) {
     const syllabusList = await this.syllabusService.findByCourse(courseId);
     res.json(syllabusList);
   }
@@ -174,7 +171,9 @@ export class SyllabusController {
 
     // 2. Jika bukan quiz, cek apakah id adalah id Syllabus
     if (!quiz) {
-      const foundSyllabus = await this.syllabusService.findOne(id).catch(() => null);
+      const foundSyllabus = await this.syllabusService
+        .findOne(id)
+        .catch(() => null);
       if (foundSyllabus) {
         syllabus = foundSyllabus;
         course = foundSyllabus.course;
@@ -186,7 +185,9 @@ export class SyllabusController {
     if (!quiz) {
       const syllabusList: any[] =
         (await this.syllabusService.findByCourse(id).catch(() => [])) || [];
-      const syllabusWithQuiz = syllabusList.find((s) => s?.quiz && s.quiz.length > 0);
+      const syllabusWithQuiz = syllabusList.find(
+        (s) => s?.quiz && s.quiz.length > 0,
+      );
       if (syllabusWithQuiz) {
         syllabus = await this.syllabusService.findOne(syllabusWithQuiz.id);
         quiz = syllabus?.quiz?.[0] || null;
@@ -266,6 +267,30 @@ export class SyllabusController {
     });
   }
 
+  @Roles('user')
+  @Get('learn/:syllabusId')
+  async detailForUser(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.syllabusService.findDetailForUser(
+      syllabusId,
+      req.user!.id,
+    );
+    res.render('user/syllabus/detail', {
+      user: req.user,
+      syllabus: detail.syllabus,
+      course: detail.course,
+      quiz: detail.quiz,
+      questionCount: detail.questionCount,
+      minScore: detail.minScore,
+      quizStatus: detail.quizStatus,
+      next: detail.next,
+      bareShell: true,
+    });
+  }
+
   @Roles('admin', 'super_admin')
   @Patch('update/:syllabusId')
   async update(
@@ -324,4 +349,3 @@ export class SyllabusController {
     }
   }
 }
-

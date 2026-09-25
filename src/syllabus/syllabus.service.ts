@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +12,7 @@ import { Course } from 'src/entities/course.entity';
 import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { Score } from 'src/entities/score.entity';
 
 @Injectable()
 export class SyllabusService {
@@ -26,6 +31,9 @@ export class SyllabusService {
 
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
+
+    @InjectRepository(Score)
+    private readonly scoreRepository: Repository<Score>,
   ) {}
 
   async findCourseSyllabus(courseId: string): Promise<number> {
@@ -137,12 +145,7 @@ export class SyllabusService {
   async findOne(syllabusId: string) {
     return await this.syllabusRepository.findOne({
       where: { id: syllabusId },
-      relations: [
-        'course',
-        'quiz',
-        'quiz.questions',
-        'quiz.questions.answers',
-      ],
+      relations: ['course', 'quiz', 'quiz.questions', 'quiz.questions.answers'],
     });
   }
 
@@ -151,6 +154,57 @@ export class SyllabusService {
       where: { syllabus: { id: syllabusId } },
       relations: ['questions'],
     });
+  }
+
+  /**
+   * Data untuk halaman detail silabus (area student, program non_bootcamp).
+   * Menggabungkan konten silabus, quiz-nya, status percobaan user, dan silabus
+   * berikutnya yang akan terbuka setelah lulus.
+   */
+  async findDetailForUser(syllabusId: string, userId: string) {
+    const syllabus = await this.syllabusRepository.findOne({
+      where: { id: syllabusId },
+      relations: ['course', 'quiz', 'quiz.questions'],
+    });
+    if (!syllabus) {
+      throw new NotFoundException('Syllabus not found');
+    }
+
+    const quiz = syllabus.quiz?.[0] || null;
+    const minScore = quiz?.minScore ?? 80;
+    const questionCount = quiz?.questions?.length ?? 0;
+
+    let hasAttempt = false;
+    let bestScore: number | null = null;
+    if (quiz) {
+      const scores = await this.scoreRepository.find({
+        where: { user: { id: userId }, quiz: { id: quiz.id } },
+      });
+      hasAttempt = scores.length > 0;
+      bestScore = hasAttempt
+        ? Math.max(...scores.map((s) => Number(s.score)))
+        : null;
+    }
+    const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+
+    // Silabus berikutnya, agar quiz-card bisa menyebutkan tujuan setelah lulus.
+    const siblings = await this.syllabusRepository.find({
+      where: { course: { id: syllabus.course?.id } },
+      order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
+      select: ['id', 'title'],
+    });
+    const idx = siblings.findIndex((s) => s.id === syllabus.id);
+    const next = idx >= 0 ? siblings[idx + 1] || null : null;
+
+    return {
+      syllabus,
+      course: syllabus.course,
+      quiz,
+      questionCount,
+      minScore,
+      quizStatus: { hasAttempt, bestScore, isPassed },
+      next,
+    };
   }
 
   async createQuiz(syllabusId: string, createQuizDto: any) {
@@ -229,4 +283,3 @@ export class SyllabusService {
     return await this.syllabusRepository.remove(syllabus);
   }
 }
-

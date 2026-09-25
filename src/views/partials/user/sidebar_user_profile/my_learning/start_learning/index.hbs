@@ -479,7 +479,7 @@
 
                             <template x-if="!getLogbook(session) || (!['approved', 'acc', 'process', 'proces', 'rejected'].includes(getLogbook(session)?.process) && !['acc', 'proces', 'rejected'].includes(getLogbook(session)?.proses))">
                               <a
-                                :href="'/logbook/formCreate/' + session.id + '/{{#if course.id}}{{course.id}}{{else if kelas.id}}{{kelas.id}}{{/if}}'"
+                                :href="'/logbooks/formCreate/' + session.id + '/{{#if course.id}}{{course.id}}{{else if kelas.id}}{{kelas.id}}{{/if}}'"
                                 class="w-full h-11 flex items-center justify-center gap-2 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
                               >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
