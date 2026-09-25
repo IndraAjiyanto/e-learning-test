@@ -227,6 +227,7 @@ export class DashboardService {
     userId?: string | null;
     categoryId?: string | null;
     courseTypeId?: string | null;
+    search?: string | null;
     page?: number;
     limit?: number;
   }) {
@@ -234,33 +235,41 @@ export class DashboardService {
     const limit = options?.limit || 6;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const qb = this.portfolioRepository
+      .createQueryBuilder('portfolio')
+      .leftJoinAndSelect('portfolio.course', 'course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('portfolio.user', 'user')
+      .orderBy('portfolio.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
 
     if (options?.userId) {
-      where.user = { id: options.userId };
+      qb.andWhere('user.id = :userId', { userId: options.userId });
     }
 
     if (options?.categoryId) {
-      where.course = {
-        ...where.course,
-        category: { id: options.categoryId },
-      };
+      qb.andWhere('category.id = :categoryId', {
+        categoryId: options.categoryId,
+      });
     }
 
     if (options?.courseTypeId) {
-      where.course = {
-        ...where.course,
-        courseType: { id: options.courseTypeId },
-      };
+      qb.andWhere('courseType.id = :courseTypeId', {
+        courseTypeId: options.courseTypeId,
+      });
     }
 
-    const [data, total] = await this.portfolioRepository.findAndCount({
-      where,
-      relations: ['course', 'course.category', 'course.courseType', 'user'],
-      skip,
-      take: limit,
-    });
+    if (options?.search && options.search.trim() !== '') {
+      const keyword = `%${options.search.trim()}%`;
+      qb.andWhere(
+        '(portfolio.title ILIKE :keyword OR portfolio.description ILIKE :keyword OR user.username ILIKE :keyword OR course.name ILIKE :keyword)',
+        { keyword },
+      );
+    }
 
+    const [data, total] = await qb.getManyAndCount();
     return { data, total };
   }
 

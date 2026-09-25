@@ -1,200 +1,26 @@
-a<div class="max-w-7xl mx-auto px-4 pt-28 bg-white sm:px-6 lg:px-8 py-12">
+<div class="pt-28 pb-20 min-h-screen bg-[#F9FAFB] font-inter">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     
-    <!-- Header -->
-    <div class="text-center mb-10">
-        <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full mb-6 shadow-lg border border-[#68BBE3]">
-            <i class="fas fa-graduation-cap text-[#055C90]"></i>
-            <span class="text-[#003060] font-semibold">{{portfolio.course.name}}</span>
-        </div>
-        
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight font-inter">
-            {{portfolio.title}}
-        </h1>
+    <!-- Top Header: Eyebrow Badge & Title -->
+    {{> portfolio/detail/header}}
+
+    <!-- Showcase Image Gallery -->
+    {{> portfolio/detail/gallery}}
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column: Description & Overview -->
+      <div class="lg:col-span-2">
+        {{> portfolio/detail/content}}
+      </div>
+
+      <!-- Right Column: Sidebar Meta Info & CTA -->
+      <div class="lg:col-span-1">
+        {{> portfolio/detail/sidebar}}
+      </div>
+
     </div>
 
-    <!-- Alpine.js Image Slider -->
-    <div class="mb-16" 
-         x-data="{
-            currentIndex: 0,
-            images: [{{#each portfolio.image}}'{{this}}',{{/each}}],
-            next() {
-                this.currentIndex = (this.currentIndex + 1) % this.images.length;
-            },
-            prev() {
-                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-            },
-            goTo(index) {
-                this.currentIndex = index;
-            }
-         }" 
-         class="space-y-6">
-
-        <!-- Main Image Display -->
-        <div class="relative group  rounded-2xl p-6">
-            <div class="relative w-full max-w-[500px] mx-auto">
-                <div class="relative aspect-[16/10] w-full">
-                    <img x-bind:src="images[currentIndex]" 
-                         alt="Portfolio Image"
-                         class="absolute inset-0 w-full h-full object-contain cursor-pointer group-hover:scale-105 transition-transform duration-500 rounded-3xl shadow-lg hover:shadow-xl">
-
-                    <!-- Navigation Arrows -->
-                    <template x-if="images.length > 1">
-                        <div class="absolute inset-0 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button @click.prevent.stop="prev()" 
-                                    class="w-10 h-10 -ml-5 bg-white/90 hover:bg-white text-slate-700 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                            </button>
-                            <button @click.prevent.stop="next()" 
-                                    class="w-10 h-10 -mr-5 bg-white/90 hover:bg-white text-slate-700 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </template>
-
-                    <!-- Image Counter -->
-                    <template x-if="images.length > 1">
-                        <div class="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                            <span x-text="currentIndex + 1"></span>/<span x-text="images.length"></span>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </div>
-
-        <!-- Thumbnail Navigation -->
-        <template x-if="images.length > 1">
-            <div class="flex pt-2 space-x-3 overflow-x-auto pb-2 justify-center">
-                <template x-for="(image, index) in images" :key="index">
-                    <button @click="goTo(index)" 
-                            class="flex-shrink-0 w-20 h-20 rounded-lg border-2 transition-all duration-300 hover:shadow-lg"
-                            :class="currentIndex === index ? 'border-[#055C90] scale-105' : 'border-[#68BBE3]/50 hover:border-[#055C90]'">
-                        <img :src="image" 
-                             alt="Thumbnail" 
-                             class="w-full h-full object-cover rounded-md">
-                    </button>
-                </template>
-            </div>
-        </template>
-    </div>
-
-    <!-- Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-8">
-            
-
-
-            <!-- Project Details -->
-            <div class="bg-white rounded-2xl p-8 shadow-xl">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 font-inter">{{t "test.detailPortfolio.projectDescription"}}</h2>
-                <div class="space-y-4 text-gray-700 leading-relaxed">
-                    <p>
-            {{portfolio.description}}
-
-                       </p>
-                </div>
-            </div>
-
-                       <div class="bg-white rounded-2xl p-8 shadow-xl">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 font-inter">{{t "test.detailPortfolio.projectOverview"}}</h2>
-                <div class="space-y-4 text-gray-700 leading-relaxed">
-            {{{portfolio.contentHtml}}}
-
-                </div>
-            </div>
-
-
-        </div>
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-            
-            <!-- Student Profile Card -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl">
-                <h3 class="text-xl font-bold text-gray-900 mb-6 font-inter">{{t "test.detailPortfolio.studentProfile"}}</h3>
-                
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden ring-4 ring-gray-100">
-                        {{#if portfolio.user.profile}}
-                        <img src="{{portfolio.user.profile}}" alt="{{portfolio.user.username}}" class="w-full h-full object-cover">
-                        {{else}}
-                                      <div
-                class='w-full h-full bg-gray-600 flex items-center justify-center'
-              >
-                <span class='text-white font-bold text-4xl'>{{substring
-                    portfolio.user.username
-                    0
-                    1
-                  }}</span>
-              </div>
-                        {{/if}}
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-gray-900 font-inter">{{portfolio.user.username}}</h4>
-                        <p class="text-gray-600 font-medium ">{{portfolio.user.email}}</p>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-700 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 font-inter">{{t "test.detailPortfolio.programCompleted"}}</p>
-                            <p class="text-gray-900 font-medium ">{{portfolio.course.name}}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-700 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 font-inter">{{t "test.detailPortfolio.completionDate"}}</p>
-                            <p class="text-gray-900 font-medium ">{{formatDate portfolio.course.startEnd lang}}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-700 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-700 font-inter">{{t "test.detailPortfolio.projectDuration"}}</p>
-                            <p class="text-gray-900 font-medium ">{{portfolio.course.month}} {{t "test.detailPortfolio.months"}}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-                        <!-- Technologies -->
-            <div class="bg-white rounded-2xl p-8 shadow-xl">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 font-inter">{{t "test.detailPortfolio.technologiesUsed"}}</h2>
-                <div class="flex flex-wrap gap-3">
-                    {{#each portfolio.course.technologies}}
-                    <div class='flex items-center gap-2'>
-                        {{#if this.svg}}
-                        <div class='w-6 h-6 flex items-center justify-center'>{{{this.svg}}}</div>
-                        {{/if}}
-                        {{#if this.imgUrl}}
-                        <div class='w-6 h-6 flex items-center justify-center'>
-                            <img src="{{this.imgUrl}}" alt="{{this.name}}" class="w-full h-full object-contain">
-                        </div>
-                        {{/if}}
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-                        <!-- Action Button -->
-                <a href="{{portfolio.link}} " target="_blank" class="w-full text-white btn h-16 text-xl bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary px-8 py-4 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
-                    {{t "test.detailPortfolio.buttonViewPortfolio"}}
-                </a>
-        </div>
-    </div>
+  </div>
 </div>
