@@ -137,6 +137,7 @@ export class UserAnswersService {
         throw new NotFoundException('User not found');
       }
       user.quizStart = false;
+      user.countdownQuiz = null;
       await this.userRepository.save(user);
 
       await this.scoreRepository.save({
@@ -179,12 +180,13 @@ export class UserAnswersService {
         throw new NotFoundException('quiz not found');
       }
 
-      if (scores >= quiz.minScore) {
+      if (scores >= quiz.minScore && quiz.weeks) {
         await this.weekProgress(quiz.weeks.id, userId);
         await this.updateWeekProgress(quiz.weeks.id, userId);
       }
 
       user.quizStart = false;
+      user.countdownQuiz = null;
       await this.userRepository.save(user);
 
       await this.scoreRepository.save({
@@ -342,5 +344,12 @@ export class UserAnswersService {
       user: { id: userId },
       question: { id: In(ids) },
     });
+  }
+  async resetQuizState(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) return;
+    user.quizStart = false;
+    user.countdownQuiz = null;
+    await this.userRepository.save(user);
   }
 }

@@ -2,196 +2,279 @@
      belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
-{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.assignment') back=(concat '/program/' assignment.session.weeks.course.id)}}
-<div class="min-h-full py-8">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6">
-<div class="flex justify-start mb-8">
-</div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <!-- Kolom Kiri: Assignment Material -->
-        <div class="space-y-6">
-          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-            <div class="flex items-center mb-4">
-              <h4 class="text-xl text-gray-900 font-bold font-inter">{{t "test.assigment.assigment"}}</h4>
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.assignment') back=false
+ trail=(array
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+      (obj
+        'label' (t 'test.startLearning.startLearning')
+        'href' (concat '/program/myProgram/' user.id '?courseId=' assignment.session.weeks.course.id))
+      (obj 'label' (t 'test.startLearning.assignment')))
+      }}
+
+{{!-- Profile content --}}
+<div class="w-full max-w-[1540px] mx-auto flex flex-col items-start px-[50px] pt-[50px] pb-[80px] gap-[38px] font-inter">
+
+  {{!-- Page Header --}}
+  <div class="w-full flex flex-col items-start gap-[6px]">
+    <div class="w-full flex flex-col items-start gap-[4px]">
+      <h1 class="w-full font-montserrat font-bold text-[34px] leading-[42px] text-[#003060]">
+        {{t "test.startLearning.assignment"}}
+      </h1>
+      <p class="w-full font-inter font-normal text-[14px] leading-[20px] text-[#718096]">
+        {{t "test.assigment.spanSubmitYourAnswer"}}
+      </p>
+    </div>
+  </div>
+
+  {{!-- My Learning page --}}
+  <div class="w-full bg-white rounded-[22px] flex flex-col items-start">
+
+    {{!-- Learning workspace --}}
+    <div class="w-full flex flex-col items-start px-[24px] pt-[20px] pb-[28px] gap-[18px]">
+
+      {{!-- workspace: left + right --}}
+      <div class="w-full flex flex-row items-start gap-[24px]">
+
+        {{!-- Left Column: document-viewer-card --}}
+        <div class="flex flex-col items-start w-[912px] shrink-0 bg-white border border-[#E2E8F0] shadow-[0px_12px_24px_rgba(15,23,42,0.039)] rounded-[24px] overflow-hidden">
+
+          {{!-- viewer-header --}}
+          <div class="w-full flex flex-row justify-between items-center px-[24px] py-[14px] bg-[#003060]">
+
+            {{!-- viewer-file-info --}}
+            <div class="flex flex-row items-center gap-[10px]">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.33333 1.33334H4C3.26667 1.33334 2.67333 1.93334 2.67333 2.66667L2.66667 13.3333C2.66667 14.0667 3.26 14.6667 3.99333 14.6667H12C12.7333 14.6667 13.3333 14.0667 13.3333 13.3333V5.33334L9.33333 1.33334ZM12 13.3333H4V2.66667H8.66667V6.00001H12V13.3333Z" fill="#94A3B8"/>
+              </svg>
+              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#E2E8F0] truncate max-w-[196px]">
+                {{assignment.title}}
+              </span>
             </div>
-            <div class="overflow-hidden rounded-xl border border-[#E5E5E5] shadow-sm bg-white">
-              <iframe
-                  class="w-full h-[500px] border-0" 
-  src="{{assignment.file}}"
-  type="application/pdf"
-></iframe>
+
+            {{!-- viewer-actions --}}
+            <div class="flex flex-row items-center gap-[16px]">
+              {{!-- share --}}
+              <a href="{{assignment.file}}" target="_blank" title="Share" class="text-[#94A3B8] hover:text-white transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 10.72C11.4933 10.72 11.04 10.92 10.6933 11.24L5.94 8.46667C5.97333 8.31333 6 8.16 6 8C6 7.84 5.97333 7.68667 5.94 7.53333L10.64 4.78667C11 5.12667 11.4733 5.33333 12 5.33333C13.1067 5.33333 14 4.44 14 3.33333C14 2.22667 13.1067 1.33333 12 1.33333C10.8933 1.33333 10 2.22667 10 3.33333C10 3.49333 10.0267 3.64667 10.06 3.8L5.36 6.54667C5 6.20667 4.52667 6 4 6C2.89333 6 2 6.89333 2 8C2 9.10667 2.89333 10 4 10C4.52667 10 5 9.79333 5.36 9.45333L10.1067 12.2333C10.0733 12.3733 10.0533 12.52 10.0533 12.6667C10.0533 13.74 10.9267 14.6133 12 14.6133C13.0733 14.6133 13.9467 13.74 13.9467 12.6667C13.9467 11.5933 13.0733 10.72 12 10.72Z" fill="#94A3B8"/>
+                </svg>
+              </a>
+              {{!-- download --}}
+              <a href="{{assignment.file}}" download title="Download" class="text-[#94A3B8] hover:text-white transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.6667 6H10V2H6V6H3.33333L8 10.6667L12.6667 6ZM3.33333 12V13.3333H12.6667V12H3.33333Z" fill="#94A3B8"/>
+                </svg>
+              </a>
+              {{!-- print --}}
+              <button onclick="window.print()" title="Print" class="text-[#94A3B8] hover:text-white transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.6667 5.33333H3.33333C2.22667 5.33333 1.33333 6.22667 1.33333 7.33333V11.3333H3.33333V13.3333H12.6667V11.3333H14.6667V7.33333C14.6667 6.22667 13.7733 5.33333 12.6667 5.33333ZM11.3333 12H4.66667V9.33333H11.3333V12ZM12.6667 8C12.3 8 12 7.7 12 7.33333C12 6.96667 12.3 6.66667 12.6667 6.66667C13.0333 6.66667 13.3333 6.96667 13.3333 7.33333C13.3333 7.7 13.0333 8 12.6667 8ZM12 2.66667H4V4.66667H12V2.66667Z" fill="#94A3B8"/>
+                </svg>
+              </button>
+              {{!-- more --}}
+              <button title="More options" class="text-[#94A3B8] hover:text-white transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 3.33333C8.73333 3.33333 9.33333 2.73333 9.33333 2C9.33333 1.26667 8.73333 0.666667 8 0.666667C7.26667 0.666667 6.66667 1.26667 6.66667 2C6.66667 2.73333 7.26667 3.33333 8 3.33333ZM8 6.66667C7.26667 6.66667 6.66667 7.26667 6.66667 8C6.66667 8.73333 7.26667 9.33333 8 9.33333C8.73333 9.33333 9.33333 8.73333 9.33333 8C9.33333 7.26667 8.73333 6.66667 8 6.66667ZM8 12.6667C7.26667 12.6667 6.66667 13.2667 6.66667 14C6.66667 14.7333 7.26667 15.3333 8 15.3333C8.73333 15.3333 9.33333 14.7333 9.33333 14C9.33333 13.2667 8.73333 12.6667 8 12.6667Z" fill="#94A3B8"/>
+                </svg>
+              </button>
             </div>
           </div>
 
-          <!-- Submit Answer Form -->
-
+          {{!-- inner-document-content: file preview from admin upload --}}
+          <div class="w-full flex flex-col bg-[#F1F5F9]" style="min-height:369px;">
+            {{#if assignment.file}}
+              <iframe
+                src="{{assignment.file}}"
+                class="w-full border-0"
+                style="min-height:369px;height:100%;flex:1;"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            {{else}}
+              {{!-- Fallback: no file uploaded --}}
+              <div class="w-full flex flex-col items-center justify-center gap-4 p-10" style="min-height:369px;">
+                <svg class="w-12 h-12 text-[#CBD5E1]" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M28 4H12C9.79 4 8.02 5.79 8.02 8L8 40C8 42.21 9.77 44 11.98 44H36C38.21 44 40 42.21 40 40V16L28 4ZM36 40H12V8H26V18H36V40Z" fill="#CBD5E1"/>
+                </svg>
+                <p class="font-inter font-medium text-[14px] text-[#94A3B8] text-center">
+                  File belum tersedia
+                </p>
+              </div>
+            {{/if}}
+          </div>
         </div>
 
-        <!-- Kolom Kanan: Your Answer -->
-        <div class="space-y-6">
-          <div class="bg-white p-6 rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-            <div class="flex items-center mb-4">
-              <h4 class="text-xl text-gray-900 font-bold font-inter">{{t "test.assigment.yourAnswer"}}</h4>
-            </div>
-            
+        {{!-- Right Column --}}
+        <div class="flex flex-col items-start gap-[24px] flex-1 min-w-0">
+
+          {{!-- heading --}}
+          <h2 class="w-full font-bold text-[24px] leading-[30px] text-[#0F172A]" style="font-family:'Schibsted Grotesk',sans-serif;">
+            {{t "test.assigment.yourAnswer"}}
+          </h2>
+
+          {{!-- submission-card --}}
+          <div class="w-full flex flex-col items-start p-[32px] gap-[24px] bg-white border border-[#E2E8F0] shadow-[0px_12px_24px_rgba(15,23,42,0.039)] rounded-[24px]">
+
             {{#if assignment_answer.length}}
-              <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+              {{!-- Existing answers list --}}
+              <div class="w-full space-y-4 max-h-[420px] overflow-y-auto">
                 {{#each assignment_answer}}
-                  <div class="p-5 bg-white border border-[#E5E5E5] rounded-xl shadow-sm transition-all duration-300">
-                    <div class="flex flex-col gap-3 mb-4">
-                      {{#if (eq this.process 'approved')}}
-                                            <a 
-                        href="{{this.file}}" 
-                        target="_blank"
-                        class="text-base text-[#404040] font-semibold hover:text-[#171717] hover:underline transition-colors break-words"
-                      >
-                        {{this.file}}
-                      </a>
-                      {{else}}
-                      <a 
-                        href="{{this.file}}" 
-                        target="_blank"
-                        class="text-base text-[#404040] font-semibold hover:text-[#171717] hover:underline transition-colors break-words"
-                      >
-                        {{this.file}}
-                      </a>
-                      {{/if}}
-                    </div>
-                    
-                    <div class="flex flex-wrap items-center gap-3">
+                  <div class="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px] flex flex-col gap-3">
+                    <a
+                      href="{{this.file}}"
+                      target="_blank"
+                      class="font-inter font-medium text-[13px] leading-[17px] text-[#2563EB] hover:underline break-all"
+                      style="font-family:'Geist Mono',monospace;"
+                    >
+                      {{this.file}}
+                    </a>
+
+                    <div class="flex flex-wrap items-center gap-2">
                       <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full
-                        {{#if (roles this.process 'approved')}} 
-                          bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]
-                        {{else if (roles this.process 'process')}} 
-                          bg-[#FEFCE8] text-[#A16207] border border-[#FEF08A]
-                        {{else if (roles this.process 'rejected')}} 
-                          bg-[#FEF2F2] text-[#B42318] border border-[#FECACA]
+                        {{#if (roles this.process 'approved')}}bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]
+                        {{else if (roles this.process 'process')}}bg-[#FEFCE8] text-[#A16207] border border-[#FEF08A]
+                        {{else if (roles this.process 'rejected')}}bg-[#FEF2F2] text-[#B42318] border border-[#FECACA]
                         {{/if}}">
                         {{#if (roles this.process 'approved')}}
-                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                          </svg>
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                           {{t "test.assigment.approved"}}
                         {{else if (roles this.process 'process')}}
-                          <svg class="w-3 h-3 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                          </svg>
+                          <svg class="w-3 h-3 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                           {{t "test.assigment.underReview"}}
                         {{else if (roles this.process 'rejected')}}
-                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                          </svg>
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                           {{t "test.assigment.needsRevision"}}
                         {{/if}}
                       </span>
                       {{#unless (eq this.process 'approved')}}
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           onclick="toggleEditForm('{{this.id}}')"
                           class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
                         >
-                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                          </svg>
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                           Edit
                         </button>
                       {{/unless}}
                     </div>
 
                     {{#if this.comment}}
-                      <div class="mt-4 space-y-2">
+                      <div class="space-y-2">
                         {{#each this.comment}}
-                          <div class="p-3 bg-[#FAFAFA] border border-[#E5E5E5] rounded-[8px]">
+                          <div class="p-3 bg-white border border-[#E2E8F0] rounded-[8px]">
                             <div class="flex items-start gap-2">
-                              <div class="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
-                              <div class="flex-1">
-                                <p class="text-sm text-[#404040] leading-relaxed">{{this.comment}}</p>
-                       
-                              </div>
+                              <div class="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                              <p class="font-inter text-sm text-[#475569] leading-relaxed">{{this.comment}}</p>
                             </div>
                           </div>
                         {{/each}}
                       </div>
                     {{/if}}
 
-                    <div id="edit-form-{{this.id}}" class="mt-4 hidden">
-                      <form 
-                            x-data="{ loading: false }"
-  @submit="loading = true"
-                        action="/answer-assigment/{{../assignment.id}}/{{this.id}}?_method=PATCH" 
-                        method="POST" 
-                        class="space-y-4"
+                    {{!-- Edit form (hidden by default) --}}
+                    <div id="edit-form-{{this.id}}" class="hidden">
+                      <form
+                        x-data="{ loading: false }"
+                        @submit="loading = true"
+                        action="/answer-assigment/{{../assignment.id}}/{{this.id}}?_method=PATCH"
+                        method="POST"
+                        class="flex flex-col gap-3"
                       >
-                        <input 
-                          type="text" 
-                          name="file" 
-                          value="{{this.file}}"
-                          placeholder="https://drive.google.com/..." 
-                          required
-                          class="w-full px-4 py-3 border border-[#D4D4D4] rounded-xl bg-white text-[#171717] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#003060] transition-all duration-300 hover:bg-white"
-                        >
-                          <button 
+                        {{!-- link-input-container --}}
+                        <div class="w-full flex flex-row items-center px-[16px] gap-[10px] h-[48px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+                          <svg class="w-4 h-4 shrink-0 text-[#94A3B8]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.40533 9.88C7.20533 9.88 7.00533 9.80667 6.852 9.65333C5.92533 8.72667 5.92533 7.22 6.852 6.29333L8.852 4.29333C9.31867 3.82667 9.93867 3.57333 10.5987 3.57333C11.2587 3.57333 11.8787 3.83333 12.3453 4.29333C13.272 5.22 13.272 6.72667 12.3453 7.65333L11.3453 8.65333C11.0387 8.96 10.5387 8.96 10.232 8.65333C9.92533 8.34667 9.92533 7.84667 10.232 7.54L11.232 6.54C11.5787 6.19333 11.5787 5.63333 11.232 5.28667C10.8853 4.94 10.3253 4.94 9.97867 5.28667L7.97867 7.28667C7.632 7.63333 7.632 8.19333 7.97867 8.54C8.28533 8.84667 8.28533 9.34667 7.97867 9.65333C7.82533 9.80667 7.62533 9.88 7.40533 9.88Z" fill="#94A3B8"/>
+                            <path d="M5.39867 12.4267C4.73867 12.4267 4.11867 12.1667 3.652 11.7067C2.72533 10.78 2.72533 9.27333 3.652 8.34667L4.652 7.34667C4.95867 7.04 5.45867 7.04 5.76533 7.34667C6.072 7.65333 6.072 8.15333 5.76533 8.46L4.76533 9.46C4.41867 9.80667 4.41867 10.3667 4.76533 10.7133C5.112 11.06 5.672 11.06 6.01867 10.7133L8.01867 8.71333C8.36533 8.36667 8.36533 7.80667 8.01867 7.46C7.712 7.15333 7.712 6.65333 8.01867 6.34667C8.32533 6.04 8.82533 6.04 9.132 6.34667C10.0587 7.27333 10.0587 8.78 9.132 9.70667L7.132 11.7067C6.65867 12.1667 6.05867 12.4267 5.39867 12.4267Z" fill="#94A3B8"/>
+                          </svg>
+                          <input
+                            type="text"
+                            name="file"
+                            value="{{this.file}}"
+                            placeholder="https://github.com/..."
+                            required
+                            class="flex-1 bg-transparent font-inter font-normal text-[13px] leading-[17px] text-[#475569] placeholder:text-[#94A3B8] outline-none"
+                            style="font-family:'Geist Mono',monospace;"
+                          />
+                        </div>
+                        <div class="flex gap-2">
+                          <button
                             :disabled="loading"
-                            type="submit" 
-                            class="inline-flex h-9 items-center justify-center rounded-[8px] bg-[#003060] px-3.5 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+                            type="submit"
+                            class="flex-1 flex flex-row justify-center items-center py-[14px] font-inter font-semibold text-[14px] leading-[17px] text-white rounded-[12px] shadow-[0px_4px_12px_rgba(37,99,235,0.169)]"
+                            style="background:linear-gradient(90deg,#1E3A8A 0%,#3B82F6 100%);"
                           >
                             <span x-show="loading" class="loading loading-spinner loading-sm"></span>
                             <span x-show="!loading">{{t "test.assigment.update"}}</span>
                           </button>
-                          <button 
+                          <button
                             type="button"
                             :disabled="loading"
                             onclick="toggleEditForm('{{this.id}}')"
-                            class="inline-flex h-9 items-center justify-center rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#F5F5F5]"
+                            class="flex-1 flex flex-row justify-center items-center py-[14px] font-inter font-semibold text-[14px] leading-[17px] text-[#003060] bg-white border border-[#E2E8F0] rounded-[12px] hover:bg-[#F8FAFC] transition-colors"
                           >
                             {{t "test.assigment.cancel"}}
                           </button>
+                        </div>
                       </form>
                     </div>
                   </div>
                 {{/each}}
               </div>
+
             {{else}}
-              <div >
-            <p class="text-sm text-[#525252] mb-4 leading-relaxed">
-              {{t "test.assigment.spanSubmitYourAnswer"}}
-            </p>
-            <form 
-                  x-data="{ loading: false }"
-  @submit="loading = true"
-              action="/answer-assigment/{{assignment.id}}/{{assignment.session.id}}" 
-              method="POST" 
-              class="space-y-4"
-            >
-              <input 
-                type="text" 
-                name="file" 
-                placeholder="https://drive.google.com/..." 
-                required
-                class="w-full px-4 py-3 border border-[#D4D4D4] rounded-xl bg-white text-[#171717] placeholder:text-[#A3A3A3] focus:outline-none focus:border-[#003060] transition-all duration-300 hover:bg-white"
-              >
-              <button 
-              :disabled="loading"
-                type="submit" 
-                class="inline-flex h-[44px] items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white transition-colors hover:bg-[#00254a] w-full"
-              >
-              <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-              <span x-show="!loading">{{t "test.assigment.submitAnswer"}}</span>
-              </button>
-            </form>
+              {{!-- Empty state: submit form --}}
+              <div class="w-full flex flex-col items-start gap-[8px]">
+                <h3 class="w-full font-semibold text-[18px] leading-[22px] text-[#0F172A]" style="font-family:'Schibsted Grotesk',sans-serif;">
+                  Submit File Link
+                </h3>
+                <p class="w-full font-inter font-normal text-[14px] leading-[150%] text-[#475569]">
+                  Enter a GitHub link, Google Drive, or any online file-sharing link containing your assignment.
+                </p>
               </div>
+
+              <form
+                x-data="{ loading: false }"
+                @submit="loading = true"
+                action="/answer-assigment/{{assignment.id}}/{{assignment.session.id}}"
+                method="POST"
+                class="w-full flex flex-col gap-[24px]"
+              >
+                {{!-- link-input-container --}}
+                <div class="w-full flex flex-row items-center px-[16px] gap-[10px] h-[48px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+                  <svg class="w-4 h-4 shrink-0 text-[#94A3B8]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.40533 9.88C7.20533 9.88 7.00533 9.80667 6.852 9.65333C5.92533 8.72667 5.92533 7.22 6.852 6.29333L8.852 4.29333C9.31867 3.82667 9.93867 3.57333 10.5987 3.57333C11.2587 3.57333 11.8787 3.83333 12.3453 4.29333C13.272 5.22 13.272 6.72667 12.3453 7.65333L11.3453 8.65333C11.0387 8.96 10.5387 8.96 10.232 8.65333C9.92533 8.34667 9.92533 7.84667 10.232 7.54L11.232 6.54C11.5787 6.19333 11.5787 5.63333 11.232 5.28667C10.8853 4.94 10.3253 4.94 9.97867 5.28667L7.97867 7.28667C7.632 7.63333 7.632 8.19333 7.97867 8.54C8.28533 8.84667 8.28533 9.34667 7.97867 9.65333C7.82533 9.80667 7.62533 9.88 7.40533 9.88Z" fill="#94A3B8"/>
+                    <path d="M5.39867 12.4267C4.73867 12.4267 4.11867 12.1667 3.652 11.7067C2.72533 10.78 2.72533 9.27333 3.652 8.34667L4.652 7.34667C4.95867 7.04 5.45867 7.04 5.76533 7.34667C6.072 7.65333 6.072 8.15333 5.76533 8.46L4.76533 9.46C4.41867 9.80667 4.41867 10.3667 4.76533 10.7133C5.112 11.06 5.672 11.06 6.01867 10.7133L8.01867 8.71333C8.36533 8.36667 8.36533 7.80667 8.01867 7.46C7.712 7.15333 7.712 6.65333 8.01867 6.34667C8.32533 6.04 8.82533 6.04 9.132 6.34667C10.0587 7.27333 10.0587 8.78 9.132 9.70667L7.132 11.7067C6.65867 12.1667 6.05867 12.4267 5.39867 12.4267Z" fill="#94A3B8"/>
+                  </svg>
+                  <input
+                    type="text"
+                    name="file"
+                    placeholder="https://github.com/bisa-ai/sains-excel-assignment-submission"
+                    required
+                    class="flex-1 bg-transparent font-inter font-normal text-[13px] leading-[17px] text-[#475569] placeholder:text-[#94A3B8] outline-none"
+                    style="font-family:'Geist Mono',monospace;"
+                  />
+                </div>
+
+                {{!-- submit-button --}}
+                <button
+                  :disabled="loading"
+                  type="submit"
+                  class="w-full flex flex-row justify-center items-center py-[14px] font-inter font-semibold text-[14px] leading-[17px] text-white rounded-[12px] shadow-[0px_4px_12px_rgba(37,99,235,0.169)] hover:opacity-90 transition-opacity"
+                  style="background:linear-gradient(90deg,#1E3A8A 0%,#3B82F6 100%);"
+                >
+                  <span x-show="loading" class="loading loading-spinner loading-sm mr-2"></span>
+                  <span x-show="!loading">{{t "test.assigment.submitAnswer"}}</span>
+                </button>
+              </form>
             {{/if}}
-          </div>
-        </div>
-      </div>
 
-      <!-- Back Button -->
-
-    </div>
-  </div>
-</div>
+          </div>{{!-- /submission-card --}}
+        </div>{{!-- /right-column --}}
+      </div>{{!-- /workspace --}}
+    </div>{{!-- /learning-workspace --}}
+  </div>{{!-- /my-learning-page --}}
+</div>{{!-- /profile-content --}}
 
 <script>
   function toggleEditForm(id) {
