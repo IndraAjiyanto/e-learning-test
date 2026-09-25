@@ -915,6 +915,33 @@ export class CoursesController {
     const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
+    const caps = capabilitiesForCourse(activeCourse);
+
+    // Program non_bootcamp tidak punya minggu, jadi tidak ada yang bisa
+    // dijumlahkan per minggu. Yang ditampilkan di tab ini adalah satu final
+    // assignment milik program itu - lihat courses/program-type.ts.
+    if (caps.structure === 'syllabus') {
+      const finalAssignment = activeCourse?.id
+        ? await this.finalAssignmentService.findByCourse(activeCourse.id)
+        : null;
+      const finalAssignmentSubmission =
+        finalAssignment?.id && id
+          ? await this.finalAssignmentService.findSubmissionByUser(
+              finalAssignment.id,
+              id,
+            )
+          : null;
+
+      return res.render('partials/user/sidebar_user_profile/assignment/index', {
+        course: activeCourse,
+        stats: null,
+        weekSummaries: null,
+        caps,
+        finalAssignment,
+        finalAssignmentSubmission,
+        layout: false,
+      });
+    }
 
     // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
     const stats = await this.coursesService.findLearningStats(
@@ -933,7 +960,9 @@ export class CoursesController {
       course: activeCourse,
       stats,
       weekSummaries,
-      caps: capabilitiesForCourse(activeCourse),
+      caps,
+      finalAssignment: null,
+      finalAssignmentSubmission: null,
       layout: false,
     });
   }

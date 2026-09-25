@@ -1,0 +1,181 @@
+{{!--
+  Komponen: Pabrik Alpine untuk menampilkan isi Final Assignment (EditorJS)
+  Lokasi: src/views/partials/components/ui/final_assignment/renderer/index.hbs
+
+  Isi `final_assignment.content` disimpan sebagai JSON hasil EditorJS, jadi
+  tidak bisa langsung dicetak ke HTML. Pabrik ini membacanya dari elemen
+  <script type="application/json">, mengubah tiap blok jadi HTML, lalu
+  menyediakannya ke Alpine lewat `renderedHtml`.
+
+  Dipakai di dua tempat: halaman detail final assignment untuk admin
+  (src/views/admin/course/detail_final_assignment.hbs) dan halaman tugas akhir
+  untuk peserta (src/views/user/learning/final_assignment.hbs). Sebelumnya
+  renderer ini hanya hidup di dalam halaman admin - menyalinnya ke sisi peserta
+  berarti 80 baris JavaScript yang sama ada dua kali dan akan menyimpang begitu
+  salah satunya diubah.
+
+  Tanpa parameter yang wajib: yang varies per program adalah isi kontennya, dan
+  itu dikirim lewat components/ui/final_assignment/content_data. Pabriknya cukup
+  disebut dengan id elemen JSON itu.
+
+  Pemakaian:
+    {{> components/ui/final_assignment/content_data/index
+        contentId='fa-content-1' content=finalAssignment.content }}
+
+    <div x-data='finalAssignmentContentRenderer("fa-content-1")' x-init='init()'>
+      <div class='final-assignment-content' x-html='renderedHtml'></div>
+    </div>
+
+  Parameter kedua opsional: kalimat yang tampil saat kontennya kosong. Side
+  peserta mengirimnya sebagai `data-empty-message` di elemen yang sama, bukan
+  sebagai argumen, karena argumen itu akan menjadi string JS di dalam atribut
+  HTML - satu tanda kutip pada kalimat terjemahan sudah cukup untuk menutup
+  atribut itu. Halaman admin memakai argumen karena tidak pernah menerjemahkan
+  apa pun (kalimatnya hardcoded, sama seperti sisa teks di halaman itu).
+--}}
+<script>
+  function finalAssignmentContentRenderer(sourceId, emptyMessage) {
+    return {
+      renderedHtml: '',
+      // `emptyMessage` sebagai parameter dipakai halaman admin. Halaman peserta
+      // mengirimnya lewat data attribute, bukan string JS di dalam atribut:
+      // kalimat terjemahan bisa saja memuat tanda kutip, dan satu tanda kutip
+      // saja sudah menutup atribut itu sebelum Alpine sempat membacanya.
+      //
+      // Ketiga cabang "tidak ada isi" memakai satu metode ini. Awalnya kalimat
+      // default-nya ditulis tiga kali, dan hanya cabang pertama yang memakai
+      // data atribut - halaman peserta yang kontennya kosong masih menampilkan
+      // kalimat hardcoded.
+      emptyHtml() {
+        const msg = emptyMessage || (this.$el && this.$el.dataset.emptyMessage);
+        return '<p class="text-[#737373] italic">' +
+          (msg || 'Belum ada konten untuk Final Assignment ini.') + '</p>';
+      },
+      init() {
+        try {
+          const rawEl = document.getElementById(sourceId);
+          if (!rawEl || !rawEl.textContent) {
+            this.renderedHtml = this.emptyHtml();
+            return;
+          }
+          let parsed = JSON.parse(rawEl.textContent);
+          if (typeof parsed === 'string') {
+            try {
+              parsed = JSON.parse(parsed);
+            } catch (e) {}
+          }
+          if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+            this.renderedHtml = parsed.blocks.map(function(b) {
+              const d = b.data || {};
+              const type = (b.type || '').toLowerCase();
+              switch (type) {
+                case 'header': {
+                  const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+                  return '<h' + lvl + ' class="ce-header">' + (d.text || '') + '</h' + lvl + '>';
+                }
+                case 'paragraph': {
+                  return '<p class="leading-[22px] text-[#171717] mb-3">' + (d.text || '') + '</p>';
+                }
+                case 'list': {
+                  if (d.style === 'checklist') {
+                    const items = (d.items || []).map(function(i) {
+                      const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                      const checked = (typeof i === 'object' && i !== null && i.meta && i.meta.checked);
+                      return '<li class="flex items-start gap-2 my-1">' +
+                        '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                        '<span>' + content + '</span></li>';
+                    }).join('');
+                    return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+                  }
+                  const items = (d.items || []).map(function(i) {
+                    const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                    return '<li class="my-1">' + content + '</li>';
+                  }).join('');
+                  return d.style === 'ordered'
+                    ? '<ol class="list-decimal pl-5 space-y-1 mb-3">' + items + '</ol>'
+                    : '<ul class="list-disc pl-5 space-y-1 mb-3">' + items + '</ul>';
+                }
+                case 'checklist': {
+                  const items = (d.items || []).map(function(i) {
+                    const content = (typeof i === 'object' && i !== null) ? (i.text || i.content || '') : i;
+                    const checked = (typeof i === 'object' && i !== null && (i.checked || (i.meta && i.meta.checked)));
+                    return '<li class="flex items-start gap-2 my-1">' +
+                      '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                      '<span>' + content + '</span></li>';
+                  }).join('');
+                  return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+                }
+                case 'image':
+                  return '<figure class="my-3"><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" class="max-w-full rounded-lg"/>' +
+                    (d.caption ? '<figcaption class="text-center text-xs text-[#737373] mt-1">' + d.caption + '</figcaption>' : '') + '</figure>';
+                case 'quote':
+                  return '<blockquote class="border-l-4 border-[#003060] pl-3 italic my-3 text-[#525252]">' + (d.text || '') + '</blockquote>';
+                case 'code':
+                  return '<pre class="bg-gray-100 p-3 rounded-md my-3 overflow-x-auto text-xs"><code>' + (d.code || '') + '</code></pre>';
+                default:
+                  return d.text ? '<p class="leading-[22px] mb-3">' + d.text + '</p>' : '';
+              }
+            }).join('');
+          } else if (typeof parsed === 'string' && parsed.trim()) {
+            this.renderedHtml = '<div class="whitespace-pre-line">' + parsed + '</div>';
+          } else {
+            this.renderedHtml = this.emptyHtml();
+          }
+        } catch (err) {
+          this.renderedHtml = this.emptyHtml();
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  .final-assignment-content h1 {
+    font-size: 24px !important;
+    line-height: 32px !important;
+    font-weight: 700 !important;
+    color: #003060 !important;
+    margin-top: 18px !important;
+    margin-bottom: 8px !important;
+  }
+  .final-assignment-content h2 {
+    font-size: 20px !important;
+    line-height: 28px !important;
+    font-weight: 700 !important;
+    color: #003060 !important;
+    margin-top: 16px !important;
+    margin-bottom: 6px !important;
+  }
+  .final-assignment-content h3 {
+    font-size: 18px !important;
+    line-height: 26px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 14px !important;
+    margin-bottom: 6px !important;
+  }
+  .final-assignment-content h4 {
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 12px !important;
+    margin-bottom: 4px !important;
+  }
+  .final-assignment-content h5 {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 10px !important;
+    margin-bottom: 4px !important;
+  }
+  .final-assignment-content h6 {
+    font-size: 12px !important;
+    line-height: 18px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+  }
+</style>

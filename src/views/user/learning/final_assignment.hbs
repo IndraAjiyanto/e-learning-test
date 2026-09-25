@@ -1,0 +1,259 @@
+{{!--
+  Halaman: Final Assignment (area student)
+  Rute   : GET /final-assignment/submission/:id  (final_assignment.controller.ts)
+
+  Ditautkan dari tab Tugas Akhir di panel Start Learning. Tab itu hanya
+  menampilkan baris judul dan status; brief dan formulir jawabannya ada di
+  halaman ini.
+
+  Bentuk halaman ini sama dengan tugas mingguan
+  (src/views/user/assignments.hbs): brief di kiri, kartu kiriman di kanan.
+  Kerangkanya dipakai bersama lewat `components/ui/learning/assignment_page/*`,
+  jadi perubahan tampilan di sana berlaku untuk keduanya. Yang berbeda hanya
+  isi kolomnya - di sini brief-nya rich text EditorJS, di sana berkas PDF.
+
+  Penguncian dan kepemilikan dihitung di server
+  (`findOneForSubmission`: peserta program mana pun tidak boleh mengintip brief
+  program lain), jadi template ini boleh menganggap brief ini memang miliknya.
+
+  Label status memakai kunci `test.startLearning.*`, sama seperti tab Tugas
+  Akhir dan halaman sesi. Kunci `test.assigment.*` dipakai di halaman tugas
+  mingguan dengan ejaan yang berbeda ("Dalam Tinjauan" vs "Sedang ditinjau"),
+  jadi memakainya di sini akan mengubah label saat peserta pindah dari tab ke
+  halaman.
+
+  Data: user, finalAssignment, submission
+--}}
+{{#> user/shell_frame/index
+      user=user
+      active='learning'
+      pageTitle=(t 'test.startLearning.finalAssignment')
+      back=(concat '/program/myProgram/' user.id '?courseId=' finalAssignment.courseId)
+      trail=(array
+        (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+        (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+        (obj
+          'label' (t 'test.startLearning.startLearning')
+          'href' (concat '/program/myProgram/' user.id '?courseId=' finalAssignment.courseId))
+        (obj 'label' (t 'test.startLearning.finalAssignment')))}}
+
+{{!-- Pabrik Alpine untuk isi brief. Dimuat di halaman ini, bukan di halaman
+     induk, karena halaman ini dimuat penuh - blok <script> di partial yang
+     disuntik lewat innerHTML tidak dieksekusi browser, tapi yang ini iya. --}}
+{{> components/ui/final_assignment/renderer/index }}
+
+{{> components/ui/final_assignment/content_data/index
+    contentId='final-assignment-content-data'
+    content=finalAssignment.content }}
+
+{{#> components/ui/learning/assignment_page/index
+      title=(t 'test.startLearning.finalAssignment')
+      subtitle=(t 'test.assigment.spanSubmitYourAnswer') }}
+
+  {{!-- Brief. `showFileActions` dikosongkan: isinya rich text, bukan berkas,
+       jadi tidak ada yang bisa diunduh. --}}
+  {{#> components/ui/learning/assignment_page/viewer/index
+        title=finalAssignment.title }}
+    <div class="w-full flex flex-col justify-center px-[24px] py-[24px]">
+      <div
+        class="w-full rounded-[12px] bg-white px-[32px] py-[28px] shadow-[0px_1px_2px_rgba(15,23,42,0.06)]"
+        style="min-height:321px;"
+        x-data='finalAssignmentContentRenderer("final-assignment-content-data")'
+        data-empty-message="{{t 'test.startLearning.finalAssignmentNoContent'}}"
+        x-init="init()"
+      >
+        <div class="final-assignment-content font-inter text-[14px] leading-[150%] text-[#0F172A]" x-html="renderedHtml"></div>
+      </div>
+    </div>
+  {{/components/ui/learning/assignment_page/viewer/index}}
+
+  {{#> components/ui/learning/assignment_page/submission/index
+        heading=(t 'test.assigment.yourAnswer') }}
+    {{#if submission}}
+      {{!--
+        Dua keadaan, bukan satu. Kiriman yang ditolak ditampilkan terpisah dari
+        yang sekadar menunggu penilaian: peserta harus baca catatan mentor dulu
+        sebelum tahu harus mengirim ulang apa.
+      --}}
+      {{#unless (eq submission.status 'rejected')}}
+        <div class="w-full flex flex-col items-start gap-[16px]">
+          <div class="w-full flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <a
+              href="{{submission.filePath}}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-inter font-medium text-[13px] leading-[17px] text-[#2563EB] hover:underline break-all"
+              style="font-family:'Geist Mono',monospace;"
+            >
+              {{submission.filePath}}
+            </a>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full
+                {{#if (eq submission.status 'approved')}}bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0]
+                {{else if (eq submission.status 'rejected')}}bg-[#FEF2F2] text-[#B42318] border border-[#FECACA]
+                {{else}}bg-[#FEFCE8] text-[#A16207] border border-[#FEF08A]
+                {{/if}}">
+                {{#if (eq submission.status 'approved')}}
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  {{t 'test.startLearning.approved'}}
+                {{else if (eq submission.status 'rejected')}}
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  {{t 'test.startLearning.assignmentRejected'}}
+                {{else}}
+                  <svg class="w-3 h-3 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  {{t 'test.startLearning.assignmentInReview'}}
+                {{/if}}
+              </span>
+            </div>
+          </div>
+
+          {{!-- Riwayat catatan mentor. --}}
+          {{#if submission.commentHistory.length}}
+            <div class="w-full space-y-2">
+              {{#each submission.commentHistory}}
+                <div class="p-3 bg-white border border-[#E2E8F0] rounded-[8px]">
+                  <div class="flex items-start gap-2">
+                    <div class="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                    <div>
+                      <p class="font-inter text-sm text-[#475569] leading-relaxed">{{this.comment}}</p>
+                      {{#if this.reviewerName}}
+                        <p class="mt-1 font-inter text-xs text-[#94A3B8]">{{this.reviewerName}}</p>
+                      {{/if}}
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          {{/if}}
+        </div>
+      {{/unless}}
+
+      {{!-- Kiriman yang ditolak: catatan mentor dulu, baru formulirnya. --}}
+      {{#if (eq submission.status 'rejected')}}
+        <div class="w-full flex flex-col items-start gap-[8px] p-[16px] bg-[#FEF2F2] border border-[#FECACA] rounded-[12px]">
+          <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-white text-[#B42318] border border-[#FECACA]">
+            {{t 'test.startLearning.assignmentRejected'}}
+          </span>
+          <p class="font-inter text-xs font-semibold uppercase tracking-wide text-[#B42318]">
+            {{t 'test.startLearning.mentorNote'}}
+          </p>
+          {{#if submission.commentHistory.length}}
+            {{#each submission.commentHistory}}
+              <p class="font-inter text-sm text-[#475569] leading-relaxed">{{this.comment}}</p>
+            {{/each}}
+          {{else}}
+            <p class="font-inter text-sm text-[#475569] leading-relaxed">{{submission.comment}}</p>
+          {{/if}}
+          <p class="font-inter text-xs text-[#B42318] leading-relaxed">
+            {{t 'test.startLearning.finalAssignmentReviseHint'}}
+          </p>
+        </div>
+      {{/if}}
+
+      {{!--
+        Formulir edit disembunyikan selama kiriman masih diproses, dan hilang
+        begitu disetujui: yang tercatat adalah nilai yang nilainya sudah dikunci.
+        Endpoint POST juga menolaknya, jadi ini bukan satu-satunya penjaga.
+      --}}
+      {{#unless (eq submission.status 'approved')}}
+        <div id="edit-form" class="hidden w-full">
+          <form
+            x-data="{ loading: false }"
+            @submit="loading = true"
+            action="/final-assignment/submission/{{finalAssignment.id}}"
+            method="POST"
+            class="w-full flex flex-col gap-[16px]"
+          >
+            <div class="w-full flex flex-row items-center px-[16px] gap-[10px] h-[48px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+              <input
+                type="text"
+                name="filePath"
+                value="{{submission.filePath}}"
+                placeholder="https://github.com/..."
+                required
+                class="flex-1 bg-transparent font-inter font-normal text-[13px] leading-[17px] text-[#475569] placeholder:text-[#94A3B8] outline-none"
+                style="font-family:'Geist Mono',monospace;"
+              />
+            </div>
+            <div class="flex gap-2">
+              <button
+                :disabled="loading"
+                type="submit"
+                class="flex-1 flex flex-row justify-center items-center py-[14px] font-inter font-semibold text-[14px] leading-[17px] text-white rounded-[12px] shadow-[0px_4px_12px_rgba(37,99,235,0.169)]"
+                style="background:linear-gradient(90deg,#1E3A8A 0%,#3B82F6 100%);"
+              >
+                <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+                <span x-show="!loading">{{t 'test.assigment.update'}}</span>
+              </button>
+              <button
+                type="button"
+                :disabled="loading"
+                onclick="toggleEditForm()"
+                class="flex-1 flex flex-row justify-center items-center py-[14px] font-inter font-semibold text-[14px] leading-[17px] text-[#003060] bg-white border border-[#E2E8F0] rounded-[12px] hover:bg-[#F8FAFC] transition-colors"
+              >
+                {{t 'test.assigment.cancel'}}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <button
+          type="button"
+          onclick="toggleEditForm()"
+          class="inline-flex items-center self-start px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
+        >
+          {{t 'test.startLearning.editSubmission'}}
+        </button>
+      {{/unless}}
+    {{else}}
+      {{!-- Belum ada kiriman: form kosong. --}}
+      <div class="w-full flex flex-col items-start gap-[8px]">
+        <h3 class="w-full font-semibold text-[18px] leading-[22px] text-[#0F172A]" style="font-family:'Schibsted Grotesk',sans-serif;">
+          {{t 'test.assigment.submitFileLink'}}
+        </h3>
+        <p class="w-full font-inter font-normal text-[14px] leading-[150%] text-[#475569]">
+          {{t 'test.assigment.spanSubmitYourAnswer'}}
+        </p>
+      </div>
+
+      <form
+        x-data="{ loading: false }"
+        @submit="loading = true"
+        action="/final-assignment/submission/{{finalAssignment.id}}"
+        method="POST"
+        class="w-full flex flex-col gap-[24px]"
+      >
+        <div class="w-full flex flex-row items-center px-[16px] gap-[10px] h-[48px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+          <input
+            type="text"
+            name="filePath"
+            placeholder="https://github.com/bisa-ai/analisis-data"
+            required
+            class="flex-1 bg-transparent font-inter font-normal text-[13px] leading-[17px] text-[#475569] placeholder:text-[#94A3B8] outline-none"
+            style="font-family:'Geist Mono',monospace;"
+          />
+        </div>
+
+        <button
+          :disabled="loading"
+          type="submit"
+          class="w-full flex flex-row justify-center items-center py-[14px] font-inter font-semibold text-[14px] leading-[17px] text-white rounded-[12px] shadow-[0px_4px_12px_rgba(37,99,235,0.169)] hover:opacity-90 transition-opacity"
+          style="background:linear-gradient(90deg,#1E3A8A 0%,#3B82F6 100%);"
+        >
+          <span x-show="loading" class="loading loading-spinner loading-sm mr-2"></span>
+          <span x-show="!loading">{{t 'test.assigment.submitAnswer'}}</span>
+        </button>
+      </form>
+    {{/if}}
+  {{/components/ui/learning/assignment_page/submission/index}}
+
+{{/components/ui/learning/assignment_page/index}}
+
+<script>
+  function toggleEditForm() {
+    const form = document.getElementById('edit-form');
+    form.classList.toggle('hidden');
+  }
+</script>
+{{/user/shell_frame/index}}

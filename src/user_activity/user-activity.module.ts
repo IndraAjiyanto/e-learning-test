@@ -9,6 +9,7 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { UserActivityService } from './user-activity.service';
 import { UserActivityMiddleware } from './user-activity.middleware';
 
@@ -24,6 +25,7 @@ import { UserActivityMiddleware } from './user-activity.middleware';
       Logbook,
       Material,
       Syllabus,
+      FinalAssignment,
     ]),
   ],
   providers: [UserActivityService, UserActivityMiddleware],

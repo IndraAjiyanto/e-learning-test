@@ -7,6 +7,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 
 export interface ScopeContext {
   sessionRepo: Repository<Session>;
@@ -16,6 +17,7 @@ export interface ScopeContext {
   materialRepo: Repository<Material>;
   userCourseRepo: Repository<UserCourse>;
   syllabusRepo?: Repository<Syllabus>;
+  finalAssignmentRepo?: Repository<FinalAssignment>;
 }
 
 export interface ScopeResolution {
@@ -123,6 +125,26 @@ async function resolveSyllabus(
 }
 
 /**
+ * Final assignment tidak punya sesi maupun minggu di belakangnya, jadi
+ * courseId-nya diambil langsung dari relasinya. Tanpa aturan ini, membuka
+ * halaman final assignment akan menghitung student sebagai "tidak belajar",
+ * padahal mereka sedang mengerjakan tugas program itu.
+ */
+async function resolveFinalAssignment(
+  ids: Record<string, string>,
+  ctx: ScopeContext,
+): Promise<ScopeResolution | null> {
+  const id = ids.finalAssignmentId;
+  if (!id || !ctx.finalAssignmentRepo) return null;
+  const finalAssignment = await ctx.finalAssignmentRepo.findOne({
+    where: { id },
+    relations: ['course'],
+  });
+  const courseId = finalAssignment?.courseId;
+  return courseId ? { courseId, label: 'Tugas Akhir' } : null;
+}
+
+/**
  * Daftar endpoint yang dianggap berada dalam "scope proses pembelajaran".
  * Selama user (role 'user') membuka endpoint ini, dia dihitung sebagai
  * "sedang belajar <course>" (disimpan di user_activity.currentCourseId).
@@ -168,6 +190,12 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     method: 'POST',
     match: /^\/answer-users\/(?<quizId>[^/]+)$/,
     resolve: (ids, _req, ctx) => resolveQuiz(ids, ctx, 'Quiz'),
+  },
+  {
+    name: 'final-assignment-submission',
+    method: 'GET',
+    match: /^\/final-assignment\/submission\/(?<finalAssignmentId>[^/]+)$/,
+    resolve: (ids, _req, ctx) => resolveFinalAssignment(ids, ctx),
   },
   {
     name: 'answer-assigment',

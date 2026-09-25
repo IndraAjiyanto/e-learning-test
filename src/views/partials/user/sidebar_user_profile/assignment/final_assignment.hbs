@@ -1,0 +1,89 @@
+{{!--
+  Tab Tugas Akhir untuk program non_bootcamp.
+
+  Bentuk tab ini mengikuti struktur program, bukan sebaliknya. Program yang
+  punya minggu (bootcamp, LPK) menilai tugas dari tiap sesi; program
+  non_bootcamp tidak punya minggu sama sekali, dan satu-satunya tugasnya adalah
+  satu final assignment milik program itu.
+
+  Isi tab ini sengaja cuma daftar. Brief dan formulir jawabannya ada di halaman
+  sendiri, `/final-assignment/submission/:id`, dengan bentuk yang sama seperti
+  tugas mingguan: dari halaman sesi, baris tugas menuju
+  `/answer-assigment/:sessionId/:id`.
+  Alasannya bentuk, bukan sekadar navigasi - program ini punya satu tugas, jadi
+  akordeon di dalam tab hanya menyembunyikan satu baris di balik klik, dan
+  memaksa satu tempat lagi (panel Start Learning) ikut menyimpan brief yang
+  sebenarnya milik halaman tugas.
+
+  Capabilities-nya dibaca dari `caps.structure`, bukan dari nama tipenya -
+  lihat src/courses/program-type.ts.
+
+  Data dari controller: course, caps, finalAssignment, finalAssignmentSubmission.
+
+  Status di sini digambar di server, bukan oleh Alpine. Tab ini masuk lewat
+  innerHTML, jadi komponen `status_pill` yang isinya berupa ekspresi Alpine
+  tidak ada isinya - bukan karena salah, tapi karena evaluate Alpine-nya tidak
+  pernah jalan di markup yang disuntik. Bentuk pilnya mengikuti halaman sesi
+  (src/views/user/learning/session.hbs).
+--}}
+<div class="w-full px-4 py-4 sm:px-8 sm:py-6">
+
+  <div class="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-6">
+    <h2 class="font-montserrat text-base font-bold text-[#171717]">{{t 'test.startLearning.finalAssignment'}}</h2>
+    <p class="mt-0.5 font-inter text-sm text-[#737373]">{{t 'test.startLearning.finalAssignmentIntro'}}</p>
+  </div>
+
+  {{#if finalAssignment}}
+    <a
+      href="/final-assignment/submission/{{finalAssignment.id}}"
+      class="group mt-4 flex w-full flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-[#E5E5E5] bg-white px-5 py-4 text-left no-underline shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#FAFAFA]"
+    >
+      <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+        <i class="fa-solid fa-file-lines text-sm"></i>
+      </span>
+
+      <span class="min-w-0 flex-1">
+        <span class="block truncate font-inter text-sm font-semibold text-[#171717]">{{finalAssignment.title}}</span>
+        <span class="mt-0.5 block truncate font-inter text-xs text-[#737373]">{{finalAssignment.description}}</span>
+      </span>
+
+      {{#if finalAssignmentSubmission}}
+        {{#if (eq finalAssignmentSubmission.status 'approved')}}
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#f0fdf4] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#15803d]">
+            <i class="fa-solid fa-circle-check text-[0.65rem]"></i>
+            {{t 'test.startLearning.approved'}}
+          </span>
+        {{else if (eq finalAssignmentSubmission.status 'rejected')}}
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#FEF2F2] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#B42318]">
+            <i class="fa-solid fa-circle-xmark text-[0.65rem]"></i>
+            {{t 'test.startLearning.assignmentRejected'}}
+          </span>
+        {{else}}
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#FEFCE8] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#A16207]">
+            <i class="fa-regular fa-clock text-[0.65rem]"></i>
+            {{t 'test.startLearning.assignmentInReview'}}
+          </span>
+        {{/if}}
+      {{else}}
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-0.5 font-inter text-xs font-semibold text-[#525252]">
+          {{t 'test.startLearning.notSubmitted'}}
+        </span>
+      {{/if}}
+
+      <i class="fa-solid fa-chevron-right shrink-0 text-sm text-[#a3a3a3] transition-transform duration-200 group-hover:text-[#003060]"></i>
+    </a>
+  {{else}}
+    {{!--
+      Program non_bootcamp selalu punya tempat untuk satu final assignment,
+      tapi admin belum mengisinya. Tanpa penjelas, peserta akan mengira tab
+      ini yang rusak.
+    --}}
+    <div class="mt-4 flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-[#d9d9d9] bg-white p-12 text-center">
+      <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+      </span>
+      <h3 class="font-inter text-xl font-bold text-[#003060]">{{t 'test.startLearning.finalAssignmentNotSet'}}</h3>
+    </div>
+  {{/if}}
+
+</div>

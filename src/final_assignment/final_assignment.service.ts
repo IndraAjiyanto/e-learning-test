@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { UserAssignment } from 'src/entities/user_assignment.entity';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 import { CreateFinalAssignmentDto } from './dto/create-final-assignment.dto';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { randomUUID } from 'crypto';
@@ -20,6 +25,8 @@ export class FinalAssignmentService {
     private readonly courseRepo: Repository<Course>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(UserCourse)
+    private readonly userCourseRepo: Repository<UserCourse>,
   ) {}
 
   async findByCourse(
@@ -99,6 +106,55 @@ export class FinalAssignmentService {
     }
     await this.finalAssignmentRepo.remove(fa);
     return true;
+  }
+
+  /**
+   * Kiriman milik SATU peserta pada satu final assignment.
+   *
+   * Sisi student tidak boleh memakai `getSubmissions` di atas: fungsi itu
+   * mengembalikan kiriman semua orang, jadi halaman student akan ikut
+   * memegang nama peserta lain. Tab tugas student cukup tahu "kiriman saya
+   * ada atau belum".
+   */
+  async findSubmissionByUser(
+    finalAssignmentId: string,
+    userId: string,
+  ): Promise<UserAssignment | null> {
+    return this.userAssignmentRepo.findOne({
+      where: { finalAssignmentId, userId },
+      order: { updatedAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Final assignment yang boleh dikirimi oleh peserta tertentu.
+   *
+   * `@Roles('user')` menahan orang yang bukan peserta, tapi tidak menahan
+   * peserta program LAIN: tanpa pemeriksaan ini, siapa pun yang tahu UUID
+   * sebuah final assignment bisa menimpa kiriman peserta program itu -
+   * cukup dengan mengarang satu ID. Karena itu keberadaan peserta di
+   * `user_courses` ikut diperiksa, dan jawabannya 403, bukan 404: programnya
+   * memang ada, peserta memang tidak berhak mengrimnya.
+   */
+  async findOneForSubmission(
+    id: string,
+    userId: string,
+  ): Promise<FinalAssignment> {
+    const finalAssignment = await this.findOne(id);
+
+    const enrollment = await this.userCourseRepo.findOne({
+      where: {
+        course: { id: finalAssignment.courseId },
+        user: { id: userId },
+      },
+    });
+    if (!enrollment) {
+      throw new ForbiddenException(
+        'You are not enrolled in the program that owns this final assignment',
+      );
+    }
+
+    return finalAssignment;
   }
 
   async getSubmissions(
