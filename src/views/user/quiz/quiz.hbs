@@ -15,7 +15,26 @@
   (user_answers.controller.ts me-redirect ke sini), jadi hasil percobaan
   terakhir harus langsung terbaca.
 --}}
-{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.quiz') back=(concat '/program/' quiz.weeks.course.id)}}
+{{#> user/shell_frame/index
+  user=user
+  active='learning'
+  pageTitle=(t 'test.startLearning.quiz')
+  back=false
+  trail=(array
+    (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+    (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+    (obj
+      'label' (t 'test.startLearning.startLearning')
+      'href' (concat '/program/myProgram/' user.id '?courseId=' (default quiz.syllabus.course.id quiz.weeks.course.id)))
+    (obj
+      'label' (ternary quiz.syllabus.id 'Syllabus' (concat (t 'test.startLearning.week') ' ' quiz.weeks.weekNumber))
+      'href' (ternary
+        quiz.syllabus.id
+        (concat '/syllabus/learn/' quiz.syllabus.id)
+        (concat '/program/myProgram/' user.id '?courseId=' (default quiz.syllabus.course.id quiz.weeks.course.id))))
+    (obj 'label' (t 'test.startLearning.quiz'))
+  )
+}}
 <div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
   <div class="flex w-full flex-col gap-4">
 
