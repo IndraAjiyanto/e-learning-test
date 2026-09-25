@@ -39,6 +39,7 @@ import { Installment } from 'src/entities/installment.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 import { dateHelpers } from 'src/common/helpers/date.helpers';
 
 @Injectable()
@@ -1699,5 +1700,65 @@ export class CoursesService {
         uc.progress === true && uc.course && uc.course.process === 'approved',
     );
     return { userCourses: completedCourses };
+  }
+
+  async findSyllabusForUser(courseId: string, userId: string) {
+    const syllabuses = await this.courseRepository.manager
+      .getRepository(Syllabus)
+      .find({
+        where: { course: { id: courseId } },
+        order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
+        relations: ['quiz'],
+      });
+
+    const quizIds = syllabuses
+      .flatMap((s) => s.quiz || [])
+      .map((q) => q.id)
+      .filter(Boolean);
+
+    let userScores: Score[] = [];
+    if (quizIds.length > 0) {
+      userScores = await this.courseRepository.manager
+        .getRepository(Score)
+        .createQueryBuilder('score')
+        .innerJoinAndSelect('score.quiz', 'quiz')
+        .innerJoin('score.user', 'user')
+        .where('quiz.id IN (:...quizIds)', { quizIds })
+        .andWhere('user.id = :userId', { userId })
+        .getMany();
+    }
+
+    let previousPassed = true;
+    return syllabuses.map((s, idx) => {
+      const quiz = s.quiz?.[0] || null;
+      const minScore = quiz?.minScore ?? 80;
+      const matchingScores = quiz
+        ? userScores.filter((sc) => sc.quiz?.id === quiz.id)
+        : [];
+      const hasAttempt = matchingScores.length > 0;
+      const bestScore = hasAttempt
+        ? Math.max(...matchingScores.map((sc) => Number(sc.score)))
+        : null;
+
+      const isUnlocked = idx === 0 || previousPassed;
+      const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+      const prevMinScore =
+        idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
+      previousPassed = isPassed;
+
+      return {
+        id: s.id,
+        title: s.title,
+        syllabusNumber: s.syllabusNumber,
+        description: s.description,
+        quizId: quiz?.id || null,
+        minScore,
+        bestScore,
+        hasAttempt,
+        isUnlocked,
+        isPassed,
+        prevMinScore,
+      };
+    });
   }
 }

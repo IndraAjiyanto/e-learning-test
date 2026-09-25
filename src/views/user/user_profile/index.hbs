@@ -377,13 +377,10 @@
       <div class="flex-1 w-full min-w-0 min-h-0 overflow-y-auto">
 
         {{!--
-          Remah dan tombol kembali untuk panel di dalam shell.
+          Remah untuk panel di dalam shell.
 
           Halaman berdiri sendiri mendapatkannya dari shell_frame; panel di sini
           bukan halaman tersendiri, jadi barisnya dirakit dari `activeSection`.
-          Tombol kembali hanya muncul untuk panel yang memang berada DI DALAM
-          sebuah program (Start Learning dan turunannya) - pada tab tingkat atas
-          tidak ada tempat untuk kembali, jadi tombolnya tidak dirender.
         --}}
         <div
           class="px-4 pt-4 sm:px-8 sm:pt-6"
@@ -410,218 +407,169 @@
             get label() { return this.labels[this.activeSection] || this.labels.dashboard; }
           }"
         >
-          {{!-- min-h-9 menyamai tinggi tombol kembali. Tanpa ini, barisnya
-               tumbuh 16px begitu tombolnya muncul, dan seluruh isi halaman
-               ikut terdorong turun - itulah lompatan yang tersisa setelah
-               skeleton dipasang. --}}
-          <div class="flex min-h-9 flex-wrap items-center gap-x-3 gap-y-2">
-            <button
-              type="button"
-              x-show="isNested"
-              {{!-- Keadaan awal ditentukan server supaya tombolnya tidak
-                   berkedip muncul sesudah halaman tampil. --}}
-              {{#unless (or (eq initialSection 'uiux') (eq initialSection 'assignment') (eq initialSection 'presentation') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class'))}}style="display:none"{{/unless}}
-              @click="toggleActiveSection('learning')"
-              class="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
-            >
-              <i class="fa-solid fa-arrow-left text-xs"></i>
-              {{t 'test.common.back'}}
-            </button>
-
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <nav aria-label="{{t 'test.common.breadcrumb'}}" class="min-w-0">
-              <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-inter text-sm text-[#737373]">
-                <li>
-                  <button type="button" @click="toggleActiveSection('dashboard')" class="cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
-                    {{t 'test.common.home'}}
-                  </button>
-                </li>
-                <template x-if="isNested">
-                  <li class="flex min-w-0 items-center gap-2">
-                    <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
-                    <button type="button" @click="toggleActiveSection('learning')" class="cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
+              <template x-if="isNested">
+                <ol class="flex flex-wrap items-center gap-2 font-inter text-xs text-[#718096]">
+                  <li class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-open text-[14px] text-[#718096]"></i>
+                    <button type="button" @click="toggleActiveSection('learning')" class="cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline">
                       {{t 'test.userSidebar.myLearning'}}
                     </button>
                   </li>
-                </template>
-                <li class="flex min-w-0 items-center gap-2">
-                  <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
-                  <span aria-current="page" class="truncate font-semibold text-[#003060]" x-text="label"></span>
-                </li>
-              </ol>
+                  <li class="flex items-center gap-2">
+                    <span aria-hidden="true" class="text-[#718096]">/</span>
+                    <span class="inline-flex items-center gap-1.5 font-semibold text-[#003060]">
+                      <i class="fa-solid fa-play-circle text-[14px] text-[#003060]"></i>
+                      <span aria-current="page" x-text="label"></span>
+                    </span>
+                  </li>
+                </ol>
+              </template>
+              <template x-if="!isNested">
+                <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-inter text-sm text-[#737373]">
+                  <li>
+                    <button type="button" @click="toggleActiveSection('dashboard')" class="cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
+                      {{t 'test.common.home'}}
+                    </button>
+                  </li>
+                  <li class="flex min-w-0 items-center gap-2">
+                    <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
+                    <span aria-current="page" class="truncate font-semibold text-[#003060]" x-text="label"></span>
+                  </li>
+                </ol>
+              </template>
             </nav>
           </div>
         </div>
 
-
-        {{!--
-          Kepala program beserta baris tab.
-
-          Sebelumnya gambar, judul, dan tombol-tombol program berada DI DALAM
-          panel Start Learning. Begitu student membuka Assignment atau Quiz,
-          seluruh konteks programnya hilang dan tidak ada jalan pindah antar
-          bagian selain kembali dulu. Sekarang keduanya berada di luar panel,
-          jadi tetap terlihat di semua tab milik program.
-
-          Datanya dari window.userCourses yang sudah ada di sisi klien, bukan
-          dari controller - dengan begitu kedua rute yang merender shell
-          (users/profile dan program/myProgram) sama-sama benar.
-
-          Keadaan awal ditentukan server lewat `initialSection` supaya kepala
-          ini tidak berkedip muncul sesudah halaman tampil.
-        --}}
         <div
           x-show="isProgramSection"
           {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
-          class="px-4 pt-4 sm:px-8 sm:pt-6"
+          class="px-4 pt-4 sm:px-8 sm:pt-6 max-w-[1334px] mx-auto w-full"
         >
-          {{#if activeCourse}}
-            <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
-              {{!--
-                Gambar di kanan, keterangan program di kiri. Sebelumnya gambar
-                membentang selebar kartu DI ATAS keterangan, dan kepala program
-                memakan 422px - hampir separuh layar laptop - sebelum tab
-                pertama kelihatan. Disandingkan begini tingginya ditentukan
-                keterangan, bukan gambar.
+          <!-- Page Header -->
+          <div class="mb-5 flex flex-col gap-1">
+            <h1 class="font-inter text-2xl sm:text-[34px] font-bold leading-tight sm:leading-[42px] text-[#003060]">
+              Start Learning
+            </h1>
+            <p class="font-inter text-sm sm:text-[14px] font-normal leading-[20px] text-[#718096]">
+              Complete each week to unlock the next
+            </p>
+          </div>
 
-                Urutan DOM tetap gambar-lalu-teks; yang dibalik cuma arah flex
-                pada sm ke atas, sehingga di ponsel gambar tetap di atas dan
-                tidak ada yang berubah untuk pembaca layar.
-              --}}
-              <div class="flex flex-col sm:min-h-[184px] sm:flex-row-reverse">
-                {{!--
-                  Tinggi tetap di ponsel, lebar tetap di sm ke atas.
+          <!-- CARD -->
+          <div class="flex flex-col gap-5 rounded-[32px] bg-white p-5 shadow-[0px_12px_32px_-4px_rgba(0,0,0,0.25)]">
+            <!-- Banner: Japanese Internship -->
+            <div class="relative h-[270px] w-full overflow-hidden rounded-[16px] bg-black/40">
+              <img
+                src="{{#if activeCourse.image}}{{activeCourse.image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+                alt="{{#if activeCourse.name}}{{activeCourse.name}}{{else}}Japanese Internship{{/if}}"
+                onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                class="absolute inset-0 h-full w-full object-cover"
+              />
+              <div class="absolute inset-0 bg-gradient-to-tr from-[#FF6BCE]/30 via-transparent to-transparent"></div>
+              <div class="absolute inset-0 bg-black/40"></div>
 
-                  Gambarnya dipasang absolute, bukan sekadar h-full: pada sm ke
-                  atas kolom ini tingginya ikut baris (yang ditentukan kolom
-                  teks), dan `height:100%` terhadap induk yang `auto` runtuh
-                  menjadi tinggi asli gambar - begitu berkasnya selesai dimuat
-                  barisnya melar 16px dan seluruh halaman turun. Terukur: CLS
-                  0,0013 menjadi 0,0432. Absolute membuat gambar tidak ikut
-                  menghitung tinggi sama sekali.
-                --}}
-                <div class="relative h-[140px] w-full shrink-0 overflow-hidden bg-[#EEF2F6] sm:h-auto sm:w-[240px] lg:w-[300px]">
-                  <img
-                    src="{{activeCourse.image}}"
-                    alt="{{activeCourse.name}}"
-                    onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
-                    class="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
 
-                <div class="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
-                  {{!-- self-start: di dalam kolom flex, span inline-flex akan
-                       melar selebar kolom kalau tidak ditahan. --}}
-                  {{#if activeCourse.category.name}}
-                    <span class="mb-2 inline-flex self-start items-center rounded-[6px] bg-[#CFE6F5] px-2.5 py-1 font-inter text-xs font-medium leading-none text-[#003060]">{{activeCourse.category.name}}</span>
-                  {{/if}}
-                  <h1 class="font-inter text-xl font-bold leading-snug text-[#003060] sm:text-2xl">{{activeCourse.name}}</h1>
-                  <p class="mt-1 line-clamp-2 font-inter text-sm text-[#737373]">{{getByLang activeCourse.description lang}}</p>
-
-                  {{!--
-                    Chip keterangan dan kedua tombol aksi berbagi satu baris.
-                    Sebelumnya tombol punya kolomnya sendiri di kanan atas; pada
-                    tata letak bersanding kolom itu sudah ditempati gambar, dan
-                    memberi tombol barisnya sendiri berarti membuang satu baris
-                    penuh - persis yang sedang dihemat.
-
-                    Chip: idenya dari baris chip halaman belajar bisa.ai (level,
-                    jumlah modul, poin, rating), tetapi isinya data yang memang
-                    ada di sini - tipe kelas, jumlah minggu, metode, lokasi -
-                    dengan token warna kita sendiri, bukan meniru warnanya.
-                  --}}
-                  <div class="mt-3 flex flex-1 flex-wrap items-end justify-between gap-x-4 gap-y-3">
-                    <div class="flex flex-wrap items-center gap-2">
-                      {{#if activeCourse.courseType.nameClassesType}}
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
-                          <i class="fa-solid fa-signal text-[0.65rem] text-[#718096]"></i>
-                          {{activeCourse.courseType.nameClassesType}}
-                        </span>
-                      {{/if}}
-                      {{#if activeCourse.weeks.length}}
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
-                          <i class="fa-regular fa-calendar text-[0.65rem] text-[#718096]"></i>
-                          {{activeCourse.weeks.length}} {{#if (eq activeCourse.weeks.length 1)}}{{t 'test.startLearning.week'}}{{else}}{{t 'test.startLearning.weeks'}}{{/if}}
-                        </span>
-                      {{/if}}
-                      {{#if activeCourse.method}}
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium capitalize text-[#525252]">
-                          <i class="fa-solid fa-location-dot text-[0.65rem] text-[#718096]"></i>
-                          {{activeCourse.method}}
-                        </span>
-                      {{/if}}
-                      {{#if activeCourse.locations}}
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-inter text-xs font-medium text-[#525252]">
-                          <i class="fa-solid fa-building text-[0.65rem] text-[#718096]"></i>
-                          {{getByLang activeCourse.locations lang}}
-                        </span>
-                      {{/if}}
-                    </div>
-
-                    {{!-- Dua aksi ini bukan tab: yang satu pergi ke halaman lain,
-                         yang satu dilakukan sekali - bukan tempat yang dihuni. --}}
-                    <div class="flex shrink-0 flex-wrap items-center gap-2">
-                      <a
-                        href="/program/program/detail/{{activeCourse.id}}"
-                        class="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
-                      >
-                        <i class="fa-regular fa-file-lines text-xs"></i>
-                        {{t 'test.startLearning.detailProgram'}}
-                      </a>
-                      <button
-                        type="button"
-                        @click="toggleActiveSection('group-class')"
-                        class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#003060] bg-white px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#E4F1F7]"
-                      >
-                        <i class="fa-solid fa-users text-xs"></i>
-                        {{t 'test.startLearning.joinGroup'}}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {{!-- Baris tab. Menempel di bawah app bar saat digulung supaya
-                   berpindah tab tidak menuntut gulung balik ke atas, dan bisa
-                   digeser mendatar di layar sempit. --}}
-              <div class="sticky top-0 z-20 border-t border-[#E5E5E5] bg-white">
-                <div class="overflow-x-auto no-scrollbar">
-                  <nav class="flex min-w-max items-stretch gap-1 px-3" role="tablist" aria-label="{{t 'test.startLearning.programTabs'}}">
-                    {{!-- Kunci 'presentation' dipertahankan karena dipakai rute
-                         fragment dan URL ?tab=, meski isinya formulir absensi;
-                         yang diperbaiki hanya labelnya. --}}
-                    {{#each (array
-                      (obj 'key' 'uiux' 'label' 'tabSessions' 'icon' 'fa-list-check')
-                      (obj 'key' 'presentation' 'label' 'tabAttendance' 'icon' 'fa-user-check')
-                      (obj 'key' 'assignment' 'label' 'assignment' 'icon' 'fa-file-pen')
-                      (obj 'key' 'quiz' 'label' 'quiz' 'icon' 'fa-circle-question')
-                      (obj 'key' 'logbook' 'label' 'myLogbook' 'icon' 'fa-clipboard')
-                      (obj 'key' 'certificate' 'label' 'certificate' 'icon' 'fa-award')
-                    )}}
-                      {{!-- Tab yang bergantung sakelar hanya dirender kalau
-                           sakelarnya menyala; `caps` dihitung server. --}}
-                      {{#if (or (not (eq this.key 'logbook')) ../caps.logbookEnabled)}}
-                      <button
-                        type="button"
-                        role="tab"
-                        :aria-selected="activeSection === '{{this.key}}' ? 'true' : 'false'"
-                        @click="toggleActiveSection('{{this.key}}')"
-                        class="relative flex cursor-pointer items-center gap-2 whitespace-nowrap px-3 py-3.5 font-inter text-sm font-semibold transition-colors"
-                        :class="activeSection === '{{this.key}}' ? 'text-[#003060]' : 'text-[#718096] hover:text-[#003060]'"
-                      >
-                        <i class="fa-solid {{this.icon}} text-xs"></i>
-                        {{t (concat 'test.startLearning.' this.label)}}
-                        <span
-                          x-show="activeSection === '{{this.key}}'"
-                          class="absolute inset-x-2 bottom-0 h-0.5 rounded-t bg-[#003060]"
-                        ></span>
-                      </button>
-                      {{/if}}
-                    {{/each}}
-                  </nav>
-                </div>
-              </div>
             </div>
-          {{/if}}
+
+            <!-- Tags Row -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center rounded-full border border-[#D0E1FD] bg-[#EEF2F6] px-4 py-1.5 font-inter text-xs font-semibold text-[#5B7EB1]">
+                {{#if activeCourse.category.type}}{{activeCourse.category.type}}{{else if category.name}}{{category.type}}{{else}}Japanese Class{{/if}}
+              </span>
+              <span class="inline-flex items-center rounded-full bg-[#1E293B] px-4 py-1.5 font-inter text-xs font-semibold text-white">
+                {{#if activeCourse.category.name}}{{activeCourse.category.name}}{{else if category.type}}{{category.name}}{{else}}Special Program{{/if}}
+              </span>
+            </div>
+
+            <!-- Course Info -->
+            <div class="flex flex-col gap-3">
+              <h3 class="font-inter text-xl sm:text-[22px] font-bold leading-[28px] text-[#1E293B]">
+                {{#if activeCourse.name}}{{activeCourse.name}}{{else}}Japanese Internship{{/if}}
+              </h3>
+              <p class="font-inter text-[13px] font-normal leading-[20px] text-[#64748B]">
+                {{#if activeCourse.description}}{{getByLang activeCourse.description lang}}{{else}}Program magang intensif ke Jepang yang membekali peserta dengan keterampilan teknis, pemahaman budaya, serta etika kerja profesional berstandar internasional.{{/if}}
+              </p>
+            </div>
+
+            <!-- Actions List -->
+            <div class="flex flex-col gap-3.5">
+              <!-- 1. Join Group -->
+              <button
+                type="button"
+                @click="toggleActiveSection('group-class')"
+                class="flex h-[50px] w-full items-center justify-between rounded-[16px] bg-[#636AE8] px-5 py-4 font-inter text-sm font-bold text-white transition-colors hover:bg-[#5259d6] cursor-pointer"
+              >
+                <div class="flex items-center gap-3">
+                  <i class="fa-solid fa-users text-[18px]"></i>
+                  <span>Join Group</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[18px]"></i>
+              </button>
+
+              <!-- 2. My Logbook -->
+              <button
+                type="button"
+                x-show="activeCaps.logbookEnabled !== false"
+                @click="toggleActiveSection('logbook')"
+                class="flex h-[50px] w-full items-center justify-between rounded-[16px] border border-[#E2E8F0] bg-white px-5 py-4 font-inter text-sm font-bold text-[#636AE8] transition-colors hover:bg-[#F8FAFC] cursor-pointer"
+              >
+                <div class="flex items-center gap-3">
+                  <i class="fa-solid fa-book-open text-[18px] text-[#636AE8]"></i>
+                  <span>My Logbook</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[18px] text-[#636AE8]"></i>
+              </button>
+
+              <!-- 3. Detail Program -->
+              <a
+                :href="activeCourseId ? '/program/program/detail/' + activeCourseId : (activeCourse ? '/program/program/detail/{{activeCourse.id}}' : '#')"
+                class="flex h-[50px] w-full items-center justify-between rounded-[16px] bg-[#1E293B] px-5 py-4 font-inter text-sm font-bold text-white no-underline transition-colors hover:bg-[#0f172a]"
+              >
+                <div class="flex items-center gap-3">
+                  <i class="fa-regular fa-file-lines text-[18px]"></i>
+                  <span>Detail Program</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[18px]"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tabs Navigation -->
+          <div class="mt-5 flex flex-wrap items-center gap-3 rounded-[16px] border border-[#D9D9D9] bg-white p-3">
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="activeSection === 'uiux' ? 'true' : 'false'"
+              @click="toggleActiveSection('uiux')"
+              class="rounded-full px-5 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'uiux' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+            >
+              Learning
+            </button>
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="activeSection === 'assignment' ? 'true' : 'false'"
+              @click="toggleActiveSection('assignment')"
+              class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'assignment' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+            >
+              Tugas Akhir
+            </button>
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="activeSection === 'portfolio' ? 'true' : 'false'"
+              @click="toggleActiveSection('portfolio')"
+              class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'portfolio' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+            >
+              Portofolio
+            </button>
+          </div>
         </div>
 
         <!-- Dashboard Tab Content -->
@@ -653,7 +601,7 @@
         <template id="learning-skeleton-source">
           {{> components/ui/learning/skeleton/index }}
         </template>
-        <div x-show="activeSection === 'uiux'" id="start-learning-container"{{#unless (eq initialSection 'uiux')}} style="display:none"{{/unless}}>
+        <div x-show="activeSection === 'uiux'" id="start-learning-container" class="max-w-[1334px] mx-auto w-full"{{#unless (eq initialSection 'uiux')}} style="display:none"{{/unless}}>
           {{> components/ui/learning/skeleton/index }}
         </div>
 

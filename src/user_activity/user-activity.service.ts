@@ -20,6 +20,7 @@ import { Quiz } from 'src/entities/quiz.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 import { format, startOfDay, subDays } from 'date-fns';
 import { matchLearningScope, ScopeContext } from './learning-scope';
 
@@ -110,6 +111,8 @@ export class UserActivityService {
     private readonly logbookRepository: Repository<Logbook>,
     @InjectRepository(Material)
     private readonly materialRepository: Repository<Material>,
+    @InjectRepository(Syllabus)
+    private readonly syllabusRepository: Repository<Syllabus>,
   ) {
     this.events.setMaxListeners(0);
   }
@@ -122,6 +125,7 @@ export class UserActivityService {
       logbookRepo: this.logbookRepository,
       materialRepo: this.materialRepository,
       userCourseRepo: this.userCourseRepository,
+      syllabusRepo: this.syllabusRepository,
     };
   }
 
@@ -234,11 +238,21 @@ export class UserActivityService {
     const tab = ((req.query?.tab as string) || '').toLowerCase();
     const isLearningProfile =
       /^\/users\/profile/i.test(path) &&
-      ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'group-class', 'quiz-start'].includes(tab);
+      [
+        'uiux',
+        'presentation',
+        'assignment',
+        'quiz',
+        'logbook',
+        'group-class',
+        'quiz-start',
+      ].includes(tab);
 
     const isExplicitExit =
       !isLearningProfile &&
-      /^\/(dashboard|users\/profile|portfolios|payments|history|alumni|login|register)(\/|$)/i.test(path);
+      /^\/(dashboard|users\/profile|portfolios|payments|history|alumni|login|register)(\/|$)/i.test(
+        path,
+      );
 
     if (isExplicitExit) {
       await this.updateActivity(user.id, null, null);
@@ -617,8 +631,8 @@ export class UserActivityService {
       return { summary, chart, activeUsers, learners };
     };
 
-    const initial   = from(snapshot());
-    const updates   = fromEvent(this.events, EVENT_LEARNING_UPDATED).pipe(
+    const initial = from(snapshot());
+    const updates = fromEvent(this.events, EVENT_LEARNING_UPDATED).pipe(
       debounceTime(400),
       switchMap(() => snapshot()),
     );
