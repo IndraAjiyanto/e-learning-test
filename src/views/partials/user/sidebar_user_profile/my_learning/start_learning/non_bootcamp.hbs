@@ -1,0 +1,63 @@
+<div class="w-full max-w-[1268px] mx-auto bg-white border border-[#D9D9D9] rounded-[16px] p-8 flex flex-col gap-6 font-inter mt-8">
+  <h2 class="text-[18px] font-bold text-[#003060] leading-[22px]">
+    Silabus
+  </h2>
+
+  <div class="flex flex-col gap-4 w-full">
+    {{#if syllabuses.length}}
+      {{#each syllabuses}}
+        {{#if this.isUnlocked}}
+          <a
+            href="#"
+            class="box-border flex flex-row justify-between items-center p-6 w-full bg-white border-l-[6px] border border-[#F59E0B] rounded-[12px] shadow-[0px_4px_12px_rgba(0,0,0,0.02)] transition-all hover:shadow-md cursor-pointer text-left"
+          >
+            <div class="flex flex-col items-start gap-2 flex-1">
+              <div class="flex flex-row items-center gap-2">
+                <i class="fa-solid fa-book-open text-[#F59E0B] text-base"></i>
+                <span class="font-bold text-[15px] leading-[18px] text-[#003060]">
+                  {{this.title}}
+                </span>
+              </div>
+              <div class="flex flex-col items-start pl-6 gap-1">
+                <span class="font-semibold text-[12px] leading-[15px] text-[#718096]">
+                  Skor: {{#if this.hasAttempt}}{{this.bestScore}}{{else}}-{{/if}}
+                </span>
+                <span class="font-normal text-[11px] leading-[13px] text-[#718096]">
+                  Syarat: Minimal skor {{default this.minScore 80}}
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-center w-5 h-5 flex-none">
+              <i class="fa-solid fa-chevron-right text-[#718096] text-sm"></i>
+            </div>
+          </a>
+        {{else}}
+          <div
+            class="box-border flex flex-row justify-between items-center p-6 w-full bg-[#FAFAFA] opacity-80 border-l-[6px] border border-[#E2E8F0] rounded-[12px] cursor-not-allowed select-none"
+          >
+            <div class="flex flex-col items-start gap-2 flex-1">
+              <div class="flex flex-row items-center gap-2">
+                <i class="fa-solid fa-lock text-[#94A3B8] text-base"></i>
+                <span class="font-bold text-[15px] leading-[18px] text-[#94A3B8]">
+                  {{this.title}}
+                </span>
+              </div>
+              <div class="flex flex-col items-start pl-6 gap-1">
+                <span class="font-normal text-[11px] leading-[13px] text-[#94A3B8]">
+                  Syarat: Minimal skor {{default this.prevMinScore 80}} pada modul sebelumnya
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-center w-5 h-5 flex-none">
+              <i class="fa-solid fa-lock text-[#94A3B8] text-sm"></i>
+            </div>
+          </div>
+        {{/if}}
+      {{/each}}
+    {{else}}
+      <div class="p-8 text-center text-[#718096] text-sm">
+        Belum ada silabus yang tersedia untuk program ini.
+      </div>
+    {{/if}}
+  </div>
+</div>
