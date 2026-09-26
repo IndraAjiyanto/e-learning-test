@@ -1,141 +1,101 @@
-      <div class='lg:col-span-1'>
-        <div
-          class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6'
+<div class='w-full lg:w-80 shrink-0'>
+  <div class='bg-[#FFFFFF] rounded-2xl border border-[#D9D9D9] p-6 sticky top-28'>
+    <!-- Filter Header -->
+    <div class='flex items-center justify-between pb-4 border-b border-gray-100'>
+      <h2 class="font-inter font-bold text-[16px] leading-none text-[#003060]">
+        {{t "test.portfolio.sidebarTitle"}}
+      </h2>
+      {{> components/ui/btn_action
+        text=(t 'test.portfolio.resetFilters')
+        variant='white'
+        xClick='resetFilters()'
+        icon='fas fa-undo-alt text-xs text-gray-500'
+        class='!h-[42px] !px-6 !py-2.5 !rounded-[8px] !border !border-[#D9D9D9] !bg-[#FFFFFF] !shadow-none hover:!bg-gray-50 gap-2'
+        textClass="font-inter text-xs font-semibold text-gray-700 hover:text-[#003060]"
+      }}
+    </div>
+
+    <!-- Search Section -->
+    <div class='mt-5'>
+      <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
+        {{t "test.portfolio.searchLabel"}}
+      </label>
+      <div class='relative'>
+        <textarea
+          rows='3'
+          x-model='draftSearch'
+          @keydown.enter.prevent='applyFilters()'
+          placeholder='{{t "test.portfolio.searchPlaceholder"}}'
+          class='w-full px-3.5 py-2.5 text-xs text-gray-800 placeholder:text-gray-400 bg-white rounded-xl border border-[#D9D9D9] focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-all outline-none leading-relaxed'
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Kategori Bidang Section -->
+    <div class='mt-5'>
+      <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
+        {{t "test.portfolio.categoryLabel"}}
+      </label>
+      <div class='relative'>
+        <select
+          x-model='draftCategoryId'
+          class='w-full appearance-none px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] focus:border-[#003060] focus:ring-1 focus:ring-[#003060] outline-none transition-all cursor-pointer pr-10'
         >
-          <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <div class='flex items-center justify-between mb-3'>
-              <h4 class='text-sm font-semibold text-gray-700 font-inter'>{{t "test.portfolio.filterTittle"}}</h4>
-              <button
-                @click='resetFilters()'
-                class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
-              >
-                <i class='fas fa-undo-alt mr-1 text-xs'></i>
-                {{t "test.portfolio.resetFilters"}}
-              </button>
-            </div>
-            <div class='space-y-2'>
-              <template
-                x-if="selectedKategori === '' && selectedJenisKelas === ''"
-              >
-                <div
-                  class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
-                >
-                  {{t "test.portfolio.noFilters"}}
-                </div>
-              </template>
-
-              <template x-if="selectedKategori !== ''">
-                <span
-                  class='block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border'
-                >
-                  <span x-text='selectedKategori'></span>
-                </span>
-              </template>
-
-              <template x-if="selectedJenisKelas !== ''">
-                <span
-                  class='block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border'
-                >
-                  <span x-text='selectedJenisKelas'></span>
-                </span>
-              </template>
-            </div>
-          </div>
-
-          <div class='mb-6'>
-            <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-inter'
-            >
-              <i class='fas fa-tags text-gray-500 mr-2'></i>
-                {{t "test.portfolio.categoryTittle"}}
-            </h3>
-
-            <div class='mb-3'>
-              <div class='relative'>
-                <input
-                  type='text'
-                  x-model='searchKategoriQuery'
-                  @input='filterKategori()'
-                  placeholder='{{t "test.portfolio.searchCategoryPlaceholder"}}'
-                  class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
-                />
-                <i
-                  class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-                ></i>
-              </div>
-            </div>
-
-            <div class='space-y-2 max-h-64 overflow-y-auto'>
-              <button
-                @click="selectKategori('')"
-                :class="selectedKategoriId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
-                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-              >
-                <span class='text-sm text-left'>{{t "test.portfolio.allCategory"}}</span>
-              </button>
-              <template x-for='category in filteredKategoriList' :key='category.id'>
-                <button
-                  @click='selectKategori(category.id)'
-                  :class="selectedKategoriId == category.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
-                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-                >
-                  <span class='text-sm' x-text='category.name'></span>
-                </button>
-              </template>
-            </div>
-          </div>
-
-          <div class='mb-6'>
-            <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center'
-            >
-              <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
-              {{t "test.portfolio.classTypeTittle"}}
-            </h3>
-
-            <div class='mb-3'>
-              <div class='relative'>
-                <input
-                  type='text'
-                  x-model='searchJenisKelasQuery'
-                  @input='filterJenisKelas()'
-                  placeholder='{{t "test.portfolio.searchClassTypePlaceholder"}}'
-                  class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
-                />
-                <i
-                  class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-                ></i>
-              </div>
-            </div>
-
-            <div class='space-y-2 max-h-64 overflow-y-auto'>
-              <button
-                @click="selectJenisKelas('')"
-                :class="selectedJenisKelasId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
-                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-              >
-                <span class='text-sm'>{{t "test.portfolio.allClassType"}}</span>
-              </button>
-              <template x-for='jenis in filteredJenisKelasList' :key='jenis.id'>
-                <button
-                  @click='selectJenisKelas(jenis.id)'
-                  :class="selectedJenisKelasId == jenis.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
-                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-                >
-                  <span class='text-sm text-left' x-text='jenis.nameClassesType'></span>
-                </button>
-              </template>
-            </div>
-          </div>
-
-          <div class='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <div class='text-center'>
-              <div
-                class='text-2xl font-bold text-gray-900'
-                x-text='totalItems'
-              ></div>
-              <div class='text-sm text-gray-600'>{{t "test.portfolio.projectAvailable"}}</div>
-            </div>
-          </div>
+          <option value=''>{{t "test.portfolio.allCategory"}}</option>
+          {{#each category}}
+            <option value='{{this.id}}'>{{this.name}}</option>
+          {{/each}}
+        </select>
+        <div class='pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-400'>
+          <svg class='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path>
+          </svg>
         </div>
       </div>
+    </div>
+
+    <!-- Tipe Kelas / Program Section -->
+    <div class='mt-5'>
+      <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
+        {{t "test.portfolio.classTypeLabel"}}
+      </label>
+      <div class='relative'>
+        <select
+          x-model='draftCourseTypeId'
+          class='w-full appearance-none px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] focus:border-[#003060] focus:ring-1 focus:ring-[#003060] outline-none transition-all cursor-pointer pr-10'
+        >
+          <option value=''>{{t "test.portfolio.allClassType"}}</option>
+          {{#each courseType}}
+            <option value='{{this.id}}'>{{getByLang this.nameClassesType @root.lang}}</option>
+          {{/each}}
+        </select>
+        <div class='pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-400'>
+          <svg class='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Karya Tersedia Counter Bar -->
+    <div class='mt-6 w-full h-[52px] p-[16px] bg-[#F3F3F3] rounded-[8px] flex items-center justify-between'>
+      <span class="font-inter text-xs font-medium text-[#6B7280]">
+        {{t "test.portfolio.totalAvailable"}}
+      </span>
+      <span class="font-inter text-xs font-bold text-[#003060]">
+        <span x-text='totalItems'>0</span> {{t "test.portfolio.projectUnit"}}
+      </span>
+    </div>
+
+    <!-- Terapkan Filter CTA Button using components/ui/btn_action -->
+    <div class='mt-4'>
+      {{> components/ui/btn_action
+        text=(t 'test.portfolio.applyFilters')
+        variant='primary'
+        xClick='applyFilters()'
+        class='w-full !h-[42px] !rounded-[8px] !bg-[#003060] hover:!bg-[#002244] text-white shadow-sm'
+        textClass="font-inter text-xs font-semibold text-white"
+      }}
+    </div>
+  </div>
+</div>

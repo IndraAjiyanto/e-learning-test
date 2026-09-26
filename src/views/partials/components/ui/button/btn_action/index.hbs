@@ -64,7 +64,7 @@
   type="{{#if type}}{{type}}{{else}}button{{/if}}"
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
-  {{#if xDisabled}}:disabled="{{xDisabled}}"{{/if}}
+  {{#if xDisabled}}:disabled="{{xDisabled}}" :class="({{xDisabled}}) ? 'opacity-50 cursor-not-allowed' : ''"{{/if}}
   class="
     inline-flex items-center justify-center font-semibold {{default roundedClass "rounded-[12px]"}} transition-all duration-300 shadow-md active:scale-95
 
@@ -90,18 +90,11 @@
       {{/if}}
     {{/if}}
 
-    {{#if xDisabled}}
-      {{xDisabled}} ? 'opacity-50 cursor-not-allowed' : ''
-    {{/if}}
-
     {{class}}
   "
 >
   {{#unless (eq iconPosition 'right')}}{{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}{{/unless}}
   <span class="{{textClass}}">{{text}}</span>
   {{#if (eq iconPosition 'right')}}{{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}{{/if}}
-  {{#if xDisabled}}
-    <span x-show="{{xDisabled}}" class="loading loading-spinner loading-sm ml-2"></span>
-  {{/if}}
 </button>
 {{/if}}

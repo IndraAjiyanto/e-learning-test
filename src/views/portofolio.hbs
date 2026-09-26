@@ -1,18 +1,15 @@
-<div class='pt-24 min-h-screen bg-white' x-data='portfolioApp()'>
-  <div class='container mx-auto px-4 pb-16'>
+<div class='pt-16 pb-20 min-h-screen bg-[#F9FAFB] font-inter' x-data='portfolioApp()'>
+  <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+    <!-- Portfolio Header Section -->
+    {{> portfolio/header}}
 
-{{> portfolio/header}}
+    <!-- Main Content Layout (Sidebar Filter + Cards Grid) -->
+    <div class='flex flex-col lg:flex-row gap-8 items-start mt-6'>
+      <!-- Filter Sidebar Partial -->
+      {{> portfolio/filter}}
 
-    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
-
-{{> portfolio/filter}}
-
-{{> portfolio/portfolio}}
-
-
-      </div>
-
-      </div>
+      <!-- Cards Grid Partial -->
+      {{> portfolio/portfolio}}
     </div>
   </div>
 </div>
@@ -20,137 +17,153 @@
 <script>
   function portfolioApp() {
     return {
-      allKategori: {{{json category}}},
-      allJenisKelas: {{{json courseType}}},
-      filteredKategoriList: [],
-      filteredJenisKelasList: [],
-      selectedKategori: '',
-      selectedJenisKelas: '',
-      selectedKategoriId: '',
-      selectedJenisKelasId: '',
-      searchKategoriQuery: '',
-      searchJenisKelasQuery: '',
+      allKategori: {{{json category}}} || [],
+      allJenisKelas: {{{json courseType}}} || [],
+      draftCategoryId: '',
+      draftCourseTypeId: '',
+      draftSearch: '',
+      appliedCategoryId: '',
+      appliedCourseTypeId: '',
+      appliedSearch: '',
+      appliedCategoryName: '',
+      appliedCourseTypeName: '',
       currentPage: 1,
       totalPages: 1,
       totalItems: 0,
       loading: false,
       portfolioItems: [],
-      lang: '{{lang}}',
+      lang: '{{lang}}' || 'id',
 
       async init() {
-        this.allKategori = this.allKategori.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-        this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
-          a.nameClassesType.localeCompare(b.nameClassesType)
-        );
-        this.filteredKategoriList = [...this.allKategori];
-        this.filteredJenisKelasList = [...this.allJenisKelas];
+        if (Array.isArray(this.allKategori)) {
+          this.allKategori.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        }
+        if (Array.isArray(this.allJenisKelas)) {
+          this.allJenisKelas.sort((a, b) => {
+            const nameA = this.getByLang(a.nameClassesType, this.lang);
+            const nameB = this.getByLang(b.nameClassesType, this.lang);
+            return nameA.localeCompare(nameB);
+          });
+        }
         await this.fetchPortfolio();
       },
 
       getByLang(obj, lang) {
-        if (!obj || typeof obj !== 'object') return '';
-        return obj[lang] || obj.id || obj.en || '';
+        if (!obj) return '';
+        if (typeof obj === 'string') return obj;
+        if (typeof obj === 'object') {
+          return obj[lang] || obj.id || obj.en || Object.values(obj)[0] || '';
+        }
+        return '';
       },
 
-          getImages(item) {
-      return Array.isArray(item.image)
-        ? item.image
-        : [item.image || 'https://placehold.co/400x300?text=No+Image'];
-    },
-
-      filterKategori() {
-        const query = this.searchKategoriQuery.toLowerCase().trim();
-        this.filteredKategoriList = query
-          ? this.allKategori.filter(k => k.name.toLowerCase().includes(query))
-          : [...this.allKategori];
+      getFirstImage(item) {
+        if (!item || !item.image) return 'https://placehold.co/600x400/003060/FFFFFF?text=Kesatria+Portfolio';
+        if (Array.isArray(item.image) && item.image.length > 0) {
+          return item.image[0];
+        }
+        if (typeof item.image === 'string' && item.image.trim() !== '') {
+          return item.image;
+        }
+        return 'https://placehold.co/600x400/003060/FFFFFF?text=Kesatria+Portfolio';
       },
 
-      filterJenisKelas() {
-        const query = this.searchJenisKelasQuery.toLowerCase().trim();
-        this.filteredJenisKelasList = query
-          ? this.allJenisKelas.filter(j =>
-              this.getByLang(j.nameClassesType, this.lang).toLowerCase().includes(query)
-            )
-          : [...this.allJenisKelas];
+      getUserInitial(item) {
+        if (item && item.user && item.user.username) {
+          return item.user.username.charAt(0).toUpperCase();
+        }
+        return 'A';
+      },
+
+      async applyFilters() {
+        this.appliedCategoryId = this.draftCategoryId;
+        this.appliedCourseTypeId = this.draftCourseTypeId;
+        this.appliedSearch = this.draftSearch;
+
+        if (this.appliedCategoryId) {
+          const found = this.allKategori.find(k => String(k.id) === String(this.appliedCategoryId));
+          this.appliedCategoryName = found ? found.name : '';
+        } else {
+          this.appliedCategoryName = '';
+        }
+
+        if (this.appliedCourseTypeId) {
+          const found = this.allJenisKelas.find(j => String(j.id) === String(this.appliedCourseTypeId));
+          this.appliedCourseTypeName = found ? this.getByLang(found.nameClassesType, this.lang) : '';
+        } else {
+          this.appliedCourseTypeName = '';
+        }
+
+        this.currentPage = 1;
+        await this.fetchPortfolio();
+      },
+
+      async resetFilters() {
+        this.draftCategoryId = '';
+        this.draftCourseTypeId = '';
+        this.draftSearch = '';
+        this.appliedCategoryId = '';
+        this.appliedCourseTypeId = '';
+        this.appliedSearch = '';
+        this.appliedCategoryName = '';
+        this.appliedCourseTypeName = '';
+        this.currentPage = 1;
+        await this.fetchPortfolio();
+      },
+
+      async removeSearchFilter() {
+        this.draftSearch = '';
+        this.appliedSearch = '';
+        this.currentPage = 1;
+        await this.fetchPortfolio();
       },
 
       async fetchPortfolio() {
         this.loading = true;
         try {
           const params = new URLSearchParams();
-          if (this.selectedKategoriId) params.set('categoryId', this.selectedKategoriId);
-          if (this.selectedJenisKelasId) params.set('course_type_id', this.selectedJenisKelasId);
+          if (this.appliedCategoryId) params.set('categoryId', this.appliedCategoryId);
+          if (this.appliedCourseTypeId) params.set('course_type_id', this.appliedCourseTypeId);
+          if (this.appliedSearch && this.appliedSearch.trim()) {
+            params.set('search', this.appliedSearch.trim());
+          }
           params.set('page', this.currentPage);
           params.set('limit', 6);
 
           const res = await fetch(`/dashboard/portofolios/filter?${params.toString()}`);
+          if (!res.ok) throw new Error('Network error');
           const json = await res.json();
 
-          this.portfolioItems = json.data;
-          this.totalItems = json.totalItems;
-          this.totalPages = json.totalPages;
-          this.currentPage = json.currentPage;
+          this.portfolioItems = json.data || [];
+          this.totalItems = json.totalItems || 0;
+          this.totalPages = json.totalPages || 1;
+          this.currentPage = json.currentPage || 1;
         } catch (err) {
+          console.error('Failed to fetch portfolio data:', err);
+          this.portfolioItems = [];
+          this.totalItems = 0;
+          this.totalPages = 1;
         } finally {
           this.loading = false;
         }
       },
 
-      async selectKategori(kategoriId) {
-        this.selectedKategoriId = kategoriId;
-        this.currentPage = 1;
-        if (kategoriId) {
-          const kat = this.allKategori.find(k => k.id == kategoriId);
-          this.selectedKategori = kat ? kat.name : '';
-        } else {
-          this.selectedKategori = '';
-        }
-        await this.fetchPortfolio();
-      },
-
-      async selectJenisKelas(jenisKelasId) {
-        this.selectedJenisKelasId = jenisKelasId;
-        this.currentPage = 1;
-        if (jenisKelasId) {
-          const jenis = this.allJenisKelas.find(j => j.id == jenisKelasId);
-          this.selectedJenisKelas = jenis ? jenis.nameClassesType : '';
-        } else {
-          this.selectedJenisKelas = '';
-        }
-        await this.fetchPortfolio();
-      },
-
       async changePage(page) {
+        if (page < 1 || page > this.totalPages || page === this.currentPage) return;
         this.currentPage = page;
         await this.fetchPortfolio();
-      },
-
-      async resetFilters() {
-        this.selectedKategoriId = '';
-        this.selectedJenisKelasId = '';
-        this.selectedKategori = '';
-        this.selectedJenisKelas = '';
-        this.searchKategoriQuery = '';
-        this.searchJenisKelasQuery = '';
-        this.filteredKategoriList = [...this.allKategori];
-        this.filteredJenisKelasList = [...this.allJenisKelas];
-        this.currentPage = 1;
-        await this.fetchPortfolio();
+        window.scrollTo({ top: 120, behavior: 'smooth' });
       },
 
       getCategoryName(item) {
-        return item.course?.category?.name
-          || item.category?.name
-          || item.course?.name
-          || null;
+        if (!item) return '';
+        return item.course?.category?.name || item.category?.name || '';
       },
 
       getJenisKelasName(item) {
-        return item.course?.courseType?.nameClassesType
-          || item.courseType?.nameClassesType
-          || item.course?.nameClassesType
+        if (!item) return '';
+        const raw = item.course?.courseType?.nameClassesType || item.courseType?.nameClassesType;
+        return this.getByLang(raw, this.lang) || '';
       }
     };
   }
