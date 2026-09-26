@@ -443,7 +443,7 @@
                             <span class="font-inter font-semibold text-sm text-[#17345E]">Logbook</span>
                             <template x-if="getLogbook(session)?.process === 'approved' || getLogbook(session)?.process === 'acc' || getLogbook(session)?.proses === 'acc'">
                               <a
-                                :href="'/logbook/' + getLogbook(session).id"
+                                :href="'/logbooks/' + getLogbook(session).id"
                                 class="w-full h-11 flex items-center justify-center gap-2 bg-[#059669] hover:bg-[#047857] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
                               >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -455,7 +455,7 @@
 
                             <template x-if="getLogbook(session)?.process === 'process' || getLogbook(session)?.process === 'proces' || getLogbook(session)?.proses === 'proces'">
                               <a
-                                :href="'/logbook/' + getLogbook(session).id"
+                                :href="'/logbooks/' + getLogbook(session).id"
                                 class="w-full h-11 flex items-center justify-center gap-2 bg-[#D97706] hover:bg-[#B45309] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
                               >
                                 <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -467,7 +467,7 @@
 
                             <template x-if="getLogbook(session)?.process === 'rejected' || getLogbook(session)?.proses === 'rejected'">
                               <a
-                                :href="'/logbook/formEdit/' + getLogbook(session).id"
+                                :href="'/logbooks/formEdit/' + getLogbook(session).id"
                                 class="w-full h-11 flex items-center justify-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
                               >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
