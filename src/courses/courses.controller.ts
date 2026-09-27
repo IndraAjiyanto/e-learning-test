@@ -917,10 +917,15 @@ export class CoursesController {
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const caps = capabilitiesForCourse(activeCourse);
 
-    // Program non_bootcamp tidak punya minggu, jadi tidak ada yang bisa
-    // dijumlahkan per minggu. Yang ditampilkan di tab ini adalah satu final
-    // assignment milik program itu - lihat courses/program-type.ts.
-    if (caps.structure === 'syllabus') {
+    // Tab Tugas Akhir untuk program yang punya tugas akhir menampilkan SATU
+    // tugas milik program itu, bukan daftar tugas per minggu - dan bukan
+    // karena program ini tidak punya minggu, tapi karena tugas akhir adalah
+    // satuan penilaiannya sendiri. Lihat courses/program-type.ts.
+    //
+    // Program tanpa tugas akhir (LPK) tetap memakai akordeon per minggu, dan
+    // tugas mingguan di sana bisa dikumpulkan lewat sesi - jadi tidak ada
+    // jalur yang hilang saat tab ini diganti.
+    if (caps.finalAssignment) {
       const finalAssignment = activeCourse?.id
         ? await this.finalAssignmentService.findByCourse(activeCourse.id)
         : null;

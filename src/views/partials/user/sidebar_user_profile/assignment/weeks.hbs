@@ -1,12 +1,13 @@
 {{!--
-  Tab Tugas Akhir untuk program yang punya minggu (bootcamp, LPK).
+  Tab Tugas Akhir untuk program yang TIDAK punya tugas akhir - sekarang hanya
+  LPK. Dulu dipakai juga oleh bootcamp, sebelum `caps.finalAssignment` ada.
 
-  Dipanggil dari index.hbs, yang memilihnya berdasarkan `caps.structure`.
+  Dipanggil dari index.hbs, yang memilihnya berdasarkan `caps.finalAssignment`.
   Data dari controller: course (dengan weeks-nya), stats, weekSummaries.
 
   Sesi di dalam setiap minggu diambil terpisah lewat GET /program/session/:weeksId
-  saat minggu diklik - لهذا kartu minggu di sini tidak butuh tahu apa saja isi
-  minggu itu.
+  saat minggu diklik - karena ini kartu minggu di sini tidak butuh tahu apa saja
+  isi minggu itu.
 --}}
 <div x-data="{ view: 'list', selectedAssignment: null }" class="w-full">
   

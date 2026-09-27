@@ -22,13 +22,18 @@
     {{!-- Tab section — x-data di wrapper agar tab + content satu scope (fix: tab is not defined) --}}
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()" x-init="init()">
 
-    {{!-- Tab Navigation: underline-tabs component --}}
+    {{!-- Tab Navigation: underline-tabs component.
+         Final Assignment hanya untuk program yang punya `caps.finalAssignment`.
+         Halaman ini dipakai bootcamp DAN lpk, dan keduanya punya
+         caps.structure = 'weeks' - jadi capability itu, bukan `structure`, yang
+         memisahkan keduanya di sini. Lihat src/courses/program-type.ts. --}}
     <div x-data="{ tabs: [
       {name:'week',label:'Week',url:'/program/week/{{course.id}}'},
       {name:'user',label:'User',url:'/program/userProgram/{{course.id}}'},
       {name:'log_book_user',label:'Logbook User',url:'/program/logbookUser/{{course.id}}'},
       {name:'log_book_mentor',label:'Logbook Mentor',url:'/program/logbookMentor/{{course.id}}'},
-      {name:'mentor',label:'Mentor',url:'/program/mentorProgram/{{course.id}}'}
+      {name:'mentor',label:'Mentor',url:'/program/mentorProgram/{{course.id}}'}{{#if caps.finalAssignment}},
+      {name:'final_assignment',label:'Final Assignment',url:'/final-assignment/course/{{course.id}}'}{{/if}}
     ] }">
       {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
     </div>
@@ -46,6 +51,18 @@
     <div x-show="tab === 'log_book_user'" class='w-full' x-data="logBookUserData()" x-init="fetchLogBookUsers()">{{> course/log_book_user_tab}}</div>
     <div x-show="tab === 'log_book_mentor'" class='w-full' x-data="logBookMentorData()" x-init="fetchLogBookMentors()">{{> course/log_book_mentor_tab}}</div>
     <div x-show="tab === 'payment'" class='w-full'>{{> course/payment_tab}}</div>
+    {{!--
+      Isi panel Final Assignment ikut bersyarat, bukan cuma tombolnya.
+      `tabData().init()` di bawah membaca `activeTab` dari localStorage TANPA
+      memvalidasi isinya kalau nilainya truthy, dan kunci `activeTab` dipakai
+      bersama semua program bootcamp - jadi nilai 'final_assignment' bisa
+      tertinggal dari program lain lalu membuat panel ini terbuka di program
+      yang tidak punya tugas akhir. Kalau panelnya tidak ada, `x-show` tidak
+      pernah mendapat opportunity untuk membukanya.
+    --}}
+    {{#if caps.finalAssignment}}
+    <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
+    {{/if}}
 
     </div>
 

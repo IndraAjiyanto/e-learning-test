@@ -1,21 +1,27 @@
 {{!--
-  Tab Tugas Akhir untuk program non_bootcamp.
+  Tab Tugas Akhir untuk program yang punya `caps.finalAssignment` - bootcamp
+  dan non_bootcamp.
 
-  Bentuk tab ini mengikuti struktur program, bukan sebaliknya. Program yang
-  punya minggu (bootcamp, LPK) menilai tugas dari tiap sesi; program
-  non_bootcamp tidak punya minggu sama sekali, dan satu-satunya tugasnya adalah
-  satu final assignment milik program itu.
+  Bentuk tab ini mengikuti satuan penilaiannya, bukan struktur program. Tugas
+  akhir adalah satu tugas milik PROGRAM, terpisah dari tugas tiap minggu: ia
+  tidak punya weekId, tidak ikut dihitung `findLearningStats`, dan tidak punya
+  tempat di akordeon minggu. Karena itu ia tidak bisa masuk ke weeks.hbs, dan
+  tab yang berkasnya hidup terpisah juga bukan kebetulan.
+
+  Di program non_bootcamp, tugas akhir ini adalah satu-satunya tugas yang
+  dimiliki program. Di bootcamp, tugas mingguan tetap ada dan tetap bisa
+  dikumpulkan - lewat halaman sesi dan panel Start Learning, yang keduanya
+  menautkan ke `/answer-assigment/:sessionId/:id`. Yang berubah di bootcamp
+  hanya tab ini, bukan kemampuannya mengirim tugas.
 
   Isi tab ini sengaja cuma daftar. Brief dan formulir jawabannya ada di halaman
   sendiri, `/final-assignment/submission/:id`, dengan bentuk yang sama seperti
-  tugas mingguan: dari halaman sesi, baris tugas menuju
-  `/answer-assigment/:sessionId/:id`.
-  Alasannya bentuk, bukan sekadar navigasi - program ini punya satu tugas, jadi
-  akordeon di dalam tab hanya menyembunyikan satu baris di balik klik, dan
-  memaksa satu tempat lagi (panel Start Learning) ikut menyimpan brief yang
-  sebenarnya milik halaman tugas.
+  tugas mingguan. Alasannya bentuk, bukan sekadar navigasi - akordeon di dalam
+  tab akan menyembunyikan satu baris di balik klik, dan memaksa satu tempat
+  lagi (panel Start Learning) ikut menyimpan brief yang sebenarnya milik
+  halaman tugas.
 
-  Capabilities-nya dibaca dari `caps.structure`, bukan dari nama tipenya -
+  Capabilities-nya dibaca dari `caps.finalAssignment`, bukan dari nama tipenya -
   lihat src/courses/program-type.ts.
 
   Data dari controller: course, caps, finalAssignment, finalAssignmentSubmission.
@@ -101,11 +107,12 @@
     </a>
   {{else}}
     {{!--
-      Program non_bootcamp selalu punya tempat untuk satu final assignment,
-      tapi admin belum mengisinya. Tanpa penjelas, peserta akan mengira tab
-      ini yang rusak. Batasnya dipakai garis putus-putus supaya terbaca
-      sebagai "belum ada isi", bukan "salah" - dan p-12-nya sama dengan
-      keadaan kosong di weeks.hbs.
+      Program tanpa tugas akhir di database harus tetap punya tempat di tab ini:
+      di program non_bootcamp tugas akhir adalah satu-satunya tugas yang
+      dimiliki program, dan di bootcamp tab ini tidak menampilkan apa yang lain.
+      Tanpa penjelas, peserta akan mengira tab ini yang rusak. Batasnya dipakai
+      garis putus-putus supaya terbaca sebagai "belum ada isi", bukan "salah" -
+      dan p-12-nya sama dengan keadaan kosong di weeks.hbs.
     --}}
     <div class="mt-4 flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-[#d9d9d9] bg-white p-12 text-center">
       <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
