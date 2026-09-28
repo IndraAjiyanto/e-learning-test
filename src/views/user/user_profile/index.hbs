@@ -74,7 +74,7 @@
          Payment History tidak boleh kebagian gambar program. --}}
     programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'certificate', 'group-class', 'quiz-start'],
     get isProgramSection() {
-      return this.programSections.includes(this.activeSection);
+      return this.programSections.includes(this.activeSection) || (this.activeSection === 'portfolio' && !!this.activeCourseId);
     },
 
     {{!-- Course yang sedang dibuka, diambil dari data yang SUDAH ada di sisi
@@ -444,7 +444,7 @@
 
         <div
           x-show="isProgramSection"
-          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
+          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start') (and (eq initialSection 'portfolio') activeCourse))}}style="display:none"{{/unless}}
           class="px-4 pt-4 sm:px-8 sm:pt-6 max-w-[1334px] mx-auto w-full"
         >
           <!-- Page Header -->
@@ -605,7 +605,7 @@
         </div>
 
         <!-- My Portfolio Tab Content -->
-        <div x-show="activeSection === 'portfolio'"{{#unless (eq initialSection 'portfolio')}} style="display:none"{{/unless}}>
+        <div x-show="activeSection === 'portfolio'" id="portfolio-container" class="max-w-[1334px] mx-auto w-full"{{#unless (eq initialSection 'portfolio')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_portofolio/index }}
         </div>
 

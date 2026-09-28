@@ -50,6 +50,10 @@
     filteredPortfolios() {
       if (!this.portfolios) return [];
       return this.portfolios.filter(item => {
+        // Jika sedang di dalam tab portofolio sebuah program/kursus, hanya tampilkan portofolio kursus tersebut
+        if (this.activeCourseId && item.courseId !== this.activeCourseId) {
+          return false;
+        }
         const matchCategory = this.categoryFilter === 'all' || this.categoryFilter === item.category;
         const matchClassType = this.classTypeFilter === 'all' || this.classTypeFilter === item.classType;
         const matchSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
@@ -159,7 +163,14 @@
     openCreatePortfolio() {
       this.editingId = null;
       this.existingImages = [];
-      this.newForm = { title: '', description: '', link: '', overview: '', program: '', courseId: '' };
+      let defaultProgram = '';
+      let defaultCourseId = '';
+      if (this.activeCourseId) {
+        defaultCourseId = this.activeCourseId;
+        const currentCourse = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
+        defaultProgram = currentCourse ? currentCourse.course.name : (this.activeCourseName || '');
+      }
+      this.newForm = { title: '', description: '', link: '', overview: '', program: defaultProgram, courseId: defaultCourseId };
       this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
       this.editorDirty = false;
       this.formBaseline = JSON.stringify(this.portfolioSnapshot());
@@ -434,7 +445,10 @@
               description: isEdit ? 'Your changes have been saved.' : 'Your project is now in your portfolio list.',
             }));
           } catch (e) {}
-          window.location.href = window.location.pathname + '?tab=portfolio';
+          const redirectUrl = this.activeCourseId 
+            ? window.location.pathname + '?courseId=' + encodeURIComponent(this.activeCourseId) + '&tab=portfolio'
+            : window.location.pathname + '?tab=portfolio';
+          window.location.href = redirectUrl;
         } else {
           showErrorToast('Portfolio not saved', result.message || 'Please try again in a moment.');
         }
@@ -449,14 +463,16 @@
 >
   <!-- LIST PORTOFOLIO VIEW -->
   <div x-show="!showDetail" class="flex flex-col gap-7">
-    <div class="flex flex-col gap-1">
+    <!-- Header: Hidden when in course view -->
+    <div x-show="!activeCourseId" class="flex flex-col gap-1">
       {{> components/ui/super_admin/page_header/index titleTag='h2' title='My Portfolio' }}
       {{> components/ui/super_admin/description/index
         text='Your project collection. Each portfolio shows the technical skills and solutions you built during the program.'
       }}
     </div>
 
-    <div class="relative w-full">
+    <!-- Search Bar: Hidden when in course view -->
+    <div x-show="!activeCourseId" class="relative w-full">
       <span class="pointer-events-none absolute left-3.5 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-[#737373]">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       </span>
@@ -469,11 +485,11 @@
       >
     </div>
 
-    <!-- TWO-COLUMN LAYOUT: left filter sidebar + right results, matches Figma reference -->
-    <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start">
+    <!-- TWO-COLUMN LAYOUT: left filter sidebar + right results, matches Figma reference (1 col in course view) -->
+    <div :class="activeCourseId ? 'w-full' : 'lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start'">
 
-      <!-- LEFT: Filter Sidebar -->
-      <aside class="mb-6 space-y-5 rounded-xl border border-[#d9d9d9] bg-white p-5 lg:mb-0">
+      <!-- LEFT: Filter Sidebar (Hidden when in course view) -->
+      <aside x-show="!activeCourseId" class="mb-6 space-y-5 rounded-xl border border-[#d9d9d9] bg-white p-5 lg:mb-0">
         <div class="flex items-center justify-between">
           <h3 class="font-inter font-semibold text-sm text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Active Filters</h3>
           <button type="button" @click="resetFilters()" class="font-inter font-medium text-xs text-[#0369A1] hover:underline cursor-pointer flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset</button>
@@ -516,10 +532,10 @@
       </aside>
 
       <!-- RIGHT: Results -->
-      <div class="min-w-0">
+      <div class="min-w-0" :class="activeCourseId ? 'w-full' : ''">
 
-    <!-- HAS DATA ACTION: Create Portfolio Button -->
-    <div x-show="filteredPortfolios().length > 0" class="w-full mb-6">
+    <!-- ACTION: Create Portfolio Button (Always shown in course view, or when filteredPortfolios has data in global view) -->
+    <div x-show="filteredPortfolios().length > 0 || activeCourseId" class="w-full mb-6">
       <button
         type="button"
         @click="openCreatePortfolio()"
@@ -530,9 +546,9 @@
       </button>
     </div>
 
-    <!-- EMPTY STATE: Project Not Found -->
+    <!-- EMPTY STATE: Project Not Found (Global View) -->
     <div
-      x-show="filteredPortfolios().length === 0"
+      x-show="filteredPortfolios().length === 0 && !activeCourseId"
       class="pt-16 pb-12 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-[#E5E7EB]"
     >
       <!-- Search Magnifier Badge Icon -->
@@ -557,6 +573,33 @@
         class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center cursor-pointer transition-all"
       >
         Reset Filters
+      </button>
+    </div>
+
+    <!-- EMPTY STATE: Course View (No portfolios yet for this course) -->
+    <div
+      x-show="filteredPortfolios().length === 0 && activeCourseId"
+      class="pt-16 pb-12 flex flex-col items-center justify-center text-center bg-white rounded-xl border border-[#E5E7EB]"
+    >
+      <div class="w-20 h-20 rounded-full bg-[#E0F2F9] flex items-center justify-center mx-auto mb-6">
+        <i class="fa-regular fa-folder-open text-2xl text-[#0369A1]"></i>
+      </div>
+
+      <h2 class="font-inter font-semibold text-xl sm:text-2xl text-[#003060] leading-none mb-3 text-center">
+        Belum Ada Portofolio
+      </h2>
+
+      <p class="font-inter font-normal text-sm text-[#666666] leading-relaxed text-center mb-8">
+        Belum ada portofolio untuk program ini. Buat portofolio pertamamu sekarang.
+      </p>
+
+      <button
+        type="button"
+        @click="openCreatePortfolio()"
+        class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all"
+      >
+        <i class="fa-solid fa-plus text-sm"></i>
+        <span>Create Portfolio</span>
       </button>
     </div>
 
