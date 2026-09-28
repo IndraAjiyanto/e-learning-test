@@ -48,19 +48,43 @@ export class UsersController {
   async forgotPasswordPage(
     @Res() res: Response,
     @Req() req: Request,
-    @Query('token') token: string,
+    @Query('token') token?: string,
+    @Query('expired') expired?: string,
   ) {
-    if (token === undefined) {
+    if (expired) {
+      req.flash(
+        'info',
+        'Verification time has expired. Please submit a new request if you have not reset your password.',
+      );
+      return res.redirect('/users/forgot-password');
+    }
+
+    if (!token) {
       return res.render('forgot-password');
     }
-    const user = await this.usersService.findUserByTokenPassword(token);
-    if (user.isVerified) {
-      const remainingMs = await this.usersService.tokenPasswordExpired(token);
-      return res.render('forgot-password', { remainingMs: remainingMs });
-    } else {
-      req.flash('error', 'Please verify your email first');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+
+    try {
+      const user = await this.usersService.findUserByTokenPassword(token);
+      if (user.isVerified) {
+        const remainingMs = await this.usersService.tokenPasswordExpired(token);
+        if (remainingMs && remainingMs > 0) {
+          return res.render('forgot-password', { remainingMs: remainingMs });
+        }
+      } else {
+        req.flash('error', 'Please verify your email first');
+        return res.redirect(
+          '/users/send-verify-email?token=' + user.verificationToken,
+        );
+      }
+    } catch {
+      // Token tidak ditemukan, expired, atau sudah di-null-kan setelah ganti password
     }
+
+    req.flash(
+      'info',
+      'Verification time has expired. Please submit a new request if you have not reset your password.',
+    );
+    return res.redirect('/users/forgot-password');
   }
 
   @Post('forgot-password')
@@ -75,16 +99,32 @@ export class UsersController {
         'success',
         'Password reset link has been sent to your email. Please check your inbox.',
       );
-      res.redirect('/users/forgot-password?token=' + token);
+      return res.redirect('/users/forgot-password?token=' + token);
     } catch (error: any) {
-      const user = await this.usersService.findUserByEmail(
-        forgotPasswordDto.email,
-      );
       req.flash(
         'error',
-        error.message || 'Failed to process password reset request',
+        error.message || 'Your email is not registered',
       );
-      res.redirect('/users/forgot-password?token=' + user.resetPasswordToken);
+
+      try {
+        const user = await this.usersService.findUserByEmail(
+          forgotPasswordDto.email,
+        );
+        if (
+          user &&
+          user.resetPasswordToken &&
+          user.resetPasswordExpires &&
+          user.resetPasswordExpires > new Date()
+        ) {
+          return res.redirect(
+            '/users/forgot-password?token=' + user.resetPasswordToken,
+          );
+        }
+      } catch {
+        // User tidak terdaftar di database, abaikan error pencarian
+      }
+
+      return res.redirect('/users/forgot-password');
     }
   }
 
