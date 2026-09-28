@@ -28,7 +28,7 @@
     tab: 'all',
     selectedCategory: 'all',
     selectedMethod: 'all',
-    searchQuery: '',
+    searchQuery: new URLSearchParams(window.location.search).get('search') || '',
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
