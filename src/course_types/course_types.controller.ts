@@ -42,7 +42,7 @@ export class CourseTypesController {
       res.redirect('/type-program');
     } catch (error: any) {
       req.flash('error', 'Program type failed to created');
-      res.render('type-program');
+      res.redirect('/type-program/formCreate');
     }
   }
 

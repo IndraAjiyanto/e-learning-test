@@ -2,10 +2,11 @@ import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from 'src/entities/payment.entity';
-import { Invoice } from 'src/entities/invoice.entity';
+import { Invoice, InvoiceStatus } from 'src/entities/invoice.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Invoice as InvoiceClient } from 'xendit-node';
 import { Course } from 'src/entities/course.entity';
+import { User } from 'src/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { PaymentsService } from 'src/payments/payments.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
@@ -33,6 +34,12 @@ export class InvoiceService {
         secretKey: process.env.XENDIT_SECRET_KEY,
       });
     }
+
+    if (!process.env.XENDIT_CALLBACK_TOKEN) {
+      console.warn(
+        '[InvoiceService] PERINGATAN: XENDIT_CALLBACK_TOKEN belum diatur di environment variable. Callback verification tidak akan memvalidasi token.',
+      );
+    }
   }
 
   async createInvoiceForPayment(
@@ -43,6 +50,8 @@ export class InvoiceService {
     paymentMethod: string,
     subtotal: number,
     discountAmount: number,
+    user?: User,
+    course?: Course,
   ) {
     if (!this.xenditInvoiceClient) {
       throw new Error(
@@ -50,18 +59,36 @@ export class InvoiceService {
       );
     }
 
+    const invoiceStatus: InvoiceStatus =
+      finalTotal <= 0 ? 'paid' : 'pending';
+
     const invoice = this.invoiceRepository.create({
       payment: payment,
       subtotal: subtotal,
       discount_amount: discountAmount,
       final_total: finalTotal,
       payment_method: paymentMethod,
+      invoice_number: payment.no,
+      status: invoiceStatus,
+      user_fullname:
+        payment.user_fullname ||
+        (user as any)?.biodata?.fullName ||
+        user?.username ||
+        null,
+      user_email: payment.user_email || user?.email || payerEmail,
+      user_phone: payment.user_no || (user as any)?.biodata?.no || null,
+      course_name: courseName,
+      category_name: course?.category?.name || null,
+      proof_url: payment.file || null,
+      user: user || payment.user || undefined,
+      course: course || payment.course || undefined,
     });
 
     await this.invoiceRepository.save(invoice);
 
     if (finalTotal <= 0) {
       invoice.paid_at = new Date();
+      invoice.status = 'paid';
       await this.invoiceRepository.save(invoice);
 
       payment.invoice = invoice;
@@ -180,6 +207,7 @@ export class InvoiceService {
       }
       if (payment.invoice) {
         payment.invoice.paid_at = res.paidAt || new Date();
+        payment.invoice.status = 'paid';
         await this.invoiceRepository.save(payment.invoice);
       }
       await this.paymentRepository.save(payment);
@@ -198,6 +226,11 @@ export class InvoiceService {
       }
     } else if (res && res.status === 'EXPIRED') {
       payment.process = 'rejected';
+      if (payment.invoice) {
+        payment.invoice.status = 'expired';
+        payment.invoice.expired_at = new Date();
+        await this.invoiceRepository.save(payment.invoice);
+      }
       await this.paymentRepository.save(payment);
     }
     return payment;
@@ -211,11 +244,14 @@ export class InvoiceService {
     if (!payment) throw new Error('Payment tidak ditemukan');
 
     if (payment.invoice && payment.invoice.paid_at) {
+      payment.invoice.status = 'paid';
+      await this.invoiceRepository.save(payment.invoice);
       return payment;
     }
 
     if (payment.invoice) {
       payment.invoice.paid_at = new Date();
+      payment.invoice.status = 'paid';
       await this.invoiceRepository.save(payment.invoice);
     }
 
@@ -280,6 +316,10 @@ export class InvoiceService {
     if (!payment) return;
 
     if (payment.invoice && payment.invoice.paid_at) {
+      if (payment.invoice.status !== 'paid') {
+        payment.invoice.status = 'paid';
+        await this.invoiceRepository.save(payment.invoice);
+      }
       return;
     }
 
@@ -292,8 +332,12 @@ export class InvoiceService {
 
       if (payment.invoice) {
         payment.invoice.paid_at = new Date();
+        payment.invoice.status = 'paid';
         if (payload.payment_method) {
           payment.invoice.payment_method = payload.payment_method;
+        }
+        if (payload.payment_channel) {
+          payment.invoice.xendit_payment_channel = payload.payment_channel;
         }
         await this.invoiceRepository.save(payment.invoice);
       }
@@ -312,6 +356,11 @@ export class InvoiceService {
       }
     } else if (status === 'EXPIRED') {
       payment.process = 'rejected';
+      if (payment.invoice) {
+        payment.invoice.status = 'expired';
+        payment.invoice.expired_at = new Date();
+        await this.invoiceRepository.save(payment.invoice);
+      }
       await this.paymentRepository.save(payment);
     }
   }
