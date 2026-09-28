@@ -31,21 +31,58 @@
       'linkForm',
     ];
 
-    const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Label domain standar + TLD 2-10 huruf, sehingga "gmail.comasdasd..." tertolak.
+    const EMAIL_PATTERN = /^[a-z0-9._%+-]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,10}$/i;
+
+    // Penyedia umum wajib memakai domain aslinya: "gmail.comx" tetap tertolak.
+    const EMAIL_PROVIDERS = {
+      gmail: ['gmail.com'],
+      yahoo: ['yahoo.com', 'yahoo.co.id'],
+      outlook: ['outlook.com', 'outlook.co.id'],
+      hotmail: ['hotmail.com'],
+      icloud: ['icloud.com'],
+    };
+
+    const isEmail = (value) => {
+      if (value.length > 254 || !EMAIL_PATTERN.test(value)) return false;
+      const domain = value.split('@')[1].toLowerCase();
+      const allowed = EMAIL_PROVIDERS[domain.split('.')[0]];
+      return !allowed || allowed.includes(domain);
+    };
 
     // Angka, boleh diawali +, dan pemisah umum (spasi, tanda hubung, kurung).
     const PHONE_PATTERN = /^\+?[\d\s().-]+$/;
 
-    // Bentuk tautan Google Maps yang lazim dibagikan.
-    const MAPS_HOSTS = ['google.com/maps', 'maps.google.', 'goo.gl/maps', 'maps.app.goo.gl'];
+    const PHONE_MAX_DIGITS = 15;
+    const ADDRESS_MAX = 500;
+    const URL_MAX = 2048;
 
-    const isUrl = (value) => {
+    // new URL() menerima skema apa pun ("abc:xyz") dan menormalkan "https:www.x.com",
+    // jadi awalan http(s):// dicek pada teks mentahnya.
+    const parseUrl = (value) => {
+      if (value.length > URL_MAX || !/^https?:\/\/[^\s]+$/i.test(value)) return null;
       try {
-        new URL(value);
-        return true;
+        const url = new URL(value);
+        return url.hostname.includes('.') ? url : null;
       } catch {
-        return false;
+        return null;
       }
+    };
+    const isUrl = (value) => parseUrl(value) !== null;
+
+    const hostIs = (value, ...domains) => {
+      const host = parseUrl(value)?.hostname.toLowerCase();
+      return !!host && domains.some((d) => host === d || host.endsWith('.' + d));
+    };
+
+    const isMapsUrl = (value) => {
+      const url = parseUrl(value);
+      if (!url) return false;
+      const host = url.hostname.toLowerCase();
+      if (host === 'maps.app.goo.gl') return true;
+      if (host === 'goo.gl') return url.pathname.startsWith('/maps');
+      if (/^maps\.google\.[a-z.]+$/.test(host)) return true;
+      return /^(www\.)?google\.[a-z.]+$/.test(host) && url.pathname.startsWith('/maps');
     };
 
     // Kembalikan '' bila valid. Urutan cek mengikuti form lama: wajib dulu,
@@ -57,19 +94,19 @@
         case 'linkedin':
           if (!val) return 'LinkedIn URL is required';
           if (!isUrl(val)) return 'Please enter a valid URL';
-          if (!val.includes('linkedin.com')) return 'Please enter a valid LinkedIn URL';
+          if (!hostIs(val, 'linkedin.com')) return 'Please enter a valid LinkedIn URL';
           return '';
 
         case 'instagram':
           if (!val) return 'Instagram URL is required';
           if (!isUrl(val)) return 'Please enter a valid URL';
-          if (!val.includes('instagram.com')) return 'Please enter a valid Instagram URL';
+          if (!hostIs(val, 'instagram.com')) return 'Please enter a valid Instagram URL';
           return '';
 
         case 'youtube':
           if (!val) return 'YouTube URL is required';
           if (!isUrl(val)) return 'Please enter a valid URL';
-          if (!val.includes('youtube.com') && !val.includes('youtu.be')) {
+          if (!hostIs(val, 'youtube.com', 'youtu.be')) {
             return 'Please enter a valid YouTube URL';
           }
           return '';
@@ -77,14 +114,14 @@
         case 'videoYoutube':
           if (!val) return 'YouTube Video URL is required';
           if (!isUrl(val)) return 'Please enter a valid URL';
-          if (!val.includes('youtube.com') && !val.includes('youtu.be')) {
+          if (!hostIs(val, 'youtube.com', 'youtu.be')) {
             return 'Please enter a valid YouTube video URL';
           }
           return '';
 
         case 'email':
           if (!val) return 'Email is required';
-          if (!EMAIL_PATTERN.test(val)) return 'Please enter a valid email address';
+          if (!isEmail(val)) return 'Please enter a valid email address';
           return '';
 
         // Aturan lama hanya "minimal 10 karakter", sehingga nilai seperti
@@ -98,11 +135,17 @@
           if (val.replace(/\D/g, '').length < 10) {
             return 'Phone number must have at least 10 digits';
           }
+          if (val.replace(/\D/g, '').length > PHONE_MAX_DIGITS) {
+            return `Phone number must have at most ${PHONE_MAX_DIGITS} digits`;
+          }
           return '';
 
         case 'address':
           if (!val) return 'Address is required';
           if (val.length < 10) return 'Address must be at least 10 characters';
+          if (val.length > ADDRESS_MAX) {
+            return `Address must be at most ${ADDRESS_MAX} characters`;
+          }
           return '';
 
         // Dulu hanya dicek "wajib diisi" karena dikhawatirkan ada baris lama yang
@@ -115,7 +158,7 @@
           if (!isUrl(val)) {
             return 'Please enter a valid URL (paste the link, not the embed code)';
           }
-          if (!MAPS_HOSTS.some((host) => val.includes(host))) {
+          if (!isMapsUrl(val)) {
             return 'Please enter a valid Google Maps link';
           }
           return '';

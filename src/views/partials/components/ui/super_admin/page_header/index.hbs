@@ -4,8 +4,6 @@
   Level: L1 Atomik (scoped super_admin)
 
   Judul halaman untuk halaman-halaman Super Admin.
-  Styling default mengikuti Figma LMS Kesatria node 768:42365 (Heading):
-  Montserrat Bold 34/36, letter-spacing -1px, #003060.
 
   Deskripsi/sub heading TIDAK ditangani di sini — pasangkan dengan
   ui/super_admin/description di halaman, dibungkus wrapper ber-gap 4px.
@@ -22,7 +20,7 @@
     </div>
 --}}
 {{#if (eq titleTag 'h2')}}
-  <h2 class='{{default titleClass "font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]"}}'>{{title}}</h2>
+  <h2 class='{{default titleClass "font-inter font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]"}}'>{{title}}</h2>
 {{else}}
-  <h1 class='{{default titleClass "font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]"}}'>{{title}}</h1>
+  <h1 class='{{default titleClass "font-inter font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]"}}'>{{title}}</h1>
 {{/if}}

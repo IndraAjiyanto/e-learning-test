@@ -28,7 +28,7 @@
 
     <div
       class='flex flex-col gap-3.5'
-      x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'
+      x-data='clientTable({ items: {{json partners}}, sortKey: "createdAt", searchKeys: ["categoryPartner.category"] })'
     >
       {{> components/ui/super_admin/table/toolbar
         placeholder='Search partner..'

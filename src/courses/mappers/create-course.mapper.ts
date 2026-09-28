@@ -1,6 +1,10 @@
 import { CreateCoursesDto } from '../dto/create-courses.dto';
 import { UpdateCoursesDto } from '../dto/update-courses.dto';
-import { Method } from 'src/entities/course.entity';
+import {
+  Method,
+  PROGRAM_TYPES,
+  ProgramType,
+} from 'src/entities/course.entity';
 
 /**
  * Anti-Corruption Layer untuk payload form "Create Program".
@@ -97,6 +101,18 @@ const toBool = (value: unknown): boolean | undefined => {
 const toMethod = (value: unknown): Method =>
   value === 'offline' ? 'offline' : 'online';
 
+/**
+ * Nilai enum tipe program dari form. Nilai yang tidak dikenal (termasuk medan
+ * yang tidak dikirim sama sekali) menjadi `undefined`, sehingga default kolom
+ * 'bootcamp' yang berlaku - bukan tipe karangan.
+ */
+function toProgramType(raw: unknown): ProgramType | undefined {
+  const value = asText(raw);
+  return (PROGRAM_TYPES as string[]).includes(value)
+    ? (value as ProgramType)
+    : undefined;
+}
+
 export function mapCreateProgram(
   body: WireBody,
   user?: { role?: string; id?: string },
@@ -127,6 +143,16 @@ export function mapCreateProgram(
     learningTargetsJa: asArray(body.learningTargetsJa),
     startDate: asText(body.startDate),
     endDate: asText(body.endDate),
+    // Bentuk belajar. Form lama tidak mengirimkannya sama sekali, dan itu
+    // memang benar: tanpa nilai, programnya bootcamp - sama seperti seluruh
+    // program yang sudah ada.
+    programType: toProgramType(body.program_type ?? body.programType),
+    // Hanya non_bootcamp yang boleh mematikan logbook; program lain selalu
+    // menyala apa pun isi medannya.
+    logbookEnabled:
+      toProgramType(body.program_type ?? body.programType) === 'non_bootcamp'
+        ? toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true
+        : true,
   };
 
   const image = asArray(body.uploadedImageUrls)[0];
@@ -297,6 +323,15 @@ export function mapUpdateProgram(
 
   if (body.paid_check !== undefined) {
     dto.checkPaid = toBool(body.paid_check);
+  }
+
+  const programType = toProgramType(body.program_type ?? body.programType);
+  if (programType) {
+    dto.programType = programType;
+    dto.logbookEnabled =
+      programType === 'non_bootcamp'
+        ? toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true
+        : true;
   }
 
   if (user?.role === 'super_admin') {

@@ -2,7 +2,6 @@
   Komponen: Card Benefit (Responsive)
   Lokasi: src/views/partials/components/ui/card/card_benefit/index.hbs
   Level: L1 Atomik
-  Figma: feat-card (250:2829) — why-choose-us (250:2815)
 
   Props:
   - icon        : string (nama ikon dari BE, diproses helper computeIcon)
@@ -23,7 +22,7 @@
   sm:border sm:border-[#E5E7EB]
   sm:transition-all sm:duration-300 sm:hover:-translate-y-1 sm:hover:shadow-[0_12px_24px_rgba(11,31,59,0.08)]
 ">
-  <!-- icon-bg (250:2830) -->
+  <!-- icon-bg -->
   <div class="
     flex items-center justify-center shrink-0
     w-[48px] h-[48px]
@@ -33,12 +32,12 @@
     <i class="{{computeIcon icon}} text-xl lg:text-2xl text-white sm:text-[#0B1F3B]" aria-hidden="true"></i>
   </div>
 
-  <!-- Card Title (250:2834) -->
+  <!-- Card Title -->
   <h3 class="{{sizeClass 'h3'}} font-inter font-semibold leading-tight text-[#0B1F3B]">
     {{getByLang title lang}}
   </h3>
 
-  <!-- Card Description (250:2835) -->
+  <!-- Card Description -->
   <p class="{{sizeClass 'body'}} font-inter font-normal text-[#2D2D2D] sm:text-[#4A5568]">
     {{getByLang description lang}}
   </p>

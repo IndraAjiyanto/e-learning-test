@@ -33,13 +33,13 @@
         {{> components/ui/super_admin/detail/field/index label='Program Type' value=course.courseType.nameClassesType }}
 
         {{#> components/ui/super_admin/detail/field/index label='Method'}}
-          <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if (eq course.method 'online')}}Online{{else if (eq course.method 'offline')}}Offline{{else}}-{{/if}}</p>
+          <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if (eq course.method 'online')}}Online{{else if (eq course.method 'offline')}}Offline{{else}}-{{/if}}</p>
         {{/components/ui/super_admin/detail/field/index}}
 
         {{> components/ui/super_admin/detail/field/index label='Location' value=(getByLang course.locations 'en') }}
 
         {{#> components/ui/super_admin/detail/field/index label='Duration'}}
-          <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.month}}{{course.month}} Month{{else if course.day}}{{course.day}} Day{{else}}-{{/if}}</p>
+          <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.month}}{{course.month}} Month{{else if course.day}}{{course.day}} Day{{else}}-{{/if}}</p>
         {{/components/ui/super_admin/detail/field/index}}
 
         {{> components/ui/super_admin/detail/field/index label='Registration Date' value=(formatDate course.date_registration) }}
@@ -66,16 +66,16 @@
           iconPaths='<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'}}
           {{#> components/ui/super_admin/detail/field/index label='Form link'}}
             {{#if course.form}}
-              <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-montserrat text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
+              <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
             {{else if course.locationLink}}
-              <a href='{{course.locationLink}}' target='_blank' rel='noopener noreferrer' class='break-all font-montserrat text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.locationLink}}</a>
+              <a href='{{course.locationLink}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.locationLink}}</a>
             {{else}}
-              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
+              <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
             {{/if}}
           {{/components/ui/super_admin/detail/field/index}}
 
           {{#> components/ui/super_admin/detail/field/index label='Type'}}
-            <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.checkPaid}}Paid{{else}}Free{{/if}}</p>
+            <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.checkPaid}}Paid{{else}}Free{{/if}}</p>
           {{/components/ui/super_admin/detail/field/index}}
         {{/components/ui/super_admin/detail/section_card/index}}
       </div>
@@ -86,8 +86,8 @@
           iconPaths='<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'}}
           <div class='flex w-full flex-col gap-1.5'>
             <div class='flex w-full items-center justify-between'>
-              <span class='font-montserrat text-sm font-semibold leading-5 text-[#171717]'>Enrollment</span>
-              <span class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{default course.userCourses.length 0}}/{{default course.quota 0}}</span>
+              <span class='font-inter text-sm font-semibold leading-5 text-[#171717]'>Enrollment</span>
+              <span class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{default course.userCourses.length 0}}/{{default course.quota 0}}</span>
             </div>
             <div class='h-5 w-full overflow-hidden rounded-lg bg-[#e4e5e6]'>
               <div
@@ -99,11 +99,11 @@
 
           <div class='grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-x-3'>
             {{#> components/ui/super_admin/detail/field/index label='Student Capacity'}}
-              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.quota}}{{course.quota}} Students{{else}}Not set{{/if}}</p>
+              <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.quota}}{{course.quota}} Students{{else}}Not set{{/if}}</p>
             {{/components/ui/super_admin/detail/field/index}}
 
             {{#> components/ui/super_admin/detail/field/index label='Student Joined'}}
-              <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>{{default course.userCourses.length 0}} Students</p>
+              <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{default course.userCourses.length 0}} Students</p>
             {{/components/ui/super_admin/detail/field/index}}
           </div>
         {{/components/ui/super_admin/detail/section_card/index}}
@@ -114,13 +114,13 @@
       title='Learning Details'
       iconPaths='<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>'}}
       {{#> components/ui/super_admin/detail/field/index label='Account Mentor'}}
-        <p class='break-words font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>
+        <p class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>
           {{#each course.mentorings}}{{this.user.username}}{{#unless @last}}, {{/unless}}{{else}}-{{/each}}
         </p>
       {{/components/ui/super_admin/detail/field/index}}
 
       {{#> components/ui/super_admin/detail/field/index label='Target'}}
-        <p class='break-words font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>
+        <p class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>
           {{#each course.learningTargetsId}}{{this}}{{#unless @last}}, {{/unless}}{{else}}-{{/each}}
         </p>
       {{/components/ui/super_admin/detail/field/index}}
@@ -137,7 +137,7 @@
               {{this.name}}
             </span>
           {{else}}
-            <p class='font-montserrat text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
+            <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
           {{/each}}
         </div>
       {{/components/ui/super_admin/detail/field/index}}
@@ -145,17 +145,18 @@
 
     <div
       class='flex w-full flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white px-4 pb-5 pt-3 sm:px-5'
-      x-data='tabData({{#if course.checkPaid}}true{{else}}false{{/if}})'
+      x-data='tabData()'
     >
       <nav role='tablist' aria-label='Program sections' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
         {{> components/ui/super_admin/tabs/panel/index name='benefit' label='Benefit' }}
         {{> components/ui/super_admin/tabs/panel/index name='participants' label='Participants' }}
         {{> components/ui/super_admin/tabs/panel/index name='flow' label='Flow' }}
-        {{> components/ui/super_admin/tabs/panel/index name='faq' label='FAQ' }}
         {{#if course.checkPaid}}
+          {{> components/ui/super_admin/tabs/panel/index name='payment' label='Payment' }}
           {{> components/ui/super_admin/tabs/panel/index name='installment' label='Installment' }}
+        {{else}}
+          {{> components/ui/super_admin/tabs/panel/index name='registration' label='Registration' }}
         {{/if}}
-        {{> components/ui/super_admin/tabs/panel/index name='payment' label='Payment' }}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
@@ -168,9 +169,11 @@
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
       {{#if course.checkPaid}}
+        <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
         <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+      {{else}}
+        <div x-show="tab === 'registration'">{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
       {{/if}}
-      <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
@@ -197,18 +200,19 @@
 }}
 
 <script>
-  function tabData(hasInstallment) {
+  function tabData() {
+    const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
     return {
-      tab: localStorage.getItem('activeTabProgram') || 'benefit',
+      tab: localStorage.getItem('activeTabProgram') || (isPaid ? 'payment' : 'registration'),
 
       init() {
         this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
 
-        // Tab Installment hanya dirender untuk program berbayar. Tanpa jepitan ini,
-        // pindah dari program berbayar ke program gratis menyisakan tab tersimpan
-        // yang tombolnya tidak ada. $watch sengaja dipasang lebih dulu supaya
-        // koreksinya ikut tersimpan.
-        if (this.tab === 'installment' && !hasInstallment) this.tab = 'benefit';
+        if (!isPaid && (this.tab === 'installment' || this.tab === 'payment')) {
+          this.tab = 'registration';
+        } else if (isPaid && this.tab === 'registration') {
+          this.tab = 'payment';
+        }
       },
     };
   }

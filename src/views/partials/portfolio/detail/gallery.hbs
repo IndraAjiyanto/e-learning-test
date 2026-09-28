@@ -1,0 +1,91 @@
+{{!--
+  Komponen: Detail Portfolio Showcase Gallery
+  Lokasi: src/views/partials/portfolio/detail/gallery.hbs
+--}}
+<div
+  class="mb-12"
+  x-data="{
+    currentIndex: 0,
+    images: [
+      {{#if portfolio.image}}
+        {{#each portfolio.image}}'{{this}}',{{/each}}
+      {{else}}
+        'https://placehold.co/1200x700/003060/FFFFFF?text={{portfolio.title}}'
+      {{/if}}
+    ],
+    next() {
+      if (this.images.length > 1) {
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      }
+    },
+    prev() {
+      if (this.images.length > 1) {
+        this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+      }
+    },
+    goTo(index) {
+      this.currentIndex = index;
+    }
+  }"
+>
+  <!-- Main Showcase Preview Frame -->
+  <div class="relative max-w-4xl mx-auto rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-[#0B1528] border border-gray-800/20 group">
+    <div class="relative aspect-[16/10] sm:aspect-[16/9] w-full flex items-center justify-center bg-gray-950">
+      <img
+        :src="images[currentIndex]"
+        alt="{{portfolio.title}}"
+        class="w-full h-full object-cover transition-all duration-500"
+        onerror="this.src='https://placehold.co/1200x700/003060/FFFFFF?text=Kesatria+Portfolio'"
+      />
+
+      <!-- Navigation Arrow Buttons (Hover) -->
+      <template x-if="images.length > 1">
+        <div class="absolute inset-0 flex items-center justify-between p-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <button
+            type="button"
+            @click.prevent.stop="prev()"
+            class="size-10 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center backdrop-blur-md pointer-events-auto transition shadow-lg hover:scale-110"
+            aria-label="Previous image"
+          >
+            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button
+            type="button"
+            @click.prevent.stop="next()"
+            class="size-10 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center backdrop-blur-md pointer-events-auto transition shadow-lg hover:scale-110"
+            aria-label="Next image"
+          >
+            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </template>
+
+      <!-- Image Counter Pill -->
+      <template x-if="images.length > 1">
+        <div class="absolute top-4 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md font-medium">
+          <span x-text="currentIndex + 1"></span> / <span x-text="images.length"></span>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Thumbnail Switcher Strip -->
+  <template x-if="images.length > 1">
+    <div class="flex items-center justify-center gap-3 mt-4 overflow-x-auto pb-2">
+      <template x-for="(image, index) in images" :key="index">
+        <button
+          type="button"
+          @click="goTo(index)"
+          class="w-16 h-11 sm:w-20 sm:h-14 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 bg-gray-100"
+          :class="currentIndex === index ? 'border-[#006699] ring-2 ring-[#006699]/30 scale-105' : 'border-transparent opacity-60 hover:opacity-100'"
+        >
+          <img :src="image" alt="Thumbnail" class="w-full h-full object-cover" />
+        </button>
+      </template>
+    </div>
+  </template>
+</div>

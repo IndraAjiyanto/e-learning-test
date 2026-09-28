@@ -1,5 +1,5 @@
 {{!--
-  Section: Team (tab halaman About) - Figma 250:1176
+  Section: Team (tab halaman About)
   Lokasi: src/views/partials/components/ui/sections/team/index.hbs
 
   Data (dari dashboard.about()):
@@ -84,7 +84,7 @@
 
     <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {{#if team.length}}
-        {{!-- Tab shows up to 6 (Figma 250:1176 = 3 rows); "View all" leads to the full roster --}}
+        {{!-- Tab shows up to 6; "View all" leads to the full roster --}}
         {{#each team}}
           {{#if (check @index 6)}}
             {{> components/ui/card/team_member/index

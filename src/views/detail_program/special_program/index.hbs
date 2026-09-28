@@ -1,0 +1,78 @@
+{{!--
+  Detail Special Program / Japan Pathway
+  Lokasi: src/views/detail_program/special_program/index.hbs
+--}}
+
+<div class="w-full bg-[#FAFAFA]">
+  {{!-- Section 1: Hero Section (with Background Wash, Meta Chips, and Snapshot Bar) --}}
+  {{> components/ui/sections/japan_hero/index 
+      course=course 
+      category=course.category 
+      lang=lang 
+      isJapan=true
+  }}
+
+  {{!-- Section 2: Why Choose ("Why Choose Our Japan Program?" - 6 Feature Cards) --}}
+  {{> components/ui/sections/special_benefit/index 
+      course=course
+      category=course.category 
+      benefit_category=benefit_category 
+      lang=lang 
+      isJapan=true
+  }}
+
+  {{!-- Section 3: Alumni Success ("Real Stories, Real Placement") --}}
+  {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      variant="special"
+      isJapan=true
+      showMobile=true
+      badgeText="ALUMNI SUCCESS"
+      dotColor="#6EB6E5"
+      titleText="Real Stories, Real Placement"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descText="Discover how our graduates transitioned into major engineering roles across the global industry."
+      descClass="max-w-[760px] text-center"
+      hideDivider=false
+      dividerClass="h-1 w-[60px]"
+      footerTextKey="test.special_program.alumni.footer"
+      footerLinkTextKey="test.special_program.alumni.allStories"
+      desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
+      alumni=alumni
+      category=course.category
+      lang=lang
+  }}
+
+  {{!-- Section 4: Life at Kesatria Academy / Gallery --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=true
+      badgeText="ACADEMY IN ACTION"
+      dotColor="#6EB6E5"
+      titleText="Life at Kesatria Academy"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descText="Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons."
+      linkText="See All Our Gallery"
+      showDivider=false
+      showBottomLink=true
+      gallery=gallery
+  }}
+
+  {{!-- Section 5: Frequently Asked Questions (FAQ) --}}
+  {{> components/ui/sections/faq/index
+      titleKey="test.special_program.faq.title"
+      descKey="test.special_program.faq.description"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      faqs=faqs
+      faq=courseQuestions
+      lang=lang
+  }}
+
+  {{!-- Section 6: Final CTA ("Transform your team today" / Pendaftaran) --}}
+  {{> components/ui/sections/special_cta/index 
+      course=course 
+      category=course.category 
+      lang=lang 
+      isJapan=true
+  }}
+</div>

@@ -33,12 +33,15 @@ import { Participants } from 'src/entities/participants.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 import { QuestionsModule } from 'src/questions/questions.module';
+import { FinalAssignmentModule } from 'src/final_assignment/final_assignment.module';
 
 @Module({
   imports: [
     CommonModule,
     TypeOrmModule.forFeature([
+      Syllabus,
       Technology,
       Logbook,
       UserCourse,
@@ -73,6 +76,7 @@ import { QuestionsModule } from 'src/questions/questions.module';
     QuestionsModule,
     UserAnswersModule,
     UsersModule,
+    FinalAssignmentModule,
   ],
   controllers: [CoursesController],
   providers: [CoursesService],

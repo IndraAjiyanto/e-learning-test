@@ -5,7 +5,6 @@
   Server scope: `session` (Session + weeks + weeks.course),
   Composes: session/session-info-item (4x), button/primary-button (Edit Session w132).
 
-  Pencil (Container - Session Detail → Feature Card 1):
   card white r12 stroke #D9D9D9 p20 gap14.
   Back: chevron-left 16 #718096 + Back Montserrat 16/500 #718096 → /week/:weeksId.
   Title Montserrat 34/700 #003060 tracking -0.85 + badge Mentoring Batch
@@ -22,23 +21,23 @@
   <div class='flex flex-row justify-between items-center w-full'>
     <a href='/week/{{session.weeks.id}}' class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity' title='Back' aria-label='Back'>
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><path d='m15 18-6-6 6-6'/></svg>
-      <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+      <span class='text-[16px]/[normal] text-[#718096] font-inter font-medium'>Back</span>
     </a>
   </div>
 
   {{!-- Title + actions --}}
-  <div class='flex flex-row gap-[12px] justify-between items-start w-full flex-wrap'>
+  <div class='flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start w-full'>
     <div class='flex flex-col gap-[10px] justify-start items-start min-w-0'>
-      <div class='text-[34px]/[1.12] w-full text-[#003060] font-montserrat font-bold tracking-[-0.85px]'>Session {{session.sessionOrder}}</div>
+      <div class='text-[34px]/[1.12] w-full text-[#003060] font-inter font-bold tracking-[-0.85px]'>Session {{session.sessionOrder}}</div>
       <div class='box-border w-fit shrink-0 h-[22px] flex flex-row gap-[8px] p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
         <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium whitespace-nowrap'>Mentoring Batch #{{session.weeks.weekNumber}}</span>
       </div>
     </div>
-    <div class='flex flex-row gap-[12px] justify-start items-center shrink-0'>
-      <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post'>
-        <button type='submit'
-          onclick='confirmDelete(this)'
-          class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'
+    <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto shrink-0'>
+      <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post' class='w-full sm:w-auto'>
+        <button type='button'
+          onclick="openDeleteModal(this, 'Delete Session?', 'Are you sure you want to delete this session? This action cannot be undone.')"
+          class='box-border w-full sm:w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'
           title='Delete Session' aria-label='Delete Session'>
           <span class='text-[16px]/[24px] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
         </button>
@@ -49,7 +48,7 @@
 
   {{!-- Info grid --}}
   <div class='flex flex-col gap-[12px] w-full'>
-    <div class='flex flex-row gap-[14px] w-full'>
+    <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>
       <div class='flex-1 min-w-0'>
         {{> components/ui/admin/session/session-info-item label='Location' value=session.location}}
       </div>
@@ -57,7 +56,7 @@
         {{> components/ui/admin/session/session-info-item label='Topic' value=session.topic}}
       </div>
     </div>
-    <div class='flex flex-row gap-[14px] w-full'>
+    <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>
       <div class='flex-1 min-w-0'>
         {{> components/ui/admin/session/session-info-item label='Date' value=(formatDate session.date)}}
       </div>

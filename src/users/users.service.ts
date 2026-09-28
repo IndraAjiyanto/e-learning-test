@@ -40,19 +40,88 @@ export class UsersService {
     private readonly emailService: EmailService,
   ) {}
 
+  private async generateVerificationToken(user: User): Promise<string> {
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(rawToken)
+      .digest('hex');
+
+    user.verificationToken = hashedToken;
+    user.verificationTokenExpires = new Date(Date.now() + 120000);
+
+    await this.userRepository.save(user);
+    return rawToken;
+  }
+
+  async sendVerificationEmailToUser(user: User): Promise<User> {
+    const rawToken = await this.generateVerificationToken(user);
+
+    try {
+      await this.emailService.sendVerificationEmail(
+        user.email,
+        rawToken,
+        user.username,
+      );
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+
+      user.verificationToken = null;
+      user.verificationTokenExpires = null;
+
+      await this.userRepository.save(user);
+
+      throw new BadRequestException(
+        'Failed to send verification email. Please try again.',
+      );
+    }
+    
+    return user;
+  }
+  async sendAdminVerificationEmailToUser(user: User, rawPassword?: string): Promise<User> {
+    const rawToken = await this.generateVerificationToken(user);
+
+    try {
+      await this.emailService.sendAdminVerificationEmail(
+        user.email,
+        rawToken,
+        user.username,
+        rawPassword,
+      );
+    } catch (error) {
+      console.error('Failed to send admin verification email:', error);
+
+      user.verificationToken = null;
+      user.verificationTokenExpires = null;
+
+      await this.userRepository.save(user);
+
+      throw new BadRequestException(
+        'Failed to send verification email. Please try again.',
+      );
+    }
+    
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const cekEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
-    if (!cekEmail) {
-      const user = await this.userRepository.create({
-        ...createUserDto,
-        isVerified: true,
-      });
-      return await this.userRepository.save(user);
-    } else {
+    if (cekEmail) {
       throw new NotFoundException('Email is already registered');
     }
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      isVerified: false,
+      resetPasswordToken: 'MUST_CHANGE_PASSWORD',
+    });
+    const savedUser = await this.userRepository.save(user);
+
+    await this.sendAdminVerificationEmailToUser(savedUser, createUserDto.password);
+
+    return savedUser;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -96,6 +165,7 @@ export class UsersService {
         userCourses: {
           course: {
             category: true,
+            courseType: true,
             weeks: true,
           },
         },
@@ -165,7 +235,14 @@ export class UsersService {
   async getDashboardData(userId: string) {
     const userWithCourses = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+      relations: [
+        'userCourses',
+        'userCourses.course',
+        'userCourses.course.category',
+        // Baris Continue Learning pada frame dashboard memakai dua keterangan
+        // di bawah judul; yang kedua diambil dari tipe kelas.
+        'userCourses.course.courseType',
+      ],
     });
 
     const userCourses = userWithCourses?.userCourses ?? [];
@@ -176,11 +253,45 @@ export class UsersService {
       where: { user: { id: userId } },
     });
 
+    // Persentase kemajuan dihitung di sini, bukan di template. Handlebars hanya
+    // punya divide/multiply, jadi merakitnya di view berarti tiga helper
+    // bersarang untuk satu angka - dan pembagian nol harus dijaga dua kali.
+    const totalCourses = userCourses.length;
+    const completionPercent = totalCourses
+      ? Math.round((completedCourses.length / totalCourses) * 100)
+      : 0;
+
+    // Komposisi program yang diikuti, dikelompokkan per tipe kelas.
+    //
+    // Idenya dari donat "Komposisi Pembelian" di dasbor bisa.ai. Sumbernya
+    // sengaja BUKAN transaksi: tabel pembayaran tidak ikut dimuat di rute ini,
+    // dan program gratis tidak punya baris transaksi sama sekali - komposisinya
+    // akan bohong untuk sebagian student. Tipe kelas ada pada setiap program
+    // yang benar-benar diikuti, jadi angkanya selalu berasal dari kenyataan.
+    const compositionCounts = new Map<string, number>();
+    for (const uc of userCourses) {
+      const label =
+        uc.course?.courseType?.nameClassesType?.trim() ||
+        uc.course?.category?.name?.trim() ||
+        'Uncategorised';
+      compositionCounts.set(label, (compositionCounts.get(label) ?? 0) + 1);
+    }
+    const programComposition = [...compositionCounts.entries()]
+      .map(([label, count]) => ({
+        label,
+        count,
+        percent: totalCourses ? Math.round((count / totalCourses) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
     return {
       ongoingCourses,
+      programComposition,
       dashboardStats: {
         ongoingCount: ongoingCourses.length,
         completedCount: completedCourses.length,
+        totalCount: totalCourses,
+        completionPercent,
         certificatesCount,
       },
     };
@@ -210,6 +321,14 @@ export class UsersService {
     if (updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword) {
       throw new BadRequestException('confirm password wrong');
     }
+
+    // Aturan yang sama dengan pendaftaran (auth.service) dan lupa-password
+    // (resetPassword di berkas ini). Sebelumnya rute ini satu-satunya yang
+    // memakai aturannya sendiri - cukup 6 karakter, tanpa syarat lain - jadi
+    // mengganti password justru bisa MELEMAHKAN akun yang password awalnya
+    // sudah dipaksa kuat saat mendaftar.
+    assertStrongPassword(updatePaaswordDto.newPassword);
+
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -223,14 +342,9 @@ export class UsersService {
       throw new BadRequestException('Old password is incorrect');
     }
 
-    if (updatePaaswordDto.newPassword.length < 6) {
-      throw new BadRequestException(
-        'New password must be at least 6 characters',
-      );
-    }
-
     const hashedPassword = await bcrypt.hash(updatePaaswordDto.newPassword, 10);
     user.password = hashedPassword;
+    user.resetPasswordToken = null;
 
     await this.userRepository.save(user);
 
@@ -370,6 +484,10 @@ export class UsersService {
   }
 
   async verifyEmail(token: string) {
+    if (!token) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
     const user = await this.userRepository
@@ -392,9 +510,19 @@ export class UsersService {
   }
 
   async sendVerificationEmail(token: string) {
-    const user = await this.userRepository.findOne({
-      where: { verificationToken: token },
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    let user = await this.userRepository.findOne({
+      where: { verificationToken: hashedToken },
     });
+    if (!user) {
+      user = await this.userRepository.findOne({
+        where: { verificationToken: token },
+      });
+    }
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -408,27 +536,36 @@ export class UsersService {
         'Verification email already sent. Please check your inbox or wait until token expires.',
       );
     }
-    const resetToken = crypto.randomBytes(32).toString('hex');
 
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
-    user.verificationToken = hashedToken;
-    user.verificationTokenExpires = new Date(Date.now() + 120000);
+    return await this.sendVerificationEmailToUser(user);
+  }
 
-    const newUser = await this.userRepository.save(user);
-
-    try {
-      await this.emailService.sendVerificationEmail(
-        user.email,
-        resetToken,
-        user.username,
-      );
-    } catch (error) {
-      console.error('Failed to send verification email:', error.message);
+  async resendVerificationByAdmin(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    return newUser;
+    if (user.isVerified) {
+      throw new BadRequestException('User is already verified');
+    }
+
+    return await this.sendVerificationEmailToUser(user);
+  }
+
+  async resendVerificationByUser(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.isVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    return await this.sendVerificationEmailToUser(user);
   }
 
   async findUserByTokenPassword(token: string) {
@@ -442,9 +579,19 @@ export class UsersService {
   }
 
   async tokenExpired(token: string) {
-    const user = await this.userRepository.findOne({
-      where: { verificationToken: token },
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    let user = await this.userRepository.findOne({
+      where: { verificationToken: hashedToken },
     });
+    if (!user) {
+      user = await this.userRepository.findOne({
+        where: { verificationToken: token },
+      });
+    }
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -457,15 +604,25 @@ export class UsersService {
       user.verificationTokenExpires &&
       user.verificationTokenExpires > new Date()
     ) {
-      const remainingMs = user.verificationTokenExpires.getTime() - Date.now();
-      return remainingMs;
+      return user.verificationTokenExpires.getTime() - Date.now();
     }
+    return 0;
   }
 
   async findUserByToken(token: string) {
-    const user = await this.userRepository.findOne({
-      where: { verificationToken: token },
+    if (!token) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    let user = await this.userRepository.findOne({
+      where: { verificationToken: hashedToken },
     });
+    if (!user) {
+      user = await this.userRepository.findOne({
+        where: { verificationToken: token },
+      });
+    }
     if (!user) {
       throw new NotFoundException('User not found');
     }

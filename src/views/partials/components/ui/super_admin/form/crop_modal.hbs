@@ -42,7 +42,7 @@
   <div class='flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl'>
     <div class='border-b border-[#d9d9d9] p-6'>
       <h3 class='font-inter text-lg font-semibold leading-7 text-[#003060]'>Crop Image</h3>
-      <p class='mt-1 font-montserrat text-xs leading-4 text-[#718096]'>
+      <p class='mt-1 font-inter text-xs leading-4 text-[#718096]'>
         Geser dan ubah ukuran area untuk menentukan bagian gambar yang dipakai.
       </p>
     </div>
@@ -60,7 +60,7 @@
       <button
         type='button'
         @click='cancel()'
-        class='inline-flex h-[38px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-5 font-montserrat text-xs font-semibold leading-4 text-[#718096] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+        class='inline-flex h-[38px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-5 font-inter text-xs font-semibold leading-4 text-[#718096] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
       >Cancel</button>
       {{!-- Dikunci sampai Cropper siap: getCroppedCanvas() sebelum itu bisa
            mengembalikan gambar yang belum termuat. --}}
@@ -68,7 +68,7 @@
         type='button'
         @click='apply()'
         :disabled='!ready'
-        class='inline-flex h-[38px] items-center justify-center rounded-lg bg-[#003060] px-5 font-montserrat text-xs font-semibold leading-4 text-white transition-colors hover:bg-[#00224a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 disabled:cursor-not-allowed disabled:opacity-50'
+        class='inline-flex h-[38px] items-center justify-center rounded-lg bg-[#003060] px-5 font-inter text-xs font-semibold leading-4 text-white transition-colors hover:bg-[#00224a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 disabled:cursor-not-allowed disabled:opacity-50'
       >Apply Crop</button>
     </div>
   </div>

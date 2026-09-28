@@ -1,11 +1,8 @@
 {{!--
-  Page: Admin — Create Logbook (Container - Logbook Form, slicing.pen VSDGM)
+  Page: Admin — Create Logbook
   Path: admin/logbooks/create.hbs
   Route: GET /logbooks/create/:sessionId -> POST /logbooks/:sessionId (create)
   Data: { user, sessionId, users[] }
-  Design: Container w1052 gap28 → Title 34/brand (Add Logbook / Add a new logbook entry for the session)
-          → Form Logbook card white r12 stroke #D9D9D9 p20 gap20 (User* + Obstacle*, Activity* + Documentation Link*,
-            Activity Details* textarea 128, Photo Documentation* h200) → Footer card h86 justify end (Cancel 90 + Save Logbook 200)
   Komponen (reuse): text/page-header, form/form-card, form/form-field, form/text-input, form/textarea-input,
           form/searchable_select, button/primary-button, button/secondary-button
           Baru (prefix logbook-): logbook/logbook-photo-upload
@@ -23,6 +20,7 @@
       x-data="{
         ...adminFormGate(),
         loading: false,
+        showFull: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -47,7 +45,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -89,9 +87,9 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Logbook' type='submit' loading='loading' disabled='!canSubmit()' width='200'}}
+          {{> components/ui/admin/button/primary-button text='Save Logbook' type='submit' loading='loading' width='200'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

@@ -229,7 +229,7 @@
         // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
         // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
         canSubmit() {
-          const courseOk = errorFor('courseId', null, this.formData.courseId) === '';
+          const courseOk = !withCourse || errorFor('courseId', null, this.formData.courseId) === '';
           const langOk = FIELDS.every((field) =>
             LANGS.every((lang) => errorFor(field, lang, this.formData[field][lang]) === ''),
           );

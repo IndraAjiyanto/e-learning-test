@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -40,9 +41,14 @@ export class BackgroundController {
         'The educational background has been added successfully.',
       );
       res.redirect('/background');
-    } catch (error: any) {
-      req.flash('error', 'background failed to create');
-      res.redirect('/background');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'background failed to create',
+      );
+      res.redirect('/background/formCreate');
     }
   }
 
@@ -80,9 +86,14 @@ export class BackgroundController {
         'The educational background has been updated successfully.',
       );
       res.redirect('/background');
-    } catch (error: any) {
-      req.flash('error', 'background failed to update');
-      res.redirect('/background');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'background failed to update',
+      );
+      res.redirect(`/background/formEdit/${id}`);
     }
   }
 

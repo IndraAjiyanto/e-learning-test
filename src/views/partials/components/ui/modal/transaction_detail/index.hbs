@@ -1,0 +1,370 @@
+{{!--
+  Komponen: Transaction Detail / Payment Proof Modal
+  Lokasi: src/views/partials/components/ui/modal/transaction_detail/index.hbs
+  Level: L2 Molekul (reusable modal)
+
+  Tampilan modal View Detail sesuai 100% token CSS all layer & Stitch LMS Kesatria UI Viewer:
+  - Header: 76px #003060, judul "Payment Proof", icon file 18px & close button 36x36px
+  - Invoice Viewer: Background #F6F8FB, padding 24px 32px
+  - Subheader: "Invoice Image" & Tombol "Download" (116x31px)
+  - Invoice Image Card: Background #FFFFFF, border 1px solid #D8E6F6, radius 16px, padding 20px 24px
+  - Status Badge ("Accepted" #16A34A bg #EDFAF3) & Invoice Number (Inter 700 15px #173B68)
+  - Info Grid: 2 kolom (Name, Email, Phone, Xendit Link | Program Name, Program Category, Keyword)
+  - Summary: Harga (Inter 13px #173B68), Discount (Inter 13px #EF4444), Total (Inter 700 15px #173B68)
+--}}
+
+<script>
+  window.openTransactionDetailModal = function(row) {
+    window.dispatchEvent(
+      new CustomEvent('transaction-detail:open', { detail: row })
+    );
+  };
+
+  function transactionDetailModal() {
+    return {
+      open: false,
+      row: null,
+
+      show(row) {
+        if (!row) return;
+        this.row = row;
+        this.open = true;
+        document.body.classList.add('overflow-hidden');
+      },
+
+      close() {
+        if (!this.open) return;
+        this.open = false;
+        this.row = null;
+        document.body.classList.remove('overflow-hidden');
+      },
+
+      get userName() {
+        return this.row?.userName || '—';
+      },
+
+      get userEmail() {
+        return this.row?.userEmail || '—';
+      },
+
+      get userPhone() {
+        return this.row?.userPhone || '—';
+      },
+
+      get xenditUrl() {
+        return this.row?.paymentLink || '';
+      },
+
+      get programName() {
+        return this.row?.courseName || '—';
+      },
+
+      get programCategory() {
+        return this.row?.categoryName || 'General';
+      },
+
+      get rowKeyword() {
+        if (this.row?.keyword) return this.row.keyword;
+        if (this.row?.kind === 'installment') return 'Installment Plan';
+        return '—';
+      },
+
+      get statusBadgeText() {
+        if (this.row?.status === 'paid') return 'Accepted';
+        return this.row?.statusLabel || 'Accepted';
+      },
+
+      get statusBadgeBg() {
+        if (this.row?.status === 'failed') return 'bg-[#FFDADA]';
+        if (this.row?.status === 'processing') return 'bg-[#FFF0C7]';
+        return 'bg-[#EDFAF3]';
+      },
+
+      get statusTextColor() {
+        if (this.row?.status === 'failed') return 'text-[#D9333F]';
+        if (this.row?.status === 'processing') return 'text-[#E99A0C]';
+        return 'text-[#16A34A]';
+      },
+
+      get statusDotBg() {
+        if (this.row?.status === 'failed') return 'bg-[#D9333F]';
+        if (this.row?.status === 'processing') return 'bg-[#E99A0C]';
+        return 'bg-[#22C55E]';
+      },
+
+      get invoiceNumber() {
+        if (this.row?.no) return this.row.no;
+        if (!this.row) return '—';
+        const d = this.row.date ? new Date(this.row.date) : new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const suffix = (this.row.id || '001').replace(/-/g, '').slice(0, 3).toUpperCase();
+        return 'INV/' + year + '/' + month + '/' + suffix;
+      },
+
+      get subtotalFormatted() {
+        if (this.row?.subtotal !== undefined && this.row?.subtotal !== null) {
+          return 'Rp ' + Number(this.row.subtotal).toLocaleString('id-ID');
+        }
+        if (this.row?.amount !== undefined && this.row?.amount !== null) {
+          return 'Rp ' + Number(this.row.amount).toLocaleString('id-ID');
+        }
+        return 'Rp 0';
+      },
+
+      get discountFormatted() {
+        const disc = Number(this.row?.discount || 0);
+        if (disc > 0) {
+          return '- Rp ' + disc.toLocaleString('id-ID');
+        }
+        return 'Rp 0';
+      },
+
+      get totalFormatted() {
+        if (this.row?.amount !== undefined && this.row?.amount !== null) {
+          return 'Rp ' + Number(this.row.amount).toLocaleString('id-ID') + ',00';
+        }
+        return 'Rp 0,00';
+      },
+
+      downloadInvoice() {
+        if (this.row?.proof) {
+          const a = document.createElement('a');
+          a.href = this.row.proof;
+          a.download = (this.row.no ? this.row.no.replace(/\//g, '_') : 'invoice') + '.jpg';
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          window.print();
+        }
+      }
+    };
+  }
+</script>
+
+<!-- Modal Backdrop & Container: Tersembunyi secara default (display: none), hanya aktif saat open=true -->
+<div
+  x-data="transactionDetailModal()"
+  x-show="open"
+  x-cloak
+  style="display: none;"
+  @transaction-detail:open.window="show($event.detail)"
+  @keydown.escape.window="close()"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/45 backdrop-blur-[2px] transition-opacity"
+  x-transition:enter="ease-out duration-300"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="ease-in duration-200"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  @click.self="close()"
+>
+  <!-- View Proof Modal (Figma: width 1000px, height 728px, background #FFFFFF, border-radius 16px, box-shadow) -->
+  <div
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-header-payment-proof-title"
+    class="relative w-full max-w-[1000px] max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-[0px_8px_24px_rgba(0,24,74,0.0941176),0px_24px_64px_rgba(0,24,74,0.2)] overflow-hidden border border-[#D8E6F6]/40 transition-all transform"
+    x-transition:enter="ease-out duration-300"
+    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+    x-transition:leave="ease-in duration-200"
+    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+  >
+    <!-- Modal Header (Figma: width 1000px, height 76px, padding 20px 32px, background #003060) -->
+    <div class="box-border flex flex-row justify-between items-center w-full h-[76px] px-6 sm:px-8 py-5 bg-[#003060] shrink-0">
+      <!-- Frame: Icon & Payment Proof Title -->
+      <div class="flex flex-row items-center gap-3">
+        <!-- Frame icon: 36x36px, background rgba(255,255,255,0.101961), radius 8px -->
+        <div class="flex flex-col justify-center items-center w-9 h-9 bg-white/[0.101961] rounded-lg shrink-0">
+          <!-- file-text-icon: 18x18px -->
+          <svg class="w-[18px] h-[18px] text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <!-- Title: Payment Proof (Montserrat 700 18px line-height 24px #FFFFFF) -->
+        <h2 id="modal-header-payment-proof-title" class="font-montserrat font-bold text-lg leading-6 text-white tracking-wide">
+          Payment Proof
+        </h2>
+      </div>
+
+      <!-- Close button: 36x36px, background rgba(255, 255, 255, 0.101961), radius 8px -->
+      <button
+        type="button"
+        @click="close()"
+        aria-label="Close modal"
+        class="flex flex-col justify-center items-center w-9 h-9 bg-white/[0.101961] hover:bg-white/20 text-white rounded-lg transition-colors focus:outline-none shrink-0"
+      >
+        <!-- x: 16x16px -->
+        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Invoice Viewer (Figma: padding 24px 32px, gap 16px, background #F6F8FB, height 643px) -->
+    <div class="box-border flex flex-col items-start w-full p-5 sm:p-[24px_32px] gap-4 bg-[#F6F8FB] overflow-y-auto flex-1">
+      <!-- Frame: Subheader (width 936px, height 31px) -->
+      <div class="flex flex-row justify-between items-center w-full h-[31px] shrink-0">
+        <!-- Invoice Image: Montserrat 700 14px line-height 17px #003060 -->
+        <span class="font-montserrat font-bold text-sm leading-[17px] text-[#003060]">
+          Invoice Image
+        </span>
+
+        <!-- Frame Download Button: 116x31px, padding 8px 16px, gap 6px, bg #FFFFFF, border 1px solid #D9D9D9, radius 8px -->
+        <button
+          type="button"
+          @click="downloadInvoice()"
+          class="box-border flex flex-row items-center justify-center w-[116px] h-[31px] px-4 py-2 gap-1.5 bg-white border border-[#D9D9D9] hover:bg-slate-50 rounded-lg transition-colors shadow-xs"
+        >
+          <!-- download-icon: 14x14px -->
+          <svg class="w-3.5 h-3.5 text-[#003060] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <!-- Download text: Montserrat 600 12px line-height 15px #003060 -->
+          <span class="font-montserrat font-semibold text-xs leading-[15px] text-[#003060]">
+            Download
+          </span>
+        </button>
+      </div>
+
+      <!-- Invoice Image Card (Figma: width 936px, height 520px, bg #FFFFFF, border 1px solid #D8E6F6, shadow, radius 16px) -->
+      <div class="box-border flex flex-col items-start w-full bg-white border border-[#D8E6F6] rounded-2xl p-5 sm:p-[20px_24px] shadow-[0px_3px_12px_rgba(23,59,104,0.0627451)] shrink-0">
+        <!-- Invoice Header: Status Badge & Invoice Number (Figma: height 40px, padding-bottom 16px) -->
+        <div class="flex flex-row justify-between items-end w-full pb-4 shrink-0">
+          <!-- Status Badge: 94x24px, padding 4px 10px, gap 6px, radius 20px -->
+          <div
+            class="flex flex-row items-center px-2.5 py-1 gap-1.5 rounded-[20px] transition-colors"
+            :class="statusBadgeBg"
+          >
+            <!-- Dot: 8x8px -->
+            <span class="w-2 h-2 rounded-full shrink-0" :class="statusDotBg"></span>
+            <!-- Status Text: Inter 500 13px line-height 16px -->
+            <span class="font-inter font-medium text-[13px] leading-4" :class="statusTextColor" x-text="statusBadgeText"></span>
+          </div>
+
+          <!-- Invoice Number: Inter 700 15px line-height 18px #173B68 -->
+          <span class="font-inter font-bold text-[15px] leading-[18px] text-[#173B68]" x-text="invoiceNumber"></span>
+        </div>
+
+        <!-- Divider Top: height 1px, background #D8E6F6 -->
+        <div class="w-full h-px bg-[#D8E6F6] shrink-0"></div>
+
+        <!-- Info Grid: padding 20px 0px, 2 columns -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 w-full py-5 shrink-0">
+          <!-- Left Column (gap 16px) -->
+          <div class="flex flex-col gap-4">
+            <!-- Name Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Name</span>
+              <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="userName"></span>
+            </div>
+            <!-- Email Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Email</span>
+              <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="userEmail"></span>
+            </div>
+            <!-- Phone Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Phone</span>
+              <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="userPhone"></span>
+            </div>
+            <!-- Xendit Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Xendit Link</span>
+              <template x-if="xenditUrl">
+                <a
+                  :href="xenditUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-inter font-normal text-[13px] leading-4 text-[#3B82F6] hover:underline truncate max-w-full"
+                  x-text="xenditUrl"
+                ></a>
+              </template>
+              <template x-if="!xenditUrl">
+                <span class="font-inter font-normal text-[13px] leading-4 text-[#6B7280]">—</span>
+              </template>
+            </div>
+          </div>
+
+          <!-- Right Column (gap 16px) -->
+          <div class="flex flex-col gap-4">
+            <!-- Program Name Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Program Name</span>
+              <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="programName"></span>
+            </div>
+            <!-- Program Category Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Program Category</span>
+              <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="programCategory"></span>
+            </div>
+            <!-- Keyword Field -->
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Keyword</span>
+              <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="rowKeyword"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider Bottom: height 1px, background #D8E6F6 -->
+        <div class="w-full h-px bg-[#D8E6F6] shrink-0"></div>
+
+        <!-- Summary (Figma: padding 12px 0 0, height 112px) -->
+        <div class="flex flex-col w-full pt-3 shrink-0">
+          <!-- Harga Row: padding 8px 0px, height 32px -->
+          <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
+            <span class="font-inter font-normal text-[#6B7280]">Harga</span>
+            <span class="font-inter font-normal text-[#173B68]" x-text="subtotalFormatted"></span>
+          </div>
+          <!-- Divider Row 1 -->
+          <div class="w-full h-px bg-[#D8E6F6]"></div>
+
+          <!-- Discount Row: padding 8px 0px, height 32px -->
+          <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
+            <span class="font-inter font-normal text-[#6B7280]">Discount</span>
+            <span class="font-inter font-semibold text-[#EF4444]" x-text="discountFormatted"></span>
+          </div>
+          <!-- Divider Row 2 -->
+          <div class="w-full h-px bg-[#D8E6F6]"></div>
+
+          <!-- Total Row: padding 8px 0px, height 34px -->
+          <div class="flex flex-row justify-between items-center w-full py-2">
+            <span class="font-inter font-normal text-[13px] leading-4 text-[#6B7280]">Total</span>
+            <span class="font-inter font-bold text-[15px] leading-[18px] text-[#173B68]" x-text="totalFormatted"></span>
+          </div>
+        </div>
+
+        <!-- Lampiran Bukti Transfer (Opsional jika ada file upload) -->
+        <template x-if="row?.proof">
+          <div class="w-full mt-4 pt-4 border-t border-[#D8E6F6] flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <span class="font-inter font-semibold text-xs text-[#173B68]">Bukti Transfer Terlampir</span>
+              <a
+                :href="row.proof"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-inter text-xs text-[#3B82F6] hover:underline inline-flex items-center gap-1"
+              >
+                <span>Lihat file asli &rarr;</span>
+              </a>
+            </div>
+            <div class="rounded-xl border border-[#D8E6F6] overflow-hidden bg-[#F8FAFC] p-2 flex items-center justify-center">
+              <img :src="row.proof" alt="Payment proof attachment" class="max-h-52 object-contain rounded-lg" />
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</div>

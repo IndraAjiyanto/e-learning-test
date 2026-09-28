@@ -1,0 +1,83 @@
+{{!--
+  Komponen: Hero Quick Stats Card (Level 2 - Composite Card)
+  Lokasi: src/views/partials/components/ui/card/quick_stats/index.hbs
+
+  Card floating horizontal berukuran 700x106px dengan 4 item metrik dan divider vertikal,
+  sesuai dengan spesifikasi Figma Layer (Frame 2147229478 -> Hero Quick Stats):
+  - Width: 700px, Height: 106px (desktop)
+  - Background: #FFFFFF, Border: 1px solid #E2E8F0
+  - Box-shadow: 0px 8px 24px -8px rgba(0, 0, 0, 0.05)
+  - Border-radius: 16px
+  - Padding: 20px 24px, Gap: 16px
+
+  Props:
+  - startDateDayMonth : "16 Sep"
+  - startDateYear     : "2026"
+  - endDateDayMonth   : "16 Des"
+  - endDateYear       : "2026"
+  - methodLine1       : "Online &"
+  - methodLine2       : "Offline"
+  - quotaLine1        : "Maximum 8"
+  - quotaLine2        : "Students"
+  - class             : kelas tambahan
+--}}
+<div class="box-border w-full max-w-[700px] rounded-[16px] border border-[#E2E8F0] bg-white p-4 sm:p-5 lg:px-6 lg:py-5 shadow-[0px_8px_24px_-8px_rgba(0,0,0,0.05)] {{class}}">
+  <div class="grid grid-cols-2 gap-4 sm:flex sm:flex-row sm:items-center sm:justify-between sm:gap-2 md:gap-3 lg:gap-4">
+    
+    {{!-- Stat Item 1: Tanggal Mulai (width: 129px) --}}
+    {{> components/ui/card/quick_stats/item
+        icon="calendar"
+        label="TANGGAL MULAI"
+        valueLine1=(default startDateDayMonth "16 Sep")
+        valueLine2=(default startDateYear "2026")
+        class="sm:w-[129px] shrink-0"
+    }}
+
+    {{!-- Separator 0 (width: 1px, height: 44px) --}}
+    <div class="hidden h-11 w-px bg-[#E2E8F0] sm:block shrink-0"></div>
+
+    {{!-- Stat Item 2: Tanggal Selesai (width: 129px) --}}
+    {{> components/ui/card/quick_stats/item
+        icon="calendar"
+        label="TANGGAL SELESAI"
+        valueLine1=(default endDateDayMonth "16 Des")
+        valueLine2=(default endDateYear "2026")
+        class="sm:w-[129px] shrink-0"
+    }}
+
+    {{!-- Separator 1 (width: 1px, height: 44px) --}}
+    <div class="hidden h-11 w-px bg-[#E2E8F0] sm:block shrink-0"></div>
+
+    {{!-- Stat Item 3: Learning System (width: 129px) --}}
+    {{#if methodLine1}}
+      {{> components/ui/card/quick_stats/item
+          icon="monitor"
+          label="LEARNING SYSTEM"
+          valueLine1=methodLine1
+          valueLine2=methodLine2
+          class="sm:w-[129px] shrink-0"
+      }}
+    {{else}}
+      {{> components/ui/card/quick_stats/item
+          icon="monitor"
+          label="LEARNING SYSTEM"
+          valueLine1="Online &"
+          valueLine2="Offline"
+          class="sm:w-[129px] shrink-0"
+      }}
+    {{/if}}
+
+    {{!-- Separator 2 (width: 1px, height: 44px) --}}
+    <div class="hidden h-11 w-px bg-[#E2E8F0] sm:block shrink-0"></div>
+
+    {{!-- Stat Item 4: Class Capacity (width: 165px) --}}
+    {{> components/ui/card/quick_stats/item
+        icon="users"
+        label="CLASS CAPACITY"
+        valueLine1=(default quotaLine1 "Maximum 8")
+        valueLine2=(default quotaLine2 "Students")
+        class="sm:w-[155px] lg:w-[165px] shrink-0"
+    }}
+
+  </div>
+</div>

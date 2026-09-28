@@ -1,13 +1,8 @@
 {{!--
-  Page: Admin — Session Detail (Container - Session Detail, slicing.pen BpSjl)
+  Page: Admin — Session Detail
   Path: admin/session/detail.hbs
   Route: GET /session/:sessionId -> admin/session/detail
   Data: { user, session } (Session + weeks + weeks.course)
-  Design: Container w1052 vertical gap16 → Feature Card 1 (hero: Back, Session NN,
-          Mentoring Batch badge, Delete w87 + Edit Session w132, info grid
-          Location/Topic/Date/Time) → Table Detail Session card (underline tabs
-          Attendance/Materi/Assignment/Logbook User/Logbook Mentor, toolbar
-          search + Add Attendance w162, table Name/LinkedIn/Status/Action).
   Komponen (reuse): form/underline-tabs, button/primary-button,
           program/user-avatar. Baru (prefix session-): session/session-hero,
           session/session-info-item, session/session-status-badge,
@@ -15,7 +10,6 @@
   BE: GET /session/attendance/:sessionId → User[] + absent[] (Attendance:
       permission|present|sick|absent|no_information); edit GET
       /attendance/formEdit/:id; delete POST /attendance/:id/:sessionId.
-      Entity User TIDAK punya linkedin — kolom LinkedIn tampil "-" (future-proof).
   Tab lain (materi/assignment/logbook) memakai partials/session/* lama — tidak diubah.
 --}}
 <div class='py-10 px-6'>
@@ -31,30 +25,40 @@
       {{> components/ui/admin/form/underline-tabs activeTabVar='tab' fetchFn='toggleFetch'}}
 
       {{!-- Attendance --}}
-      <div x-show="tab === 'attendance'" x-data='absenData()' x-init='fetchAbsens()' class='flex flex-col gap-[12px] w-full'>
+      <div x-show="tab === 'attendance'" x-cloak x-data='absenData()' x-init='fetchAbsens()' class='flex flex-col gap-[12px] w-full'>
         {{> components/ui/admin/session/session-attendance-table}}
       </div>
 
       {{!-- Materi / Assignment / Logbook (partials lama, perilaku tidak berubah) --}}
-      <div x-show="tab === 'materi'" x-data='materiData()' x-init='init()'>
+      <div x-show="tab === 'materi'" x-cloak x-data='materiData()' x-init='init()'>
         {{> session/materi_tab}}
       </div>
 
-      <div x-show="tab === 'assignment'" x-data='tugasData()' x-init='fetchTugas()'>
+      <div x-show="tab === 'assignment'" x-cloak x-data='tugasData()' x-init='fetchTugas()'>
         {{> session/tugas_tab}}
       </div>
 
-      <div x-show="tab === 'logbook'" x-data='logbookData()' x-init='fetchLogBook()'>
+      <div x-show="tab === 'logbook'" x-cloak x-data='logbookData()' x-init='fetchLogBook()'>
         {{> session/logbook_tab}}
       </div>
 
-      <div x-show="tab === 'logbook_mentor'" x-data='logBookMentorData()' x-init='fetchLogBookMentor()'>
+      <div x-show="tab === 'logbook_mentor'" x-cloak x-data='logBookMentorData()' x-init='fetchLogBookMentor()'>
         {{> session/logbook_mentor_tab}}
       </div>
+
+      {{#if session.isFinal}}
+      <div x-show="tab === 'quiz'" x-cloak x-data='quizData()' x-init='fetchQuizzes()'>
+        {{> weeks/quiz_tab weeks=session.weeks}}
+      </div>
+      {{/if}}
 
     </div>
   </div>
 </div>
+
+{{!-- Toast sukses untuk proses attendance (create, update, delete) yang
+     redirect balik ke sini. Dipicu via flashToast() di attendances.controller. --}}
+{{> components/ui/admin/toast/success/index toast=toast }}
 
 <script
   src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
@@ -74,6 +78,9 @@ function tabData() {
       { name: 'assignment', label: 'Assignment', url: '/session/task/{{session.id}}' },
       { name: 'logbook', label: 'Logbook User', url: '/session/logbooks/{{session.id}}' },
       { name: 'logbook_mentor', label: 'Logbook Mentor', url: '/session/logbooks-mentor/{{session.id}}' },
+      {{#if session.isFinal}}
+      { name: 'quiz', label: 'Quiz', url: '/week/quiz/{{session.weeks.id}}' },
+      {{/if}}
     ],
 
     async init() {
@@ -154,3 +161,6 @@ function absenData() {
   }
 }
 </script>
+
+{{> components/ui/admin/modal/delete_confirm/index}}
+{{> components/ui/admin/modal/confirm_action/index}}

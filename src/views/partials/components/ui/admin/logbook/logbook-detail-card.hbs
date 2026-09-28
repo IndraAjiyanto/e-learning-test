@@ -5,7 +5,6 @@
   Props: {{icon}} (lucide name, default 'zap'), {{title}} (static label),
          {{contentVar}} (Alpine expression ke teks, mis. 'selectedLogbook?.activity'),
          {{isLink}} (optional bool — true render <a> biru #2563EB untuk Documentation Link)
-  Pencil (Container - User Property → _Badge base Sky):
   w fill (560 kiri / 348 kanan via parent), fill #F0F9FF r10 stroke #BAE6FD,
   p20 14 gap10 vertical; header row h24 gap4 icon 24 #171717 + title
   Montserrat 16/600 #171717; desc Montserrat 14/500 #737373 (link: #2563EB).
@@ -31,18 +30,18 @@
     {{else}}
       <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>
     {{/if}}
-    <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-montserrat font-semibold text-left'>{{title}}</div>
+    <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-inter font-semibold text-left'>{{title}}</div>
   </div>
   {{#if isLink}}
     <template x-if='{{contentVar}}'>
       <a :href='{{contentVar}}' target='_blank' rel='noopener noreferrer'
-        class='text-[14px]/[1.21] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#2563EB] font-montserrat font-medium text-left hover:underline break-all'
+        class='text-[14px]/[1.21] w-full overflow-hidden text-ellipsis whitespace-nowrap text-[#2563EB] font-inter font-medium text-left hover:underline break-all'
         x-text='{{contentVar}}' :title='{{contentVar}}'></a>
     </template>
     <template x-if='!({{contentVar}})'>
-      <div class='text-[14px]/[1.21] w-full text-[#737373] font-montserrat font-medium text-left'>-</div>
+      <div class='text-[14px]/[1.21] w-full text-[#737373] font-inter font-medium text-left'>-</div>
     </template>
   {{else}}
-    <div class='text-[14px]/[1.21] w-full text-[#737373] font-montserrat font-medium text-left break-words' x-text='{{contentVar}} || "-"'></div>
+    <div class='text-[14px]/[1.21] w-full text-[#737373] font-inter font-medium text-left break-words' x-text='{{contentVar}} || "-"'></div>
   {{/if}}
 </div>

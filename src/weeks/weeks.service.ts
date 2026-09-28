@@ -167,9 +167,13 @@ export class WeeksService {
   }
 
   async findLastSession(weeksId: string) {
-    return await this.sessionRepository.findOne({
-      where: { weeks: { id: weeksId }, isFinal: true },
-    });
+    // Query builder eksplisit dengan kolom FK langsung — menghindari ambiguitas
+    // filter relasi bersarang ({ weeks: { id } }) yang dipakai gate tab Quiz.
+    return await this.sessionRepository
+      .createQueryBuilder('session')
+      .where('session.weeksId = :weeksId', { weeksId })
+      .andWhere('session.isFinal = :isFinal', { isFinal: true })
+      .getOne();
   }
 
   async update(id: string, updateWeekDto: UpdateWeeksDto) {

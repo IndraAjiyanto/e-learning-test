@@ -20,6 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('task')
@@ -54,7 +55,11 @@ export class AssignmentsController {
       createAssignmentDto.sessionId = sessionId;
       createAssignmentDto.file = req.body.uploadedFileUrls[0];
       await this.assignmentsService.create(createAssignmentDto);
-      req.flash('success', 'Assignment successfully created');
+      flashToast(
+        req,
+        'Assignment Created',
+        'The new assignment has been added to this session.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create assignment';
@@ -85,7 +90,11 @@ export class AssignmentsController {
       const assignments = await this.assignmentsService.findOne(assignmentId);
       await this.assignmentsService.deleteFile(assignments.file);
       await this.assignmentsService.remove(assignmentId);
-      req.flash('success', 'successfuly delete assignment');
+      flashToast(
+        req,
+        'Assignment Deleted',
+        'The assignment has been permanently removed.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'unsuccess delete assignment');

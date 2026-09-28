@@ -4,12 +4,13 @@
   Level: L0 Skrip pendamping (scoped super_admin)
 
   Factory Alpine `backgroundForm()` untuk super_admin/background/{create,edit}.hbs.
-  Menyediakan: formData, formErrors, validateField(), touch(), canSubmit(), submitForm(), loading.
+  Menyediakan: contentLang & detailsLang (tab bahasa), formData, formErrors, validateField(), touch(), canSubmit(), submitForm(), loading.
 --}}
 <script>
   (() => {
     const LANGS = ['id', 'en', 'ja'];
     const FIELDS = ['content', 'details'];
+    const MAX_LENGTH = 255;
     const LANG_LABEL = { id: 'ID', en: 'EN', ja: 'JP' };
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
@@ -24,6 +25,7 @@
       const label = field === 'content' ? 'Content' : 'Text';
 
       if (!val) return `${label} (${LANG_LABEL[lang]}) is required.`;
+      if (val.length > MAX_LENGTH) return `${label} (${LANG_LABEL[lang]}) must be at most ${MAX_LENGTH} characters.`;
       return '';
     };
 
@@ -32,6 +34,8 @@
 
       return {
         loading: false,
+        contentLang: 'id',
+        detailsLang: 'id',
 
         formData: { content: initial(content), details: initial(details) },
         formErrors: { content: byLang(() => ''), details: byLang(() => '') },
@@ -65,10 +69,10 @@
         },
 
         canSubmit() {
-          const allFilled = FIELDS.every((field) =>
-            LANGS.every((lang) => ((this.formData[field] && this.formData[field][lang]) ?? '').toString().trim() !== '')
+          const allValid = FIELDS.every((field) =>
+            LANGS.every((lang) => errorFor(field, lang, this.formData[field] && this.formData[field][lang]) === '')
           );
-          return allFilled && !this.hasFormErrors();
+          return allValid && !this.hasFormErrors();
         },
 
         revealFirstInvalid() {
@@ -76,6 +80,7 @@
             for (const lang of LANGS) {
               if (!this.formErrors[field][lang]) continue;
 
+              this[`${field}Lang`] = lang;
               this.$nextTick(() => {
                 const el = document.getElementById(`${field}-${lang}`);
                 if (el) el.focus();

@@ -17,7 +17,11 @@ import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
 import { hbsHelpers } from './common/helpers';
-import { readFlashToast } from './common/utils/toast.util';
+import {
+  readFlashToast,
+  readFlashToastError,
+  readFlashToastWarning,
+} from './common/utils/toast.util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -119,9 +123,12 @@ async function bootstrap() {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
+    res.locals.warning = req.flash('warning');
     // Key terpisah dari 'success': partial `sweetalert` merender 'success'
     // sebagai toast sendiri, jadi ini mencegah dua notifikasi untuk satu aksi.
     res.locals.toast = readFlashToast(req);
+    res.locals.toastError = readFlashToastError(req);
+    res.locals.toastWarning = readFlashToastWarning(req);
     next();
   });
 
@@ -160,7 +167,7 @@ async function bootstrap() {
     // Auth screens (login/register/forgot/reset/verify) render over a photo bg -
     // navbar must be transparent there. Checked server-side so no Alpine flash.
     res.locals.isAuthPage =
-      /^\/(login|register|session-expired|verify-email)(\/|$)/.test(req.path) ||
+      /^\/(login|register|session-expired)(\/|$)/.test(req.path) ||
       /^\/users\/(forgot-password|reset-password|send-verify-email|verify-email)(\/|$)/.test(
         req.path,
       );

@@ -1,15 +1,10 @@
 {{!--
   Component: Answer Review Card (Admin) — molecule, prefix assignment-
   Path: components/ui/admin/assignment/answer-review-card.hbs
-  Source: slicing.pen (Container - Logbook Detail 1022, iLK5a -> Button Wrapper klUCl)
   Dipakai: {{> components/ui/admin/assignment/answer-review-card assignmentId=assignment.id}}
            di dalam {{#each assignment_answer}} pada admin/answers-assignments/index.hbs.
   Konteks each: AnswerTask { id, file, process, createdAt, user, comment[] }.
   Props: {{assignmentId}} (required, untuk form approve/reject).
-  Design: card r8 stroke #D9D9D9; header h64 #FAFAFA bottom-border (avatar 40 + nama Inter 14/600
-          #404040 + email 12/400 #525252 + badge pill r16 dot 8 + chevron 20 #525252);
-          body p14 gap20 (Form link #2563EB, Submitted Date, Leave a Comment textarea,
-          Approve #003060 text white + Reject #FEF2F2 text #B91C1C stroke #FCA5A5, Comment History).
   BE: PATCH /answer-assigment/:assignmentId/:answerId { process, comment }
 --}}
 <div data-status='{{this.process}}' x-data='cardData()' class='box-border w-full bg-white rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] overflow-hidden'>
@@ -58,7 +53,7 @@
     <div class='flex flex-col gap-[4px] w-full'>
       <div class='text-[14px]/[normal] w-full text-[#171717] font-inter font-medium'>Form link</div>
       <a href='{{this.file}}' target='_blank' rel='noopener noreferrer'
-        class='text-[14px]/[1.21] w-full text-[#2563EB] font-montserrat font-medium break-all hover:underline'>{{this.file}}</a>
+        class='text-[14px]/[1.21] w-full text-[#2563EB] font-inter font-medium break-all hover:underline'>{{this.file}}</a>
     </div>
 
     {{!-- Preview Frame Mini (jika preview di card ingin ditampilkan) --}}
@@ -80,7 +75,7 @@
     {{!-- Container Submited Date (fZ9sL) --}}
     <div class='flex flex-col gap-[4px] w-full'>
       <div class='text-[14px]/[normal] w-full text-[#171717] font-inter font-medium'>Submited Date</div>
-      <div class='text-[14px]/[1.62] w-full text-[#737373] font-montserrat font-medium'>{{formatDate this.createdAt}}</div>
+      <div class='text-[14px]/[1.62] w-full text-[#737373] font-inter font-medium'>{{formatDate this.createdAt}}</div>
     </div>
 
     {{!-- Container Leave a Comment (Cz9fL) + Approve/Reject (KOxfP) --}}
@@ -89,7 +84,7 @@
       <div class='text-[14px]/[normal] w-full text-[#404040] font-inter font-medium'>Leave a Comment</div>
       {{> components/ui/admin/form/textarea-input id=(concat 'comment-' this.id) name="comment" rows="3" placeholder="Leave a feedback for this answer..."}}
       
-      {{!-- Action Buttons (Frame 2147229614: Approve #003060, Reject #FEF2F2 text #B91C1C) --}}
+      {{!-- Action Buttons --}}
       <div class='flex flex-row gap-[12px] w-full items-center h-[44px] pt-1'>
         <button type='button' onclick="confirmAction(this, 'Are you sure approve this answer?', 'Confirmation', 'approved')"
           class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#002040] transition-colors cursor-pointer'>
@@ -102,7 +97,7 @@
       </div>
     </form>
 
-    {{!-- Container Comment History (Q0VTy8: gap 8, Frame 2147229622 cards) --}}
+    {{!-- Container Comment History --}}
     {{#if this.comment}}
     <div class='flex flex-col gap-[8px] w-full pt-1'>
       <div class='text-[14px]/[normal] w-full text-[#404040] font-inter font-medium'>Comment History</div>

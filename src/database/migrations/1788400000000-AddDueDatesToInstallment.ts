@@ -11,12 +11,27 @@ export class AddDueDatesToInstallment1788400000000 implements MigrationInterface
   name = 'AddDueDatesToInstallment1788400000000';
 
   public async up(q: QueryRunner): Promise<void> {
+    // Idempoten: kolom bisa terlanjur ada dari synchronize di masa lalu.
+    const [existing] = await q.query(
+      `SELECT 1 FROM information_schema.columns
+       WHERE table_name = 'installment' AND column_name = 'dueDates'`,
+    );
+    if (existing) {
+      return;
+    }
     await q.query(
       `ALTER TABLE "installment" ADD "dueDates" date[] NOT NULL DEFAULT '{}'`,
     );
   }
 
   public async down(q: QueryRunner): Promise<void> {
+    const [existing] = await q.query(
+      `SELECT 1 FROM information_schema.columns
+       WHERE table_name = 'installment' AND column_name = 'dueDates'`,
+    );
+    if (!existing) {
+      return;
+    }
     await q.query(`ALTER TABLE "installment" DROP COLUMN "dueDates"`);
   }
 }

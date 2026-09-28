@@ -76,10 +76,9 @@
   {{#> components/ui/admin/form/form-field label=label for=forId errorId=errorId}}
     <div class='relative'>
       <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
-        :class="locked ? 'bg-[#F5F5F5]' : ''">
+        {{#if validateKey}}:class="(locked ? 'bg-[#F5F5F5] ' : '') + borderClass('{{validateKey}}')"{{else}}:class="locked ? 'bg-[#F5F5F5]' : ''"{{/if}}>
         <input type='text' x-model='search' @focus='if (!locked) showDropdown = true' @input='if (!locked) showDropdown = true'
           :disabled='locked' placeholder='{{default placeholder 'Search...'}}'
-          {{#if validateKey}}:class="borderClass('{{validateKey}}')"{{/if}}
           class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='m6 9 6 6 6-6'/></svg>
       </div>

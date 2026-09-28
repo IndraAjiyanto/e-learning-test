@@ -3,7 +3,6 @@
   Path: components/ui/admin/detail/learning/index.hbs
   Props: {{course}} (mentorings, learningTargetsId, technologies)
 
-  Pencil: Card Learning Details (J3SEIu): header book-open 36x36 #003060, Account Mentor, Target, Tools badges #F5F5F5/Inter 12 #404040
 --}}
 <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[24px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
 
@@ -11,20 +10,20 @@
     <div class='box-border w-[36px] h-[36px] shrink-0 flex flex-row gap-0 justify-center items-center bg-[#003060] rounded-full'>
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20'/></svg>
     </div>
-    <span class='text-[16px]/[normal] text-[#003060] font-montserrat font-semibold'>Learning Details</span>
+    <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold'>Learning Details</span>
   </div>
 
   <div class='w-full flex flex-col gap-[20px]'>
     <div class='w-full flex flex-col gap-[8px]'>
-      <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Account Mentor</span>
-      <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.mentorings}}{{#each course.mentorings}}{{this.user.username}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}Mentor{{/if}}</span>
+      <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Account Mentor</span>
+      <span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.mentorings}}{{#each course.mentorings}}{{this.user.username}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}Mentor{{/if}}</span>
     </div>
     <div class='w-full flex flex-col gap-[8px]'>
-      <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Target</span>
-      <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium break-words'>{{#if course.learningTargetsId}}{{#each course.learningTargetsId}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}Memahami dasar dasar uiux design{{/if}}</span>
+      <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Target</span>
+      <span class='text-[14px]/[normal] text-[#737373] font-inter font-medium break-words'>{{#if course.learningTargetsId}}{{#each course.learningTargetsId}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}Memahami dasar dasar uiux design{{/if}}</span>
     </div>
     <div class='w-full flex flex-col gap-[8px]'>
-      <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Tools</span>
+      <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Tools</span>
       <div class='flex flex-row gap-[4px] justify-start items-center flex-wrap'>
         {{#if course.technologies}}
           {{#each course.technologies}}

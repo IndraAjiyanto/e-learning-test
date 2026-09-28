@@ -73,6 +73,7 @@ export class CategoriesService {
     // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
     // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
     return await this.categoryRepository.find({
+      relations: ['courses'],
       order: { createdAt: 'ASC' },
     });
   }
@@ -251,9 +252,18 @@ export class CategoriesService {
   }
 
   async remove(categoryId: string) {
-    const category = await this.findOne(categoryId);
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+      relations: ['courses'],
+    });
     if (!category) {
       throw new NotFoundException('Category not found');
+    }
+    const programCount = category.courses?.length || 0;
+    if (programCount > 0) {
+      throw new BadRequestException(
+        `Kategori "${category.name}" tidak dapat dihapus karena masih memiliki ${programCount} program. Hapus atau pindahkan program tersebut terlebih dahulu.`,
+      );
     }
     await this.categoryRepository.remove(category);
     return { message: 'category successfully deleted' };

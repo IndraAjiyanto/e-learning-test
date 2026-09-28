@@ -1,0 +1,94 @@
+<div class='flex flex-col gap-[12px] w-full'>
+
+  {{!-- State 1: Ketika sudah ada final assignment di database (Figma node 1932-5178) --}}
+  <template x-if='finalAssignment'>
+    <div class='flex flex-col gap-[10px] w-full'>
+      <div class='box-border w-full shrink-0 min-h-[68px] h-fit sm:h-[68px] flex flex-col sm:flex-row items-start sm:items-center p-[8px_14px] gap-[12px] sm:gap-[6px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FAFAFA] transition-colors'>
+
+        <div class='flex flex-col gap-[4px] flex-1 min-w-0 justify-center items-start'>
+          <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#003060] truncate'
+               x-text="finalAssignment.title"
+               :title="finalAssignment.title"></div>
+
+          <div class='w-full font-inter font-normal text-[12px] leading-[18px] text-[#718096] truncate'
+               x-text="finalAssignment.description"
+               :title="finalAssignment.description"></div>
+        </div>
+
+        <div class='flex flex-row items-center gap-[6px] shrink-0 self-end sm:self-center'>
+          <a :href="'/program/edit-final-assignment/{{course.id}}'"
+            class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#F5F5F5] transition-colors'
+            title='Edit Final Assignment' aria-label='Edit Final Assignment'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+              <path d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z'></path>
+            </svg>
+          </a>
+
+          <form action="/final-assignment/delete/{{course.id}}" method='POST' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+            <button type='button'
+              onclick="openDeleteModal(this, 'Delete Final Assignment', 'Are you sure you want to delete this final assignment? All submissions and records will be removed permanently.')"
+              class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+              title='Delete Final Assignment' aria-label='Delete Final Assignment'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                <path d='M3 6h18'/>
+                <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
+                <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
+                <line x1='10' y1='11' x2='10' y2='17'/>
+                <line x1='14' y1='11' x2='14' y2='17'/>
+              </svg>
+            </button>
+          </form>
+
+          <a :href="'/program/detail-final-assignment/{{course.id}}'"
+            class='box-border w-[81px] shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'
+            title='Final Assignment Detail' aria-label='Final Assignment Detail'>
+            <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060] flex items-center justify-center whitespace-nowrap'>Detail</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </template>
+
+  {{!-- State 2: Ketika belum ada final assignment di database (Figma node 1932-5180) --}}
+  <template x-if='!loading && !finalAssignment'>
+    <div class='box-border w-full flex flex-col items-start'>
+      <a
+        href='/program/create-final-assignment/{{course.id}}'
+        class='box-border w-full shrink-0 h-[44px] flex flex-row justify-center items-center px-[18px] py-[10px] gap-[8px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'>
+        <span class='h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] flex items-center justify-center whitespace-nowrap'>
+          Create Final Assignment
+        </span>
+      </a>
+    </div>
+  </template>
+
+</div>
+
+<script>
+function finalAssignmentData() {
+  return {
+    loading: true,
+    finalAssignment: null,
+
+    async fetchFinalAssignment() {
+      this.loading = true;
+      try {
+        const res = await fetch('/final-assignment/course/{{course.id}}');
+        if (res.ok) {
+          const json = await res.json();
+          this.finalAssignment = json && json.success && json.data ? json.data : null;
+        } else {
+          this.finalAssignment = null;
+        }
+      } catch (e) {
+        console.error('Failed to load final assignment', e);
+        this.finalAssignment = null;
+      } finally {
+        this.loading = false;
+      }
+    }
+  };
+}
+</script>
+</script>

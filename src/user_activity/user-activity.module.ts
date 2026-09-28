@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserActivity } from 'src/entities/user_activity.entity';
-import { ActivityLog } from 'src/entities/activity_log.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
@@ -9,7 +8,7 @@ import { Quiz } from 'src/entities/quiz.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
-import { DailyStatistics } from 'src/entities/daily_statistics.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 import { UserActivityService } from './user-activity.service';
 import { UserActivityMiddleware } from './user-activity.middleware';
 
@@ -17,7 +16,6 @@ import { UserActivityMiddleware } from './user-activity.middleware';
   imports: [
     TypeOrmModule.forFeature([
       UserActivity,
-      ActivityLog,
       UserCourse,
       Course,
       Session,
@@ -25,7 +23,7 @@ import { UserActivityMiddleware } from './user-activity.middleware';
       Weeks,
       Logbook,
       Material,
-      DailyStatistics,
+      Syllabus,
     ]),
   ],
   providers: [UserActivityService, UserActivityMiddleware],

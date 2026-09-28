@@ -8,10 +8,6 @@
     Edit:   GET /learning-material/formEdit/:id (editMode=true, material)
             -> PATCH /learning-material/{pdf,ppt,video}/:id
   Data: { user, sessionId, jenis_file } (+ { material, editMode } saat edit)
-  Design: Container w1052 gap28 → Title 34/brand + subtitle 16/#718096 →
-          Form Card (white r12 stroke #D9D9D9 p20 gap20): Material Title*,
-          link/file field + hint + info box (ppt) → Footer h86 justify end
-          (Cancel w90 + Save/Update Material w142).
   Komponen (reuse): text/page-header, form/form-card, form/form-field,
           form/text-input, button/primary-button, button/secondary-button.
           Baru (prefix material-): material/material-file-upload (pdf),
@@ -88,7 +84,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -107,9 +103,9 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='185'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='185'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -182,7 +178,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -221,9 +217,9 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='142'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -291,7 +287,7 @@
       x-init="recomputeFormValid()"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); }"
+      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -327,9 +323,9 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' disabled='!canSubmit()' width='142'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

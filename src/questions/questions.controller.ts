@@ -110,8 +110,7 @@ export class QuestionsController {
       user: req.user,
       questions,
       session,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
 

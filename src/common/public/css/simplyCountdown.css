@@ -1,87 +1,85 @@
 /**
 * Project : simply-countdown
-* File : simplyCountdown.theme.default
-* Author : Vincent Loy <vincent.loy1@gmail.com>
-* Theme : Light Modern
+* Custom Theme based on Figma Spec (Frame 2147229431)
 */
-.simply-countdown .simply-section.simply-days,
-.simply-countdown .simply-section.simply-hours {
-  display: none;
-}
+
 .simply-countdown {
-  overflow: hidden;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  width: 100%;
+  max-width: 560px;
+  height: 90px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .simply-countdown > .simply-section {
-  padding: 0 1rem;
+  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  flex: 1 1 0;
+  width: 140px;
+  height: 90px;
+  padding: 0;
   border: none;
-  border-left: 1px solid #cbd5e1;
-}
-
-.simply-countdown > .simply-section:last-child {
-  border-right: 1px solid #cbd5e1;
+  border-right: 1px solid #D9D9D9;
+  background: transparent;
 }
 
 .simply-countdown > .simply-section > div {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  line-height: 1;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 4px;
 }
 
 .simply-countdown > .simply-section .simply-amount {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
+  display: block;
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 44px;
+  text-align: center;
+  color: #000000;
 }
 
 .simply-countdown > .simply-section .simply-word {
-  font-size: 0.6rem;
-  font-weight: 500;
-  color: #64748b;
+  display: block;
+  font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 35px;
+  text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: rgba(0, 0, 0, 0.8);
 }
 
-@media (min-width: 640px) {
+@media (max-width: 640px) {
+  .simply-countdown {
+    height: auto;
+  }
+
   .simply-countdown > .simply-section {
-    width: 75px;
-    height: 75px;
-    padding: 1.75rem;
+    width: auto;
+    height: 70px;
   }
 
   .simply-countdown > .simply-section .simply-amount {
-    font-size: 1.75rem;
+    font-size: 24px;
+    line-height: 30px;
   }
 
   .simply-countdown > .simply-section .simply-word {
-    font-size: 0.75rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .simply-countdown > .simply-section {
-    width: 90px;
-    height: 90px;
-    padding: 2rem;
-  }
-
-  .simply-countdown > .simply-section .simply-amount {
-    font-size: 2rem;
-  }
-
-  .simply-countdown > .simply-section .simply-word {
-    font-size: 0.8rem;
+    font-size: 12px;
+    line-height: 18px;
   }
 }

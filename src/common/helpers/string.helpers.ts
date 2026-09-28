@@ -55,8 +55,20 @@ export const stringHelpers = {
   },
   default: (value: any, defaultValue: any) => value || defaultValue,
   getByLang: (obj: any, lang: string) => {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || '';
+    if (!obj) return '';
+    if (typeof obj === 'string') {
+      try {
+        const parsed = JSON.parse(obj);
+        if (parsed && typeof parsed === 'object') {
+          return parsed[lang] || parsed['id'] || parsed['en'] || '';
+        }
+      } catch {
+        return obj;
+      }
+      return obj;
+    }
+    if (typeof obj !== 'object') return '';
+    return obj[lang] || obj['id'] || obj['en'] || '';
   },
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
@@ -120,4 +132,15 @@ export const stringHelpers = {
     typeof str === 'string' &&
     typeof suffix === 'string' &&
     str.toLowerCase().endsWith(suffix.toLowerCase()),
+  includes: (str: unknown, sub: unknown) =>
+    typeof str === 'string' &&
+    typeof sub === 'string' &&
+    str.toLowerCase().includes(sub.toLowerCase()),
+  lower: (str: unknown) =>
+    typeof str === 'string' ? str.toLowerCase() : '',
+  capitalize: (str: unknown) => {
+    if (typeof str !== 'string' || !str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
 };
+

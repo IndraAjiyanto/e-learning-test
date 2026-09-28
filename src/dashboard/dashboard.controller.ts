@@ -130,6 +130,7 @@ export class DashboardController {
     @Query('userId') userId?: string,
     @Query('categoryId') categoryId?: string,
     @Query('course_type_id') courseTypeId?: string,
+    @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -140,6 +141,7 @@ export class DashboardController {
       userId: userId || null,
       categoryId: categoryId || null,
       courseTypeId: courseTypeId || null,
+      search: search || null,
       page: currentPage,
       limit: itemsPerPage,
     });

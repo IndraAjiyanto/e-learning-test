@@ -54,7 +54,7 @@ export class ApiPaymentController {
         // Redirect to success page for free courses
         return res.json({
           status: 'success',
-          redirect_url: `/payment/history/${userId}`,
+          redirect_url: '/users/profile?tab=history-payment',
           message: 'Pendaftaran berhasil! Pembayaran gratis (100% diskon).',
         });
       }

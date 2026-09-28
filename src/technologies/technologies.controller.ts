@@ -65,12 +65,12 @@ export class TechnologiesController {
       await this.technologiesService.create(createTechnologiesDto);
       flashToast(
         req,
-        'Tech Created',
-        'The technology has been added successfully.',
+        'Tool Created',
+        'The tool has been added successfully.',
       );
       res.redirect('/technology');
     } catch (error: any) {
-      req.flash('error', error.message || 'Tech failed to create');
+      req.flash('error', error.message || 'Tool failed to create');
       res.redirect('/technology');
     }
   }
@@ -185,12 +185,12 @@ export class TechnologiesController {
       await this.technologiesService.update(id, updateTechnologiesDto);
       flashToast(
         req,
-        'Tech Updated',
-        'The changes to this technology have been saved.',
+        'Tool Updated',
+        'The changes to this tool have been saved.',
       );
       res.redirect('/technology');
     } catch (error: any) {
-      req.flash('error', error.message || 'Tech failed to update');
+      req.flash('error', error.message || 'Tool failed to update');
       res.redirect(`/technology/formEdit/${id}`);
     }
   }
@@ -205,18 +205,18 @@ export class TechnologiesController {
     try {
       const technologies = await this.technologiesService.findOne(id);
       if (!technologies) {
-        req.flash('error', 'Tech not found');
+        req.flash('error', 'Tool not found');
         res.redirect('/technology');
       }
       await this.technologiesService.remove(id);
       flashToast(
         req,
-        'Tech Deleted',
-        'The technology has been removed successfully.',
+        'Tool Deleted',
+        'The tool has been removed successfully.',
       );
       res.redirect('/technology');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete tech');
+      req.flash('error', error.message || 'Failed to delete tool');
       res.redirect('/technology');
     }
   }

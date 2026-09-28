@@ -5,7 +5,6 @@
            `assigment` pada partials/session/tugas_tab.hbs.
   Alpine scope (parent): `assigment` { id, title }, `session` id server-side.
 
-  Pencil (Container - Session Assignment → Button <title>):
   row h68 white r8 stroke #D9D9D9 p8 14 gap6; judul Montserrat 16/600 #003060;
   delete 44x44 outline #D9D9D9 (trash-2 16 #C80606); Detail w81 h44 outline
   #003060 shadow teks #003060 Inter 16/600.
@@ -16,12 +15,12 @@
 <div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
 
   {{!-- Title --}}
-  <div class='text-[16px]/[normal] flex-1 min-w-0 text-[#003060] font-montserrat font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='assigment.title' :title='assigment.title'></div>
+  <div class='text-[16px]/[normal] flex-1 min-w-0 text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='assigment.title' :title='assigment.title'></div>
 
   {{!-- Delete --}}
   <form :action="'/task/' + assigment.id + '/{{session.id}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
     <button type='button'
-      onclick='confirmDelete(this)'
+      onclick="openDeleteModal(this, 'Delete Assignment?', 'Are you sure you want to delete this assignment?')"
       class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
       title='Delete Assignment' aria-label='Delete Assignment'>
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>

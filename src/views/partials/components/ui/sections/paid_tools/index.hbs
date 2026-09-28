@@ -1,0 +1,107 @@
+{{!--
+  Section: Paid Tools / Software & Tools (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/paid_tools/index.hbs
+
+  Spesifikasi Figma:
+  - Width: 1728px, Height: 278px (desktop)
+  - Padding: 50px 80px 80px (desktop), gap 40px
+  - Header:
+    - Eyebrow: "SOFTWARE & TOOLS" (Inter 600 13px uppercase, leading 16px, #64748B)
+    - Headline: "Tools You Will Master" (Inter 700 20px leading 24px, #0B1F3B)
+  - Row Logo Grid:
+    - Width: 1568px, height 56px, gap 48px, justify-center, items-center
+    - Menggunakan komponen atomik: components/ui/card/tool_chip/index
+
+  Props:
+  - course       : object (memuat course.technologies jika tersedia)
+  - technologies : array (opsional array teknologi langsung)
+  - lang         : string
+--}}
+
+<section 
+  id="tools" 
+  class="relative w-full bg-white font-inter py-12 sm:py-16 lg:pt-12 lg:pb-20 border-b border-[#F1F5F9]"
+  data-node-id="tools-section"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-8 sm:gap-10">
+    
+    {{!-- Tools Header (Figma: Frame 2147229479, gap 12px, text-center) --}}
+    <div class="flex flex-col items-center gap-2.5 sm:gap-3 text-center w-full">
+      {{!-- SOFTWARE & TOOLS (Inter 600 13px uppercase #64748B) --}}
+      <span class="font-inter text-xs sm:text-[13px] font-semibold uppercase leading-none tracking-wider text-[#64748B]">
+        SOFTWARE & TOOLS
+      </span>
+      
+      {{!-- Tools You Will Master (Inter 700 20px #0B1F3B) --}}
+      <h2 class="font-inter text-lg sm:text-xl lg:text-[20px] font-bold leading-tight text-[#0B1F3B]">
+        Tools You Will Master
+      </h2>
+    </div>
+
+    {{!-- Tools Row Logo Grid (Figma: gap 48px, height 56px, justify-center) --}}
+    <div class="flex flex-row flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-12 w-full">
+      
+      {{#if course.technologies.length}}
+        {{!-- Dynamic Tools Data dari Database (table technologies via course.technologies) --}}
+        {{#each course.technologies}}
+          {{> components/ui/card/tool_chip/index
+              name=this.name
+              svg=this.svg
+              imgUrl=this.imgUrl
+          }}
+        {{/each}}
+
+      {{else if technologies.length}}
+        {{!-- Dynamic Tools Data jika array technologies dioper langsung --}}
+        {{#each technologies}}
+          {{> components/ui/card/tool_chip/index
+              name=this.name
+              svg=this.svg
+              imgUrl=this.imgUrl
+          }}
+        {{/each}}
+
+      {{else if portfolio.[0].course.technologies.length}}
+        {{!-- Dynamic Tools Data dari portfolio yang berelasi dengan course --}}
+        {{#each portfolio.[0].course.technologies}}
+          {{> components/ui/card/tool_chip/index
+              name=this.name
+              svg=this.svg
+              imgUrl=this.imgUrl
+          }}
+        {{/each}}
+
+      {{else}}
+        {{!-- Fallback 5 Tools Resmi Figma Lengkap --}}
+        
+        {{!-- Tool 1: Figma --}}
+        {{> components/ui/card/tool_chip/index
+            name="Figma"
+        }}
+
+        {{!-- Tool 2: Figjam --}}
+        {{> components/ui/card/tool_chip/index
+            name="Figjam"
+        }}
+
+        {{!-- Tool 3: Maze --}}
+        {{> components/ui/card/tool_chip/index
+            name="Maze"
+        }}
+
+        {{!-- Tool 4: Notion --}}
+        {{> components/ui/card/tool_chip/index
+            name="Notion"
+        }}
+
+        {{!-- Tool 5: Miro --}}
+        {{> components/ui/card/tool_chip/index
+            name="Miro"
+        }}
+
+      {{/if}}
+
+    </div>
+
+  </div>
+</section>

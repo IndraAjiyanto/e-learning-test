@@ -14,7 +14,7 @@ export class InstallmentPayment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Payment, (payment) => payment.id, {
+  @ManyToOne(() => Payment, (payment) => payment.installmentPayments, {
     onDelete: 'CASCADE',
     nullable: false,
   })

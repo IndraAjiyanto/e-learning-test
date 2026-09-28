@@ -3,7 +3,6 @@
   Path: components/ui/admin/detail/capacity/index.hbs
   Props: {{course}} (quota + userCourses.length)
 
-  Pencil: Card Capacity & Enrollment (AIZFl): header users icon 36x36 #003060, Enrollment 27/30, progress bg #E4E5E6 h20 radius8, fill gradient #0063C6→#003060, Capacity/ Joined nums
 --}}
 <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[24px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
 
@@ -11,15 +10,15 @@
     <div class='box-border w-[36px] h-[36px] shrink-0 flex flex-row gap-0 justify-center items-center bg-[#003060] rounded-full'>
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M22 21v-2a4 4 0 0 0-3-3.87'/><path d='M16 3.13a4 4 0 0 1 0 7.75'/></svg>
     </div>
-    <span class='text-[16px]/[normal] text-[#003060] font-montserrat font-semibold'>Capacity & Enrollment</span>
+    <span class='text-[16px]/[normal] text-[#003060] font-inter font-semibold'>Capacity & Enrollment</span>
   </div>
 
   <div class='w-full flex flex-col gap-[16px]'>
 
     <div class='w-full flex flex-col gap-[6px]'>
       <div class='w-full flex flex-row gap-0 justify-between items-center'>
-        <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Enrollment</span>
-        <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{course.userCourses.length}}/{{#if course.quota}}{{course.quota}}{{else}}0{{/if}}</span>
+        <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Enrollment</span>
+        <span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{course.userCourses.length}}/{{#if course.quota}}{{course.quota}}{{else}}0{{/if}}</span>
       </div>
       <div class='w-full h-[20px] bg-[#E4E5E6] rounded-[8px] overflow-hidden'>
         <div class='h-[20px] rounded-[8px]' style='background: linear-gradient(95deg, #0063C6 0%, #003060 100%); width: {{#if course.quota}}{{multiply (divide course.userCourses.length course.quota) 100}}%{{else}}0%{{/if}};'></div>
@@ -28,12 +27,12 @@
 
     <div class='w-full flex flex-row gap-[14px] justify-start items-start'>
       <div class='flex-1 min-w-0 flex flex-col gap-0'>
-        <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Student Capacity :</span>
-        <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{#if course.quota}}{{course.quota}} Students{{else}}Not set{{/if}}</span>
+        <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Student Capacity :</span>
+        <span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.quota}}{{course.quota}} Students{{else}}Not set{{/if}}</span>
       </div>
       <div class='flex-1 min-w-0 flex flex-col gap-0'>
-        <span class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold'>Student Joined :</span>
-        <span class='text-[14px]/[normal] text-[#737373] font-montserrat font-medium'>{{course.userCourses.length}} Students</span>
+        <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Student Joined :</span>
+        <span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{course.userCourses.length}} Students</span>
       </div>
     </div>
 

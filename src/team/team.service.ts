@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +11,10 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
+// Tidak ada ValidationPipe global, jadi DTO tidak memvalidasi instagram.
+const INSTAGRAM_PATTERN =
+  /^https?:\/\/(www\.)?instagram\.com\/[A-Za-z0-9._]+\/?(\?.*)?$/;
+
 @Injectable()
 export class TeamService {
   constructor(
@@ -14,7 +22,15 @@ export class TeamService {
     private readonly teamRepository: Repository<Team>,
   ) {}
 
+  private assertValidInstagram(instagram?: string) {
+    const value = instagram?.trim();
+    if (value && !INSTAGRAM_PATTERN.test(value)) {
+      throw new BadRequestException('Please enter a valid Instagram URL.');
+    }
+  }
+
   async create(createTeamDto: CreateTeamDto) {
+    this.assertValidInstagram(createTeamDto.instagram);
     const team = this.teamRepository.create(createTeamDto);
     return await this.teamRepository.save(team);
   }
@@ -43,6 +59,7 @@ export class TeamService {
   }
 
   async update(teamId: string, updateTeamDto: UpdateTeamDto) {
+    this.assertValidInstagram(updateTeamDto.instagram);
     const team = await this.findOne(teamId);
     if (!team) {
       throw new NotFoundException('team not found');

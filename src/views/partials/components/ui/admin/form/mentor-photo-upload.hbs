@@ -7,11 +7,6 @@
          {{showOldPhoto}} (optional — set true di edit agar foto lama tampil)
   Alpine scope (parent): previewUrl, oldPhoto (optional, hanya edit),
          errorMessage, isValid, validateImage(file), clearFile(), $refs.profileFile.
-  Design (slicing.pen "Container - Mentor Form" → Photo picker):
-         label Profile Photo* 14 #404040; Upload button fill #F8F9FA ($lightBox),
-         p8 16, vertical gap 10, radius 8, border 1px solid #D9D9D9;
-         Upload icon 40x40 #718096; Drop text Montserrat 12/16 #718096;
-         Format hint Montserrat 10/12 #ADB7C5.
   Catatan: teks hint mengikuti design. Validasi file mengikuti BE
   (ValidateImage mentor: 300–2000px, max 5MB) agar upload selalu lolos BE.
   Dibuat terpisah karena blok upload foto dipakai di create + edit
@@ -31,8 +26,8 @@
           <path d='M25 21.667L20 26.667L15 21.667' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
           <path d='M20 26.667V18.333' stroke='#718096' stroke-width='1.66667' stroke-linecap='round' stroke-linejoin='round'/>
         </svg>
-        <p class='text-[12px]/[16px] font-montserrat font-medium text-[#718096] text-center'>Drag &amp; Drop your Image here or click to browse</p>
-        <p class='text-[10px]/[12px] font-montserrat font-medium text-[#ADB7C5] text-center'>JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB</p>
+        <p class='text-[12px]/[16px] font-inter font-medium text-[#718096] text-center'>Drag &amp; Drop your Image here or click to browse</p>
+        <p class='text-[10px]/[12px] font-inter font-medium text-[#ADB7C5] text-center'>JPG / PNG · 1900×1000 – 1920×1080 · Max 10 MB</p>
       </div>
     </template>
     <template x-if="previewUrl">
@@ -46,13 +41,13 @@
   </label>
   {{#if showOldPhoto}}
   <template x-if="!previewUrl && oldPhoto">
-    <p class='text-[11px]/[normal] font-montserrat text-[#A3A3A3]'>Current photo — click to change</p>
+    <p class='text-[11px]/[normal] font-inter text-[#A3A3A3]'>Current photo — click to change</p>
   </template>
   {{/if}}
   <template x-if="previewUrl && isValid">
     <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
       <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
-      <span class='text-[12px]/[normal] font-montserrat text-[#16A34A]'>Valid image</span>
+      <span class='text-[12px]/[normal] font-inter text-[#16A34A]'>Valid image</span>
       <button type='button' @click="clearFile()" class='ml-auto text-[#DC2626] hover:text-[#B91C1C]'>
         <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
       </button>
@@ -61,7 +56,7 @@
   <template x-if="!isValid && errorMessage">
     <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
       <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
-      <span class='text-[12px]/[normal] font-montserrat text-[#DC2626]' x-text='errorMessage'></span>
+      <span class='text-[12px]/[normal] font-inter text-[#DC2626]' x-text='errorMessage'></span>
     </div>
   </template>
 </div>

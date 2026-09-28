@@ -16,7 +16,7 @@
 --}}
 <aside class='flex flex-col gap-10 rounded-xl border border-[#d9d9d9] bg-white px-4 py-5 lg:sticky lg:top-6 lg:min-h-[645px] lg:justify-between'>
   <div class='flex flex-col gap-5'>
-    <h2 class='font-montserrat text-lg font-semibold leading-[27px] text-[#003060]'>Form Progress</h2>
+    <h2 class='font-inter text-lg font-semibold leading-[27px] text-[#003060]'>Form Progress</h2>
 
     <ol class='flex flex-col gap-8'>
       <template x-for='(step, index) in {{steps}}' :key='step.id'>
@@ -35,7 +35,7 @@
           >
             <span
               :class="stepActive(step.id) ? 'bg-[#003060]' : 'bg-[#b1b6bd] group-hover:bg-[#718096]'"
-              class='flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-montserrat text-sm font-medium leading-5 text-white transition-colors'
+              class='flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-inter text-sm font-medium leading-5 text-white transition-colors'
               x-text="String(index + 1).padStart(2, '0')"
             ></span>
             <span
@@ -61,7 +61,7 @@
         </span>
         <span class='font-inter text-base font-semibold leading-5 text-[#003060]'>Tips</span>
       </div>
-      <p class='font-montserrat text-xs leading-4 text-[#4a5568]'>{{tips}}</p>
+      <p class='font-inter text-xs leading-4 text-[#4a5568]'>{{tips}}</p>
     </div>
   {{/if}}
 </aside>

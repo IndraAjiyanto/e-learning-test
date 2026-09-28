@@ -48,12 +48,29 @@ export class BenefitController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const benefit = await this.benefitService.findAll();
-    res.render('super_admin/benefit/index', { user: req.user, benefit });
+    const isMaxBenefit = benefit.length >= 5;
+    res.render('super_admin/benefit/index', {
+      user: req.user,
+      benefit,
+      isMaxBenefit,
+      benefitCount: benefit.length,
+      maxBenefit: 5,
+    });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
+    const count = await this.benefitService.count();
+    if (count >= 5) {
+      flashToast(
+        req,
+        'Limit Reached',
+        'Maksimal 5 benefit telah tercapai. Tidak dapat menambah benefit baru.',
+      );
+      return res.redirect('/benefit');
+    }
+
     const availableNumbers = await this.benefitService.findNo();
 
     res.render('super_admin/benefit/create', {

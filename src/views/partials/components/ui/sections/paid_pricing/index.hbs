@@ -1,0 +1,77 @@
+{{!--
+  Section: Paid Pricing / Informasi Investasi (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/paid_pricing/index.hbs
+
+  Spesifikasi Figma & Desain:
+  - Container: bg #FAFAFA, padding: 120px 80px, gap: 64px, width: 1728px
+  - Header:
+    - Eyebrow: "INFORMASI INVESTASI" (Inter 700 14px uppercase #003060)
+    - Headline: "Pilihan Paket Sesuai Kebutuhanmu" (Montserrat 800 36px #0B1F3B)
+    - Description: "Kami menyediakan program pendampingan yang optimal dengan skema pembiayaan bersahabat dan transparan." (Inter 400 16px #64748B, max-w 680px)
+  - Content: 1 Single Card di tengah yang bergantian menampilkan data Full Payment & Installment sesuai tab yang aktif.
+
+  Props:
+  - course       : object (course data: price, promo, startDate, startEnd, date_registration, id, installments)
+  - installments : array (opsional list cicilan)
+  - category     : object (category data: contact)
+  - lang         : string
+--}}
+
+<section 
+  id="pricing" 
+  class="relative w-full bg-[#FAFAFA] font-inter py-16 sm:py-20 lg:py-28"
+  data-node-id="pricing-section"
+  x-data="{
+    countdown: {
+      days: 15,
+      time: '11 : 50 : 05'
+    },
+    init() {
+      // Countdown simulation
+      let totalSeconds = 15 * 86400 + 11 * 3600 + 50 * 60 + 5;
+      setInterval(() => {
+        if (totalSeconds > 0) {
+          totalSeconds--;
+          const d = Math.floor(totalSeconds / 86400);
+          const h = Math.floor((totalSeconds % 86400) / 3600);
+          const m = Math.floor((totalSeconds % 3600) / 60);
+          const s = totalSeconds % 60;
+          this.countdown.days = d;
+          this.countdown.time = String(h).padStart(2, '0') + ' : ' + String(m).padStart(2, '0') + ' : ' + String(s).padStart(2, '0');
+        }
+      }, 1000);
+    }
+  }"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-12 lg:gap-16">
+    
+    {{!-- Pricing Header (Figma: Frame 2147229479, gap 16px, text-center) --}}
+    <div class="flex flex-col items-center gap-3 sm:gap-4 text-center max-w-[800px]">
+      {{!-- INFORMASI INVESTASI (Inter 700 14px uppercase #003060) --}}
+      <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-tight">
+        INFORMASI INVESTASI
+      </span>
+
+      {{!-- Pilihan Paket Sesuai Kebutuhanmu (Montserrat 800 36px #0B1F3B) --}}
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
+        Pilihan Paket Sesuai Kebutuhanmu
+      </h2>
+
+      {{!-- Description (Inter 400 16px #64748B, max-w 680px) --}}
+      <p class="font-inter text-sm sm:text-base font-normal leading-[160%] text-[#64748B] max-w-[680px]">
+        Kami menyediakan program pendampingan yang optimal dengan skema pembiayaan bersahabat dan transparan.
+      </p>
+    </div>
+
+    {{!-- Single Centered Pricing Card (Bergantian Full Payment & Installment) --}}
+    <div class="w-full flex justify-center items-center">
+      {{> components/ui/card/pricing_card/index
+          course=course
+          installments=installments
+          contactWhatsapp=(default category.contact course.contact)
+          lang=lang
+      }}
+    </div>
+
+  </div>
+</section>

@@ -1,16 +1,14 @@
 {{!--
-  Halaman: Corporate Training (In House Training) - Figma 559:211
+  Halaman: Corporate Training (In House Training)
   Lokasi: src/views/corporate_training.hbs
   Route: GET /dashboard/corporate-training (dashboard.controller)
 
-  Hero + hero-image-card + hero-stats + coming-soon + why-choose (navy) dibuat khusus
-  sesuai Figma. Testimonials / gallery / faq memakai ulang section partial landing.
-  Catatan font: Figma memakai "Outfit" untuk kartu (tak tersedia di proyek) -> dipetakan ke Inter.
+  Hero + hero-image-card + hero-stats + coming-soon + why-choose (navy) dibuat khusus. Testimonials / gallery / faq memakai ulang section partial landing.
   Standar: sizeClass, .page-shell, base + lg.
 --}}
 <div class="min-h-screen bg-white font-inter">
 
-  {{!-- ================= HERO (559:229) ================= --}}
+  {{!-- ================= HERO ================= --}}
   <section class="w-full bg-[#F8F9FA] py-14 lg:py-20">
     <div class="page-shell flex flex-col gap-10">
 
@@ -25,7 +23,7 @@
         </p>
       </div>
 
-      {{!-- hero image card + overlapping stats (559:238 / 559:253) --}}
+      {{!-- hero image card + overlapping stats --}}
       <div class="relative pb-16 lg:pb-24">
         <div
           class="relative flex min-h-[420px] flex-col justify-center overflow-hidden rounded-[24px] bg-[#0B1F3B] p-8 lg:min-h-[560px] lg:p-16"
@@ -74,7 +72,7 @@
     </div>
   </section>
 
-  {{!-- ============ CHOOSE YOUR PROGRAM - COMING SOON (559:277) ============ --}}
+  {{!-- ============ CHOOSE YOUR PROGRAM - COMING SOON ============ --}}
   <section id="courses-section" class="w-full bg-white py-14 lg:py-20">
     <div class="page-shell flex flex-col items-center gap-12 text-center">
       <div class="flex max-w-[680px] flex-col items-center gap-3">
@@ -93,7 +91,7 @@
     </div>
   </section>
 
-  {{!-- ============ WHY CHOOSE (navy, 559:288) ============ --}}
+  {{!-- ============ WHY CHOOSE ============ --}}
   <section class="relative w-full overflow-hidden py-16 lg:py-20" style="background: linear-gradient(90deg, #264673 0%, #2C5C9C 50%, #264673 100%);">
     <span aria-hidden="true" class="pointer-events-none absolute -left-20 -top-20 size-[340px] rounded-full border border-white/5 bg-white/[0.02]"></span>
     <span aria-hidden="true" class="pointer-events-none absolute -bottom-24 -right-24 size-[400px] rounded-full border border-white/5 bg-white/[0.02]"></span>
@@ -134,7 +132,7 @@
   {{!-- FAQ (reuse landing faq section) --}}
   {{> components/ui/sections/faq/index}}
 
-  {{!-- Final CTA - corporate copy (559:443) --}}
+  {{!-- Final CTA - corporate copy --}}
   {{> components/ui/sections/final_cta/index
       title=(t 'test.corporateTraining.cta.title')
       description=(t 'test.corporateTraining.cta.description')

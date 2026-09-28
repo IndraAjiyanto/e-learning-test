@@ -3,18 +3,18 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/select_field.hbs
   Level: L1 Atomik (scoped super_admin)
 
-  Trigger (identik di semua varian) — Figma Create User node 740:7085 / Edit User node 768:41902:
+  Trigger (identik di semua varian)
   - sama persis dengan text_field: h 44, radius 8, border #d4d4d4, shadow 0 1px 2px rgba(0,0,0,0.05)
   - placeholder Inter Regular 16/24 #737373, chevron-down 20px #737373 (padding kanan 14)
 
-  Menu punya DUA varian sesuai dua komponen Figma yang berbeda:
+  Menu punya DUA varian yang berbeda:
 
-  variant='menu' (default) — Figma node 740:3637 / 768:41908 ("_Select menu"), dipakai Role
+  variant='menu' (default), dipakai Role
   - menu min-w 320, item h 44, px 14, py 10, gap 8
   - item Montserrat 16/24 #4a5568; terpilih bg #e4f1f7, Montserrat Medium #055c90
   - ikon check 20px #055c90
 
-  variant='dropdown' — Figma node 768:41913 ("Dropdown menu"), dipakai Status
+  variant='dropdown', dipakai Status
   - menu w 240, item h 40, px 16, py 10, gap 12
   - item Montserrat 16/20 #404040 (berat teks tidak berubah saat terpilih); terpilih bg #e4f1f7
   - ikon check 20px #404040
@@ -24,9 +24,9 @@
 
   Indikator titik (dot 10px) bersifat data-driven, bukan varian: bila sebuah option
   punya property `dot` (nama class bg Tailwind), titik itu tampil di menu DAN di trigger.
-  Dipakai Status — Verified #22c55e (node 768:41916), Unverified #718096 (node 768:41920).
+  Dipakai Status — Verified #22c55e, Unverified #718096.
 
-  Menggunakan listbox Alpine (bukan <select> native) agar menu bisa mengikuti Figma.
+  Menggunakan listbox Alpine (bukan <select> native) agar menu bisa di-styling penuh.
   Nilai terpilih dikirim ke backend lewat <input type='hidden'>.
 
   Props:
@@ -42,10 +42,14 @@
   - placeholder : string (opsional)
   - hint        : string (opsional)
   - required    : boolean (opsional)
+  - searchable  : boolean (default true) — kotak cari di atas menu; kata kunci dikosongkan
+                  tiap menu dibuka agar semua opsi tetap muncul. Matikan dengan searchable=false
+  - highlight   : boolean (opsional) — latar trigger kuning #fefce8
+  - disabled    : boolean (opsional) — trigger tak bisa dibuka; nilai tetap terkirim lewat hidden input
 --}}
 <div
   class='flex flex-col gap-1.5'
-  x-data='{ open: false }'
+  x-data='{ open: false, q: "" }'
   @keydown.escape.stop='open = false'
   @click.outside='open = false'
 >
@@ -60,15 +64,20 @@
     <button
       type='button'
       id='{{id}}-trigger'
-      @click='open = !open'
+      {{#if disabled}}disabled{{/if}}
+      @click="open = !open; q = ''{{#unless (eq searchable false)}}; if (open) $nextTick(() => $refs.search.focus()){{/unless}}"
       :aria-expanded='open'
       :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
       aria-haspopup='listbox'
       aria-labelledby='{{id}}-label'
+      x-data='{ seen: false }'
+      {{#unless disabled}}x-init="$el.form?.addEventListener('submit', () => seen = true); $watch('formData.{{field}}', () => seen = true)"{{/unless}}
       :class="formErrors.{{field}}
         ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
-        : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
-      class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border bg-white py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2'
+        : seen
+          ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+          : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+      class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border {{#if highlight}}bg-[#fefce8]{{else}}bg-white{{/if}} py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5]'
     >
       <span class='flex min-w-0 items-center gap-2'>
         {{#if iconLeft}}
@@ -106,9 +115,22 @@
       x-transition.opacity.duration.150ms
       role='listbox'
       aria-labelledby='{{id}}-label'
-      class='absolute left-0 top-[calc(100%+6px)] z-20 w-full max-w-full overflow-hidden {{#if (eq variant 'dropdown')}}sm:w-60{{else}}sm:min-w-[320px]{{/if}} rounded-lg border border-[#e5e5e5] bg-white py-1 shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
+      class='absolute left-0 top-[calc(100%+6px)] z-20 w-full max-w-full {{#unless (eq searchable false)}}max-h-72 overflow-y-auto{{else}}overflow-hidden{{/unless}} {{#if (eq variant 'dropdown')}}sm:w-60{{else}}sm:min-w-[320px]{{/if}} rounded-lg border border-[#e5e5e5] bg-white py-1 shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
     >
-      <template x-for='option in {{options}}' :key='String(option.value)'>
+      {{#unless (eq searchable false)}}
+        <li class='px-2 py-1'>
+          <input
+            type='text'
+            x-ref='search'
+            x-model='q'
+            @keydown.enter.prevent
+            placeholder='Search...'
+            aria-label='Search {{label}}'
+            class='h-9 w-full rounded-md border border-[#d4d4d4] bg-white px-3 font-inter text-sm leading-5 text-[#171717] placeholder:text-[#737373] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+          />
+        </li>
+      {{/unless}}
+      <template x-for="option in {{#unless (eq searchable false)}}{{options}}.filter(o => !q || String(o.label).toLowerCase().includes(q.trim().toLowerCase())){{else}}{{options}}{{/unless}}" :key='String(option.value)'>
         <li>
           <button
             type='button'
@@ -118,7 +140,7 @@
             :class="formData.{{field}} === option.value
               ? '{{#if (eq variant 'dropdown')}}bg-[#e4f1f7]{{else}}bg-[#e4f1f7] font-medium text-[#055c90]{{/if}}'
               : 'hover:bg-[#f5f5f5] active:bg-[#ededed]{{#unless (eq variant 'dropdown')}} text-[#4a5568]{{/unless}}'"
-            class='flex w-full items-center text-left font-montserrat transition-colors focus:outline-none focus-visible:bg-[#f5f5f5] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003060]/40 {{#if (eq variant 'dropdown')}}h-10 gap-3 px-4 py-2.5 text-base leading-5 text-[#404040]{{else}}h-11 justify-between gap-2 px-3.5 py-2.5 text-base leading-6{{/if}}'
+            class='flex w-full items-center text-left font-inter transition-colors focus:outline-none focus-visible:bg-[#f5f5f5] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003060]/40 {{#if (eq variant 'dropdown')}}h-10 gap-3 px-4 py-2.5 text-base leading-5 text-[#404040]{{else}}h-11 justify-between gap-2 px-3.5 py-2.5 text-base leading-6{{/if}}'
           >
             {{!-- dot 10px — data-driven, ikut ada/tidaknya `dot` pada option --}}
             <template x-if='option.dot'>
@@ -137,6 +159,12 @@
           </button>
         </li>
       </template>
+      {{#unless (eq searchable false)}}
+        <li
+          x-show='!{{options}}.filter(o => !q || String(o.label).toLowerCase().includes(q.trim().toLowerCase())).length'
+          class='px-3.5 py-2.5 font-inter text-sm leading-5 text-[#737373]'
+        >No results found</li>
+      {{/unless}}
     </ul>
   </div>
 

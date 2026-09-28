@@ -1,7 +1,6 @@
 {{!--
   Page: Admin — Meeting Detail (Week)
   Path: admin/weeks/detail.hbs
-  Design: slicing.pen "Container - Meeting Detail" (1052, gap 16)
   Route: GET /week/:weeksId (findOne) — data: { weeks (course), lastSession }
   Feature Card - Meeting: back link, "Pertemuan NN" 34 + description + badge, Delete (red text) + Edit Week (navy)
   Table Detail Week: underline tabs (Session + Quiz if lastSession), session rows + Add Session
@@ -19,16 +18,16 @@
           class='flex flex-row gap-[4px] justify-start items-center hover:opacity-70 transition-opacity'
           title='Back' aria-label='Back'>
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'><polyline points='15 18 9 12 15 6'/></svg>
-          <span class='text-[16px]/[normal] text-[#718096] font-montserrat font-medium'>Back</span>
+          <span class='text-[16px]/[normal] text-[#718096] font-inter font-medium'>Back</span>
         </a>
       </div>
 
       {{!-- Title Row --}}
-      <div class='w-full flex flex-row gap-[12px] justify-between items-start'>
+      <div class='w-full flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start'>
         <div class='flex flex-col gap-[16px] flex-1 min-w-0 justify-start items-start'>
           <div class='flex flex-col gap-[4px] w-full'>
-            <div class='text-[34px]/[normal] w-full text-[#003060] font-montserrat font-bold text-left'>Pertemuan {{weeks.week_number}}</div>
-            <div class='text-[14px]/[normal] w-full text-[#718096] font-montserrat font-medium text-left break-words'>{{weeks.description}}</div>
+            <div class='text-[34px]/[normal] w-full text-[#003060] font-inter font-bold text-left'>Pertemuan {{weeks.week_number}}</div>
+            <div class='text-[14px]/[normal] w-full text-[#718096] font-inter font-medium text-left break-words'>{{weeks.description}}</div>
           </div>
           <div class='box-border w-[173px] flex flex-row p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
             <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium text-center whitespace-nowrap'><span class='capitalize'>{{weeks.course.method}}</span> · Session {{weeks.week_number}} · {{default weeks.course.quota '-'}} Seats</span>
@@ -36,21 +35,15 @@
         </div>
 
         {{!-- Actions --}}
-        <div class='flex flex-row gap-[12px] shrink-0 justify-start items-center'>
-          {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
-     default — hapus dilakukan dari halaman list. Kirim showDelete=true dari
-     controller bila perlu ditampilkan lagi. Tombol hapus pada tabel/daftar
-     di halaman ini sengaja TIDAK ikut digating. --}}
-          {{#if showDelete}}
-            <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
-              <button type='button'
-                @click='confirmMeetingDelete($el)'
-                class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
-                title='Delete Week' aria-label='Delete Week'>
-                <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
-              </button>
-            </form>
-          {{/if}}
+        <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
+          <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
+            <button type='button'
+              onclick='openDeleteModal(this)'
+              class='box-border w-[87px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] rounded-[8px] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FEE2E2] transition-colors'
+              title='Delete Week' aria-label='Delete Week'>
+              <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
+            </button>
+          </form>
           <a href='/week/formEdit/{{weeks.id}}'
             class='box-border w-[114px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
             title='Edit Week' aria-label='Edit Week'>
@@ -67,39 +60,36 @@
       {{!-- Tab Bar: underline-tabs component --}}
       <div x-data="{ tabs: [
         {name:'session',label:'Session',url:'/week/session/{{weeks.id}}'},
+        {{#if lastSession}}
         {name:'quiz',label:'Quiz',url:'/week/quiz/{{weeks.id}}'}
+        {{/if}}
       ] }">
         {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
       </div>
 
       {{!-- Session Rows --}}
-      <div x-show="tab === 'session'" class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
+      <div x-show="tab === 'session'" x-cloak class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
 
       {{!-- Quiz (frozen) --}}
-      <div x-show="tab === 'quiz'" class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+      {{#if lastSession}}
+      <div x-show="tab === 'quiz'" x-cloak class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+      {{/if}}
 
     </div>
 
   </div>
 </div>
 
-<script>
-function confirmMeetingDelete(el) {
-  Swal.fire({
-    title: 'Delete Week',
-    text: 'Are you sure you want to delete this week? Sessions inside it will be removed too.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#C80606',
-    cancelButtonColor: '#525252',
-    confirmButtonText: 'Delete'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      el.closest('form').submit();
-    }
-  });
-}
+{{!-- Toast sukses untuk proses week/session (create, update, delete) yang
+     redirect balik ke sini. Dipicu via flashToast() di weeks & session controller. --}}
+{{> components/ui/admin/toast/success/index toast=toast }}
 
+{{> components/ui/admin/modal/delete_confirm/index
+    title='Delete Week'
+    description='Are you sure you want to delete this week? Sessions inside it will be removed too.'
+    confirmLabel='Delete' }}
+
+<script>
 function tabData() {
   return {
     search: '',

@@ -13,6 +13,7 @@ import {
   UploadedFile,
   Query,
   UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,7 +31,8 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
+import { capabilitiesForCourse } from 'src/courses/program-type';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -135,12 +137,54 @@ export class UsersController {
     @Query('token') token: string,
   ) {
     try {
-      const user = await this.usersService.sendVerificationEmail(token);
-      req.flash('success', 'Verification email sent successfully');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      const currentUser = (req as any).user;
+      if (currentUser?.id) {
+        await this.usersService.resendVerificationByUser(currentUser.id);
+        req.flash(
+          'success',
+          'Verification email has been sent. Please check your inbox.',
+        );
+        return res.redirect('/users/send-verify-email');
+      }
+
+      if (token) {
+        await this.usersService.sendVerificationEmail(token);
+        req.flash('success', 'Verification email sent successfully');
+        return res.redirect('/users/send-verify-email');
+      }
+
+      req.flash('error', 'Silakan login untuk mengirim ulang email verifikasi.');
+      return res.redirect('/login');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
-      res.redirect('/users/send-verify-email');
+      return res.redirect('/users/send-verify-email');
+    }
+  }
+
+  @Post('resend-verification')
+  @UseGuards(AuthenticatedGuard)
+  async resendVerificationByUser(
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const currentUser = (req as any).user;
+      if (!currentUser?.id) {
+        return res.redirect('/login');
+      }
+
+      await this.usersService.resendVerificationByUser(currentUser.id);
+      req.flash(
+        'success',
+        'Verification email has been sent. Please check your inbox.',
+      );
+      return res.redirect('/users/send-verify-email');
+    } catch (error: any) {
+      req.flash(
+        'error',
+        error.message || 'Failed to send verification email',
+      );
+      return res.redirect('/users/send-verify-email');
     }
   }
 
@@ -151,12 +195,47 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-      const remainingMs = await this.usersService.tokenExpired(token);
-      const user = await this.usersService.findUserByToken(token);
-      return res.render('verify-email', {
-        remainingMs: remainingMs,
-        user: user,
-      });
+      if (token) {
+        const remainingMs = await this.usersService.tokenExpired(token);
+        const user = await this.usersService.findUserByToken(token);
+        return res.render('verify-email', {
+          remainingMs: remainingMs,
+          user: user,
+        });
+      }
+
+      const currentUser = (req as any).user;
+      if (currentUser?.id) {
+        const user = await this.usersService.findOne(currentUser.id);
+        if (!user) {
+          return res.redirect('/login');
+        }
+        if (user.isVerified) {
+          return res.redirect(
+            user.role === 'user' ? '/users/profile' : '/dashboard',
+          );
+        }
+
+        let remainingMs = 0;
+        if (
+          user.verificationToken &&
+          user.verificationTokenExpires &&
+          user.verificationTokenExpires > new Date()
+        ) {
+          remainingMs = user.verificationTokenExpires.getTime() - Date.now();
+        }
+
+        return res.render('verify-email', {
+          remainingMs: remainingMs,
+          user: user,
+        });
+      }
+
+      req.flash(
+        'error',
+        'Silakan login terlebih dahulu untuk mengakses halaman verifikasi.',
+      );
+      return res.redirect('/login');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
       return res.render('verify-email');
@@ -173,17 +252,16 @@ export class UsersController {
     try {
       await this.usersService.verifyEmail(token);
       req.flash('success', 'Email verified successfully! You can now login.');
-      res.redirect('/users/verify-email-success');
+      return res.redirect('/users/verify-email-success');
     } catch (error: any) {
-      const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      return res.redirect('/login');
     }
   }
 
   @Get('verify-email-success')
   async verifyEmailSuccess(@Res() res: Response) {
-    res.render('verify-email-success');
+    return res.render('verify-email-success');
   }
 
   // ============================================
@@ -213,12 +291,14 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
+      createUserDto.confirm_password =
+        createUserDto.confirm_password || createUserDto.password;
       createUserDto.profile = req.body.uploadedImageUrls?.[0];
       await this.usersService.create(createUserDto);
       flashToast(
         req,
         'User Created',
-        'The new user account has been added successfully.',
+        'The new user account has been created and verification email sent.',
       );
       res.redirect('/users');
     } catch (error: any) {
@@ -247,8 +327,52 @@ export class UsersController {
           .map((c) => [c.category.id, c.category]),
       ).values(),
     ];
-    const { dashboardStats, ongoingCourses } =
+    // Dropdown "All Type" pada frame My Learning. Sama seperti `category`,
+    // isinya diturunkan dari program yang benar-benar diikuti student, jadi
+    // filter tidak pernah menawarkan tipe yang tak punya hasil.
+    const courseType = [
+      ...new Map(
+        course
+          .filter((c) => c.courseType)
+          .map((c) => [c.courseType.id, c.courseType]),
+      ).values(),
+    ];
+    const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    const initialSection = String(req.query.tab || '') || 'dashboard';
+    // Course yang dipakai kepala program. Dirender di server, bukan dirakit
+    // Alpine sesudah halaman tampil: kepala setinggi ~370px yang baru muncul
+    // setelah gambar pertama akan mendorong seluruh halaman turun.
+    const requestedCourseId = String(req.query.courseId || '');
+    const activeCourse =
+      course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
+    // Apakah program ini sudah tuntas. Dikirim dari server, bukan dibaca dari
+    // window.userCourses: kolom `progress` tidak ikut terserialisasi ke sisi
+    // klien, jadi panel Certificate sempat menyatakan program yang sudah selesai
+    // sebagai belum selesai.
+    // Ringkasan tab My Logbook sengaja TIDAK dihitung di rute ini.
+    // findLearningStats ada di CoursesService, dan menyuntikkannya ke sini hanya
+    // demi satu blok ringkasan berarti menambah ketergantungan antar modul.
+    // Rute /program/myProgram - satu-satunya jalan masuk ke tab program - sudah
+    // mengirimkannya; di sini ringkasannya cukup tidak ditampilkan.
+    const stats = null;
+    const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
+      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+    );
+
+    // Kapabilitas per tipe program. Template TIDAK PERNAH menyebut nama tipe
+    // programnya; ia membaca caps. Lihat courses/program-type.ts.
+    const caps = capabilitiesForCourse(activeCourse);
+    // Peta untuk sisi klien: student bisa berpindah program tanpa memuat ulang
+    // halaman, jadi sakelar logbook harus ikut berpindah bersamanya.
+    const programCaps = Object.fromEntries(
+      course.map((c) => [c.id, capabilitiesForCourse(c)]),
+    );
+
     return res.render('user/user_profile/index', {
       user: user,
       portfolio,
@@ -256,8 +380,16 @@ export class UsersController {
       logbooks,
       course,
       category,
+      courseType,
       dashboardStats,
       ongoingCourses,
+      programComposition,
+      initialSection,
+      stats,
+      activeCourse,
+      activeCourseCompleted,
+      caps,
+      programCaps,
       bareShell: true,
     });
   }
@@ -265,7 +397,13 @@ export class UsersController {
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/password')
   async editPassword(@Res() res: Response, @Req() req: Request) {
-    return res.render('user/user_profile/password', { user: req.user });
+    // bareShell mematikan navbar dan footer publik di layouts/main.hbs. Tanpa ini
+    // student yang membuka halaman ini langsung mendapat chrome landing di tengah
+    // area login, sementara admin tetap memakai sidebar CMS-nya sendiri.
+    return res.render('user/user_profile/password', {
+      user: req.user,
+      bareShell: true,
+    });
   }
 
   @Roles('user', 'admin', 'super_admin')
@@ -420,12 +558,21 @@ export class UsersController {
         );
         res.redirect('/users/profile');
       } else {
-        req.flash('error', 'Unauthorized access');
+        flashToastError(
+          req,
+          'Password not changed',
+          'You can only change the password of your own account.',
+        );
         res.redirect('/users/profile');
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to update password';
-      req.flash('error', errorMessage);
+      // Pesan dari assertStrongPassword dan dari pemeriksaan password lama
+      // sudah menjelaskan dirinya sendiri, jadi diteruskan apa adanya.
+      flashToastError(
+        req,
+        'Password not changed',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }
@@ -506,6 +653,32 @@ export class UsersController {
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete user');
       res.redirect('/users');
+    }
+  }
+
+  @Roles('super_admin')
+  @Post('resend-verification/:id')
+  async resendVerification(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.usersService.resendVerificationByAdmin(id);
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: 'Verification email resent successfully.',
+      });
+    } catch (error: any) {
+      return res
+        .status(
+          typeof error.getStatus === 'function'
+            ? error.getStatus()
+            : HttpStatus.INTERNAL_SERVER_ERROR,
+        )
+        .json({
+          success: false,
+          message: error.message || 'Failed to resend verification email.',
+        });
     }
   }
 }

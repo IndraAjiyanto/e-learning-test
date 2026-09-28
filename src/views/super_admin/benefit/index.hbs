@@ -13,9 +13,15 @@
   <div class='flex flex-col gap-7'>
 
     <div class='flex flex-col gap-1'>
-      {{> components/ui/super_admin/page_header/index
-        title='Benefit'
-      }}
+      <div class='flex flex-row items-center justify-between'>
+        {{> components/ui/super_admin/page_header/index
+          title='Benefit'
+        }}
+        <div class='flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{#if isMaxBenefit}}bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]{{else}}bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]{{/if}}'>
+          <div class='w-2 h-2 rounded-full {{#if isMaxBenefit}}bg-[#D97706]{{else}}bg-[#10B981]{{/if}}'></div>
+          <span>{{benefitCount}}/5 Benefit Terdaftar</span>
+        </div>
+      </div>
 
       {{> components/ui/super_admin/description/index
         text='Manage the key benefits and value propositions displayed across Kesatria Academy.'
@@ -31,7 +37,18 @@
         searchLabel='Search benefit'
         createHref='/benefit/formCreate'
         createLabel='Create Benefit'
+        hideCreate=isMaxBenefit
       }}
+
+      {{#if isMaxBenefit}}
+      <div class="flex items-center justify-between p-4 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-sm">
+        <div class="flex items-center gap-2.5">
+          <i class="fas fa-circle-info text-[#D97706] text-base shrink-0"></i>
+          <span>Batas maksimal <strong>5 benefit</strong> telah tercapai (5/5). Tombol tambah benefit dinonaktifkan. Hapus atau edit benefit yang ada jika ingin melakukan perubahan.</span>
+        </div>
+        <span class="px-2.5 py-1 bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] font-semibold text-xs rounded-full shrink-0">Batas Kuota Penuh</span>
+      </div>
+      {{/if}}
 
       <div
         class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'

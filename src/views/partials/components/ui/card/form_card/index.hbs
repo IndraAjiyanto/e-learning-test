@@ -1,0 +1,20 @@
+{{!--
+  Komponen: Form Card (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/card/form_card/index.hbs
+
+  Container kartu putih dengan shadow lembut dan border-radius besar untuk formulir pendaftaran dan pembayaran.
+
+  Props:
+  - class : string (opsional, class tambahan wrapper)
+--}}
+
+<div
+  class="
+    w-full bg-white rounded-[20px]
+    shadow-[0px_10px_32px_rgba(10,53,109,0.07)]
+    p-6 sm:p-10 md:p-[44px] flex flex-col gap-6 md:gap-[30px]
+    {{class}}
+  "
+>
+  {{> @partial-block}}
+</div>

@@ -1,0 +1,60 @@
+{{!--
+  Komponen: Page Nav (back + breadcrumb) — L2 Section
+  Lokasi: src/views/partials/components/ui/backoffice/page_nav/index.hbs
+
+  Satu baris di atas isi halaman backoffice: tombol kembali di kiri, jejak
+  remah di kanannya. Dipakai supaya student selalu tahu sedang berada di mana
+  dan punya satu jalan keluar yang sama di setiap halaman.
+
+  Catatan riwayat: remah sempat dihapus dari area student atas permintaan
+  pemilik, lalu diminta kembali untuk SELURUH halaman backoffice. Komponen ini
+  jawaban permintaan yang kedua.
+
+  Props:
+  - back   : string (opsional) — tujuan tombol kembali. Bila kosong, tombolnya
+             tidak dirender sama sekali (bukan tombol mati).
+  - trail  : array (opsional) — [{ label, href }]. Item TERAKHIR dianggap
+             halaman yang sedang dibuka: dirender sebagai teks, bukan tautan,
+             dan diberi aria-current.
+  - class  : string (opsional) — kelas tambahan untuk pembungkusnya.
+
+  Catatan: helper `obj` menerima pasangan POSISIONAL, bukan hash.
+
+  Contoh:
+    {{> components/ui/backoffice/page_nav/index
+        back='/users/profile?tab=learning'
+        trail=(array (obj 'label' 'My Learning' 'href' '/users/profile?tab=learning')
+                     (obj 'label' 'Logbook')) }}
+--}}
+{{#if (or back trail.length)}}
+<div class="flex flex-wrap items-center gap-x-3 gap-y-2 {{class}}">
+  {{#if back}}
+    <a
+      href="{{back}}"
+      class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] no-underline shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
+    >
+      <i class="fa-solid fa-arrow-left text-xs"></i>
+      {{t 'test.common.back'}}
+    </a>
+  {{/if}}
+
+  {{#if trail.length}}
+    <nav aria-label="{{t 'test.common.breadcrumb'}}" class="min-w-0">
+      <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-inter text-sm text-[#737373]">
+        {{#each trail}}
+          <li class="flex min-w-0 items-center gap-2">
+            {{#unless @first}}
+              <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
+            {{/unless}}
+            {{#if this.href}}
+              <a href="{{this.href}}" class="truncate text-[#525252] no-underline transition-colors hover:text-[#003060] hover:underline">{{this.label}}</a>
+            {{else}}
+              <span aria-current="page" class="truncate font-semibold text-[#003060]">{{this.label}}</span>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ol>
+    </nav>
+  {{/if}}
+</div>
+{{/if}}

@@ -1,0 +1,75 @@
+{{!--
+  Section: Paid Schedule / Informasi Jadwal (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/paid_schedule/index.hbs
+
+  Spesifikasi Figma:
+  - Container: width 1728px, height 635px (desktop), padding: 100px 80px, gap: 64px
+  - Header:
+    - Eyebrow: "INFORMASI JADWAL" (Inter 700 14px uppercase #003060)
+    - Headline: "Format Kelas & Jadwal Sesi" (Montserrat 800 36px leading 44px #0B1F3B)
+  - Grid: 4 items (552x132px, gap 30px, flex wrap center)
+    - Item 1: Tanggal Mulai (Calendar icon, table course column startDate)
+    - Item 2: Tanggal Selesai (Calendar icon, table course column startEnd)
+    - Item 3: Tanggal Akhir Registration (Clock icon, table course column date_registration / jam sesi)
+    - Item 4: Opsi Format (Format/Layout icon, table course column method)
+
+  Props:
+  - course : object (course data)
+  - lang   : string
+--}}
+
+<section 
+  id="schedule" 
+  class="relative w-full bg-white font-inter py-16 sm:py-20 lg:py-[100px]"
+  data-node-id="schedule-section"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-12 lg:gap-16">
+    
+    {{!-- Schedule Header (Figma: gap 16px, text-center) --}}
+    <div class="flex flex-col items-center gap-3 sm:gap-4 text-center w-full">
+      {{!-- INFORMASI JADWAL (Inter 700 14px uppercase #003060) --}}
+      <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-tight">
+        INFORMASI JADWAL
+      </span>
+
+      {{!-- Format Kelas & Jadwal Sesi (Montserrat 800 36px #0B1F3B) --}}
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
+        Format Kelas & Jadwal Sesi
+      </h2>
+    </div>
+
+    {{!-- Schedule Info Grid (Figma: flex wrap center, gap 30px) --}}
+    <div class="flex flex-row flex-wrap justify-center items-center gap-5 sm:gap-[30px] w-full max-w-[1140px]">
+      
+      {{!-- Item 1: Tanggal Mulai --}}
+      {{> components/ui/card/schedule_item/index
+          iconType="calendar"
+          label="Tanggal Mulai"
+          value=(ternary course.startDate (formatDateDayMonthYear course.startDate lang) "21 April 2026")
+      }}
+
+      {{!-- Item 2: Tanggal Selesai --}}
+      {{> components/ui/card/schedule_item/index
+          iconType="calendar"
+          label="Tanggal Selesai"
+          value=(ternary course.startEnd (formatDateDayMonthYear course.startEnd lang) "30 April 2026")
+      }}
+
+      {{!-- Item 3: Tanggal Akhir Registration --}}
+      {{> components/ui/card/schedule_item/index
+          iconType="clock"
+          label="Tanggal Akhir Registration"
+          value=(ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) (ternary course.time_start (concat "Setiap Hari, " (formatTime course.time_start) " - " (formatTime course.time_end) " WIB") "Selasa & Kamis, 19:00 - 21:00 WIB"))
+      }}
+
+      {{!-- Item 4: Opsi Format --}}
+      {{> components/ui/card/schedule_item/index
+          iconType="format"
+          label="Opsi Format"
+          value=(ternary course.method (concat (capitalize course.method) " (Online Zoom & Offline Meetup)") "Hybrid (Online Zoom & Offline Meetup)")
+      }}
+
+    </div>
+
+  </div>
+</section>

@@ -1,13 +1,8 @@
 {{!--
-  Page: Admin — Add Attendance (Container - Attendance Form, slicing.pen Z8kPt)
+  Page: Admin — Add Attendance
   Path: admin/attendance/create.hbs
   Route: GET /attendance/create/:sessionId -> POST /attendance/:sessionId (createAttendance)
   Data: { user, users, sessionId }
-  Design: Container w1052 vertical gap28 → Title (Add Attendance 34 #003060 /
-          "Record attendance for the session participants" 16 #718096)
-          → Form Card (white r12 stroke #D9D9D9 p20 gap20): row User*+Status*,
-          row Date*+Note* → Footer card h86 (Cancel w90 + Save Attendance w183,
-          justify end).
   Komponen (reuse): text/page-header, form/form-card (noNumber),
           form/searchable_select (User*), button/primary-button,
           button/secondary-button, form/text-input (Date* icon calendar, Note*).
@@ -29,13 +24,13 @@
     {{!-- Form --}}
     <form method='POST' action='/attendance/{{sessionId}}'
       class='flex flex-col gap-[16px] w-full'
-      @submit='loading = true'>
+      novalidate @focusout="markField($event.target)" @submit='submitGate($event)'>
 
       {{!-- Feature Card --}}
       {{#> components/ui/admin/form/form-card noNumber=true}}
 
         {{!-- Row: User* + Status* --}}
-        <div class='flex flex-row gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           {{> components/ui/admin/form/searchable_select/index
             required=true
             label="User*"
@@ -50,7 +45,7 @@
         </div>
 
         {{!-- Row: Date* + Note* --}}
-        <div class='flex flex-row gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           <div class='flex-1 min-w-0'>
             {{#> components/ui/admin/form/form-field label="Date*" for="attendanceTime" errorId="attendanceTime_error"}}
               {{> components/ui/admin/form/text-input
@@ -73,9 +68,9 @@
 
       {{!-- Footer: Cancel + Save Attendance --}}
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' disabled='!formValid' width='183'}}
+          {{> components/ui/admin/button/primary-button text='Save Attendance' type='submit' loading='loading' width='183'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 

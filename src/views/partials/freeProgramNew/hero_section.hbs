@@ -1,5 +1,5 @@
 <section 
-  class="relative z-10 w-full font-montserrat flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
+  class="relative z-10 w-full font-inter flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
   x-data="{
     currentIndex: 0,
     intervalId: null,
@@ -57,7 +57,7 @@
     
     <!-- Title, Subtitle & Button Mobile -->
     <div class="flex flex-col items-center text-center max-w-[362px] w-full">
-      <h1 class="font-montserrat font-bold text-[28px] leading-[36px] tracking-normal text-[#0B1F3B] text-center mb-4">
+      <h1 class="font-inter font-bold text-[28px] leading-[36px] tracking-normal text-[#0B1F3B] text-center mb-4">
         {{t 'test.categoryFreeProgram.hero.title'}} {{category.name}} {{t 'test.categoryFreeProgram.hero.title1'}} {{t 'test.categoryFreeProgram.hero.title2'}} {{t 'test.categoryFreeProgram.hero.title3'}}
       </h1>
 
@@ -69,7 +69,7 @@
         onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
         class="inline-flex items-center justify-center gap-2.5 bg-[#003060] active:bg-[#001f3f] text-white rounded-[12px] w-full max-w-[362px] h-[46px] shadow-md transition-all cursor-pointer mb-8"
       >
-        <span class="font-montserrat font-semibold text-[15px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.hero.button'}}</span>
+        <span class="font-inter font-semibold text-[15px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.hero.button'}}</span>
         <i class="fa-solid fa-arrow-left text-[15px]"></i>
       </button>
     </div>
@@ -85,13 +85,13 @@
 
   </div>
 
-  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <!-- 2. KONTEN KHUSUS DESKTOP -->
   <div class="hidden sm:flex relative z-10 container mx-auto mt-32 px-6 sm:px-10 lg:px-12 max-w-[1440px] xl:max-w-[1536px] w-full flex-1 flex-col lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-8 pt-8 min-h-[calc(100vh-80px)]">
     
     <!-- Left Column: Title & Button Desktop -->
     <div class="flex-1 max-w-[960px] flex flex-col items-start text-left mb-10 lg:mb-64 self-center lg:self-center">
       <!-- Title -->
-      <h1 class="font-montserrat font-semibold text-3xl sm:text-5xl lg:text-[70px] text-[#000000] leading-tight lg:leading-[85px] tracking-normal text-left mb-8">
+      <h1 class="font-inter font-semibold text-3xl sm:text-5xl lg:text-[70px] text-[#000000] leading-tight lg:leading-[85px] tracking-normal text-left mb-8">
         {{t 'test.categoryFreeProgram.hero.title'}} {{category.name}} {{t 'test.categoryFreeProgram.hero.title1'}} <br class="hidden sm:inline"> {{t 'test.categoryFreeProgram.hero.title2'}} <br class="hidden sm:inline"> {{t 'test.categoryFreeProgram.hero.title3'}}
       </h1>
 
@@ -100,7 +100,7 @@
         onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
         class="inline-flex items-center justify-center gap-[10px] bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-8 w-full sm:w-[281px] h-[54px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer"
       >
-        <span class="font-montserrat font-medium text-lg sm:text-[25px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.hero.button'}}</span>
+        <span class="font-inter font-medium text-lg sm:text-[25px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.hero.button'}}</span>
         <i class="fa-solid fa-arrow-down text-base sm:text-lg"></i>
       </button>
     </div>

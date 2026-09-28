@@ -1,16 +1,9 @@
 {{!--
-  Page: Admin — Edit Mentor Logbook (Container - Logbook Form (Edit), slicing.pen Hwecx)
+  Page: Admin — Edit Mentor Logbook
   Path: admin/mentor_logbook/edit.hbs
   Route: GET /logbooks-mentor/formEdit/:mentor_logbookId -> PATCH /logbooks-mentor/:mentor_logbookId
   Data: { user, mentor_logbook (MentorLogbook + user + session) }
-  Design: redesign FROM create (mentor_logbook/create.hbs, iapom) — struktur 1:1
-          (w1052 gap28, Title, Form Logbook card: Row Activity* + Obstacle*,
-          Activity Details* textarea 128, Photo Documentation* h200 dengan oldPhoto,
-          footer Cancel 90 + Update).
-          Perbedaan vs create (Hwecx): Title Edit Mentor Logbook / subtitle
-          "Update the mentor logbook details for this session", semua input
-          prefilled, tombol Update Logbook, submit PATCH (tanpa ganti foto =
-          pertahankan lama).
+  Beda dari create: semua input prefilled, submit PATCH (tanpa ganti foto = pertahankan lama).
   Komponen (reuse, sama dengan create): text/page-header, form/form-card,
           button/primary-button, button/secondary-button,
           logbook/logbook-mentor-form-fields (prefill + showOldPhoto, tanpa
@@ -30,6 +23,7 @@
       x-data="{
         ...adminFormGate(),
         loading: false,
+        showFull: false,
         errorMessage: '',
         isValid: true,
         fileName: 'Existing Image',
@@ -63,7 +57,7 @@
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' mentor_logbook.session.id) width='90'}}
           {{> components/ui/admin/button/primary-button text='Update Logbook' type='submit' loading='loading' disabled='!canSubmit() || !isDirty' width='200'}}
         </div>

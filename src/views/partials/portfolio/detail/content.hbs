@@ -1,0 +1,33 @@
+{{!--
+  Komponen: Detail Portfolio Main Content (Description & Overview)
+  Lokasi: src/views/partials/portfolio/detail/content.hbs
+--}}
+<div class="space-y-6">
+  <!-- Project Description Card -->
+  <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+    <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
+      {{t "test.detailPortfolio.projectDescription"}}
+    </h2>
+    <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569]">
+      {{#if portfolio.description}}
+        <p>{{portfolio.description}}</p>
+      {{else}}
+        <p class="text-gray-400 italic">No description provided.</p>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- Project Overview Card -->
+  <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+    <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
+      {{t "test.detailPortfolio.projectOverview"}}
+    </h2>
+    <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] prose prose-sm max-w-none">
+      {{#if portfolio.content}}
+        <p>{{portfolio.content}}</p>
+      {{else}}
+        <p class="text-gray-400 italic">No detailed overview provided.</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

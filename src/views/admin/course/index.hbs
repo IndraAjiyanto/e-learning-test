@@ -1,6 +1,5 @@
 {{!--
-  Page: Admin Program List V2 — LkmRR
-  Pencil export: page-program-list-v2.html (html-tailwind)
+  Page: Admin Program List V2
   Layout: main.hbs (res.render layout default via express-handlebars)
   Komponen modular: partials/components/ui/admin/
 --}}
@@ -19,7 +18,9 @@
       {{!-- Toolbar --}}
       <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
         {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
-        {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
+        <div class='w-[158px] shrink-0 self-end sm:self-auto'>
+          {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
+        </div>
       </div>
 
       {{!-- Table (1 komponen) --}}
@@ -27,6 +28,9 @@
 
     </div>
   </div>
+
+  {{!-- Modal konfirmasi toggle launch — dipicu confirmToggleLaunch() di kelasTable() --}}
+  {{> components/ui/admin/modal/confirm_action/index}}
 </div>
 
 <script>
@@ -95,6 +99,24 @@ function kelasTable() {
       await this.fetchKelas();
     },
 
+    // Dipanggil dari @change checkbox launch: menahan aksi lewat modal konfirmasi
+    // sebelum benar-benar toggle. Checkbox dikembalikan ke state model saat ini
+    // dulu (native checked sudah berubah duluan oleh browser) supaya tampilan
+    // tidak berubah sebelum user menekan Confirm di modal.
+    confirmToggleLaunch(courseId, index, event) {
+      const course = this.kelasList[index];
+      const willLaunch = !course.launch;
+      event.target.checked = course.launch;
+
+      openConfirmModal({
+        title: willLaunch ? 'Launch Program?' : 'Unlaunch Program?',
+        description: `Are you sure you want to ${willLaunch ? 'launch' : 'unlaunch'} "${course.name}"?`,
+        confirmLabel: willLaunch ? 'Launch' : 'Unlaunch',
+        cancelLabel: 'Cancel',
+        onConfirm: () => this.toggleLaunch(courseId, index),
+      });
+    },
+
     async toggleLaunch(courseId, index) {
       const prev = this.kelasList[index].launch;
       try {
@@ -120,3 +142,7 @@ function kelasTable() {
   }
 }
 </script>
+
+{{!-- Toast sukses untuk proses program (create, switch launch/status, delete)
+     yang redirect balik ke /program. Dipicu via flashToast() di courses.controller. --}}
+{{> components/ui/admin/toast/success/index toast=toast }}

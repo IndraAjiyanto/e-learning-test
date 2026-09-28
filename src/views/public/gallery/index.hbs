@@ -1,5 +1,5 @@
 {{!--
-  Halaman: Gallery (user) - Figma "Gallery" 250:2333
+  Halaman: Gallery (user)
   Lokasi: src/views/public/gallery/index.hbs
   Satu pohon markup, base + lg. .page-shell, sizeClass.
   Header polos (tanpa eyebrow/divider) -> filter (label + search + pill "All Programs" + Clear)
@@ -45,7 +45,7 @@
 
       <div class="flex w-full flex-col">
 
-        {{!-- masonry: explicit columns (round-robin distribution) + checkerboard tall/short per Figma masonry-grid 596:379 --}}
+        {{!-- masonry: explicit columns (round-robin distribution) + checkerboard tall/short --}}
         <div x-show="amount > 0" class="flex flex-col gap-6 sm:flex-row sm:items-start">
           <template x-for="(col, ci) in masonryColumns" :key="ci">
             <div class="flex flex-1 flex-col gap-6">
@@ -63,7 +63,7 @@
                       onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
                       class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {{!-- Figma: flat 40% black wash + caption top-left --}}
+                    {{!-- flat 40% black wash + caption top-left --}}
                     <div class="absolute inset-0 bg-black/40 transition group-hover:bg-black/50"></div>
                     <div class="absolute inset-x-0 top-0 flex flex-col gap-1.5 p-4">
                       <h3 class="font-inter text-base font-bold leading-snug text-white" x-text="getByLang(item.title, lang)"></h3>
@@ -76,7 +76,7 @@
           </template>
         </div>
 
-        {{!-- Figma has a "View All Activities" link here; no dedicated activities page exists yet, so it points to the landing page for now --}}
+        {{!-- "View All Activities": no dedicated activities page exists yet, so it points to the landing page for now --}}
         <a
           x-show="amount > 0"
           href="/dashboard"

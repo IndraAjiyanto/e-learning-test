@@ -1,0 +1,126 @@
+{{!--
+  Komponen: Detail Portfolio Sidebar (Student Profile, Meta Info, Tools Used, & Action CTA)
+  Lokasi: src/views/partials/portfolio/detail/sidebar.hbs
+--}}
+<div class="space-y-4">
+  <!-- Student Profile & Program Details Card -->
+  <div class="bg-[#FFFFFF] rounded-2xl p-6 border border-[#D9D9D9]">
+    <!-- Creator Row -->
+    <div class="flex items-center gap-3.5 pb-5 border-b border-[#D9D9D9]">
+      <div class="size-12 rounded-full bg-[#DCEEFB] text-[#006699] font-bold text-lg flex items-center justify-center shrink-0 overflow-hidden">
+        {{#if portfolio.user.profile}}
+          <img src="{{portfolio.user.profile}}" alt="{{portfolio.user.username}}" class="w-full h-full object-cover" />
+        {{else}}
+          <span>{{#if portfolio.user.username}}{{substring portfolio.user.username 0 1}}{{else}}A{{/if}}</span>
+        {{/if}}
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 class="text-sm font-bold text-[#0B1F3B] truncate leading-tight">
+          {{#if portfolio.user.username}}{{portfolio.user.username}}{{else}}Alumni Kesatria{{/if}}
+        </h3>
+        <p class="text-xs text-[#94A3B8] truncate leading-tight mt-0.5">
+          {{#if portfolio.user.email}}{{portfolio.user.email}}{{else}}-{{/if}}
+        </p>
+      </div>
+    </div>
+
+    <!-- Program Meta Details -->
+    <div class="space-y-4 pt-5">
+      <!-- Program Completed -->
+      <div class="flex items-start gap-3">
+        <div class="size-8 rounded-lg bg-[#EBF5FB] text-[#006699] flex items-center justify-center shrink-0 mt-0.5">
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-5.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path>
+          </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-[10px] font-bold tracking-wider text-[#94A3B8] uppercase">
+            {{t "test.detailPortfolio.programCompleted"}}
+          </p>
+          <p class="font-inter font-medium text-[14px] leading-[20px] text-[#1E293B] mt-0.5">
+            {{#if portfolio.course.name}}{{portfolio.course.name}}{{else}}-{{/if}}
+          </p>
+        </div>
+      </div>
+
+      <!-- Completion Date -->
+      <div class="flex items-start gap-3">
+        <div class="size-8 rounded-lg bg-[#EBF5FB] text-[#006699] flex items-center justify-center shrink-0 mt-0.5">
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-[10px] font-bold tracking-wider text-[#94A3B8] uppercase">
+            {{t "test.detailPortfolio.completionDate"}}
+          </p>
+          <p class="font-inter font-medium text-[14px] leading-[20px] text-[#1E293B] mt-0.5">
+            {{#if portfolio.course.startEnd}}
+              {{formatDate portfolio.course.startEnd lang}}
+            {{else if portfolio.createdAt}}
+              {{formatDate portfolio.createdAt lang}}
+            {{else}}
+              -
+            {{/if}}
+          </p>
+        </div>
+      </div>
+
+      <!-- Project Duration -->
+      <div class="flex items-start gap-3">
+        <div class="size-8 rounded-lg bg-[#EBF5FB] text-[#006699] flex items-center justify-center shrink-0 mt-0.5">
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-[10px] font-bold tracking-wider text-[#94A3B8] uppercase">
+            {{t "test.detailPortfolio.projectDuration"}}
+          </p>
+          <p class="font-inter font-medium text-[14px] leading-[20px] text-[#1E293B] mt-0.5">
+            {{#if portfolio.course.month}}
+              {{portfolio.course.month}} {{t "test.detailPortfolio.months"}}
+            {{else}}
+              0 {{t "test.detailPortfolio.months"}}
+            {{/if}}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tools Used Card -->
+  <div class="bg-[#FFFFFF] rounded-2xl p-6 border border-[#D9D9D9]">
+    <h3 class="text-xs font-bold text-[#94A3B8] mb-3 uppercase tracking-wider font-inter">
+      {{t "test.detailPortfolio.technologiesUsed"}}
+    </h3>
+    <div class="flex flex-wrap gap-2">
+      {{#if portfolio.course.technologies}}
+        {{#each portfolio.course.technologies}}
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F1F5F9] text-[#334155] text-xs font-semibold rounded-full border border-[#D9D9D9]">
+            {{#if this.imgUrl}}
+              <img src="{{this.imgUrl}}" alt="{{this.name}}" class="size-3.5 object-contain" />
+            {{/if}}
+            <span>{{this.name}}</span>
+          </span>
+        {{/each}}
+      {{else}}
+        <span class="inline-flex items-center px-3 py-1 bg-[#F1F5F9] text-[#334155] text-xs font-semibold rounded-full border border-[#D9D9D9]">
+          Web Technologies
+        </span>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- View Portfolio Website CTA Button using components/ui/btn_action -->
+  <div>
+    {{> components/ui/btn_action
+      href=portfolio.link
+      target='_blank'
+      text=(t 'test.detailPortfolio.buttonViewPortfolio')
+      variant='primary'
+      class='w-full !py-3.5 !rounded-xl text-xs sm:text-sm font-semibold'
+      textClass='text-xs sm:text-sm font-semibold'
+    }}
+  </div>
+</div>

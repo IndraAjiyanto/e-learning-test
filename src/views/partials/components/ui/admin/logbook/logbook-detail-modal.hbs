@@ -9,7 +9,6 @@
            logbook/logbook-detail-card (baru, Activity/Key Activities/Obstacle/Documentation Link),
            logbook/logbook-detail-field (baru, User Info + Date & Time),
            logbook/logbook-detail-photo (baru).
-  Pencil (Container - User Property ZP8Hp 980x820 r20 clip vertical):
   header navy h98 + body white stroke #D9D9D9 p14 28 gap10 vertical:
   Container Status row h22 (Status Montserrat 14/600 #171717 + badge Pending),
   Main Content gap14 horizontal: List Container w560 vertical gap12 (4 sky cards)
@@ -38,7 +37,7 @@
 
       {{!-- Status row --}}
       <div class='w-full h-[22px] shrink-0 flex flex-row gap-[8px] justify-between items-center'>
-        <div class='text-[14px]/[normal] text-[#171717] font-montserrat font-semibold text-left'>Status</div>
+        <div class='text-[14px]/[normal] text-[#171717] font-inter font-semibold text-left'>Status</div>
         {{> components/ui/admin/logbook/logbook-status-badge statusVar='selectedLogbook.process'}}
       </div>
 
@@ -59,7 +58,7 @@
           <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[10px] p-[20px_14px] justify-start items-stretch bg-[#F0F9FF] [outline:1px_solid_#BAE6FD] [outline-offset:-0.5px] rounded-[10px]'>
             <div class='w-full h-[24px] shrink-0 flex flex-row gap-[4px] justify-start items-center'>
               <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
-              <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-montserrat font-semibold text-left'>User Information</div>
+              <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-inter font-semibold text-left'>User Information</div>
             </div>
             <div class='w-full flex flex-col gap-[8px] justify-start items-stretch'>
               {{> components/ui/admin/logbook/logbook-detail-field label='Full Name:' valueVar='selectedLogbook?.user?.username'}}
@@ -71,7 +70,7 @@
           <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[10px] p-[20px_14px] justify-start items-stretch bg-[#F0F9FF] [outline:1px_solid_#BAE6FD] [outline-offset:-0.5px] rounded-[10px]'>
             <div class='w-full h-[24px] shrink-0 flex flex-row gap-[4px] justify-start items-center'>
               <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='shrink-0'><path d='M8 2v4'/><path d='M16 2v4'/><rect width='18' height='18' x='3' y='4' rx='2'/><path d='M3 10h18'/></svg>
-              <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-montserrat font-semibold text-left'>Date &amp; Time</div>
+              <div class='text-[16px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#171717] font-inter font-semibold text-left'>Date &amp; Time</div>
             </div>
             <div class='w-full flex flex-col gap-[8px] justify-start items-stretch'>
               {{> components/ui/admin/logbook/logbook-detail-field label='Created:' valueVar="selectedLogbook?.createdAt ? new Date(selectedLogbook.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : null"}}

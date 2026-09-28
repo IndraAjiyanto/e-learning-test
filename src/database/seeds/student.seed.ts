@@ -233,9 +233,24 @@ async function bootstrap() {
     const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
     const rows: Material[] = [];
     sessions.slice(0, Math.min(6, sessions.length)).forEach((session, i) => {
+      // Sengaja lebih dari satu berkas sejenis: halaman sesi menyebut materi
+      // satu per satu, dan kasus "satu sesi punya beberapa PDF" harus benar-benar
+      // muncul di data contoh, bukan hanya dibayangkan.
       rows.push(
         materialRepo.create({
           title: `Panduan tertulis — ${session.topic}`,
+          file: PDF,
+          fileType: 'pdf',
+          session,
+        }),
+        materialRepo.create({
+          title: `Lembar latihan — ${session.topic}`,
+          file: PDF,
+          fileType: 'pdf',
+          session,
+        }),
+        materialRepo.create({
+          title: `Ringkasan — ${session.topic}`,
           file: PDF,
           fileType: 'pdf',
           session,

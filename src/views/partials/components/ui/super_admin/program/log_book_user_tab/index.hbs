@@ -192,6 +192,7 @@
     // menyalin nilainya sekali sehingga tabel berhenti bereaksi.
     const table = clientTable({
       url: '/program/logbookUser/' + courseId,
+      sortKey: 'createdAt',
       searchKeys: [
         'user.username',
         'user.email',

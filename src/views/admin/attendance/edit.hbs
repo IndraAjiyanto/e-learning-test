@@ -1,11 +1,9 @@
 {{!--
-  Page: Admin — Edit Attendance (mirror Container - Attendance Form, slicing.pen Z8kPt)
+  Page: Admin — Edit Attendance
   Path: admin/attendance/edit.hbs
   Route: GET /attendance/formEdit/:id -> PATCH /attendance/:attendanceId/:sessionId
   Data: { user, attendance } (Attendance + session + user)
-  Design: mirror Add Attendance (form-card p20 gap20, footer Cancel w90 +
-          Update Attendance w183). Tanpa field User (perilaku lama: user tidak
-          diubah saat edit) — kolom Status/Date/Note pre-filled.
+  Tanpa field User (perilaku lama: user tidak diubah saat edit); Status/Date/Note prefilled.
   Komponen: sama seperti create (page-header, form-card, form-field,
           text-input, primary/secondary-button,
           attendance/attendance-status-select dengan initialStatus).
@@ -31,7 +29,7 @@
       {{#> components/ui/admin/form/form-card noNumber=true}}
 
         {{!-- Row: User (read-only) + Status* --}}
-        <div class='flex flex-row gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           <div class='flex-1 min-w-0'>
             {{#> components/ui/admin/form/form-field label="User" for="username"}}
               {{> components/ui/admin/form/text-input
@@ -45,7 +43,7 @@
         </div>
 
         {{!-- Row: Date* + Note* --}}
-        <div class='flex flex-row gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
           <div class='flex-1 min-w-0'>
             {{#> components/ui/admin/form/form-field label="Date*" for="attendanceTime" errorId="attendanceTime_error"}}
               {{> components/ui/admin/form/text-input
@@ -70,7 +68,7 @@
 
       {{!-- Footer: Cancel + Update Attendance --}}
       {{#> components/ui/admin/form/form-card noNumber=true}}
-        <div class='flex flex-row justify-end items-center gap-[12px] w-full'>
+        <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' attendance.session.id) width='90'}}
           {{> components/ui/admin/button/primary-button text='Update Attendance' type='submit' loading='loading' disabled='!formValid || !isDirty' width='183'}}
         </div>

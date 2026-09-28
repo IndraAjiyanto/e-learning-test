@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,6 +14,7 @@ import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Installment } from './installment.entity';
 import { Invoice } from './invoice.entity';
+import { InstallmentPayment } from './installment-payment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 
@@ -116,4 +118,10 @@ export class Payment {
   })
   @Exclude()
   installment: Installment;
+
+  @OneToMany(
+    () => InstallmentPayment,
+    (installmentPayment) => installmentPayment.payment,
+  )
+  installmentPayments: InstallmentPayment[];
 }

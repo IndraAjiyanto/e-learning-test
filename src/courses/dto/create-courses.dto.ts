@@ -9,7 +9,11 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { Method } from 'src/entities/course.entity';
+import {
+  Method,
+  PROGRAM_TYPES,
+  ProgramType,
+} from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
 /**
@@ -35,6 +39,19 @@ export class CreateCoursesDto {
 
   @IsUUID()
   courseTypeId: string;
+
+  /**
+   * Bentuk belajar program. Tidak wajib dikirim: program yang tidak
+   * menyebutkannya tetap bootcamp, sama seperti seluruh program yang sudah ada.
+   */
+  @IsOptional()
+  @IsEnum(PROGRAM_TYPES)
+  programType?: ProgramType;
+
+  /** Sakelar logbook. Hanya berarti pada program non_bootcamp. */
+  @IsOptional()
+  @IsBoolean()
+  logbookEnabled?: boolean;
 
   @IsOptional()
   @IsUUID()

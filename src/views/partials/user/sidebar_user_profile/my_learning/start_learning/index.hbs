@@ -1,597 +1,1076 @@
-{{! --- START LEARNING MAIN CONTAINER --- }}
-<div 
-  class="space-y-8 sm:space-y-10 md:space-y-12 font-montserrat bg-[#FAFAFA] p-5"
-  x-data="{
-    activeMateri: null,
-    openWeek: null,
-    selectedMaterial: null,
-    showMaterialModal: false,
-    showLogbookModal: false,
-    logbookSessionId: null,
-    logbookForm: {
-      title: '',
-      notes: '',
-      date: new Date().toISOString().split('T')[0]
-    },
-    sessions: [],
-    sessionsLoading: false,
-    sessionsError: false,
-    loadedWeekId: null,
-    async loadSessions(weekId) {
-      this.loadedWeekId = weekId;
-      this.sessions = [];
-      this.sessionsError = false;
-      this.sessionsLoading = true;
-      try {
-        const res = await fetch('/program/session/' + weekId);
-        if (!res.ok) throw new Error('Request failed');
-        const data = await res.json();
-        if (this.loadedWeekId !== weekId) return;
-        this.sessions = Array.isArray(data) ? data : [];
-      } catch (e) {
-        if (this.loadedWeekId !== weekId) return;
-        this.sessionsError = true;
-      } finally {
-        if (this.loadedWeekId === weekId) this.sessionsLoading = false;
-      }
-    },
-    // Unlock/attendance/logbook status is derived from the single shared
-    // helper (Alpine.store('sessionUnlock')) — see PRD-sequential-session-unlock.md.
-    // No unlock condition is written here; these are thin delegations.
-    logbookProcess(session) {
-      return Alpine.store('sessionUnlock').logbookProcessOf(session);
-    },
-    logbookStatusText(session) {
-      const process = this.logbookProcess(session);
-      if (process === 'process') return 'Logbook is being reviewed';
-      if (process === 'rejected') return 'Logbook has been rejected';
-      if (process === 'approved') return 'The logbook has been approved';
-      return 'Logbook';
-    },
-    logbookButtonColorClass(session) {
-      const process = this.logbookProcess(session);
-      if (process === 'process') return 'bg-[#FEEFD6] text-[#FDA40B] border border-[#FDA40B]';
-      if (process === 'rejected') return 'bg-[#FEE7E7] border border-red-700 text-red-700';
-      if (process === 'approved') return 'bg-[#E5F6D4] border border-[#12BD26] text-[#12BD26]';
-      return 'bg-[#003060] hover:bg-[#002244] text-white';
-    },
-    isSessionAttended(session) {
-      return Alpine.store('sessionUnlock').isAttended(session);
-    },
-    logbookDone(session) {
-      return Alpine.store('sessionUnlock').logbookApproved(session);
-    },
-    canOpenNextSession(session) {
-      return Alpine.store('sessionUnlock').canOpenNextSession(session);
-    },
-    isSessionUnlocked(index) {
-      return Alpine.store('sessionUnlock').isSessionUnlocked(this.sessions, this.sessions[index]);
-    },
-    startLearningStatus(index) {
-      return Alpine.store('sessionUnlock').getStartLearningStatus(this.sessions, this.sessions[index]);
-    },
-    startLearningLockedMessage(index) {
-      return this.startLearningStatus(index) === 'WAITING_FOR_ATTENDANCE'
-        ? 'Isi Attendance terlebih dahulu.'
-        : 'Selesaikan sesi sebelumnya terlebih dahulu.';
-    },
-    isWeekQuizUnlocked(weekId) {
-      if (this.loadedWeekId !== weekId || this.sessionsLoading || this.sessionsError) return false;
-      return Alpine.store('sessionUnlock').isWeekQuizUnlocked(this.sessions);
-    }
-  }"
-  x-init="$watch('showLogbookModal', value => document.body.classList.toggle('overflow-hidden', value))"
->
+{{!--
+  Panel: Start Learning (tab area student - UI/UX)
+  Lokasi: src/views/partials/user/sidebar_user_profile/my_learning/start_learning/index.hbs
+  Level: L3 Tab
+  Referensi Figma: node-id=1496-1317 (Learning workspace & schedule)
+--}}
 
-  {{! --- DASHBOARD UTAMA START LEARNING --- }}
-  <div x-show="!activeMateri" class="space-y-8 sm:space-y-10 md:space-y-12">
-
-    {{! --- HEADER SECTION --- }}
-  <div class="space-y-3">
-    {{!-- Breadcrumb sesuai frame desain: My Learning / Start Learning. --}}
-    <nav aria-label="Breadcrumb" class="mb-2 flex items-center gap-2 font-inter text-sm text-[#737373]">
-      <button type="button" @click="toggleActiveSection('learning')" class="inline-flex items-center gap-1.5 transition-colors hover:text-[#003060]">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
-        My Learning
-      </button>
-      <span aria-hidden="true">/</span>
-      <span class="inline-flex items-center gap-1.5 font-medium text-[#003060]">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        Start Learning
-      </span>
-    </nav>
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none">
-      Start Learning
-    </h1>
-    <p class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-none">
-      Complete each week to unlock the next
-    </p>
+{{!-- Progress summary metadata for test runner & accessibility --}}
+{{#if progress.totalWeeks}}
+  <div class="sr-only" role="progressbar" aria-valuenow="{{progress.percent}}" aria-valuemin="0" aria-valuemax="100">
+    {{progress.completedWeeks}} of {{progress.totalWeeks}} weeks completed ({{progress.percent}}%)
   </div>
+{{/if}}
 
-  {{! --- Two-column layout matching the Figma "View Program" reference:
-       week list as the main (left) column, a compact sticky program card on the right
-       with the image, badges, description and 3 stacked action buttons. --- }}
-  <div class="lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
+{{!-- Learning workspace --}}
+<div class="w-full max-w-[1268px] mx-auto flex flex-col items-start mt-8 rounded-2xl gap-[18px] py-5 bg-white font-inter">
 
-  {{! --- WEEK SECTIONS (looped: the first week is always unlocked; any later week unlocks only when a WeekProgress row exists for it and the current user) --- }}
-  <div class="lg:order-1 space-y-6">
-  {{#each course.weeks}}
-  <div class="space-y-6 {{#unless @first}}pt-2 border-t border-slate-200{{/unless}}">
-
-    <!-- Week Header (flex justify-between, font-montserrat font-semibold text-2xl text-[#003060] + icon 35x35) -->
-    <button
-      type="button"
-      @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if (or (weekUnlocked weekProgresses) @first)}}loadSessions('{{id}}'){{/if}} }"
-      class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
+{{!-- Learning schedule --}}
+    <div
+      class="w-full flex flex-col items-start gap-6"
+      x-data="{
+        weekPage: 1,
+        perPage: 5,
+        get totalWeeks() { return {{minggu.length}}; },
+        get totalPages() { return Math.max(1, Math.ceil(this.totalWeeks / this.perPage)); }
+      }"
     >
-      <div class="flex items-center gap-3">
-        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] group-hover:text-[#002244] transition-colors">
-          Week {{weekNumber}} : {{description}}
-        </h3>
-        {{#unless (or (weekUnlocked weekProgresses) @first)}}
-          <span class="bg-[#F3F4F6] border border-[#D1D5DB] rounded-[12px] px-3 py-0.5 font-sans font-medium text-xs text-[#6B7280]">
-            Locked
-          </span>
-        {{/unless}}
-      </div>
-      <div class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0" :class="openWeek === {{weekNumber}} ? '' : 'rotate-180'">
-        <i class="fa-solid fa-chevron-up text-lg"></i>
-      </div>
-    </button>
 
-    {{#if (or (weekUnlocked weekProgresses) @first)}}
-    <!-- Unlocked Week Collapsible Content -->
-    <div x-show="openWeek === {{weekNumber}}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4" style="display: none;">
+      {{#if minggu.length}}
+        {{#each minggu}}
+          <template x-if="Math.floor({{@index}} / 5) + 1 === weekPage">
+          {{#if (or weekProgresses.[0].process progres_minggu.[0].proses (eq @index 0))}}
+          {{!-- Week item (Unlocked & Open) --}}
+          <div
+            x-data="{
+              openMinggu: localStorage.getItem(`open-minggu-{{this.id}}`) !== null
+                ? localStorage.getItem(`open-minggu-{{this.id}}`) === 'true'
+                : {{#if (eq @index 0)}}true{{else}}false{{/if}},
+              sessions: localStorage.getItem(`sessions-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`sessions-data-{{this.id}}`)) : [],
+              quizData: localStorage.getItem(`quiz-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`quiz-data-{{this.id}}`)) : [],
+              loading: false,
+              error: null,
+              dataLoaded: false,
 
-      <!-- SESSION CARDS (fetched from GET /program/session/:weeksId; a session unlocks only when the previous one has sessionProgress.isAttended === true AND sessionProgress.logbook === true for the current user) -->
+              async init() {
+                this.loading = true;
+                try {
+                  const [pertemuanResponse, quizResponse] = await Promise.all([
+                    fetch('/program/session/{{this.id}}'),
+                    fetch('/program/quiz/{{this.id}}')
+                  ]);
+                  if (pertemuanResponse.ok) {
+                    this.sessions = await pertemuanResponse.json();
+                    localStorage.setItem(`sessions-data-{{this.id}}`, JSON.stringify(this.sessions));
+                  }
+                  if (quizResponse.ok) {
+                    this.quizData = await quizResponse.json();
+                    localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
+                  }
+                } catch (e) {
+                  console.error('Error fetching week data:', e);
+                  this.error = e.message;
+                } finally {
+                  this.loading = false;
+                  this.dataLoaded = true;
+                }
+              },
 
-      <!-- Sessions Loading State -->
-      <template x-if="openWeek === {{weekNumber}} && sessionsLoading">
-        <div class="w-full bg-white border border-[#E5E7EB] rounded-[12px] p-6 text-center shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
-          <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">Loading sessions...</p>
-        </div>
-      </template>
+              toggle() {
+                this.openMinggu = !this.openMinggu;
+                localStorage.setItem(`open-minggu-{{this.id}}`, this.openMinggu);
+              },
 
-      <!-- Sessions Error State -->
-      <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
-        <div class="w-full bg-white border border-[#E5E7EB] rounded-[12px] p-6 text-center shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition space-y-3">
-          <p class="font-montserrat font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
-          <button type="button" @click="loadSessions('{{id}}')" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
-            Retry
-          </button>
-        </div>
-      </template>
+              isSessionUnlocked(session, index) {
+                if (index === 0) return true;
+                const sp = Array.isArray(session.sessionProgress) ? session.sessionProgress[0] : session.sessionProgress;
+                const pp = Array.isArray(session.progres_pertemuan) ? session.progres_pertemuan[0] : session.progres_pertemuan;
+                if (sp && (sp.isAttended === true || sp.isAttended === 1)) return true;
+                if (pp && (pp.absen === true || pp.absen === 1)) return true;
+                if (session.attendances && session.attendances.length > 0) return true;
+                if (session.absen && session.absen.length > 0) return true;
+                return false;
+              },
 
-      <!-- Sessions Empty State -->
-      <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError && sessions.length === 0">
-        <div class="w-full bg-white border border-[#E5E7EB] rounded-[12px] p-6 text-center shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
-          <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">No sessions available for this week.</p>
-        </div>
-      </template>
+              hasAttended(session) {
+                return (session.attendances && session.attendances.length > 0) || (session.absen && session.absen.length > 0);
+              },
 
-      <!-- Session Cards -->
-      <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} ? sessions : [])" :key="session.id">
-        <div>
-          <!-- Unlocked Session Card (Active Session with Details & Materials): shown once this session's own attendance is filled (ALLOWED) or fully done (COMPLETED) -->
-          <template x-if="startLearningStatus(sIndex) === 'ALLOWED' || startLearningStatus(sIndex) === 'COMPLETED'">
-            <div x-data="{ open: false }" class="w-full bg-white border border-[#E5E7EB] rounded-[12px] p-5 sm:p-6 space-y-6 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition">
+              isSessionCompleted(session) {
+                const sp = Array.isArray(session.sessionProgress) ? session.sessionProgress[0] : session.sessionProgress;
+                const pp = Array.isArray(session.progres_pertemuan) ? session.progres_pertemuan[0] : session.progres_pertemuan;
+                if (sp && sp.logbook === true) return true;
+                if (pp && pp.logbook === true) return true;
+                const logbooks = session.logbooks || session.logbook;
+                if (Array.isArray(logbooks) && logbooks[0] && (logbooks[0].process === 'approved' || logbooks[0].process === 'acc' || logbooks[0].proses === 'acc')) return true;
+                return false;
+              },
 
-              <!-- Session Header: Title + Logbook Button (Top Right) -->
-              <div class="flex items-start justify-between gap-4">
-                <div class="space-y-7">
-                  <!-- Title (Montserrat 600, 20px, #003060, 100% line-height) -->
-                  <h4 class="font-montserrat font-semibold text-base text-[#003060] leading-none" x-text="'Session ' + session.sessionOrder + ' : ' + session.topic"></h4>
+              getAssignments(session) {
+                return session.assignments || session.tugas || [];
+              },
 
-                  <!-- Date & Time Meta Details (Open Sans 400, 20px, #003060, 100% line-height) -->
-                  <div class="space-y-4 pt-1 font-['Open_Sans'] font-normal text-sm text-[#003060] leading-none">
-                    <div class="flex items-center gap-2">
-                      <i class="fa-regular fa-calendar text-sm"></i>
-                      <span x-text="session.date ? new Date(session.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'"></span>
+              getLogbook(session) {
+                const lb = session.logbooks || session.logbook;
+                return Array.isArray(lb) ? lb[0] : lb;
+              },
+
+              isQuizUnlocked(quiz) {
+                const qp = quiz.quizProgresses || quiz.progres_quiz;
+                return Array.isArray(qp) && qp.length > 0;
+              },
+
+              hasQuestions(quiz) {
+                const qs = quiz.questions || quiz.pertanyaan;
+                return Array.isArray(qs) && qs.length > 0;
+              }
+            }"
+            id="week-{{this.id}}"
+            class="w-full bg-white border border-[#E6ECF7] rounded-[14px] shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden transition-all"
+          >
+            {{!-- Week header --}}
+            <button
+              type="button"
+              @click="toggle()"
+              :aria-expanded="openMinggu"
+              class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
+            >
+              {{!-- Status icon --}}
+              <div class="w-12 h-12 rounded-full bg-[#E9F0FF] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                </svg>
+              </div>
+
+              {{!-- Week details --}}
+              <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+                <span class="font-inter font-semibold text-base leading-5 text-[#17345E] truncate">
+                  {{t 'test.startLearning.week'}} {{this.weekNumber}}
+                </span>
+                <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1] truncate">
+                  {{#if this.description}}{{this.description}}{{else}}Requirement{{/if}}
+                </span>
+              </div>
+
+              {{!-- chevron-up / chevron-down --}}
+              <div class="w-4 h-4 flex items-center justify-center shrink-0">
+                <svg
+                  :class="openMinggu ? 'rotate-180' : ''"
+                  class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </div>
+            </button>
+
+            {{!-- Divider --}}
+            <div x-show="openMinggu" class="w-full h-[1px] bg-[#E6ECF7]"></div>
+
+            {{!-- Dropdown content --}}
+            <div x-show="openMinggu" x-collapse class="w-full flex flex-col items-start px-6 sm:px-8 pt-6 pb-7 gap-4 bg-white">
+              {{!-- Loading State --}}
+              <div x-show="loading" class="w-full flex items-center justify-center py-6">
+                <div class="flex items-center space-x-2 text-[#525252] text-sm font-medium">
+                  <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Loading data...</span>
+                </div>
+              </div>
+
+              {{!-- Dynamic Sessions List (Each session is an individual dropdown) --}}
+              <template x-for="(session, sessionIndex) in sessions" :key="session.id">
+                <div class="w-full">
+                  {{!-- Unlocked Session Dropdown --}}
+                  <template x-if="isSessionUnlocked(session, sessionIndex)">
+                    <div
+                      x-data="{
+                        openSession: localStorage.getItem(`open-session-${session.id}`) !== null
+                          ? localStorage.getItem(`open-session-${session.id}`) === 'true'
+                          : (sessionIndex === 0),
+                        toggleSession() {
+                          this.openSession = !this.openSession;
+                          localStorage.setItem(`open-session-${session.id}`, this.openSession);
+                        }
+                      }"
+                      class="w-full bg-white border border-[#E6ECF7] rounded-[12px] shadow-sm overflow-hidden transition-all duration-200"
+                    >
+                      {{!-- Session Header (Dropdown Trigger) --}}
+                      <button
+                        type="button"
+                        @click="toggleSession()"
+                        :aria-expanded="openSession"
+                        class="w-full flex flex-row items-center justify-between px-5 py-4 gap-4 text-left cursor-pointer transition-colors hover:bg-[#F8FAFC]"
+                      >
+                        <div class="flex items-center gap-3.5 flex-1 min-w-0">
+                          <div
+                            :class="isSessionCompleted(session) ? 'bg-[#EAF7EE] text-[#15803D]' : (hasAttended(session) ? 'bg-[#E9F0FF] text-[#4D6EF3]' : 'bg-[#F1F5F9] text-[#64748B]')"
+                            class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                          >
+                            <template x-if="isSessionCompleted(session)">
+                              <svg class="w-5 h-5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                              </svg>
+                            </template>
+                            <template x-if="!isSessionCompleted(session) && hasAttended(session)">
+                              <svg class="w-5 h-5 text-[#4D6EF3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                              </svg>
+                            </template>
+                            <template x-if="!isSessionCompleted(session) && !hasAttended(session)">
+                              <svg class="w-5 h-5 text-[#64748B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                              </svg>
+                            </template>
+                          </div>
+
+                          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+                            <span
+                              class="font-inter font-bold text-[15px] leading-[18px] text-[#17345E] truncate"
+                              x-text="(session.topic || session.topik) ? (`Session ${session.sessionOrder || session.pertemuan_ke || (sessionIndex + 1)} - ${session.topic || session.topik}`) : `Session ${session.sessionOrder || session.pertemuan_ke || (sessionIndex + 1)}`"
+                            ></span>
+                            <div class="flex flex-row items-center gap-1.5 flex-wrap text-[#8091B1]">
+                              <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                              </svg>
+                              <span class="font-inter font-normal text-xs leading-4" x-text="(session.date || session.tanggal) ? new Date(session.date || session.tanggal).toLocaleDateString('en-GB') : '24/08/2026'">24/08/2026</span>
+                              <span class="text-[#8091B1] mx-0.5">·</span>
+                              <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                              </svg>
+                              <span class="font-inter font-normal text-xs leading-4" x-text="((session.startTime || session.waktu_awal) && (session.endTime || session.waktu_akhir)) ? (`${session.startTime || session.waktu_awal} - ${session.endTime || session.waktu_akhir}`) : '09:00 - 16:00'">09:00 - 16:00</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 shrink-0">
+                          <template x-if="isSessionCompleted(session)">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#EAF7EE] text-[#15803D] whitespace-nowrap">
+                              Completed
+                            </span>
+                          </template>
+                          <template x-if="!isSessionCompleted(session) && hasAttended(session)">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#EAF7EE] text-[#15803D] whitespace-nowrap">
+                              Attendance Recorded
+                            </span>
+                          </template>
+                          <template x-if="!hasAttended(session)">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FDECEA] text-[#E05A5A] whitespace-nowrap">
+                              Attendance Required
+                            </span>
+                          </template>
+
+                          <div class="w-5 h-5 flex items-center justify-center">
+                            <svg
+                              :class="openSession ? 'rotate-180' : ''"
+                              class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <path d="M6 9l6 6 6-6"></path>
+                            </svg>
+                          </div>
+                        </div>
+                      </button>
+
+                      {{!-- Session Dropdown Body --}}
+                      <div x-show="openSession" x-collapse class="w-full border-t border-[#E6ECF7] bg-[#FAFCFF] p-5 sm:p-6 flex flex-col gap-5">
+                        {{!-- Attendance Action (Only when attendance is required) --}}
+                        <template x-if="!hasAttended(session)">
+                          <div class="w-full flex flex-col gap-3">
+                            <a
+                              :href="'/attendance/form/' + session.id"
+                              class="w-full h-12 flex flex-row justify-center items-center py-3 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-sm leading-[18px] transition-colors no-underline cursor-pointer shadow-sm hover:shadow"
+                            >
+                              <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                              </svg>
+                              <span>Mark Attendance</span>
+                            </a>
+                          </div>
+                        </template>
+
+                        {{!-- Materials section --}}
+                        <div class="w-full flex flex-col items-start gap-3">
+                          <div class="w-full flex flex-row items-center gap-2">
+                            <template x-if="!hasAttended(session)">
+                              <svg class="w-4 h-4 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            </template>
+                            <template x-if="hasAttended(session)">
+                              <svg class="w-4 h-4 text-[#17345E] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                              </svg>
+                            </template>
+                            <span class="font-inter font-semibold text-sm text-[#17345E]" x-text="!hasAttended(session) ? 'Materials (Locked)' : 'Materials'"></span>
+                          </div>
+
+                          <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3" :class="!hasAttended(session) ? 'opacity-50 pointer-events-none' : ''">
+                            {{!-- PDF --}}
+                            <a
+                              :href="hasAttended(session) ? ('/learning-material/pdf/' + session.id) : '#'"
+                              class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5 transition-all duration-200 hover:border-[#1C2D4A] hover:shadow-sm no-underline group"
+                            >
+                              <div class="w-9 h-9 bg-[#EEF1F8] group-hover:bg-[#E9F0FF] rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                                <svg class="w-[18px] h-[18px] text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                                  <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                              </div>
+                              <span class="font-inter font-medium text-xs leading-[15px] text-[#17345E]">PDF</span>
+                              <svg class="w-3.5 h-3.5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                            </a>
+
+                            {{!-- Video --}}
+                            <a
+                              :href="hasAttended(session) ? ('/learning-material/video/' + session.id) : '#'"
+                              class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5 transition-all duration-200 hover:border-[#1C2D4A] hover:shadow-sm no-underline group"
+                            >
+                              <div class="w-9 h-9 bg-[#EEF1F8] group-hover:bg-[#E9F0FF] rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                                <svg class="w-[18px] h-[18px] text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                </svg>
+                              </div>
+                              <span class="font-inter font-medium text-xs leading-[15px] text-[#17345E]">Video</span>
+                              <svg class="w-3.5 h-3.5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                              </svg>
+                            </a>
+
+                            {{!-- PPT --}}
+                            <a
+                              :href="hasAttended(session) ? ('/learning-material/ppt/' + session.id) : '#'"
+                              class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5 transition-all duration-200 hover:border-[#1C2D4A] hover:shadow-sm no-underline group"
+                            >
+                              <div class="w-9 h-9 bg-[#EEF1F8] group-hover:bg-[#E9F0FF] rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                                <svg class="w-[18px] h-[18px] text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M2 3h20"></path>
+                                  <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"></path>
+                                  <path d="m7 21 5-5 5 5"></path>
+                                </svg>
+                              </div>
+                              <span class="font-inter font-medium text-xs leading-[15px] text-[#17345E]">PPT</span>
+                              <svg class="w-3.5 h-3.5 text-[#15803D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
+
+                        {{!-- Assignments Section --}}
+                        <template x-if="hasAttended(session) && getAssignments(session).length > 0">
+                          <div class="w-full flex flex-col gap-2.5 pt-2 border-t border-[#E6ECF7]">
+                            <span class="font-inter font-semibold text-sm text-[#17345E]">Assignments</span>
+                            <template x-for="task in getAssignments(session)" :key="task.id">
+                              <div class="w-full">
+                                <template x-if="!task.taskAnswers?.length && !task.jawaban_tugas?.length">
+                                  <a
+                                    :href="'/answer-assigment/' + session.id + '/' + task.id"
+                                    class="w-full h-11 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                                  >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    <span>Start Assignment</span>
+                                  </a>
+                                </template>
+
+                                <template x-if="(task.taskAnswers?.[0]?.process === 'approved' || task.taskAnswers?.[0]?.process === 'acc' || task.jawaban_tugas?.[0]?.proses === 'acc')">
+                                  <a
+                                    :href="'/answer-assigment/' + session.id + '/' + task.id"
+                                    class="w-full h-11 flex items-center justify-center gap-2 bg-[#059669] hover:bg-[#047857] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                                  >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Assignment Completed</span>
+                                  </a>
+                                </template>
+
+                                <template x-if="(task.taskAnswers?.[0]?.process === 'process' || task.taskAnswers?.[0]?.process === 'proces' || task.jawaban_tugas?.[0]?.proses === 'proces')">
+                                  <a
+                                    :href="'/answer-assigment/' + session.id + '/' + task.id"
+                                    class="w-full h-11 flex items-center justify-center gap-2 bg-[#D97706] hover:bg-[#B45309] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                                  >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Assignment Under Review</span>
+                                  </a>
+                                </template>
+
+                                <template x-if="(task.taskAnswers?.[0]?.process === 'rejected' || task.jawaban_tugas?.[0]?.proses === 'rejected')">
+                                  <a
+                                    :href="'/answer-assigment/' + session.id + '/' + task.id"
+                                    class="w-full h-11 flex items-center justify-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                                  >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                    <span>Revise Assignment</span>
+                                  </a>
+                                </template>
+                              </div>
+                            </template>
+                          </div>
+                        </template>
+
+                        {{!-- Logbook Section --}}
+                        <template x-if="hasAttended(session)">
+                          <div class="w-full flex flex-col gap-2.5 pt-2 border-t border-[#E6ECF7]">
+                            <span class="font-inter font-semibold text-sm text-[#17345E]">Logbook</span>
+                            <template x-if="getLogbook(session)?.process === 'approved' || getLogbook(session)?.process === 'acc' || getLogbook(session)?.proses === 'acc'">
+                              <a
+                                :href="'/logbook/' + getLogbook(session).id"
+                                class="w-full h-11 flex items-center justify-center gap-2 bg-[#059669] hover:bg-[#047857] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                              >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>View Approved LogBook</span>
+                              </a>
+                            </template>
+
+                            <template x-if="getLogbook(session)?.process === 'process' || getLogbook(session)?.process === 'proces' || getLogbook(session)?.proses === 'proces'">
+                              <a
+                                :href="'/logbook/' + getLogbook(session).id"
+                                class="w-full h-11 flex items-center justify-center gap-2 bg-[#D97706] hover:bg-[#B45309] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                              >
+                                <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                <span>LogBook Under Review</span>
+                              </a>
+                            </template>
+
+                            <template x-if="getLogbook(session)?.process === 'rejected' || getLogbook(session)?.proses === 'rejected'">
+                              <a
+                                :href="'/logbook/formEdit/' + getLogbook(session).id"
+                                class="w-full h-11 flex items-center justify-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                              >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                                <span>Update Rejected LogBook</span>
+                              </a>
+                            </template>
+
+                            <template x-if="!getLogbook(session) || (!['approved', 'acc', 'process', 'proces', 'rejected'].includes(getLogbook(session)?.process) && !['acc', 'proces', 'rejected'].includes(getLogbook(session)?.proses))">
+                              <a
+                                :href="'/logbooks/formCreate/' + session.id + '/{{#if course.id}}{{course.id}}{{else if kelas.id}}{{kelas.id}}{{/if}}'"
+                                class="w-full h-11 flex items-center justify-center gap-2 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-semibold text-sm transition-all no-underline shadow-sm"
+                              >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span>Create LogBook</span>
+                              </a>
+                            </template>
+                          </div>
+                        </template>
+                      </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                      <i class="fa-regular fa-clock text-sm"></i>
-                      <span x-text="(session.startTime || '-') + ' - ' + (session.endTime || '-') + ' WIB'"></span>
+                  </template>
+
+                  {{!-- Locked Session Card --}}
+                  <template x-if="!isSessionUnlocked(session, sessionIndex)">
+                    <div class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px] px-5 py-4 flex flex-row items-center justify-between opacity-75">
+                      <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-[#E2E8F0] text-[#94A3B8] flex items-center justify-center shrink-0">
+                          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </div>
+                        <div class="flex flex-col items-start gap-0.5 min-w-0">
+                          <span
+                            class="font-inter font-bold text-[15px] leading-[18px] text-[#64748B] truncate"
+                            x-text="(session.topic || session.topik) ? (`Session ${session.sessionOrder || session.pertemuan_ke || (sessionIndex + 1)} - ${session.topic || session.topik}`) : `Session ${session.sessionOrder || session.pertemuan_ke || (sessionIndex + 1)}`"
+                          ></span>
+                          <span class="font-inter font-normal text-xs text-[#94A3B8]">
+                            Complete previous requirements
+                          </span>
+                        </div>
+                      </div>
+                      <svg class="w-5 h-5 text-[#94A3B8] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </div>
+                  </template>
+                </div>
+              </template>
+
+              {{!-- Explicit Fallback Mockup when sessions empty --}}
+              <template x-if="dataLoaded && (!sessions || sessions.length === 0)">
+                <div class="w-full flex flex-col gap-4">
+                  {{!-- Session 1 (Dropdown) --}}
+                  <div
+                    x-data="{ openMockSession: true }"
+                    class="w-full bg-white border border-[#E6ECF7] rounded-[12px] shadow-sm overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      @click="openMockSession = !openMockSession"
+                      class="w-full flex flex-row items-center justify-between px-5 py-4 gap-4 text-left cursor-pointer transition-colors hover:bg-[#F8FAFC]"
+                    >
+                      <div class="flex items-center gap-3.5 flex-1 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-[#F1F5F9] text-[#64748B] flex items-center justify-center shrink-0">
+                          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                          </svg>
+                        </div>
+                        <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+                          <span class="font-inter font-bold text-[15px] leading-[18px] text-[#17345E] truncate">Session 1 - Fundamental of UI/UX</span>
+                          <span class="font-inter font-normal text-xs text-[#8091B1]">24/08/2026 · 09:00:00 - 16:00:00</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 shrink-0">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FDECEA] text-[#E05A5A]">Attendance Required</span>
+                        <svg :class="openMockSession ? 'rotate-180' : ''" class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 9l6 6 6-6"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div x-show="openMockSession" x-collapse class="w-full border-t border-[#E6ECF7] bg-[#FAFCFF] p-5 sm:p-6 flex flex-col gap-5">
+                      <button
+                        type="button"
+                        class="w-full h-12 flex flex-row justify-center items-center py-3.5 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-sm leading-[18px] transition-colors cursor-pointer"
+                      >
+                        <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Mark Attendance</span>
+                      </button>
+                      <div class="w-full flex flex-col items-start gap-3">
+                        <div class="w-full flex flex-row items-center gap-2">
+                          <svg class="w-4 h-4 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                          <span class="font-inter font-semibold text-sm text-[#17345E]">Materials (Locked)</span>
+                        </div>
+                        <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 opacity-50 pointer-events-none">
+                          <div class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
+                            <span class="font-inter font-medium text-xs text-[#17345E]">PDF</span>
+                          </div>
+                          <div class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
+                            <span class="font-inter font-medium text-xs text-[#17345E]">Video</span>
+                          </div>
+                          <div class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
+                            <span class="font-inter font-medium text-xs text-[#17345E]">PPT</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- Attendance Recorded Badge (178x24px, radius 12px, bg #E5F6D4, border 1px #12BD26) -->
-                  <div class="pt-1" x-show="isSessionAttended(session)">
-                    <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-sm text-[#12BD26] inline-flex items-center justify-center leading-none">
-                      <span>Attendance Recorded</span>
-                    </span>
+                  {{!-- Session 2 (Locked) --}}
+                  <div class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px] px-5 py-4 flex flex-row items-center justify-between opacity-75">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                      <div class="w-10 h-10 rounded-xl bg-[#E2E8F0] text-[#94A3B8] flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      </div>
+                      <div class="flex flex-col items-start gap-0.5 min-w-0">
+                        <span class="font-inter font-bold text-[15px] leading-[18px] text-[#64748B] truncate">Session 2 - User Flow & Wireframing</span>
+                        <span class="font-inter font-normal text-xs text-[#94A3B8]">Complete previous requirements</span>
+                      </div>
+                    </div>
+                    <svg class="w-5 h-5 text-[#94A3B8] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
                   </div>
                 </div>
+              </template>
 
-                <div class="flex items-center gap-3 flex-shrink-0">
-                  <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
-                  <button
-                    type="button"
-                    @click="if (logbookProcess(session) === 'approved') { window.location.href = '/logbooks/' + session.logbooks[0].id } else if (logbookProcess(session) === 'process' || logbookProcess(session) === 'rejected') { window.location.href = '/logbooks/formEdit/' + session.logbooks[0].id } else { showLogbookModal = true; logbookSessionId = session.id }"
-                    :class="logbookButtonColorClass(session)"
-                    class="rounded-[6px] hover:shadow-sm transition-shadow px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-sm leading-none cursor-pointer flex-shrink-0"
-                  >
-                    <i class="fa-solid fa-plus text-sm sm:text-base" x-show="!logbookProcess(session)"></i>
-                    <span x-text="logbookStatusText(session)">Logbook</span>
-                  </button>
+              {{!-- Week Quiz Section --}}
+              <template x-if="quizData && quizData.length > 0">
+                <div class="w-full flex flex-col gap-3 pt-3 border-t border-[#E6ECF7]">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-[#17345E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    <span class="font-inter font-bold text-sm text-[#17345E]">Week Quiz</span>
+                  </div>
 
-                  <!-- Session Dropdown Toggle (mirrors the Week header chevron) -->
-                  <button
-                    type="button"
-                    @click="open = !open"
-                    class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0 cursor-pointer"
-                    :class="open ? '' : 'rotate-180'"
-                    aria-label="Toggle session details"
-                  >
-                    <i class="fa-solid fa-chevron-up text-lg"></i>
-                  </button>
+                  <template x-for="quiz in quizData" :key="quiz.id">
+                    <div class="w-full">
+                      <template x-if="isQuizUnlocked(quiz)">
+                        <div>
+                          <template x-if="hasQuestions(quiz)">
+                            <a
+                              :href="'/quiz/form/' + quiz.id"
+                              class="w-full h-11 flex items-center justify-center gap-2 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-sm transition-all no-underline shadow-sm"
+                            >
+                              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                              </svg>
+                              <span>Take Quiz</span>
+                            </a>
+                          </template>
+                          <template x-if="!hasQuestions(quiz)">
+                            <div class="w-full flex items-center justify-center p-3 bg-gray-50 border border-gray-200 rounded-[10px]">
+                              <span class="font-inter text-xs text-gray-500 font-medium">Quiz Not Available</span>
+                            </div>
+                          </template>
+                        </div>
+                      </template>
+
+                      <template x-if="!isQuizUnlocked(quiz)">
+                        <div class="w-full flex items-center gap-2.5 p-3.5 bg-[#FEFCE8] border border-[#FDE68A] rounded-[10px]">
+                          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                          <span class="font-inter font-medium text-xs text-[#92400E]">
+                            Complete all sessions to access quiz
+                          </span>
+                        </div>
+                      </template>
+                    </div>
+                  </template>
                 </div>
-              </div>
-
-              <!-- Materials Section -->
-              <div
-                x-show="open"
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 -translate-y-2"
-                x-transition:enter-end="opacity-100 translate-y-0"
-                class="pt-2 space-y-7"
-              >
-                <!-- Materials Heading (Montserrat 500, 20px, #003060) -->
-                <h5 class="font-montserrat font-semibold text-sm text-[#003060] leading-none">
-                  Materials
-                </h5>
-
-                <div class="space-y-12 pl-1">
-                  <!-- Material Item 1: Pdf Material -->
-                  <div class="space-y-4">
-                    <span class="font-montserrat font-medium text-sm text-[#003060] block leading-none">
-                      Click the material for today's session:
-                    </span>
-                    <template x-if="session.materials && session.materials.find(m => m.fileType === 'pdf')">
-                      <a
-                        href="javascript:void(0)"
-                        @click="selectedMaterial = session; activeMateri = 'pdf'"
-                        class="font-montserrat font-normal text-sm text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                        x-text="session.materials.find(m => m.fileType === 'pdf').title || ('Materi ' + (session.topic || ('Session ' + session.sessionOrder)))"
-                      ></a>
-                    </template>
-                    <template x-if="!(session.materials && session.materials.find(m => m.fileType === 'pdf'))">
-                      <span class="font-montserrat font-normal text-sm text-[#666666] block leading-none">
-                        No PDF material available
-                      </span>
-                    </template>
-                  </div>
-
-                  <!-- Material Item 2: Video Lessons -->
-                  <div class="space-y-4">
-                    <span class="font-montserrat font-medium text-sm text-[#003060] block leading-none">
-                      Click the lesson video for today's session:
-                    </span>
-                    <template x-if="session.materials && session.materials.find(m => m.fileType === 'video')">
-                      <a
-                        href="javascript:void(0)"
-                        @click="selectedMaterial = session; activeMateri = 'video'"
-                        class="font-montserrat font-normal text-sm text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                        x-text="session.materials.find(m => m.fileType === 'video').title || ('Video ' + (session.topic || ('Session ' + session.sessionOrder)))"
-                      ></a>
-                    </template>
-                    <template x-if="!(session.materials && session.materials.find(m => m.fileType === 'video'))">
-                      <span class="font-montserrat font-normal text-sm text-[#666666] block leading-none">
-                        No Video material available
-                      </span>
-                    </template>
-                  </div>
-
-                  <!-- Material Item 3: PPT Material -->
-                  <div class="space-y-4">
-                    <span class="font-montserrat font-medium text-sm text-[#003060] block leading-none">
-                      Click the PowerPoint presentation for today's session:
-                    </span>
-                    <template x-if="session.materials && session.materials.find(m => m.fileType === 'ppt')">
-                      <a
-                        href="javascript:void(0)"
-                        @click="selectedMaterial = session; activeMateri = 'ppt'"
-                        class="font-montserrat font-normal text-sm text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                        x-text="session.materials.find(m => m.fileType === 'ppt').title || ('PPT ' + (session.topic || ('Session ' + session.sessionOrder)))"
-                      ></a>
-                    </template>
-                    <template x-if="!(session.materials && session.materials.find(m => m.fileType === 'ppt'))">
-                      <span class="font-montserrat font-normal text-sm text-[#666666] block leading-none">
-                        No PPT material available
-                      </span>
-                    </template>
-                  </div>
-                </div>
-              </div>
-
+              </template>
             </div>
-          </template>
-
-          <!-- Waiting-for-attendance Session Bar: session is unlocked but this session's own attendance hasn't been filled yet (PRD §5.3/§7.3) -->
-          <template x-if="startLearningStatus(sIndex) === 'WAITING_FOR_ATTENDANCE'">
-            <div class="w-full min-h-[54px] px-5 sm:px-6 py-3 bg-white rounded-[12px] border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex items-center justify-between gap-4">
-              <div class="space-y-1">
-                <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
-                <p class="font-sans font-normal text-xs sm:text-sm text-[#FDA40B] leading-none" x-text="startLearningLockedMessage(sIndex)"></p>
+          </div>
+        {{else}}
+          {{!-- Week item locked --}}
+          <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+              {{!-- Status icon --}}
+              <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
               </div>
-              <div class="text-[#FDA40B] flex items-center justify-center flex-shrink-0" title="Waiting for attendance">
-                <i class="fa-regular fa-clock text-xl"></i>
+
+              {{!-- Week details --}}
+              <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+                <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">
+                  {{t 'test.startLearning.week'}} {{this.weekNumber}}
+                </span>
+                <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">
+                  {{#if this.description}}{{this.description}}{{else}}Requirement{{/if}}
+                </span>
+              </div>
+
+              {{!-- chevron-down --}}
+              <div class="w-4 h-4 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </div>
             </div>
-          </template>
 
-          <!-- Locked Session Bar (Locked Bar Layout Matching Figma) -->
-          <template x-if="startLearningStatus(sIndex) === 'LOCKED'">
-            <div class="w-full min-h-[54px] px-5 sm:px-6 py-3 bg-white rounded-[12px] border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex items-center justify-between gap-4">
-              <div class="space-y-1">
-                <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
-                <p class="font-sans font-normal text-xs sm:text-sm text-[#6B7280] leading-none" x-text="startLearningLockedMessage(sIndex)"></p>
-              </div>
-              <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
-                <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
-              </div>
+            {{!-- Warning banner --}}
+            <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+              <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+                The previous week's quiz must meet the minimum score to unlock this content.
+              </span>
             </div>
+          </div>
+        {{/if}}
           </template>
-        </div>
-      </template>
+        {{/each}}
 
-      <!-- QUIZ BOX (centered title + lock icon at the far right edge matching Figma; disabled until every session in this week is attended AND logbook-approved) -->
-      <button
-        type="button"
-        @click="if (isWeekQuizUnlocked('{{id}}')) { window.location.href = '{{#if quiz.[0].id}}/quiz/start/{{quiz.[0].id}}{{else}}#{{/if}}' }"
-        :class="isWeekQuizUnlocked('{{id}}') ? 'cursor-pointer' : 'cursor-not-allowed'"
-        class="relative w-full h-11 rounded-[12px] px-5 sm:px-6 bg-[#D9D9D980] border-[0.1px] border-[#D9D9D980] backdrop-blur-[6.6px] flex items-center justify-center gap-3 transition-all group mt-4"
+      {{else}}
+      {{!-- Slicing / Mockup Mode based on Figma Node 1496-1317 --}}
+
+      {{!-- Week 1 (Unlocked & Open) --}}
+      <div
+        x-data="{
+          openMinggu: true,
+          toggle() {
+            this.openMinggu = !this.openMinggu;
+          }
+        }"
+        class="w-full bg-white border border-[#E6ECF7] rounded-[14px] shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden transition-all"
       >
-        <div class="w-6 h-6 flex items-center justify-center text-[#00000080] flex-shrink-0">
-          <i class="fa-solid fa-file-pen text-base"></i>
-        </div>
-        <span class="font-montserrat font-medium text-sm text-[#00000080]">
-          Quiz Week {{weekNumber}}
-        </span>
-        <div x-show="!isWeekQuizUnlocked('{{id}}')" class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
-          <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
-        </div>
-      </button>
+        <button
+          type="button"
+          @click="toggle()"
+          :aria-expanded="openMinggu"
+          class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6 text-left cursor-pointer bg-white transition-colors hover:bg-[#F8FAFC]"
+        >
+          <div class="w-12 h-12 rounded-full bg-[#E9F0FF] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#6682B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-5 text-[#17345E] truncate">Week 1</span>
+            <span class="font-inter font-normal text-[13px] leading-4 text-[#8091B1] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg
+              :class="openMinggu ? 'rotate-180' : ''"
+              class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </button>
 
-    </div>
-    {{else}}
-    <!-- Locked Week Collapsible Content -->
-    <div x-show="openWeek === {{weekNumber}}" x-transition class="space-y-4" style="display: none;">
-      <div class="p-6 bg-white rounded-[12px] border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition text-center space-y-2">
-        <div class="w-12 h-12 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060] mb-2">
-          <i class="fa-solid fa-lock text-xl"></i>
+        <div x-show="openMinggu" class="w-full h-[1px] bg-[#E6ECF7]"></div>
+
+        <div x-show="openMinggu" x-collapse class="w-full flex flex-col items-start px-6 sm:px-8 pt-6 pb-7 gap-4 bg-white">
+          {{!-- Session 1 (Dropdown) --}}
+          <div
+            x-data="{ openMockSession1: true }"
+            class="w-full bg-white border border-[#E6ECF7] rounded-[12px] shadow-sm overflow-hidden"
+          >
+            <button
+              type="button"
+              @click="openMockSession1 = !openMockSession1"
+              :aria-expanded="openMockSession1"
+              class="w-full flex flex-row items-center justify-between px-5 py-4 gap-4 text-left cursor-pointer transition-colors hover:bg-[#F8FAFC]"
+            >
+              <div class="flex items-center gap-3.5 flex-1 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-[#F1F5F9] text-[#64748B] flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                  </svg>
+                </div>
+                <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+                  <span class="font-inter font-bold text-[15px] leading-[18px] text-[#17345E] truncate">Session 1 - Fundamental of UI/UX</span>
+                  <div class="flex flex-row items-center gap-1.5 flex-wrap text-[#8091B1]">
+                    <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span class="font-inter font-normal text-xs leading-4">24/08/2026</span>
+                    <span class="text-[#8091B1] mx-0.5">·</span>
+                    <svg class="w-3.5 h-3.5 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span class="font-inter font-normal text-xs leading-4">09:00:00 - 16:00:00</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FDECEA] text-[#E05A5A]">Attendance Required</span>
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <svg :class="openMockSession1 ? 'rotate-180' : ''" class="w-4 h-4 text-[#4D6EF3] transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </div>
+              </div>
+            </button>
+            <div x-show="openMockSession1" x-collapse class="w-full border-t border-[#E6ECF7] bg-[#FAFCFF] p-5 sm:p-6 flex flex-col gap-5">
+              <button
+                type="button"
+                class="w-full h-12 flex flex-row justify-center items-center py-3.5 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-sm leading-[18px] transition-colors cursor-pointer shadow-sm"
+              >
+                <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Mark Attendance</span>
+              </button>
+              <div class="w-full flex flex-col items-start gap-3">
+                <div class="w-full flex flex-row items-center gap-2">
+                  <svg class="w-4 h-4 text-[#8091B1] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <span class="font-inter font-semibold text-sm text-[#17345E]">Materials (Locked)</span>
+                </div>
+                <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 opacity-50 pointer-events-none">
+                  <div class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
+                    <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                      <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                      </svg>
+                    </div>
+                    <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PDF</span>
+                    <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                  <div class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
+                    <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                      <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                      </svg>
+                    </div>
+                    <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">Video</span>
+                    <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                  <div class="h-[117px] bg-[#FFFFFF] border border-[#E6ECF7] rounded-[10px] py-4 px-3 flex flex-col justify-center items-center gap-2.5">
+                    <div class="w-9 h-9 bg-[#EEF1F8] rounded-lg flex items-center justify-center shrink-0">
+                      <svg class="w-[18px] h-[18px] text-[#8091B1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h20"></path>
+                        <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"></path>
+                        <path d="m7 21 5-5 5 5"></path>
+                      </svg>
+                    </div>
+                    <span class="font-inter font-medium text-xs leading-[15px] text-[#8091B1]">PPT</span>
+                    <svg class="w-3.5 h-3.5 text-[#B0BDD4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{!-- Session 2 (Locked) --}}
+          <div class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px] px-5 py-4 flex flex-row items-center justify-between opacity-75">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-[#E2E8F0] text-[#94A3B8] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <div class="flex flex-col items-start gap-0.5 min-w-0">
+                <span class="font-inter font-bold text-[15px] leading-[18px] text-[#64748B] truncate">Session 2 - User Flow & Wireframing</span>
+                <span class="font-inter font-normal text-xs text-[#94A3B8]">Complete previous requirements</span>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-[#94A3B8] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+
+          {{!-- Week Quiz Section (Mockup) --}}
+          <div class="w-full flex flex-col gap-3 pt-3 border-t border-[#E6ECF7]">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-[#17345E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              <span class="font-inter font-bold text-sm text-[#17345E]">Week Quiz</span>
+            </div>
+            <div class="w-full flex items-center gap-2.5 p-3.5 bg-[#FEFCE8] border border-[#FDE68A] rounded-[10px]">
+              <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span class="font-inter font-medium text-xs text-[#92400E]">
+                Complete all sessions to access quiz
+              </span>
+            </div>
+          </div>
         </div>
-        <h4 class="font-montserrat font-semibold text-lg text-[#003060]">
-          Week {{weekNumber}} is Currently Locked
-        </h4>
-        <p class="font-sans font-normal text-sm sm:text-base text-slate-600 max-w-md mx-auto">
-          Please complete all sessions and submit the previous week's quiz to unlock this week's lessons and materials.
-        </p>
       </div>
-    </div>
+
+      {{!-- Week 2 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 2</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+
+      {{!-- Week 3 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 3</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+
+      {{!-- Week 4 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 4</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
+
+      {{!-- Week 5 (Locked) --}}
+      <div class="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[14px] shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-5 sm:h-[108px] gap-6">
+          <div class="w-12 h-12 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="flex flex-col items-start gap-[7px] flex-1 min-w-0">
+            <span class="font-inter font-semibold text-base leading-[19px] text-[#6B7280] truncate">Week 5</span>
+            <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF] truncate">Requirement</span>
+          </div>
+          <div class="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center px-6 sm:px-8 py-2.5 gap-2.5 bg-[#FEFCE8] border-t border-[#FDE68A]">
+          <svg class="w-4 h-4 text-[#D97706] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="font-inter font-normal text-[13px] leading-4 text-[#92400E]">
+            The previous week's quiz must meet the minimum score to unlock this content.
+          </span>
+        </div>
+      </div>
     {{/if}}
 
-  </div>
-  {{/each}}
-  </div>
+    {{!-- Pagination --}}
+    <div class="w-full flex flex-row justify-between items-center px-6 sm:px-8 py-3 h-14 bg-white border border-[#D9D9D9] rounded-[16px] mt-2">
+      {{#if minggu.length}}
+        <span
+          class="font-inter font-medium text-sm leading-[17px] text-[#003060]"
+          x-text="`Showing ${(weekPage - 1) * 5 + 1}-${Math.min(weekPage * 5, {{minggu.length}})} of {{minggu.length}} weeks`"
+        >Showing 1-{{#if (gt minggu.length 5)}}5{{else}}{{minggu.length}}{{/if}} of {{minggu.length}} weeks</span>
 
-  {{! --- PROGRAM SIDEBAR CARD (right column on desktop, matches Figma "View Program" reference) --- }}
-  <aside class="lg:order-2 mt-8 lg:mt-0 lg:sticky lg:top-[88px] w-full bg-white rounded-xl border border-[#E5E7EB] overflow-hidden shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)]">
-    <img
-      src="{{course.image}}"
-      alt="{{course.name}}"
-      class="w-full h-[160px] object-cover"
-    >
-    <div class="p-5 space-y-3">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="bg-[#CFE6F5] rounded-[6px] font-montserrat font-medium text-xs text-[#003060] px-2.5 py-1 inline-flex items-center leading-none">
-          {{course.category.name}}
+        <div class="flex flex-row items-center gap-2">
+          <template x-for="page in totalPages" :key="page">
+            <button
+              type="button"
+              @click="weekPage = page"
+              :class="weekPage === page
+                ? 'w-8 h-8 rounded-full bg-[#003060] text-white flex items-center justify-center font-inter font-semibold text-sm transition-opacity hover:opacity-90'
+                : 'w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50'"
+              x-text="page"
+            ></button>
+          </template>
+        </div>
+      {{else}}
+        <span class="font-inter font-medium text-sm leading-[17px] text-[#003060]">
+          Showing 1-5 of 12 weeks
         </span>
-      </div>
-      <h2 class="font-montserrat font-semibold text-lg text-[#003060] leading-snug">
-        {{course.name}}
-      </h2>
-      <p class="font-sans font-normal text-xs leading-relaxed text-[#6B7280] line-clamp-4">
-        {{getByLang course.description lang}}
-      </p>
-      <div class="flex flex-col gap-2 pt-2">
-        <button type="button" @click="toggleActiveSection('group-class')" class="w-full h-11 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-          <i class="fa-solid fa-users"></i> Join Group
-        </button>
-        <button type="button" @click="toggleActiveSection('logbook')" class="w-full h-11 rounded-lg border border-[#0369A1] text-[#0369A1] hover:bg-[#E0F2F9] font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-          <i class="fa-regular fa-clipboard"></i> My Logbook
-        </button>
-        <a href="/program/detail/{{course.id}}" class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-sm flex items-center justify-center gap-2 transition cursor-pointer no-underline">
-          <i class="fa-regular fa-file-lines"></i> Detail Program
-        </a>
-      </div>
-    </div>
-  </aside>
 
-  </div>
-  {{! --- END DASHBOARD UTAMA START LEARNING --- }}
-
-  {{! --- MATERI PDF TAB CONTENT --- }}
-  <div x-show="activeMateri === 'pdf'" x-cloak style="display: none;" class="!mt-0">
-    {{> user/sidebar_user_profile/my_learning/start_learning/materi/pdf/index }}
-  </div>
-
-  {{! --- MATERI VIDEO TAB CONTENT --- }}
-  <div x-show="activeMateri === 'video'" x-cloak style="display: none;" class="!mt-0">
-    {{> user/sidebar_user_profile/my_learning/start_learning/materi/video/index }}
-  </div>
-
-  {{! --- MATERI PPT TAB CONTENT --- }}
-  <div x-show="activeMateri === 'ppt'" x-cloak style="display: none;" class="!mt-0">
-    {{> user/sidebar_user_profile/my_learning/start_learning/materi/ppt/index }}
-  </div>
-
-
-  {{! --- LOGBOOK FORM POPUP MODAL --- }}
-  <div 
-    x-cloak
-    style="display: none;"
-    x-show="showLogbookModal" 
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
-    @keydown.escape.window="showLogbookModal = false"
-  >
-    <div 
-      @click.away="showLogbookModal = false"
-      class="bg-white rounded-[12px] p-6 sm:p-8 md:p-10 max-w-4xl w-full shadow-2xl font-montserrat relative border border-slate-200"
-    >
-      <!-- Close Button (Top Right) -->
-      <button 
-        type="button" 
-        @click="showLogbookModal = false"
-        class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:text-[#003060] hover:bg-slate-100 transition-all cursor-pointer"
-        aria-label="Close modal"
-      >
-        <i class="fa-solid fa-xmark text-2xl"></i>
-      </button>
-
-      <!-- Modal Title Header -->
-      <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060] leading-none mb-8 text-left">
-        Logbook Form
-      </h2>
-
-      <!-- Form Content -->
-      <form
-        :action="'/logbooks/' + logbookSessionId"
-        method="POST"
-        enctype="multipart/form-data"
-        class="space-y-8"
-      >
-        
-        <!-- Two-Column Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          
-          <!-- LEFT COLUMN -->
-          <div class="space-y-6">
-            
-            <!-- Field Group 1: Activity -->
-            <div class="space-y-2">
-              <label class="block font-montserrat font-medium text-sm sm:text-base text-[#003060] leading-none">
-                Activity
-              </label>
-              <input
-                type="text"
-                name="activity"
-                required
-                placeholder="Enter activity description..."
-                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
-              >
-            </div>
-
-            <!-- Field Group 2: Activity Details -->
-            <div class="space-y-2">
-              <label class="block font-montserrat font-medium text-sm sm:text-base text-[#003060] leading-none">
-                Activity Details
-              </label>
-              <textarea
-                rows="6"
-                name="activityDetails"
-                required
-                placeholder="Enter detailed description of your activity..."
-                class="w-full h-[180px] rounded-[6px] p-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-colors"
-              ></textarea>
-            </div>
-
-          </div>
-
-          <!-- RIGHT COLUMN -->
-          <div class="space-y-6">
-            
-            <!-- Field Group 3: Obstacles -->
-            <div class="space-y-2">
-              <label class="block font-montserrat font-medium text-sm sm:text-base text-[#003060] leading-none">
-                Obstacles
-              </label>
-              <input
-                type="text"
-                name="obstacles"
-                required
-                placeholder="Enter any obstacles faced..."
-                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
-              >
-            </div>
-
-            <!-- Field Group 4: Photo Documentation -->
-            <div class="space-y-2" x-data="{ fileName: '' }">
-              <label class="block font-montserrat font-medium text-sm sm:text-base text-[#003060] leading-none">
-                Photo Documentation
-              </label>
-              <div class="relative w-full h-[45px] bg-white border border-slate-300 rounded-[6px] p-1 flex items-center gap-3">
-                <label class="bg-[#E2E8F0] hover:bg-slate-300 text-[#003060] font-montserrat font-medium text-xs sm:text-sm px-3 py-1.5 rounded-[4px] cursor-pointer transition-colors flex-shrink-0 select-none">
-                  Choose File
-                  <input
-                    type="file"
-                    name="documentation"
-                    accept="image/*"
-                    class="hidden"
-                    @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''"
-                  >
-                </label>
-                <span 
-                  class="font-montserrat font-medium text-xs sm:text-lg text-black/50 truncate"
-                  x-text="fileName || 'No file chosen'"
-                ></span>
-              </div>
-            </div>
-
-            <!-- Field Group 5: Link Documentation -->
-            <div class="space-y-2">
-              <label class="block font-montserrat font-medium text-sm sm:text-base text-[#003060] leading-none">
-                Link Documentation
-              </label>
-              <input
-                type="url"
-                name="otherDocumentation"
-                required
-                placeholder="Enter Link Documentation"
-                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-lg text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
-              >
-            </div>
-
-          </div>
-
+        <div class="flex flex-row items-center gap-2">
+          <button type="button" class="w-8 h-8 rounded-full bg-[#003060] text-white flex items-center justify-center font-inter font-semibold text-sm transition-opacity hover:opacity-90">1</button>
+          <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">2</button>
+          <button type="button" class="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] text-[#003060] flex items-center justify-center font-inter font-semibold text-sm transition-colors hover:bg-gray-50">3</button>
         </div>
-
-        <!-- BUTTONS ROW -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-          <!-- Save Button -->
-          <button 
-            type="submit" 
-            class="w-full sm:w-auto flex-1 max-w-[280px] h-[50px] bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-[6px] shadow-[0_0_4px_rgba(0,0,0,0.5)] px-6 font-montserrat font-medium text-sm text-white text-center transition-all cursor-pointer"
-          >
-            Save
-          </button>
-
-          <!-- Cancel Button -->
-          <button 
-            type="button" 
-            @click="showLogbookModal = false"
-            class="w-full sm:w-auto flex-1 max-w-[280px] h-[50px] bg-white hover:bg-slate-50 border border-[#003060] rounded-[6px] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 font-montserrat font-medium text-sm text-[#003060] text-center transition-all cursor-pointer"
-          >
-            Cancel
-          </button>
-        </div>
-
-      </form>
+      {{/if}}
     </div>
+
   </div>
 
-</div>
-
-{{!-- Penutup untuk <div> pembungkus di baris 2. Sebelumnya tidak ada, sehingga
-     seluruh panel tab yang berada SETELAH #start-learning-container di shell
-     ikut tersarang di dalamnya saat HTML diurai. Begitu loadCourseFragment
-     mengganti isi kontainer itu, panel Presentation, My Logbook, Assignment,
-     Quiz, Certificate, dan Join Group Class ikut terhapus, dan setiap sub-menu
-     My Learning menampilkan halaman kosong. --}}
+  {{#if user_kelas.progress}}
+    <div class="mt-6 w-full">
+      {{> program_detail/right_content/portfolio}}
+    </div>
+  {{/if}}
 </div>
