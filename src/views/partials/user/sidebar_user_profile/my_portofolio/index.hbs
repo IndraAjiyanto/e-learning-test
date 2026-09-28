@@ -25,7 +25,7 @@
     modalProgramOpen: false,
     showDetail: false,
     selectedPortfolio: null,
-    imageUploads: [{ id: 1, file: null, name: 'No file chosen', error: '' }],
+    imageUploads: [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }],
     userCourses: window.userCoursesData || [],
     newForm: {
       title: '',
@@ -64,7 +64,7 @@
       if (window.backendPortfolioData && window.backendPortfolioData.length > 0) {
         this.portfolios = window.backendPortfolioData.map(p => ({
           id: p.id,
-          title: p.title || 'Untitled Portfolio',
+          title: p.title || '{{t 'test.myPortfolio.untitledPortfolio'}}',
           description: p.description || '',
           link: p.link || '',
           overview: p.contentHtml || p.content || '',
@@ -114,7 +114,7 @@
       this.categoryFilter = 'all';
       this.classTypeFilter = 'all';
       this.sortBy = 'newest';
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
+      this.imageUploads = [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }];
     },
     handleFile(event, idx) {
       const file = event.target.files[0];
@@ -132,11 +132,11 @@
       const TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
       const MAX = 5 * 1024 * 1024;
       if (!TYPES.includes(file.type)) {
-        this.imageUploads[idx].error = 'use a JPG, PNG, or GIF file';
+        this.imageUploads[idx].error = '{{t 'test.myPortfolio.messages.invalidType'}}';
         return;
       }
       if (file.size > MAX) {
-        this.imageUploads[idx].error = 'file is larger than 5MB';
+        this.imageUploads[idx].error = '{{t 'test.myPortfolio.messages.fileTooLarge'}}';
         return;
       }
       const url = URL.createObjectURL(file);
@@ -147,11 +147,11 @@
         const okH = img.naturalHeight >= 1000 && img.naturalHeight <= 1080;
         this.imageUploads[idx].error = okW && okH
           ? ''
-          : `${img.naturalWidth}x${img.naturalHeight}px - needs 1900-1920 x 1000-1080`;
+          : `${img.naturalWidth}x${img.naturalHeight}{{t 'test.myPortfolio.messages.dimensionError'}}`;
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
-        this.imageUploads[idx].error = 'this file could not be read as an image';
+        this.imageUploads[idx].error = '{{t 'test.myPortfolio.messages.unreadableImage'}}';
       };
       img.src = url;
     },
@@ -171,7 +171,7 @@
         defaultProgram = currentCourse ? currentCourse.course.name : (this.activeCourseName || '');
       }
       this.newForm = { title: '', description: '', link: '', overview: '', program: defaultProgram, courseId: defaultCourseId };
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
+      this.imageUploads = [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }];
       this.editorDirty = false;
       this.formBaseline = JSON.stringify(this.portfolioSnapshot());
       this.createPortofolio = true;
@@ -188,7 +188,7 @@
         program: item.program || '',
         courseId: item.courseId || '',
       };
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
+      this.imageUploads = [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }];
       this.editorDirty = false;
       this.formBaseline = JSON.stringify(this.portfolioSnapshot());
       this.createPortofolio = true;
@@ -251,7 +251,7 @@
       return true;
     },
     addImageRow() {
-      this.imageUploads.push({ id: Date.now(), file: null, name: 'No file chosen', error: '' });
+      this.imageUploads.push({ id: Date.now(), file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' });
     },
     async initOverviewEditor() {
       // Destroy previous instance if exists (for re-open scenarios)
@@ -370,7 +370,7 @@
     async submitPortfolio() {
       if (this.savingPortfolio) return;
       if (!this.newForm.title.trim()) {
-        showErrorToast('Portfolio not saved', 'Give your portfolio a title first.');
+        showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', '{{t 'test.myPortfolio.messages.titleRequired'}}');
         return;
       }
 
@@ -407,15 +407,15 @@
 
       if (!hasNewImage && this.existingImages.length === 0) {
         showErrorToast(
-          'Portfolio not saved',
-          isEdit ? 'Keep at least one image, or upload a new one.' : 'Upload at least one image first.',
+          '{{t 'test.myPortfolio.messages.saveErrorTitle'}}',
+          isEdit ? '{{t 'test.myPortfolio.messages.imageRequiredEdit'}}' : '{{t 'test.myPortfolio.messages.imageRequiredCreate'}}',
         );
         return;
       }
 
       const courseId = this.newForm.courseId;
       if (!courseId) {
-        showErrorToast('Portfolio not saved', 'Choose which program this portfolio belongs to.');
+        showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', '{{t 'test.myPortfolio.messages.programRequired'}}');
         return;
       }
 
@@ -441,8 +441,8 @@
                jadi toast-nya dititipkan dulu dan ditampilkan sesudah muat. --}}
           try {
             sessionStorage.setItem('portfolioToast', JSON.stringify({
-              title: isEdit ? 'Portfolio updated' : 'Portfolio created',
-              description: isEdit ? 'Your changes have been saved.' : 'Your project is now in your portfolio list.',
+              title: isEdit ? '{{t 'test.myPortfolio.messages.updatedTitle'}}' : '{{t 'test.myPortfolio.messages.createdTitle'}}',
+              description: isEdit ? '{{t 'test.myPortfolio.messages.updatedDesc'}}' : '{{t 'test.myPortfolio.messages.createdDesc'}}',
             }));
           } catch (e) {}
           const redirectUrl = this.activeCourseId 
@@ -450,11 +450,11 @@
             : window.location.pathname + '?tab=portfolio';
           window.location.href = redirectUrl;
         } else {
-          showErrorToast('Portfolio not saved', result.message || 'Please try again in a moment.');
+          showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', result.message || '{{t 'test.myPortfolio.messages.tryAgain'}}');
         }
       } catch (err) {
         console.error('Error saving portfolio:', err);
-        showErrorToast('Portfolio not saved', 'The request did not go through. Check your connection and try again.');
+        showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', '{{t 'test.myPortfolio.messages.networkError'}}');
       } finally {
         this.savingPortfolio = false;
       }
@@ -465,9 +465,9 @@
   <div x-show="!showDetail" class="flex flex-col gap-7">
     <!-- Header: Hidden when in course view -->
     <div x-show="!activeCourseId" class="flex flex-col gap-1">
-      {{> components/ui/super_admin/page_header/index titleTag='h2' title='My Portfolio' }}
+      {{> components/ui/super_admin/page_header/index titleTag='h2' title=(t 'test.myPortfolio.header.title') }}
       {{> components/ui/super_admin/description/index
-        text='Your project collection. Each portfolio shows the technical skills and solutions you built during the program.'
+        text=(t 'test.myPortfolio.header.description')
       }}
     </div>
 
@@ -479,8 +479,8 @@
       <input
         type="search"
         x-model="searchQuery"
-        aria-label="Search portfolio"
-        placeholder="Search portfolio by title or description..."
+        aria-label="{{t 'test.myPortfolio.search.ariaLabel'}}"
+        placeholder="{{t 'test.myPortfolio.search.placeholder'}}"
         class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-10 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20"
       >
     </div>
@@ -491,11 +491,11 @@
       <!-- LEFT: Filter Sidebar (Hidden when in course view) -->
       <aside x-show="!activeCourseId" class="mb-6 space-y-5 rounded-xl border border-[#d9d9d9] bg-white p-5 lg:mb-0">
         <div class="flex items-center justify-between">
-          <h3 class="font-inter font-semibold text-sm text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Active Filters</h3>
-          <button type="button" @click="resetFilters()" class="font-inter font-medium text-xs text-[#0369A1] hover:underline cursor-pointer flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+          <h3 class="font-inter font-semibold text-sm text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> {{t 'test.myPortfolio.filterTittle'}}</h3>
+          <button type="button" @click="resetFilters()" class="font-inter font-medium text-xs text-[#0369A1] hover:underline cursor-pointer flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> {{t 'test.myPortfolio.resetFilters'}}</button>
         </div>
 
-        <div x-show="categoryFilter === 'all' && classTypeFilter === 'all'" class="bg-[#F4F7FC] rounded-lg px-3 py-2 text-center font-inter text-xs text-[#94A3B8]">No active filters</div>
+        <div x-show="categoryFilter === 'all' && classTypeFilter === 'all'" class="bg-[#F4F7FC] rounded-lg px-3 py-2 text-center font-inter text-xs text-[#94A3B8]">{{t 'test.myPortfolio.noFilters'}}</div>
         <div x-show="!(categoryFilter === 'all' && classTypeFilter === 'all')" class="flex flex-wrap gap-2">
           <span x-show="categoryFilter !== 'all'" class="inline-flex items-center bg-[#E0F2F9] text-[#0369A1] font-inter text-xs px-2.5 py-1 rounded-full" x-text="categoryFilter"></span>
           <span x-show="classTypeFilter !== 'all'" class="inline-flex items-center bg-[#E0F2F9] text-[#0369A1] font-inter text-xs px-2.5 py-1 rounded-full" x-text="classTypeFilter"></span>
@@ -503,10 +503,10 @@
 
         <!-- Category -->
         <div class="space-y-2">
-          <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> Category</label>
-          <input type="text" x-model="categorySearch" placeholder="Search category..." class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
+          <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> {{t 'test.myPortfolio.categoryTittle'}}</label>
+          <input type="text" x-model="categorySearch" placeholder="{{t 'test.myPortfolio.searchCategoryPlaceholder'}}" class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
           <select x-model="categoryFilter" class="h-11 w-full cursor-pointer rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
-            <option value="all">All Categories</option>
+            <option value="all">{{t 'test.myPortfolio.allCategory'}}</option>
             <template x-for="c in categoryOptions.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase()))" :key="c">
               <option :value="c" x-text="c"></option>
             </template>
@@ -515,10 +515,10 @@
 
         <!-- Class Type -->
         <div class="space-y-2">
-          <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> Class Type</label>
-          <input type="text" x-model="classTypeSearch" placeholder="Search class type..." class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
+          <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> {{t 'test.myPortfolio.programTypeTittle'}}</label>
+          <input type="text" x-model="classTypeSearch" placeholder="{{t 'test.myPortfolio.searchClassTypePlaceholder'}}" class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
           <select x-model="classTypeFilter" class="h-11 w-full cursor-pointer rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
-            <option value="all">All</option>
+            <option value="all">{{t 'test.myPortfolio.allProgramType'}}</option>
             <template x-for="c in classTypeOptions.filter(c => c.toLowerCase().includes(classTypeSearch.toLowerCase()))" :key="c">
               <option :value="c" x-text="c"></option>
             </template>
@@ -527,7 +527,7 @@
 
         <div class="bg-[#F4F7FC] rounded-lg px-3 py-3 text-center">
           <span class="block font-inter font-bold text-lg text-[#003060]" x-text="filteredPortfolios().length"></span>
-          <span class="font-inter text-xs text-[#6B7280]">Projects Available</span>
+          <span class="font-inter text-xs text-[#6B7280]">{{t 'test.myPortfolio.projectAvailable'}}</span>
         </div>
       </aside>
 
@@ -542,7 +542,7 @@
         class="w-[190px] h-11 rounded-lg gap-2 border border-[#003060] bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center cursor-pointer shadow-md transition-all"
       >
         <i class="fa-solid fa-plus text-base"></i>
-        <span>Create Portfolio</span>
+        <span>{{t 'test.myPortfolio.createButton'}}</span>
       </button>
     </div>
 
@@ -558,12 +558,12 @@
 
       <!-- Heading -->
       <h2 class="font-inter font-semibold text-xl sm:text-2xl text-[#003060] leading-none mb-3 text-center">
-        Project Not Found
+        {{t 'test.myPortfolio.projectNotFound'}}
       </h2>
 
       <!-- Subtitle -->
       <p class="font-inter font-normal text-sm text-[#666666] leading-relaxed text-center mb-8">
-        Try adjusting your filters to find more projects.
+        {{t 'test.myPortfolio.tryAdjusting'}}
       </p>
 
       <!-- Reset Filters Button -->
@@ -572,7 +572,7 @@
         @click="resetFilters()"
         class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center cursor-pointer transition-all"
       >
-        Reset Filters
+        {{t 'test.myPortfolio.resetAllFilters'}}
       </button>
     </div>
 
@@ -586,11 +586,11 @@
       </div>
 
       <h2 class="font-inter font-semibold text-xl sm:text-2xl text-[#003060] leading-none mb-3 text-center">
-        Belum Ada Portofolio
+        {{t 'test.myPortfolio.emptyStateCourse.title'}}
       </h2>
 
       <p class="font-inter font-normal text-sm text-[#666666] leading-relaxed text-center mb-8">
-        Belum ada portofolio untuk program ini. Buat portofolio pertamamu sekarang.
+        {{t 'test.myPortfolio.emptyStateCourse.description'}}
       </p>
 
       <button
@@ -599,7 +599,7 @@
         class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all"
       >
         <i class="fa-solid fa-plus text-sm"></i>
-        <span>Create Portfolio</span>
+        <span>{{t 'test.myPortfolio.createButton'}}</span>
       </button>
     </div>
 
@@ -626,7 +626,7 @@
               <template x-if="!item.images || item.images.length === 0">
                 <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#94A3B8]">
                   <i class="fa-regular fa-image text-2xl"></i>
-                  <span class="font-inter text-xs">No image uploaded</span>
+                  <span class="font-inter text-xs">{{t 'test.myPortfolio.noImageUploaded'}}</span>
                 </div>
               </template>
               <template x-for="(imgSrc, imgIdx) in (item.images || [])" :key="imgIdx">
@@ -678,10 +678,10 @@
             </div>
 
             <!-- Title -->
-            <h3 class="font-inter font-semibold text-lg text-[#003060] leading-snug mb-3" x-text="item.title">Portfolio title</h3>
+            <h3 class="font-inter font-semibold text-lg text-[#003060] leading-snug mb-3" x-text="item.title"></h3>
 
             <!-- Description -->
-            <p class="font-inter font-normal text-sm text-black leading-relaxed mb-4 line-clamp-2" x-text="item.description">Portfolio description</p>
+            <p class="font-inter font-normal text-sm text-black leading-relaxed mb-4 line-clamp-2" x-text="item.description"></p>
 
             <!-- Technologies Tags -->
             <div class="mb-5 flex flex-wrap gap-2">
@@ -697,7 +697,7 @@
                 </span>
               </template>
               <template x-if="!item.technologies || item.technologies.length === 0">
-                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-inter font-medium text-sm 2xl:text-base" x-text="item.category">Program</span>
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-inter font-medium text-sm 2xl:text-base" x-text="item.category"></span>
               </template>
             </div>
 
@@ -723,7 +723,7 @@
               @click="selectedPortfolio = item; showDetail = true;"
               class="w-full h-11 rounded-xl bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center text-center transition-all cursor-pointer shadow-md"
             >
-              View Detail
+              {{t 'test.myPortfolio.viewDetailButton'}}
             </button>
             <div class="flex items-center gap-2">
               <button
@@ -732,7 +732,7 @@
                 class="h-11 flex-1 rounded-xl border border-[#D4D4D4] bg-white text-[#003060] font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
               >
                 <i class="fa-regular fa-pen-to-square text-xs"></i>
-                Edit
+                {{t 'test.myPortfolio.editButton'}}
               </button>
               <button
                 type="button"
@@ -740,7 +740,7 @@
                 class="h-11 flex-1 rounded-xl border border-[#fca5a5] bg-[#fef2f2] text-[#ef4444] font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:bg-[#fee2e2]"
               >
                 <i class="fa-regular fa-trash-can text-xs"></i>
-                Delete
+                {{t 'test.myPortfolio.deleteButton'}}
               </button>
             </div>
           </div>
@@ -782,8 +782,8 @@
       <!-- Title Header -->
       <h2
         class="font-inter font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8"
-        x-text="editingId ? 'Edit Your Portfolio' : 'Create Your Portfolio'"
-      >Create Your Portfolio</h2>
+        x-text="editingId ? '{{t 'test.myPortfolio.modal.editTitle'}}' : '{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}'"
+      >{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}</h2>
 
       <!-- Form Grid (2 Columns on Desktop) -->
       <form @submit.prevent="submitPortfolio()" class="space-y-8">
@@ -794,12 +794,12 @@
             <!-- Portfolio Title -->
             <div class="space-y-3">
               <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Portfolio Title<span class="text-red-500">*</span>
+                {{t 'test.myPortfolio.createPortfolio.portfolioTittle'}}<span class="text-red-500">*</span>
               </label>
               <input 
                 type="text" 
                 x-model="newForm.title"
-                placeholder="Enter portfolio title"
+                placeholder="{{t 'test.myPortfolio.createPortfolio.placeholderTittle'}}"
                 class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
               >
             </div>
@@ -807,12 +807,12 @@
             <!-- Description -->
             <div class="space-y-3">
               <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Description
+                {{t 'test.myPortfolio.createPortfolio.description'}}
               </label>
               <textarea 
                 rows="4"
                 x-model="newForm.description"
-                placeholder="write a description..."
+                placeholder="{{t 'test.myPortfolio.createPortfolio.placeholderDescription'}}"
                 class="w-full bg-white rounded-[10px] border border-[#D4D4D4] p-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm"
               ></textarea>
             </div>
@@ -821,7 +821,7 @@
             <!-- Program Dropdown -->
             <div class="space-y-3">
               <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Program<span class="text-red-500">*</span>
+                {{t 'test.myPortfolio.detailPortfolio.program'}}<span class="text-red-500">*</span>
               </label>
               {{!-- Saat menyunting, program tidak bisa dipindah: rute update
                    tidak menyentuh courseId sama sekali. Ditampilkan terkunci
@@ -829,9 +829,9 @@
                    yang tidak akan tersimpan. --}}
               <template x-if="editingId">
                 <div>
-                  <div class="w-full h-[48px] bg-[#F5F5F5] rounded-[10px] border border-[#D4D4D4] px-4 flex items-center font-inter text-sm sm:text-base text-[#666666]" x-text="newForm.program || 'Program'"></div>
+                  <div class="w-full h-[48px] bg-[#F5F5F5] rounded-[10px] border border-[#D4D4D4] px-4 flex items-center font-inter text-sm sm:text-base text-[#666666]" x-text="newForm.program || '{{t 'test.myPortfolio.detailPortfolio.program'}}'"></div>
                   <p class="font-inter font-normal text-xs text-[#666666] pt-1">
-                    A portfolio stays with the program it was created for.
+                    {{t 'test.myPortfolio.modal.programLockedHint'}}
                   </p>
                 </div>
               </template>
@@ -841,7 +841,7 @@
                   @click="modalProgramOpen = !modalProgramOpen"
                   class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 flex items-center justify-between font-inter text-sm sm:text-base text-black hover:shadow-sm cursor-pointer"
                 >
-                  <span x-text="newForm.program || 'Select Program'">Select Program</span>
+                  <span x-text="newForm.program || '{{t 'test.myPortfolio.modal.selectProgram'}}'">{{t 'test.myPortfolio.modal.selectProgram'}}</span>
                   <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060]" :class="modalProgramOpen ? 'rotate-180' : ''"></i>
                 </button>
                 <div 
@@ -853,7 +853,7 @@
                     <button type="button" @click="newForm.program = uc.course.name; newForm.courseId = uc.course.id; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors" x-text="uc.course.name"></button>
                   </template>
                   <template x-if="!userCourses || userCourses.length === 0">
-                    <div class="px-4 py-2 text-[#A3A3A3] text-sm">No programs enrolled</div>
+                    <div class="px-4 py-2 text-[#A3A3A3] text-sm">{{t 'test.myPortfolio.modal.noProgramsEnrolled'}}</div>
                   </template>
                 </div>
               </div>
@@ -862,16 +862,16 @@
             <!-- Link* -->
             <div>
               <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060] mb-3">
-                Link
+                {{t 'test.myPortfolio.createPortfolio.link'}}
               </label>
               <input 
                 type="text" 
                 x-model="newForm.link"
-                placeholder="Enter link (e.g., https://example.com)..."
+                placeholder="{{t 'test.myPortfolio.createPortfolio.placeholderLink'}}"
                 class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
               >
               <p class="font-inter font-normal text-xs sm:text-sm text-[#666666] pt-1">
-                Enter a valid URL starting with http:// or https://
+                {{t 'test.myPortfolio.createPortfolio.spanLink'}}
               </p>
             </div>
           </div>
@@ -882,7 +882,7 @@
             <!-- Project Overview -->
             <div class="space-y-3">
               <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Project Overview
+                {{t 'test.myPortfolio.createPortfolio.overview'}}
               </label>
               <div 
                 id="overviewEditor"
@@ -894,7 +894,7 @@
             <!-- Upload Images* -->
             <div class="space-y-3">
               <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Upload Images<span class="text-red-500">*</span>
+                {{t 'test.myPortfolio.createPortfolio.uploadImages'}}<span class="text-red-500">*</span>
               </label>
               
               {{!-- Gambar yang sudah tersimpan. Yang dibuang di sini ikut
@@ -915,7 +915,7 @@
                         type="button"
                         @click="removeExistingImage(url)"
                         class="shrink-0 px-2 py-1 text-xs text-red-500 transition-colors hover:text-red-700"
-                        title="Remove this image"
+                        title="{{t 'test.myPortfolio.modal.removeThisImage'}}"
                       >
                         <i class="fa-solid fa-trash-can"></i>
                       </button>
@@ -930,10 +930,10 @@
                   <div class="w-full h-[52px] rounded-[10px] border border-[#D4D4D4] px-3 flex items-center justify-between gap-3 bg-white hover:shadow-sm">
                     <div class="flex items-center gap-3 min-w-0">
                       <label class="cursor-pointer bg-[#0B1F3B1A] hover:bg-slate-200 text-black font-inter font-medium text-sm px-4 py-2 rounded-[6px] transition-colors flex-shrink-0">
-                        Choose File
+                        {{t 'test.myPortfolio.modal.chooseFile'}}
                         <input type="file" class="hidden" accept="image/*" @change="handleFile($event, idx)">
                       </label>
-                      <span class="font-inter text-sm text-[#676767] truncate" x-text="upload.name">No file chosen</span>
+                      <span class="font-inter text-sm text-[#676767] truncate" x-text="upload.name">{{t 'test.myPortfolio.modal.noFileChosen'}}</span>
                     </div>
                     <!-- Remove row button if more than 1 -->
                     <button 
@@ -941,7 +941,7 @@
                       x-show="imageUploads.length > 1" 
                       @click="imageUploads.splice(idx, 1)" 
                       class="text-red-500 hover:text-red-700 text-xs px-2 py-1 transition-colors"
-                      title="Remove image"
+                      title="{{t 'test.myPortfolio.modal.removeImage'}}"
                     >
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
@@ -951,7 +951,7 @@
 
               <!-- Allowed format subtitle -->
               <p class="font-inter font-normal text-xs text-[#666666] pt-0.5">
-                JPG, JPEG, PNG, or GIF &middot; max 5MB &middot; 1900-1920 &times; 1000-1080 px
+                {{t 'test.myPortfolio.modal.formatSubtitle'}}
               </p>
               {{!-- Pesan ini muncul begitu berkas dipilih, bukan setelah
                    unggahannya ditolak server. Syaratnya sama persis dengan
@@ -969,7 +969,7 @@
                 class="w-full h-[52px] rounded-[10px] border border-dashed border-[#D4D4D4] flex items-center justify-center gap-2 cursor-pointer hover:bg-[#FAFAFA] text-[#666666] font-inter font-medium text-sm sm:text-base transition-colors mt-3"
               >
                 <i class="fa-solid fa-plus text-xs"></i>
-                <span>Add Image</span>
+                <span>{{t 'test.myPortfolio.createPortfolio.addImage'}}</span>
               </div>
             </div>
           </div>
@@ -983,14 +983,14 @@
             :disabled="!canSubmitPortfolio() || savingPortfolio"
             class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md disabled:pointer-events-none disabled:opacity-50"
           >
-            <span x-text="savingPortfolio ? 'Saving...' : (editingId ? 'Save Changes' : 'Save')">Save</span>
+            <span x-text="savingPortfolio ? '{{t 'test.myPortfolio.modal.saving'}}' : (editingId ? '{{t 'test.myPortfolio.modal.saveChanges'}}' : '{{t 'test.myPortfolio.modal.save'}}')">{{t 'test.myPortfolio.modal.save'}}</span>
           </button>
           <button 
             type="button"
             @click="closePortfolioModal()"
             class="w-full max-w-[240px] h-[48px] rounded-[8px] border border-[#003060] bg-white hover:bg-[#FAFAFA] text-[#003060] font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
           >
-            Cancel
+            {{t 'test.myPortfolio.modal.cancel'}}
           </button>
         </div>
       </form>
@@ -1023,10 +1023,10 @@
         <i class="fa-regular fa-trash-can"></i>
       </span>
 
-      <h3 class="text-center font-inter text-lg font-semibold leading-7 text-[#171717]">Delete this portfolio?</h3>
+      <h3 class="text-center font-inter text-lg font-semibold leading-7 text-[#171717]">{{t 'test.myPortfolio.deleteConfirm.title'}}</h3>
       <p class="mt-2 text-center font-inter text-sm leading-5 text-[#525252]">
         <span class="font-semibold" x-text="deleteTarget ? deleteTarget.title : ''"></span>
-        and the images uploaded with it will be removed permanently. This cannot be undone.
+        {{t 'test.myPortfolio.deleteConfirm.warningSuffix'}}
       </p>
 
       <form
@@ -1039,13 +1039,13 @@
           @click="deleteTarget = null"
           class="inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f5f5f5]"
         >
-          Cancel
+          {{t 'test.myPortfolio.deleteConfirm.cancel'}}
         </button>
         <button
           type="submit"
           class="inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#e84338] bg-[#e84338] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#d13328]"
         >
-          Delete
+          {{t 'test.myPortfolio.deleteConfirm.delete'}}
         </button>
       </form>
     </div>
