@@ -386,7 +386,7 @@ export class UsersService {
 
     if (!user) {
       throw new NotFoundException(
-        'If this email exists, a reset link has been sent.',
+        'Your email is not registered',
       );
     }
 

@@ -36,20 +36,42 @@
       <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
         {{t "test.portfolio.categoryLabel"}}
       </label>
-      <div class='relative'>
-        <select
-          x-model='draftCategoryId'
-          class='w-full appearance-none px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] focus:border-[#003060] focus:ring-1 focus:ring-[#003060] outline-none transition-all cursor-pointer pr-10'
+      <div class='relative' x-data='{ open: false }' @click.outside='open = false'>
+        <button
+          type='button'
+          @click='open = !open'
+          class='w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] transition-all cursor-pointer outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]'
+          :class="open && 'border-[#003060] ring-1 ring-[#003060]'"
         >
-          <option value=''>{{t "test.portfolio.allCategory"}}</option>
+          <span class='truncate text-left' x-text="draftCategoryId ? (allKategori.find(k => String(k.id) === String(draftCategoryId))?.name || '{{t "test.portfolio.allCategory"}}') : '{{t "test.portfolio.allCategory"}}'"></span>
+          <i class='fas fa-chevron-down text-xs text-gray-400 transition-transform duration-200 shrink-0 ml-2' :class="open && 'rotate-180'"></i>
+        </button>
+        <div
+          x-cloak
+          x-show='open'
+          x-transition.opacity
+          class='absolute left-0 z-50 mt-1.5 w-full max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg'
+        >
+          <button
+            type='button'
+            @click="draftCategoryId = ''; open = false"
+            class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
+            :class="!draftCategoryId ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{t "test.portfolio.allCategory"}}</span>
+            <i class='fas fa-check text-xs' x-show='!draftCategoryId'></i>
+          </button>
           {{#each category}}
-            <option value='{{this.id}}'>{{this.name}}</option>
+            <button
+              type='button'
+              @click="draftCategoryId = '{{this.id}}'; open = false"
+              class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
+              :class="String(draftCategoryId) === '{{this.id}}' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+            >
+              <span class='truncate'>{{this.name}}</span>
+              <i class='fas fa-check text-xs' x-show="String(draftCategoryId) === '{{this.id}}'"></i>
+            </button>
           {{/each}}
-        </select>
-        <div class='pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-400'>
-          <svg class='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path>
-          </svg>
         </div>
       </div>
     </div>
@@ -59,20 +81,42 @@
       <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
         {{t "test.portfolio.classTypeLabel"}}
       </label>
-      <div class='relative'>
-        <select
-          x-model='draftCourseTypeId'
-          class='w-full appearance-none px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] focus:border-[#003060] focus:ring-1 focus:ring-[#003060] outline-none transition-all cursor-pointer pr-10'
+      <div class='relative' x-data='{ open: false }' @click.outside='open = false'>
+        <button
+          type='button'
+          @click='open = !open'
+          class='w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] transition-all cursor-pointer outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]'
+          :class="open && 'border-[#003060] ring-1 ring-[#003060]'"
         >
-          <option value=''>{{t "test.portfolio.allClassType"}}</option>
+          <span class='truncate text-left' x-text="draftCourseTypeId ? (getByLang(allJenisKelas.find(j => String(j.id) === String(draftCourseTypeId))?.nameClassesType, lang) || '{{t "test.portfolio.allClassType"}}') : '{{t "test.portfolio.allClassType"}}'"></span>
+          <i class='fas fa-chevron-down text-xs text-gray-400 transition-transform duration-200 shrink-0 ml-2' :class="open && 'rotate-180'"></i>
+        </button>
+        <div
+          x-cloak
+          x-show='open'
+          x-transition.opacity
+          class='absolute left-0 z-50 mt-1.5 w-full max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg'
+        >
+          <button
+            type='button'
+            @click="draftCourseTypeId = ''; open = false"
+            class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
+            :class="!draftCourseTypeId ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{t "test.portfolio.allClassType"}}</span>
+            <i class='fas fa-check text-xs' x-show='!draftCourseTypeId'></i>
+          </button>
           {{#each courseType}}
-            <option value='{{this.id}}'>{{getByLang this.nameClassesType @root.lang}}</option>
+            <button
+              type='button'
+              @click="draftCourseTypeId = '{{this.id}}'; open = false"
+              class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
+              :class="String(draftCourseTypeId) === '{{this.id}}' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+            >
+              <span class='truncate'>{{getByLang this.nameClassesType @root.lang}}</span>
+              <i class='fas fa-check text-xs' x-show="String(draftCourseTypeId) === '{{this.id}}'"></i>
+            </button>
           {{/each}}
-        </select>
-        <div class='pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-400'>
-          <svg class='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path>
-          </svg>
         </div>
       </div>
     </div>
