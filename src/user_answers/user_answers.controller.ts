@@ -62,6 +62,10 @@ export class UserAnswersController {
       req.flash('success', 'Success complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
     } catch (error: any) {
+      // Pastikan quizStart direset agar sesi berikutnya tidak langsung time's up
+      try {
+        await this.userAnswersService.resetQuizState(req.user!.id);
+      } catch (_) {}
       flashToastError(
         req,
         'Quiz not submitted',

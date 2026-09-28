@@ -175,6 +175,7 @@ export class QuizController {
       res.render('user/quiz/start', {
         user: req.user,
         quizId,
+        quiz,
         pertanyaan: questions,
         check,
         bareShell: true,
@@ -199,6 +200,7 @@ export class QuizController {
       res.render('user/quiz/start', {
         user: req.user,
         quizId,
+        quiz,
         pertanyaan: questions,
         remainingTime,
         check,
