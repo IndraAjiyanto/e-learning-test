@@ -920,7 +920,7 @@ export class PaymentsService {
 
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
-      relations: ['user'],
+      relations: ['user', 'invoice'],
     });
     if (!payment) {
       throw new Error('Pembayaran tidak ditemukan');
@@ -928,6 +928,18 @@ export class PaymentsService {
     if (payment.user && payment.user.id !== userId) {
       throw new Error('Payment tidak berhak diakses user ini');
     }
+    // `approved` berarti pembayaran sudah lunas: manual berarti sudah diterima
+    // super admin, Xendit berarti sudah dibayar. Dua-duanya tidak perlu bukti
+    // lagi, dan membuka upload ulang hanya bisa membatalkan status yang sah.
+    if (payment.process === 'approved') {
+      throw new Error(
+        'Pembayaran ini sudah lunas dan diterima. Bukti tidak perlu diunggah lagi.',
+      );
+    }
+
+    // Bukti manual menggantikan kanal Xendit untuk payment ini, jadi invoice
+    // yang masih hidup harus ditutup dulu supaya tidak bisa dibayar dua kali.
+    await this.invoiceService.expireAndClearInvoice(payment.invoice);
 
     const previousFile = payment.file;
     payment.file = file;
@@ -1005,6 +1017,16 @@ export class PaymentsService {
 
     let row = existingRow;
     if (row) {
+      // Bukti manual untuk bulan ini menggantikan kanal Xendit, jadi invoice
+      // lama yang masih hidup harus ditutup dan field-nya dikosongkan. Tanpa
+      // ini user memegang link Xendit dan bukti manual sekaligus untuk bulan
+      // yang sama, dan bisa membayar dua kali.
+      if (row.xendit_invoice_id) {
+        await this.invoiceService.expireXenditInvoice(row.xendit_invoice_id);
+        row.xendit_invoice_id = '';
+        row.xendit_invoice_url = '';
+      }
+
       const previousFile = row.file;
       row.amount = amount;
       row.file = file;
