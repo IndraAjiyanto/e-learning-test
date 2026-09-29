@@ -144,15 +144,89 @@
   }
 </script>
 
+<style>
+  @media print {
+    body > *:not(main),
+    nav,
+    aside,
+    footer,
+    #route-progress,
+    .print\:hidden,
+    [data-print-hide],
+    #payment-proof-download-btn,
+    #payment-proof-close-btn {
+      display: none !important;
+    }
+
+    body * {
+      visibility: hidden;
+    }
+
+    #payment-proof-modal,
+    #payment-proof-modal * {
+      visibility: visible;
+    }
+
+    #payment-proof-modal {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      display: block !important;
+    }
+
+    #payment-proof-dialog {
+      position: static !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: none !important;
+      box-shadow: none !important;
+      border: 1px solid #D8E6F6 !important;
+      border-radius: 8px !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
+
+    #payment-proof-viewer {
+      max-height: none !important;
+      overflow: visible !important;
+      background: #ffffff !important;
+      padding: 16px !important;
+    }
+
+    #payment-proof-download-btn,
+    #payment-proof-close-btn {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    @page {
+      size: auto;
+      margin: 10mm 15mm;
+    }
+  }
+</style>
+
 <!-- Modal Backdrop & Container: Tersembunyi secara default (display: none), hanya aktif saat open=true -->
 <div
   x-data="transactionDetailModal()"
   x-show="open"
   x-cloak
+  id="payment-proof-modal"
   style="display: none;"
   @transaction-detail:open.window="show($event.detail)"
   @keydown.escape.window="close()"
-  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/45 backdrop-blur-[2px] transition-opacity"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/45 backdrop-blur-[2px] transition-opacity print:p-0 print:bg-transparent"
   x-transition:enter="ease-out duration-300"
   x-transition:enter-start="opacity-0"
   x-transition:enter-end="opacity-100"
@@ -165,8 +239,9 @@
   <div
     role="dialog"
     aria-modal="true"
+    id="payment-proof-dialog"
     aria-labelledby="modal-header-payment-proof-title"
-    class="relative w-full max-w-[1000px] max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-[0px_8px_24px_rgba(0,24,74,0.0941176),0px_24px_64px_rgba(0,24,74,0.2)] overflow-hidden border border-[#D8E6F6]/40 transition-all transform"
+    class="relative w-full max-w-[1000px] max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-[0px_8px_24px_rgba(0,24,74,0.0941176),0px_24px_64px_rgba(0,24,74,0.2)] overflow-hidden border border-[#D8E6F6]/40 transition-all transform print:border-[#D8E6F6] print:shadow-none"
     x-transition:enter="ease-out duration-300"
     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -198,9 +273,11 @@
       <!-- Close button: 36x36px, background rgba(255, 255, 255, 0.101961), radius 8px -->
       <button
         type="button"
+        id="payment-proof-close-btn"
+        data-print-hide="true"
         @click="close()"
         aria-label="Close modal"
-        class="flex flex-col justify-center items-center w-9 h-9 bg-white/[0.101961] hover:bg-white/20 text-white rounded-lg transition-colors focus:outline-none shrink-0"
+        class="flex flex-col justify-center items-center w-9 h-9 bg-white/[0.101961] hover:bg-white/20 text-white rounded-lg transition-colors focus:outline-none shrink-0 print:hidden"
       >
         <!-- x: 16x16px -->
         <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -211,7 +288,7 @@
     </div>
 
     <!-- Invoice Viewer (Figma: padding 24px 32px, gap 16px, background #F6F8FB, height 643px) -->
-    <div class="box-border flex flex-col items-start w-full p-5 sm:p-[24px_32px] gap-4 bg-[#F6F8FB] overflow-y-auto flex-1">
+    <div id="payment-proof-viewer" class="box-border flex flex-col items-start w-full p-5 sm:p-[24px_32px] gap-4 bg-[#F6F8FB] overflow-y-auto flex-1 print:p-4 print:overflow-visible">
       <!-- Frame: Subheader (width 936px, height 31px) -->
       <div class="flex flex-row justify-between items-center w-full h-[31px] shrink-0">
         <!-- Invoice Image: Montserrat 700 14px line-height 17px #003060 -->
@@ -222,8 +299,10 @@
         <!-- Frame Download Button: 116x31px, padding 8px 16px, gap 6px, bg #FFFFFF, border 1px solid #D9D9D9, radius 8px -->
         <button
           type="button"
+          id="payment-proof-download-btn"
+          data-print-hide="true"
           @click="downloadInvoice()"
-          class="box-border flex flex-row items-center justify-center w-[116px] h-[31px] px-4 py-2 gap-1.5 bg-white border border-[#D9D9D9] hover:bg-slate-50 rounded-lg transition-colors shadow-xs"
+          class="box-border flex flex-row items-center justify-center w-[116px] h-[31px] px-4 py-2 gap-1.5 bg-white border border-[#D9D9D9] hover:bg-slate-50 rounded-lg transition-colors shadow-xs print:hidden"
         >
           <!-- download-icon: 14x14px -->
           <svg class="w-3.5 h-3.5 text-[#003060] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
