@@ -12,6 +12,12 @@
   hanya cermin hasil simpanan. Kanal Gateway otomatis nonaktif bila kunci
   Xendit belum dikonfigurasi.
 
+  Pemilih kanal ADALAH dua kartu di bawah: tidak ada segmented control
+  terpisah di atas, jadi tidak ada dua tempat untuk state yang sama. Kartu yang
+  aktif ditandai hijau + badge "Active"; kanal yang belum dipilih punya hover.
+  Kartu Gateway tetap bisa diklik saat kunci Xendit kosong supaya user
+  mendapat penjelasan lewat toast, bukan sekadar tombol mati.
+
   Props:
   - manualEnabled : boolean — kanal manual yang aktif
   - gatewayEnabled: boolean — kanal gateway yang aktif
@@ -44,32 +50,21 @@
     </span>
   </div>
 
-  {{!-- Kanal aktif: segmented control (komponen yang sama dengan sakelar
-       Paid Program / Logbook di form buat program) --}}
-  {{#> components/ui/admin/form/form-field label="Active Payment Channel"}}
-    {{> components/ui/admin/form/segmented-button
-      alpineVar="channel"
-      options=(array
-        (obj 'label' 'Manual (Bank Transfer)' 'value' 'manual' 'onClick' "select('manual')" 'activeIf' "channel === 'manual'")
-        (obj 'label' 'Gateway (Xendit)' 'value' 'gateway' 'onClick' "select('gateway')" 'activeIf' "channel === 'gateway'")
-      )
-    }}
-    <p
-      x-show="gatewayHidden"
-      x-cloak
-      class="font-inter text-[11px] leading-4 text-[#B45309]"
-    >
-      XENDIT_SECRET_KEY belum dikonfigurasi — gateway otomatis nonaktif dan
-      pembayaran berjalan lewat kanal Manual.
-    </p>
-  {{/components/ui/admin/form/form-field}}
+  {{!-- Kanal aktif dipilih langsung dari dua kartu di bawah, jadi tidak ada lagi
+       segmented control terpisah di atas. --}}
+  <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
+    Active Payment Channel
+  </span>
 
-  {{!-- Detail tiap kanal (read-only) --}}
   <div class="flex flex-col sm:flex-row gap-3">
     <!-- Manual Payment -->
-    <div
-      class="flex flex-1 items-center justify-between gap-3 rounded-xl border border-[#D9D9D9] px-4 py-3 transition-colors"
-      :class="channel === 'manual' ? 'bg-[#F0FDF4] border-[#16A34A]' : 'bg-white'"
+    <button
+      type="button"
+      @click="select('manual')"
+      :aria-pressed="channel === 'manual'"
+      :disabled="saving"
+      class="flex flex-1 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left font-sans transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-60"
+      :class="channelCardClass('manual')"
     >
       <span class="flex flex-col gap-0.5">
         <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
@@ -86,12 +81,16 @@
       >
         <i class="fa-solid fa-circle-check text-[10px]"></i> Active
       </span>
-    </div>
+    </button>
 
     <!-- Gateway -->
-    <div
-      class="flex flex-1 items-center justify-between gap-3 rounded-xl border border-[#D9D9D9] px-4 py-3 transition-colors"
-      :class="channel === 'gateway' ? 'bg-[#F0FDF4] border-[#16A34A]' : 'bg-white'"
+    <button
+      type="button"
+      @click="select('gateway')"
+      :aria-pressed="channel === 'gateway'"
+      :disabled="saving"
+      class="flex flex-1 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left font-sans transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-60"
+      :class="channelCardClass('gateway')"
     >
       <span class="flex flex-col gap-0.5">
         <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
@@ -108,8 +107,17 @@
       >
         <i class="fa-solid fa-circle-check text-[10px]"></i> Active
       </span>
-    </div>
+    </button>
   </div>
+
+  <p
+    x-show="gatewayHidden"
+    x-cloak
+    class="font-inter text-[11px] leading-4 text-[#B45309]"
+  >
+    XENDIT_SECRET_KEY belum dikonfigurasi — gateway otomatis nonaktif dan
+    pembayaran berjalan lewat kanal Manual.
+  </p>
 </div>
 
 <script>
@@ -123,6 +131,19 @@
 
       init() {
         this.channel = this.gatewayEnabled ? 'gateway' : 'manual';
+      },
+
+      // Warna kartu + affordance hover, dipakai oleh kedua kartu di template.
+      // Kanal aktif tidak diberi hover apa pun supaya tidak ada dua aturan
+      // Tailwind yang saling bertabrakan (urutan di CSS, bukan di class).
+      channelCardClass(value) {
+        if (value === this.channel) {
+          return 'bg-[#F0FDF4] border-[#16A34A]';
+        }
+        if (value === 'gateway' && this.gatewayHidden) {
+          return 'bg-white border-[#D9D9D9] opacity-60 cursor-not-allowed';
+        }
+        return 'bg-white border-[#D9D9D9] hover:border-[#003060] hover:bg-[#F8FAFC]';
       },
 
       // Satu kanal saja yang boleh aktif: memilih kanal yang sama tidak
