@@ -183,6 +183,25 @@ export class InvoiceService {
     }
   }
 
+  // Menutup invoice Xendit yang menggantung. Dipakai saat user memutuskan
+  // pindah dari gateway ke kanal manual: invoice lama yang masih PENDING
+  // harus ditutup supaya tidak bisa dibayar belakangan dan menghasilkan
+  // pembayaran ganda. Kegagalan expire tidak boleh menggagalkan perpindahan
+  // kanal, jadi status error dikembalikan, bukan dilempar.
+  async expireXenditInvoice(xenditInvoiceId?: string) {
+    if (!this.xenditInvoiceClient || !xenditInvoiceId) {
+      return { expired: false, reason: 'not_configured' };
+    }
+    try {
+      await this.xenditInvoiceClient.expireInvoice({
+        invoiceId: xenditInvoiceId,
+      });
+      return { expired: true, reason: 'expired' };
+    } catch (error) {
+      return { expired: false, reason: 'error', error };
+    }
+  }
+
   // Menyelesaikan payment (full/DP cicilan) yang 'process' berdasarkan status terbaru dari Xendit
   async settleStuckPayment(paymentId: string) {
     const payment = await this.paymentRepository.findOne({

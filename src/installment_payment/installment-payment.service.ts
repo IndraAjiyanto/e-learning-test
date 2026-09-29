@@ -26,6 +26,13 @@ export class InstallmentPaymentService {
     });
   }
 
+  async findOneById(id: string) {
+    return this.installmentPaymentRepository.findOne({
+      where: { id },
+      relations: ['payment', 'payment.course', 'payment.user', 'payment.installment'],
+    });
+  }
+
   async findByPaymentId(paymentId: string) {
     return this.installmentPaymentRepository.find({
       where: { payment: { id: paymentId } },

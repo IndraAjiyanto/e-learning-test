@@ -5,6 +5,7 @@ import {
   Body,
   Patch,
   Param,
+  Query,
   NotFoundException,
   UseGuards,
   UseInterceptors,
@@ -23,6 +24,8 @@ import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
+import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('payment')
@@ -30,6 +33,8 @@ export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly invoiceService: InvoiceService,
+    private readonly paymentSettingsService: PaymentSettingsService,
+    private readonly installmentPaymentService: InstallmentPaymentService,
   ) {}
 
   // ======================== XENDIT REDIRECT PAGES ========================
@@ -164,6 +169,169 @@ export class PaymentsController {
     }
   }
 
+  // ======================== MANUAL PAYMENT (BANK TRANSFER) ========================
+  // Jalur paralel: pembayaran manual verifikasi super admin. Semua rute memakai
+  // pola upload yang sama dengan cicilan bulanan, dan kode Xendit tidak disentuh.
+  //
+  // PENTING: rute literal '/manual' WAJIB berada sebelum rute param
+  // ':installmentsId'. Express mencocokkan rute sesuai urutan deklarasi, jadi
+  // tanpa urutan ini POST /manual akan tertelan route DP (installmentsId
+  // menjadi 'manual') dan bukti pembayaran Full manual gagal dikirim.
+
+  @Roles('user')
+  @Post(':userId/:courseId/manual')
+  @UseInterceptors(
+    FileInterceptor('file', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'payment',
+  })
+  async createManualFullPayment(
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
+    @Body() body: any,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    // Di luar try supaya file yang sudah terunggah tetap bisa dibersihkan
+    // di cabang catch. Kalau file meninggal di storage setiap kali upload
+    // gagal, foldernya akan penuh file yatim.
+    let uploadedFile: string | undefined;
+    try {
+      const { manual_enabled } = await this.paymentSettingsService.effective();
+      if (!manual_enabled) {
+        flashToastError(
+          req,
+          'Method inactive',
+          'Manual payment is currently disabled.',
+        );
+        return res.redirect('/users/profile?tab=history-payment');
+      }
+
+      const dto = new CreatePaymentDto();
+      dto.file = req.body.uploadedImageUrls?.[0];
+      uploadedFile = dto.file;
+      dto.courseId = courseId;
+      dto.userId = userId;
+      dto.process = 'process';
+      dto.no = 'MANF-' + Date.now();
+      const validSources = [
+        'Instagram',
+        'TikTok',
+        'LinkedIn',
+        'Friends',
+        'University',
+        'WhatsApp Group',
+        'Webinar/Event',
+        'Website',
+        'Other',
+      ];
+      dto.referalSource = validSources.includes(body.source)
+        ? body.source
+        : 'Other';
+      (dto as any).user_fullname = body.fullName;
+      (dto as any).user_email = body.email;
+      (dto as any).user_no = body.whatsappNumber;
+
+      const result = await this.paymentsService.create(dto);
+      if (!result) {
+        // Bukti yang sudah terunggah tidak terpakai, jadi jangan ditinggalkan
+        // di storage.
+        await this.paymentsService.deleteFile(uploadedFile);
+        uploadedFile = undefined;
+        flashToastError(
+          req,
+          'Proof not submitted',
+          result === false
+            ? 'You already have an active payment for this program.'
+            : 'Payment data is incomplete or invalid.',
+        );
+        return res.redirect('/users/profile?tab=history-payment');
+      }
+
+      flashToast(
+        req,
+        'Proof submitted',
+        'Your payment proof is being reviewed by the admin.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
+    } catch (error: any) {
+      if (uploadedFile) {
+        await this.paymentsService.deleteFile(uploadedFile);
+      }
+      flashToastError(
+        req,
+        'Proof not submitted',
+        error.message || 'Please try again in a moment.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
+    }
+  }
+
+  // Upload ulang bukti pembayaran manual untuk Full Payment & DP Installment.
+  // Payment diambil dari record yang sudah ada, user selalu dari session sehingga
+  // tidak bisa meng-upload bukti milik user lain. Route ini harus didaftarkan
+  // sebelum ':userId/:courseId/:installmentsId' karena tiga segment-nya akan
+  // ditelan route generik itu kalau didaftarkan belakangan.
+  @Roles('user')
+  @Post('manual/reupload/:paymentId')
+  @UseInterceptors(
+    FileInterceptor('file', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'payment',
+  })
+  async reuploadManualProof(
+    @Param('paymentId') paymentId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    let uploadedFile: string | undefined;
+    try {
+      const { manual_enabled } = await this.paymentSettingsService.effective();
+      if (!manual_enabled) {
+        flashToastError(
+          req,
+          'Method inactive',
+          'Manual payment is currently disabled.',
+        );
+        return res.redirect('/users/profile?tab=history-payment');
+      }
+
+      const file = req.body.uploadedImageUrls?.[0];
+      uploadedFile = file;
+
+      await this.paymentsService.reuploadManualProof(
+        req.user!.id,
+        paymentId,
+        file,
+      );
+
+      flashToast(
+        req,
+        'Proof submitted',
+        'Your payment proof is being reviewed by the admin.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
+    } catch (error: any) {
+      if (uploadedFile) {
+        await this.paymentsService.deleteFile(uploadedFile);
+      }
+      flashToastError(
+        req,
+        'Proof not submitted',
+        error.message || 'Please try again in a moment.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
+    }
+  }
+
   @Roles('user')
   @Post(':userId/:courseId/:installmentsId')
   @UseInterceptors(
@@ -183,36 +351,176 @@ export class PaymentsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    // Di luar try supaya file yang sudah terunggah tetap bisa dibersihkan di
+    // cabang catch. Lihat catatan di createManualFullPayment.
+    let uploadedFile: string | undefined;
     try {
+      const { manual_enabled } = await this.paymentSettingsService.effective();
+      if (!manual_enabled) {
+        flashToastError(
+          req,
+          'Method inactive',
+          'Manual payment is currently disabled.',
+        );
+        return res.redirect('/users/profile?tab=history-payment');
+      }
+
       createPaymentDto.installmentId = installmentsId;
       createPaymentDto.file = req.body.uploadedImageUrls?.[0];
+      uploadedFile = createPaymentDto.file;
       createPaymentDto.courseId = courseId;
       createPaymentDto.userId = userId;
       createPaymentDto.process = 'process';
-      const payment = await this.paymentsService.create(createPaymentDto);
-      if (payment == false) {
-        await this.paymentsService.deleteFile(createPaymentDto.file);
+      if (!createPaymentDto.no) {
+        createPaymentDto.no = 'MAND-' + Date.now();
+      }
+
+      const result = await this.paymentsService.create(createPaymentDto);
+      if (!result) {
+        await this.paymentsService.deleteFile(uploadedFile);
+        uploadedFile = undefined;
         flashToastError(
           req,
-          'Proof already submitted',
-          'You have already sent proof for this payment. Please wait for the admin to review it.',
+          'Proof not submitted',
+          result === false
+            ? 'You already have an active payment for this program.'
+            : 'Payment data is incomplete or invalid.',
         );
-        res.redirect('/users/profile?tab=history-payment');
-      } else {
-        flashToast(
-          req,
-          'Proof submitted',
-          'Your payment proof is being reviewed by the admin.',
-        );
-        res.redirect('/users/profile?tab=history-payment');
+        return res.redirect('/users/profile?tab=history-payment');
       }
+
+      flashToast(
+        req,
+        'Proof submitted',
+        'Your payment proof is being reviewed by the admin.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
     } catch (error: any) {
+      if (uploadedFile) {
+        await this.paymentsService.deleteFile(uploadedFile);
+      }
       flashToastError(
         req,
         'Proof not submitted',
         error.message || 'Please try again in a moment.',
       );
-      res.redirect('/users/profile?tab=history-payment');
+      return res.redirect('/users/profile?tab=history-payment');
+    }
+  }
+
+  @Roles('user')
+  @Post('manual/installment/:paymentId/:month')
+  @UseInterceptors(
+    FileInterceptor('file', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'payment',
+  })
+  async createManualInstallmentMonthPayment(
+    @Param('paymentId') paymentId: string,
+    @Param('month') month: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    // Di luar try supaya file yang sudah terunggah tetap bisa dibersihkan di
+    // cabang catch, termasuk ketika payment ditolak karena sudah ada invoice
+    // atau bukti transfer lain untuk bulan yang sama.
+    let uploadedFile: string | undefined;
+    try {
+      const { manual_enabled } = await this.paymentSettingsService.effective();
+      if (!manual_enabled) {
+        flashToastError(
+          req,
+          'Method inactive',
+          'Manual payment is currently disabled.',
+        );
+        return res.redirect('/users/profile?tab=history-payment');
+      }
+
+      const file = req.body.uploadedImageUrls?.[0];
+      uploadedFile = file;
+      await this.paymentsService.createManualInstallmentPayment(
+        req.user!.id,
+        paymentId,
+        Number(month),
+        file,
+      );
+
+      flashToast(
+        req,
+        'Proof submitted',
+        'Your installment payment proof is being reviewed by the admin.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
+    } catch (error: any) {
+      if (uploadedFile) {
+        await this.paymentsService.deleteFile(uploadedFile);
+      }
+      flashToastError(
+        req,
+        'Proof not submitted',
+        error.message || 'Please try again in a moment.',
+      );
+      return res.redirect('/users/profile?tab=history-payment');
+    }
+  }
+
+  // Approve / reject cicilan bulanan manual (super admin)
+  @Roles('super_admin')
+  @Patch('installment/:proses/:id')
+  async updateManualInstallmentPayment(
+    @Param('proses') proses: string,
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const row = await this.installmentPaymentService.findOneById(id);
+      if (!row) {
+        flashToastError(
+          req,
+          'Cicilan Tidak Ditemukan',
+          'Data cicilan tidak ditemukan.',
+        );
+        return res.redirect('/program');
+      }
+      const approved = proses === 'approved';
+      if (proses === 'approved') {
+        row.status = 'approved';
+        row.paidAt = new Date();
+      } else if (proses === 'rejected') {
+        row.status = 'rejected';
+      } else {
+        // Tanpa validasi ini, proses yang tidak dikenali jatuh ke save tanpa
+        // mengubah apa-apa, lalu toast sukses berbunyi "Cicilan Ditolak".
+        flashToastError(
+          req,
+          'Status Tidak Dikenali',
+          `Status "${proses}" tidak dikenali.`,
+        );
+        return res.redirect('/program');
+      }
+      await this.installmentPaymentService.save(row);
+      flashToast(
+        req,
+        approved ? 'Cicilan Disetujui' : 'Cicilan Ditolak',
+        `Cicilan bulan ${row.month} telah ${approved ? 'disetujui' : 'ditolak'}.`,
+      );
+      const courseId = row.payment?.course?.id;
+      if (courseId) {
+        return res.redirect(`/program/detail/program/admin/${courseId}`);
+      }
+      return res.redirect('/program');
+    } catch (error: any) {
+      flashToastError(
+        req,
+        'Gagal Memperbarui Status Cicilan',
+        error.message || 'Gagal memperbarui status cicilan.',
+      );
+      return res.redirect('/program');
     }
   }
 
@@ -279,10 +587,30 @@ export class PaymentsController {
     });
   }
 
+  /**
+   * Step 1 & 2 pendaftaran program.
+   *
+   * Pilihan metode pembayaran sudah ditentukan SEBELUM user masuk ke sini, di
+   * kartu harga pada halaman program: tab `Full Payment` mengirim
+   * `?method=full`, tab `Installment` mengirim `?method=installment`
+   * (components/ui/card/pricing_card). Jadi step 2 tidak lagi menanyakan
+   * metode lagi - user hanya membayar lewat jalan yang sudah dia pilih.
+   *
+   * Aturan penentuannya:
+   * - Hanya `full` & `installment` yang diterima. Tanpa parameter, atau
+   *   nilai lain, jatuh ke Full Payment (default kartu harga `tab: 'full'`),
+   *   jadi keempat pintu masuk yang tidak mengirim parameter tetap punya
+   *   perilaku yang sama.
+   * - `installment` hanya sah bila programnya benar-benar punya rencana
+   *   cicilan dengan DP > 0. Kalau tidak, jatuh ke Full Payment tanpa pesan:
+   *   menekan tab Installment di program tanpa cicilan bukan kondisi yang
+   *   perlu dijelaskan, dan user tetap bisa membayar lewat Full.
+   */
   @Roles('user')
   @Get('registration/:courseId')
   async registrationPage(
     @Param('courseId') courseId: string,
+    @Query('method') method: string | undefined,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -290,7 +618,25 @@ export class PaymentsController {
     if (!course) {
       throw new NotFoundException('Program tidak ditemukan');
     }
-    res.render('payments/index', { user: req.user, course });
+
+    const firstInstallment = course.installments?.[0];
+    const hasInstallmentPlan =
+      !!firstInstallment && Number(firstInstallment.downPayment) > 0;
+    const wantsInstallment =
+      String(method ?? '').toLowerCase() === 'installment';
+
+    const paymentMethod =
+      wantsInstallment && hasInstallmentPlan
+        ? 'Installment'
+        : 'Full Payment';
+
+    const paymentSettings = await this.paymentSettingsService.effective();
+    res.render('payments/index', {
+      user: req.user,
+      course,
+      paymentSettings,
+      paymentMethod,
+    });
   }
 
   @Roles('super_admin')
@@ -318,6 +664,15 @@ export class PaymentsController {
     res.render('super_admin/payments/detail', { user: req.user, payment });
   }
 
+  /**
+   * Verifikasi payment utama (Full Payment / DP) oleh super admin.
+   *
+   * Catatan body: PATCH dari Alpine (fetch tanpa body & tanpa Content-Type) TIDAK
+   * membuat Express 5 + body-parser 2 menginisialisasi req.body, sehingga
+   * `@Body()` bisa `undefined` dan `dto.file = ...` melempar TypeError
+   * "Cannot set properties of undefined (setting 'file')". Semua field di bawah
+   * selalu diisi dari payment yang sudah diambil, jadi DTO kosong tidak masalah.
+   */
   @Roles('super_admin')
   @Patch(':proses/:paymentId')
   async update(
@@ -327,49 +682,103 @@ export class PaymentsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const dto = (updatePaymentDto || {}) as UpdatePaymentDto;
+
+    // Kembalikan super admin ke halaman tempat tombol ditekan (hanya satu origin),
+    // supaya aksi dari daftar /payment atau halaman detail tidak melempar ke
+    // halaman program. Fallback: halaman detail program admin.
+    const backTo = (courseId?: string | null) => {
+      const referer = req.get('referer');
+      if (referer) {
+        try {
+          const url = new URL(referer);
+          if (url.host === req.headers.host) {
+            return `${url.pathname}${url.search}`;
+          }
+        } catch (error) {}
+      }
+      return courseId
+        ? `/program/detail/program/admin/${courseId}`
+        : '/program';
+    };
+
     try {
       const payment = await this.paymentsService.findOne(paymentId);
       if (!payment) {
-        return null;
+        flashToastError(
+          req,
+          'Pembayaran Tidak Ditemukan',
+          'Data pembayaran tidak ditemukan.',
+        );
+        return res.redirect('/payment');
       }
-      if (proses === 'approved') {
-        updatePaymentDto.file = payment['file'];
-        updatePaymentDto.userId = payment['user']['id'];
-        updatePaymentDto.courseId = payment['course']['id'];
-        updatePaymentDto.process = 'approved';
-        await this.paymentsService.update(paymentId, updatePaymentDto);
-        try {
-          await this.paymentsService.addUserToCourse(
-            payment['user']['id'],
-            payment['course']['id'],
-          );
-        } catch (error: any) {}
 
-        req.flash('success', 'proces successfully change acc');
-        res.redirect(
-          `/program/detail/program/admin/${payment['course']['id']}`,
+      const userId = payment.user?.id;
+      const courseId = payment.course?.id;
+      if (!userId || !courseId) {
+        flashToastError(
+          req,
+          'Data Pembayaran Tidak Lengkap',
+          'Pembayaran tidak terhubung ke user atau program.',
         );
-      } else if (proses === 'rejected') {
-        updatePaymentDto.file = payment['file'];
-        updatePaymentDto.userId = payment['user']['id'];
-        updatePaymentDto.courseId = payment['course']['id'];
-        updatePaymentDto.process = 'rejected';
-        await this.paymentsService.update(paymentId, updatePaymentDto);
+        return res.redirect(backTo(courseId));
+      }
+      if (proses !== 'approved' && proses !== 'rejected') {
+        flashToastError(
+          req,
+          'Status Tidak Dikenali',
+          `Status "${proses}" tidak dikenali.`,
+        );
+        return res.redirect(backTo(courseId));
+      }
+
+      dto.file = payment.file;
+      dto.userId = userId;
+      dto.courseId = courseId;
+      dto.process = proses;
+      await this.paymentsService.update(paymentId, dto);
+
+      if (proses === 'approved') {
         try {
-          await this.paymentsService.removeCourseUser(
-            payment['user']['id'],
-            payment['course']['id'],
+          await this.paymentsService.addUserToCourse(userId, courseId);
+        } catch (error: any) {
+          // Sudah ikut program / data bermasalah: status payment tetap approved.
+          console.warn(
+            'Payment approved tapi user belum masuk program:',
+            error?.message ?? error,
           );
-        } catch (error: any) {}
-        req.flash('success', 'proces successfully change rejected');
-        res.redirect(
-          `/program/detail/program/admin/${payment['course']['id']}`,
+        }
+        flashToast(
+          req,
+          'Pembayaran Disetujui',
+          'Status pembayaran telah diubah menjadi approved.',
+        );
+      } else {
+        try {
+          await this.paymentsService.removeCourseUser(userId, courseId);
+        } catch (error: any) {
+          // Belum pernah ikut program: status payment tetap rejected.
+          console.warn(
+            'Payment rejected tapi user tidak terdaftar di program:',
+            error?.message ?? error,
+          );
+        }
+        flashToast(
+          req,
+          'Pembayaran Ditolak',
+          'Status pembayaran telah diubah menjadi rejected.',
         );
       }
+      return res.redirect(backTo(courseId));
     } catch (error: any) {
+      console.error('Gagal memperbarui status payment:', error);
       const payment = await this.paymentsService.findOne(paymentId);
-      req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect(`/program/detail/program/admin/${payment['course']['id']}`);
+      flashToastError(
+        req,
+        'Gagal Memperbarui Status Pembayaran',
+        error?.message || 'Gagal memperbarui status pembayaran.',
+      );
+      return res.redirect(backTo(payment?.course?.id));
     }
   }
 }

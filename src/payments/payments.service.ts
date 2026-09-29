@@ -26,7 +26,22 @@ import * as path from 'path';
 import { InvoiceService } from 'src/invoice/invoice.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
+import { Invoice } from 'src/entities/invoice.entity';
 import { dateHelpers } from 'src/common/helpers';
+
+// Hasil `createXenditInvoice`. Kalau payment-nya sudah pernah dibuat, service
+// mengembalikan objek ringkas yang menyertakan invoice lama; kalau baru, objek
+// `Payment` yang sama dengan `createInvoiceForPayment`.
+export type XenditOrderResult =
+  | { process: 'approved' | 'process'; payment: Payment; invoice: Invoice }
+  | Payment;
+
+// Hasil `createMonthlyInstallmentInvoice`. `blocked: true` berarti invoice bulan
+// itu masih PENDING di Xendit, jadi pemanggil harus mengarahkan user ke link yang
+// sudah ada alih-alih membuat invoice kedua yang bisa dibayar dua kali.
+export type MonthlyInstallmentResult =
+  | { blocked: true; existingInvoiceUrl: string; message: string }
+  | InstallmentPayment;
 
 @Injectable()
 export class PaymentsService {
@@ -658,7 +673,7 @@ export class PaymentsService {
     paymentMethod: string,
     promoCode?: string,
     formData?: any,
-  ) {
+  ): Promise<XenditOrderResult> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['installments', 'category'],
@@ -696,14 +711,14 @@ export class PaymentsService {
             process: 'approved',
             payment: existingPayment,
             invoice: existingPayment.invoice,
-          } as any;
+          };
         }
         if (existingPayment.invoice) {
           return {
             process: 'process',
             payment: existingPayment,
             invoice: existingPayment.invoice,
-          } as any;
+          };
         }
         throw new Error(
           'Anda sudah membuat pembayaran cicilan untuk program ini. Silakan lanjutkan pembayaran.',
@@ -782,7 +797,7 @@ export class PaymentsService {
     userId: string,
     parentPaymentId: string,
     month: number,
-  ) {
+  ): Promise<MonthlyInstallmentResult> {
     const parent = await this.paymentRepository.findOne({
       where: { id: parentPaymentId },
       relations: ['user', 'course', 'installment', 'installment.course'],
@@ -837,23 +852,37 @@ export class PaymentsService {
 
     let row = existingRow;
     if (row) {
+      // Status invoice Xendit yang sudah ada dicek sekali di sini, lalu dipakai
+      // untuk tiga keputusan: sudah lunas (tandai lunas), masih aktif (jangan
+      // buat invoice kedua), atau sudah mati (biarkan di-regenerate di bawah).
+      const xenditStatus = row.xendit_invoice_id
+        ? await this.invoiceService.getXenditInvoiceStatus(row.xendit_invoice_id)
+        : null;
+
       // Cegah double-charge: jika invoice lama ternyata sudah dibayar di Xendit
       // (webhook mungkin gagal), tandai lunas tanpa membuat invoice baru.
-      if (row.xendit_invoice_id) {
-        const xenditStatus = await this.invoiceService.getXenditInvoiceStatus(
-          row.xendit_invoice_id,
-        );
-        if (
-          xenditStatus &&
-          (xenditStatus.status === 'PAID' || xenditStatus.status === 'SETTLED')
-        ) {
-          row.status = 'approved';
-          row.paidAt = xenditStatus.paidAt || new Date();
-          return await this.installmentPaymentService.save(row);
-        }
+      if (
+        xenditStatus &&
+        (xenditStatus.status === 'PAID' || xenditStatus.status === 'SETTLED')
+      ) {
+        row.status = 'approved';
+        row.paidAt = xenditStatus.paidAt || new Date();
+        return await this.installmentPaymentService.save(row);
       }
 
-      // Belum dibayar -> regenerasi invoice baru agar user bisa membayar lagi.
+      // Invoice lama masih PENDING: kembalikan link yang sama supaya user tidak
+      // memegang dua link yang bisa dibayar dua kali untuk bulan yang sama.
+      if (xenditStatus?.status === 'PENDING' && row.xendit_invoice_url) {
+        return {
+          blocked: true,
+          existingInvoiceUrl: row.xendit_invoice_url,
+          message:
+            'Invoice bulan ini masih aktif. Lanjutkan pembayaran melalui link yang sudah ada.',
+        };
+      }
+
+      // Sudah EXPIRED/FAILED atau belum pernah dibuat -> regenerasi invoice
+      // baru agar user tetap bisa membayar.
       row.amount = amount;
       row.no = `INV-M${month}-${Date.now()}-${Math.random()
         .toString(36)
@@ -877,6 +906,125 @@ export class PaymentsService {
       parent.user?.email || 'guest@example.com',
       course?.name || 'Program',
     );
+  }
+
+  // ======================== MANUAL PAYMENT RE-UPLOAD ========================
+
+  // Upload ulang bukti pembayaran manual untuk Full Payment & DP Installment.
+  // Mengubah record yang sama (tidak membuat record baru) dan mengembalikan
+  // statusnya ke `process` agar ditinjau ulang oleh super admin.
+  async reuploadManualProof(userId: string, paymentId: string, file: string) {
+    if (!file) {
+      throw new Error('Bukti pembayaran wajib diunggah');
+    }
+
+    const payment = await this.paymentRepository.findOne({
+      where: { id: paymentId },
+      relations: ['user'],
+    });
+    if (!payment) {
+      throw new Error('Pembayaran tidak ditemukan');
+    }
+    if (payment.user && payment.user.id !== userId) {
+      throw new Error('Payment tidak berhak diakses user ini');
+    }
+
+    const previousFile = payment.file;
+    payment.file = file;
+    payment.process = 'process';
+    const saved = await this.paymentRepository.save(payment);
+
+    if (previousFile && previousFile !== file) {
+      await this.deleteFile(previousFile);
+    }
+
+    return saved;
+  }
+
+  // Upload ulang bukti pembayaran manual untuk satu bulan cicilan.
+  // Cicilan yang sudah lunas (approved) tidak boleh di-upload ulang.
+  async createManualInstallmentPayment(
+    userId: string,
+    parentPaymentId: string,
+    month: number,
+    file: string,
+  ) {
+    if (!file) {
+      throw new Error('Bukti pembayaran wajib diunggah');
+    }
+
+    const parent = await this.paymentRepository.findOne({
+      where: { id: parentPaymentId },
+      relations: ['user', 'course', 'installment', 'installment.course'],
+    });
+    if (!parent || !parent.installment) {
+      throw new Error('Rencana cicilan tidak ditemukan');
+    }
+    if (parent.process !== 'approved') {
+      throw new Error('Pembayaran DP belum lunas/approved');
+    }
+    if (!parent.dpPaidAt) {
+      throw new Error('Pembayaran DP belum tercatat');
+    }
+    if (parent.user && parent.user.id !== userId) {
+      throw new Error('Payment tidak berhak diakses user ini');
+    }
+
+    const schedule = parent.installment.price || [];
+    if (month < 1 || month > schedule.length) {
+      throw new Error('Nomor cicilan tidak valid');
+    }
+
+    const existingRow =
+      await this.installmentPaymentService.findOneByPaymentAndMonth(
+        parentPaymentId,
+        month,
+      );
+    if (existingRow && existingRow.status === 'approved') {
+      throw new Error('Cicilan bulan ini sudah lunas');
+    }
+
+    // Pembayaran cicilan harus berurutan.
+    if (month > 1) {
+      const existingPayments =
+        await this.installmentPaymentService.findByPaymentId(parentPaymentId);
+      for (let m = 1; m < month; m++) {
+        const prevPayment = existingPayments.find((p) => p.month === m);
+        if (!prevPayment || prevPayment.status !== 'approved') {
+          throw new Error(
+            `Cicilan bulan ${m} belum lunas. Silakan bayar cicilan secara berurutan.`,
+          );
+        }
+      }
+    }
+
+    const amount = schedule[month - 1];
+    if (amount === undefined || amount === null) {
+      throw new Error('Nominal cicilan tidak ditemukan');
+    }
+
+    let row = existingRow;
+    if (row) {
+      const previousFile = row.file;
+      row.amount = amount;
+      row.file = file;
+      row.status = 'process';
+      row.paidAt = null as unknown as Date;
+      row = await this.installmentPaymentService.save(row);
+      if (previousFile && previousFile !== file) {
+        await this.deleteFile(previousFile);
+      }
+      return row;
+    }
+
+    return this.installmentPaymentService.create({
+      payment: parent,
+      month,
+      amount,
+      file,
+      status: 'process',
+      no: `INV-M${month}-${Date.now()}`,
+    });
   }
 
   // Get course by ID

@@ -20,6 +20,17 @@
         {{#if payment.course.title}}{{payment.course.title}}{{else}}{{payment.course.name}}{{/if}}
         ({{#if payment.invoice.xendit_invoice_id}}{{payment.invoice.xendit_invoice_id}}{{else if payment.no}}{{payment.no}}{{else}}INV/{{payment.id}}{{/if}})
       </p>
+      {{#if payment.file}}
+      <a
+        href="{{payment.file}}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 font-inter text-sm font-semibold leading-5 text-[#2563EB] hover:underline"
+      >
+        <i class="fa-solid fa-file-image text-xs"></i>
+        Lihat Bukti Transfer
+      </a>
+      {{/if}}
     </div>
 
     <!-- Frame 2147229746: Cards Container, Gap 16px -->
@@ -102,7 +113,7 @@
                     </div>
 
                     <!-- Right: Amount/Month & Status Badge with Dot -->
-                    <div class="flex flex-row items-center justify-end gap-2.5 shrink-0">
+                    <div class="flex flex-row items-center justify-end gap-2.5 shrink-0 flex-wrap">
                       <span class="font-montserrat font-semibold text-sm leading-5 text-[#003060]" x-text="formatCurrency(price) + '/Month'"></span>
 
                       <!-- Status Badges with Dot -->
@@ -135,6 +146,38 @@
                           <span>Unpaid</span>
                         </span>
                       </template>
+
+                      <!-- Bukti manual term ini -->
+                      <template x-if="getTerm(idx + 1)?.file">
+                        <a
+                          :href="getTerm(idx + 1).file"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-1 font-inter text-[11px] font-semibold leading-4 text-[#2563EB] hover:underline"
+                        >
+                          <i class="fa-solid fa-file-image text-[10px]"></i> Bukti
+                        </a>
+                      </template>
+
+                      <!-- Approve / Reject term proses -->
+                      <template x-if="getTermStatus(idx + 1) === 'process' && getTerm(idx + 1)">
+                        <div class="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            @click="reviewTerm(idx + 1, 'approved')"
+                            class="px-2.5 py-1 rounded bg-[#16A34A] text-white text-[11px] font-semibold hover:bg-[#15803D] transition-colors cursor-pointer"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            @click="reviewTerm(idx + 1, 'rejected')"
+                            class="px-2.5 py-1 rounded bg-[#EF4444] text-white text-[11px] font-semibold hover:bg-[#D9333F] transition-colors cursor-pointer"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </template>
                     </div>
                   </div>
                 </template>
@@ -154,6 +197,29 @@
 
         <!-- Section D: Primary Actions -->
         <div class="flex flex-row justify-end items-center gap-3">
+          <!-- Accept / Reject payment utama (DP/Full) -->
+          <template x-if="(payment.process === 'proces' || payment.process === 'process' || payment.process === 'pending') && payment.file">
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                @click="reviewPayment(payment, 'approved')"
+                class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 h-11 bg-[#16A34A] hover:bg-[#15803D] rounded-lg text-decoration-none cursor-pointer"
+              >
+                <span class="font-inter font-semibold text-base leading-6 text-white text-center">
+                  Accept
+                </span>
+              </button>
+              <button
+                type="button"
+                @click="reviewPayment(payment, 'rejected')"
+                class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 h-11 bg-[#EF4444] hover:bg-[#D9333F] rounded-lg text-decoration-none cursor-pointer"
+              >
+                <span class="font-inter font-semibold text-base leading-6 text-white text-center">
+                  Reject
+                </span>
+              </button>
+            </div>
+          </template>
           <a
             href="{{#if payment.course.id}}/program/detail/program/admin/{{payment.course.id}}{{else}}javascript:window.history.back(){{/if}}"
             class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 w-[177px] h-11 bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all cursor-pointer text-decoration-none"
@@ -168,6 +234,16 @@
     </div>
   </div>
 </div>
+
+{{!-- Modal konfirmasi Accept/Reject payment + Approve/Reject cicilan
+     (openConfirmModal) — komponen yang sama dengan toggle launch program. --}}
+{{> components/ui/admin/modal/confirm_action/index}}
+
+{{!-- Toast sukses untuk aksi verifikasi payment (accept/reject payment utama &
+     approve/reject cicilan) yang redirect balik ke halaman detail ini. Dipicu
+     via flashToast() di payments.controller. Toast error & warning sudah
+     dipasang global di layouts/main.hbs. --}}
+{{> components/ui/super_admin/toast/success/index toast=toast}}
 
 <script>
   function installmentDetailPage(initialPayment) {
@@ -199,6 +275,88 @@
         const term = this.getTerm(month);
         if (!term) return 'unpaid';
         return term.status || 'process';
+      },
+
+      // Approve / reject cicilan bulanan manual → PATCH /payment/installment/:proses/:id
+      // Menahan aksi di modal konfirmasi dulu; request-nya baru dikirim setelah
+      // user menekan tombol confirm di modal.
+      reviewTerm(month, action) {
+        const term = this.getTerm(month);
+        if (!term?.id) return;
+        const approve = action === 'approved';
+        openConfirmModal({
+          title: approve ? 'Approve Installment?' : 'Reject Installment?',
+          description: `Are you sure you want to ${approve ? 'approve' : 'reject'} the proof of payment for month ${month}?`,
+          confirmLabel: approve ? 'Approve' : 'Reject',
+          cancelLabel: 'Cancel',
+          onConfirm: () => this.submitReviewTerm(term, action),
+        });
+      },
+
+      async submitReviewTerm(term, action) {
+        try {
+          const res = await fetch(
+            `/payment/installment/${action}/${term.id}`,
+            {
+              method: 'PATCH',
+              redirect: 'manual',
+            },
+          );
+          if (res.ok || res.type === 'opaqueredirect') {
+            location.reload();
+          } else {
+            showErrorToast(
+              'Gagal Memperbarui Status Cicilan',
+              'Permintaan tidak dapat diproses. Silakan coba lagi.',
+            );
+          }
+        } catch (error) {
+          console.error('Review term error:', error);
+          showErrorToast(
+            'Gagal Memperbarui Status Cicilan',
+            'Terjadi kesalahan koneksi ke server.',
+          );
+        }
+      },
+
+      // Accept / reject payment utama (DP/Full) → PATCH /payment/:proses/:paymentId
+      reviewPayment(payment, action) {
+        if (!payment?.id) return;
+        const approve = action === 'approved';
+        openConfirmModal({
+          title: approve ? 'Accept Payment?' : 'Reject Payment?',
+          description: approve
+            ? 'Are you sure you want to accept this payment? The user will be automatically enrolled in the program.'
+            : 'Are you sure you want to reject this payment?',
+          confirmLabel: approve ? 'Accept' : 'Reject',
+          cancelLabel: 'Cancel',
+          onConfirm: () => this.submitReviewPayment(payment, action),
+        });
+      },
+
+      async submitReviewPayment(payment, action) {
+        try {
+          const res = await fetch(`/payment/${action}/${payment.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: '{}',
+            redirect: 'manual',
+          });
+          if (res.ok || res.type === 'opaqueredirect') {
+            location.reload();
+          } else {
+            showErrorToast(
+              'Gagal Memperbarui Status Pembayaran',
+              'Permintaan tidak dapat diproses. Silakan coba lagi.',
+            );
+          }
+        } catch (error) {
+          console.error('Review payment error:', error);
+          showErrorToast(
+            'Gagal Memperbarui Status Pembayaran',
+            'Terjadi kesalahan koneksi ke server.',
+          );
+        }
       },
     };
   }

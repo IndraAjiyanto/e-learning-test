@@ -3,6 +3,8 @@ import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { InvoiceService } from '../invoice/invoice.service';
 import { UploadService } from '../common/upload/upload.service';
+import { PaymentSettingsService } from '../payment-settings/payment-settings.service';
+import { InstallmentPaymentService } from '../installment_payment/installment-payment.service';
 
 describe('PaymentsController', () => {
   let controller: PaymentsController;
@@ -43,6 +45,22 @@ describe('PaymentsController', () => {
       providers: [
         { provide: PaymentsService, useValue: paymentsService },
         { provide: InvoiceService, useValue: invoiceService },
+        {
+          provide: PaymentSettingsService,
+          useValue: {
+            effective: jest.fn().mockResolvedValue({
+              manual_enabled: true,
+              gateway_enabled: true,
+            }),
+          },
+        },
+        {
+          provide: InstallmentPaymentService,
+          useValue: {
+            findOneById: jest.fn(),
+            save: jest.fn(),
+          },
+        },
         {
           provide: UploadService,
           useValue: { validateImageDimensions: jest.fn() },

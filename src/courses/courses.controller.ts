@@ -35,6 +35,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
+import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -44,6 +45,7 @@ export class CoursesController {
     private readonly coursesService: CoursesService,
     private readonly usersService: UsersService,
     private readonly finalAssignmentService: FinalAssignmentService,
+    private readonly paymentSettingsService: PaymentSettingsService,
   ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
@@ -236,13 +238,12 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    if (req.user!.role === 'super_admin') {
-      // const course = await this.coursesService.findAllCourses();
-      res.render('admin/course/index', { user: req.user });
-    } else if (req.user!.role === 'admin') {
-      // const course = await this.coursesService.findCourseByMentoring(req.user!.id);
-      res.render('admin/course/index', { user: req.user });
-    }
+    const paymentSettings = await this.paymentSettingsService.effective();
+    res.render('admin/course/index', {
+      user: req.user,
+      paymentSettings,
+      isSuperAdmin: req.user!.role === 'super_admin',
+    });
   }
 
   @Roles('admin', 'super_admin')

@@ -17,6 +17,7 @@ import { VoucherModule } from 'src/voucher/voucher.module';
 import { ApiPaymentController } from './api-payment.controller';
 import { InvoiceModule } from 'src/invoice/invoice.module';
 import { InstallmentPaymentModule } from 'src/installment_payment/installment-payment.module';
+import { PaymentSettingsModule } from 'src/payment-settings/payment-settings.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { InstallmentPaymentModule } from 'src/installment_payment/installment-pa
     VoucherModule,
     forwardRef(() => InvoiceModule),
     InstallmentPaymentModule,
+    PaymentSettingsModule,
   ],
   controllers: [PaymentsController, ApiPaymentController],
   providers: [PaymentsService],

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter } from 'events';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, Repository } from 'typeorm';
+import { Between, In, LessThan, Repository } from 'typeorm';
 import { Request } from 'express';
 import {
   from,
@@ -21,8 +22,10 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { ActivityLog } from 'src/entities/activity_log.entity';
+import { DailyStatistics } from 'src/entities/daily_statistics.entity';
 import { format, startOfDay, subDays } from 'date-fns';
-import { matchLearningScope, ScopeContext } from './learning-scope';
+import { isAssetPath, isNavigationRequest, matchLearningScope, ScopeContext } from './learning-scope';
 
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -41,6 +44,7 @@ export interface ActiveParticipant {
   courseId: string;
   courseName: string;
   activityLabel: string;
+  isLearning: boolean;
   lastSeenHuman: string;
   bgColor: string;
   textColor: string;
@@ -72,8 +76,10 @@ export interface WeeklyStat {
   label: string;
   login: number;
   active: number;
+  learning: number;
   loginH: number;
   activeH: number;
+  learningH: number;
   max: number;
 }
 
@@ -113,6 +119,10 @@ export class UserActivityService {
     private readonly materialRepository: Repository<Material>,
     @InjectRepository(Syllabus)
     private readonly syllabusRepository: Repository<Syllabus>,
+    @InjectRepository(ActivityLog)
+    private readonly activityLogRepository: Repository<ActivityLog>,
+    @InjectRepository(DailyStatistics)
+    private readonly dailyStatsRepository: Repository<DailyStatistics>,
   ) {
     this.events.setMaxListeners(0);
   }
@@ -218,10 +228,15 @@ export class UserActivityService {
           req as any,
           this.scopeContext(),
         );
-        if (resolution) {
-          courseId = resolution.courseId;
-          label = resolution.label;
+        if (!resolution) {
+          await this.touch(user.id);
+          return;
         }
+        await this.updateActivity(
+          user.id,
+          resolution.courseId,
+          resolution.label,
+        );
       } catch (error) {
         // Gagal resolve scope !== crash request.
       }
@@ -230,6 +245,7 @@ export class UserActivityService {
         await this.updateActivity(user.id, courseId, label);
         return;
       }
+      return;
     }
 
     // Jika tidak cocok dengan learning scope:
@@ -379,6 +395,7 @@ export class UserActivityService {
         courseId,
         courseName,
         activityLabel: a.activityLabel ?? '',
+        isLearning: !!a.currentCourseId,
         lastSeenHuman: this.humanize(a.lastSeenAt),
         bgColor: palette.bg,
         textColor: palette.text,
@@ -599,7 +616,7 @@ export class UserActivityService {
 
   /** SSE stream: snapshot awal + push saat ada perubahan + heartbeat tiap 20 detik. */
   learningStream() {
-    const snapshot = () => this.getCurrentlyLearning(5);
+    const snapshot = () => this.getActiveParticipants(5);
 
     const initial = from(snapshot());
 
@@ -611,8 +628,8 @@ export class UserActivityService {
     const heartbeat = interval(20000).pipe(switchMap(() => snapshot()));
 
     return merge(initial, updates, heartbeat).pipe(
-      map((learners) => ({
-        data: JSON.stringify({ learners }),
+      map((participants) => ({
+        data: JSON.stringify({ participants }),
       })),
     );
   }
@@ -644,6 +661,7 @@ export class UserActivityService {
   }
 
   async getWeeklyChart(): Promise<WeeklyStat[]> {
+    await this.ensureDailyStats(new Date()).catch(() => undefined);
     const today = new Date();
     const start = startOfDay(subDays(today, 6));
 
@@ -691,6 +709,12 @@ export class UserActivityService {
     const activeMap = new Map<string, number>(
       activeRows.map((r: any) => [r.day, Number(r.count) || 0]),
     );
+    const statMap = new Map<string, { learningCount: number }>(
+      activeRows.map((r: any) => [
+        r.day,
+        { learningCount: Number(r.count) || 0 },
+      ]),
+    );
 
     // Hari ini minimal memiliki nilai keaktifan sesuai user yang sedang belajar saat ini
     const todayKey = format(today, 'yyyy-MM-dd');
@@ -714,15 +738,20 @@ export class UserActivityService {
         label: DAY_LABELS[date.getDay()],
         login: loginMap.get(key) ?? 0,
         active: activeMap.get(key) ?? 0,
+        learning: statMap.get(key)?.learningCount ?? 0,
       };
     });
 
-    const max = Math.max(...stats.map((s) => Math.max(s.login, s.active)), 1);
+    const max = Math.max(
+      ...stats.map((s) => Math.max(s.login, s.learning)),
+      1,
+    );
     return stats.map((s) => ({
       ...s,
       max,
       loginH: Math.round((s.login / max) * 220),
       activeH: Math.round((s.active / max) * 220),
+      learningH: Math.round((s.learning / max) * 220),
     }));
   }
 
@@ -759,5 +788,131 @@ export class UserActivityService {
       onlineNow: activeParticipants.length,
       activeMentors,
     };
+  }
+
+  /** Mentor aktif (role admin) yang login & session belum expired. */
+  async countActiveMentors(thresholdMinutes = 5): Promise<number> {
+    const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
+    return this.activityRepository
+      .createQueryBuilder('ua')
+      .innerJoin('ua.user', 'user')
+      .where('user.role = :role', { role: 'admin' })
+      .andWhere('ua.lastSeenAt >= :threshold', { threshold })
+      .getCount();
+  }
+
+  /** Peserta (role user) yang sedang login & session belum expired. */
+  async countActiveParticipants(thresholdMinutes = 5): Promise<number> {
+    const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
+    return this.activityRepository
+      .createQueryBuilder('ua')
+      .innerJoin('ua.user', 'user')
+      .where('user.role = :role', { role: 'user' })
+      .andWhere('ua.lastSeenAt >= :threshold', { threshold })
+      .getCount();
+  }
+
+  /** User role 'user' yang sedang belajar (currentCourseId terisi) & lastSeenAt segar. */
+  private async countCurrentlyLearning(thresholdMinutes = 5): Promise<number> {
+    const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
+    return this.activityRepository
+      .createQueryBuilder('ua')
+      .innerJoin('ua.user', 'user')
+      .where('user.role = :role', { role: 'user' })
+      .andWhere('ua.currentCourseId IS NOT NULL')
+      .andWhere('ua.lastSeenAt >= :threshold', { threshold })
+      .getCount();
+  }
+
+  /** Program aktif = masih berjalan (approved + periode berlangsung) & belum dituntaskan seluruh pesertanya. */
+  async countActivePrograms(): Promise<number> {
+    const today = startOfDay(new Date());
+    const row = await this.courseRepository
+      .createQueryBuilder('course')
+      .innerJoin('course.userCourses', 'uc')
+      .select('COUNT(DISTINCT course.id)', 'count')
+      .where('course.process = :process', { process: 'approved' })
+      .andWhere('course.startDate <= :today', { today })
+      .andWhere('(course.startEnd IS NULL OR course.startEnd >= :today)')
+      .andWhere('uc.progress = :progress', { progress: false })
+      .getRawOne();
+    return Number(row?.count ?? 0);
+  }
+
+  private async countLoginEvents(day: Date): Promise<number> {
+    const start = startOfDay(day);
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1);
+    const row = await this.activityLogRepository
+      .createQueryBuilder('al')
+      .innerJoin('al.user', 'user')
+      .select('COUNT(DISTINCT al.userId)', 'count')
+      .where('al.eventType = :type', { type: 'login' })
+      .andWhere('al.eventAt >= :start', { start })
+      .andWhere('al.eventAt <= :end', { end })
+      .andWhere('user.role = :role', { role: 'user' })
+      .getRawOne();
+    return Number(row?.count ?? 0);
+  }
+
+  /**
+   * Upsert baris daily_statistics utk tanggal tertentu.
+   * - loginCount selalu dihitung ulang dari activity_log (akurat utk hari lalu).
+   * - learning/participant/mentor hanya ditulis ulang utk hari ini (real-time snapshot).
+   */
+  async ensureDailyStats(day: Date = new Date()): Promise<DailyStatistics> {
+    await this.purgeExpired(60).catch(() => undefined);
+    const key = format(day, 'yyyy-MM-dd');
+    const isToday = format(new Date(), 'yyyy-MM-dd') === key;
+
+    let row = await this.dailyStatsRepository.findOne({
+      where: { statDate: key },
+    });
+
+    const loginCount = await this.countLoginEvents(day);
+    const data: Partial<DailyStatistics> = {
+      loginCount: Math.max(row?.loginCount ?? 0, loginCount),
+    };
+
+    if (isToday) {
+      const [learningCount, participantsCount, mentorCount, programCount] =
+        await Promise.all([
+          this.countCurrentlyLearning(5),
+          this.countActiveParticipants(5),
+          this.countActiveMentors(5),
+          this.countActivePrograms(),
+        ]);
+      data.learningCount = Math.max(row?.learningCount ?? 0, learningCount);
+      data.participantsActiveCount = Math.max(
+        row?.participantsActiveCount ?? 0,
+        participantsCount,
+      );
+      data.mentorActiveCount = Math.max(
+        row?.mentorActiveCount ?? 0,
+        mentorCount,
+      );
+      data.programActiveCount = programCount;
+    }
+
+    if (row) {
+      Object.assign(row, data);
+      return this.dailyStatsRepository.save(row);
+    }
+
+    const created = this.dailyStatsRepository.create({
+      statDate: key,
+      ...data,
+    } as DailyStatistics);
+    return this.dailyStatsRepository.save(created);
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async snapshotTodayStats() {
+    await this.ensureDailyStats(new Date()).catch(() => undefined);
+  }
+
+  @Cron('0 5 0 * * *')
+  async finalizeYesterdayStats() {
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    await this.ensureDailyStats(yesterday).catch(() => undefined);
   }
 }
