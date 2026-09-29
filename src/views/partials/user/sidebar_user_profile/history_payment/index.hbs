@@ -25,10 +25,10 @@
     <!-- Page Header (Figma token) -->
     <div class="flex flex-col gap-1 w-full">
       <h2 class="font-montserrat font-bold text-[28px] sm:text-[34px] leading-[36px] sm:leading-[42px] text-[#003060]">
-        Payment History
+        {{t "test.historyPayment.title"}}
       </h2>
       <p class="font-montserrat font-medium text-sm sm:text-[15px] leading-5 sm:leading-[21px] text-[#003060]">
-        View and manage your payment history.
+        {{t "test.historyPayment.description"}}
       </p>
     </div>
 
@@ -38,7 +38,7 @@
       <div class="flex flex-wrap items-end gap-4 xl:gap-[22px] w-full">
         <!-- 1. Date range -->
         <div class="flex flex-col gap-2 min-w-[200px] flex-1">
-          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Date range</label>
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.dateRange"}}</label>
           <div class="relative w-full" x-data="{ openDate: false }" @click.outside="openDate = false" @keydown.escape="openDate = false">
             <button
               type="button"
@@ -62,7 +62,7 @@
               class="absolute left-0 top-[calc(100%+6px)] z-30 w-72 p-3 bg-white border border-[#E5E5E5] rounded-xl shadow-[0px_4px_16px_rgba(0,0,0,0.1)] flex flex-col gap-2.5"
             >
               <div class="flex flex-col gap-1">
-                <span class="font-montserrat text-xs font-medium text-[#003060]">From Date</span>
+                <span class="font-montserrat text-xs font-medium text-[#003060]">{{t "test.historyPayment.filter.fromDate"}}</span>
                 <input
                   type="date"
                   x-model="formData.from"
@@ -70,7 +70,7 @@
                 />
               </div>
               <div class="flex flex-col gap-1">
-                <span class="font-montserrat text-xs font-medium text-[#003060]">To Date</span>
+                <span class="font-montserrat text-xs font-medium text-[#003060]">{{t "test.historyPayment.filter.toDate"}}</span>
                 <input
                   type="date"
                   x-model="formData.to"
@@ -83,14 +83,14 @@
                   @click="formData.from = ''; formData.to = ''"
                   class="font-inter text-xs text-[#6280A5] hover:underline"
                 >
-                  Clear
+                  {{t "test.historyPayment.filter.clear"}}
                 </button>
                 <button
                   type="button"
                   @click="openDate = false"
                   class="px-3 py-1 bg-[#003060] text-white rounded font-montserrat text-xs font-medium hover:bg-[#00254a]"
                 >
-                  Done
+                  {{t "test.historyPayment.filter.done"}}
                 </button>
               </div>
             </div>
@@ -99,7 +99,7 @@
 
         <!-- 2. Payment status -->
         <div class="flex flex-col gap-2 min-w-[170px] flex-1">
-          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Payment status</label>
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.paymentStatus"}}</label>
           <div class="relative w-full">
             <select
               x-model="formData.status"
@@ -120,7 +120,7 @@
 
         <!-- 3. Payment method -->
         <div class="flex flex-col gap-2 min-w-[170px] flex-1">
-          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Payment method</label>
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.paymentMethod"}}</label>
           <div class="relative w-full">
             <select
               x-model="formData.method"
@@ -141,7 +141,7 @@
 
         <!-- 4. Program course -->
         <div class="flex flex-col gap-2 min-w-[180px] flex-1">
-          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">Program course</label>
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.programCourse"}}</label>
           <div class="relative w-full">
             <select
               x-model="formData.program"
@@ -167,7 +167,7 @@
             @click="applyFilters()"
             class="h-[42px] px-6 bg-[#003060] hover:bg-[#00254a] active:bg-[#001f3f] text-white rounded-lg font-montserrat font-semibold text-sm leading-5 transition-colors shadow-sm flex items-center justify-center shrink-0"
           >
-            Save Changes
+            {{t "test.historyPayment.filter.saveChanges"}}
           </button>
           <button
             type="button"
@@ -179,7 +179,7 @@
               <path d="M3 3v5h5"/>
             </svg>
             <span class="font-inter font-normal text-[11px] leading-[13px] text-[#6280A5] group-hover:text-[#003060]">
-              Reset
+              {{t "test.historyPayment.filter.reset"}}
             </span>
           </button>
         </div>
@@ -198,7 +198,7 @@
           x-model="searchInput"
           @input.debounce.250ms="handleSearch()"
           aria-label="Search transactions"
-          placeholder="Search..."
+          placeholder="{{t "test.historyPayment.searchPlaceholder"}}"
           class="w-full h-10 bg-white border border-[#D9D9D9] rounded-lg pl-11 pr-4 font-montserrat font-normal text-sm leading-5 text-[#171717] placeholder-[#718096] transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
         />
       </div>
@@ -209,7 +209,7 @@
       <!-- Loading State -->
       <template x-if="loading">
         <div class="rounded-xl border border-[#D8E6F6] bg-white p-8 text-center font-montserrat text-sm text-[#718096]">
-          Loading your payment history...
+          {{t "test.historyPayment.loading"}}
         </div>
       </template>
 
@@ -222,14 +222,14 @@
               <path d="m21 21-4.3-4.3"/>
             </svg>
           </span>
-          <h3 class="font-montserrat text-xl font-bold text-[#003060]">No transactions found</h3>
-          <p class="font-montserrat text-sm text-[#718096]">Try adjusting your filters or search keyword.</p>
+          <h3 class="font-montserrat text-xl font-bold text-[#003060]">{{t "test.historyPayment.noTransactions"}}</h3>
+          <p class="font-montserrat text-sm text-[#718096]">{{t "test.historyPayment.adjustFilters"}}</p>
           <button
             type="button"
             @click="resetFilters()"
             class="mt-1 inline-flex h-11 items-center rounded-lg bg-[#003060] px-4 font-montserrat text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
           >
-            Reset Filters
+            {{t "test.historyPayment.resetFilters"}}
           </button>
         </div>
       </template>
@@ -250,7 +250,7 @@
             type="button"
             @click="changePage(currentPage - 1)"
             :disabled="currentPage <= 1"
-            aria-label="Previous page"
+            aria-label="{{t "test.historyPayment.prev"}}"
             class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -283,7 +283,7 @@
             type="button"
             @click="changePage(currentPage + 1)"
             :disabled="currentPage >= totalPages"
-            aria-label="Next page"
+            aria-label="{{t "test.historyPayment.next"}}"
             class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -338,43 +338,44 @@
       },
 
       statusOptions: [
-        { value: '', label: 'All Status' },
-        { value: 'paid', label: 'Paid' },
-        { value: 'processing', label: 'Processing' },
-        { value: 'failed', label: 'Failed' },
+        { value: '', label: '{{t "test.historyPayment.allStatus"}}' },
+        { value: 'paid', label: '{{t "test.historyPayment.accepted"}}' },
+        { value: 'processing', label: '{{t "test.historyPayment.processing"}}' },
+        { value: 'failed', label: '{{t "test.historyPayment.rejected"}}' },
       ],
 
       get methodOptions() {
         const rawMethods = this.source.map((r) => r.method).filter(Boolean);
         const uniqueMethods = [...new Set(rawMethods)];
         return [
-          { value: '', label: 'All Methods' },
+          { value: '', label: '{{t "test.historyPayment.allMethods"}}' },
           ...uniqueMethods.map((m) => ({ value: m, label: m })),
         ];
       },
 
       get programOptions() {
         const programs = [...new Set(this.source.map((r) => r.courseName).filter(Boolean))];
-        return [{ value: '', label: 'All Programs' }, ...programs.map((p) => ({ value: p, label: p }))];
+        return [{ value: '', label: '{{t "test.historyPayment.allPrograms"}}' }, ...programs.map((p) => ({ value: p, label: p }))];
       },
 
       get dateRangeDisplay() {
         if (this.formData.from && this.formData.to) {
           return this.formatDate(this.formData.from) + ' – ' + this.formatDate(this.formData.to);
         } else if (this.formData.from) {
-          return 'From ' + this.formatDate(this.formData.from);
+          return '{{t "test.historyPayment.from"}} ' + this.formatDate(this.formData.from);
         } else if (this.formData.to) {
-          return 'Until ' + this.formatDate(this.formData.to);
+          return '{{t "test.historyPayment.until"}} ' + this.formatDate(this.formData.to);
         }
-        return 'Select date range';
+        return '{{t "test.historyPayment.selectDateRange"}}';
       },
 
       get rangeLabel() {
         const total = this.filtered.length;
-        if (total === 0) return 'No history';
+        if (total === 0) return '{{t "test.historyPayment.noHistory"}}';
         const start = (this.currentPage - 1) * this.size + 1;
         const end = Math.min(start + this.size - 1, total);
-        return `Showing ${start}-${end} of ${total} history`;
+        const tpl = '{{t "test.historyPayment.rangeTemplate"}}';
+        return tpl.replace('{start}', start).replace('{end}', end).replace('{total}', total);
       },
 
       async load() {
@@ -422,10 +423,10 @@
 
       kindLabel(kind) {
         return kind === 'registration'
-          ? 'Registration'
+          ? '{{t "test.historyPayment.kind.registration"}}'
           : kind === 'installment'
-            ? 'Installment payment'
-            : 'Full payment';
+            ? '{{t "test.historyPayment.kind.installment"}}'
+            : '{{t "test.historyPayment.kind.full"}}';
       },
     };
 

@@ -116,13 +116,19 @@ export class DashboardService {
       // oleh filter userId di bawah, sehingga `userCourses.length` selalu 1
       // untuk student yang sedang login - bar kuota jadi selalu "1 / N".
       // loadRelationCountAndMap memakai subquery sendiri, tidak terpengaruh.
-      .loadRelationCountAndMap('course.enrolledCount', 'course.userCourses')
-      .where('course.launch = :launch', { launch: true });
+      .loadRelationCountAndMap('course.enrolledCount', 'course.userCourses');
 
     if (params.userId) {
-      query.andWhere('userCourses.user.id = :userId', {
-        userId: params.userId,
-      });
+      // ponytail: My Learning menampilkan program yang diikuti student (launch, learning, done).
+      // Jangan kunci pada launch = true karena saat fase learning, launch sengaja false agar pendaftaran publik ditutup.
+      query
+        .where('userCourses.user.id = :userId', { userId: params.userId })
+        .andWhere('(course.status IS NULL OR course.status != :unlaunch)', {
+          unlaunch: 'unlaunch',
+        });
+    } else {
+      // Landing page publik: hanya tampilkan program yang pendaftarannya buka
+      query.where('course.launch = :launch', { launch: true });
     }
 
     if (params.category) {
