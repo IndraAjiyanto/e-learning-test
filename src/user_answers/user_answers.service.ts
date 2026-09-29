@@ -173,7 +173,7 @@ export class UserAnswersService {
 
       const quiz = await this.quizRepository.findOne({
         where: { id: quizId },
-        relations: ['weeks'],
+        relations: ['weeks', 'syllabus', 'syllabus.course'],
       });
 
       if (!quiz) {
@@ -183,6 +183,25 @@ export class UserAnswersService {
       if (scores >= quiz.minScore && quiz.weeks) {
         await this.weekProgress(quiz.weeks.id, userId);
         await this.updateWeekProgress(quiz.weeks.id, userId);
+      }
+
+      // Syllabus final selesai → tandai user_courses.progress = true.
+      // Tanpa ini student yang menyelesaikan program non_bootcamp tidak pernah
+      // mendapat `progress = true`, sehingga tombol Create Portfolio tidak
+      // pernah muncul walaupun seluruh silabus sudah dikerjakan.
+      if (scores >= quiz.minScore && quiz.syllabus?.isFinal && quiz.syllabus.course) {
+        const existingUserCourse = await this.userCourseRepository.findOne({
+          where: {
+            course: { id: quiz.syllabus.course.id },
+            user: { id: userId },
+          },
+        });
+        if (existingUserCourse && !existingUserCourse.progress) {
+          await this.userCourseRepository.save({
+            id: existingUserCourse.id,
+            progress: true,
+          });
+        }
       }
 
       user.quizStart = false;
@@ -198,14 +217,20 @@ export class UserAnswersService {
   }
 
   async updateWeekProgress(weeksId: string, userId: string) {
-    const weekProgresses = await this.weekProgressRepository.findOne({
+    let weekProgresses = await this.weekProgressRepository.findOne({
       where: { week: { id: weeksId }, user: { id: userId } },
     });
     if (!weekProgresses) {
-      throw new NotFoundException('weekProgresses not found');
+      weekProgresses = this.weekProgressRepository.create({
+        week: { id: weeksId },
+        user: { id: userId },
+        process: true,
+        quiz: true,
+      });
+    } else {
+      weekProgresses.quiz = true;
     }
 
-    weekProgresses.quiz = true;
     await this.weekProgressRepository.save(weekProgresses);
 
     return weekProgresses;
