@@ -36,6 +36,9 @@ export class InstallmentPayment {
   @Column({ nullable: true })
   xendit_invoice_url: string;
 
+  @Column({ nullable: true })
+  file: string;
+
   @Column({
     type: 'enum',
     enum: ['process', 'approved', 'rejected'],

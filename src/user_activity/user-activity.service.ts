@@ -22,6 +22,8 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Material } from 'src/entities/materials.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { ActivityLog } from 'src/entities/activity_log.entity';
+import { DailyStatistics } from 'src/entities/daily_statistics.entity';
 import { format, startOfDay, subDays } from 'date-fns';
 import { isAssetPath, isNavigationRequest, matchLearningScope, ScopeContext } from './learning-scope';
 
@@ -117,6 +119,10 @@ export class UserActivityService {
     private readonly materialRepository: Repository<Material>,
     @InjectRepository(Syllabus)
     private readonly syllabusRepository: Repository<Syllabus>,
+    @InjectRepository(ActivityLog)
+    private readonly activityLogRepository: Repository<ActivityLog>,
+    @InjectRepository(DailyStatistics)
+    private readonly dailyStatsRepository: Repository<DailyStatistics>,
   ) {
     this.events.setMaxListeners(0);
   }
@@ -703,6 +709,12 @@ export class UserActivityService {
     const activeMap = new Map<string, number>(
       activeRows.map((r: any) => [r.day, Number(r.count) || 0]),
     );
+    const statMap = new Map<string, { learningCount: number }>(
+      activeRows.map((r: any) => [
+        r.day,
+        { learningCount: Number(r.count) || 0 },
+      ]),
+    );
 
     // Hari ini minimal memiliki nilai keaktifan sesuai user yang sedang belajar saat ini
     const todayKey = format(today, 'yyyy-MM-dd');
@@ -725,7 +737,7 @@ export class UserActivityService {
         key,
         label: DAY_LABELS[date.getDay()],
         login: loginMap.get(key) ?? 0,
-        active: loginMap.get(key) ?? 0,
+        active: activeMap.get(key) ?? 0,
         learning: statMap.get(key)?.learningCount ?? 0,
       };
     });
@@ -739,6 +751,7 @@ export class UserActivityService {
       max,
       loginH: Math.round((s.login / max) * 220),
       activeH: Math.round((s.active / max) * 220),
+      learningH: Math.round((s.learning / max) * 220),
     }));
   }
 

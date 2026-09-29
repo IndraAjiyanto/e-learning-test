@@ -257,7 +257,8 @@ describe('PaymentsService', () => {
       expect(createCall.amount).toBe(500000);
       expect(createCall.payment.id).toBe('p1');
       expect(invoiceService.createInvoiceForInstallment).toHaveBeenCalled();
-      expect(result.xendit_invoice_url).toBe('https://x.com');
+      expect('blocked' in result).toBe(false);
+      expect(result).toMatchObject({ xendit_invoice_url: 'https://x.com' });
     });
   });
 });

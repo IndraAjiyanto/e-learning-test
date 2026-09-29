@@ -29,7 +29,11 @@
         if (!row) return;
         this.row = row;
         this.open = true;
+        this.showReupload = false;
+        this.reuploadFile = null;
+        this.activeManualMonth = null;
         document.body.classList.add('overflow-hidden');
+        this.init();
       },
 
       close() {
@@ -139,7 +143,157 @@
         } else {
           window.print();
         }
-      }
+      },
+
+      showReupload: false,
+      reuploadFile: null,
+      settings: {
+        manual_enabled: true,
+        gateway_enabled: true,
+      },
+
+      async init() {
+        try {
+          const res = await fetch('/api/payment/settings');
+          const json = await res.json();
+          if (res.ok && json.data) this.settings = json.data;
+        } catch (e) {
+          /* default: keduanya aktif */
+        }
+      },
+
+      onReuploadFile(event) {
+        const input = event.target;
+        const f = input.files && input.files[0];
+        if (!f) {
+          this.reuploadFile = null;
+          return;
+        }
+        if (f.size > 5 * 1024 * 1024) {
+          alert('Ukuran file maksimal 5MB.');
+          input.value = '';
+          this.reuploadFile = null;
+          return;
+        }
+        this.reuploadFile = f;
+      },
+
+      get canReupload() {
+        if (!this.settings.manual_enabled) return false;
+        if (!this.row) return false;
+        if (this.row.paymentLink) return false;
+        return true;
+      },
+
+      get installmentData() {
+        return this.row?.installmentDetail?.monthly || [];
+      },
+
+      get installmentDueDates() {
+        return this.row?.installmentDetail?.installment?.dueDates || [];
+      },
+
+      get installmentProgress() {
+        const d = this.row?.installmentDetail;
+        if (!d) return null;
+        return {
+          paid: Number(d.paidSoFar) || 0,
+          total: Number(d.totalProgramFee) || 0,
+          percent: Number(d.progressPercentage) || 0,
+        };
+      },
+
+      monthStatusLabel(m) {
+        const map = {
+          paid: 'Lunas',
+          process: 'Diproses',
+          rejected: 'Ditolak',
+          due: 'Jatuh tempo',
+          upcoming: 'Belum',
+        };
+        return map[m.status] || m.status || '—';
+      },
+
+      monthStatusClass(m) {
+        const map = {
+          paid: ['bg-[#CFF3DF]', 'text-[#139B59]'],
+          process: ['bg-[#FFF0C7]', 'text-[#E99A0C]'],
+          rejected: ['bg-[#FFDADA]', 'text-[#D9333F]'],
+          due: ['bg-[#FFDADA]', 'text-[#D9333F]'],
+          upcoming: ['bg-[#F1F5F9]', 'text-[#64748B]'],
+        };
+        const [bg, text] = map[m.status] || map.upcoming;
+        return { bg, text };
+      },
+
+      canPayMonth(m) {
+        if (!this.settings.manual_enabled) return false;
+        if (!m) return false;
+        if (m.status === 'paid' || m.process === 'approved') return false;
+        return m.canPay !== false;
+      },
+
+      formatRupiah(n) {
+        const number = Number(n);
+        if (Number.isNaN(number)) return 'Rp 0';
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 0,
+        }).format(number);
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        if (typeof value === 'string' && value.includes('T')) {
+          const [datePart] = value.split('T');
+          const [y, m, d] = datePart.split('-').map(Number);
+          if (!y || !m || !d) return '—';
+          return new Date(y, m - 1, d).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          });
+        }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '—';
+        return date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        });
+      },
+
+      monthlyFilenames: {},
+      activeManualMonth: null,
+      copied: false,
+
+      toggleManualMonth(month) {
+        this.activeManualMonth = this.activeManualMonth === month ? null : month;
+      },
+
+      onMonthlyFile(month, event) {
+        const input = event.target;
+        const f = input.files && input.files[0];
+        if (!f) return;
+        if (f.size > 5 * 1024 * 1024) {
+          alert('Ukuran file maksimal 5MB.');
+          input.value = '';
+          this.monthlyFilenames[month] = '';
+          return;
+        }
+        this.monthlyFilenames[month] = f.name;
+      },
+
+      async copyBank() {
+        try {
+          await navigator.clipboard.writeText('2847923742981234');
+          this.copied = true;
+          setTimeout(() => (this.copied = false), 1800);
+        } catch (e) {
+          /* clipboard tidak tersedia */
+        }
+      },
     };
   }
 </script>
@@ -166,7 +320,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-header-payment-proof-title"
-    class="relative w-full max-w-[1000px] max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-[0px_8px_24px_rgba(0,24,74,0.0941176),0px_24px_64px_rgba(0,24,74,0.2)] overflow-hidden border border-[#D8E6F6]/40 transition-all transform"
+    class="relative w-full max-w-[1100px] max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-[0px_8px_24px_rgba(0,24,74,0.0941176),0px_24px_64px_rgba(0,24,74,0.2)] overflow-hidden border border-[#D8E6F6]/40 transition-all transform"
     x-transition:enter="ease-out duration-300"
     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -211,7 +365,9 @@
     </div>
 
     <!-- Invoice Viewer (Figma: padding 24px 32px, gap 16px, background #F6F8FB, height 643px) -->
-    <div class="box-border flex flex-col items-start w-full p-5 sm:p-[24px_32px] gap-4 bg-[#F6F8FB] overflow-y-auto flex-1">
+    <div class="box-border flex flex-col lg:flex-row items-start w-full p-5 sm:p-[24px_32px] gap-4 bg-[#F6F8FB] overflow-y-auto flex-1">
+      <!-- Kolom Kiri: Invoice DP -->
+      <div class="flex flex-col items-start w-full gap-4 shrink-0" :class="row.kind === 'installment' && installmentData.length ? 'lg:w-[55%]' : 'lg:w-full'">
       <!-- Frame: Subheader (width 936px, height 31px) -->
       <div class="flex flex-row justify-between items-center w-full h-[31px] shrink-0">
         <!-- Invoice Image: Montserrat 700 14px line-height 17px #003060 -->
@@ -256,6 +412,89 @@
           <!-- Invoice Number: Inter 700 15px line-height 18px #173B68 -->
           <span class="font-inter font-bold text-[15px] leading-[18px] text-[#173B68]" x-text="invoiceNumber"></span>
         </div>
+
+        <!-- Tombol Upload Bukti (manual payment, kapan saja) -->
+        <template x-if="canReupload">
+          <div class="w-full mt-4">
+            <button
+              type="button"
+              @click="showReupload = !showReupload"
+              class="w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg border border-[#D9333F] text-[#D9333F] font-inter font-semibold text-sm leading-5 transition-colors hover:bg-[#D9333F] hover:text-white cursor-pointer"
+              :class="showReupload ? 'bg-[#D9333F] text-white' : ''"
+            >
+              <i class="fa-solid fa-rotate-left text-sm"></i>
+              Upload Bukti Pembayaran
+            </button>
+
+            <div
+              x-show="showReupload"
+              x-cloak
+              x-transition
+              class="mt-3 rounded-xl border border-[#D8E6F6] bg-[#F8FAFC] p-4 flex flex-col gap-3"
+            >
+              <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-xl p-4 flex flex-col gap-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="text-[10px] text-slate-300">Transfer ke rekening berikut</p>
+                    <p class="text-lg font-bold tracking-wider mt-0.5">2847 9237 4298 1234</p>
+                  </div>
+                  <button
+                    type="button"
+                    @click="copyBank()"
+                    class="p-2 rounded-full bg-slate-700/60 hover:bg-emerald-600 transition-colors shrink-0"
+                    :class="{'bg-emerald-600': copied}"
+                  >
+                    <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                  </button>
+                </div>
+                <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
+                  <div>
+                    <p class="text-[10px] text-slate-300">Atas nama</p>
+                    <p class="text-xs font-semibold">PT. WIRATEK SOLUSI ASIA</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-[10px] text-slate-300">Bank</p>
+                    <p class="text-xs font-semibold">BANK BCA</p>
+                  </div>
+                </div>
+              </div>
+
+              <form
+                method="POST"
+                :action="'/payment/manual/reupload/' + row.id"
+                enctype="multipart/form-data"
+                class="flex flex-col gap-3"
+              >
+                <label
+                  class="flex flex-col items-center justify-center gap-2 w-full min-h-[96px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-white hover:border-[#003060] transition-colors cursor-pointer p-4 text-center"
+                  :class="reuploadFile ? 'border-emerald-400 bg-emerald-50' : ''"
+                >
+                  <i class="fa-solid fa-cloud-arrow-up text-lg text-[#64748B]" x-show="!reuploadFile"></i>
+                  <i class="fa-solid fa-file-image text-lg text-emerald-500" x-show="reuploadFile"></i>
+                  <span class="font-inter text-[12px] text-[#475569]">
+                    <span x-show="!reuploadFile">Upload bukti transfer (JPG/PNG, maks 5MB)</span>
+                    <span x-show="reuploadFile" class="font-semibold text-[#003060]" x-text="reuploadFile?.name"></span>
+                  </span>
+                  <input
+                    type="file"
+                    name="file"
+                    accept="image/jpeg,image/jpg,image/png"
+                    required
+                    class="hidden"
+                    @change="onReuploadFile($event)"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-2.5 font-inter font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <i class="fa-solid fa-paper-plane text-xs"></i>
+                  Kirim Bukti
+                </button>
+              </form>
+            </div>
+          </div>
+        </template>
 
         <!-- Divider Top: height 1px, background #D8E6F6 -->
         <div class="w-full h-px bg-[#D8E6F6] shrink-0"></div>
@@ -365,6 +604,130 @@
           </div>
         </template>
       </div>
+      </div>
+
+      <!-- Kolom Kanan: Cicilan Per Bulan -->
+      <template x-if="row.kind === 'installment' && installmentData.length">
+        <div class="box-border flex flex-col items-start w-full lg:w-[45%] bg-white border border-[#D8E6F6] rounded-2xl p-5 sm:p-[20px_24px] shadow-[0px_3px_12px_rgba(23,59,104,0.0627)] shrink-0 lg:max-h-[calc(92vh-76px-2rem)] overflow-y-auto">
+          <div class="flex items-center justify-between gap-3 w-full pb-4">
+            <span class="font-montserrat font-bold text-sm leading-[17px] text-[#003060]">
+              Monthly Installments
+            </span>
+            <template x-if="installmentProgress">
+              <span
+                class="font-inter font-semibold text-[11px] leading-4 text-[#139B59] text-right"
+                x-text="`Lunas ${installmentProgress.paid} dari ${installmentProgress.total} (${installmentProgress.percent}%)`"
+              ></span>
+            </template>
+          </div>
+          <div class="w-full h-px bg-[#D8E6F6]"></div>
+
+          <div class="flex flex-col w-full">
+            <template x-for="(m, index) in installmentData" :key="m.month">
+              <div class="flex flex-col border-b border-[#EDF1F7] last:border-b-0 py-3">
+                <div class="flex flex-wrap items-center gap-3 w-full">
+                  <div class="flex flex-col gap-0.5 min-w-[110px]">
+                    <span class="font-inter font-semibold text-[13px] leading-4 text-[#173B68]" x-text="formatDate(installmentDueDates[index] || m.dueDate)"></span>
+                    <span class="font-inter font-normal text-[11px] leading-[13px] text-[#9CA3AF]">
+                      Jatuh Tempo
+                    </span>
+                  </div>
+                  <span class="font-inter font-bold text-sm leading-4 text-[#173B68]" x-text="formatRupiah(m.amount)"></span>
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-inter font-semibold text-[10px] leading-3"
+                    :class="monthStatusClass(m).bg + ' ' + monthStatusClass(m).text"
+                  >
+                    <span class="w-[7px] h-[7px] rounded-full shrink-0" :class="monthStatusClass(m).text"></span>
+                    <span x-text="monthStatusLabel(m)"></span>
+                  </span>
+
+                  <div class="flex items-center gap-2 ml-auto shrink-0">
+                    <template x-if="canPayMonth(m)">
+                      <button
+                        type="button"
+                        @click="toggleManualMonth(m.month)"
+                        class="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-[#D9333F] text-[#D9333F] font-inter font-semibold text-[11px] leading-4 transition-colors hover:bg-[#D9333F] hover:text-white cursor-pointer"
+                        :class="activeManualMonth === m.month ? 'bg-[#D9333F] text-white' : ''"
+                      >
+                        <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                        <span x-text="m.process ? 'Upload Ulang' : 'Bayar'"></span>
+                      </button>
+                    </template>
+                  </div>
+                </div>
+
+                <div
+                  x-show="activeManualMonth === m.month"
+                  x-cloak
+                  x-transition
+                  class="mt-3 rounded-xl border border-[#D8E6F6] bg-[#F8FAFC] p-4 flex flex-col gap-3"
+                >
+                  <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-xl p-4 flex flex-col gap-3">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <p class="text-[10px] text-slate-300">Transfer ke rekening berikut</p>
+                        <p class="text-lg font-bold tracking-wider mt-0.5">2847 9237 4298 1234</p>
+                      </div>
+                      <button
+                        type="button"
+                        @click="copyBank()"
+                        class="p-2 rounded-full bg-slate-700/60 hover:bg-emerald-600 transition-colors shrink-0"
+                        :class="{'bg-emerald-600': copied}"
+                      >
+                        <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                      </button>
+                    </div>
+                    <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
+                      <div>
+                        <p class="text-[10px] text-slate-300">Atas nama</p>
+                        <p class="text-xs font-semibold">PT. WIRATEK SOLUSI ASIA</p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-[10px] text-slate-300">Bank</p>
+                        <p class="text-xs font-semibold">BANK BCA</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <form
+                    method="POST"
+                    :action="'/payment/manual/installment/' + row.id + '/' + m.month"
+                    enctype="multipart/form-data"
+                    class="flex flex-col gap-3"
+                  >
+                    <label
+                      class="flex flex-col items-center justify-center gap-2 w-full min-h-[96px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-white hover:border-[#003060] transition-colors cursor-pointer p-4 text-center"
+                      :class="monthlyFilenames[m.month] ? 'border-emerald-400 bg-emerald-50' : ''"
+                    >
+                      <i class="fa-solid fa-cloud-arrow-up text-lg text-[#64748B]" x-show="!monthlyFilenames[m.month]"></i>
+                      <i class="fa-solid fa-file-image text-lg text-emerald-500" x-show="monthlyFilenames[m.month]"></i>
+                      <span class="font-inter text-[12px] text-[#475569]">
+                        <span x-show="!monthlyFilenames[m.month]">Upload bukti transfer (JPG/PNG, maks 5MB)</span>
+                        <span x-show="monthlyFilenames[m.month]" class="font-semibold text-[#003060]" x-text="monthlyFilenames[m.month]"></span>
+                      </span>
+                      <input
+                        type="file"
+                        name="file"
+                        accept="image/jpeg,image/jpg,image/png"
+                        required
+                        class="hidden"
+                        @change="onMonthlyFile(m.month, $event)"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-2.5 font-inter font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <i class="fa-solid fa-paper-plane text-xs"></i>
+                      Kirim Bukti Bulan <span x-text="m.month"></span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </div>

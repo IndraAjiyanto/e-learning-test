@@ -1,0 +1,199 @@
+{{!--
+  Komponen: Payment Settings Panel (Super Admin)
+  Lokasi: src/views/partials/components/ui/admin/payment_settings/index.hbs
+  Level: L2 Section (scoped admin/super_admin)
+
+  Memilih kanal pembayaran yang aktif untuk SEMUA program:
+  - Manual Payment (Bank Transfer): user upload bukti, super admin verifikasi.
+  - Payment Gateway (Xendit): pembayaran online instan.
+
+  Hanya SATU kanal boleh aktif. Memilih satu kanal otomatis mematikan yang
+  lain — aturan ini ditegakkan di PaymentSettingsService.update(), panel ini
+  hanya cermin hasil simpanan. Kanal Gateway otomatis nonaktif bila kunci
+  Xendit belum dikonfigurasi.
+
+  Props:
+  - manualEnabled : boolean — kanal manual yang aktif
+  - gatewayEnabled: boolean — kanal gateway yang aktif
+  - gatewayHidden : boolean — true bila gateway dipilih tapi kunci Xendit
+                               belum ada, sehingga otomatis nonaktif
+--}}
+<div
+  class="box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch bg-white border border-[#D9D9D9] rounded-xl p-4 sm:p-5"
+  x-data="paymentSettingsPanel({
+    manualEnabled: {{#if manualEnabled}}true{{else}}false{{/if}},
+    gatewayEnabled: {{#if gatewayEnabled}}true{{else}}false{{/if}},
+    gatewayHidden: {{#if gatewayHidden}}true{{else}}false{{/if}}
+  })"
+>
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex flex-col gap-1">
+      <h3 class="font-inter font-semibold text-base leading-6 text-[#171717]">
+        Payment Settings
+      </h3>
+      <p class="font-inter text-xs leading-[18px] text-[#737373]">
+        Only one payment channel can be active. Toggles apply to every program.
+      </p>
+    </div>
+    <span
+      x-show="saving"
+      x-cloak
+      class="inline-flex items-center gap-1.5 text-xs text-[#737373]"
+    >
+      <i class="fas fa-spinner fa-spin"></i> Saving…
+    </span>
+  </div>
+
+  {{!-- Kanal aktif: segmented control (komponen yang sama dengan sakelar
+       Paid Program / Logbook di form buat program) --}}
+  {{#> components/ui/admin/form/form-field label="Active Payment Channel"}}
+    {{> components/ui/admin/form/segmented-button
+      alpineVar="channel"
+      options=(array
+        (obj 'label' 'Manual (Bank Transfer)' 'value' 'manual' 'onClick' "select('manual')" 'activeIf' "channel === 'manual'")
+        (obj 'label' 'Gateway (Xendit)' 'value' 'gateway' 'onClick' "select('gateway')" 'activeIf' "channel === 'gateway'")
+      )
+    }}
+    <p
+      x-show="gatewayHidden"
+      x-cloak
+      class="font-inter text-[11px] leading-4 text-[#B45309]"
+    >
+      XENDIT_SECRET_KEY belum dikonfigurasi — gateway otomatis nonaktif dan
+      pembayaran berjalan lewat kanal Manual.
+    </p>
+  {{/components/ui/admin/form/form-field}}
+
+  {{!-- Detail tiap kanal (read-only) --}}
+  <div class="flex flex-col sm:flex-row gap-3">
+    <!-- Manual Payment -->
+    <div
+      class="flex flex-1 items-center justify-between gap-3 rounded-xl border border-[#D9D9D9] px-4 py-3 transition-colors"
+      :class="channel === 'manual' ? 'bg-[#F0FDF4] border-[#16A34A]' : 'bg-white'"
+    >
+      <span class="flex flex-col gap-0.5">
+        <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
+          Manual Payment (Bank Transfer)
+        </span>
+        <span class="font-inter text-xs leading-[18px] text-[#737373]">
+          User uploads transfer proof, admin verifies.
+        </span>
+      </span>
+      <span
+        x-show="channel === 'manual'"
+        x-cloak
+        class="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[11px] font-semibold text-[#15803D]"
+      >
+        <i class="fa-solid fa-circle-check text-[10px]"></i> Active
+      </span>
+    </div>
+
+    <!-- Gateway -->
+    <div
+      class="flex flex-1 items-center justify-between gap-3 rounded-xl border border-[#D9D9D9] px-4 py-3 transition-colors"
+      :class="channel === 'gateway' ? 'bg-[#F0FDF4] border-[#16A34A]' : 'bg-white'"
+    >
+      <span class="flex flex-col gap-0.5">
+        <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
+          Payment Gateway (Xendit)
+        </span>
+        <span class="font-inter text-xs leading-[18px] text-[#737373]">
+          Instant online payment via Xendit.
+        </span>
+      </span>
+      <span
+        x-show="channel === 'gateway'"
+        x-cloak
+        class="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[11px] font-semibold text-[#15803D]"
+      >
+        <i class="fa-solid fa-circle-check text-[10px]"></i> Active
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function paymentSettingsPanel(initial) {
+    return {
+      manualEnabled: !!initial?.manualEnabled,
+      gatewayEnabled: !!initial?.gatewayEnabled,
+      gatewayHidden: !!initial?.gatewayHidden,
+      saving: false,
+      channel: '',
+
+      init() {
+        this.channel = this.gatewayEnabled ? 'gateway' : 'manual';
+      },
+
+      // Satu kanal saja yang boleh aktif: memilih kanal yang sama tidak
+      // melakukan apa-apa, jadi tidak ada request sia-sia.
+      select(next) {
+        if (this.saving) return;
+        if (next === 'gateway' && this.gatewayHidden) {
+          showWarningToast('Gateway belum tersedia', 'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.');
+          return;
+        }
+        if (next === this.channel) return;
+        this.channel = next;
+        this.save();
+      },
+
+      async save() {
+        this.saving = true;
+        try {
+          // Satu PATCH berisi kedua nilai: backend yang memutuskan exclusivity,
+          // jadi tidak mungkin tersimpan setengah jalan.
+          const res = await fetch('/api/payment/settings', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              manualEnabled: this.channel === 'manual',
+              gatewayEnabled: this.channel === 'gateway',
+            }),
+          });
+          const json = await res.json();
+          if (!res.ok || json.status !== 'success') {
+            showErrorToast('Gagal menyimpan', json.message || 'Gagal menyimpan pengaturan pembayaran.');
+            await this.refresh();
+            return;
+          }
+          this.apply(json.data);
+          // Toast sukses tidak punya helper global (keduanya error & warning
+          // punya, success tidak), jadi lewat CustomEvent yang memang
+          // kontrak komponen ui/admin/toast/success.
+          window.dispatchEvent(new CustomEvent('toast:success', {
+            detail: {
+              title: 'Pengaturan tersimpan',
+              description: 'Kanal pembayaran aktif: ' + (this.channel === 'gateway' ? 'Gateway (Xendit)' : 'Manual (Bank Transfer)') + '.',
+            },
+          }));
+        } catch (err) {
+          console.error('Update payment settings error:', err);
+          showErrorToast('Gagal menyimpan', 'Terjadi kesalahan saat menyimpan pengaturan pembayaran.');
+          await this.refresh();
+        } finally {
+          this.saving = false;
+        }
+      },
+
+      // Cerminkan state tersimpan (sumber kebenaran) kembali ke tampilan.
+      apply(data) {
+        if (!data) return;
+        this.manualEnabled = !!data.manual_enabled;
+        this.gatewayEnabled = !!data.gateway_enabled;
+        this.gatewayHidden = !!data.gateway_hidden_because_key_missing;
+        this.channel = this.gatewayEnabled ? 'gateway' : 'manual';
+      },
+
+      async refresh() {
+        try {
+          const res = await fetch('/api/payment/settings');
+          const json = await res.json();
+          if (res.ok && json.data) this.apply(json.data);
+        } catch (err) {
+          console.error('Fetch payment settings error:', err);
+        }
+      },
+    };
+  }
+</script>

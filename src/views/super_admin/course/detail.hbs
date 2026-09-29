@@ -199,6 +199,12 @@
   description='Are you sure you want to delete this program? This action will permanently remove the program and cannot be undone.'
 }}
 
+{{!-- Modal konfirmasi Accept/Reject payment + Approve/Reject cicilan.
+     Dipasang di level halaman, bukan di dalam payment_tab, karena payment_tab
+     berada di dalam <div x-show="tab === 'payment'"> — kalau modalnya di sana,
+     modal ikut tersembunyi begitu user pindah tab. --}}
+{{> components/ui/admin/modal/confirm_action/index}}
+
 <script>
   function tabData() {
     const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
