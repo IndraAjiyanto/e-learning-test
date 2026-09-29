@@ -108,26 +108,33 @@
     <div class="lg:col-span-7 space-y-6">
       
       <!-- Project Description Card -->
-      <div class="bg-white border border-[#E5E5E5]/80 rounded-[12px] p-6 shadow-sm space-y-3">
-        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+      <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+        <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
           {{t "test.myPortfolio.detailPortfolio.projectDescription"}}
-        </h3>
-        <p 
-          class="font-inter font-normal text-sm sm:text-base text-[#666666] leading-relaxed"
-          x-text="selectedPortfolio ? selectedPortfolio.description : ''"
-        >
-        </p>
+        </h2>
+        <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569]">
+          <p 
+            x-show="selectedPortfolio && selectedPortfolio.description"
+            x-text="selectedPortfolio ? selectedPortfolio.description : ''"
+          ></p>
+          <p 
+            x-show="!selectedPortfolio || !selectedPortfolio.description"
+            class="text-gray-400 italic"
+          >
+            No description provided.
+          </p>
+        </div>
       </div>
 
       <!-- Project Overview Card -->
-      <div class="bg-white border border-[#E5E5E5]/80 rounded-[12px] p-6 shadow-sm space-y-3">
-        <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+      <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+        <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
           {{t "test.myPortfolio.detailPortfolio.overview"}}
-        </h3>
+        </h2>
         <div 
           id="overviewDetail"
-          class="font-inter font-normal text-sm sm:text-base text-[#666666] leading-relaxed space-y-2"
-          x-html="renderOverview(selectedPortfolio ? selectedPortfolio.overview : '') || '<p class=\'italic text-[#999999]\'>{{t 'test.myPortfolio.detailPortfolio.noOverview'}}</p>'"
+          class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] prose prose-sm max-w-none"
+          x-html="renderOverview(selectedPortfolio ? selectedPortfolio.overview : '') || '<p class=\'italic text-gray-400\'>{{t 'test.myPortfolio.detailPortfolio.noOverview'}}</p>'"
         ></div>
       </div>
 
