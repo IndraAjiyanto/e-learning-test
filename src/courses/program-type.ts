@@ -33,6 +33,21 @@ export interface ProgramCapabilities {
    * perbedaannya dipakai tidak perlu dicari-cari lagi.
    */
   mentorship: 'none' | 'mentor' | 'sensei';
+  /**
+   * Apakah program punya SATU tugas akhir milik program (`final_assignment`).
+   *
+   * Yang dijawab sumbu ini bukan "di mana tugasnya disimpan" - tugas akhir
+   * selalu milik program, bukan milik minggu - melainkan apa yang ditampilkan
+   * tab Tugas Akhir di area student, dan apakah admin melihat tab Final
+   * Assignment di halaman detail program.
+   *
+   * Alasannya dipisah dari `structure` yang memang sengaja tidak pernah
+   * dibandingkan di luar program-type.ts. Bootcamp punya minggu sekaligus
+   * punya tugas akhir, jadi `structure` menjawab bentuk program sedangkan
+   * sumbu ini menjawab bentuk tab Tugas Akhir. LPK punya minggu dan TIDAK punya
+   * tugas akhir, jadi ia masih memakai akordeon per minggu seperti sebelumnya.
+   */
+  finalAssignment: boolean;
 }
 
 const BOOTCAMP: ProgramCapabilities = {
@@ -43,6 +58,8 @@ const BOOTCAMP: ProgramCapabilities = {
   unitLabel: 'week',
   pacing: 'guided',
   mentorship: 'mentor',
+  // Satu tugas penutup program, terpisah dari tugas tiap minggu.
+  finalAssignment: true,
 };
 
 const NON_BOOTCAMP: ProgramCapabilities = {
@@ -58,10 +75,20 @@ const NON_BOOTCAMP: ProgramCapabilities = {
   unitLabel: 'syllabus',
   pacing: 'self_paced',
   mentorship: 'none',
+  // Program non_bootcamp berbasis silabus dan tidak memiliki tugas akhir.
+  finalAssignment: false,
 };
 
-// Japan Pathway. Isinya hari ini sama dengan bootcamp kecuali `mentorship`.
-const LPK: ProgramCapabilities = { ...BOOTCAMP, mentorship: 'sensei' };
+// Japan Pathway. Isinya sama dengan bootcamp kecuali dua hal: `mentorship`,
+// dan `finalAssignment` - LPK dinilai dari tugas tiap minggunya, tidak punya
+// satu tugas penutup program. Jadi `finalAssignment` HARUS ditulis ulang di
+// sini; mewarisi `true` dari BOOTCAMP akan diam-diam memunculkan tab Final
+// Assignment di program yang tidak punya tugas akhir.
+const LPK: ProgramCapabilities = {
+  ...BOOTCAMP,
+  mentorship: 'sensei',
+  finalAssignment: false,
+};
 
 export function capabilitiesFor(
   type?: ProgramType | null,

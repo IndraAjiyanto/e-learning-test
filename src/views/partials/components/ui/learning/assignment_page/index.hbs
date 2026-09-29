@@ -1,0 +1,68 @@
+{{!--
+  Komponen: Assignment Page (kerangka luar)
+  Lokasi: src/views/partials/components/ui/learning/assignment_page/index.hbs
+  Level: L3 Section
+
+  Kerangka halaman "baca tugas lalu kirim jawaban", dipakai dua halaman student
+  yang berdiri sendiri:
+
+    - src/views/user/assignments.hbs            tugas mingguan
+    - src/views/user/learning/final_assignment.hbs   final assignment
+
+  Yang sama di keduanya: judul, kalimat penjelas, kartu putih, lalu dua kolom -
+  brief di kiri dan kiriman di kanan. Yang berbeda hanya isi tiap kolom, jadi
+  kerangkanya ditulis sekali di sini.
+
+  Chrome backoffice tidak ikut. Halaman pemanggil tetap membungkus sendiri dengan
+  `user/shell_frame/index` karena jejak remahnya berbeda: tugas mingguan bisa
+  menyebut sesi, final assignment tidak punya sesi.
+
+  Props:
+  - title    : string (wajib) judul besar di kepala halaman
+  - subtitle : string (wajib) kalimat penjelas di bawahnya
+
+  Isi dikirim lewat block, dan isinya adalah baris dua kolom:
+    {{#> components/ui/learning/assignment_page/index
+          title=(t 'test.startLearning.assignment')
+          subtitle=(t 'test.assigment.spanSubmitYourAnswer') }}
+      {{#> components/ui/learning/assignment_page/viewer/index}}...{{/...}}
+      {{#> components/ui/learning/assignment_page/submission/index}}...{{/...}}
+    {{/components/ui/learning/assignment_page/index}}
+
+  Angka 912px di kartu brief bukan pilihan rasa, dan kolom kanan tidak punya
+  lebar tetap - ia mengisi sisa. Masalahnya: 912 + 24 + sisa kolom kanan
+  baru muat kalau lebar area kontennya besar. Di 1440px viewport kolom kanannya
+  cuma dapat 100px, dan di bawah 1280px dapat 0px - form kirim jawaban jadi tak
+  bisa dipakai, bukan cuma sempit. Jadi dua kolom baru aktif di `2xl` (1536px),
+  di bawah itu susun ke bawah dan kartu ikut jadi `w-full`.
+
+  Mengubah angka atau titik potongnya di sini mengubah dua halaman sekaligus.
+--}}
+  <div class="w-full max-w-[1540px] mx-auto flex flex-col items-start px-[20px] sm:px-[50px] pt-[30px] sm:pt-[50px] pb-[40px] sm:pb-[80px] gap-[24px] sm:gap-[38px] font-inter">
+
+  {{!-- Page Header --}}
+  <div class="w-full flex flex-col items-start gap-[6px]">
+    <div class="w-full flex flex-col items-start gap-[4px]">
+      <h1 class="w-full font-montserrat font-bold text-[24px] leading-[30px] sm:text-[34px] sm:leading-[42px] text-[#003060]">
+        {{title}}
+      </h1>
+      <p class="w-full font-inter font-normal text-[14px] leading-[20px] text-[#718096]">
+        {{subtitle}}
+      </p>
+    </div>
+  </div>
+
+  {{!-- My Learning page --}}
+  <div class="w-full bg-white rounded-[22px] flex flex-col items-start">
+
+    {{!-- Learning workspace --}}
+    <div class="w-full flex flex-col items-start px-[24px] pt-[20px] pb-[28px] gap-[18px]">
+
+      {{!-- workspace: left + right --}}
+      <div class="w-full flex flex-col items-start gap-[24px] 2xl:flex-row">
+        {{> @partial-block}}
+      </div>
+
+    </div>{{!-- /learning-workspace --}}
+  </div>{{!-- /my-learning-page --}}
+</div>{{!-- /profile-content --}}
