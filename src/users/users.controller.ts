@@ -354,7 +354,6 @@ export class UsersController {
       return res.redirect('/login');
     }
     const user = await this.usersService.findOne(req.user.id);
-    const portfolio = await this.usersService.findPortfolio(req.user.id);
     const userWithCourses = await this.usersService.findWithCourses(
       req.user.id,
     );
@@ -410,7 +409,6 @@ export class UsersController {
 
     return res.render('user/user_profile/index', {
       user: user,
-      portfolio,
       userWithCourses,
       logbooks,
       course,

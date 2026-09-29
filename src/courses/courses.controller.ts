@@ -764,9 +764,6 @@ export class CoursesController {
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
 
-    // const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
-    const portfolio = await this.coursesService.findPortfolio(req.user!.id);
-
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
     // myProgram menampilkan angka nol di semua kartu statistik.
@@ -824,7 +821,6 @@ export class CoursesController {
       programCaps: Object.fromEntries(
         course.map((c) => [c.id, capabilitiesForCourse(c)]),
       ),
-      portfolio,
       dashboardStats,
       ongoingCourses,
       programComposition,
