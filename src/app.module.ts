@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -190,11 +190,18 @@ export class AppModule {
         '/dashboard',
         '/dashboard/*path',
         '/api/search',
+        { path: '/invoice/webhook/xendit', method: RequestMethod.POST },
       )
       .forRoutes('*');
 
-    consumer.apply(UserActivityMiddleware).forRoutes('*');
+    consumer
+      .apply(UserActivityMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
 
-    consumer.apply(FooterMiddleware).forRoutes('*');
+    consumer
+      .apply(FooterMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
   }
 }

@@ -234,5 +234,68 @@ describe('InvoiceService', () => {
       ).rejects.toThrow('Unauthorized');
       delete process.env.XENDIT_CALLBACK_TOKEN;
     });
+
+    it('updates invoice status, channel, and paid_at when full payment PAID', async () => {
+      installmentService.findByNo.mockResolvedValue(null);
+      const invoiceObj = { id: 'inv1', status: 'pending', paid_at: null, payment_method: null, xendit_payment_channel: null };
+      const paymentObj = {
+        id: 'p1',
+        no: 'INV-12345',
+        process: 'process',
+        invoice: invoiceObj,
+        user: { id: 'u1' },
+        course: { id: 'c1' },
+        installment: null,
+      };
+      paymentRepo.findOne.mockResolvedValue(paymentObj);
+      userCourseRepo.findOne.mockResolvedValue(null);
+
+      await service.handleXenditWebhook(
+        {
+          external_id: 'INV-12345',
+          status: 'PAID',
+          payment_method: 'BANK_TRANSFER',
+          payment_channel: 'BCA',
+        },
+        '',
+      );
+
+      expect(paymentRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ process: 'approved' }),
+      );
+      expect(invoiceRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'paid',
+          payment_method: 'BANK_TRANSFER',
+          xendit_payment_channel: 'BCA',
+        }),
+      );
+      expect(paymentsService.addUserToCourse).toHaveBeenCalledWith('u1', 'c1');
+    });
+
+    it('marks invoice status expired when webhook status is EXPIRED', async () => {
+      installmentService.findByNo.mockResolvedValue(null);
+      const invoiceObj = { id: 'inv1', status: 'pending', expired_at: null };
+      const paymentObj = {
+        id: 'p1',
+        no: 'INV-12345',
+        process: 'process',
+        invoice: invoiceObj,
+        installment: null,
+      };
+      paymentRepo.findOne.mockResolvedValue(paymentObj);
+
+      await service.handleXenditWebhook(
+        { external_id: 'INV-12345', status: 'EXPIRED' },
+        '',
+      );
+
+      expect(paymentRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ process: 'rejected' }),
+      );
+      expect(invoiceRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'expired' }),
+      );
+    });
   });
 });
