@@ -40,6 +40,8 @@ describe('PaymentsService', () => {
       settleStuckPayment: jest.fn().mockResolvedValue(undefined),
       createInvoiceForPayment: jest.fn(),
       createInvoiceForInstallment: jest.fn(),
+      expireXenditInvoice: jest.fn().mockResolvedValue({ expired: true }),
+      expireAndClearInvoice: jest.fn().mockResolvedValue(undefined),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -259,6 +261,106 @@ describe('PaymentsService', () => {
       expect(invoiceService.createInvoiceForInstallment).toHaveBeenCalled();
       expect('blocked' in result).toBe(false);
       expect(result).toMatchObject({ xendit_invoice_url: 'https://x.com' });
+    });
+  });
+
+  describe('reuploadManualProof', () => {
+    it('menolak payment yang sudah approved', async () => {
+      paymentRepo.findOne.mockResolvedValue({
+        id: 'p1',
+        process: 'approved',
+        user: { id: 'u1' },
+        file: 'old.png',
+        invoice: null,
+      });
+
+      await expect(
+        service.reuploadManualProof('u1', 'p1', 'new.png'),
+      ).rejects.toThrow('sudah lunas dan diterima');
+      expect(paymentRepo.save).not.toHaveBeenCalled();
+      expect(invoiceService.expireAndClearInvoice).not.toHaveBeenCalled();
+    });
+
+    it('menutup invoice Xendit sebelum attaching bukti manual', async () => {
+      const invoice = {
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+      const payment = {
+        id: 'p1',
+        process: 'process',
+        user: { id: 'u1' },
+        file: 'old.png',
+        invoice,
+      };
+      paymentRepo.findOne.mockResolvedValue(payment);
+
+      await service.reuploadManualProof('u1', 'p1', 'new.png');
+
+      expect(invoiceService.expireAndClearInvoice).toHaveBeenCalledWith(
+        invoice,
+      );
+      expect(paymentRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ file: 'new.png', process: 'process' }),
+      );
+    });
+  });
+
+  describe('createManualInstallmentPayment', () => {
+    const parentPayment = () => ({
+      id: 'p1',
+      process: 'approved',
+      dpPaidAt: new Date('2026-01-01'),
+      user: { id: 'u1' },
+      installment: { price: [500000, 500000] },
+    });
+
+    it('menutup dan mengosongkan invoice Xendit lama saat reuse baris', async () => {
+      paymentRepo.findOne.mockResolvedValue(parentPayment());
+      const row: Record<string, any> = {
+        id: 'ip1',
+        status: 'process',
+        month: 1,
+        file: 'old.png',
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+      installmentService.findOneByPaymentAndMonth.mockResolvedValue(row);
+
+      await service.createManualInstallmentPayment(
+        'u1',
+        'p1',
+        1,
+        'new.png',
+      );
+
+      expect(invoiceService.expireXenditInvoice).toHaveBeenCalledWith('inv-1');
+      expect(row.xendit_invoice_id).toBe('');
+      expect(row.xendit_invoice_url).toBe('');
+      expect(installmentService.save).toHaveBeenCalledWith(
+        expect.objectContaining({ file: 'new.png', status: 'process' }),
+      );
+    });
+
+    it('tidak menyentuh Xendit untuk baris yang tidak punya invoice', async () => {
+      paymentRepo.findOne.mockResolvedValue(parentPayment());
+      installmentService.findOneByPaymentAndMonth.mockResolvedValue({
+        id: 'ip1',
+        status: 'process',
+        month: 1,
+        file: 'old.png',
+        xendit_invoice_id: null,
+        xendit_invoice_url: null,
+      });
+
+      await service.createManualInstallmentPayment(
+        'u1',
+        'p1',
+        1,
+        'new.png',
+      );
+
+      expect(invoiceService.expireXenditInvoice).not.toHaveBeenCalled();
     });
   });
 });

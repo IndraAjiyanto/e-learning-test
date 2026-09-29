@@ -22,11 +22,13 @@ describe('InvoiceService', () => {
   const mockClient = {
     getInvoiceById: jest.fn(),
     createInvoice: jest.fn(),
+    expireInvoice: jest.fn(),
   };
 
   beforeEach(async () => {
     mockClient.getInvoiceById.mockReset();
     mockClient.createInvoice.mockReset();
+    mockClient.expireInvoice.mockReset();
     invoiceRepo = { save: jest.fn((x) => Promise.resolve(x)) };
     paymentRepo = {
       findOne: jest.fn(),
@@ -296,6 +298,61 @@ describe('InvoiceService', () => {
       expect(invoiceRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({ status: 'expired' }),
       );
+    });
+  });
+
+  describe('expireAndClearInvoice', () => {
+    it('menutup invoice di Xendit lalu mengosongkan field', async () => {
+      mockClient.expireInvoice.mockResolvedValue({});
+      const invoice: any = {
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+
+      await service.expireAndClearInvoice(invoice);
+
+      expect(mockClient.expireInvoice).toHaveBeenCalledWith({
+        invoiceId: 'inv-1',
+      });
+      expect(invoice.xendit_invoice_id).toBe('');
+      expect(invoice.xendit_invoice_url).toBe('');
+      expect(invoiceRepo.save).toHaveBeenCalledWith(invoice);
+    });
+
+    it('tetap mengosongkan field walau expire Xendit gagal', async () => {
+      mockClient.expireInvoice.mockRejectedValue(new Error('xendit down'));
+      const invoice: any = {
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+
+      await expect(
+        service.expireAndClearInvoice(invoice),
+      ).resolves.toBeUndefined();
+
+      // Kegagalan Xendit tidak boleh menggagalkan perpindahan kanal manual.
+      expect(invoice.xendit_invoice_id).toBe('');
+      expect(invoice.xendit_invoice_url).toBe('');
+      expect(invoiceRepo.save).toHaveBeenCalledWith(invoice);
+    });
+
+    it('tidak memanggil Xendit kalau tidak ada invoice id', async () => {
+      const invoice: any = {
+        xendit_invoice_id: null,
+        xendit_invoice_url: '',
+      };
+
+      await service.expireAndClearInvoice(invoice);
+
+      expect(mockClient.expireInvoice).not.toHaveBeenCalled();
+      expect(invoiceRepo.save).toHaveBeenCalledWith(invoice);
+    });
+
+    it('tidak melakukan apa-apa untuk invoice kosong', async () => {
+      await service.expireAndClearInvoice(null as any);
+
+      expect(mockClient.expireInvoice).not.toHaveBeenCalled();
+      expect(invoiceRepo.save).not.toHaveBeenCalled();
     });
   });
 });
