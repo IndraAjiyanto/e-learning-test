@@ -240,22 +240,56 @@
       </template>
     </div>
 
-    <!-- Pagination (Figma Pagination) -->
+    <!-- Pagination (Figma Pagination with Chevron & Ellipsis) -->
     <template x-if="filtered.length > 0">
       <div class="box-border flex flex-wrap items-center justify-between gap-4 w-full min-h-[56px] px-6 sm:px-8 py-3 bg-white border border-[#D9D9D9] rounded-2xl">
         <span class="font-montserrat font-medium text-sm leading-[17px] text-[#003060]" x-text="rangeLabel"></span>
         <div class="flex items-center gap-2">
-          <template x-for="page in totalPages" :key="page">
-            <button
-              type="button"
-              @click="changePage(page)"
-              :class="page === currentPage
-                ? 'bg-[#003060] text-white border-transparent shadow-sm'
-                : 'bg-white text-[#003060] border border-[#D9D9D9] hover:bg-slate-50'"
-              class="flex flex-col justify-center items-center w-8 h-8 rounded-full font-montserrat font-semibold text-sm leading-[17px] transition-colors focus-visible:outline-none"
-              x-text="page"
-            ></button>
+          <!-- Chevron Left -->
+          <button
+            type="button"
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1"
+            aria-label="Previous page"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+
+          <!-- Page Numbers -->
+          <template x-for="(page, idx) in visiblePages" :key="idx">
+            <div class="flex items-center">
+              <template x-if="page === '...'">
+                <span class="flex items-center justify-center w-8 h-8 font-montserrat font-semibold text-sm text-[#718096]">...</span>
+              </template>
+              <template x-if="page !== '...'">
+                <button
+                  type="button"
+                  @click="changePage(page)"
+                  :class="page === currentPage
+                    ? 'bg-[#003060] text-white border-transparent shadow-sm'
+                    : 'bg-white text-[#003060] border border-[#D9D9D9] hover:bg-slate-50'"
+                  class="flex flex-col justify-center items-center w-8 h-8 rounded-full font-montserrat font-semibold text-sm leading-[17px] transition-colors focus-visible:outline-none"
+                  x-text="page"
+                ></button>
+              </template>
+            </div>
           </template>
+
+          <!-- Chevron Right -->
+          <button
+            type="button"
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= totalPages"
+            aria-label="Next page"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
         </div>
       </div>
     </template>

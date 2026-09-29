@@ -13,6 +13,7 @@ import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { capabilitiesFor } from './program-type';
+import { CourseStatus, COURSE_STATUSES } from 'src/entities/types/course-status';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -1542,13 +1543,69 @@ export class CoursesService {
     return await this.courseRepository.save(course);
   }
 
+  async updateProgramStatus(
+    courseId: string,
+    targetStatus: CourseStatus,
+  ): Promise<Course> {
+    const course = await this.findOne(courseId);
+    if (!course) {
+      throw new NotFoundException('Program not found');
+    }
+
+    if (!COURSE_STATUSES.includes(targetStatus)) {
+      throw new BadRequestException(
+        `Status program "${targetStatus}" tidak valid.`,
+      );
+    }
+
+    const currentStatus: CourseStatus =
+      course.status || (course.launch ? 'launch' : 'unlaunch');
+
+    // Validasi aturan transisi bertahap:
+    // unlaunch -> launch
+    // launch -> unlaunch (rollback diizinkan sebelum pembelajaran)
+    // launch -> learning
+    // learning -> done
+    // done -> terminal state
+    const validTransitions: Record<CourseStatus, CourseStatus[]> = {
+      unlaunch: ['launch'],
+      launch: ['unlaunch', 'learning'],
+      learning: ['done'],
+      done: [],
+    };
+
+    if (
+      currentStatus !== targetStatus &&
+      !validTransitions[currentStatus]?.includes(targetStatus)
+    ) {
+      throw new BadRequestException(
+        `Transisi status dari "${currentStatus}" ke "${targetStatus}" tidak diizinkan.`,
+      );
+    }
+
+    course.status = targetStatus;
+    // Sinkronkan launch: hanya 'launch' yang membuka pendaftaran baru di landing page publik
+    course.launch = targetStatus === 'launch';
+
+    return await this.courseRepository.save(course);
+  }
+
   async toggleLaunch(courseId: string) {
     const course = await this.findOne(courseId);
     if (!course) {
       throw new NotFoundException('Program not found');
     }
-    course.launch = !course.launch;
-    return await this.courseRepository.save(course);
+    const currentStatus =
+      course.status || (course.launch ? 'launch' : 'unlaunch');
+    if (currentStatus === 'unlaunch') {
+      return this.updateProgramStatus(courseId, 'launch');
+    } else if (currentStatus === 'launch') {
+      return this.updateProgramStatus(courseId, 'unlaunch');
+    } else {
+      throw new BadRequestException(
+        `Program dengan status "${currentStatus}" tidak dapat di-toggle launch langsung.`,
+      );
+    }
   }
 
   async update(id: string, updateCourseDto: UpdateCoursesDto) {

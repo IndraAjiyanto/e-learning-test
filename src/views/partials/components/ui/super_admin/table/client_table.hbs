@@ -137,6 +137,14 @@
         return Math.max(1, Math.ceil(this.filtered.length / this.size));
       },
 
+      get visiblePages() {
+        const t = this.totalPages, c = this.currentPage;
+        if (t <= 5) return Array.from({ length: t }, (_, i) => i + 1);
+        if (c <= 3) return [1, 2, 3, '...', t];
+        if (c >= t - 2) return [1, '...', t - 2, t - 1, t];
+        return [1, '...', c - 1, c, c + 1, '...', t];
+      },
+
       // O(size) — tidak memfilter ulang.
       get rows() {
         const start = (this.currentPage - 1) * this.size;

@@ -118,7 +118,13 @@
             minutes: { root: '{{default countdownMinuteText "MINUTE"}}', lambda: (root, n) => root },
             seconds: { root: '{{default countdownSecondText "SECOND"}}', lambda: (root, n) => root }
           },
-          onEnd: () => location.reload()
+          onEnd: () => {
+            {{#if (eq variant 'forgot-password')}}
+              window.location.href = '/users/forgot-password?expired=true';
+            {{else}}
+              location.reload();
+            {{/if}}
+          }
         });
       </script>
 
@@ -335,6 +341,16 @@
       {{!-- ALERT ERROR --}}
       {{#if error}}
         {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 lg:mb-6" }}
+      {{/if}}
+
+      {{!-- ALERT INFO --}}
+      {{#if info}}
+        {{> components/ui/alert/index type="info" message=info dismissible=true class="mb-4 lg:mb-6" }}
+      {{/if}}
+
+      {{!-- ALERT WARNING --}}
+      {{#if warning}}
+        {{> components/ui/alert/index type="warning" message=warning dismissible=true class="mb-4 lg:mb-6" }}
       {{/if}}
 
       {{!-- FORM --}}

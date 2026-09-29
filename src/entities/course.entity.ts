@@ -33,6 +33,7 @@ import { Syllabus } from './syllabus.entity';
 import { FinalAssignment } from './final_assignment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
+import { CourseStatus, COURSE_STATUSES } from './types/course-status';
 
 export type Method = 'online' | 'offline';
 
@@ -89,6 +90,13 @@ export class Course {
 
   @Column('jsonb', { nullable: true })
   criteriaJa: string[];
+
+  @Column({
+    type: 'enum',
+    enum: COURSE_STATUSES,
+    default: 'unlaunch',
+  })
+  status: CourseStatus;
 
   @Column({ default: false })
   launch: boolean;

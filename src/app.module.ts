@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -75,6 +75,7 @@ import { InstallmentPaymentModule } from './installment_payment/installment-paym
 import { PaymentSettingsModule } from './payment-settings/payment-settings.module';
 import { SyllabusModule } from './syllabus/syllabus.module';
 import { FinalAssignmentModule } from './final_assignment/final_assignment.module';
+import { SearchModule } from './search/search.module';
 import path from 'path';
 
 @Module({
@@ -159,6 +160,7 @@ import path from 'path';
     PaymentSettingsModule,
     SyllabusModule,
     FinalAssignmentModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -189,11 +191,19 @@ export class AppModule {
         '/alumni/filter',
         '/dashboard',
         '/dashboard/*path',
+        '/api/search',
+        { path: '/invoice/webhook/xendit', method: RequestMethod.POST },
       )
       .forRoutes('*');
 
-    consumer.apply(UserActivityMiddleware).forRoutes('*');
+    consumer
+      .apply(UserActivityMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
 
-    consumer.apply(FooterMiddleware).forRoutes('*');
+    consumer
+      .apply(FooterMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
   }
 }

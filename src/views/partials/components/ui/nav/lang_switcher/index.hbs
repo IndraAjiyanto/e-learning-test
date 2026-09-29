@@ -32,7 +32,7 @@
   <div x-data="{ langOpen: false }" class="relative" @click.away="langOpen = false">
     <button
       @click="langOpen = !langOpen"
-      class="flex items-center gap-2 rounded-md bg-[#F5F5F5] px-2.5 py-2 text-sm font-medium text-[#1F2937] shadow-[0_0_4px_0_rgba(0,0,0,0.25)]"
+      class="flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-3 py-2.5 text-sm font-medium text-[#1F2937] hover:border-[#CBD5E1]"
     >
       <span class="text-base" :class="lang === 'id' ? 'fi fi-id' : lang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"></span>
       <span x-text="lang === 'id' ? 'ID' : lang === 'en' ? 'ENG' : 'JP'"></span>
@@ -40,18 +40,45 @@
     </button>
     <div
       x-show="langOpen"
-      x-transition.origin.top.right
-      class="absolute right-0 z-[100] mt-2 w-32 overflow-hidden rounded-lg bg-white shadow-lg"
+      x-transition
+      class="absolute right-0 z-[100] mt-2 w-32 rounded-xl border border-[#E5E7EB] bg-[#F5F5F5] p-1.5 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]"
       style="display:none"
     >
       <form action="/translation" method="post"><input type="hidden" name="lang" value="en" />
-        <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#1F2937] hover:bg-gray-100"><span class="fi fi-gb"></span>EN</button>
+        <button
+          type="submit"
+          class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left font-inter text-sm transition-colors hover:bg-[#EAEAEA]"
+          :class="lang === 'en' ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+        >
+          <span class="flex items-center gap-2.5">
+            <span class="fi fi-gb shadow-[0_0_1px_rgba(0,0,0,0.3)]"></span>EN
+          </span>
+          <i x-show="lang === 'en'" class="fa-solid fa-check text-xs text-[#003060]"></i>
+        </button>
       </form>
       <form action="/translation" method="post"><input type="hidden" name="lang" value="id" />
-        <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#1F2937] hover:bg-gray-100"><span class="fi fi-id"></span>ID</button>
+        <button
+          type="submit"
+          class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left font-inter text-sm transition-colors hover:bg-[#EAEAEA]"
+          :class="lang === 'id' ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+        >
+          <span class="flex items-center gap-2.5">
+            <span class="fi fi-id shadow-[0_0_1px_rgba(0,0,0,0.3)]"></span>ID
+          </span>
+          <i x-show="lang === 'id'" class="fa-solid fa-check text-xs text-[#003060]"></i>
+        </button>
       </form>
       <form action="/translation" method="post"><input type="hidden" name="lang" value="ja" />
-        <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#1F2937] hover:bg-gray-100"><span class="fi fi-jp"></span>JP</button>
+        <button
+          type="submit"
+          class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left font-inter text-sm transition-colors hover:bg-[#EAEAEA]"
+          :class="lang === 'ja' ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+        >
+          <span class="flex items-center gap-2.5">
+            <span class="fi fi-jp shadow-[0_0_1px_rgba(0,0,0,0.3)]"></span>JP
+          </span>
+          <i x-show="lang === 'ja'" class="fa-solid fa-check text-xs text-[#003060]"></i>
+        </button>
       </form>
     </div>
   </div>

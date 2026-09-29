@@ -18,6 +18,7 @@ import {
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
 import { capabilitiesForCourse } from './program-type';
+import { CourseStatus } from 'src/entities/types/course-status';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -1394,11 +1395,40 @@ export class CoursesController {
   ) {
     try {
       const result = await this.coursesService.toggleLaunch(courseId);
-      return res.json({ success: true, launch: result.launch });
+      return res.json({
+        success: true,
+        launch: result.launch,
+        status: result.status,
+      });
     } catch (error: any) {
       return res.status(500).json({
         success: false,
         message: error.message || 'Failed to toggle launch',
+      });
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Patch(':courseId/status-json')
+  async updateStatusJson(
+    @Param('courseId') courseId: string,
+    @Body('status') status: CourseStatus,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.coursesService.updateProgramStatus(
+        courseId,
+        status,
+      );
+      return res.json({
+        success: true,
+        status: result.status,
+        launch: result.launch,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to update program status',
       });
     }
   }

@@ -676,11 +676,14 @@ export class PaymentsService {
   ): Promise<XenditOrderResult> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['installments'],
+      relations: ['installments', 'category'],
     });
     if (!course) throw new Error('Course not found');
 
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['biodata'],
+    });
     if (!user) throw new Error('User not found');
 
     let basePrice =
@@ -768,6 +771,8 @@ export class PaymentsService {
       paymentMethod,
       basePrice,
       discountAmount,
+      user,
+      course,
     );
   }
 
