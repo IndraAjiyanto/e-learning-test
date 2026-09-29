@@ -570,7 +570,7 @@
             <button
               type="button"
               role="tab"
-              x-show="activeCaps.logbookEnabled !== false"
+              x-show="activeCaps.logbookEnabled !== false && (activeCourseData?.programType ?? activeCourseData?.program_type) !== 'non_bootcamp'"
               @click="toggleActiveSection('logbook')"
               class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
               :class="'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
