@@ -133,9 +133,17 @@ export class ApiPaymentController {
       }
 
       // Redirect to Xendit Invoice URL
+      const invoiceUrl = orderData.invoice?.xendit_invoice_url;
+      if (!invoiceUrl) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invoice belum siap. Silakan coba lagi beberapa saat.',
+        });
+      }
+
       return res.json({
         status: 'success',
-        redirect_url: orderData.invoice.xendit_invoice_url,
+        redirect_url: invoiceUrl,
         message: 'Mengalihkan ke halaman pembayaran Xendit...',
       });
     } catch (error: any) {

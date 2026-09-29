@@ -75,6 +75,53 @@ describe('PaymentsController', () => {
     expect(controller).toBeDefined();
   });
 
+  describe('create', () => {
+    const mockReq = { user: { id: 'u1' }, flash: jest.fn() } as any;
+    const mockRes = { redirect: jest.fn() } as any;
+
+    beforeEach(() => {
+      mockReq.flash.mockClear();
+      mockRes.redirect.mockClear();
+    });
+
+    it('redirects back to the course page when the invoice URL is null', async () => {
+      paymentsService.createXenditInvoice.mockResolvedValue({
+        id: 'p1',
+        process: 'process',
+        invoice: { xendit_invoice_url: null },
+      });
+
+      await controller.create('u1', 'c1', {}, mockRes, mockReq);
+
+      expect(mockRes.redirect).toHaveBeenCalledWith('/payment/detail/c1');
+      expect(mockRes.redirect).not.toHaveBeenCalledWith(null);
+      // Guard dan `catch` sama-sama redirect ke /payment/detail/:courseId, jadi
+      // flash toast error yang membuktikan yang benar-benar guard yang bekerja.
+      expect(mockReq.flash).toHaveBeenCalledWith(
+        'toastError',
+        expect.stringContaining('Payment unavailable'),
+      );
+    });
+
+    it('redirects to the Xendit invoice URL when it exists', async () => {
+      paymentsService.createXenditInvoice.mockResolvedValue({
+        id: 'p1',
+        process: 'process',
+        invoice: { xendit_invoice_url: 'https://checkout.xendit.co/x' },
+      });
+
+      await controller.create('u1', 'c1', {}, mockRes, mockReq);
+
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        'https://checkout.xendit.co/x',
+      );
+      expect(mockReq.flash).not.toHaveBeenCalledWith(
+        'toastError',
+        expect.anything(),
+      );
+    });
+  });
+
   describe('paymentSuccess', () => {
     const mockReq = { user: { id: 'u1' }, flash: jest.fn() } as any;
     const mockRes = { redirect: jest.fn(), render: jest.fn() } as any;
