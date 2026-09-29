@@ -10,7 +10,6 @@
   }}
 {{else}}
 
-
 {{!-- USER PROFILE INDEX VIEW --}}
 <script>
   window.userLogbooks = {{{json logbooks}}};
@@ -52,13 +51,17 @@
       uiux: { url: '/program/myProgram/{{user.id}}/fragment', container: 'start-learning-container' },
       assignment: { url: '/program/myProgram/{{user.id}}/fragment/assignment', container: 'assignment-container' },
       presentation: { url: '/program/myProgram/{{user.id}}/fragment/presentation', container: 'presentation-container' },
-      quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' }
+      quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' },
+      portfolio: { url: '/portfolio/fragment', container: 'portfolio-container' }
     },
     toggleActiveSection(section) {
       // Student bisa sampai di ?tab=logbook lewat tautan lama atau riwayat
       // peramban, termasuk untuk program yang logbooknya dimatikan. Tanpa
       // penjagaan ini ia mendapat panel kosong tanpa penjelasan.
       if (section === 'logbook' && this.activeCaps.logbookEnabled === false) {
+        section = 'uiux';
+      }
+      if (section === 'assignment' && !this.activeCaps.finalAssignment && this.activeCaps.structure !== 'weeks') {
         section = 'uiux';
       }
       this.activeSection = section;
@@ -75,7 +78,7 @@
          Payment History tidak boleh kebagian gambar program. --}}
     programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'logbook', 'certificate', 'group-class', 'quiz-start'],
     get isProgramSection() {
-      return this.programSections.includes(this.activeSection);
+      return this.programSections.includes(this.activeSection) || (this.activeSection === 'portfolio' && !!this.activeCourseId);
     },
 
     {{!-- Course yang sedang dibuka, diambil dari data yang SUDAH ada di sisi
@@ -174,6 +177,7 @@
   }"
   x-init="
     if (activeSection === 'logbook' && activeCaps.logbookEnabled === false) { activeSection = 'uiux'; }
+    if (activeSection === 'assignment' && !activeCaps.finalAssignment && activeCaps.structure !== 'weeks') { activeSection = 'uiux'; }
     if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }
   "
 >
@@ -225,8 +229,8 @@
             :class="activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
             class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
           >
-            <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-5 h-5 object-contain brightness-0">
-            <span>My Portfolio</span>
+            <img src="/public/image/user_profile/myPortofolio.svg" alt="Portfolio" class="w-5 h-5 object-contain brightness-0">
+            <span>{{t 'test.startLearning.portfolio'}}</span>
           </button>
 
           <!-- History Payment Button -->
@@ -326,12 +330,12 @@
             :class="[
               activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] hover:bg-[#F4F7FC]'
             ]"
-            aria-label="{{t 'test.userSidebar.myPortfolio'}}" title="{{t 'test.userSidebar.myPortfolio'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
+            aria-label="{{t 'test.startLearning.portfolio'}}" title="{{t 'test.startLearning.portfolio'}}" class="js-user-sidebar-item rounded-lg text-left transition-colors duration-150 flex items-center font-inter font-medium text-sm leading-none cursor-pointer"
           >
             <div class="w-5 flex justify-center items-center flex-shrink-0">
               <span class="block size-5" :class="activeSection === 'portfolio' ? 'bg-[#003060]' : 'bg-[#718096]'" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
             </div>
-            <span class="js-user-sidebar-label whitespace-nowrap">My Portfolio</span>
+            <span class="js-user-sidebar-label whitespace-nowrap">{{t 'test.startLearning.portfolio'}}</span>
           </button>
 
           <!-- 5. History Payment Button -->
@@ -390,7 +394,7 @@
               profile: '{{t 'test.userSidebar.profile'}}',
               password: '{{t 'test.profile.changePassword'}}',
               learning: '{{t 'test.userSidebar.myLearning'}}',
-              portfolio: '{{t 'test.userSidebar.myPortfolio'}}',
+              portfolio: '{{t 'test.startLearning.portfolio'}}',
               'history-payment': '{{t 'test.userSidebar.paymentHistory'}}',
               uiux: '{{t 'test.startLearning.startLearning'}}',
               assignment: '{{t 'test.startLearning.assignment'}}',
@@ -472,16 +476,16 @@
 
         <div
           x-show="isProgramSection"
-          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
+          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start') (and (eq initialSection 'portfolio') activeCourse))}}style="display:none"{{/unless}}
           class="px-4 pt-4 sm:px-8 sm:pt-6 max-w-[1334px] mx-auto w-full"
         >
           <!-- Page Header -->
           <div class="mb-5 flex flex-col gap-1">
             <h1 class="font-inter text-2xl sm:text-[34px] font-bold leading-tight sm:leading-[42px] text-[#003060]">
-              Start Learning
+              {{t 'test.startLearning.startLearning'}}
             </h1>
             <p class="font-inter text-sm sm:text-[14px] font-normal leading-[20px] text-[#718096]">
-              Complete each week to unlock the next
+              {{t 'test.startLearning.spanStartLearning'}}
             </p>
           </div>
 
@@ -531,7 +535,7 @@
               >
                 <div class="flex items-center gap-3">
                   <i class="fa-solid fa-users text-[18px]"></i>
-                  <span>Join Group</span>
+                  <span>{{t 'test.startLearning.joinGroup'}}</span>
                 </div>
                 <i class="fa-solid fa-chevron-right text-[18px]"></i>
               </button>
@@ -545,7 +549,7 @@
               >
                 <div class="flex items-center gap-3">
                   <i class="fa-solid fa-book-open text-[18px] text-[#636AE8]"></i>
-                  <span>My Logbook</span>
+                  <span>{{t 'test.startLearning.myLogbook'}}</span>
                 </div>
                 <i class="fa-solid fa-chevron-right text-[18px] text-[#636AE8]"></i>
               </button>
@@ -557,7 +561,7 @@
               >
                 <div class="flex items-center gap-3">
                   <i class="fa-regular fa-file-lines text-[18px]"></i>
-                  <span>Detail Program</span>
+                  <span>{{t 'test.startLearning.detailProgram'}}</span>
                 </div>
                 <i class="fa-solid fa-chevron-right text-[18px]"></i>
               </a>
@@ -574,17 +578,18 @@
               class="rounded-full px-5 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
               :class="activeSection === 'uiux' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
             >
-              Learning
+              {{t 'test.startLearning.startLearning'}}
             </button>
             <button
               type="button"
               role="tab"
+              x-show="activeCaps.finalAssignment || activeCaps.structure === 'weeks'"
               :aria-selected="activeSection === 'assignment' ? 'true' : 'false'"
               @click="toggleActiveSection('assignment')"
               class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
               :class="activeSection === 'assignment' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
             >
-              Tugas Akhir
+              {{t 'test.startLearning.assignment'}}
             </button>
             <button
               type="button"
@@ -594,7 +599,7 @@
               class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
               :class="activeSection === 'portfolio' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
             >
-              Portofolio
+              {{t 'test.startLearning.portfolio'}}
             </button>
           </div>
         </div>
@@ -632,9 +637,32 @@
           {{> components/ui/learning/skeleton/index }}
         </div>
 
-        <!-- My Portfolio Tab Content -->
-        <div x-show="activeSection === 'portfolio'"{{#unless (eq initialSection 'portfolio')}} style="display:none"{{/unless}}>
-          {{> user/sidebar_user_profile/my_portofolio/index }}
+        <!-- Portfolio Tab Content (loaded per course via loadCourseFragment) -->
+        {{!-- Sengaja kosong, sama seperti Start Learning: tab ini menampilkan
+             portfolio SETIAP student di program yang sedang dibuka, jadi isinya
+             harus diambil per program. Merendernya di server dari sini selalu
+             menghasilkan daftar kosong, karena `portfolio` yang dikirim kedua
+             controller route hanya berisi karya student itu sendiri. --}}
+        <div
+          x-show="activeSection === 'portfolio' && activeCourseId"
+          id="portfolio-container"
+          class="max-w-[1334px] mx-auto w-full"
+          {{#unless (and (eq initialSection 'portfolio') activeCourse)}}style="display:none"{{/unless}}
+        >
+          {{> components/ui/learning/skeleton/index }}
+        </div>
+        {{!-- Tanpa program yang diikuti tidak ada program yang bisa ditampilkan
+             sebagai galeri, jadi diberi tahu, bukan dibiarkan kosong. --}}
+        <div
+          x-show="activeSection === 'portfolio' && !activeCourseId"
+          {{#unless (and (eq initialSection 'portfolio') (not activeCourse))}}style="display:none"{{/unless}}
+          class="mx-4 my-4 rounded-xl border border-[#E5E5E5] bg-white p-8 text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:mx-8 sm:my-6 sm:p-12"
+        >
+          <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
+            <i class="fas fa-folder-open text-2xl"></i>
+          </span>
+          <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.myPortfolio.emptyStateCourse.noProgramTitle'}}</h3>
+          <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]">{{t 'test.myPortfolio.emptyStateCourse.noProgramDescription'}}</p>
         </div>
 
         <!-- History Payment Tab Content -->
@@ -749,4 +777,9 @@
 
   </div>
 </div>
+{{!-- `renderOverview` dipanggil dari Alpine (`x-html`) di panel detail
+     portfolio. Panel itu dimuat lewat loadCourseFragment, jadi skrip yang
+     menempel di dalam partial tidak akan dieksekusi - fungsinya harus sudah
+     ada sebelum fragment masuk. --}}
+<script src="/public/js/portfolio-overview.js"></script>
 {{/if}}

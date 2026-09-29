@@ -354,7 +354,6 @@ export class UsersController {
       return res.redirect('/login');
     }
     const user = await this.usersService.findOne(req.user.id);
-    const portfolio = await this.usersService.findPortfolio(req.user.id);
     const userWithCourses = await this.usersService.findWithCourses(
       req.user.id,
     );
@@ -379,34 +378,29 @@ export class UsersController {
     ];
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
-    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
-    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
-    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
-    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    const initialSection = String(req.query.tab || '') || 'dashboard';
-    // Course yang dipakai kepala program. Dirender di server, bukan dirakit
-    // Alpine sesudah halaman tampil: kepala setinggi ~370px yang baru muncul
-    // setelah gambar pertama akan mendorong seluruh halaman turun.
     const requestedCourseId = String(req.query.courseId || '');
     const activeCourse =
       course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
-    // Apakah program ini sudah tuntas. Dikirim dari server, bukan dibaca dari
-    // window.userCourses: kolom `progress` tidak ikut terserialisasi ke sisi
-    // klien, jadi panel Certificate sempat menyatakan program yang sudah selesai
-    // sebagai belum selesai.
-    // Ringkasan tab My Logbook sengaja TIDAK dihitung di rute ini.
-    // findLearningStats ada di CoursesService, dan menyuntikkannya ke sini hanya
-    // demi satu blok ringkasan berarti menambah ketergantungan antar modul.
-    // Rute /program/myProgram - satu-satunya jalan masuk ke tab program - sudah
-    // mengirimkannya; di sini ringkasannya cukup tidak ditampilkan.
     const stats = null;
     const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
     );
-
     // Kapabilitas per tipe program. Template TIDAK PERNAH menyebut nama tipe
     // programnya; ia membaca caps. Lihat courses/program-type.ts.
     const caps = capabilitiesForCourse(activeCourse);
+
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    let initialSection = String(req.query.tab || '') || 'dashboard';
+    if (
+      initialSection === 'assignment' &&
+      !caps.finalAssignment &&
+      caps.structure !== 'weeks'
+    ) {
+      initialSection = 'dashboard';
+    }
     // Peta untuk sisi klien: student bisa berpindah program tanpa memuat ulang
     // halaman, jadi sakelar logbook harus ikut berpindah bersamanya.
     const programCaps = Object.fromEntries(
@@ -415,7 +409,6 @@ export class UsersController {
 
     return res.render('user/user_profile/index', {
       user: user,
-      portfolio,
       userWithCourses,
       logbooks,
       course,

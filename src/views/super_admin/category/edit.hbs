@@ -219,7 +219,15 @@
       const last = keys.pop();
       keys.reduce((acc, key) => acc[key], obj)[last] = value;
     };
-    const assetUrl = (path) => (path ? (path.startsWith('/') ? path : `/${path}`) : '');
+    // Gambar hasil upload Cloudinary disimpan sebagai URL absolut, bukan path
+    // relatif. Hanya path yang benar-benar lokal yang perlu diawali '/';
+    // URL absolut (http/https) atau protocol-relative (//) harus dibiarkan,
+    // kalau tidak jadi '/https://...' dan browser memintanya sebagai path lokal.
+    const assetUrl = (path) => {
+      if (!path) return '';
+      if (/^(https?:)?\/\//i.test(path)) return path;
+      return path.startsWith('/') ? path : `/${path}`;
+    };
     const emptyImage = (existingUrl) => ({
       existingUrl,
       previewUrl: existingUrl || null,

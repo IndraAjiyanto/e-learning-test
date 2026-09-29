@@ -11,6 +11,7 @@ import { Material } from 'src/entities/materials.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { ActivityLog } from 'src/entities/activity_log.entity';
 import { DailyStatistics } from 'src/entities/daily_statistics.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { UserActivityService } from './user-activity.service';
 import { UserActivityMiddleware } from './user-activity.middleware';
 
@@ -28,6 +29,7 @@ import { UserActivityMiddleware } from './user-activity.middleware';
       Syllabus,
       ActivityLog,
       DailyStatistics,
+      FinalAssignment,
     ]),
   ],
   providers: [UserActivityService, UserActivityMiddleware],
