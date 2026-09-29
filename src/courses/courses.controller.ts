@@ -334,11 +334,14 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     const existing = await this.finalAssignmentService.findByCourse(courseId);
     if (existing) {
       return res.redirect(`/program/edit-final-assignment/${courseId}`);
     }
-    const course = await this.coursesService.findOne(courseId);
     return res.render('admin/course/create_final_assignment', {
       user: req.user,
       course,
@@ -353,6 +356,10 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     try {
       await this.finalAssignmentService.createOrUpdate(courseId, {
         title: req.body.title,
@@ -379,6 +386,9 @@ export class CoursesController {
     @Param('courseId') courseId: string,
   ) {
     const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     const finalAssignment =
       await this.finalAssignmentService.findByCourse(courseId);
     return res.render('admin/course/edit_final_assignment', {
@@ -396,6 +406,10 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     try {
       await this.finalAssignmentService.createOrUpdate(courseId, {
         title: req.body.title,
@@ -424,6 +438,9 @@ export class CoursesController {
     const course = await this.coursesService
       .findOne(courseId)
       .catch(() => null);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     const finalAssignment = await this.finalAssignmentService.findByCourse(
       courseId,
       true,
@@ -749,21 +766,29 @@ export class CoursesController {
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
 
-    // const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
-    const portfolio = await this.coursesService.findPortfolio(req.user!.id);
-
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
     // myProgram menampilkan angka nol di semua kartu statistik.
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(req.user!.id);
 
+    // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
+    // ia membaca caps - lihat courses/program-type.ts.
+    const caps = capabilitiesForCourse(activeCourse);
+
     // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    const initialSection =
+    let initialSection =
       String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+    if (
+      initialSection === 'assignment' &&
+      !caps.finalAssignment &&
+      caps.structure !== 'weeks'
+    ) {
+      initialSection = 'uiux';
+    }
     // Apakah program ini sudah tuntas.
     //
     // `userWithCourses` di atas bukan baris pendaftaran sungguhan - ia dirakit
@@ -792,15 +817,12 @@ export class CoursesController {
       initialSection,
       stats,
       activeCourseCompleted,
-      // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
-      // ia membaca caps - lihat courses/program-type.ts.
-      caps: capabilitiesForCourse(activeCourse),
+      caps,
       // Peta untuk sisi klien: berpindah program tidak memuat ulang halaman,
       // jadi sakelar logbook harus ikut berpindah.
       programCaps: Object.fromEntries(
         course.map((c) => [c.id, capabilitiesForCourse(c)]),
       ),
-      portfolio,
       dashboardStats,
       ongoingCourses,
       programComposition,
@@ -917,6 +939,50 @@ export class CoursesController {
     const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
+    const caps = capabilitiesForCourse(activeCourse);
+
+    // Tab Tugas Akhir untuk program yang punya tugas akhir menampilkan SATU
+    // tugas milik program itu, bukan daftar tugas per minggu - dan bukan
+    // karena program ini tidak punya minggu, tapi karena tugas akhir adalah
+    // satuan penilaiannya sendiri. Lihat courses/program-type.ts.
+    //
+    // Program tanpa tugas akhir (LPK) tetap memakai akordeon per minggu, dan
+    // tugas mingguan di sana bisa dikumpulkan lewat sesi - jadi tidak ada
+    // jalur yang hilang saat tab ini diganti.
+    if (caps.finalAssignment) {
+      const finalAssignment = activeCourse?.id
+        ? await this.finalAssignmentService.findByCourse(activeCourse.id)
+        : null;
+      const finalAssignmentSubmission =
+        finalAssignment?.id && id
+          ? await this.finalAssignmentService.findSubmissionByUser(
+              finalAssignment.id,
+              id,
+            )
+          : null;
+
+      return res.render('partials/user/sidebar_user_profile/assignment/index', {
+        course: activeCourse,
+        stats: null,
+        weekSummaries: null,
+        caps,
+        finalAssignment,
+        finalAssignmentSubmission,
+        layout: false,
+      });
+    }
+
+    if (caps.structure !== 'weeks') {
+      return res.render('partials/user/sidebar_user_profile/assignment/index', {
+        course: activeCourse,
+        stats: null,
+        weekSummaries: null,
+        caps,
+        finalAssignment: null,
+        finalAssignmentSubmission: null,
+        layout: false,
+      });
+    }
 
     // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
     const stats = await this.coursesService.findLearningStats(
@@ -935,7 +1001,9 @@ export class CoursesController {
       course: activeCourse,
       stats,
       weekSummaries,
-      caps: capabilitiesForCourse(activeCourse),
+      caps,
+      finalAssignment: null,
+      finalAssignmentSubmission: null,
       layout: false,
     });
   }

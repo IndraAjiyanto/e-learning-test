@@ -202,6 +202,21 @@ export class InvoiceService {
     }
   }
 
+  // Menutup invoice Xendit yang masih hidup lalu mengosongkan field-nya, supaya
+  // record bisa beralih ke kanal manual tanpa menyisakan link Xendit yang bisa
+  // dibayar belakangan (jalur dobel bayar). Field dikosongkan walau expire
+  // gagal: `expireXenditInvoice` sengaja mengembalikan status, bukan melempar,
+  // supaya kegagalan tidak menggagalkan perpindahan kanal.
+  async expireAndClearInvoice(invoice: Invoice) {
+    if (!invoice) return;
+    if (invoice.xendit_invoice_id) {
+      await this.expireXenditInvoice(invoice.xendit_invoice_id);
+    }
+    invoice.xendit_invoice_id = '';
+    invoice.xendit_invoice_url = '';
+    await this.invoiceRepository.save(invoice);
+  }
+
   // Menyelesaikan payment (full/DP cicilan) yang 'process' berdasarkan status terbaru dari Xendit
   async settleStuckPayment(paymentId: string) {
     const payment = await this.paymentRepository.findOne({

@@ -24,6 +24,7 @@ import { Material } from 'src/entities/materials.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { ActivityLog } from 'src/entities/activity_log.entity';
 import { DailyStatistics } from 'src/entities/daily_statistics.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { format, startOfDay, subDays } from 'date-fns';
 import { isAssetPath, isNavigationRequest, matchLearningScope, ScopeContext } from './learning-scope';
 
@@ -123,6 +124,8 @@ export class UserActivityService {
     private readonly activityLogRepository: Repository<ActivityLog>,
     @InjectRepository(DailyStatistics)
     private readonly dailyStatsRepository: Repository<DailyStatistics>,
+    @InjectRepository(FinalAssignment)
+    private readonly finalAssignmentRepository: Repository<FinalAssignment>,
   ) {
     this.events.setMaxListeners(0);
   }
@@ -136,6 +139,7 @@ export class UserActivityService {
       materialRepo: this.materialRepository,
       userCourseRepo: this.userCourseRepository,
       syllabusRepo: this.syllabusRepository,
+      finalAssignmentRepo: this.finalAssignmentRepository,
     };
   }
 

@@ -190,6 +190,9 @@
       get canReupload() {
         if (!this.settings.manual_enabled) return false;
         if (!this.row) return false;
+        // `paid` = sudah lunas (manual: diterima super admin, Xendit: sudah
+        // dibayar). Backend menolak dengan pesan yang sama.
+        if (this.row.status === 'paid') return false;
         if (this.row.paymentLink) return false;
         return true;
       },

@@ -1725,19 +1725,6 @@ export class CoursesService {
     } catch (error) {}
   }
 
-  async findPortfolio(userId: string) {
-    return await this.portfolioRepository.find({
-      where: { user: { id: userId } },
-      relations: [
-        'user',
-        'course',
-        'course.courseType',
-        'course.category',
-        'course.technologies',
-      ],
-    });
-  }
-
   async findCompletedCoursesByUser(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },

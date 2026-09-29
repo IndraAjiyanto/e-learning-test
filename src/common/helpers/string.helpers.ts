@@ -24,6 +24,14 @@ export const stringHelpers = {
   },
   lookup: (str: any[], index: number) => (str ? str[index] : ''),
   json: (context: any) => JSON.stringify(context),
+  // Untuk data island: <script type="application/json">{{{jsonSafe x}}}</script>.
+  //
+  // `json` polosnya bisa berisi urutan `</script>`, dan browser memotong blok
+  // script di situ -sisanya jadi markup halaman, bukan JSON. Menyelipkan
+  // garis miring di depan '/' menutup lubang itu tanpa mengubah nilai
+  // JSON.parse-nya (JSON memperlakukan `\/` sama dengan `/`).
+  jsonSafe: (context: any) =>
+    String(JSON.stringify(context) ?? 'null').replace(/<\//g, '<\\/'),
   isJSON: (str: string) => {
     if (!str || typeof str !== 'string') return false;
     try {
