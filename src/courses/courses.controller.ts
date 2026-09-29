@@ -332,11 +332,14 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     const existing = await this.finalAssignmentService.findByCourse(courseId);
     if (existing) {
       return res.redirect(`/program/edit-final-assignment/${courseId}`);
     }
-    const course = await this.coursesService.findOne(courseId);
     return res.render('admin/course/create_final_assignment', {
       user: req.user,
       course,
@@ -351,6 +354,10 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     try {
       await this.finalAssignmentService.createOrUpdate(courseId, {
         title: req.body.title,
@@ -377,6 +384,9 @@ export class CoursesController {
     @Param('courseId') courseId: string,
   ) {
     const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     const finalAssignment =
       await this.finalAssignmentService.findByCourse(courseId);
     return res.render('admin/course/edit_final_assignment', {
@@ -394,6 +404,10 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId') courseId: string,
   ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     try {
       await this.finalAssignmentService.createOrUpdate(courseId, {
         title: req.body.title,
@@ -422,6 +436,9 @@ export class CoursesController {
     const course = await this.coursesService
       .findOne(courseId)
       .catch(() => null);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
     const finalAssignment = await this.finalAssignmentService.findByCourse(
       courseId,
       true,
@@ -756,12 +773,23 @@ export class CoursesController {
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(req.user!.id);
 
+    // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
+    // ia membaca caps - lihat courses/program-type.ts.
+    const caps = capabilitiesForCourse(activeCourse);
+
     // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    const initialSection =
+    let initialSection =
       String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+    if (
+      initialSection === 'assignment' &&
+      !caps.finalAssignment &&
+      caps.structure !== 'weeks'
+    ) {
+      initialSection = 'uiux';
+    }
     // Apakah program ini sudah tuntas.
     //
     // `userWithCourses` di atas bukan baris pendaftaran sungguhan - ia dirakit
@@ -790,9 +818,7 @@ export class CoursesController {
       initialSection,
       stats,
       activeCourseCompleted,
-      // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
-      // ia membaca caps - lihat courses/program-type.ts.
-      caps: capabilitiesForCourse(activeCourse),
+      caps,
       // Peta untuk sisi klien: berpindah program tidak memuat ulang halaman,
       // jadi sakelar logbook harus ikut berpindah.
       programCaps: Object.fromEntries(
@@ -944,6 +970,18 @@ export class CoursesController {
         caps,
         finalAssignment,
         finalAssignmentSubmission,
+        layout: false,
+      });
+    }
+
+    if (caps.structure !== 'weeks') {
+      return res.render('partials/user/sidebar_user_profile/assignment/index', {
+        course: activeCourse,
+        stats: null,
+        weekSummaries: null,
+        caps,
+        finalAssignment: null,
+        finalAssignmentSubmission: null,
         layout: false,
       });
     }

@@ -1,27 +1,20 @@
 {{!--
-  Tab Tugas Akhir. Isinya dua-duanya, dipilih dari KAPABILITAS - bukan dari
-  nama tipenya:
+  Tab Tugas Akhir. Isinya dipilih dari KAPABILITAS - bukan dari nama tipenya:
 
-    caps.finalAssignment = true   -> final_assignment.hbs  (bootcamp, non_bootcamp)
-    caps.finalAssignment = false  -> weeks.hbs             (LPK)
-
-  Yang dipecah bukan bentuk program, tapi isi tab ini. Program bootcamp punya
-  minggu DAN punya satu tugas akhir; program non_bootcamp hanya punya tugas
-  akhir. Keduanya karena itu menampilkan hal yang sama di tab Tugas Akhir, dan
-  keduanya berbeda dari LPK karena tugas akhir adalah satuan penilaian yang
-  terpisah dari tugas mingguan - bukan salah satu minggu yang ditulis ulang.
-
-  Yang paling perlu diketahui pembaca berkas ini: BOOTCAMP kehilangan daftar
-  tugas per minggu dari tab ini. Itu tidak menutup jalan apa pun, karena tugas
-  mingguan tetap bisa dikumpulkan dari halaman sesi dan dari panel Start
-  Learning, yang keduanya menautkan ke `/answer-assigment/:sessionId/:id`.
-  LPK tidak kehilangan apa pun - tabnya tetap akordeon minggu seperti sebelumnya.
+    caps.finalAssignment = true          -> final_assignment.hbs  (bootcamp)
+    caps.finalAssignment = false &&
+    caps.structure = 'weeks'             -> weeks.hbs             (LPK)
+    selainnya (non_bootcamp)             -> pesan kosong
 
   Controller mengirim `finalAssignment` + `finalAssignmentSubmission` hanya
   untuk cabang yang memakainya; keduanya null di cabang lain.
 --}}
 {{#if caps.finalAssignment}}
   {{> user/sidebar_user_profile/assignment/final_assignment}}
-{{else}}
+{{else if (eq caps.structure 'weeks')}}
   {{> user/sidebar_user_profile/assignment/weeks}}
+{{else}}
+  <div class="w-full px-4 py-12 text-center text-[#737373] font-inter text-sm">
+    {{t 'test.startLearning.noAssignments'}}
+  </div>
 {{/if}}

@@ -75,9 +75,8 @@ const NON_BOOTCAMP: ProgramCapabilities = {
   unitLabel: 'syllabus',
   pacing: 'self_paced',
   mentorship: 'none',
-  // Bukan karena tidak punya minggu, tapi karena bagi program ini tugas akhir
-  // itulah satu-satunya tugas yang dimiliki program.
-  finalAssignment: true,
+  // Program non_bootcamp berbasis silabus dan tidak memiliki tugas akhir.
+  finalAssignment: false,
 };
 
 // Japan Pathway. Isinya sama dengan bootcamp kecuali dua hal: `mentorship`,
