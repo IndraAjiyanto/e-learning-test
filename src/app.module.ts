@@ -74,6 +74,7 @@ import { InstallmentReminderModule } from './installment_reminder/installment-re
 import { InstallmentPaymentModule } from './installment_payment/installment-payment.module';
 import { SyllabusModule } from './syllabus/syllabus.module';
 import { FinalAssignmentModule } from './final_assignment/final_assignment.module';
+import { SearchModule } from './search/search.module';
 import path from 'path';
 
 @Module({
@@ -157,6 +158,7 @@ import path from 'path';
     InstallmentPaymentModule,
     SyllabusModule,
     FinalAssignmentModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -187,6 +189,7 @@ export class AppModule {
         '/alumni/filter',
         '/dashboard',
         '/dashboard/*path',
+        '/api/search',
         { path: '/invoice/webhook/xendit', method: RequestMethod.POST },
       )
       .forRoutes('*');

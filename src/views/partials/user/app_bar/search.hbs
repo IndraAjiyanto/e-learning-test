@@ -1,0 +1,474 @@
+{{!--
+  Komponen: Global Search (User area)
+  Lokasi: src/views/partials/user/app_bar/search.hbs
+  Level: L2 Section Component
+
+  Search bar interaktif dengan sticky dropdown popup melayang di bawah search bar.
+  Desain selaras dengan brand Kesatria & Sidebar (bg #E4F1F7 & icon #003060).
+--}}
+<div
+  x-data="globalSearch()"
+  @keydown.escape.window="closeSearch()"
+  class="relative hidden sm:flex flex-1 max-w-[420px] transition-all"
+  :class="{ 'sm:max-w-[480px] lg:max-w-[540px] z-50': isOpen }"
+>
+  {{!-- 1. Backdrop Overlay --}}
+  <div
+    x-show="isOpen && (query.trim().length > 0 || hasSearched)"
+    x-transition:enter="transition-opacity ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    @click="closeSearch()"
+    class="fixed inset-0 top-16 lg:top-[72px] z-40 bg-black/25 backdrop-blur-[1px]"
+    x-cloak
+  ></div>
+
+  {{!-- 2. Input Box --}}
+  <div
+    class="relative z-50 flex w-full items-center gap-2.5 rounded-full border border-[#D9D9D9] bg-[#F4F7FC] px-4 py-2 transition-all shadow-sm"
+    :class="{ 'bg-white border-[#003060] ring-2 ring-[#003060]/10 shadow-md': isOpen }"
+    @click.outside="closeSearch()"
+  >
+    <i class="fas fa-magnifying-glass text-xs text-[#718096] shrink-0" :class="{ 'text-[#003060]': isOpen }"></i>
+
+    <input
+      x-ref="searchInput"
+      type="text"
+      x-model="query"
+      @focus="openSearch()"
+      @input.debounce.300ms="fetchResults()"
+      placeholder="Search course, program, or learning..."
+      class="w-full bg-transparent font-inter text-xs text-[#1F2937] placeholder:text-[#718096] focus:outline-none"
+    />
+
+    {{!-- Spinner Loading --}}
+    <template x-if="isLoading">
+      <i class="fas fa-circle-notch fa-spin text-xs text-[#003060] shrink-0"></i>
+    </template>
+
+    {{!-- Clear Button --}}
+    <button
+      type="button"
+      x-show="query.length > 0 && !isLoading"
+      @click="clearQuery()"
+      class="flex size-4 shrink-0 items-center justify-center rounded-full text-[#94A3B8] hover:bg-[#E2E8F0] hover:text-[#475569] transition-colors"
+      aria-label="Clear search"
+      x-cloak
+    >
+      <i class="fas fa-xmark text-[10px]"></i>
+    </button>
+  </div>
+
+  {{!-- 3. Sticky Floating Popup Dropdown --}}
+  <div
+    x-show="isOpen && query.trim().length > 0"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 translate-y-1 scale-[0.99]"
+    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+    x-transition:leave-end="opacity-0 translate-y-1 scale-[0.99]"
+    class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[calc(100vw-32px)] sm:w-[480px] lg:w-[540px] z-50 rounded-2xl border border-[#E2E8F0] bg-white shadow-[0px_20px_40px_rgba(0,0,0,0.12),0px_1px_3px_rgba(0,0,0,0.05)] overflow-hidden"
+    x-cloak
+  >
+    <div class="max-h-[min(540px,calc(100vh-130px))] overflow-y-auto divide-y divide-[#F1F5F9]">
+
+      {{!-- Loading state skeleton --}}
+      <template x-if="isLoading && !hasSearched">
+        <div class="p-8 flex flex-col items-center justify-center gap-2.5 text-center">
+          <i class="fas fa-circle-notch fa-spin text-xl text-[#003060]"></i>
+          <p class="font-inter text-xs text-[#64748B]">Searching for results...</p>
+        </div>
+      </template>
+
+      {{!-- EMPTY STATE --}}
+      <template x-if="!isLoading && hasSearched && totalResults === 0">
+        <div class="py-10 px-6 flex flex-col items-center justify-center text-center">
+          <div class="size-12 rounded-full bg-[#E4F1F7] flex items-center justify-center text-[#003060] mb-3">
+            <i class="fas fa-magnifying-glass text-lg"></i>
+          </div>
+          <h4 class="font-inter font-semibold text-sm text-[#1E293B] mb-1">
+            No results found for "<span class="text-[#003060]" x-text="query"></span>"
+          </h4>
+          <p class="font-inter text-xs text-[#64748B] max-w-[300px]">
+            Try checking for spelling errors or searching for general topics, courses, programs, portfolios, or payment history.
+          </p>
+        </div>
+      </template>
+
+      {{!-- 1. CATEGORY: PROGRAM --}}
+      <template x-if="programs.length > 0">
+        <div class="p-3">
+          <div class="flex items-center justify-between px-3 py-1.5 mb-1">
+            <div class="flex items-center gap-2 text-[#003060]">
+              <i class="fa-solid fa-layer-group text-xs"></i>
+              <span class="font-inter font-semibold text-xs tracking-wide text-[#003060]">Program</span>
+            </div>
+            <span class="rounded-full bg-[#E4F1F7] px-2 py-0.5 font-inter text-[11px] font-semibold text-[#003060]" x-text="programs.length"></span>
+          </div>
+
+          <div class="space-y-1">
+            <template x-for="item in programs" :key="item.id || item.title">
+              <a
+                :href="item.url"
+                class="group flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[#F4F7FC]"
+              >
+                <div 
+                  x-data="{ imgLoaded: false, imgError: false }"
+                  class="size-10 rounded-lg overflow-hidden shrink-0 bg-[#E4F1F7] border border-[#D0E2EC] flex items-center justify-center"
+                >
+                  <template x-if="item.image">
+                    <img
+                      :src="item.image"
+                      :alt="item.title"
+                      class="size-full object-cover"
+                      x-show="imgLoaded && !imgError"
+                      @load="imgLoaded = true; imgError = false"
+                      @error="imgError = true"
+                    />
+                  </template>
+                  <i
+                    x-show="!item.image || imgError"
+                    class="fa-solid fa-layer-group text-sm text-[#003060]"
+                  ></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h5 class="font-inter text-xs sm:text-sm font-semibold text-[#0F172A] group-hover:text-[#003060] truncate transition-colors" x-text="item.title"></h5>
+                  <p class="font-inter text-[11px] text-[#64748B] truncate mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-[#94A3B8] group-hover:text-[#003060] group-hover:translate-x-0.5 transition-all shrink-0"></i>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      {{!-- 2. CATEGORY: COURSE --}}
+      <template x-if="courses.length > 0">
+        <div class="p-3">
+          <div class="flex items-center justify-between px-3 py-1.5 mb-1">
+            <div class="flex items-center gap-2 text-[#003060]">
+              <i class="fa-solid fa-graduation-cap text-xs"></i>
+              <span class="font-inter font-semibold text-xs tracking-wide text-[#003060]">Course</span>
+            </div>
+            <span class="rounded-full bg-[#E4F1F7] px-2 py-0.5 font-inter text-[11px] font-semibold text-[#003060]" x-text="courses.length"></span>
+          </div>
+
+          <div class="space-y-1">
+            <template x-for="item in courses" :key="item.id || item.title">
+              <a
+                :href="item.url"
+                class="group flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[#F4F7FC]"
+              >
+                <div 
+                  x-data="{ imgLoaded: false, imgError: false }"
+                  class="size-10 rounded-lg overflow-hidden shrink-0 bg-[#E4F1F7] border border-[#D0E2EC] flex items-center justify-center"
+                >
+                  <template x-if="item.image">
+                    <img
+                      :src="item.image"
+                      :alt="item.title"
+                      class="size-full object-cover"
+                      x-show="imgLoaded && !imgError"
+                      @load="imgLoaded = true; imgError = false"
+                      @error="imgError = true"
+                    />
+                  </template>
+                  <i
+                    x-show="!item.image || imgError"
+                    class="fa-solid fa-graduation-cap text-sm text-[#003060]"
+                  ></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h5 class="font-inter text-xs sm:text-sm font-semibold text-[#0F172A] group-hover:text-[#003060] truncate transition-colors" x-text="item.title"></h5>
+                  <p class="font-inter text-[11px] text-[#64748B] truncate mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-[#94A3B8] group-hover:text-[#003060] group-hover:translate-x-0.5 transition-all shrink-0"></i>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      {{!-- 3. CATEGORY: MY LEARNING --}}
+      <template x-if="learnings.length > 0">
+        <div class="p-3">
+          <div class="flex items-center justify-between px-3 py-1.5 mb-1">
+            <div class="flex items-center gap-2 text-[#003060]">
+              <span class="block size-3.5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span>
+              <span class="font-inter font-semibold text-xs tracking-wide text-[#003060]">My Learning</span>
+            </div>
+            <span class="rounded-full bg-[#E4F1F7] px-2 py-0.5 font-inter text-[11px] font-semibold text-[#003060]" x-text="learnings.length"></span>
+          </div>
+
+          <div class="space-y-1">
+            <template x-for="item in learnings" :key="item.id || item.title">
+              <a
+                :href="item.url"
+                class="group flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[#F4F7FC]"
+              >
+                <div 
+                  x-data="{ imgLoaded: false, imgError: false }"
+                  class="size-10 rounded-lg overflow-hidden shrink-0 bg-[#E4F1F7] border border-[#D0E2EC] flex items-center justify-center"
+                >
+                  <template x-if="item.image">
+                    <img
+                      :src="item.image"
+                      :alt="item.title"
+                      class="size-full object-cover"
+                      x-show="imgLoaded && !imgError"
+                      @load="imgLoaded = true; imgError = false"
+                      @error="imgError = true"
+                    />
+                  </template>
+                  <span
+                    x-show="!item.image || imgError"
+                    class="block size-5 bg-[#003060]"
+                    style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"
+                  ></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h5 class="font-inter text-xs sm:text-sm font-semibold text-[#0F172A] group-hover:text-[#003060] truncate transition-colors" x-text="item.title"></h5>
+                  <p class="font-inter text-[11px] text-[#64748B] truncate mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-[#94A3B8] group-hover:text-[#003060] group-hover:translate-x-0.5 transition-all shrink-0"></i>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      {{!-- 4. CATEGORY: MY PORTFOLIO --}}
+      <template x-if="portfolios.length > 0">
+        <div class="p-3">
+          <div class="flex items-center justify-between px-3 py-1.5 mb-1">
+            <div class="flex items-center gap-2 text-[#003060]">
+              <span class="block size-3.5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
+              <span class="font-inter font-semibold text-xs tracking-wide text-[#003060]">My Portfolio</span>
+            </div>
+            <span class="rounded-full bg-[#E4F1F7] px-2 py-0.5 font-inter text-[11px] font-semibold text-[#003060]" x-text="portfolios.length"></span>
+          </div>
+
+          <div class="space-y-1">
+            <template x-for="item in portfolios" :key="item.id || item.title">
+              <a
+                :href="item.url"
+                class="group flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[#F4F7FC]"
+              >
+                <div 
+                  x-data="{ imgLoaded: false, imgError: false }"
+                  class="size-10 rounded-lg overflow-hidden shrink-0 bg-[#E4F1F7] border border-[#D0E2EC] flex items-center justify-center"
+                >
+                  <template x-if="item.image">
+                    <img
+                      :src="item.image"
+                      :alt="item.title"
+                      class="size-full object-cover"
+                      x-show="imgLoaded && !imgError"
+                      @load="imgLoaded = true; imgError = false"
+                      @error="imgError = true"
+                    />
+                  </template>
+                  <span
+                    x-show="!item.image || imgError"
+                    class="block size-5 bg-[#003060]"
+                    style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"
+                  ></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h5 class="font-inter text-xs sm:text-sm font-semibold text-[#0F172A] group-hover:text-[#003060] truncate transition-colors" x-text="item.title"></h5>
+                  <p class="font-inter text-[11px] text-[#64748B] truncate mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-[#94A3B8] group-hover:text-[#003060] group-hover:translate-x-0.5 transition-all shrink-0"></i>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      {{!-- 5. CATEGORY: PAYMENT HISTORY --}}
+      <template x-if="payments.length > 0">
+        <div class="p-3">
+          <div class="flex items-center justify-between px-3 py-1.5 mb-1">
+            <div class="flex items-center gap-2 text-[#003060]">
+              <span class="block size-3.5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
+              <span class="font-inter font-semibold text-xs tracking-wide text-[#003060]">Payment History</span>
+            </div>
+            <span class="rounded-full bg-[#E4F1F7] px-2 py-0.5 font-inter text-[11px] font-semibold text-[#003060]" x-text="payments.length"></span>
+          </div>
+
+          <div class="space-y-1">
+            <template x-for="item in payments" :key="item.id || item.title">
+              <a
+                :href="item.url"
+                class="group flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[#F4F7FC]"
+              >
+                <div class="size-10 rounded-lg shrink-0 bg-[#E4F1F7] border border-[#D0E2EC] flex items-center justify-center">
+                  <span class="block size-5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h5 class="font-inter text-xs sm:text-sm font-semibold text-[#0F172A] group-hover:text-[#003060] truncate transition-colors" x-text="item.title"></h5>
+                    <template x-if="item.badge">
+                      <span 
+                        class="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block shrink-0"
+                        :class="{
+                          'bg-[#DCFCE7] text-[#166534]': item.badge === 'Paid',
+                          'bg-[#FEF9C3] text-[#854D0E]': item.badge === 'Processing',
+                          'bg-[#FEE2E2] text-[#991B1B]': item.badge === 'Failed'
+                        }"
+                        x-text="item.badge"
+                      ></span>
+                    </template>
+                  </div>
+                  <p class="font-inter text-[11px] text-[#64748B] truncate mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-[#94A3B8] group-hover:text-[#003060] group-hover:translate-x-0.5 transition-all shrink-0"></i>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      {{!-- 6. CATEGORY: MENU / PAGE --}}
+      <template x-if="menus.length > 0">
+        <div class="p-3">
+          <div class="flex items-center justify-between px-3 py-1.5 mb-1">
+            <div class="flex items-center gap-2 text-[#003060]">
+              <i class="fa-solid fa-table-cells-large text-xs"></i>
+              <span class="font-inter font-semibold text-xs tracking-wide text-[#003060]">Menu / Page</span>
+            </div>
+            <span class="rounded-full bg-[#E4F1F7] px-2 py-0.5 font-inter text-[11px] font-semibold text-[#003060]" x-text="menus.length"></span>
+          </div>
+
+          <div class="space-y-1">
+            <template x-for="item in menus" :key="item.title">
+              <a
+                :href="item.url"
+                class="group flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[#F4F7FC]"
+              >
+                <div class="size-10 rounded-lg shrink-0 bg-[#E4F1F7] border border-[#D0E2EC] flex items-center justify-center">
+                  <template x-if="item.title === 'My Portfolio'">
+                    <span class="block size-5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myPortofolio.svg') center/contain no-repeat;"></span>
+                  </template>
+                  <template x-if="item.title === 'My Learning'">
+                    <span class="block size-5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;mask:url('/public/image/user_profile/myLearning.svg') center/contain no-repeat;"></span>
+                  </template>
+                  <template x-if="item.title === 'Payment History'">
+                    <span class="block size-5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;mask:url('/public/image/user_profile/historyPayment.svg') center/contain no-repeat;"></span>
+                  </template>
+                  <template x-if="item.title === 'Profile'">
+                    <span class="block size-5 bg-[#003060]" style="-webkit-mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;mask:url('/public/image/user_profile/profile.svg') center/contain no-repeat;"></span>
+                  </template>
+                  <template x-if="!['My Portfolio', 'My Learning', 'Payment History', 'Profile'].includes(item.title)">
+                    <i class="fa-solid fa-table-cells-large text-sm text-[#003060]"></i>
+                  </template>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h5 class="font-inter text-xs sm:text-sm font-semibold text-[#0F172A] group-hover:text-[#003060] truncate transition-colors" x-text="item.title"></h5>
+                  <p class="font-inter text-[11px] text-[#64748B] truncate mt-0.5" x-text="item.subtitle"></p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-[#94A3B8] group-hover:text-[#003060] group-hover:translate-x-0.5 transition-all shrink-0"></i>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+    </div>
+
+    {{!-- FOOTER: Menampilkan Total Hasil Saja --}}
+    <template x-if="hasSearched && totalResults > 0">
+      <div class="border-t border-[#F1F5F9] bg-[#F8FAFC] px-5 py-2.5 flex items-center justify-between text-xs text-[#64748B]">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass text-[11px] text-[#003060]"></i>
+          <span class="font-normal font-inter">Menampilkan <span class="font-semibold text-[#003060]" x-text="totalResults"></span> hasil untuk "<span class="font-medium text-[#0F172A]" x-text="query"></span>"</span>
+        </div>
+        <span class="text-[11px] font-inter text-[#718096] hidden sm:inline">Pilih item untuk membuka</span>
+      </div>
+    </template>
+  </div>
+</div>
+
+<script>
+  function globalSearch() {
+    return {
+      query: '',
+      isOpen: false,
+      isLoading: false,
+      hasSearched: false,
+      courses: [],
+      programs: [],
+      learnings: [],
+      portfolios: [],
+      payments: [],
+      menus: [],
+      totalResults: 0,
+
+      openSearch() {
+        this.isOpen = true;
+        if (this.query.trim().length > 0 && !this.hasSearched) {
+          this.fetchResults();
+        }
+      },
+
+      closeSearch() {
+        this.isOpen = false;
+      },
+
+      clearQuery() {
+        this.query = '';
+        this.courses = [];
+        this.programs = [];
+        this.learnings = [];
+        this.portfolios = [];
+        this.payments = [];
+        this.menus = [];
+        this.totalResults = 0;
+        this.hasSearched = false;
+        this.$refs.searchInput.focus();
+      },
+
+      async fetchResults() {
+        const q = this.query.trim();
+        if (!q) {
+          this.courses = [];
+          this.programs = [];
+          this.learnings = [];
+          this.portfolios = [];
+          this.payments = [];
+          this.menus = [];
+          this.totalResults = 0;
+          this.hasSearched = false;
+          this.isLoading = false;
+          return;
+        }
+
+        this.isLoading = true;
+        this.isOpen = true;
+
+        try {
+          const res = await fetch('/api/search?q=' + encodeURIComponent(q));
+          const result = await res.json();
+          if (result.status === 'success' && result.data) {
+            this.courses = result.data.courses || [];
+            this.programs = result.data.programs || [];
+            this.learnings = result.data.learnings || [];
+            this.portfolios = result.data.portfolios || [];
+            this.payments = result.data.payments || [];
+            this.menus = result.data.menus || [];
+            this.totalResults = result.total || 0;
+            this.hasSearched = true;
+          }
+        } catch (e) {
+          console.error('Search error:', e);
+        } finally {
+          this.isLoading = false;
+        }
+      }
+    };
+  }
+</script>
