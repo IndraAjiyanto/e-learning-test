@@ -69,13 +69,15 @@
 
       get rowKeyword() {
         if (this.row?.keyword) return this.row.keyword;
-        if (this.row?.kind === 'installment') return 'Installment Plan';
+        if (this.row?.kind === 'installment') return '{{t "test.transactionDetail.installmentPlan"}}';
         return '—';
       },
 
       get statusBadgeText() {
-        if (this.row?.status === 'paid') return 'Accepted';
-        return this.row?.statusLabel || 'Accepted';
+        if (this.row?.status === 'paid') return '{{t "test.historyPayment.accepted"}}';
+        if (this.row?.status === 'processing') return '{{t "test.historyPayment.processing"}}';
+        if (this.row?.status === 'failed' || this.row?.status === 'rejected') return '{{t "test.historyPayment.rejected"}}';
+        return this.row?.statusLabel || '{{t "test.historyPayment.accepted"}}';
       },
 
       get statusBadgeBg() {
@@ -179,7 +181,7 @@
           return;
         }
         if (f.size > 5 * 1024 * 1024) {
-          alert('Ukuran file maksimal 5MB.');
+          alert('{{t "test.transactionDetail.uploadSizeAlert"}}');
           input.value = '';
           this.reuploadFile = null;
           return;
@@ -215,13 +217,18 @@
         };
       },
 
+      formatPaidProgress(paid, total, percent) {
+        const tpl = '{{t "test.transactionDetail.paidProgress"}}';
+        return tpl.replace('{paid}', paid).replace('{total}', total).replace('{percent}', percent);
+      },
+
       monthStatusLabel(m) {
         const map = {
-          paid: 'Lunas',
-          process: 'Diproses',
-          rejected: 'Ditolak',
-          due: 'Jatuh tempo',
-          upcoming: 'Belum',
+          paid: '{{t "test.transactionDetail.monthStatus.paid"}}',
+          process: '{{t "test.transactionDetail.monthStatus.process"}}',
+          rejected: '{{t "test.transactionDetail.monthStatus.rejected"}}',
+          due: '{{t "test.transactionDetail.monthStatus.due"}}',
+          upcoming: '{{t "test.transactionDetail.monthStatus.upcoming"}}',
         };
         return map[m.status] || m.status || '—';
       },
@@ -289,7 +296,7 @@
         const f = input.files && input.files[0];
         if (!f) return;
         if (f.size > 5 * 1024 * 1024) {
-          alert('Ukuran file maksimal 5MB.');
+          alert('{{t "test.transactionDetail.uploadSizeAlert"}}');
           input.value = '';
           this.monthlyFilenames[month] = '';
           return;
@@ -432,7 +439,7 @@
         </div>
         <!-- Title: Payment Proof (Montserrat 700 18px line-height 24px #FFFFFF) -->
         <h2 id="modal-header-payment-proof-title" class="font-montserrat font-bold text-lg leading-6 text-white tracking-wide">
-          Payment Proof
+          {{t "test.transactionDetail.paymentProof"}}
         </h2>
       </div>
 
@@ -461,7 +468,7 @@
       <div class="flex flex-row justify-between items-center w-full h-[31px] shrink-0">
         <!-- Invoice Image: Montserrat 700 14px line-height 17px #003060 -->
         <span class="font-montserrat font-bold text-sm leading-[17px] text-[#003060]">
-          Invoice Image
+          {{t "test.transactionDetail.invoiceImage"}}
         </span>
 
         <!-- Frame Download Button: 116x31px, padding 8px 16px, gap 6px, bg #FFFFFF, border 1px solid #D9D9D9, radius 8px -->
@@ -480,7 +487,7 @@
           </svg>
           <!-- Download text: Montserrat 600 12px line-height 15px #003060 -->
           <span class="font-montserrat font-semibold text-xs leading-[15px] text-[#003060]">
-            Download
+            {{t "test.transactionDetail.download"}}
           </span>
         </button>
       </div>
@@ -514,7 +521,7 @@
               :class="showReupload ? 'bg-[#D9333F] text-white' : ''"
             >
               <i class="fa-solid fa-rotate-left text-sm"></i>
-              Upload Bukti Pembayaran
+              {{t "test.transactionDetail.uploadPaymentProof"}}
             </button>
 
             <div
@@ -526,7 +533,7 @@
               <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-xl p-4 flex flex-col gap-3">
                 <div class="flex items-start justify-between gap-3">
                   <div>
-                    <p class="text-[10px] text-slate-300">Transfer ke rekening berikut</p>
+                    <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.transferInstruction"}}</p>
                     <p class="text-lg font-bold tracking-wider mt-0.5">2847 9237 4298 1234</p>
                   </div>
                   <button
@@ -540,11 +547,11 @@
                 </div>
                 <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
                   <div>
-                    <p class="text-[10px] text-slate-300">Atas nama</p>
+                    <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.accountHolder"}}</p>
                     <p class="text-xs font-semibold">PT. WIRATEK SOLUSI ASIA</p>
                   </div>
                   <div class="text-right">
-                    <p class="text-[10px] text-slate-300">Bank</p>
+                    <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.bank"}}</p>
                     <p class="text-xs font-semibold">BANK BCA</p>
                   </div>
                 </div>
@@ -563,7 +570,7 @@
                   <i class="fa-solid fa-cloud-arrow-up text-lg text-[#64748B]" x-show="!reuploadFile"></i>
                   <i class="fa-solid fa-file-image text-lg text-emerald-500" x-show="reuploadFile"></i>
                   <span class="font-inter text-[12px] text-[#475569]">
-                    <span x-show="!reuploadFile">Upload bukti transfer (JPG/PNG, maks 5MB)</span>
+                    <span x-show="!reuploadFile">{{t "test.transactionDetail.uploadInstruction"}}</span>
                     <span x-show="reuploadFile" class="font-semibold text-[#003060]" x-text="reuploadFile?.name"></span>
                   </span>
                   <input
@@ -580,7 +587,7 @@
                   class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-2.5 font-inter font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <i class="fa-solid fa-paper-plane text-xs"></i>
-                  Kirim Bukti
+                  {{t "test.transactionDetail.sendProof"}}
                 </button>
               </form>
             </div>
@@ -596,22 +603,22 @@
           <div class="flex flex-col gap-4">
             <!-- Name Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Name</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.name"}}</span>
               <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="userName"></span>
             </div>
             <!-- Email Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Email</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.email"}}</span>
               <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="userEmail"></span>
             </div>
             <!-- Phone Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Phone</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.phone"}}</span>
               <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="userPhone"></span>
             </div>
             <!-- Xendit Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Xendit Link</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.xenditLink"}}</span>
               <template x-if="xenditUrl">
                 <a
                   :href="xenditUrl"
@@ -631,17 +638,17 @@
           <div class="flex flex-col gap-4">
             <!-- Program Name Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Program Name</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.programName"}}</span>
               <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="programName"></span>
             </div>
             <!-- Program Category Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Program Category</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.programCategory"}}</span>
               <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="programCategory"></span>
             </div>
             <!-- Keyword Field -->
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">Keyword</span>
+              <span class="font-inter font-normal text-xs leading-[15px] text-[#9CA3AF]">{{t "test.transactionDetail.keyword"}}</span>
               <span class="font-inter font-semibold text-sm leading-[17px] text-[#173B68]" x-text="rowKeyword"></span>
             </div>
           </div>
@@ -656,7 +663,7 @@
           <template x-if="originalPriceFormatted">
             <div>
               <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-                <span class="font-inter font-normal text-xs text-[#9CA3AF]">Harga Normal</span>
+                <span class="font-inter font-normal text-xs text-[#9CA3AF]">{{t "test.transactionDetail.normalPrice"}}</span>
                 <span class="font-inter font-normal text-sm text-[#9CA3AF] line-through" x-text="originalPriceFormatted"></span>
               </div>
               <div class="w-full h-px bg-[#D8E6F6]"></div>
@@ -665,7 +672,7 @@
 
           <!-- Harga Row: padding 8px 0px, height 32px -->
           <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]" x-text="originalPriceFormatted ? 'Harga Promo' : 'Harga'">Harga</span>
+            <span class="font-inter font-normal text-[#6B7280]" x-text="originalPriceFormatted ? '{{t "test.transactionDetail.promoPrice"}}' : '{{t "test.transactionDetail.price"}}'">{{t "test.transactionDetail.price"}}</span>
             <span class="font-inter font-normal text-[#173B68]" x-text="subtotalFormatted"></span>
           </div>
           <!-- Divider Row 1 -->
@@ -673,7 +680,7 @@
 
           <!-- Discount Row: padding 8px 0px, height 32px -->
           <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]">Discount</span>
+            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.discount"}}</span>
             <span class="font-inter font-semibold text-[#EF4444]" x-text="discountFormatted"></span>
           </div>
           <!-- Divider Row 2 -->
@@ -681,7 +688,7 @@
 
           <!-- Total Row: padding 8px 0px, height 34px -->
           <div class="flex flex-row justify-between items-center w-full py-2">
-            <span class="font-inter font-normal text-[13px] leading-4 text-[#6B7280]">Total</span>
+            <span class="font-inter font-normal text-[13px] leading-4 text-[#6B7280]">{{t "test.transactionDetail.total"}}</span>
             <span class="font-inter font-bold text-[15px] leading-[18px] text-[#173B68]" x-text="totalFormatted"></span>
           </div>
         </div>
@@ -690,14 +697,14 @@
         <template x-if="row?.proof">
           <div class="w-full mt-4 pt-4 border-t border-[#D8E6F6] flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <span class="font-inter font-semibold text-xs text-[#173B68]">Bukti Transfer Terlampir</span>
+              <span class="font-inter font-semibold text-xs text-[#173B68]">{{t "test.transactionDetail.attachedProof"}}</span>
               <a
                 :href="row.proof"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="font-inter text-xs text-[#3B82F6] hover:underline inline-flex items-center gap-1"
               >
-                <span>Lihat file asli &rarr;</span>
+                <span>{{t "test.transactionDetail.viewOriginalFile"}} &rarr;</span>
               </a>
             </div>
             <div class="rounded-xl border border-[#D8E6F6] overflow-hidden bg-[#F8FAFC] p-2 flex items-center justify-center">
@@ -713,12 +720,12 @@
         <div class="box-border flex flex-col items-start w-full lg:w-[45%] bg-white border border-[#D8E6F6] rounded-2xl p-5 sm:p-[20px_24px] shadow-[0px_3px_12px_rgba(23,59,104,0.0627)] shrink-0 lg:max-h-[calc(92vh-76px-2rem)] overflow-y-auto">
           <div class="flex items-center justify-between gap-3 w-full pb-4">
             <span class="font-montserrat font-bold text-sm leading-[17px] text-[#003060]">
-              Monthly Installments
+              {{t "test.transactionDetail.monthlyInstallments"}}
             </span>
             <template x-if="installmentProgress">
               <span
                 class="font-inter font-semibold text-[11px] leading-4 text-[#139B59] text-right"
-                x-text="`Lunas ${installmentProgress.paid} dari ${installmentProgress.total} (${installmentProgress.percent}%)`"
+                x-text="formatPaidProgress(installmentProgress.paid, installmentProgress.total, installmentProgress.percent)"
               ></span>
             </template>
           </div>
@@ -731,7 +738,7 @@
                   <div class="flex flex-col gap-0.5 min-w-[110px]">
                     <span class="font-inter font-semibold text-[13px] leading-4 text-[#173B68]" x-text="formatDate(installmentDueDates[index] || m.dueDate)"></span>
                     <span class="font-inter font-normal text-[11px] leading-[13px] text-[#9CA3AF]">
-                      Jatuh Tempo
+                      {{t "test.transactionDetail.dueDate"}}
                     </span>
                   </div>
                   <span class="font-inter font-bold text-sm leading-4 text-[#173B68]" x-text="formatRupiah(m.amount)"></span>
@@ -752,7 +759,7 @@
                         :class="activeManualMonth === m.month ? 'bg-[#D9333F] text-white' : ''"
                       >
                         <i class="fa-solid fa-rotate-left text-[10px]"></i>
-                        <span x-text="m.process ? 'Upload Ulang' : 'Bayar'"></span>
+                        <span x-text="m.process ? '{{t "test.transactionDetail.reupload"}}' : '{{t "test.transactionDetail.pay"}}'"></span>
                       </button>
                     </template>
                   </div>
@@ -767,7 +774,7 @@
                   <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-xl p-4 flex flex-col gap-3">
                     <div class="flex items-start justify-between gap-3">
                       <div>
-                        <p class="text-[10px] text-slate-300">Transfer ke rekening berikut</p>
+                        <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.transferInstruction"}}</p>
                         <p class="text-lg font-bold tracking-wider mt-0.5">2847 9237 4298 1234</p>
                       </div>
                       <button
@@ -781,11 +788,11 @@
                     </div>
                     <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
                       <div>
-                        <p class="text-[10px] text-slate-300">Atas nama</p>
+                        <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.accountHolder"}}</p>
                         <p class="text-xs font-semibold">PT. WIRATEK SOLUSI ASIA</p>
                       </div>
                       <div class="text-right">
-                        <p class="text-[10px] text-slate-300">Bank</p>
+                        <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.bank"}}</p>
                         <p class="text-xs font-semibold">BANK BCA</p>
                       </div>
                     </div>
@@ -804,7 +811,7 @@
                       <i class="fa-solid fa-cloud-arrow-up text-lg text-[#64748B]" x-show="!monthlyFilenames[m.month]"></i>
                       <i class="fa-solid fa-file-image text-lg text-emerald-500" x-show="monthlyFilenames[m.month]"></i>
                       <span class="font-inter text-[12px] text-[#475569]">
-                        <span x-show="!monthlyFilenames[m.month]">Upload bukti transfer (JPG/PNG, maks 5MB)</span>
+                        <span x-show="!monthlyFilenames[m.month]">{{t "test.transactionDetail.uploadInstruction"}}</span>
                         <span x-show="monthlyFilenames[m.month]" class="font-semibold text-[#003060]" x-text="monthlyFilenames[m.month]"></span>
                       </span>
                       <input
@@ -821,7 +828,7 @@
                       class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-2.5 font-inter font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <i class="fa-solid fa-paper-plane text-xs"></i>
-                      Kirim Bukti Bulan <span x-text="m.month"></span>
+                      {{t "test.transactionDetail.sendMonthProof"}} <span x-text="m.month"></span>
                     </button>
                   </form>
                 </div>
