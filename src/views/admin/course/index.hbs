@@ -12,6 +12,16 @@
     {{!-- Title --}}
     {{> components/ui/admin/text/page-header title='Program List' subtitle='Manage programs, quotas, and students.'}}
 
+    {{!-- Payment Settings (super admin only) --}}
+    {{#if isSuperAdmin}}
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
+        {{> components/ui/admin/payment_settings/index
+            manualEnabled=paymentSettings.manual_enabled
+            gatewayEnabled=paymentSettings.gateway_enabled
+            gatewayHidden=paymentSettings.gateway_hidden_because_key_missing }}
+      </div>
+    {{/if}}
+
     {{!-- Content --}}
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
 
@@ -99,14 +109,136 @@ function kelasTable() {
       await this.fetchKelas();
     },
 
-    // Dipanggil dari @change checkbox launch: menahan aksi lewat modal konfirmasi
-    // sebelum benar-benar toggle. Checkbox dikembalikan ke state model saat ini
-    // dulu (native checked sudah berubah duluan oleh browser) supaya tampilan
-    // tidak berubah sebelum user menekan Confirm di modal.
+    // Program Status Lifecycle Helpers
+    getStatus(status) {
+      return status || 'unlaunch';
+    },
+
+    getStatusLabel(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'Launch';
+        case 'learning': return 'Learning';
+        case 'done': return 'Done';
+        default: return 'Unlaunch';
+      }
+    },
+
+    getStatusBadgeClass(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'bg-[#DCFCE7]';
+        case 'learning': return 'bg-[#DBEAFE]';
+        case 'done': return 'bg-[#F3E8FF]';
+        default: return 'bg-[#F1F5F9]';
+      }
+    },
+
+    getStatusDotClass(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'bg-[#22C55E]';
+        case 'learning': return 'bg-[#3B82F6]';
+        case 'done': return 'bg-[#A855F7]';
+        default: return 'bg-[#94A3B8]';
+      }
+    },
+
+    getStatusTextClass(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'text-[#15803D]';
+        case 'learning': return 'text-[#1D4ED8]';
+        case 'done': return 'text-[#7E22CE]';
+        default: return 'text-[#475569]';
+      }
+    },
+
+    confirmStatusChange(courseId, index, targetStatus) {
+      const course = this.kelasList[index];
+      const configs = {
+        launch: {
+          title: 'Launch Program?',
+          description: `Are you sure you want to launch "${course.name}"? Program will be visible on the landing page for user registration.`,
+          confirmLabel: 'Launch',
+        },
+        unlaunch: {
+          title: 'Rollback to Unlaunch?',
+          description: `Are you sure you want to rollback "${course.name}" to Unlaunch? Program will be hidden from the landing page.`,
+          confirmLabel: 'Rollback',
+        },
+        learning: {
+          title: 'Start Learning Phase?',
+          description: `Are you sure you want to start learning for "${course.name}"? Registration on the landing page will be closed and learning sessions will begin.`,
+          confirmLabel: 'Start Learning',
+        },
+        done: {
+          title: 'Mark Program as Done?',
+          description: `Are you sure you want to mark "${course.name}" as Done? Participants will have finished learning and portfolios. This is the terminal state.`,
+          confirmLabel: 'Mark Done',
+        },
+      };
+
+      const config = configs[targetStatus] || {
+        title: 'Change Program Status?',
+        description: `Are you sure you want to change status to "${targetStatus}"?`,
+        confirmLabel: 'Confirm',
+      };
+
+      openConfirmModal({
+        title: config.title,
+        description: config.description,
+        confirmLabel: config.confirmLabel,
+        cancelLabel: 'Cancel',
+        onConfirm: () => this.updateStatus(courseId, index, targetStatus),
+      });
+    },
+
+    async updateStatus(courseId, index, targetStatus) {
+      const prevStatus = this.kelasList[index].status;
+      const prevLaunch = this.kelasList[index].launch;
+      try {
+        const res = await fetch(`/program/${courseId}/status-json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: targetStatus }),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          this.kelasList[index].status = json.status;
+          this.kelasList[index].launch = json.launch;
+        } else {
+          console.error('Update status failed:', json.message);
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Failed',
+              text: json.message || 'Failed to update program status',
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Update status error:', err);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Network or server error while updating status',
+          });
+        }
+      }
+    },
+
+    // Dipanggil dari legacy toggle switch bila ada
     confirmToggleLaunch(courseId, index, event) {
       const course = this.kelasList[index];
       const willLaunch = !course.launch;
-      event.target.checked = course.launch;
+      if (event && event.target) {
+        event.target.checked = course.launch;
+      }
 
       openConfirmModal({
         title: willLaunch ? 'Launch Program?' : 'Unlaunch Program?',
@@ -130,6 +262,7 @@ function kelasTable() {
 
         if (json.success) {
           this.kelasList[index].launch = json.launch;
+          if (json.status) this.kelasList[index].status = json.status;
         } else {
           this.kelasList[index].launch = prev;
           console.error('Toggle launch failed:', json.message);

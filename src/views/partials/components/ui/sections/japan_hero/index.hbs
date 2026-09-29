@@ -40,8 +40,8 @@
           <h1 class="font-montserrat text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B]">
             {{#if headline}}
               {{headline}}
-            {{else if course.name}}
-              {{course.name}}
+            {{else if category.name}}
+              {{category.name}}
             {{else if (getByLang category.text lang)}}
               {{getByLang category.text lang}}
             {{else}}

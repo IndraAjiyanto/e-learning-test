@@ -114,7 +114,7 @@
         {{> components/ui/backoffice/page_nav/index
             back=(ternary (eq back false) '' (default back (concat '/users/profile?tab=' (default active 'dashboard'))))
             trail=(default trail (array
-              (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+              (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
               (obj 'label' (lookup (obj
                   'dashboard' (t 'test.userSidebar.dashboard')
                   'profile' (t 'test.userSidebar.profile')
@@ -122,7 +122,14 @@
                   'portfolio' (t 'test.userSidebar.myPortfolio')
                   'history-payment' (t 'test.userSidebar.paymentHistory')
                 ) (default active 'dashboard'))
-                'href' (concat '/users/profile?tab=' (default active 'dashboard')))
+                'href' (concat '/users/profile?tab=' (default active 'dashboard'))
+                'icon' (lookup (obj
+                  'dashboard' 'ph ph-squares-four'
+                  'profile' 'ph ph-user'
+                  'learning' 'ph ph-book-open'
+                  'portfolio' 'ph ph-briefcase'
+                  'history-payment' 'ph ph-receipt'
+                ) (default active 'dashboard')))
               (obj 'label' pageTitle)
             )) }}
       </div>

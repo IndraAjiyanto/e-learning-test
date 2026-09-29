@@ -18,6 +18,7 @@ import {
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
 import { capabilitiesForCourse } from './program-type';
+import { CourseStatus } from 'src/entities/types/course-status';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -34,6 +35,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
+import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -43,6 +45,7 @@ export class CoursesController {
     private readonly coursesService: CoursesService,
     private readonly usersService: UsersService,
     private readonly finalAssignmentService: FinalAssignmentService,
+    private readonly paymentSettingsService: PaymentSettingsService,
   ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
@@ -235,13 +238,12 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    if (req.user!.role === 'super_admin') {
-      // const course = await this.coursesService.findAllCourses();
-      res.render('admin/course/index', { user: req.user });
-    } else if (req.user!.role === 'admin') {
-      // const course = await this.coursesService.findCourseByMentoring(req.user!.id);
-      res.render('admin/course/index', { user: req.user });
-    }
+    const paymentSettings = await this.paymentSettingsService.effective();
+    res.render('admin/course/index', {
+      user: req.user,
+      paymentSettings,
+      isSuperAdmin: req.user!.role === 'super_admin',
+    });
   }
 
   @Roles('admin', 'super_admin')
@@ -1461,11 +1463,40 @@ export class CoursesController {
   ) {
     try {
       const result = await this.coursesService.toggleLaunch(courseId);
-      return res.json({ success: true, launch: result.launch });
+      return res.json({
+        success: true,
+        launch: result.launch,
+        status: result.status,
+      });
     } catch (error: any) {
       return res.status(500).json({
         success: false,
         message: error.message || 'Failed to toggle launch',
+      });
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Patch(':courseId/status-json')
+  async updateStatusJson(
+    @Param('courseId') courseId: string,
+    @Body('status') status: CourseStatus,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.coursesService.updateProgramStatus(
+        courseId,
+        status,
+      );
+      return res.json({
+        success: true,
+        status: result.status,
+        launch: result.launch,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to update program status',
       });
     }
   }

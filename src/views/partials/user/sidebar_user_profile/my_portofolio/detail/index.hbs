@@ -9,7 +9,7 @@
       class="inline-flex items-center gap-2 font-inter font-medium text-sm sm:text-base text-[#003060] hover:text-[#001f3f] transition-colors cursor-pointer"
     >
       <i class="fa-solid fa-arrow-left text-sm"></i>
-      <span>{{t 'test.myPortfolio.detailPortfolio.backToList'}}</span>
+      <span>{{t "test.myPortfolio.detailPortfolio.backProgram"}}</span>
     </button>
   </div>
 
@@ -37,7 +37,7 @@
       <template x-if="!selectedPortfolio || !selectedPortfolio.images || selectedPortfolio.images.length === 0">
         <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#94A3B8]">
           <i class="fa-regular fa-image text-3xl"></i>
-          <span class="font-inter text-sm">{{t 'test.myPortfolio.noImageUploaded'}}</span>
+          <span class="font-inter text-sm">{{t "test.myPortfolio.noImage"}}</span>
         </div>
       </template>
       <template x-for="(imgSrc, imgIdx) in (selectedPortfolio && selectedPortfolio.images ? selectedPortfolio.images : [])" :key="imgIdx">
@@ -110,7 +110,7 @@
       <!-- Project Description Card -->
       <div class="bg-white border border-[#E5E5E5]/80 rounded-[12px] p-6 shadow-sm space-y-3">
         <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
-          {{t 'test.myPortfolio.detailPortfolio.projectDescription'}}
+          {{t "test.myPortfolio.detailPortfolio.projectDescription"}}
         </h3>
         <p 
           class="font-inter font-normal text-sm sm:text-base text-[#666666] leading-relaxed"
@@ -122,7 +122,7 @@
       <!-- Project Overview Card -->
       <div class="bg-white border border-[#E5E5E5]/80 rounded-[12px] p-6 shadow-sm space-y-3">
         <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
-          {{t 'test.myPortfolio.detailPortfolio.overview'}}
+          {{t "test.myPortfolio.detailPortfolio.overview"}}
         </h3>
         <div 
           id="overviewDetail"
@@ -134,7 +134,7 @@
       <!-- Technologies Used Card -->
       <div class="bg-white border border-[#E5E5E5]/80 rounded-[12px] p-6 shadow-sm space-y-4">
         <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
-          {{t 'test.myPortfolio.detailPortfolio.technologiesUsed'}}
+          {{t "test.myPortfolio.detailPortfolio.technologiesUsed"}}
         </h3>
         <div class="flex flex-wrap gap-2">
           <template x-for="tech in (selectedPortfolio && selectedPortfolio.technologies ? selectedPortfolio.technologies : [])" :key="tech.id || tech.name">
@@ -232,7 +232,7 @@
         rel="noopener"
         class="w-full h-11 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-sm flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
       >
-        {{t 'test.myPortfolio.detailPortfolio.visitProject'}}
+        {{t "test.myPortfolio.detailPortfolio.visitProject"}}
       </a>
 
       <!-- Share To Social Media Card -->

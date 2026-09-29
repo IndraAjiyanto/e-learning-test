@@ -242,6 +242,93 @@
         if (status === 'rejected') return 'Ditolak';
         return 'Belum Bayar';
       },
+
+      getTermProof(item, month) {
+        const term = this.getTerm(item, month);
+        return term?.file || null;
+      },
+
+      // Approve / reject cicilan bulanan manual → PATCH /payment/installment/:proses/:id
+      // Menahan aksi di modal konfirmasi dulu; request-nya baru dikirim setelah
+      // user menekan tombol confirm di modal. Partial modal-nya di-mount oleh
+      // halaman (super_admin/course/detail.hbs), bukan di sini.
+      reviewTerm(item, term, action) {
+        if (!term?.id) return;
+        const approve = action === 'approved';
+        openConfirmModal({
+          title: approve ? 'Approve Installment?' : 'Reject Installment?',
+          description: `Are you sure you want to ${approve ? 'approve' : 'reject'} the proof of payment for month ${term.month}?`,
+          confirmLabel: approve ? 'Approve' : 'Reject',
+          cancelLabel: 'Cancel',
+          onConfirm: () => this.submitReviewTerm(item, term, action),
+        });
+      },
+
+      async submitReviewTerm(item, term, action) {
+        try {
+          const res = await fetch(
+            `/payment/installment/${action}/${term.id}`,
+            {
+              method: 'PATCH',
+              redirect: 'manual',
+            },
+          );
+          if (res.ok || res.type === 'opaqueredirect') {
+            location.reload();
+          } else {
+            showErrorToast(
+              'Gagal Memperbarui Status Cicilan',
+              'Permintaan tidak dapat diproses. Silakan coba lagi.',
+            );
+          }
+        } catch (error) {
+          console.error('Review term error:', error);
+          showErrorToast(
+            'Gagal Memperbarui Status Cicilan',
+            'Terjadi kesalahan koneksi ke server.',
+          );
+        }
+      },
+
+      // Accept / reject payment utama (Full Payment / DP) → PATCH /payment/:proses/:paymentId
+      reviewPayment(item, action) {
+        if (!item?.id) return;
+        const approve = action === 'approved';
+        openConfirmModal({
+          title: approve ? 'Accept Payment?' : 'Reject Payment?',
+          description: approve
+            ? 'Are you sure you want to accept this payment? The user will be automatically enrolled in the program.'
+            : 'Are you sure you want to reject this payment?',
+          confirmLabel: approve ? 'Accept' : 'Reject',
+          cancelLabel: 'Cancel',
+          onConfirm: () => this.submitReviewPayment(item, action),
+        });
+      },
+
+      async submitReviewPayment(item, action) {
+        try {
+          const res = await fetch(`/payment/${action}/${item.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: '{}',
+            redirect: 'manual',
+          });
+          if (res.ok || res.type === 'opaqueredirect') {
+            location.reload();
+          } else {
+            showErrorToast(
+              'Gagal Memperbarui Status Pembayaran',
+              'Permintaan tidak dapat diproses. Silakan coba lagi.',
+            );
+          }
+        } catch (error) {
+          console.error('Review payment error:', error);
+          showErrorToast(
+            'Gagal Memperbarui Status Pembayaran',
+            'Terjadi kesalahan koneksi ke server.',
+          );
+        }
+      },
     };
   }
 </script>

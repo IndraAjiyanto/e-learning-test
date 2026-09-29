@@ -53,10 +53,28 @@
           <div class='box-border h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
             <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium whitespace-nowrap'>{{#if course.category}}{{course.category.name}}{{else}}-{{/if}} · {{#if course.courseType}}{{course.courseType.nameClassesType}}{{else}}-{{/if}}</span>
           </div>
-          {{!-- Badge Status --}}
-          <div class='box-border h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center rounded-[16px]' style='background: {{#if course.launch}}#DCFCE7{{else}}#FEF3C7{{/if}};'>
-            <span class='text-[12px]/[normal] font-inter font-medium whitespace-nowrap' style='color: {{#if course.launch}}#16A34A{{else}}#D97706{{/if}};'>{{#if course.launch}}Active{{else}}Pending{{/if}}</span>
-          </div>
+          {{!-- Badge Status Lifecycle --}}
+          {{#if (eq course.status 'done')}}
+            <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px] justify-center items-center bg-[#F3E8FF] rounded-[16px]'>
+              <div class='w-[6px] h-[6px] rounded-full bg-[#A855F7]'></div>
+              <span class='text-[12px]/[normal] text-[#7E22CE] font-inter font-medium whitespace-nowrap'>Done</span>
+            </div>
+          {{else if (eq course.status 'learning')}}
+            <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px] justify-center items-center bg-[#DBEAFE] rounded-[16px]'>
+              <div class='w-[6px] h-[6px] rounded-full bg-[#3B82F6]'></div>
+              <span class='text-[12px]/[normal] text-[#1D4ED8] font-inter font-medium whitespace-nowrap'>Learning</span>
+            </div>
+          {{else if (eq course.status 'launch')}}
+            <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px] justify-center items-center bg-[#DCFCE7] rounded-[16px]'>
+              <div class='w-[6px] h-[6px] rounded-full bg-[#22C55E]'></div>
+              <span class='text-[12px]/[normal] text-[#15803D] font-inter font-medium whitespace-nowrap'>Launch</span>
+            </div>
+          {{else}}
+            <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px] justify-center items-center bg-[#F1F5F9] rounded-[16px]'>
+              <div class='w-[6px] h-[6px] rounded-full bg-[#94A3B8]'></div>
+              <span class='text-[12px]/[normal] text-[#475569] font-inter font-medium whitespace-nowrap'>Unlaunch</span>
+            </div>
+          {{/if}}
           {{!-- Badge Quota / Launch --}}
           {{#if (or isSyllabus (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
             {{#if course.launch}}

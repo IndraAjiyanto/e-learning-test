@@ -110,6 +110,47 @@
           <span class="font-inter font-normal text-sm leading-5 text-[#A3A3A3]">—</span>
         </template>
       </div>
+
+      <!-- Row 5: Bukti Transfer (pembayaran manual) -->
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Bukti Transfer</span>
+        <template x-if="item.file">
+          <a
+            :href="item.file"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-inter font-normal text-sm leading-5 text-[#2563EB] hover:underline truncate"
+          >
+            Lihat bukti pembayaran &rarr;
+          </a>
+        </template>
+        <template x-if="!item.file">
+          <span class="font-inter font-normal text-sm leading-5 text-[#A3A3A3]">—</span>
+        </template>
+      </div>
+
+      <!-- Aksi verifikasi payment utama (Full Payment / DP).
+           Tombol muncul untuk payment apa pun yang punya bukti transfer,
+           tanpa memandang statusnya — supaya status bisa diubah bolak-balik
+           (accepted -> rejected -> accepted) tanpa halaman di-reload manual. -->
+      <template x-if="item.file">
+        <div class="flex items-center justify-end gap-2 pt-2.5 border-t border-[#E5E5E5]">
+          <button
+            type="button"
+            @click="reviewPayment(item, 'approved')"
+            class="px-3 py-1.5 rounded bg-[#16A34A] text-white text-xs font-semibold hover:bg-[#15803D] transition-colors cursor-pointer"
+          >
+            <i class="fa-solid fa-check mr-1"></i>Accept
+          </button>
+          <button
+            type="button"
+            @click="reviewPayment(item, 'rejected')"
+            class="px-3 py-1.5 rounded bg-[#EF4444] text-white text-xs font-semibold hover:bg-[#D9333F] transition-colors cursor-pointer"
+          >
+            <i class="fa-solid fa-xmark mr-1"></i>Reject
+          </button>
+        </div>
+      </template>
     </div>
 
     <!-- Khusus Tab Installment: Detail Cicilan (Termin & Status) -->
@@ -157,6 +198,40 @@
                   :class="getTermStatus(item, idx + 1) === 'approved' ? 'bg-[#F0FDF4] text-[#15803D]' : (getTermStatus(item, idx + 1) === 'process' ? 'bg-[#FEFCE8] text-[#A16207]' : 'bg-slate-200 text-slate-600')"
                   x-text="getTermStatusLabel(item, idx + 1)"
                 ></span>
+
+                <!-- Bukti manual term ini -->
+                <template x-if="typeof getTerm === 'function' && getTerm(item, idx + 1)?.file">
+                  <a
+                    :href="getTerm(item, idx + 1).file"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[#2563EB] hover:underline text-[11px] font-medium shrink-0"
+                  >
+                    Bukti
+                  </a>
+                </template>
+
+                <!-- Approve / Reject term yang punya bukti transfer. Sama seperti
+                     tombol payment utama di atas: status tidak membatasi, jadi
+                     termin yang sudah approved/rejected tetap bisa diubah. -->
+                <template x-if="typeof reviewTerm === 'function' && getTerm(item, idx + 1)?.file">
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      @click="reviewTerm(item, getTerm(item, idx + 1), 'approved')"
+                      class="px-2 py-1 rounded bg-[#16A34A] text-white text-[10px] font-semibold hover:bg-[#15803D] transition-colors cursor-pointer"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      @click="reviewTerm(item, getTerm(item, idx + 1), 'rejected')"
+                      class="px-2 py-1 rounded bg-[#EF4444] text-white text-[10px] font-semibold hover:bg-[#D9333F] transition-colors cursor-pointer"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </template>
               </div>
             </div>
           </template>

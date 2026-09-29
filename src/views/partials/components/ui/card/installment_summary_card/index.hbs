@@ -125,28 +125,37 @@
       </span>
     </div>
 
-    <!-- CTA: Pay Now Button (Figma: height 46px, bg #003060, rounded 8px, font 15px 700) -->
-    <button
-      type="button"
-      id="btn-pay-now-installment"
-      onclick="proceedToPayment()"
-      class="
-        w-full h-[46px] bg-[#003060] hover:bg-[#082a4d] text-[#F3F3F3]
-        rounded-[8px] font-montserrat font-bold text-[15px] leading-[18px]
-        flex items-center justify-center gap-2.5 transition-all duration-200
-        shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed relative cursor-pointer
-      "
-    >
-      <i class="fa-regular fa-credit-card text-base text-[#F3F3F3]"></i>
-      <span id="btn-pay-now-installment-text">Pay Now</span>
-      <i class="fa-solid fa-arrow-right text-xs text-[#F3F3F3]"></i>
-      <span id="btn-pay-now-installment-spinner" class="hidden absolute inset-0 flex items-center justify-center">
-        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </span>
-    </button>
+    <!-- CTA: Payment Channel (Gateway / Manual) -->
+    {{#> components/ui/card/payment_channel/index
+      uid=(default uid "installment")
+      methodLabel=(default methodLabel "Installment Payment")
+      actionUrl=manualActionUrl
+      gatewayEnabled=gatewayEnabled
+      gatewayHidden=gatewayHidden
+      manualEnabled=manualEnabled
+    }}
+      <button
+        type="button"
+        id="btn-pay-now-installment"
+        onclick="proceedToPayment()"
+        class="
+          w-full h-[46px] bg-[#003060] hover:bg-[#082a4d] text-[#F3F3F3]
+          rounded-[8px] font-montserrat font-bold text-[15px] leading-[18px]
+          flex items-center justify-center gap-2.5 transition-all duration-200
+          shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed relative cursor-pointer
+        "
+      >
+        <i class="fa-regular fa-credit-card text-base text-[#F3F3F3]"></i>
+        <span id="btn-pay-now-installment-text">Pay Now</span>
+        <i class="fa-solid fa-arrow-right text-xs text-[#F3F3F3]"></i>
+        <span id="btn-pay-now-installment-spinner" class="hidden absolute inset-0 flex items-center justify-center">
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </span>
+      </button>
+    {{/components/ui/card/payment_channel/index}}
 
   </div>
 

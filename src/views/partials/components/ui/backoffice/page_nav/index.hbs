@@ -47,9 +47,21 @@
               <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
             {{/unless}}
             {{#if this.href}}
-              <a href="{{this.href}}" class="truncate text-[#525252] no-underline transition-colors hover:text-[#003060] hover:underline">{{this.label}}</a>
+              <a href="{{this.href}}" class="inline-flex items-center gap-1.5 truncate text-[#525252] no-underline transition-colors hover:text-[#003060] hover:underline">
+                {{#if this.icon}}
+                  <i class="{{this.icon}} text-sm text-[#737373]"></i>
+                {{else if @first}}
+                  <i class="ph ph-house text-sm text-[#737373]"></i>
+                {{/if}}
+                <span>{{this.label}}</span>
+              </a>
             {{else}}
-              <span aria-current="page" class="truncate font-semibold text-[#003060]">{{this.label}}</span>
+              <span aria-current="page" class="inline-flex items-center gap-1.5 truncate font-semibold text-[#003060]">
+                {{#if this.icon}}
+                  <i class="{{this.icon}} text-sm text-[#003060]"></i>
+                {{/if}}
+                <span>{{this.label}}</span>
+              </span>
             {{/if}}
           </li>
         {{/each}}
