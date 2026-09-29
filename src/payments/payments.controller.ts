@@ -162,7 +162,17 @@ export class PaymentsController {
         return res.redirect('/users/profile?tab=history-payment');
       }
 
-      return res.redirect(orderData.invoice.xendit_invoice_url);
+      const invoiceUrl = orderData.invoice?.xendit_invoice_url;
+      if (!invoiceUrl) {
+        flashToastError(
+          req,
+          'Payment unavailable',
+          'Invoice belum siap. Silakan coba lagi beberapa saat.',
+        );
+        return res.redirect(`/payment/detail/${courseId}`);
+      }
+
+      return res.redirect(invoiceUrl);
     } catch (error: any) {
       req.flash('error', error.message || 'Payment initiation failed');
       return res.redirect(`/payment/detail/${courseId}`);
