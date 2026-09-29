@@ -106,6 +106,15 @@
         return 'INV/' + year + '/' + month + '/' + suffix;
       },
 
+      get originalPriceFormatted() {
+        const orig = Number(this.row?.originalPrice || 0);
+        const sub  = Number(this.row?.subtotal || 0);
+        if (orig > 0 && sub > 0 && orig > sub) {
+          return 'Rp ' + orig.toLocaleString('id-ID');
+        }
+        return null;
+      },
+
       get subtotalFormatted() {
         if (this.row?.subtotal !== undefined && this.row?.subtotal !== null) {
           return 'Rp ' + Number(this.row.subtotal).toLocaleString('id-ID');
@@ -640,9 +649,20 @@
 
         <!-- Summary (Figma: padding 12px 0 0, height 112px) -->
         <div class="flex flex-col w-full pt-3 shrink-0">
+          <!-- Harga Normal (dicoret) — hanya tampil kalau ada promo -->
+          <template x-if="originalPriceFormatted">
+            <div>
+              <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
+                <span class="font-inter font-normal text-xs text-[#9CA3AF]">Harga Normal</span>
+                <span class="font-inter font-normal text-sm text-[#9CA3AF] line-through" x-text="originalPriceFormatted"></span>
+              </div>
+              <div class="w-full h-px bg-[#D8E6F6]"></div>
+            </div>
+          </template>
+
           <!-- Harga Row: padding 8px 0px, height 32px -->
           <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]">Harga</span>
+            <span class="font-inter font-normal text-[#6B7280]" x-text="originalPriceFormatted ? 'Harga Promo' : 'Harga'">Harga</span>
             <span class="font-inter font-normal text-[#173B68]" x-text="subtotalFormatted"></span>
           </div>
           <!-- Divider Row 1 -->

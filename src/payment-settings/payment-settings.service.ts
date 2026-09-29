@@ -11,25 +11,39 @@ export class PaymentSettingsService {
   ) {}
 
   async get(): Promise<PaymentSettings> {
-    let settings = (
-      await this.settingsRepository.find({
-        order: { createdAt: 'ASC' },
-        take: 1,
-      })
-    )[0];
-    if (!settings) {
-      // Default awal: manual. Dua-duanya menyala dulu hanya menyisakan
-      // pertanyaan "kenapa user tidak bisa pilih kanal", dan tidak ada satu
-      // pun alasan bisnis yang membuat gateway lebih aman sebagai default
-      // (gateway butuh XENDIT_SECRET_KEY juga).
-      settings = await this.settingsRepository.save(
-        this.settingsRepository.create({
+    try {
+      let settings = (
+        await this.settingsRepository.find({
+          order: { createdAt: 'ASC' },
+          take: 1,
+        })
+      )[0];
+      if (!settings) {
+        // Default awal: manual. Dua-duanya menyala dulu hanya menyisakan
+        // pertanyaan "kenapa user tidak bisa pilih kanal", dan tidak ada satu
+        // pun alasan bisnis yang membuat gateway lebih aman sebagai default
+        // (gateway butuh XENDIT_SECRET_KEY juga).
+        settings = await this.settingsRepository.save(
+          this.settingsRepository.create({
+            manual_enabled: true,
+            gateway_enabled: false,
+          }),
+        );
+      }
+      return settings;
+    } catch (err: any) {
+      // ponytail: in-memory fallback saat tabel belum ada (code 42P01) agar endpoint publik tidak crash 500
+      if (err?.code === '42P01') {
+        return {
+          id: 'fallback-default',
           manual_enabled: true,
           gateway_enabled: false,
-        }),
-      );
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as PaymentSettings;
+      }
+      throw err;
     }
-    return settings;
   }
 
   /**

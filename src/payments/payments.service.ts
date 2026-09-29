@@ -353,9 +353,18 @@ export class PaymentsService {
         const installmentDetail = isInstallment
           ? installmentDetailMap.get(payment.id) ?? null
           : null;
+
+        const hasPromo =
+          payment.course?.promo !== null &&
+          payment.course?.promo !== undefined &&
+          Number(payment.course.promo) > 0;
+        const promoPrice = hasPromo ? Number(payment.course.promo) : null;
+        const normalPrice = payment.course?.price ? Number(payment.course.price) : null;
+        const fallbackPrice = promoPrice ?? normalPrice;
+
         const subtotal = payment.invoice?.subtotal
           ? Number(payment.invoice.subtotal)
-          : (payment.course?.price ? Number(payment.course.price) : (payment.invoice?.final_total ? Number(payment.invoice.final_total) : null));
+          : (fallbackPrice ?? (payment.invoice?.final_total ? Number(payment.invoice.final_total) : null));
         const discount = payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0;
         const amount = payment.invoice?.final_total
           ? Number(payment.invoice.final_total)
@@ -374,6 +383,7 @@ export class PaymentsService {
           amount,
           subtotal,
           discount,
+          originalPrice: normalPrice,
           proof: payment.file ?? null,
           no: payment.no ?? null,
           paymentLink: payment.invoice?.xendit_invoice_url ?? null,
@@ -386,7 +396,13 @@ export class PaymentsService {
         };
       }),
       ...registrations.map((registration) => {
-        const subtotal = registration.course?.price ? Number(registration.course.price) : null;
+        const hasPromo =
+          registration.course?.promo !== null &&
+          registration.course?.promo !== undefined &&
+          Number(registration.course.promo) > 0;
+        const promoPrice = hasPromo ? Number(registration.course.promo) : null;
+        const normalPrice = registration.course?.price ? Number(registration.course.price) : null;
+        const subtotal = promoPrice ?? normalPrice;
         return {
           id: registration.id,
           kind: 'registration',
@@ -398,6 +414,7 @@ export class PaymentsService {
           amount: subtotal,
           subtotal,
           discount: 0,
+          originalPrice: normalPrice,
           proof: registration.file ?? null,
           no: null,
           paymentLink: null,
