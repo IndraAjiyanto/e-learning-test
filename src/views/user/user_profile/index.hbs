@@ -402,9 +402,25 @@
               certificate: '{{t 'test.startLearning.certificate'}}',
               'group-class': '{{t 'test.startLearning.joinGroup'}}'
             },
+            icons: {
+              dashboard: 'ph ph-squares-four',
+              profile: 'ph ph-user',
+              password: 'ph ph-user',
+              learning: 'ph ph-book-open',
+              portfolio: 'ph ph-briefcase',
+              'history-payment': 'ph ph-receipt',
+              uiux: 'ph ph-play-circle',
+              assignment: 'ph ph-clipboard-text',
+              presentation: 'ph ph-presentation-chart',
+              quiz: 'ph ph-question',
+              logbook: 'ph ph-notebook',
+              certificate: 'ph ph-certificate',
+              'group-class': 'ph ph-users'
+            },
             nested: ['uiux','assignment','presentation','quiz','logbook','certificate','group-class'],
             get isNested() { return this.nested.includes(this.activeSection); },
-            get label() { return this.labels[this.activeSection] || this.labels.dashboard; }
+            get label() { return this.labels[this.activeSection] || this.labels.dashboard; },
+            get sectionIcon() { return this.icons[this.activeSection] || 'ph ph-squares-four'; }
           }"
         >
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -412,15 +428,22 @@
               <template x-if="isNested">
                 <ol class="flex flex-wrap items-center gap-2 font-inter text-xs text-[#718096]">
                   <li class="flex items-center gap-1.5">
-                    <i class="fa-solid fa-book-open text-[14px] text-[#718096]"></i>
-                    <button type="button" @click="toggleActiveSection('learning')" class="cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline">
-                      {{t 'test.userSidebar.myLearning'}}
+                    <button type="button" @click="toggleActiveSection('dashboard')" class="inline-flex items-center gap-1.5 cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline">
+                      <i class="ph ph-house text-xs text-[#718096]"></i>
+                      <span>{{t 'test.common.home'}}</span>
+                    </button>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span aria-hidden="true" class="text-[#718096]">/</span>
+                    <button type="button" @click="toggleActiveSection('learning')" class="inline-flex items-center gap-1.5 cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline">
+                      <i class="ph ph-book-open text-xs text-[#718096]"></i>
+                      <span>{{t 'test.userSidebar.myLearning'}}</span>
                     </button>
                   </li>
                   <li class="flex items-center gap-2">
                     <span aria-hidden="true" class="text-[#718096]">/</span>
                     <span class="inline-flex items-center gap-1.5 font-semibold text-[#003060]">
-                      <i class="fa-solid fa-play-circle text-[14px] text-[#003060]"></i>
+                      <i :class="sectionIcon" class="text-xs text-[#003060]"></i>
                       <span aria-current="page" x-text="label"></span>
                     </span>
                   </li>
@@ -428,14 +451,18 @@
               </template>
               <template x-if="!isNested">
                 <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-inter text-sm text-[#737373]">
-                  <li>
-                    <button type="button" @click="toggleActiveSection('dashboard')" class="cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
-                      {{t 'test.common.home'}}
+                  <li class="flex items-center gap-1.5">
+                    <button type="button" @click="toggleActiveSection('dashboard')" class="inline-flex items-center gap-1.5 cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline">
+                      <i class="ph ph-house text-sm text-[#737373]"></i>
+                      <span>{{t 'test.common.home'}}</span>
                     </button>
                   </li>
                   <li class="flex min-w-0 items-center gap-2">
                     <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
-                    <span aria-current="page" class="truncate font-semibold text-[#003060]" x-text="label"></span>
+                    <span aria-current="page" class="inline-flex items-center gap-1.5 truncate font-semibold text-[#003060]">
+                      <i :class="sectionIcon" class="text-sm text-[#003060]"></i>
+                      <span x-text="label"></span>
+                    </span>
                   </li>
                 </ol>
               </template>
