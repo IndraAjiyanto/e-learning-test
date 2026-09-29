@@ -14,6 +14,7 @@ import {
   Query,
   ValidationPipe,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
@@ -751,7 +752,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -833,7 +834,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment')
   async myCourseFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -931,7 +932,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/assignment')
   async myCourseAssignmentFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
@@ -1011,7 +1012,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/presentation')
   async myCoursePresentationFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -1050,7 +1051,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/quiz')
   async myCourseQuizFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
