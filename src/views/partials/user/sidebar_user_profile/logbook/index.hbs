@@ -13,7 +13,10 @@
   per course aktif. Berkas ini hanya merender — jangan memindahkan state itu ke
   sini, shell adalah satu-satunya titik gagal untuk seluruh area login.
 --}}
-<div class='px-4 py-4 sm:px-8 sm:py-6'>
+<div
+  class='px-4 py-4 sm:px-8 sm:py-6'
+  x-show="(activeCourseData?.programType ?? activeCourseData?.program_type) !== 'non_bootcamp'"
+>
   <div class='flex flex-col gap-7 max-w-[1268px] mx-auto'>
 
     <div class='flex flex-col gap-1'>
