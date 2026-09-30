@@ -660,6 +660,124 @@
     "projectDuration": "プロジェクト期間",
     "months": "ヶ月"
   },
+  "payment": {
+    "shell": {
+      "back": "戻る",
+      "defaultTitle": "プログラム登録",
+      "description": "お支払い手続きを完了させると、登録の確認と参加資格が有効になります。"
+    },
+    "stepper": {
+      "step1": {
+        "title": "個人情報",
+        "subtitle": "情報を入力"
+      },
+      "step2": {
+        "title": "お支払い",
+        "subtitle": "学費"
+      },
+      "step3": {
+        "title": "確認",
+        "subtitle": "アカウント有効化"
+      }
+    },
+    "form": {
+      "batch": "プログラム・バッチ",
+      "fullName": "氏名",
+      "fullNamePlaceholder": "氏名を入力してください",
+      "email": "メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "whatsapp": "WhatsApp 電話番号",
+      "whatsappPlaceholder": "WhatsApp 電話番号を入力してください",
+      "sourceLabel": "Kesatria Academy のプログラムをどのように知りましたか？",
+      "sourcePlaceholder": "入手元を選択してください",
+      "agreementLabel": "プログラムの修了まで参加することに同意します",
+      "agreementTerms": "このチェックボックスをオンにすることで、予定のカリキュラムに従ってすべての学習セッションに参加することを約束します。",
+      "saveChanges": "変更を保存",
+      "sourceOptions": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "友人",
+        "university": "大学",
+        "whatsappGroup": "WhatsApp グループ",
+        "webinarEvent": "ウェビナー／イベント",
+        "website": "ウェブサイト",
+        "other": "その他"
+      }
+    },
+    "voucher": {
+      "title": "割引バウチャー",
+      "placeholder": "バウチャーコードを入力",
+      "cancel": "キャンセル",
+      "checking": "バウチャーコードを確認しています...",
+      "typing": "入力中...",
+      "applied": "バウチャーコードを適用しました！",
+      "invalid": "バウチャーコードが無効か、期限切れです。",
+      "apiNotFound": "システムが更新中のため、API を利用できません。",
+      "checkFailed": "バウチャーコードの確認中にエラーが発生しました。"
+    },
+    "installment": {
+      "title": "分割払い",
+      "subtitle": "都合のよいお支払い方法をお選びください。",
+      "choosePeriod": "分割期間を選択",
+      "months": "か月",
+      "schedule": "お支払いスケジュール",
+      "downPayment": "頭金（DP）",
+      "payNowToEnroll": "登録のためにお支払いください",
+      "monthlyAfterDp": "分割払（頭金のお支払い後）",
+      "monthLabel": "月",
+      "summaryTitle": "お支払い概要",
+      "installmentPlan": "分割プラン",
+      "perMonth": "/月",
+      "dpNote": "登録を確定するため、頭金（DP）をお支払いください。残額は毎月のお支払いで完了します。",
+      "planMeta": "（分割のお支払い -",
+      "monthUnit": "か月）"
+    },
+    "summary": {
+      "title": "お支払い手続き",
+      "fullPayment": "一括払い",
+      "promoPrice": "プロモーション価格",
+      "coursePrice": "通常価格",
+      "discountVoucher": "割引バウチャー",
+      "subtotal": "小計",
+      "total": "合計",
+      "payNow": "支払う",
+      "defaultCourseTitle": "プログラム",
+      "subtitle": "ご都合のよいお支払い方法を選択してください。"
+    },
+    "channel": {
+      "manualOnly": "ご利用いただけるのは銀行振込（手動決済）のみです。",
+      "gatewayOnly": "ゲートウェイ（Xendit）による決済に対応しています。手動決済は現在無効です。",
+      "allClosed": "現在、このプログラムのお支払いを受け付けていません。",
+      "gatewayTitle": "ゲートウェイ決済（Xendit）",
+      "gatewayHint": "下のボタンを押すと、Xendit のお支払い画面に移動します。",
+      "manualTitle": "お支払い証明のアップロード（銀行振込）",
+      "manualHint": "概要の金額どおりに銀行振込を行い、転送明細をアップロードしてください。管理者が 1 日以内に確認します。",
+      "transferTo": "以下の口座へ入金してください",
+      "copied": "コピーしました！",
+      "copyAccount": "口座番号をコピー",
+      "accountName": "口座名義",
+      "bankLabel": "銀行",
+      "manualInstruction": "入金後、お支払い証明をアップロードしてください。管理者が 1 日以内に確認し、承認後にプログラムアカウントが有効になります。",
+      "uploadHint": "転送明細をアップロード（JPG/PNG、最大 5MB）",
+      "chooseFile": "クリックしてファイルを選択",
+      "submit": "支払い証明を送信",
+      "uniqueNote": "受付番号は自動生成されます。支払い履歴で状況を確認できます。",
+      "fileTooLarge": "ファイルが大きすぎます",
+      "fileTooLargeBody": "ファイルの最大サイズは 5MB です。"
+    },
+    "success": {
+      "title": "ありがとうございます。お支払いが完了しました！",
+      "subtitle": "まもなく担当者よりご連絡し、プログラムが有効になります。",
+      "imageAlt": "支払い成功",
+      "buttonText": "ホームに戻る"
+    },
+    "toast": {
+      "paymentFailed": "お支払いに失敗しました",
+      "processError": "お支払いの処理中にエラーが発生しました。",
+      "connectionError": "決済サーバーとの接続中にエラーが発生しました。"
+    }
+  },
   "historyPayment": {
     "title": "取引履歴",
     "description": "すべての支払いと登録を追跡・管理",
@@ -1086,7 +1204,9 @@
       "noProgramDescription": "いずれかのプログラムを開いて、そのポートフォリオを確認してください。",
       "noProgramTitle": "プログラムが開かれていません",
       "title": "ポートフォリオがまだありません",
-      "description": "このプログラムのポートフォリオはまだありません。今すぐ最初のポートフォリオを作成しましょう。"
+      "description": "このプログラムのポートフォリオはまだありません。今すぐ最初のポートフォリオを作成しましょう。",
+      "lockedNotice": "ポートフォリオを作成する前に、すべての学習コンテンツを完了してください。",
+      "lockedNoticeBootcamp": "ポートフォリオを作成する前に、すべての学習コンテンツを完了し、ファイナルアサインメントの承認を受けてください。"
     },
     "modal": {
       "editTitle": "ポートフォリオを編集",

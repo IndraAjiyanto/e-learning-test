@@ -14,11 +14,13 @@ import {
   Query,
   ValidationPipe,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
 import { capabilitiesForCourse } from './program-type';
 import { CourseStatus } from 'src/entities/types/course-status';
+import { REFERAL_SOURCES } from 'src/entities/types/referal-source';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -751,7 +753,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -765,6 +767,7 @@ export class CoursesController {
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
+    const portfolio = await this.usersService.findPortfolio(id);
 
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
@@ -813,6 +816,7 @@ export class CoursesController {
       courseType,
       userWithCourses,
       logbooks,
+      portfolio,
       activeSection: courseId ? 'uiux' : 'learning',
       initialSection,
       stats,
@@ -833,7 +837,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment')
   async myCourseFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -931,7 +935,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/assignment')
   async myCourseAssignmentFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
@@ -1011,7 +1015,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/presentation')
   async myCoursePresentationFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -1050,7 +1054,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/quiz')
   async myCourseQuizFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
@@ -1128,17 +1132,7 @@ export class CoursesController {
       'Entrepreneur',
       'Other',
     ];
-    const referalOptions = [
-      'Instagram',
-      'TikTok',
-      'LinkedIn',
-      'Friends',
-      'University',
-      'WhatsApp Group',
-      'Webinar/Event',
-      'Website',
-      'Other',
-    ];
+    const referalSourceOptions = REFERAL_SOURCES;
 
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
@@ -1155,7 +1149,7 @@ export class CoursesController {
         technologies,
         installments,
         currentStatusOptions: statusOptions,
-        referalSourceOptions: referalOptions,
+        referalSourceOptions,
       });
     } else {
       const course_flows = await this.coursesService.findCourseFlows(course.id);
@@ -1214,17 +1208,7 @@ export class CoursesController {
         'Entrepreneur',
         'Other',
       ];
-      const referalOptions = [
-        'Instagram',
-        'TikTok',
-        'LinkedIn',
-        'Friends',
-        'University',
-        'WhatsApp Group',
-        'Webinar/Event',
-        'Website',
-        'Other',
-      ];
+      const referalSourceOptions = REFERAL_SOURCES;
 
       if (course.checkPaid === false) {
         course.programBenefits = course_benefits;
@@ -1240,7 +1224,7 @@ export class CoursesController {
           userCourses,
           faqs,
           currentStatusOptions: statusOptions,
-          referalSourceOptions: referalOptions,
+          referalSourceOptions,
         });
       } else {
         const course_flows = await this.coursesService.findCourseFlows(id);
@@ -1304,17 +1288,7 @@ export class CoursesController {
           'Entrepreneur',
           'Other',
         ];
-        const referalOptions = [
-          'Instagram',
-          'TikTok',
-          'LinkedIn',
-          'Friends',
-          'University',
-          'WhatsApp Group',
-          'Webinar/Event',
-          'Website',
-          'Other',
-        ];
+        const referalSourceOptions = REFERAL_SOURCES;
 
         if (course.checkPaid === false) {
           const course_flows = await this.coursesService.findCourseFlows(id);
@@ -1330,7 +1304,7 @@ export class CoursesController {
             installments,
             faqs,
             currentStatusOptions: statusOptions,
-            referalSourceOptions: referalOptions,
+            referalSourceOptions,
           });
         } else {
           const course_flows = await this.coursesService.findCourseFlows(id);

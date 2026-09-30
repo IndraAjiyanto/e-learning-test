@@ -680,6 +680,124 @@
     "projectDuration": "Project Duration",
     "months": "Months"
   },
+  "payment": {
+    "shell": {
+      "back": "Back",
+      "defaultTitle": "Program Registration",
+      "description": "Please complete your payment to verify your registration and activate your participation."
+    },
+    "stepper": {
+      "step1": {
+        "title": "Your Information",
+        "subtitle": "Enter details"
+      },
+      "step2": {
+        "title": "Payment",
+        "subtitle": "Tuition fees"
+      },
+      "step3": {
+        "title": "Confirmation",
+        "subtitle": "Activate account"
+      }
+    },
+    "form": {
+      "batch": "Program Batch",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Input Your Full Name",
+      "email": "Email",
+      "emailPlaceholder": "Input Your Email",
+      "whatsapp": "WhatsApp Number",
+      "whatsappPlaceholder": "Input Your WhatsApp Number",
+      "sourceLabel": "How did you know About the Kesatria Academy Program?",
+      "sourcePlaceholder": "Select How Did You Know",
+      "agreementLabel": "I agree to participate in the program until its completion",
+      "agreementTerms": "By checking this box, you confirm your commitment to follow all learning sessions according to the scheduled curriculum.",
+      "saveChanges": "Save Changes",
+      "sourceOptions": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "Friends",
+        "university": "University",
+        "whatsappGroup": "WhatsApp Group",
+        "webinarEvent": "Webinar/Event",
+        "website": "Website",
+        "other": "Other"
+      }
+    },
+    "voucher": {
+      "title": "Voucher Discount",
+      "placeholder": "Input Voucher Code",
+      "cancel": "Cancel",
+      "checking": "Checking voucher code...",
+      "typing": "Typing...",
+      "applied": "Voucher code applied successfully!",
+      "invalid": "Voucher code is invalid or has expired.",
+      "apiNotFound": "The system is being updated, the API is unavailable.",
+      "checkFailed": "An error occurred while checking the voucher code."
+    },
+    "installment": {
+      "title": "Installment Payment",
+      "subtitle": "Select the most convenient payment method for you.",
+      "choosePeriod": "Choose Installment Period",
+      "months": "Months",
+      "schedule": "Payment Schedule",
+      "downPayment": "Down Payment (DP)",
+      "payNowToEnroll": "Pay now to enroll",
+      "monthlyAfterDp": "Monthly Installment (After DP)",
+      "monthLabel": "Month",
+      "summaryTitle": "Payment Summary",
+      "installmentPlan": "Installment Plan",
+      "perMonth": "/month",
+      "dpNote": "Pay the down payment (DP) now to confirm your registration. The remaining balance is paid in monthly installments.",
+      "planMeta": "(Installment Payment -",
+      "monthUnit": "month)"
+    },
+    "summary": {
+      "title": "Complete your payment",
+      "fullPayment": "Full Payment",
+      "promoPrice": "Promo Price",
+      "coursePrice": "Course Price",
+      "discountVoucher": "Discount Voucher",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "payNow": "Pay Now",
+      "defaultCourseTitle": "Program Course",
+      "subtitle": "Select the most convenient payment method for you."
+    },
+    "channel": {
+      "manualOnly": "Only manual payment (bank transfer) is available.",
+      "gatewayOnly": "Fast payment via Gateway (Xendit). Manual payment is currently disabled.",
+      "allClosed": "Payment for this program is temporarily closed.",
+      "gatewayTitle": "Gateway Payment (Xendit)",
+      "gatewayHint": "You will be redirected to the Xendit payment page after pressing the button below.",
+      "manualTitle": "Upload Payment Proof (Manual Transfer)",
+      "manualHint": "Transfer the amount shown in the summary, then send your transfer receipt for admin verification (up to 1x24 hours).",
+      "transferTo": "Transfer to the following account",
+      "copied": "Copied!",
+      "copyAccount": "Copy the account number",
+      "accountName": "Account name",
+      "bankLabel": "Bank",
+      "manualInstruction": "After transferring, upload your payment proof. An admin will verify it within 1x24 hours and your program account will be activated once approved.",
+      "uploadHint": "Upload transfer receipt (JPG/PNG, max 5MB)",
+      "chooseFile": "Click to choose a file",
+      "submit": "Submit Payment Proof",
+      "uniqueNote": "A unique submission number is created automatically. You can track the status in Payment History.",
+      "fileTooLarge": "File too large",
+      "fileTooLargeBody": "Maximum file size is 5MB."
+    },
+    "success": {
+      "title": "Thank you! Your Payment Is Success!",
+      "subtitle": "We will contact you shortly and your program is now active.",
+      "imageAlt": "Payment Success",
+      "buttonText": "Back to Home"
+    },
+    "toast": {
+      "paymentFailed": "Payment failed",
+      "processError": "An error occurred while processing your payment.",
+      "connectionError": "A connection error occurred while contacting the payment server."
+    }
+  },
   "historyPayment": {
     "title": "Transaction History",
     "description": "Track and manage all your payment and registration",
@@ -1106,7 +1224,9 @@
       "noProgramDescription": "Open one of your programs to see its portfolio.",
       "noProgramTitle": "No program opened",
       "title": "No Portfolios Yet",
-      "description": "No portfolios for this program yet. Create your first portfolio now."
+      "description": "No portfolios for this program yet. Create your first portfolio now.",
+      "lockedNotice": "Complete all learning materials first before you can create a portfolio.",
+      "lockedNoticeBootcamp": "Complete all learning materials and get your final assignment approved first before you can create a portfolio."
     },
     "modal": {
       "editTitle": "Edit Your Portfolio",
@@ -1250,8 +1370,8 @@
     "noSessionsInWeek": "No sessions in this week.",
     "notRecorded": "Not recorded",
     "reviewQuiz": "Review Quiz",
-    "quizLocked": "Finish this week’s sessions to unlock the quiz.",
     "editAttendanceUnavailable": "Your attendance is already recorded. Ask your mentor if it needs changing.",
+    "quizLocked": "Finish this week’s sessions to unlock the quiz.",
     "markAttendanceShort": "Mark attendance",
     "openTask": "Open task",
     "weekLockedHint": "Pass the previous week’s quiz to unlock this week.",

@@ -209,6 +209,12 @@ export class PortfoliosController {
         // di dalam teks portfolio.
         portfolioData: {
           currentUserId: userId,
+          // Tombol Create Portfolio hanya muncul setelah student menyelesaikan
+          // seluruh week atau syllabus di program ini (user_courses.progress = true).
+          canCreatePortfolio: await this.portfoliosService.hasCompletedLearning(
+            userId,
+            String(courseId),
+          ),
           course: await this.portfoliosService.findCourseForPortfolio(
             String(courseId),
           ),

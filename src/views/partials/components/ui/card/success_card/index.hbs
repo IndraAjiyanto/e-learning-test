@@ -5,11 +5,14 @@
   Kartu ucapan sukses/konfirmasi dengan ilustrasi gambar, judul besar, sub-judul, dan tombol pill dengan ikon panah.
 
   Props:
-  - title      : string (default: 'Thank you! Your Payment Is Success!')
-  - subtitle   : string (default: 'We will contact you shortly.')
-  - imageSrc   : string (default: '/public/image/paymentSucces.svg')
-  - imageAlt   : string (default: 'Success Illustration')
-  - buttonText : string (default: 'Back to Home')
+  Fallback tiap prop diambil dari i18n, bukan dari teks Inggris yang ditulis
+  di sini, supaya komponen ini tetap benar kalau dipanggil tanpa prop.
+
+  - title      : string (fallback: test.payment.success.title)
+  - subtitle   : string (fallback: test.payment.success.subtitle)
+  - imageSrc   : string (fallback: '/public/image/paymentSucces.svg')
+  - imageAlt   : string (fallback: test.payment.success.imageAlt)
+  - buttonText : string (fallback: test.payment.success.buttonText)
   - buttonHref : string (default: '/')
   - class      : string (opsional)
 --}}
@@ -21,7 +24,7 @@
     {{#if imageSrc}}
       <img
         src="{{imageSrc}}"
-        alt="{{default imageAlt 'Success'}}"
+        alt="{{default imageAlt (t 'test.payment.success.imageAlt')}}"
         class="w-[200px] sm:w-[280px] md:w-[310px] h-auto max-h-[220px] object-contain mx-auto transition-transform duration-300 hover:scale-105"
       />
     {{else}}
@@ -35,12 +38,12 @@
   <div class="flex flex-col items-center gap-3 sm:gap-4 mb-8 sm:mb-12 w-full">
     <!-- Success Title -->
     <h2 class="font-inter font-bold text-2xl sm:text-3xl md:text-[40px] leading-tight md:leading-[125%] tracking-[-0.01em] text-[#003060]">
-      {{default title 'Thank you! Your Payment Is Success!'}}
+      {{default title (t 'test.payment.success.title')}}
     </h2>
 
     <!-- Success Subtitle -->
     <p class="font-inter font-normal text-sm sm:text-base md:text-[18px] leading-relaxed md:leading-[150%] text-[#4B5563] max-w-lg">
-      {{default subtitle 'We will contact you shortly and your program is now active.'}}
+      {{default subtitle (t 'test.payment.success.subtitle')}}
     </p>
   </div>
 
@@ -56,7 +59,7 @@
         active:scale-95 group
       "
     >
-      <span>{{default buttonText 'Back to Home'}}</span>
+      <span>{{default buttonText (t 'test.payment.success.buttonText')}}</span>
       <i class="fa-solid fa-arrow-right text-xs sm:text-sm transition-transform duration-200 group-hover:translate-x-1"></i>
     </a>
   </div>

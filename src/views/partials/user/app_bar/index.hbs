@@ -19,7 +19,9 @@
                      `data-user-sidebar` pada <html>, dan CSS yang memindahkan
                      geometrinya. Jadi aman dipakai shell maupun halaman berdiri
                      sendiri.
-  - homeHref       : string (opsional, default '/users/profile') — tujuan klik logo.
+  - homeHref       : string (opsional, default '/dashboard') — tujuan klik logo.
+                      Default-nya dashboard PUBLIK, jadi dari area user student
+                      bisa balik ke landing tanpa lewat navbar publik dulu.
 
   Contoh (shell):
     {{> user/app_bar/index user=user sidebarToggle=true }}
@@ -29,7 +31,7 @@
 {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
 <header class="sticky top-0 z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#D9D9D9] bg-white px-4 lg:h-[72px] lg:px-8">
   <div class="flex items-center gap-3">
-    <a href="{{default homeHref '/users/profile'}}"><img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-6 w-auto object-contain lg:h-7" /></a>
+    <a href="{{default homeHref '/dashboard'}}" title="{{t 'test.navbar.home'}}" aria-label="{{t 'test.navbar.home'}}"><img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-6 w-auto object-contain lg:h-7" /></a>
     {{#if sidebarToggle}}
     <button
       type="button"

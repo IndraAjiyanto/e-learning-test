@@ -36,7 +36,7 @@
     <!-- Right Column: Installment Summary Card (Group 6727, width 480px) -->
     <div class="w-full xl:w-[480px] xl:max-w-[480px] shrink-0">
       {{> components/ui/card/installment_summary_card/index
-        courseTitle=(default course.name "Program Course")
+        courseTitle=(default course.name (t 'test.payment.summary.defaultCourseTitle'))
         basePrice=course.price
         promoPrice=course.promo
         downPayment=course.installments.[0].downPayment
@@ -56,10 +56,10 @@
     <div class="lg:col-span-5 flex flex-col gap-6 w-full">
       <div class="flex flex-col gap-1.5">
         <h3 class="font-montserrat font-bold text-lg sm:text-xl text-[#1B2559]">
-          Full Payment
+          {{t 'test.payment.summary.fullPayment'}}
         </h3>
         <p class="font-montserrat font-normal text-xs sm:text-sm text-[#718096]">
-          Select the most convenient payment method for you.
+          {{t 'test.payment.summary.subtitle'}}
         </p>
       </div>
 
@@ -68,14 +68,14 @@
         id="promo-input"
         removeBtnId="remove-promo-btn"
         messageId="promo-message"
-        placeholder="Input Voucher Code"
+        placeholder=(t 'test.payment.voucher.placeholder')
       }}
     </div>
 
     <!-- Right Column: Full Payment Summary Card -->
     <div class="lg:col-span-7 flex justify-end w-full">
       {{> components/ui/card/payment_summary_card/index
-        courseTitle=(default course.name "Program Course")
+        courseTitle=(default course.name (t 'test.payment.summary.defaultCourseTitle'))
         basePrice=course.price
         promoPrice=course.promo
         uid="full"
@@ -90,6 +90,24 @@
 </div>
 
 <script>
+  // Teks yang dipakai di dalam JavaScript dikumpulkan di sini lebih dulu.
+  // Alasannya quoting: nilai terjemahan dirender dengan tiga kurung supaya
+  // tidak di-escape, sehingga tanda kutip di dalam teks akan langsung
+  // menutup literal JS. Menumpuknya di satu tempat membuat ini hanya satu
+  // titik yang perlu diawasi, dan teks aslinya tinggal dipakai sebagai
+  // I18N.<nama>.
+  const I18N = {
+    checking: '{{{t 'test.payment.voucher.checking'}}}',
+    applied: '{{{t 'test.payment.voucher.applied'}}}',
+    invalid: '{{{t 'test.payment.voucher.invalid'}}}',
+    apiNotFound: '{{{t 'test.payment.voucher.apiNotFound'}}}',
+    checkFailed: '{{{t 'test.payment.voucher.checkFailed'}}}',
+    typing: '{{{t 'test.payment.voucher.typing'}}}',
+    paymentFailed: '{{{t 'test.payment.toast.paymentFailed'}}}',
+    processError: '{{{t 'test.payment.toast.processError'}}}',
+    connectionError: '{{{t 'test.payment.toast.connectionError'}}}',
+  };
+
   // Metode sudah ditetapkan server (lihat header partial). Nilai ini yang
   // dikirim ke /api/payment/create; tidak ada lagi yang bisa menggantinya dari
   // sisi klien karena toggle metodenya sudah dihapus.
@@ -171,7 +189,7 @@
       return;
     }
 
-    showPromoMessage("Mengecek kode voucher...", "neutral");
+    showPromoMessage(I18N.checking, "neutral");
 
     try {
       const courseId = '{{course.id}}';
@@ -208,17 +226,20 @@
         if (removeBtn) removeBtn.classList.remove("hidden");
 
         updatePricingUI(discount_amount, final_total);
-        showPromoMessage(result.message || "Kode promo berhasil diterapkan!", "success");
+        showPromoMessage(result.message || I18N.applied, "success");
       } else {
         activePromo = null;
         updatePricingUI(0, currentSubtotal);
-        showPromoMessage(result.message || "Kode promo tidak valid atau kadaluarsa.", "error");
+        showPromoMessage(result.message || I18N.invalid, "error");
       }
     } catch (error) {
       console.error("Promo check error:", error);
       activePromo = null;
       updatePricingUI(0, currentSubtotal);
-      showPromoMessage(error.message === "Endpoint API tidak ditemukan (404)." ? "Sistem sedang diperbarui, API tidak ditemukan." : "Terjadi kesalahan saat mengecek kode promo.", "error");
+      showPromoMessage(
+          error.message === "Endpoint API tidak ditemukan (404)." ? I18N.apiNotFound : I18N.checkFailed,
+          "error"
+        );
     }
   }, 800);
 
@@ -230,7 +251,7 @@
     if (input.value.trim() === "") {
       removePromo();
     } else {
-      showPromoMessage("Mengetik...", "neutral");
+      showPromoMessage(I18N.typing, "neutral");
       checkPromo();
     }
   }
@@ -337,12 +358,12 @@
         // Toast global dari layouts/main.hbs, bukan alert() bawaan browser:
         // alert memblokir seluruh halaman dan terlihat berbeda dari semua
         // notifikasi lain di sistem ini.
-        showErrorToast('Pembayaran gagal', data.message || 'Terjadi kesalahan saat memproses pembayaran.');
+        showErrorToast(I18N.paymentFailed, data.message || I18N.processError);
         resetButton();
       }
     } catch (error) {
       console.error('Payment Error:', error);
-      showErrorToast('Pembayaran gagal', 'Terjadi kesalahan koneksi saat menghubungi server pembayaran.');
+      showErrorToast(I18N.paymentFailed, I18N.connectionError);
       resetButton();
     }
   }

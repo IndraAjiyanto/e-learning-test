@@ -307,16 +307,16 @@ export class CoursesService {
           if (existingProgresMinggu) {
             await this.weekProgressRepository.save({
               id: existingProgresMinggu.id,
-              weeks: weeks,
+              week: weeks,
               user: user,
-              proses: true,
+              process: true,
               quiz: false,
             });
           } else {
             await this.weekProgressRepository.save({
-              weeks: weeks,
+              week: weeks,
               user: user,
-              proses: true,
+              process: true,
               quiz: false,
             });
           }
@@ -403,16 +403,16 @@ export class CoursesService {
           if (existingProgresMinggu) {
             await this.weekProgressRepository.save({
               id: existingProgresMinggu.id,
-              weeks: weeks,
+              week: weeks,
               user: user,
-              proses: true,
+              process: true,
               quiz: false,
             });
           } else {
             await this.weekProgressRepository.save({
-              weeks: weeks,
+              week: weeks,
               user: user,
-              proses: true,
+              process: true,
               quiz: false,
             });
           }
