@@ -14,11 +14,11 @@
   <div class="flex flex-col gap-2 w-full">
     <div class="flex items-center gap-1">
       <h3 class="font-montserrat font-bold text-[20px] leading-[24px] text-[#1B2559]">
-        Installment Payment
+        {{t 'test.payment.installment.title'}}
       </h3>
     </div>
     <p class="font-montserrat font-normal text-[14px] leading-[17px] text-[#718096]">
-      Select the most convenient payment method for you.
+      {{t 'test.payment.installment.subtitle'}}
     </p>
   </div>
 
@@ -26,7 +26,7 @@
   <div class="flex flex-col gap-3 w-full">
     <div class="flex items-center gap-1">
       <span class="font-montserrat font-bold text-[15px] leading-[18px] text-[#1B2559]">
-        Choose Installment Period
+        {{t 'test.payment.installment.choosePeriod'}}
       </span>
       <span class="font-montserrat font-bold text-[15px] leading-[18px] text-[#EE5D50]">*</span>
     </div>
@@ -36,7 +36,7 @@
       <div class="w-[158px] h-[50px] bg-[#003060] rounded-[8px] px-4 py-3 flex items-center gap-2 select-none shadow-xs text-[#F3F3F3]">
         <i class="fa-regular fa-calendar text-base text-[#F3F3F3]"></i>
         <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#F3F3F3]">
-          {{default course.installments.[0].month 3}} Months
+          {{default course.installments.[0].month 3}} {{t 'test.payment.installment.months'}}
         </span>
       </div>
     </div>
@@ -45,7 +45,7 @@
   <!-- Payment Schedule Segment (Figma: width 912px, p 24px, gap 20px, bg #F8FAFC, rounded 16px) -->
   <div class="w-full bg-[#F8FAFC] rounded-[16px] p-5 sm:p-6 flex flex-col gap-5">
     <h4 class="font-montserrat font-bold text-[15px] leading-[18px] text-[#1B2559]">
-      Payment Schedule
+      {{t 'test.payment.installment.schedule'}}
     </h4>
 
     <!-- DP Card (Figma: height 72px, p 16px, bg #FFFFFF, rounded 8px, shadow [0px_2px_8px_rgba(0,0,0,0.0156863)]) -->
@@ -56,10 +56,10 @@
         </div>
         <div class="flex flex-col gap-0.5">
           <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559]">
-            Down Payment (DP)
+            {{t 'test.payment.installment.downPayment'}}
           </span>
           <span class="font-montserrat font-normal text-[12px] leading-[15px] text-[#718096]">
-            Pay now to enroll
+            {{t 'test.payment.installment.payNowToEnroll'}}
           </span>
         </div>
       </div>
@@ -71,7 +71,7 @@
     <!-- Monthly Installments Section (Figma: gap 12px, data array kolom price) -->
     <div class="flex flex-col gap-3 w-full">
       <h5 class="font-montserrat font-bold text-[13px] leading-[16px] text-[#1B2559]">
-        Monthly Installment (After DP)
+        {{t 'test.payment.installment.monthlyAfterDp'}}
       </h5>
 
       <div class="flex flex-col gap-3 w-full">
@@ -79,7 +79,7 @@
           {{#each course.installments.[0].price}}
             <div class="flex justify-between items-center w-full h-[17px]">
               <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">
-                Month {{addOne @index}}
+                {{t 'test.payment.installment.monthLabel'}} {{addOne @index}}
               </span>
               <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">
                 {{formatRupiah this}}
@@ -88,7 +88,7 @@
           {{/each}}
         {{else}}
           <div class="flex justify-between items-center w-full h-[17px]">
-            <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">Month 1</span>
+            <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">{{t 'test.payment.installment.monthLabel'}} 1</span>
             <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">Rp 0</span>
           </div>
         {{/if}}
@@ -101,7 +101,7 @@
     id="promo-input-installment"
     removeBtnId="remove-promo-btn-installment"
     messageId="promo-message-installment"
-    placeholder="Input Voucher Code"
+    placeholder=(t 'test.payment.voucher.placeholder')
   }}
 
 </div>

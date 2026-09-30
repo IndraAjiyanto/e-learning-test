@@ -6,7 +6,7 @@
 
   Props:
   - id          : string (opsional, default: 'promo-input')
-  - placeholder : string (opsional, default: 'Input Voucher Code')
+  - placeholder : string (opsional, default ke `test.payment.voucher.placeholder`)
   - class       : string (opsional)
 --}}
 
@@ -22,7 +22,7 @@
       </svg>
     </div>
     <span class="font-montserrat font-semibold text-sm text-[#1B2559]">
-      Voucher Discount
+      {{t 'test.payment.voucher.title'}}
     </span>
   </div>
 
@@ -32,7 +32,7 @@
       type="text"
       id="{{default id 'promo-input'}}"
       oninput="handlePromoInput()"
-      placeholder="{{default placeholder 'Input Voucher Code'}}"
+      placeholder="{{default placeholder (t 'test.payment.voucher.placeholder')}}"
       class="
         uppercase flex-1 h-[52px] rounded-[8px] border border-[#D9D9D9] px-4
         bg-white font-montserrat font-normal text-sm text-slate-800
@@ -46,7 +46,7 @@
       onclick="removePromo()"
       class="px-5 h-[52px] bg-red-50 text-red-600 font-montserrat font-semibold text-xs rounded-[8px] border border-red-200 hover:bg-red-100 transition-colors hidden"
     >
-      Cancel
+      {{t 'test.payment.voucher.cancel'}}
     </button>
   </div>
 

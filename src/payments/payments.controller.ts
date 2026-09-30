@@ -26,6 +26,11 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
+import {
+  REFERAL_SOURCES,
+  isReferalSource,
+  getReferalSourceI18nOptions,
+} from 'src/entities/types/referal-source';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('payment')
@@ -99,6 +104,13 @@ export class PaymentsController {
         autoStep: 3,
         success: req.flash('success'),
         error: req.flash('error'),
+        // Halaman ini di-render ulang ke step 3, tapi step 1 tetap ada di DOM
+        // dan tombol "back" bisa menampilkannya. Tanpa prop ini select-nya akan
+        // kosong dan user tidak bisa lanjut.
+        referalSourceOptions: REFERAL_SOURCES,
+        // Versi berlabel i18n untuk step 1. Nilai `value` tetap kanonis
+        // (dipakai kolom enum), hanya `labelKey` yang ikut ke template.
+        referalSourceI18nOptions: getReferalSourceI18nOptions(),
       });
     } catch (error: any) {
       req.flash('error', 'Terjadi kesalahan.');
@@ -228,20 +240,11 @@ export class PaymentsController {
       dto.userId = userId;
       dto.process = 'process';
       dto.no = 'MANF-' + Date.now();
-      const validSources = [
-        'Instagram',
-        'TikTok',
-        'LinkedIn',
-        'Friends',
-        'University',
-        'WhatsApp Group',
-        'Webinar/Event',
-        'Website',
-        'Other',
-      ];
-      dto.referalSource = validSources.includes(body.source)
-        ? body.source
-        : 'Other';
+      // Kolomnya enum, jadi nilai dari form harus dicek dulu. Nilai yang tidak
+      // dikenal disimpan sebagai 'Other' - kolom nullable, tapi di form
+      // pembayaran field ini wajib diisi, jadi null akan membingungkan saat
+      // ditinjau admin.
+      dto.referalSource = isReferalSource(body.source) ? body.source : 'Other';
       (dto as any).user_fullname = body.fullName;
       (dto as any).user_email = body.email;
       (dto as any).user_no = body.whatsappNumber;
@@ -646,6 +649,13 @@ export class PaymentsController {
       course,
       paymentSettings,
       paymentMethod,
+      // Opsi "How did you know about the program?" harus berasal dari daftar
+      // yang sama dengan enum kolom, kalau tidak pilihan user bisa gagal
+      // disimpan. Lihat src/entities/types/referal-source.ts.
+      referalSourceOptions: REFERAL_SOURCES,
+      // Dipakai step 1 untuk menampilkan label sesuai bahasa, sementara
+      // `value` yang dikirim tetap string kanonis milik enum.
+      referalSourceI18nOptions: getReferalSourceI18nOptions(),
     });
   }
 

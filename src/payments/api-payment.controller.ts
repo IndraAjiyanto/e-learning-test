@@ -4,6 +4,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaymentsService } from './payments.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
+import { isReferalSource } from 'src/entities/types/referal-source';
 
 @UseGuards(AuthenticatedGuard)
 @Roles('user')
@@ -82,7 +83,16 @@ export class ApiPaymentController {
       courseId: string;
       paymentMethod: string; // 'Full Payment' | 'Installment'
       promoCode?: string;
-      formData?: any;
+      // Bentuknya sama dengan draft yang disimpan registration.hbs di
+      // localStorage, lalu dikirim paymentMethod.hbs. Semuanya opsional karena
+      // field form memang bisa kosong, dan `source` tetap harus diperiksa
+      // ulang sebelum menyentuh kolom enum `referalSource`.
+      formData?: {
+        fullName?: string;
+        email?: string;
+        whatsappNumber?: string;
+        source?: string;
+      };
     },
     @Res() res: Response,
     @Req() req: Request & { user?: any },
@@ -111,7 +121,16 @@ export class ApiPaymentController {
             user_fullname: formData.fullName,
             user_email: formData.email,
             user_no: formData.whatsappNumber,
-            referal_source: formData.source,
+            // `source` datang dari select di form, jadi nilainya bisa saja bukan
+            // member enum - localStorage pun bisa disunting manual, dan form
+            // pernah mengirim "Social Media" yang tidak ada di enum. Tanpa
+            // penjaga di sini, INSERT ditolak Postgres dan user ikut gagal
+            // bayar dengan pesan "Terjadi kesalahan saat memproses pembayaran."
+            // Kolomnya nullable, jadi lebih baik null daripada menggagalkan
+            // seluruh pembayaran karena satu field.
+            referal_source: isReferalSource(formData.source)
+              ? formData.source
+              : null,
           }
         : undefined;
 
