@@ -26,11 +26,11 @@
             {{!-- Category / Program Name --}}
             <span class="font-['Montserrat',sans-serif] font-bold text-[12px] leading-[15px] uppercase tracking-wider text-[#0B1F3B]">
               {{#if (eq course.checkPaid true)}}
-                Paid Program
+                {{default (t 'test.paidProgram.hero.paidProgramBadge') 'Paid Program'}}
               {{else if (eq course.checkPaid false)}}
-                Free Program
+                {{default (t 'test.paidProgram.hero.freeProgramBadge') 'Free Program'}}
               {{else if course.checkPaid}}
-                Paid Program
+                {{default (t 'test.paidProgram.hero.paidProgramBadge') 'Paid Program'}}
               {{else if category.name}}
                 {{category.name}}
               {{else if course.group}}
@@ -38,7 +38,7 @@
               {{else if course.name}}
                 {{course.name}}
               {{else}}
-                BOOTCAMP
+                {{default (t 'test.paidProgram.hero.bootcampBadge') 'BOOTCAMP'}}
               {{/if}}
             </span>
           </div>
@@ -56,7 +56,7 @@
 
           {{!-- Tagline Description --}}
           <p class="w-full font-inter font-normal text-sm sm:text-base lg:text-[17px] xl:text-lg leading-[160%] text-[#64748B]">
-            {{default (getByLang course.description lang) (default (getByLang category.description lang) 'Program intensif pembelajaran komprehensif dirancang khusus untuk membimbing Anda menguasai keahlian nyata bersama para mentor industri terbaik.')}}
+            {{default (getByLang course.description lang) (default (getByLang category.description lang) (default (t 'test.paidProgram.hero.defaultDescription') 'Program intensif pembelajaran komprehensif dirancang khusus untuk membimbing Anda menguasai keahlian nyata bersama para mentor industri terbaik.'))}}
           </p>
         </div>
 
@@ -68,7 +68,7 @@
             onclick="document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); return false;"
             class="inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[184px] h-[51px] px-7 bg-[#003060] text-white font-inter font-bold text-base leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] hover:bg-[#002244] active:scale-[0.98] transition-all duration-200 cursor-pointer"
           >
-            Daftar Sekarang
+            {{default (t 'test.paidProgram.hero.btnRegister') 'Daftar Sekarang'}}
           </a>
 
           {{!-- Button Secondary --}}
@@ -78,7 +78,7 @@
             rel="noopener noreferrer"
             class="box-border inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[180px] h-[51px] px-6 border-[1.5px] border-[#003060] bg-transparent text-[#003060] font-inter font-semibold text-base leading-[19px] rounded-[10px] hover:bg-[#003060]/5 active:scale-[0.98] transition-all duration-200"
           >
-            Konsultasi Gratis
+            {{default (t 'test.paidProgram.hero.btnConsultation') 'Konsultasi Gratis'}}
           </a>
         </div>
 
@@ -97,7 +97,7 @@
             </div>
             <div class="flex flex-col items-start gap-0.5 min-w-0">
               <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
-                Tanggal Mulai
+                {{default (t 'test.paidProgram.hero.quickStats.startDate') 'Tanggal Mulai'}}
               </span>
               <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.startDate}}{{formatDateShort course.startDate lang}}{{else}}-{{/if}}">
                 {{#if course.startDate}}
@@ -122,13 +122,13 @@
             </div>
             <div class="flex flex-col items-start gap-0.5 min-w-0">
               <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
-                Tanggal Selesai
+                {{default (t 'test.paidProgram.hero.quickStats.endDate') 'Tanggal Selesai'}}
               </span>
-              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.startEnd}}{{formatDateShort course.startEnd lang}}{{else if course.month}}{{course.month}} Bulan{{else}}-{{/if}}">
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.startEnd}}{{formatDateShort course.startEnd lang}}{{else if course.month}}{{course.month}} {{default (t 'test.paidProgram.hero.quickStats.month') 'Bulan'}}{{else}}-{{/if}}">
                 {{#if course.startEnd}}
                   {{formatDateShort course.startEnd lang}}
                 {{else if course.month}}
-                  {{course.month}} Bulan
+                  {{course.month}} {{default (t 'test.paidProgram.hero.quickStats.month') 'Bulan'}}
                 {{else}}
                   -
                 {{/if}}
@@ -147,13 +147,13 @@
             </div>
             <div class="flex flex-col items-start gap-0.5 min-w-0">
               <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
-                Sistem Belajar
+                {{default (t 'test.paidProgram.hero.quickStats.learningSystem') 'Sistem Belajar'}}
               </span>
-              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.method}}{{capitalize course.method}}{{else}}Online & Offline{{/if}}">
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.method}}{{capitalize course.method}}{{else}}{{default (t 'test.paidProgram.hero.quickStats.onlineOffline') 'Online & Offline'}}{{/if}}">
                 {{#if course.method}}
                   {{capitalize course.method}}
                 {{else}}
-                  Online & Offline
+                  {{default (t 'test.paidProgram.hero.quickStats.onlineOffline') 'Online & Offline'}}
                 {{/if}}
               </span>
             </div>
@@ -171,14 +171,10 @@
             </div>
             <div class="flex flex-col items-start gap-0.5 min-w-0">
               <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
-                Kapasitas Kelas
+                {{default (t 'test.paidProgram.hero.quickStats.classCapacity') 'Kapasitas Kelas'}}
               </span>
-              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.quota}}Maks. {{course.quota}} Siswa{{else}}Maks. 8 Siswa{{/if}}">
-                {{#if course.quota}}
-                  Maks. {{course.quota}} Siswa
-                {{else}}
-                  Maks. 8 Siswa
-                {{/if}}
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="Maks. {{#if course.quota}}{{course.quota}}{{else}}8{{/if}} Siswa">
+                Maks. {{#if course.quota}}{{course.quota}}{{else}}8{{/if}} Siswa
               </span>
             </div>
           </div>

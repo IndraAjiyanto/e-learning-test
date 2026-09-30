@@ -49,17 +49,17 @@
     <div class="flex flex-col items-center gap-3 sm:gap-4 text-center max-w-[800px]">
       {{!-- INFORMASI INVESTASI (Inter 700 14px uppercase #003060) --}}
       <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-tight">
-        INFORMASI INVESTASI
+        {{default (t 'test.paidProgram.pricing.eyebrow') 'INFORMASI INVESTASI'}}
       </span>
 
       {{!-- Pilihan Paket Sesuai Kebutuhanmu (Montserrat 800 36px #0B1F3B) --}}
       <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
-        Pilihan Paket Sesuai Kebutuhanmu
+        {{default (t 'test.paidProgram.pricing.title') 'Pilihan Paket Sesuai Kebutuhanmu'}}
       </h2>
 
       {{!-- Description (Inter 400 16px #64748B, max-w 680px) --}}
       <p class="font-inter text-sm sm:text-base font-normal leading-[160%] text-[#64748B] max-w-[680px]">
-        Kami menyediakan program pendampingan yang optimal dengan skema pembiayaan bersahabat dan transparan.
+        {{default (t 'test.paidProgram.pricing.description') 'Kami menyediakan program pendampingan yang optimal dengan skema pembiayaan bersahabat dan transparan.'}}
       </p>
     </div>
 
