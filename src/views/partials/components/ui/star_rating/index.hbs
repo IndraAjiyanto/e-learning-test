@@ -1,0 +1,85 @@
+{{!--
+  Komponen: Star Rating (read-only, sisi publik)
+  Lokasi: src/views/partials/components/ui/star_rating/index.hbs
+  Level: L1 Atomik
+
+  Menampilkan rating 1-5 sebagai bintang, tanpa interaksi. Dipakai card alumni
+  (components/ui/card/card_alumni) dan halaman direktori alumni.
+
+  Jumlah bintang dikunci 5 karena enum `alumni_rating_enum` hanya punya lima
+  nilai - jadi tidak ada props `max`.
+
+  Bintang kosong sengaja dibuat abu-abu, bukan transparan penuh, supaya skornya
+  selalu terbaca sebagai "X dari 5".
+
+  Bentuk SVG sama dengan form/super_admin/form/star_rating, hanya tanpa state
+  dan tanpa interaksi. Warna lewat `text-*` (stroke='currentColor') plus atribut
+  `fill`, karena Tailwind tidak bisa menyetel `fill` dari `text-*`.
+
+  Props:
+  - expr      : string (opsional) - ekspresi Alpine untuk nilai rating, mis.
+                'getRating(alumni)'. Bila diisi, bintang dirender lewat Alpine
+                dan `value` diabaikan (data datang dari fetch, bukan dari
+                context Handlebars).
+  - value     : number|string - rating 1-5, harus sudah tervalidasi pemanggil.
+                Diabaikan bila di luar 1-5 agar tidak tampil bintang terpisah.
+  - size      : kelas ukuran ikon (opsional, default 'size-3.5')
+  - showValue : boolean (opsional, default false) - tampilkan angka di kanan
+                bintang. Defaultnya bintang saja; tidak ada pemanggil yang
+                mengaktifkannya karena angka rating tidak lagi ditampilkan di
+                sisi user - nilainya tetap terbaca lewat `aria-label`
+                ("N of 5 stars") untuk screen reader.
+  - onClass   : kelas warna bintang terisi (opsional, default amber)
+  - offClass  : kelas warna bintang kosong (opsional, default gray)
+  - label     : string (opsional) - teks aria-label; default "N of 5 stars"
+  - class     : kelas tambahan pada elemen pembungkus
+--}}
+{{#if expr}}
+  <div
+    class='flex items-center gap-1 {{class}}'
+    role='img'
+    :aria-label="({{{expr}}}) + ' of 5 stars'"
+  >
+    <template x-for='star in 5' :key="'star-' + star">
+      <svg
+        viewBox='0 0 24 24'
+        stroke='currentColor'
+        stroke-width='1.5'
+        stroke-linejoin='round'
+        class='{{#if size}}{{size}}{{else}}size-3.5{{/if}} transition-colors'
+        :class="star <= ({{{expr}}}) ? '{{#if onClass}}{{onClass}}{{else}}text-[#f59e0b]{{/if}}' : '{{#if offClass}}{{offClass}}{{else}}text-[#d4d4d4]{{/if}}'"
+        :fill="star <= ({{{expr}}}) ? 'currentColor' : 'none'"
+      >
+        <path d='M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z' />
+      </svg>
+    </template>
+    {{#if showValue}}
+      <span
+        class='font-inter text-xs font-semibold text-[#475569]'
+        x-text='({{{expr}}})'
+      ></span>
+    {{/if}}
+  </div>
+{{else if (gte value 1)}}
+  <div
+    class='flex items-center gap-1 {{class}}'
+    role='img'
+    aria-label='{{#if label}}{{label}}{{else}}{{value}} of 5 stars{{/if}}'
+  >
+    {{#each (array 1 2 3 4 5)}}
+      <svg
+        viewBox='0 0 24 24'
+        stroke='currentColor'
+        stroke-width='1.5'
+        stroke-linejoin='round'
+        class='{{#if ../size}}{{../size}}{{else}}size-3.5{{/if}} {{#if (lte @index ../value)}}{{#if ../onClass}}{{../onClass}}{{else}}text-[#f59e0b]{{/if}}{{else}}{{#if ../offClass}}{{../offClass}}{{else}}text-[#d4d4d4]{{/if}}{{/if}}'
+        {{#if (lte @index ../value)}}fill='currentColor'{{else}}fill='none'{{/if}}
+      >
+        <path d='M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z' />
+      </svg>
+    {{/each}}
+    {{#if showValue}}
+      <span class='font-inter text-xs font-semibold text-[#475569]'>{{value}}</span>
+    {{/if}}
+  </div>
+{{/if}}

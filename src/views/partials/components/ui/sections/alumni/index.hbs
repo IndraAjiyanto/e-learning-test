@@ -115,7 +115,8 @@
       position: {{{json (getByLang this.currentPosition ../lang)}}},
       company: {{{json (default this.course.name '')}}},
       photo: {{{json (default this.profile '')}}},
-      testimonial: {{{json (getByLang this.message ../lang)}}}
+      testimonial: {{{json (getByLang this.message ../lang)}}},
+      rating: {{{json (default this.rating '5')}}}
     }{{#unless @last}},{{/unless}}
     {{/each}}
   ];

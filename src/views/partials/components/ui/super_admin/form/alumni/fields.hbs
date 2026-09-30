@@ -3,8 +3,9 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/alumni/fields.hbs
   Level: L2 Blok field (scoped super_admin)
 
-  Program, foto profil, lalu Name / Message / Current Position — masing-masing
-  dengan tab bahasa sendiri. Pemanggil menyediakan state Alpine dari form/alumni/form.
+  Program, foto profil, Name / Message / Current Position (tiap-tiapnya dengan tab
+  bahasa sendiri), lalu Rating sebagai blok penutup. Pemanggil menyediakan state
+  Alpine dari form/alumni/form.
 
   Props:
   - hideProgram : boolean (opsional) — sembunyikan field Program, untuk halaman
@@ -13,6 +14,10 @@
 
   Field dikirim sebagai name[id]/name[en]/name[ja] (idem message, currentPosition)
   sesuai Create/UpdateAlumnusDto. Dipakai keempat halaman form alumni.
+
+  Rating adalah field skalar tunggal (1–5) tanpa tab bahasa, dikirim sebagai
+  `rating` lewat form/star_rating. Ditaruh paling akhir dan dibungkus kartu
+  tersendiri supaya menonjol — lihat blok rating di bawah.
 
   Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
   meski tab-nya tidak aktif.
@@ -83,5 +88,42 @@
     {{> alumniLangField field='name' label='Name' placeholder='Enter a name...' }}
     {{> alumniLangField field='message' label='Message' placeholder='Enter a message...' }}
     {{> alumniLangField field='currentPosition' label='Current Position' placeholder='Enter a current position...' }}
+  </div>
+
+  {{!-- Rating ditutup paling akhir dan dipisah jadi blok sendiri: rating inilah yang
+       menentukan jumlah bintang di halaman publik, jadi harus mudah ditemukan dan
+       seketika terlihat saat super admin create/edit alumni.
+       Skalar tunggal tanpa tab bahasa, dikirim sebagai `rating` (enum 1-5).
+
+       Judul & angka "N / 5" ditulis di sini, bukan lewat `showValue`, supaya bisa
+       mengikuti skala section. `hideLabel` memindahkan label milik
+       form/star_rating ke sr-only supaya tidak dobel — elemennya tetap ada, jadi
+       aria-labelledby di radiogroup tidak putus.
+       `formData` di sini milik alumniForm() dari form/alumni/form, sama seperti
+       yang sudah dipakai text_field di atas. --}}
+  <div class='flex flex-col gap-3 rounded-xl border border-[#d9d9d9] bg-[#fafafa] p-4 sm:p-5'>
+    <div class='flex flex-col gap-2'>
+      <h2 class='font-montserrat text-base font-semibold leading-5 text-[#003060]'>
+        Rating
+        <span class='text-[#dc2626]'>*</span>
+        <span
+          class='font-inter text-sm font-medium leading-5 text-[#525252]'
+          x-text="formData.rating + ' / 5'"
+        ></span>
+      </h2>
+      <p class='font-montserrat text-sm font-medium leading-[23px] text-[#737373]'>
+        Shown as stars on the public alumni page and alumni section. 1 star is the lowest, 5 stars the highest.
+      </p>
+    </div>
+
+    {{> components/ui/super_admin/form/star_rating
+      id='rating'
+      name='rating'
+      field='rating'
+      label='Rating'
+      hideLabel=true
+      required=true
+      iconClass='size-12'
+    }}
   </div>
 </div>

@@ -78,9 +78,15 @@
                   class="w-[60px] h-[60px] rounded-full object-cover"
                 />
               </div>
-              <div>
+              <div class="min-w-0">
                 <h3 class="text-base font-bold text-[#0F172A]" x-text="getByLang(alumni.name, lang)"></h3>
                 <p class="text-sm font-medium text-[#475569]" x-text="getByLang(alumni.currentPosition, lang)"></p>
+
+                <!-- Rating (1-5): bintang saja, angka disembunyikan -->
+                {{> components/ui/star_rating/index
+                  expr='getRating(alumni)'
+                  class='mt-1.5'
+                  size='size-3.5' }}
               </div>
             </div>
 
@@ -168,6 +174,14 @@ function alumniApp() {
       if (typeof obj === 'string') return obj;
       if (typeof obj !== 'object') return '';
       return obj[lang] || obj.id || obj.en || '';
+    },
+
+    // Kolom rating di DB berupa enum string '1'..'5', tapi JSON bisa
+    // menyampaikannya sebagai angka. Data lama di-backfill '5' oleh migration,
+    // jadi fallback 5 hanya untuk jaga-jaga bila null.
+    getRating(alumni) {
+      const n = Number(alumni?.rating);
+      return Number.isInteger(n) && n >= 1 && n <= 5 ? n : 5;
     },
 
     filterPrograms() {

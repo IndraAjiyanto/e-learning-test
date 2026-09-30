@@ -12,6 +12,9 @@
   - profile         : URL gambar profil (opsional, fallback ke orang.png)
   - name            : Nama alumni (multibahasa)
   - currentPosition : Jabatan/posisi (multibahasa)
+  - rating          : Rating 1-5 (enum `alumni_rating_enum`), hanya dirender di
+                      variant 'profile'. Pada isDesktop=true nilai diambil dari
+                      `item.rating` (state carousel), bukan dari prop ini.
   - courseName      : Nama kursus/program yang diikuti (opsional, tampil sebagai badge di variant 'profile')
   - badgeLabel      : string (opsional) — prefix badge, default (t 'test.home.alumniSection.bootcampLabel')
   - lang            : Bahasa yang aktif
@@ -39,6 +42,18 @@
          {{#if isDesktop}}x-text="item.position"{{/if}}>
         {{#unless isDesktop}}{{getByLang currentPosition lang}}{{/unless}}
       </p>
+      {{!-- Rating hanya di variant 'profile', dan hanya bintangnya — angka
+           sengaja tidak ditampilkan. isDesktop=true membaca item.* dari state
+           carousel (Alpine), isDesktop=false membaca prop Handlebars. --}}
+      {{#if isDesktop}}
+        {{> components/ui/star_rating/index
+          expr='Number(item.rating) || 5'
+          size='size-4' }}
+      {{else}}
+        {{> components/ui/star_rating/index
+          value=(default rating '5')
+          size='size-4' }}
+      {{/if}}
     </div>
   </div>
 
