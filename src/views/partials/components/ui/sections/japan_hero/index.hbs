@@ -31,7 +31,7 @@
         <div class="inline-flex h-[27px] items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-xs">
           <span class="size-2.5 shrink-0 rounded-full bg-[#6EB6E5]"></span>
           <span class="font-montserrat text-[12px] font-bold leading-[15px] uppercase tracking-wider text-[#0B1F3B]">
-            {{#if category.type}}{{category.type}}{{else}}{{default tagText "PREMIUM STUDY ABROAD"}}{{/if}}
+            {{#if category.type}}{{category.type}}{{else}}{{default tagText (default (t 'test.special_program.heroSection.tagText') "PREMIUM STUDY ABROAD")}}{{/if}}
           </span>
         </div>
 
@@ -45,7 +45,7 @@
             {{else if (getByLang category.text lang)}}
               {{getByLang category.text lang}}
             {{else}}
-              Transform your future in {{default category.name "Japan"}} — from {{#if (or isJapan (includes category.name 'japan'))}}language{{else}}learning{{/if}} to career.
+              {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.heroSection.defaultHeadlineJapan') 'Transform your future in Japan — from language to career.'}}{{else}}{{default (t 'test.special_program.heroSection.defaultHeadlineGeneral') 'Transform your future with us — from learning to career.'}}{{/if}}
             {{/if}}
           </h1>
 
@@ -57,7 +57,7 @@
             {{else if (getByLang category.description lang)}}
               {{getByLang category.description lang}}
             {{else}}
-              A structured journey designed for ambitious learners: {{#if (or isJapan (includes category.name 'japan'))}}immersive Japanese training{{else}}practical industry training{{/if}}, workplace readiness, and guided support for long-term success.
+              {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.heroSection.defaultSubheadingJapan') 'A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.'}}{{else}}{{default (t 'test.special_program.heroSection.defaultSubheadingGeneral') 'A structured journey designed for ambitious learners: practical industry training, workplace readiness, and guided support for long-term success.'}}{{/if}}
             {{/if}}
           </p>
         </div>
@@ -67,7 +67,7 @@
           {{!-- Primary CTA: Daftar Sekarang (Detail) / View Program (Category) --}}
           {{> components/ui/button/view_program/index
               href=(ternary course.id (concat '/payment/registration/' course.id) '#programs')
-              text=(ternary course.id "Daftar Sekarang" "View Program")
+              text=(ternary course.id (default (t 'test.special_program.heroSection.buttonRegister') "Daftar Sekarang") (default (t 'test.special_program.heroSection.buttonViewProgram') "View Program"))
           }}
         </div>
 
@@ -96,7 +96,7 @@
                 </svg>
               </span>
               <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
-                {{#if (or isJapan (includes category.name 'japan'))}}N5 readiness curriculum{{else}}Industry-standard curriculum{{/if}}
+                {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.heroSection.curriculumChipJapan') 'N5 readiness curriculum'}}{{else}}{{default (t 'test.special_program.heroSection.curriculumChipGeneral') 'Industry-standard curriculum'}}{{/if}}
               </span>
             </div>
 
@@ -107,7 +107,7 @@
                 </svg>
               </span>
               <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
-                Career &amp; study support
+                {{default (t 'test.special_program.heroSection.supportChip') 'Career & study support'}}
               </span>
             </div>
           {{/if}}
@@ -134,16 +134,16 @@
     {{!-- floating-snapshot-card-horizontal: Overlapping Snapshot Bar at bottom of Hero --}}
     <div class="mt-14 lg:mt-16 flex justify-center w-full">
       {{> components/ui/card/snapshot_bar/index
-          item1Title="Comprehensive curriculum"
-          item1Desc=(ternary (or isJapan (includes category.name 'japan')) "Language + culture + career prep" "Practical + industry readiness")
+          item1Title=(default (t 'test.special_program.heroSection.snapshot1Title') "Comprehensive curriculum")
+          item1Desc=(ternary (or isJapan (includes category.name 'japan')) (default (t 'test.special_program.heroSection.snapshot1DescJapan') "Language + culture + career prep") (default (t 'test.special_program.heroSection.snapshot1DescGeneral') "Practical + industry readiness"))
           item1Icon="fa-solid fa-book-open"
 
-          item2Title="Mentor-led learning"
-          item2Desc="Experienced instructors & support"
+          item2Title=(default (t 'test.special_program.heroSection.snapshot2Title') "Mentor-led learning")
+          item2Desc=(default (t 'test.special_program.heroSection.snapshot2Desc') "Experienced instructors & support")
           item2Icon="fa-solid fa-chalkboard-user"
 
-          item3Title=(ternary (or isJapan (includes category.name 'japan')) "Career & study pathways" "Career development pathways")
-          item3Desc=(ternary (or isJapan (includes category.name 'japan')) "Guidance for next steps in Japan" "Guidance for professional growth")
+          item3Title=(ternary (or isJapan (includes category.name 'japan')) (default (t 'test.special_program.heroSection.snapshot3TitleJapan') "Career & study pathways") (default (t 'test.special_program.heroSection.snapshot3TitleGeneral') "Career development pathways"))
+          item3Desc=(ternary (or isJapan (includes category.name 'japan')) (default (t 'test.special_program.heroSection.snapshot3DescJapan') "Guidance for next steps in Japan") (default (t 'test.special_program.heroSection.snapshot3DescGeneral') "Guidance for professional growth"))
           item3Icon="fa-solid fa-compass"
       }}
     </div>

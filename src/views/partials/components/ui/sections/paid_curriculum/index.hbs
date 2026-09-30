@@ -31,18 +31,18 @@
       {{!-- Badge (Figma: bg #E0F2FE, rounded 999px, text BOOTCAMP SYLLABUS) --}}
       <div class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#E0F2FE]">
         <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-none">
-          BOOTCAMP SYLLABUS
+          {{default (t 'test.paidProgram.curriculum.badge') 'BOOTCAMP SYLLABUS'}}
         </span>
       </div>
 
       {{!-- Headline (Figma: Montserrat 800, 36px, leading 44px, #0B1F3B) --}}
       <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
-        Structured & Industry-Proven Curriculum
+        {{default (t 'test.paidProgram.curriculum.title') 'Structured & Industry-Proven Curriculum'}}
       </h2>
 
       {{!-- Description (Figma: Inter 400, 16px, #64748B, max-w 680px) --}}
       <p class="font-inter text-sm sm:text-base font-normal leading-[160%] text-[#64748B] max-w-[680px]">
-        Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.
+        {{default (t 'test.paidProgram.curriculum.description') 'Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.'}}
       </p>
 
     </div>
@@ -57,8 +57,8 @@
         {{#each course.courseFlow}}
           {{> components/ui/card/curriculum_item/index
               index=@index
-              title=(default (getByLang this.title ../lang) (default this.title (concat "Module " (default this.sequence (add @index 1)))))
-              description=(default (getByLang this.content ../lang) (default this.content "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri."))
+              title=(default (getByLang this.title ../lang) (default this.title (concat (default (t 'test.paidProgram.curriculum.modulePrefix') 'Module ') (default this.sequence (add @index 1)))))
+              description=(default (getByLang this.content ../lang) (default this.content (default (t 'test.paidProgram.curriculum.defaultModuleDesc') 'Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.')))
               lang=../lang
           }}
         {{/each}}
@@ -68,8 +68,8 @@
         {{#each course_flows}}
           {{> components/ui/card/curriculum_item/index
               index=@index
-              title=(default (getByLang this.title ../lang) (default this.title (concat "Module " (default this.sequence (add @index 1)))))
-              description=(default (getByLang this.content ../lang) (default this.content "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri."))
+              title=(default (getByLang this.title ../lang) (default this.title (concat (default (t 'test.paidProgram.curriculum.modulePrefix') 'Module ') (default this.sequence (add @index 1)))))
+              description=(default (getByLang this.content ../lang) (default this.content (default (t 'test.paidProgram.curriculum.defaultModuleDesc') 'Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.')))
               lang=../lang
           }}
         {{/each}}
@@ -79,8 +79,8 @@
         {{#each course.weeks}}
           {{> components/ui/card/curriculum_item/index
               index=@index
-              title=(default (getByLang this.description ../lang) (concat "Module " (default this.weekNumber (add @index 1))))
-              description=(default (getByLang this.description ../lang) "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.")
+              title=(default (getByLang this.description ../lang) (concat (default (t 'test.paidProgram.curriculum.modulePrefix') 'Module ') (default this.weekNumber (add @index 1))))
+              description=(default (getByLang this.description ../lang) (default (t 'test.paidProgram.curriculum.defaultModuleDesc') 'Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.'))
               lang=../lang
           }}
         {{/each}}
@@ -90,8 +90,8 @@
         {{#each weeks}}
           {{> components/ui/card/curriculum_item/index
               index=@index
-              title=(default (getByLang this.description ../lang) (concat "Module " (default this.weekNumber (add @index 1))))
-              description=(default (getByLang this.description ../lang) "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.")
+              title=(default (getByLang this.description ../lang) (concat (default (t 'test.paidProgram.curriculum.modulePrefix') 'Module ') (default this.weekNumber (add @index 1))))
+              description=(default (getByLang this.description ../lang) (default (t 'test.paidProgram.curriculum.defaultModuleDesc') 'Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri.'))
               lang=../lang
           }}
         {{/each}}

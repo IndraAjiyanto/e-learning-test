@@ -16,7 +16,7 @@
       </div>
       <div class="min-w-0 flex-1">
         <h3 class="text-sm font-bold text-[#0B1F3B] truncate leading-tight">
-          {{#if portfolio.user.username}}{{portfolio.user.username}}{{else}}Alumni Kesatria{{/if}}
+          {{#if portfolio.user.username}}{{portfolio.user.username}}{{else}}{{default (t 'test.portfolio.defaultAuthor') 'Alumni Kesatria'}}{{/if}}
         </h3>
         <p class="text-xs text-[#94A3B8] truncate leading-tight mt-0.5">
           {{#if portfolio.user.email}}{{portfolio.user.email}}{{else}}-{{/if}}
@@ -106,7 +106,7 @@
         {{/each}}
       {{else}}
         <span class="inline-flex items-center px-3 py-1 bg-[#F1F5F9] text-[#334155] text-xs font-semibold rounded-full border border-[#D9D9D9]">
-          Web Technologies
+          {{default (t 'test.detailPortfolio.defaultWebTech') 'Web Technologies'}}
         </span>
       {{/if}}
     </div>
