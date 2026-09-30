@@ -12,7 +12,7 @@
       {{#if portfolio.description}}
         <p>{{portfolio.description}}</p>
       {{else}}
-        <p class="text-gray-400 italic">No description provided.</p>
+        <p class="text-gray-400 italic">{{default (t 'test.detailPortfolio.noDescription') 'No description provided.'}}</p>
       {{/if}}
     </div>
   </div>
@@ -23,10 +23,10 @@
       {{t "test.detailPortfolio.projectOverview"}}
     </h2>
     <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] prose prose-sm max-w-none">
-      {{#if portfolio.content}}
-        <p>{{portfolio.content}}</p>
+      {{#if portfolio.contentHtml}}
+        {{{portfolio.contentHtml}}}
       {{else}}
-        <p class="text-gray-400 italic">No detailed overview provided.</p>
+        <p class="text-gray-400 italic">{{default (t 'test.detailPortfolio.noOverview') 'No detailed overview provided.'}}</p>
       {{/if}}
     </div>
   </div>
