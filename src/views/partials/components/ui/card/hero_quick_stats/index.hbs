@@ -26,7 +26,7 @@
       </div>
       <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
         <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-          {{#if (eq lang 'id')}}Tanggal Mulai{{else if (eq lang 'ja')}}開始日{{else}}Tanggal Mulai{{/if}}
+          {{default (t 'test.freeProgram.hero.quickStats.startDate') 'Tanggal Mulai'}}
         </span>
         <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
           {{#if course.startDate}}{{formatDateShort course.startDate lang}}{{else}}16 Sep 2026{{/if}}
@@ -50,7 +50,7 @@
       </div>
       <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
         <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-          {{#if (eq lang 'id')}}Tanggal Selesai{{else if (eq lang 'ja')}}終了日{{else}}Tanggal Selesai{{/if}}
+          {{default (t 'test.freeProgram.hero.quickStats.endDate') 'Tanggal Selesai'}}
         </span>
         <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
           {{#if course.startEnd}}{{formatDateShort course.startEnd lang}}{{else if course.endDate}}{{formatDateShort course.endDate lang}}{{else}}16 Des 2026{{/if}}
@@ -74,10 +74,10 @@
       </div>
       <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
         <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-          Learning System
+          {{default (t 'test.freeProgram.hero.quickStats.learningSystem') 'Learning System'}}
         </span>
         <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
-          {{#if course.method}}{{course.method}}{{else}}Online &amp; Offline{{/if}}
+          {{#if course.method}}{{course.method}}{{else}}{{default (t 'test.freeProgram.hero.quickStats.onlineOffline') 'Online & Offline'}}{{/if}}
         </span>
       </div>
     </div>
@@ -98,10 +98,10 @@
       </div>
       <div class="flex flex-col items-start p-0 gap-1.5 flex-1 min-w-0">
         <span class="font-inter font-semibold text-[10px] leading-[12px] uppercase text-[#64748B]">
-          Class Capacity
+          {{default (t 'test.freeProgram.hero.quickStats.classCapacity') 'Class Capacity'}}
         </span>
         <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
-          Maximum {{default course.quota '8'}} Students
+          {{default (t 'test.freeProgram.hero.quickStats.maxPrefix') 'Maximum'}} {{default course.quota '8'}} {{default (t 'test.freeProgram.hero.quickStats.students') 'Students'}}
         </span>
       </div>
     </div>

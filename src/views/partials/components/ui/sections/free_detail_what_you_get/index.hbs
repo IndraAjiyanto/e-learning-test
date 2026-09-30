@@ -40,10 +40,10 @@
   <div class="relative z-20 flex flex-col items-center gap-[50px] w-full max-w-[1608px] px-4 sm:px-6 lg:px-15">
     <div class="flex flex-col items-center gap-3 w-full text-center">
       <span class="font-inter font-bold text-[14px] leading-[120%] text-[#93C5FD] tracking-wider uppercase">
-        KEY ADVANTAGES
+        {{default (t 'test.freeProgram.whatYouGet.eyebrow') 'KEY ADVANTAGES'}}
       </span>
       <h2 class="font-inter font-bold text-[28px] md:text-[32px] leading-[120%] text-white">
-        Why Study at Kesatria Academy?
+        {{default (t 'test.freeProgram.whatYouGet.title') 'Why Study at Kesatria Academy?'}}
       </h2>
     </div>
 
@@ -58,23 +58,23 @@
         {{/each}}
       {{else}}
         {{> components/ui/card/card_why_choose/index
-          title="1-on-1 Mentoring"
-          description="Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio."
+          title=(default (t 'test.freeProgram.whatYouGet.card1Title') '1-on-1 Mentoring')
+          description=(default (t 'test.freeProgram.whatYouGet.card1Desc') 'Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio.')
           icon="person-connections"
         }}
         {{> components/ui/card/card_why_choose/index
-          title="Real-World Portfolio"
-          description="Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes."
+          title=(default (t 'test.freeProgram.whatYouGet.card2Title') 'Real-World Portfolio')
+          description=(default (t 'test.freeProgram.whatYouGet.card2Desc') 'Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes.')
           icon="document-checklist"
         }}
         {{> components/ui/card/card_why_choose/index
-          title="Career Support"
-          description="CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network."
+          title=(default (t 'test.freeProgram.whatYouGet.card3Title') 'Career Support')
+          description=(default (t 'test.freeProgram.whatYouGet.card3Desc') "CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network.")
           icon="person"
         }}
         {{> components/ui/card/card_why_choose/index
-          title="Competency Certificate"
-          description="Earn an official graduation certificate to prove your practical skills to recruiters."
+          title=(default (t 'test.freeProgram.whatYouGet.card4Title') 'Competency Certificate')
+          description=(default (t 'test.freeProgram.whatYouGet.card4Desc') 'Earn an official graduation certificate to prove your practical skills to recruiters.')
           icon="certificate"
         }}
       {{/if}}
