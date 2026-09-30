@@ -1,82 +1,108 @@
-# Implementation Plan: Redesign Tombol Logout (Figma Frame 2147229725)
+# Implementation Plan: Detail Transaksi pada Halaman History Payment
 
 ## 1. Analisis Task ClickUp & Hubungannya
-- **Task ID**: `z8pbk8xuyy` (URL: `https://app.clickup.com/t/90182814122/z8pbk8xuyy`)
-- **Nama Task**: List Portfolio
-- **Deskripsi Task**: *"Membuat sebuah halaman baru untuk menampilkan list portofolio."*
-- **Assignee**: John Calvin S | **Creator**: Chinta Fitriana (UI/UX) | **Status**: In Progress
-- **Korelasi Desain**:
-  Pada pengerjaan halaman student area (termasuk List Portfolio & User Profile), frame desain Figma (`Frame 2147229725`) memuat pembaruan visual pada komponen sidebar student, khususnya **Tombol Log Out** di bagian bawah.
+- **Task ID**: `z8pbk8xq6x` (URL: `https://app.clickup.com/t/90182814122/z8pbk8xq6x`)
+- **Nama Task**: *Detail transaksi pada halaman history payment*
+- **Deskripsi Task**:
+  > *"Role user pada halaman detail payment, tambahkan label 'harga promo' di bawah label 'harga' lalu label 'discount' ganti menjadi 'promo code'.*
+  > *Data backend yang digunakan per label nya :*
+  > - *harga : table invoice column price*
+  > - *harga promo : table invoice column promo*
+  > - *promo code : table invoice column promo_code*
+  > - *final total : table invoice column final_total*
+  > 
+  > *Karena ada beberapa tambahan column baru di invoice, column column tersebut di isi dengan :*
+  > - *price → ketika user melakukan pembayaran xendit atau upload bukti pembayaran manual, ambil harga price program untuk di simpan ke invoice*
+  > - *promo → ketika user melakukan pembayaran xendit atau upload bukti pembayaran manual, ambil harga promo program untuk di simpan ke invoice*
+  > - *promo_code → ketika user melakukan pembayaran xendit atau upload bukti pembayaran manual, ambil hitungan dari harga promo program yang di diskon oleh promo code"*
 
 ---
 
-## 2. Perbandingan: Kode Saat Ini vs Desain Baru
+## 2. Nomor Urut Alur Bisnis (End-to-End)
+1. **Input / Maker**:
+   - User memilih program dan metode (Full Payment / Installment).
+   - User membayar via gateway Xendit (`/api/payment/create`) ATAU mengunggah bukti transfer manual (`/payment/:userId/:courseId/manual` atau `/payment/:userId/:courseId/:installmentsId`).
+2. **Snapshot Invoice (Persistence)**:
+   - Sistem mengambil harga asli program (`course.price`) disimpan ke `invoice.price`.
+   - Sistem mengambil harga promo program (`course.promo`) disimpan ke `invoice.promo`.
+   - Sistem menghitung potongan voucher (`discountAmount`) disimpan ke `invoice.promo_code`.
+   - Nilai akhir disimpan ke `invoice.final_total`.
+3. **Antrean Verifikasi**:
+   - Transaksi masuk antrean (`payments` status `process` untuk verifikasi manual super admin, atau menunggu webhook Xendit untuk gateway).
+4. **Approval & Selesai**:
+   - Super admin menyetujui transaksi manual ATAU webhook Xendit memvalidasi `PAID`. Status berubah menjadi `approved` / `paid`.
+5. **Post-Condition (Penyajian Data History)**:
+   - User membuka `GET /users/profile?tab=history-payment` lalu menekan tombol *View Detail*.
+   - Modal `transaction_detail/index.hbs` menampilkan rincian ringkasan 4 baris sesuai token Figma:
+     - `Harga`: `invoice.price`
+     - `Harga Promo`: `invoice.promo`
+     - `Promo Code`: `invoice.promo_code` (warna `#EF4444`)
+     - `Total`: `invoice.final_total` (warna `#173B68`, font weight 700)
 
-| Atribut Visual | Kode Saat Ini (Existing) | Desain Baru (Figma Frame 2147229725) |
+---
+
+## 3. Komparasi: Kode Existing vs Kebutuhan Baru
+
+| Komponen / Layer | Kode Saat Ini (Existing) | Kebutuhan Baru (Figma & ClickUp) |
 | :--- | :--- | :--- |
-| **Background** | Merah solid (`#C0392B`) | Putih (`#FFFFFF`) |
-| **Warna Teks & Ikon** | Putih (`#FFFFFF`) | Merah (`#C0392B`) |
-| **Box Shadow** | Tidak ada | `0px 0px 4px rgba(0, 0, 0, 0.25)` |
-| **Border Radius** | `8px` (`rounded-lg`) | `8px` (`border-radius: 8px`) |
-| **Tinggi (Height)** | `44px` (`h-11` / `2.75rem`) | `40px` (`height: 40px` / `h-10`) |
-| **Padding** | `10px 14px` (`0.625rem 0.875rem`) | `10px 24px` (`padding: 10px 24px`) |
-| **Gap** | `12px` (`gap-3` / `0.75rem`) | `10px` (`gap: 10px` / `gap-2.5`) |
-| **Tipografi** | Inter/Montserrat, font-medium (500), 14px | Montserrat, font-semibold (600), 14px, line-height 20px |
-| **Ikon** | FontAwesome `fa-arrow-right-from-bracket` | SVG Feather/Lucide `log-out` 18x18px, border 2px solid `#C0392B` |
-| **State Hover** | Merah lebih gelap (`#a5311f`) | Soft hover effect (`#fef2f2` / subtle light red background) |
+| **Database Table `invoice`** | Kolom: `subtotal`, `discount_amount`, `final_total` | Tambah 3 kolom: `price` (numeric), `promo` (numeric), `promo_code` (numeric) |
+| **Invoice Entity** | [invoice.entity.ts](file:///src/entities/invoice.entity.ts#L48-L62) belum ada `price`, `promo`, `promo_code` | Tambahkan decorator `@Column` untuk `price`, `promo`, `promo_code` |
+| **Penyimpanan Manual Payment** | [payments.service.ts](file:///src/payments/payments.service.ts#L104-L127) `create()` belum membuat record `Invoice` | Buat record `Invoice` otomatis saat payment manual dibuat, isi snapshot `price`, `promo`, `promo_code`, `final_total` |
+| **Penyimpanan Gateway Xendit** | [invoice.service.ts](file:///src/invoice/invoice.service.ts#L65-L85) baru menyimpan `subtotal`, `discount_amount`, `final_total` | Simpan `price` (`course.price`), `promo` (`course.promo`), `promo_code` (`discountAmount`) ke `Invoice` |
+| **API History Payment** | [payments.service.ts](file:///src/payments/payments.service.ts#L365-L387) memetakan `subtotal`, `discount`, `originalPrice` | Petakan `price`, `promo`, `promoCode`, `finalTotal` dari relasi `payment.invoice` (dengan fallback aman ke `course`) |
+| **Modal View Detail UI** | [transaction_detail/index.hbs](file:///src/views/partials/components/ui/modal/transaction_detail/index.hbs#L660-L695) baris harga dinamis (mencoret harga normal dan memakai label 'Discount') | 4 baris tetap sesuai CSS Figma: `Harga`, `Harga Promo`, `Promo Code` (warna `#EF4444`), dan `Total` |
+| **I18n Translation** | Menggunakan key `test.transactionDetail.discount` ("Discount" / "Diskon") | Menggunakan key `test.transactionDetail.promoCode` ("Promo Code") |
 
 ---
 
-## 3. Rencana Perubahan Berkas (Target Files)
+## 4. Rencana Perubahan Berkas (Target Files)
 
-### A. `src/common/public/style.css`
-Ubah aturan CSS kelas `.js-user-sidebar-logout-link`:
-```css
-/* Log Out: background putih, drop shadow, teks & icon merah #C0392B */
-.js-user-sidebar-logout-link {
-  background-color: #FFFFFF;
-  color: #C0392B;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  height: 2.5rem; /* 40px */
-  padding: 0.625rem 1.5rem; /* 10px 24px */
-  gap: 0.625rem; /* 10px */
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 20px;
-}
-.js-user-sidebar-logout-link:hover {
-  background-color: #fef2f2;
-}
-html[data-user-sidebar='collapsed'] .js-user-sidebar-logout-link {
-  background-color: #FFFFFF;
-  color: #C0392B;
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-}
-html[data-user-sidebar='collapsed'] .js-user-sidebar-logout-link:hover {
-  background-color: #fef2f2;
-}
-```
+### A. Database Migration
+- **Berkas**: `src/database/migrations/1790400000000-AddPricePromoPromoCodeToInvoice.ts`
+- **Aksi**: Tambahkan kolom `price` (numeric 12,2), `promo` (numeric 12,2), dan `promo_code` (numeric 12,2 default 0) pada tabel `invoice` secara idempoten.
 
-### B. `src/views/user/user_profile/index.hbs`
-1. **Navigasi Mobile (Baris ~253)**:
-   Ubah tombol logout mobile agar konsisten dengan desain baru:
-   - Dari: `text-white bg-[#C0392B] hover:bg-[#a5311f] h-11 px-4`
-   - Menjadi: `h-10 px-6 py-2.5 gap-2.5 rounded-lg bg-white text-[#C0392B] shadow-[0px_0px_4px_rgba(0,0,0,0.25)] font-montserrat font-semibold text-sm leading-5 hover:bg-[#fef2f2]`
-   - Ikon disesuaikan ke ukuran 18px.
-2. **Navigasi Desktop Sidebar (Baris ~376)**:
-   - Perbarui kelas font menjadi `font-montserrat font-semibold` dan pastikan ikon berukuran 18px.
+### B. Entity Layer
+- **Berkas**: [`src/entities/invoice.entity.ts`](file:///src/entities/invoice.entity.ts#L48-L62)
+- **Aksi**: Tambahkan definisi properti:
+  ```ts
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  price: number | null;
 
-### C. `src/views/partials/user/shell_frame/index.hbs`
-- Sesuaikan link tombol logout desktop (Baris ~94) dengan `font-montserrat font-semibold` dan ukuran icon 18px agar identik di seluruh halaman shell.
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  promo: number | null;
 
-### D. Kompilasi CSS
-- Jalankan: `npm run build:css:prod` untuk memperbarui berkas `src/common/public/css/style.css`.
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true, default: 0 })
+  promo_code: number | null;
+  ```
+
+### C. Backend Service
+1. **[`src/invoice/invoice.service.ts`](file:///src/invoice/invoice.service.ts#L45-L86)**:
+   - Tambahkan pemetaan `price: course?.price ?? null`, `promo: course?.promo ?? null`, `promo_code: discountAmount ?? 0` saat `this.invoiceRepository.create()`.
+2. **[`src/payments/payments.service.ts`](file:///src/payments/payments.service.ts#L104-L127)**:
+   - Pada metode `create(createPaymentDto)` untuk pembayaran manual: buat instance `Invoice` yang menyimpan snapshot `price: course.price`, `promo: course.promo`, `promo_code: 0`, `final_total: calculatedTotal`, lalu hubungkan dengan `payment.invoice`.
+   - Pada metode `findPaymentHistory(userId)` ([baris ~373](file:///src/payments/payments.service.ts#L373-L396)): sertakan `price`, `promo`, `promoCode`, dan `finalTotal` pada baris DTO agar dikonsumsi frontend modal.
+
+### D. Frontend Modal & I18n
+1. **[`src/views/partials/components/ui/modal/transaction_detail/index.hbs`](file:///src/views/partials/components/ui/modal/transaction_detail/index.hbs#L111-L144)**:
+   - Tambahkan getter Alpine: `priceFormatted`, `promoPriceFormatted`, `promoCodeFormatted`, `finalTotalFormatted`.
+   - Perbarui markup Summary (baris ~660-694) agar menampilkan 4 baris berurutan:
+     1. `Harga` (`#6B7280`) -> `priceFormatted` (`#9CA3AF`, `line-through` / harga dicoret)
+     2. Divider `#D8E6F6`
+     3. `Harga Promo` (`#6B7280`) -> `promoPriceFormatted` (`#173B68`)
+     4. Divider `#D8E6F6`
+     5. `Promo Code` (`#6B7280`) -> `promoCodeFormatted` (`#EF4444`, font-semibold)
+     6. Divider `#D8E6F6`
+     7. `Total` (`#6B7280`) -> `finalTotalFormatted` (`#173B68`, font-bold, text-[15px])
+2. **I18n Files**:
+   - `src/i18n/id/test.json`: tambahkan `"promoCode": "Promo Code"` di `transactionDetail`.
+   - `src/i18n/en/test.json`: tambahkan `"promoCode": "Promo Code"` di `transactionDetail`.
+   - `src/i18n/ja/test.json`: tambahkan `"promoCode": "プロモコード"` di `transactionDetail`.
 
 ---
 
-## 4. Rencana Pengujian
-1. Verifikasi tampilan visual desktop sidebar saat expanded (terbentang) dan collapsed (menciut).
-2. Verifikasi tampilan tombol logout pada navigasi mobile di halaman profil.
-3. Jalankan automated test layout sidebar bila diperlukan (`npm run test:ui`).
+## 5. Verifikasi & Pengujian
+1. Jalankan migrasi database: `npm run migration:run` (atau TypeORM migration check).
+2. Verifikasi schema table `invoice` memiliki kolom `price`, `promo`, `promo_code`.
+3. Verifikasi unit tests yang sudah ada (`npm run test -- payments.service.spec.ts` & `invoice.service.spec.ts`).
+4. Jalankan `npm run build` untuk memastikan kompilasi TypeScript dan bundle aset bersih dari error.
+5. Verifikasi visual modal transaksi pada halaman user profile tab history payment.

@@ -11,6 +11,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { PaymentsService } from 'src/payments/payments.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
+import { Installment } from 'src/entities/installment.entity';
 
 @Injectable()
 export class InvoiceService {
@@ -64,6 +65,9 @@ export class InvoiceService {
 
     const invoice = this.invoiceRepository.create({
       payment: payment,
+      price: course?.price ?? null,
+      promo: course?.promo ?? null,
+      promo_code: discountAmount ?? 0,
       subtotal: subtotal,
       discount_amount: discountAmount,
       final_total: finalTotal,
@@ -121,6 +125,50 @@ export class InvoiceService {
       await this.paymentRepository.save(payment);
       throw new Error('Gagal terhubung dengan Xendit Payment Gateway');
     }
+  }
+
+  async createManualInvoice(
+    payment: Payment,
+    course: Course,
+    user: User,
+    installment?: Installment,
+  ) {
+    const isInstallment = !!installment;
+    const price = course?.price ? Number(course.price) : null;
+    const promo = course?.promo ? Number(course.promo) : null;
+    const basePrice = isInstallment
+      ? Number(installment.downPayment)
+      : (promo && promo > 0 ? promo : (price ?? 0));
+    const finalTotal = basePrice;
+
+    const invoice = this.invoiceRepository.create({
+      payment: payment,
+      price: price,
+      promo: promo,
+      promo_code: 0,
+      subtotal: basePrice,
+      discount_amount: 0,
+      final_total: finalTotal,
+      payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
+      invoice_number: payment.no,
+      status: 'pending',
+      user_fullname:
+        payment.user_fullname ||
+        (user as any)?.biodata?.fullName ||
+        user?.username ||
+        null,
+      user_email: payment.user_email || user?.email || null,
+      user_phone: payment.user_no || (user as any)?.biodata?.no || null,
+      course_name: course.name,
+      category_name: course.category?.name || null,
+      proof_url: payment.file || null,
+      user: user,
+      course: course,
+    });
+
+    const saved = await this.invoiceRepository.save(invoice);
+    payment.invoice = saved;
+    return saved;
   }
 
   async createInvoiceForInstallment(

@@ -107,7 +107,13 @@ export class PaymentsService {
           course: course,
           installment: installments,
         });
-        return await this.paymentRepository.save(payment);
+        const saved = await this.paymentRepository.save(payment);
+        await this.invoiceService
+          .createManualInvoice(saved, course, user, installments)
+          .catch((err) => {
+            console.error('[PaymentsService] Failed to create manual invoice:', err);
+          });
+        return saved;
       }
     }
 
@@ -123,7 +129,13 @@ export class PaymentsService {
         user: user,
         course: course,
       });
-      return await this.paymentRepository.save(payment);
+      const saved = await this.paymentRepository.save(payment);
+      await this.invoiceService
+        .createManualInvoice(saved, course, user)
+        .catch((err) => {
+          console.error('[PaymentsService] Failed to create manual invoice:', err);
+        });
+      return saved;
     }
   }
 
@@ -370,6 +382,23 @@ export class PaymentsService {
           ? Number(payment.invoice.final_total)
           : (subtotal !== null ? Math.max(0, subtotal - discount) : null);
 
+        const price =
+          payment.invoice?.price !== null && payment.invoice?.price !== undefined
+            ? Number(payment.invoice.price)
+            : normalPrice;
+        const promo =
+          payment.invoice?.promo !== null && payment.invoice?.promo !== undefined
+            ? Number(payment.invoice.promo)
+            : promoPrice;
+        const promoCode =
+          payment.invoice?.promo_code !== null && payment.invoice?.promo_code !== undefined
+            ? Number(payment.invoice.promo_code)
+            : (payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0);
+        const finalTotal =
+          payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
+            ? Number(payment.invoice.final_total)
+            : amount;
+
         return {
           id: payment.id,
           kind: isInstallment ? 'installment' : 'full',
@@ -380,10 +409,14 @@ export class PaymentsService {
           method:
             payment.invoice?.payment_method ||
             (isInstallment ? 'Installment' : 'Full Payment'),
-          amount,
+          amount: finalTotal,
           subtotal,
           discount,
           originalPrice: normalPrice,
+          price,
+          promo,
+          promoCode,
+          finalTotal,
           proof: payment.file ?? null,
           no: payment.no ?? null,
           paymentLink: payment.invoice?.xendit_invoice_url ?? null,
@@ -415,6 +448,10 @@ export class PaymentsService {
           subtotal,
           discount: 0,
           originalPrice: normalPrice,
+          price: normalPrice,
+          promo: promoPrice,
+          promoCode: 0,
+          finalTotal: subtotal,
           proof: registration.file ?? null,
           no: null,
           paymentLink: null,
