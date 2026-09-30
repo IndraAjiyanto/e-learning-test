@@ -7,7 +7,6 @@
   - Headline: Montserrat 800, 52px, -1px letter-spacing, #0B1F3B
   - Subheading: Inter 400, 16px, line-height 165%, #4B5563
   - CTA Primary: View Program (dark navy #0B1F3B, pill, arrow icon, smooth scroll ke #programs)
-  - CTA Secondary: Watch overview (white border, pill, play icon, interactive modal video)
   - Line divider: 1px solid #E5E7EB
   - Meta Chips: "N5 readiness curriculum" & "Career & study support"
   - Visual Image Box: rounded-[24px] dengan hover zoom halus & subtle gradient
@@ -15,7 +14,6 @@
 --}}
 
 <section 
-  x-data="{ videoModalOpen: false }"
   class="relative w-full bg-[#FAFAFA] font-inter pt-10 sm:pt-14 pb-16 lg:pb-24" 
   data-node-id="free-hero"
 >
@@ -35,7 +33,7 @@
             {{else if (t 'test.categoryFreeProgram.hero.eyebrow')}}
               {{t 'test.categoryFreeProgram.hero.eyebrow'}}
             {{else}}
-              PREMIUM STUDY ABROAD
+              {{default (t 'test.categoryFreeProgram.hero.defaultEyebrow') 'PREMIUM STUDY ABROAD'}}
             {{/if}}
           </span>
         </div>
@@ -45,7 +43,7 @@
             {{#if category.name}}
               {{category.name}}
             {{else}}
-              Short Classes
+              {{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}
             {{/if}}
           </h1>
 
@@ -55,7 +53,7 @@
             {{else if (t 'test.categoryFreeProgram.hero.description')}}
               {{t 'test.categoryFreeProgram.hero.description'}}
             {{else}}
-              A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.
+              {{default (t 'test.categoryFreeProgram.hero.defaultDescription') 'A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.'}}
             {{/if}}
           </p>
         </div>
@@ -99,7 +97,7 @@
                 </svg>
               </span>
               <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
-                N5 readiness curriculum
+                {{default (t 'test.categoryFreeProgram.hero.chips.n5Readiness') 'N5 readiness curriculum'}}
               </span>
             </div>
 
@@ -110,7 +108,7 @@
                 </svg>
               </span>
               <span class="font-inter text-[13px] font-semibold leading-[16px] text-[#0B1F3B] whitespace-nowrap">
-                Career &amp; study support
+                {{default (t 'test.categoryFreeProgram.hero.chips.careerSupport') 'Career & study support'}}
               </span>
             </div>
           {{/if}}
@@ -137,75 +135,20 @@
     {{!-- floating-snapshot-card-horizontal: Overlapping Snapshot Bar (Figma 2591:917) --}}
     <div class="mt-14 lg:mt-16 flex justify-center w-full">
       {{> components/ui/card/snapshot_bar/index
-          item1Title="Comprehensive curriculum"
-          item1Desc="Language + culture + career prep"
+          item1Title=(default (t 'test.categoryFreeProgram.hero.snapshot.item1Title') 'Comprehensive curriculum')
+          item1Desc=(default (t 'test.categoryFreeProgram.hero.snapshot.item1Desc') 'Language + culture + career prep')
           item1Icon="fa-solid fa-book-open"
 
-          item2Title="Mentor-led learning"
-          item2Desc="Experienced instructors & support"
+          item2Title=(default (t 'test.categoryFreeProgram.hero.snapshot.item2Title') 'Mentor-led learning')
+          item2Desc=(default (t 'test.categoryFreeProgram.hero.snapshot.item2Desc') 'Experienced instructors & support')
           item2Icon="fa-solid fa-chalkboard-user"
 
-          item3Title="Career & study pathways"
-          item3Desc="Guidance for next steps in Japan"
+          item3Title=(default (t 'test.categoryFreeProgram.hero.snapshot.item3Title') 'Career & study pathways')
+          item3Desc=(default (t 'test.categoryFreeProgram.hero.snapshot.item3Desc') 'Guidance for next steps in Japan')
           item3Icon="fa-solid fa-compass"
       }}
     </div>
 
-  </div>
-
-  {{!-- Modal Overview Video (Alpine.js) --}}
-  <div
-    x-show="videoModalOpen"
-    x-cloak
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-    @keydown.escape.window="videoModalOpen = false"
-    style="display: none;"
-  >
-    <div 
-      @click="videoModalOpen = false"
-      class="fixed inset-0 z-0"
-    ></div>
-
-    <div 
-      x-show="videoModalOpen"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-      x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-      x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-      class="relative z-10 w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl border border-gray-100"
-    >
-      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-        <h3 class="font-montserrat text-lg font-bold text-[#0B1F3B]">
-          Program Overview: {{#if category.name}}{{category.name}}{{else}}Short Classes{{/if}}
-        </h3>
-        <button
-          type="button"
-          @click="videoModalOpen = false"
-          class="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-          aria-label="Close modal"
-        >
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-      
-      <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center">
-        <div class="text-center p-6 text-white">
-          <div class="grid size-16 mx-auto mb-3 place-items-center rounded-full bg-white/20 backdrop-blur-xs">
-            <i class="fa-solid fa-play text-2xl text-white ml-1"></i>
-          </div>
-          <p class="font-montserrat font-semibold text-lg">{{#if category.name}}{{category.name}}{{else}}Free Short Classes{{/if}} Overview</p>
-          <p class="font-inter text-xs text-white/70 mt-1">Video overview will play here</p>
-        </div>
-      </div>
-    </div>
   </div>
 
 </section>

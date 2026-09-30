@@ -31,17 +31,17 @@
       
       {{!-- REGISTRATION PROCESS (Inter 700 14px uppercase #6EB6E5) --}}
       <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#6EB6E5] leading-tight">
-        REGISTRATION PROCESS
+        {{default (t 'test.paidProgram.finalCta.eyebrow') 'REGISTRATION PROCESS'}}
       </span>
 
       {{!-- Start Your Career in [Course Name] Now (Montserrat 800 32px-42px #003060) --}}
       <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[42px] font-extrabold leading-[120%] tracking-tight text-[#003060]">
-        Start Your Career in {{#if course.name}}{{course.name}}{{else if category.name}}{{category.name}}{{else}}UI/UX{{/if}} Now
+        {{default (t 'test.paidProgram.finalCta.titlePrefix') 'Start Your Career in'}} {{#if course.name}}{{course.name}}{{else if category.name}}{{category.name}}{{else}}UI/UX{{/if}} {{default (t 'test.paidProgram.finalCta.titleSuffix') 'Now'}}
       </h2>
 
       {{!-- Subtitle (Open Sans 400 16px-20px #003060, max-w 800px) --}}
       <p class="font-sans text-sm sm:text-base lg:text-[20px] font-normal leading-[160%] text-[#003060]/80 max-w-[800px]">
-        Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality.
+        {{default (t 'test.paidProgram.finalCta.description') "Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality."}}
       </p>
 
     </div>

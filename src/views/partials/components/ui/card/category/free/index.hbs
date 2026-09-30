@@ -58,20 +58,20 @@
         {{/if}}
         {{#if quota}}
           <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
-            {{quota}} Quota
+            {{quota}} {{default (t 'test.categoryFreeProgram.program.quota') 'Quota'}}
           </span>
         {{/if}}
         {{#unless method}}
           {{#unless day}}
             {{#unless quota}}
               <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
-                Language
+                {{default (t 'test.categoryFreeProgram.program.tags.language') 'Language'}}
               </span>
               <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
-                Culture
+                {{default (t 'test.categoryFreeProgram.program.tags.culture') 'Culture'}}
               </span>
               <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 font-inter text-xs font-medium text-[#0B1F3B]">
-                Career
+                {{default (t 'test.categoryFreeProgram.program.tags.career') 'Career'}}
               </span>
             {{/unless}}
           {{/unless}}
@@ -86,7 +86,7 @@
       {{else if description}}
         {{description}}
       {{else}}
-        A structured journey from language fundamentals to workplace readiness and long-term career opportunities.
+        {{default (t 'test.categoryFreeProgram.program.fallbackCards.card1.desc') 'A structured journey from language fundamentals to workplace readiness and long-term career opportunities.'}}
       {{/if}}
     </p>
 

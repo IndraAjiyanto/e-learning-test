@@ -1,4 +1,4 @@
-<div class="w-full min-h-[500px] flex items-center justify-center font-inter px-4 py-4 sm:px-8 sm:py-6">
+<div class="w-full min-h-[500px] flex items-center justify-center font-inter p-5">
   
   <div class="flex flex-col md:flex-row items-center gap-8 xl:gap-[50px] max-w-4xl mx-auto py-8">
     
@@ -21,34 +21,24 @@
         Join your class group to receive important announcements, learning materials, schedules, and communicate with mentors and fellow participants.
       </p>
 
-      <div x-data="{
-        get groupLink() {
-          const raw = (activeCourseData && activeCourseData.category && activeCourseData.category.contact)
-            || (activeCourseData && activeCourseData.group)
-            || '{{course.category.contact}}'
-            || '';
-          const trimmed = String(raw).trim();
-          if (!trimmed) return '';
-          if (/^https?:\/\//i.test(trimmed)) return trimmed;
-          return $waLink(trimmed);
-        }
-      }">
-        <template x-if="groupLink">
-          <a
-            :href="groupLink"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
-          >
-            Join Now
-          </a>
-        </template>
-        <template x-if="!groupLink">
-          <p class="font-inter text-sm text-[#737373]">
-            The group link has not been shared by your mentor yet.
-          </p>
-        </template>
-      </div>
+      {{!-- Tautan grup diambil dari kolom Course.group. Sebelumnya tautannya kosong,
+           sehingga tombol Join Now tidak pernah membawa student ke mana pun.
+           Bila kolomnya belum diisi, yang muncul keterangan, bukan tombol mati
+           yang menjanjikan sesuatu yang tidak ada. --}}
+      {{#if course.group}}
+        <a
+          href="{{course.group}}"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+        >
+          Join Now
+        </a>
+      {{else}}
+        <p class="font-inter text-sm text-[#737373]">
+          The group link has not been shared by your mentor yet.
+        </p>
+      {{/if}}
     </div>
 
   </div>

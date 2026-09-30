@@ -30,7 +30,7 @@
               <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-[#D9D9D9] rounded-[100px] h-[27px]">
                 <span class="size-2 rounded-full bg-[#6EB6E5] shrink-0"></span>
                 <span class="font-montserrat font-bold text-[12px] leading-[15px] uppercase text-[#003060]">
-                  {{#if course.category.name}}{{course.category.name}}{{else}}FREE PROGRAM{{/if}}
+                  {{#if course.category.name}}{{course.category.name}}{{else}}{{default (t 'test.freeProgram.hero.freeProgramBadge') 'FREE PROGRAM'}}{{/if}}
                 </span>
               </div>
 
@@ -44,7 +44,7 @@
                 {{#if course.description}}
                   {{getByLang course.description lang}}
                 {{else}}
-                  Learn the fundamentals of Python for data analysis from scratch to better understand data insights in a simpler and more structured way.
+                  {{default (t 'test.freeProgram.hero.defaultDescription') 'Learn the fundamentals of data analysis from scratch to better understand data insights in a structured way.'}}
                 {{/if}}
               </p>
             </div>
@@ -83,7 +83,7 @@
                 target="_blank"
                 class="inline-flex items-center justify-center px-6 py-4 w-auto min-w-[180px] h-[51px] bg-transparent hover:bg-[#003060]/10 text-[#003060] border-[1.5px] border-[#003060] font-inter font-semibold text-[16px] leading-[19px] rounded-[10px] transition-all duration-200 active:scale-95 cursor-pointer"
               >
-                Konsultasi Gratis
+                {{default (t 'test.freeProgram.hero.consultation') 'Konsultasi Gratis'}}
               </a>
             </div>
 

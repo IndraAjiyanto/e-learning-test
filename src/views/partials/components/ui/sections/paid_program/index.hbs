@@ -38,10 +38,11 @@
               icon=(default this.icon "fa-solid fa-graduation-cap")
               title=this.name
               description=(default (getByLang this.description ../lang) (default this.description "A structured journey from fundamentals to workplace readiness and long-term career opportunities."))
-              tag1=(ternary this.method this.method "Online")
-              tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " Day") (concat (default this.month 1) " Month"))
-              tag3=(ternary this.quota (concat this.quota " Quota") "20 Quota")
+              tag1=(ternary this.method this.method (default (t 'test.categoryPaidProgram.program.online') "Online"))
+              tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " " (default (t 'test.categoryPaidProgram.program.day') "Day")) (concat (default this.month 1) " " (default (t 'test.categoryPaidProgram.program.month') "Month")))
+              tag3=(ternary this.quota (concat this.quota " " (default (t 'test.categoryPaidProgram.program.quota') "Quota")) (concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota")))
               href=(concat '/program/' this.id)
+              lang=../lang
           }}
         {{/each}}
       </div>
@@ -50,36 +51,39 @@
       <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
         {{> components/ui/card/program_showcase/index
             id="#"
-            title=(default category.name "Japan Program")
+            title=(default category.name (default (t 'test.categoryPaidProgram.program.fallbackCard1Title') "Japan Program"))
             icon="fa-solid fa-graduation-cap"
             image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
-            tag1="Online"
-            tag2="3 Month"
-            tag3="20 Quota"
-            description="A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
+            tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
+            tag2=(concat "3 " (default (t 'test.categoryPaidProgram.program.month') "Month"))
+            tag3=(concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota"))
+            description=(default (t 'test.categoryPaidProgram.program.fallbackCard1Desc') "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.")
             href="#programs"
+            lang=lang
         }}
         {{> components/ui/card/program_showcase/index
             id="#"
-            title="Japanese Language Training"
+            title=(default (t 'test.categoryPaidProgram.program.fallbackCard2Title') "Japanese Language Training")
             icon="eye"
             image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
-            tag1="Online"
-            tag2="3 Month"
-            tag3="20 Quota"
-            description="Build strong communication skills through structured lessons and interactive practice."
+            tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
+            tag2=(concat "3 " (default (t 'test.categoryPaidProgram.program.month') "Month"))
+            tag3=(concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota"))
+            description=(default (t 'test.categoryPaidProgram.program.fallbackCard2Desc') "Build strong communication skills through structured lessons and interactive practice.")
             href="#programs"
+            lang=lang
         }}
         {{> components/ui/card/program_showcase/index
             id="#"
-            title="Career & Study Support"
+            title=(default (t 'test.categoryPaidProgram.program.fallbackCard3Title') "Career & Study Support")
             icon="users"
             image="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
-            tag1="Online"
-            tag2="3 Month"
-            tag3="20 Quota"
-            description="Receive support for applications, interviews, and planning your path in Japan."
+            tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
+            tag2=(concat "3 " (default (t 'test.categoryPaidProgram.program.month') "Month"))
+            tag3=(concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota"))
+            description=(default (t 'test.categoryPaidProgram.program.fallbackCard3Desc') "Receive support for applications, interviews, and planning your path in Japan.")
             href="#programs"
+            lang=lang
         }}
       </div>
     {{/if}}
