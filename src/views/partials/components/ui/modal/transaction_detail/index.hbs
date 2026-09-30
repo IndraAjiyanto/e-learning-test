@@ -108,6 +108,41 @@
         return 'INV/' + year + '/' + month + '/' + suffix;
       },
 
+      get priceFormatted() {
+        const val = this.row?.price !== undefined && this.row?.price !== null
+          ? Number(this.row.price)
+          : (this.row?.originalPrice ? Number(this.row.originalPrice) : null);
+        if (val !== null && val > 0) {
+          return 'Rp ' + val.toLocaleString('id-ID');
+        }
+        return '—';
+      },
+
+      get promoPriceFormatted() {
+        const val = this.row?.promo !== undefined && this.row?.promo !== null
+          ? Number(this.row.promo)
+          : null;
+        if (val !== null && val > 0) {
+          return 'Rp ' + val.toLocaleString('id-ID');
+        }
+        return '—';
+      },
+
+      get promoCodeFormatted() {
+        const disc = Number(this.row?.promoCode ?? this.row?.discount ?? 0);
+        if (disc > 0) {
+          return '- Rp ' + disc.toLocaleString('id-ID');
+        }
+        return 'Rp 0';
+      },
+
+      get finalTotalFormatted() {
+        const total = this.row?.finalTotal !== undefined && this.row?.finalTotal !== null
+          ? Number(this.row.finalTotal)
+          : (this.row?.amount !== undefined && this.row?.amount !== null ? Number(this.row.amount) : 0);
+        return 'Rp ' + total.toLocaleString('id-ID');
+      },
+
       get originalPriceFormatted() {
         const orig = Number(this.row?.originalPrice || 0);
         const sub  = Number(this.row?.subtotal || 0);
@@ -657,39 +692,36 @@
         <!-- Divider Bottom: height 1px, background #D8E6F6 -->
         <div class="w-full h-px bg-[#D8E6F6] shrink-0"></div>
 
-        <!-- Summary (Figma: padding 12px 0 0, height 112px) -->
+        <!-- Summary (Figma: padding 12px 0 0, height 145px) -->
         <div class="flex flex-col w-full pt-3 shrink-0">
-          <!-- Harga Normal (dicoret) — hanya tampil kalau ada promo -->
-          <template x-if="originalPriceFormatted">
-            <div>
-              <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-                <span class="font-inter font-normal text-xs text-[#9CA3AF]">{{t "test.transactionDetail.normalPrice"}}</span>
-                <span class="font-inter font-normal text-sm text-[#9CA3AF] line-through" x-text="originalPriceFormatted"></span>
-              </div>
-              <div class="w-full h-px bg-[#D8E6F6]"></div>
-            </div>
-          </template>
-
-          <!-- Harga Row: padding 8px 0px, height 32px -->
+          <!-- 1. Harga Row: padding 8px 0px, height 32px -->
           <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]" x-text="originalPriceFormatted ? '{{t "test.transactionDetail.promoPrice"}}' : '{{t "test.transactionDetail.price"}}'">{{t "test.transactionDetail.price"}}</span>
-            <span class="font-inter font-normal text-[#173B68]" x-text="subtotalFormatted"></span>
+            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.price"}}</span>
+            <span class="font-inter font-normal text-[#9CA3AF] line-through" x-text="priceFormatted"></span>
           </div>
           <!-- Divider Row 1 -->
           <div class="w-full h-px bg-[#D8E6F6]"></div>
 
-          <!-- Discount Row: padding 8px 0px, height 32px -->
+          <!-- 2. Harga Promo Row: padding 8px 0px, height 32px -->
           <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.discount"}}</span>
-            <span class="font-inter font-semibold text-[#EF4444]" x-text="discountFormatted"></span>
+            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.promoPrice"}}</span>
+            <span class="font-inter font-normal text-[#173B68]" x-text="promoPriceFormatted"></span>
           </div>
           <!-- Divider Row 2 -->
           <div class="w-full h-px bg-[#D8E6F6]"></div>
 
-          <!-- Total Row: padding 8px 0px, height 34px -->
+          <!-- 3. Promo Code Row: padding 8px 0px, height 32px -->
+          <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
+            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.promoCode"}}</span>
+            <span class="font-inter font-semibold text-[#EF4444]" x-text="promoCodeFormatted"></span>
+          </div>
+          <!-- Divider Row 3 -->
+          <div class="w-full h-px bg-[#D8E6F6]"></div>
+
+          <!-- 4. Total Row: padding 8px 0px, height 34px -->
           <div class="flex flex-row justify-between items-center w-full py-2">
             <span class="font-inter font-normal text-[13px] leading-4 text-[#6B7280]">{{t "test.transactionDetail.total"}}</span>
-            <span class="font-inter font-bold text-[15px] leading-[18px] text-[#173B68]" x-text="totalFormatted"></span>
+            <span class="font-inter font-bold text-[15px] leading-[18px] text-[#173B68]" x-text="finalTotalFormatted"></span>
           </div>
         </div>
 
