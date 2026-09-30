@@ -394,6 +394,9 @@ export class UsersController {
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
     let initialSection = String(req.query.tab || '') || 'dashboard';
+    if (initialSection === 'portfolio' && requestedCourseId) {
+      initialSection = 'course-portfolio';
+    }
     if (
       initialSection === 'assignment' &&
       !caps.finalAssignment &&

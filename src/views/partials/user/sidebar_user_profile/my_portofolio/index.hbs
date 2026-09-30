@@ -74,6 +74,21 @@
       return list;
     },
 
+    getFirstImage(item) {
+      if (!item) return 'https://placehold.co/600x400/003060/FFFFFF?text=Kesatria+Portfolio';
+      if (Array.isArray(item.images) && item.images.length > 0) return item.images[0];
+      if (Array.isArray(item.image) && item.image.length > 0) return item.image[0];
+      if (typeof item.image === 'string' && item.image.trim() !== '') return item.image;
+      return 'https://placehold.co/600x400/003060/FFFFFF?text=Kesatria+Portfolio';
+    },
+
+    getUserInitial(item) {
+      if (item && item.author && item.author.trim() !== '') {
+        return item.author.charAt(0).toUpperCase();
+      }
+      return 'A';
+    },
+
     init() {
       let payload = { currentUserId: '', course: null, items: [] };
       const island = document.getElementById('portfolio-data');
@@ -668,150 +683,95 @@
     </div>
 
     <!-- HAS DATA STATE: Portfolios Grid -->
-    <div x-show="filteredPortfolios().length > 0" class="grid w-full grid-cols-1 gap-6 pb-12 xl:grid-cols-2">
+    <div x-show="filteredPortfolios().length > 0" class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
       <template x-for="item in filteredPortfolios()" :key="item.id">
         {{!-- Pengait untuk pemeriksaan UI: satu kartu, satu id. --}}
         <div
           :data-portfolio-id="item.id"
-          class="flex h-auto w-full flex-col justify-between rounded-xl border border-[#E5E7EB] bg-white p-5 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] 2xl:h-[686px] 2xl:p-6"
+          class="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] transition-all duration-300 flex flex-col overflow-hidden group"
         >
-          <div>
-            <!-- Badge: Program Type + penanda karya sendiri -->
-            <div class="mb-4 flex flex-wrap items-center gap-2">
-              <span class="inline-flex h-8 max-w-[160px] items-center justify-center truncate rounded-md bg-[#0B1F3B1A] p-1 font-inter text-xs font-medium text-black" x-text="item.classType"></span>
-              <span
-                x-show="item.isMine"
-                class="inline-flex h-8 items-center justify-center rounded-md bg-[#E0F2F9] px-2.5 font-inter text-xs font-semibold text-[#0369A1]"
-              >
-                {{t 'test.myPortfolio.gallery.yoursBadge'}}
-              </span>
-            </div>
-
-            <!-- Portfolio Image Slider Container -->
-            <div class="group relative mb-4 h-[200px] overflow-hidden rounded-[12px] bg-slate-200 2xl:h-[262px]" x-data="{ currentImg: 0 }">
-              <!-- Images -->
-              {{!-- Portfolio tanpa gambar dulu diisi foto stok Unsplash -
-                   karya orang lain tampil seolah karya student. Sekarang
-                   keadaan kosongnya disebut apa adanya. --}}
-              <template x-if="!item.images || item.images.length === 0">
-                <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#94A3B8]">
-                  <i class="fa-regular fa-image text-2xl"></i>
-                  <span class="font-inter text-xs">{{t 'test.myPortfolio.noImageUploaded'}}</span>
-                </div>
-              </template>
-              <template x-for="(imgSrc, imgIdx) in (item.images || [])" :key="imgIdx">
-                <img
-                  :src="imgSrc"
-                  :alt="item.title"
-                  onerror="this.remove()"
-                  x-show="currentImg === imgIdx"
-                  x-transition:enter="transition ease-out duration-300"
-                  x-transition:enter-start="opacity-0 scale-95"
-                  x-transition:enter-end="opacity-100 scale-100"
-                  class="absolute inset-0 h-full w-full object-cover"
-                >
-              </template>
-
-              <!-- Left/Right Arrow Navigation Controls (only if > 1 image) -->
-              <template x-if="item.images && item.images.length > 1">
-                <div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-between p-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button
-                    type="button"
-                    @click.stop="currentImg = (currentImg === 0) ? item.images.length - 1 : currentImg - 1"
-                    class="pointer-events-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white shadow-md transition-transform hover:bg-black active:scale-95"
-                  >
-                    <i class="fa-solid fa-chevron-left text-xs"></i>
-                  </button>
-                  <button
-                    type="button"
-                    @click.stop="currentImg = (currentImg === item.images.length - 1) ? 0 : currentImg + 1"
-                    class="pointer-events-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white shadow-md transition-transform hover:bg-black active:scale-95"
-                  >
-                    <i class="fa-solid fa-chevron-right text-xs"></i>
-                  </button>
-                </div>
-              </template>
-
-              <!-- Indicator Dots (only if > 1 image) -->
-              <template x-if="item.images && item.images.length > 1">
-                <div class="pointer-events-none absolute bottom-2 left-0 right-0 z-10 flex items-center justify-center gap-1.5">
-                  <template x-for="(imgSrc, imgIdx) in item.images" :key="imgIdx">
-                    <button
-                      type="button"
-                      @click.stop="currentImg = imgIdx"
-                      class="pointer-events-auto h-1.5 cursor-pointer rounded-full transition-all"
-                      :class="currentImg === imgIdx ? 'w-4 bg-white' : 'w-1.5 bg-white/60 hover:bg-white'"
-                    ></button>
-                  </template>
-                </div>
-              </template>
-            </div>
-
-            <!-- Title -->
-            <h3 class="mb-3 font-inter text-lg font-semibold leading-snug text-[#003060]" x-text="item.title"></h3>
-
-            <!-- Description -->
-            <p class="mb-4 line-clamp-2 font-inter text-sm font-normal leading-relaxed text-black" x-text="item.description"></p>
-
-            <!-- Technologies Tags -->
-            <div class="mb-5 flex flex-wrap gap-2">
-              <template x-for="tech in (item.technologies || [])" :key="tech.id || tech.name">
-                <span class="inline-flex items-center gap-1.5 rounded-[6px] bg-[#CFE6F5] px-3 py-1.5 font-inter text-sm font-medium text-[#003060] 2xl:text-base">
-                  <template x-if="tech.svg">
-                    <span x-html="tech.svg" class="w-4 h-4 flex-shrink-0 [&>svg]:w-4 [&>svg]:h-4"></span>
-                  </template>
-                  <template x-if="!tech.svg && tech.imgUrl">
-                    <img :src="tech.imgUrl" :alt="tech.name" class="w-4 h-4 flex-shrink-0 object-contain">
-                  </template>
-                  <span x-text="tech.name"></span>
-                </span>
-              </template>
-              <template x-if="!item.technologies || item.technologies.length === 0">
-                <span class="inline-flex items-center gap-2 rounded-[6px] bg-[#CFE6F5] px-3 py-1.5 font-inter text-sm font-medium text-[#003060] 2xl:text-base" x-text="item.category"></span>
-              </template>
-            </div>
-
-            <!-- Author Info Row -->
-            <div class="mb-5 flex items-center gap-2.5">
-              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E0F1F9] font-semibold text-xs text-[#003060]">
-                <img :src="item.avatar" alt="" class="h-full w-full object-cover" onerror="this.style.display='none'">
-                <span x-text="item.author.charAt(0)"></span>
-              </div>
-              <div class="flex min-w-0 flex-col">
-                <span class="mb-0.5 truncate font-inter text-sm font-semibold leading-none text-black" x-text="item.author"></span>
-                <span class="truncate font-sans text-xs font-normal leading-[15px] text-[#666666]" x-text="item.email"></span>
-              </div>
-            </div>
+          <!-- Image Mockup / Cover -->
+          <div class="relative aspect-[16/10] w-full bg-gray-100 overflow-hidden rounded-t-2xl">
+            <img
+              :src="getFirstImage(item)"
+              :alt="item.title"
+              loading="lazy"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              onerror="this.src='https://placehold.co/600x400/003060/FFFFFF?text=Kesatria+Portfolio'"
+            />
           </div>
 
-          {{!-- Edit dan Delete hanya untuk karya sendiri. Rute PATCH dan
-               DELETE-nya menolak portfolio student lain juga, jadi ini
-               sekadar supaya orang tidak offered tombol yang pasti ditolak. --}}
-          <div class="flex flex-col gap-2">
-            <button
-              type="button"
-              @click="selectedPortfolio = item; showDetail = true;"
-              class="flex h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-[#003060] text-center font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f]"
-            >
-              {{t 'test.myPortfolio.viewDetailButton'}}
-            </button>
-            <div x-show="item.isMine" class="flex items-center gap-2">
+          <!-- Card Body -->
+          <div class="p-5 flex-1 flex flex-col">
+            <!-- Badges Row -->
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <!-- Category Badge -->
+              <span
+                class="inline-flex items-center px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#EEF2FF] text-[#4F46E5]"
+                x-text="item.category || 'General'"
+              ></span>
+              <!-- Class Type Badge -->
+              <span
+                class="inline-flex items-center px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#F1F5F9] text-[#64748B]"
+                x-text="item.classType || 'Program'"
+              ></span>
+            </div>
+
+            <!-- Project Title -->
+            <h3
+              class="font-bold text-[#0B1F3B] text-base leading-snug mb-4 line-clamp-2 min-h-[44px] group-hover:text-[#003060] transition-colors font-inter"
+              x-text="item.title || 'Untitled Project'"
+              :title="item.title"
+            ></h3>
+
+            <!-- Author Info Row -->
+            <div class="flex items-center gap-2.5 pt-3 border-t border-gray-100 mb-4">
+              <div class="size-8 rounded-full bg-[#E2E8F0] text-[#003060] font-bold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-gray-200">
+                <template x-if="item.avatar">
+                  <img :src="item.avatar" :alt="item.author" class="w-full h-full object-cover">
+                </template>
+                <template x-if="!item.avatar">
+                  <span x-text="getUserInitial(item)"></span>
+                </template>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p
+                  class="text-xs font-bold text-[#0B1F3B] truncate leading-tight"
+                  x-text="item.author || 'Alumni'"
+                ></p>
+                <p class="text-[11px] text-[#94A3B8] font-normal truncate leading-tight mt-0.5">
+                  {{t "test.portfolio.alumniRole"}}
+                </p>
+              </div>
+            </div>
+
+            <!-- Action Button: Detail / Edit / Delete -->
+            <div class="mt-auto space-y-2">
               <button
                 type="button"
-                @click="openEditPortfolio(item)"
-                class="flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#D4D4D4] bg-white font-inter text-sm font-medium leading-none text-[#003060] transition-colors hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
+                @click="selectedPortfolio = item; showDetail = true;"
+                class="w-full py-2.5 px-4 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 text-[#0B1F3B] text-xs font-semibold rounded-xl text-center transition-all block shadow-none cursor-pointer"
               >
-                <i class="fa-regular fa-pen-to-square text-xs"></i>
-                {{t 'test.myPortfolio.editButton'}}
+                {{t "test.portfolio.detailButton"}}
               </button>
-              <button
-                type="button"
-                @click="askDeletePortfolio(item)"
-                class="flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#fca5a5] bg-[#fef2f2] font-inter text-sm font-medium leading-none text-[#ef4444] transition-colors hover:bg-[#fee2e2]"
-              >
-                <i class="fa-regular fa-trash-can text-xs"></i>
-                {{t 'test.myPortfolio.deleteButton'}}
-              </button>
+              <div x-show="item.isMine" class="flex items-center gap-2">
+                <button
+                  type="button"
+                  @click="openEditPortfolio(item)"
+                  class="flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-[#D4D4D4] bg-white font-inter text-xs font-medium text-[#003060] transition-colors hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
+                >
+                  <i class="fa-regular fa-pen-to-square text-[11px]"></i>
+                  {{t 'test.myPortfolio.editButton'}}
+                </button>
+                <button
+                  type="button"
+                  @click="askDeletePortfolio(item)"
+                  class="flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-[#fca5a5] bg-[#fef2f2] font-inter text-xs font-medium text-[#ef4444] transition-colors hover:bg-[#fee2e2]"
+                >
+                  <i class="fa-regular fa-trash-can text-[11px]"></i>
+                  {{t 'test.myPortfolio.deleteButton'}}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -43,7 +43,7 @@ export class PortfoliosController {
    */
   private portfolioRedirectUrl(courseId?: string) {
     const query = courseId
-      ? `?tab=portfolio&courseId=${encodeURIComponent(courseId)}`
+      ? `?tab=course-portfolio&courseId=${encodeURIComponent(courseId)}`
       : '?tab=portfolio';
     return `/users/profile${query}`;
   }
