@@ -21,18 +21,18 @@
     <!-- badge -->
     <div class="inline-flex items-center px-3 py-1.5 bg-[#003060]/[0.05] rounded-full">
       <span class="font-inter font-bold text-[12px] leading-[16px] uppercase tracking-wider text-[#003060]">
-        SHORT CLASS REGISTRATION
+        {{default (t 'test.freeProgram.registrationModal.badge') 'SHORT CLASS REGISTRATION'}}
       </span>
     </div>
 
     <!-- title -->
     <h1 class="font-inter font-bold text-[28px] sm:text-[32px] leading-[36px] sm:leading-[40px] text-[#003060] m-0">
-      Short Class Registration
+      {{default (t 'test.freeProgram.registrationModal.title') 'Short Class Registration'}}
     </h1>
 
     <!-- subtitle -->
     <p class="font-inter font-normal text-[14px] sm:text-[15px] leading-[20px] text-[#64748B] m-0">
-      Please complete the form below to confirm your registration
+      {{default (t 'test.freeProgram.registrationModal.subtitle') 'Please complete the form below to confirm your registration'}}
     </p>
   </div>
 
@@ -46,7 +46,7 @@
       <div class="w-full flex flex-col gap-2">
         <div class="flex items-center gap-1">
           <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            Your Program
+            {{default (t 'test.freeProgram.registrationModal.yourProgram') 'Your Program'}}
           </label>
           <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
         </div>
@@ -66,7 +66,7 @@
       <div class="w-full flex flex-col gap-2">
         <div class="flex items-center gap-1">
           <label for="user_fullname" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            Full Name
+            {{default (t 'test.freeProgram.registrationModal.fullName') 'Full Name'}}
           </label>
           <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
         </div>
@@ -76,7 +76,7 @@
           name="user_fullname"
           value="{{#if user.fullname}}{{user.fullname}}{{else}}{{user.username}}{{/if}}"
           required
-          placeholder="Input Your Full Name"
+          placeholder="{{default (t 'test.freeProgram.registrationModal.fullNamePlaceholder') 'Input Your Full Name'}}"
           class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
         />
       </div>
@@ -87,7 +87,7 @@
         <div class="w-full sm:flex-1 flex flex-col gap-2">
           <div class="flex items-center gap-1">
             <label for="user_email" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-              Email
+              {{default (t 'test.freeProgram.registrationModal.email') 'Email'}}
             </label>
             <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
           </div>
@@ -97,7 +97,7 @@
             name="user_email"
             value="{{user.email}}"
             required
-            placeholder="Input Your Email"
+            placeholder="{{default (t 'test.freeProgram.registrationModal.emailPlaceholder') 'Input Your Email'}}"
             class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
           />
         </div>
@@ -106,7 +106,7 @@
         <div class="w-full sm:flex-1 flex flex-col gap-2">
           <div class="flex items-center gap-1">
             <label for="user_no" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-              WhatsApp Number
+              {{default (t 'test.freeProgram.registrationModal.whatsapp') 'WhatsApp Number'}}
             </label>
             <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
           </div>
@@ -116,7 +116,7 @@
             name="user_no"
             value="{{user.no_telp}}"
             required
-            placeholder="Input Your WhatsApp Number"
+            placeholder="{{default (t 'test.freeProgram.registrationModal.whatsappPlaceholder') 'Input Your WhatsApp Number'}}"
             class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
           />
         </div>
@@ -126,7 +126,7 @@
       <div class="w-full flex flex-col gap-2">
         <div class="flex items-center gap-1">
           <label for="current_status" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            Current Status
+            {{default (t 'test.freeProgram.registrationModal.currentStatus') 'Current Status'}}
           </label>
           <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
         </div>
@@ -137,19 +137,19 @@
             required
             class="w-full h-[48px] px-4 pr-10 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors appearance-none cursor-pointer"
           >
-            <option value="" disabled selected hidden>Select your current status</option>
+            <option value="" disabled selected hidden>{{default (t 'test.freeProgram.registrationModal.selectStatus') 'Select your current status'}}</option>
             {{#if currentStatusOptions}}
               {{#each currentStatusOptions}}
                 <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
               {{/each}}
             {{else}}
-              <option value="University Student" class="text-[#0F172A] font-inter">University Student</option>
-              <option value="Fresh Graduate" class="text-[#0F172A] font-inter">Fresh Graduate</option>
-              <option value="Job Seeker" class="text-[#0F172A] font-inter">Job Seeker</option>
-              <option value="Employee" class="text-[#0F172A] font-inter">Employee</option>
-              <option value="Freelancer" class="text-[#0F172A] font-inter">Freelancer</option>
-              <option value="Entrepreneur" class="text-[#0F172A] font-inter">Entrepreneur</option>
-              <option value="Other" class="text-[#0F172A] font-inter">Other</option>
+              <option value="University Student" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.universityStudent') 'University Student'}}</option>
+              <option value="Fresh Graduate" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freshGraduate') 'Fresh Graduate'}}</option>
+              <option value="Job Seeker" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.jobSeeker') 'Job Seeker'}}</option>
+              <option value="Employee" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.employee') 'Employee'}}</option>
+              <option value="Freelancer" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freelancer') 'Freelancer'}}</option>
+              <option value="Entrepreneur" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.entrepreneur') 'Entrepreneur'}}</option>
+              <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.other') 'Other'}}</option>
             {{/if}}
           </select>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#64748B]">
@@ -164,7 +164,7 @@
       <div class="w-full flex flex-col gap-2">
         <div class="flex items-center gap-1">
           <label for="referal_source" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            How did you know About the program?
+            {{default (t 'test.freeProgram.registrationModal.referalSource') 'How did you know About the program?'}}
           </label>
           <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
         </div>
@@ -175,21 +175,21 @@
             required
             class="w-full h-[48px] px-4 pr-10 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors appearance-none cursor-pointer"
           >
-            <option value="" disabled selected hidden>Select Option</option>
+            <option value="" disabled selected hidden>{{default (t 'test.freeProgram.registrationModal.selectOption') 'Select Option'}}</option>
             {{#if referalSourceOptions}}
               {{#each referalSourceOptions}}
                 <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
               {{/each}}
             {{else}}
-              <option value="Instagram" class="text-[#0F172A] font-inter">Instagram</option>
-              <option value="TikTok" class="text-[#0F172A] font-inter">TikTok</option>
-              <option value="LinkedIn" class="text-[#0F172A] font-inter">LinkedIn</option>
-              <option value="Friends" class="text-[#0F172A] font-inter">Friends</option>
-              <option value="University" class="text-[#0F172A] font-inter">University</option>
-              <option value="WhatsApp Group" class="text-[#0F172A] font-inter">WhatsApp Group</option>
-              <option value="Webinar/Event" class="text-[#0F172A] font-inter">Webinar/Event</option>
-              <option value="Website" class="text-[#0F172A] font-inter">Website</option>
-              <option value="Other" class="text-[#0F172A] font-inter">Other</option>
+              <option value="Instagram" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.instagram') 'Instagram'}}</option>
+              <option value="TikTok" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.tiktok') 'TikTok'}}</option>
+              <option value="LinkedIn" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.linkedin') 'LinkedIn'}}</option>
+              <option value="Friends" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.friends') 'Friends'}}</option>
+              <option value="University" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.university') 'University'}}</option>
+              <option value="WhatsApp Group" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.whatsappGroup') 'WhatsApp Group'}}</option>
+              <option value="Webinar/Event" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.webinar') 'Webinar/Event'}}</option>
+              <option value="Website" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.website') 'Website'}}</option>
+              <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.other') 'Other'}}</option>
             {{/if}}
           </select>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#64748B]">
@@ -204,7 +204,7 @@
       <div class="w-full flex flex-col gap-3">
         <div class="flex items-center gap-1">
           <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            Will you attend this program?
+            {{default (t 'test.freeProgram.registrationModal.willAttend') 'Will you attend this program?'}}
           </label>
           <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
         </div>
@@ -218,7 +218,7 @@
               <div class="radio-inner w-2.5 h-2.5 rounded-full bg-[#003060]"></div>
             </div>
             <span class="radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]">
-              Yes, I will attend
+              {{default (t 'test.freeProgram.registrationModal.yesAttend') 'Yes, I will attend'}}
             </span>
           </label>
 
@@ -229,7 +229,7 @@
               <div class="radio-inner w-2.5 h-2.5 rounded-full bg-[#003060] hidden"></div>
             </div>
             <span class="radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]">
-              No, I can't attend
+              {{default (t 'test.freeProgram.registrationModal.noAttend') "No, I can't attend"}}
             </span>
           </label>
         </div>
@@ -238,7 +238,7 @@
       <!-- field-consent -->
       <div class="w-full pt-2 flex flex-col gap-3">
         <p class="font-inter font-semibold text-[15px] leading-[20px] text-[#003060] m-0">
-          I agree to receive seminar updates via email or WhatsApp.
+          {{default (t 'test.freeProgram.registrationModal.consentText') 'I agree to receive seminar updates via email or WhatsApp.'}}
         </p>
         <label class="inline-flex items-center gap-3 cursor-pointer select-none w-fit group">
           <div class="relative flex items-center justify-center">
@@ -255,7 +255,7 @@
             </svg>
           </div>
           <span class="font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]">
-            Yes, I agree
+            {{default (t 'test.freeProgram.registrationModal.yesAgree') 'Yes, I agree'}}
           </span>
         </label>
       </div>
@@ -274,8 +274,8 @@
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
       <div class="flex-1">
-        <p id="form-error-title" class="font-semibold m-0">Pendaftaran Gagal</p>
-        <p id="form-error-message" class="font-normal text-[13px] mt-0.5 text-[#B91C1C] m-0">Terjadi kesalahan saat mendaftar. Silakan coba lagi.</p>
+        <p id="form-error-title" class="font-semibold m-0">{{default (t 'test.freeProgram.registrationModal.errorTitle') 'Registration Failed'}}</p>
+        <p id="form-error-message" class="font-normal text-[13px] mt-0.5 text-[#B91C1C] m-0">{{default (t 'test.freeProgram.registrationModal.errorDefault') 'An error occurred while registering. Please try again.'}}</p>
       </div>
       <button
         type="button"
@@ -296,7 +296,7 @@
         @click="closeRegistrationModal()"
         class="w-full sm:flex-1 h-[49px] px-7 rounded-lg border-[1.5px] border-[#003060] bg-transparent hover:bg-[#003060]/[0.05] font-inter font-semibold text-[16px] leading-[21px] text-[#003060] flex items-center justify-center transition-all cursor-pointer focus:outline-none"
       >
-        Cancel
+        {{default (t 'test.freeProgram.registrationModal.btnCancel') 'Cancel'}}
       </button>
 
       <!-- button-register -->
@@ -305,7 +305,7 @@
         id="btn-register-form"
         class="w-full sm:flex-1 h-[49px] px-7 rounded-lg bg-[#003060] hover:bg-[#002244] shadow-[0px_4px_12px_rgba(0,48,96,0.2)] font-inter font-semibold text-[16px] leading-[21px] text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none relative"
       >
-        <span id="btn-register-text">Register Now</span>
+        <span id="btn-register-text">{{default (t 'test.freeProgram.registrationModal.btnRegister') 'Register Now'}}</span>
         <span id="btn-register-spinner" class="hidden absolute inset-0 flex items-center justify-center">
           <i class="fa-solid fa-spinner fa-spin text-white"></i>
         </span>
@@ -336,12 +336,12 @@
       <div class="w-full flex flex-col items-center gap-3 text-center">
         <!-- You're all set. -->
         <h2 class="font-inter font-bold text-[26px] sm:text-[32px] leading-[32px] sm:leading-[40px] text-[#003060] m-0 text-center">
-          You're all set.
+          {{default (t 'test.freeProgram.registrationModal.successTitle') "You're all set."}}
         </h2>
 
         <!-- Description -->
         <p class="font-inter font-normal text-[15px] sm:text-[18px] leading-[24px] sm:leading-[30px] text-[#4B6470] m-0 text-center">
-          Your program registration is confirmed. We'll send updates, reminders, and everything you need before the scheduled date.
+          {{default (t 'test.freeProgram.registrationModal.successDesc') "Your program registration is confirmed. We'll send updates, reminders, and everything you need before the scheduled date."}}
         </p>
       </div>
 
@@ -353,7 +353,7 @@
       id="btn-continue-dashboard"
       class="w-full h-[52px] py-4 px-6 bg-[#003060] hover:bg-[#002244] shadow-[0px_10px_24px_rgba(0,48,96,0.121569)] rounded-[14px] font-inter font-semibold text-[16px] leading-[20px] text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
     >
-      Continue to dashboard
+      {{default (t 'test.freeProgram.registrationModal.btnContinueDashboard') 'Continue to dashboard'}}
     </button>
 
   </div>
@@ -364,6 +364,13 @@
     // Inject ID dari Backend Handlebars
     const USER_ID = "{{user.id}}";
     const COURSE_ID = "{{course.id}}";
+
+    const MSG_ERROR_TITLE = "{{default (t 'test.freeProgram.registrationModal.errorTitle') 'Registration Failed'}}";
+    const MSG_SELECT_STATUS = "{{default (t 'test.freeProgram.registrationModal.validation.selectStatus') 'Please select your current status.'}}";
+    const MSG_SELECT_SOURCE = "{{default (t 'test.freeProgram.registrationModal.validation.selectSource') 'Please select how you knew about this program.'}}";
+    const MSG_ALREADY_REGISTERED = "{{default (t 'test.freeProgram.registrationModal.validation.alreadyRegistered') 'Registration failed or you have already registered for this program.'}}";
+    const MSG_ERROR_DEFAULT = "{{default (t 'test.freeProgram.registrationModal.errorDefault') 'An error occurred while processing registration.'}}";
+    const MSG_NETWORK_ERROR = "{{default (t 'test.freeProgram.registrationModal.validation.networkError') 'Failed to connect to the server. Please check your internet connection and try again.'}}";
 
     const form = document.getElementById('short-class-form');
     const successModal = document.getElementById('success-popup-modal');
@@ -389,7 +396,7 @@
       successModal.classList.add('visible', 'opacity-100');
     }
 
-    function showError(message, title = 'Pendaftaran Gagal') {
+    function showError(message, title = MSG_ERROR_TITLE) {
       const errorAlert = document.getElementById('form-error-alert');
       const errorTitle = document.getElementById('form-error-title');
       const errorMsg = document.getElementById('form-error-message');
@@ -440,13 +447,13 @@
         const sourceSelect = document.getElementById('referal_source');
 
         if (!statusSelect || !statusSelect.value) {
-          showError('Silakan pilih status Anda saat ini (Current Status).');
+          showError(MSG_SELECT_STATUS);
           statusSelect?.focus();
           return;
         }
 
         if (!sourceSelect || !sourceSelect.value) {
-          showError('Silakan pilih dari mana Anda mengetahui program ini (How did you know about the program).');
+          showError(MSG_SELECT_SOURCE);
           sourceSelect?.focus();
           return;
         }
@@ -498,14 +505,14 @@
             const errorMessage =
               responseData?.message ||
               (response.status === 400
-                ? 'Pendaftaran gagal atau kamu sudah pernah mendaftar program ini.'
-                : 'Terjadi kesalahan saat memproses pendaftaran.');
+                ? MSG_ALREADY_REGISTERED
+                : MSG_ERROR_DEFAULT);
             showError(errorMessage);
           }
         } catch (error) {
           console.error('Registration error:', error);
           showError(
-            error.message || 'Gagal menghubungi server. Periksa koneksi internet Anda dan coba lagi.'
+            error.message || MSG_NETWORK_ERROR
           );
         } finally {
           if (registerBtn) registerBtn.disabled = false;

@@ -23,18 +23,10 @@
     {{!-- section-header (Figma Node 1158:4244) --}}
     <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
       <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[40px] font-bold leading-[1.2] tracking-tight text-[#0B1F3B]">
-        {{#if (eq lang 'id')}}
-          Mengapa Memilih <span class="text-[#6EB6E5]">{{#if category.name}}{{category.name}}{{else}}Program Kami{{/if}}</span>?
-        {{else}}
-          Why Choose <span class="text-[#6EB6E5]">{{#if category.name}}{{category.name}}{{else}}Our Japan Program{{/if}}</span>?
-        {{/if}}
+        {{default (t 'test.categoryFreeProgram.benefit.sectionTitlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if category.name}}{{category.name}}{{else}}{{default (t 'test.categoryFreeProgram.benefit.defaultProgramName') 'Our Program'}}{{/if}}</span>?
       </h2>
       <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
-        {{#if (eq lang 'id')}}
-          Dapatkan keterampilan, kemahiran bahasa, dan pemahaman budaya yang dibutuhkan untuk meraih peluang studi atau karier di Jepang dengan bimbingan komprehensif dari mentor berpengalaman.
-        {{else}}
-          Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.
-        {{/if}}
+        {{default (t 'test.categoryFreeProgram.benefit.sectionDesc') 'Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.'}}
       </p>
     </div>
 
@@ -64,10 +56,10 @@
             <i class="fa-solid fa-book-open text-lg"></i>
           </div>
           <h3 class="font-montserrat text-lg font-bold leading-snug text-[#0B1F3B]">
-            {{#if (eq lang 'id')}}Pelatihan Bahasa Jepang Komprehensif{{else}}Comprehensive Japanese Language Training{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item1Title') 'Comprehensive Japanese Language Training'}}
           </h3>
           <p class="font-inter text-sm leading-[160%] text-[#6B7280]">
-            {{#if (eq lang 'id')}}Bangun keterampilan komunikasi bahasa Jepang yang kuat melalui pelajaran terstruktur yang mencakup berbicara, mendengar, membaca, dan menulis untuk penggunaan sehari-hari maupun profesional.{{else}}Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item1Desc') 'Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.'}}
           </p>
         </div>
 
@@ -77,10 +69,10 @@
             <i class="fa-solid fa-users text-lg"></i>
           </div>
           <h3 class="font-montserrat text-lg font-bold leading-snug text-[#0B1F3B]">
-            {{#if (eq lang 'id')}}Instruktur Berpengalaman{{else}}Experienced Instructors{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item2Title') 'Experienced Instructors'}}
           </h3>
           <p class="font-inter text-sm leading-[160%] text-[#6B7280]">
-            {{#if (eq lang 'id')}}Belajar dari mentor berpengalaman yang memberikan wawasan praktis, bimbingan personal, dan metode pengajaran yang efektif di sepanjang perjalanan belajar Anda.{{else}}Learn from experienced mentors who provide practical insights, personalized guidance, and effective teaching methods throughout your learning journey.{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item2Desc') 'Learn from experienced mentors who provide practical insights, personalized guidance, and effective teaching methods throughout your learning journey.'}}
           </p>
         </div>
 
@@ -90,10 +82,10 @@
             <i class="fa-solid fa-award text-lg"></i>
           </div>
           <h3 class="font-montserrat text-lg font-bold leading-snug text-[#0B1F3B]">
-            {{#if (eq lang 'id')}}Persiapan Ujian JLPT{{else}}JLPT Preparation{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item3Title') 'JLPT Preparation'}}
           </h3>
           <p class="font-inter text-sm leading-[160%] text-[#6B7280]">
-            {{#if (eq lang 'id')}}Persiapkan diri untuk JLPT dengan materi belajar komprehensif, latihan ujian, dan strategi teruji untuk membantu Anda meraih level target.{{else}}Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item3Desc') 'Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.'}}
           </p>
         </div>
 
@@ -103,10 +95,10 @@
             <i class="fa-solid fa-briefcase text-lg"></i>
           </div>
           <h3 class="font-montserrat text-lg font-bold leading-snug text-[#0B1F3B]">
-            {{#if (eq lang 'id')}}Dukungan Karier & Studi{{else}}Career & Study Support{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item4Title') 'Career & Study Support'}}
           </h3>
           <p class="font-inter text-sm leading-[160%] text-[#6B7280]">
-            {{#if (eq lang 'id')}}Dapatkan bimbingan untuk melanjutkan studi, magang, atau peluang karier di Jepang, termasuk persiapan wawancara dan bantuan aplikasi.{{else}}Receive guidance for pursuing study, internship, or career opportunities in Japan, including interview preparation and application assistance.{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item4Desc') 'Receive guidance for pursuing study, internship, or career opportunities in Japan, including interview preparation and application assistance.'}}
           </p>
         </div>
 
@@ -116,10 +108,10 @@
             <i class="fa-solid fa-handshake text-lg"></i>
           </div>
           <h3 class="font-montserrat text-lg font-bold leading-snug text-[#0B1F3B]">
-            {{#if (eq lang 'id')}}Pembelajaran Praktik & Interaktif{{else}}Hands-On & Interactive Learning{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item5Title') 'Hands-On & Interactive Learning'}}
           </h3>
           <p class="font-inter text-sm leading-[160%] text-[#6B7280]">
-            {{#if (eq lang 'id')}}Belajar melalui kegiatan interaktif, percakapan kehidupan nyata, simulasi peran, dan latihan praktis yang membangun rasa percaya diri serta kemampuan komunikasi nyata.{{else}}Learn through interactive activities, real-life conversations, role-playing, and practical exercises that build confidence and real-world communication skills.{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item5Desc') 'Learn through interactive activities, real-life conversations, role-playing, and practical exercises that build confidence and real-world communication skills.'}}
           </p>
         </div>
 
@@ -129,10 +121,10 @@
             <i class="fa-solid fa-location-dot text-lg"></i>
           </div>
           <h3 class="font-montserrat text-lg font-bold leading-snug text-[#0B1F3B]">
-            {{#if (eq lang 'id')}}Budaya Jepang & Kesiapan Kerja{{else}}Japanese Culture & Workplace Readiness{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item6Title') 'Japanese Culture & Workplace Readiness'}}
           </h3>
           <p class="font-inter text-sm leading-[160%] text-[#6B7280]">
-            {{#if (eq lang 'id')}}Pahami budaya Jepang, etika tempat kerja, dan komunikasi profesional untuk beradaptasi dengan percaya diri saat tinggal dan bekerja di Jepang.{{else}}Understand Japanese culture, workplace etiquette, and professional communication to confidently adapt to life and work in Japan.{{/if}}
+            {{default (t 'test.categoryFreeProgram.benefit.items.item6Desc') 'Understand Japanese culture, workplace etiquette, and professional communication to confidently adapt to life and work in Japan.'}}
           </p>
         </div>
 
