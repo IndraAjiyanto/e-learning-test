@@ -10,6 +10,7 @@ import { UserAssignment } from 'src/entities/user_assignment.entity';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
+import { Weeks } from 'src/entities/weeks.entity';
 import { CreateFinalAssignmentDto } from './dto/create-final-assignment.dto';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { randomUUID } from 'crypto';
@@ -232,6 +233,51 @@ export class FinalAssignmentService {
       commentHistory: [],
     });
     return this.userAssignmentRepo.save(submission);
+  }
+
+  /**
+   * Final assignment terkunci jika program memiliki week dan peserta belum
+   * menyelesaikan seluruh week (ditandai dengan userCourse.progress = true
+   * atau seluruh week telah lulus kuis).
+   */
+  async isLocked(courseId: string, userId: string): Promise<boolean> {
+    if (!courseId || !userId) {
+      return false;
+    }
+
+    const weeks = await this.finalAssignmentRepo.manager
+      .getRepository(Weeks)
+      .createQueryBuilder('weeks')
+      .leftJoinAndSelect(
+        'weeks.weekProgresses',
+        'weekProgresses',
+        'weekProgresses.userId = :userId',
+        { userId },
+      )
+      .where('weeks.courseId = :courseId', { courseId })
+      .orderBy('weeks.week_number', 'ASC')
+      .getMany();
+
+    if (!weeks || weeks.length === 0) {
+      return false;
+    }
+
+    const userCourse = await this.userCourseRepo.findOne({
+      where: {
+        course: { id: courseId },
+        user: { id: userId },
+      },
+    });
+
+    if (userCourse?.progress) {
+      return false;
+    }
+
+    const allWeeksCompleted = weeks.every((w) =>
+      w.weekProgresses?.some((wp) => wp.quiz === true),
+    );
+
+    return !allWeeksCompleted;
   }
 }
 

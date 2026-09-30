@@ -89,12 +89,17 @@ export class FinalAssignmentController {
       finalAssignment.id,
       userId,
     );
+    const isLocked = await this.finalAssignmentService.isLocked(
+      finalAssignment.courseId,
+      userId,
+    );
 
     return res.render('user/learning/final_assignment', {
       user: req.user,
       finalAssignment,
       submission,
       bareShell: true,
+      isLocked,
     });
   }
 
@@ -139,6 +144,16 @@ export class FinalAssignmentController {
           finalAssignmentId,
           userId,
         );
+
+      const isLocked = await this.finalAssignmentService.isLocked(
+        finalAssignment.courseId,
+        userId,
+      );
+      if (isLocked) {
+        throw new BadRequestException(
+          'Final assignment is locked. Please complete all weeks first.',
+        );
+      }
 
       // `submitAssignment` selalu menulis ulang status jadi 'process', jadi tanpa
       // penjaga di sini satu POST cukup untuk mengembalikan nilai yang sudah
