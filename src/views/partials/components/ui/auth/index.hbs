@@ -293,7 +293,7 @@
 
       {{!-- ICON / LOGO --}}
       {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-        <div class="flex justify-center w-full mt-32">
+        <div class="flex justify-center w-full mb-6">
           {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto text-[#003060]") wrapperClass="text-[#003060]" }}
         </div>
       {{else}}
@@ -302,7 +302,7 @@
 
       {{!-- ICON KHUSUS (Email / Success) --}}
       {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-        <div class="flex items-center justify-center {{#if (eq variant 'verify-email-success')}}-mt-32{{else}}-mt-40{{/if}}">
+        <div class="flex items-center justify-center mb-6">
           {{#if (eq variant 'verify-email-success')}}
             {{!-- Success Icon SVG --}}
             <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="-2 -2 78 78" fill="none">
