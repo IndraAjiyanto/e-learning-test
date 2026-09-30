@@ -1403,49 +1403,67 @@
     "mentorNote": "Catatan mentor",
     "backToAssignmentList": "Kembali ke daftar tugas",
     "submissionFailed": "Karyamu belum terkirim. Silakan coba lagi.",
-    "finalAssignmentNoContent": "Belum ada isi untuk tugas akhir ini."
+    "finalAssignmentNoContent": "Belum ada isi untuk tugas akhir ini.",
+    "finalAssignmentLocked": "Tugas Akhir Masih Terkunci",
+    "finalAssignmentLockedHint": "Selesaikan seluruh minggu pembelajaran terlebih dahulu untuk membuka tugas akhir ini."
   },
   "attendance": {
     "title": "Formulir Kehadiran",
     "attendanceStatus": "Status Kehadiran",
+    "selectStatus": "Pilih status kehadiran",
     "present": "Hadir",
     "permission": "Izin",
     "sick": "Sakit",
     "absent": "Alpa",
     "noInformation": "Tidak Ada Informasi",
     "notes": "Catatan",
+    "placeholderNotes": "Masukkan catatan kehadiran...",
     "saveAttendance": "Simpan Kehadiran",
     "cancel": "Batal"
   },
   "material": {
+    "completeWeekHint": "Selesaikan setiap minggu untuk membuka yang berikutnya",
     "pdf": {
       "backToProgram": "Kembali ke Program",
       "noPDFSelected": "Tidak Ada PDF Dipilih",
       "selectPDFInstruction": "Pilih PDF dari daftar untuk mulai membaca",
-      "materiProgram": "Materi Program",
+      "materiProgram": "Materi PDF",
       "downloadPDF": "Unduh PDF",
-      "noMateriAvailable": "Tidak Ada Materi Tersedia",
+      "noMateriAvailable": "Tidak ada materi PDF yang tersedia untuk sesi ini",
       "spanNoMateriAvailable": "Materi akan segera ditambahkan"
     },
     "video": {
       "backToProgram": "Kembali ke Program",
       "noVideoSelected": "Tidak Ada Video Dipilih",
       "selectVideoInstruction": "Pilih video dari daftar untuk mulai menonton",
-      "materiProgram": "Materi Program",
-      "noMateriAvailable": "Tidak Ada Materi Tersedia",
+      "materiProgram": "Materi Video",
+      "noMateriAvailable": "Tidak ada materi Video yang tersedia untuk sesi ini",
       "spanNoMateriAvailable": "Materi akan segera ditambahkan"
     },
     "ppt": {
       "backToProgram": "Kembali ke Program",
       "noPresentationSelected": "Tidak Ada Presentasi Dipilih",
       "selectPPTInstruction": "Pilih presentasi dari daftar untuk mulai melihat",
-      "materiProgram": "Materi Program",
+      "materiProgram": "Materi PPT",
       "downloadPPT": "Unduh PPT",
-      "noMateriAvailable": "Tidak Ada Materi Tersedia",
+      "noMateriAvailable": "Tidak ada materi PPT yang tersedia untuk sesi ini",
       "spanNoMateriAvailable": "Materi akan segera ditambahkan"
     },
     "unavailableTitle": "Berkas ini tidak tersedia",
     "unavailableBody": "Berkasnya sudah tidak ada di server. Silakan minta mentor mengunggahnya kembali."
+  },
+  "nonBootcamp": {
+    "title": "Silabus",
+    "scorePrefix": "Skor:",
+    "requirement": "Syarat: Minimal skor",
+    "requirementPrev": "pada modul sebelumnya",
+    "empty": "Belum ada silabus yang tersedia untuk program ini."
+  },
+  "joinGroup": {
+    "title": "Gabung Grup Kelas",
+    "description": "Bergabunglah dengan grup kelas Anda untuk menerima pengumuman penting, materi pembelajaran, jadwal, dan berkomunikasi dengan mentor serta sesama peserta.",
+    "joinNow": "Gabung Sekarang",
+    "linkNotShared": "Tautan grup belum dibagikan oleh mentor Anda."
   },
   "logbook": {
     "createLogBook": {
@@ -1508,7 +1526,17 @@
       "action": "Aksi",
       "noLogbookFound": "Logbook Tidak Ditemukan",
       "noLogBookDataMatch": "Tidak ada data logbook yang cocok dengan filter yang Anda pilih.",
-      "resetFilters": "Reset Filter"
+      "resetFilters": "Reset Filter",
+      "description": "Pantau dan lihat entri logbook yang Anda kirimkan selama program.",
+      "empty": "Belum ada entri logbook untuk program ini.",
+      "view": "Lihat",
+      "session": "Sesi",
+      "showing": "Menampilkan",
+      "of": "dari",
+      "entries": "entri",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "logbookEntry": "Entri Logbook"
     }
   },
   "quiz": {
@@ -2312,5 +2340,24 @@
       "sessionUserDesc": "Sesi login berhasil tercatat pada perangkat baru.",
       "sessionUserTime": "2 hari lalu"
     }
+  },
+  "dashboard": {
+    "title": "Dasbor",
+    "welcomeBack": "Selamat datang kembali",
+    "welcomeSubtitle": "Terus belajar, terus berkembang. Pencapaian Anda berikutnya tinggal selangkah lagi!",
+    "ongoingCourses": "Kursus Berjalan",
+    "completedCourses": "Kursus Selesai",
+    "portfolioPublished": "Portofolio Dipublikasikan",
+    "continueLearning": "Lanjut Belajar",
+    "viewAllPrograms": "Lihat Semua Program",
+    "continueButton": "Lanjutkan",
+    "showing": "Menampilkan",
+    "of": "dari",
+    "course": "kursus",
+    "coursesPlural": "kursus",
+    "noCoursesInProgress": "Tidak ada kursus yang sedang berjalan saat ini. Bagus, atau mulai yang baru dari \"My Learning\".",
+    "noPrograms": "Anda belum bergabung dengan program apa pun",
+    "noProgramsDescription": "Jelajahi program kami dan pilih yang sesuai dengan tujuan Anda - dasbor Anda akan terisi begitu Anda mendaftar.",
+    "browsePrograms": "Jelajahi Program"
   }
 }

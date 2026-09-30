@@ -28,9 +28,9 @@
     <div class="relative overflow-hidden rounded-xl bg-[linear-gradient(105deg,#EEF2F7_0%,#C7D3E2_22%,#6E88A8_52%,#1E3A5F_80%,#0A2647_100%)] px-6 py-8 sm:px-10 sm:py-10">
       <div class="relative flex items-center justify-between gap-6">
         <div class="flex flex-col gap-2">
-          <span class="text-xs font-bold uppercase tracking-[0.15em] text-[#0B1F3B]">Welcome back,</span>
+          <span class="text-xs font-bold uppercase tracking-[0.15em] text-[#0B1F3B]">{{default (t 'test.dashboard.welcomeBack') 'Welcome back,'}}</span>
           <h1 class="text-2xl font-bold text-[#0B1F3B] sm:text-3xl">{{user.username}}</h1>
-          <p class="max-w-lg text-sm text-[#0B1F3B]/70">Keep learning, keep growing. Your next achievement is just one step away!</p>
+          <p class="max-w-lg text-sm text-[#0B1F3B]/70">{{default (t 'test.dashboard.welcomeSubtitle') 'Keep learning, keep growing. Your next achievement is just one step away!'}}</p>
         </div>
 
         {{!-- Ilustrasi: elips lembut, kartu putih miring berisi topi wisuda, dan
@@ -56,9 +56,9 @@
     {{!-- Stat cards --}}
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
       {{#each (array
-        (array "fa-book-open" dashboardStats.ongoingCount "Ongoing Courses" "#E0F2F9" "#0369A1" "learning")
-        (array "fa-circle-check" dashboardStats.completedCount "Completed Courses" "#DCFCE7" "#16A34A" "learning")
-        (array "fa-folder-open" portfolio.length "Portfolio Published" "#EDE9FE" "#7C3AED" "portfolio")
+        (array "fa-book-open" dashboardStats.ongoingCount (default (t 'test.dashboard.ongoingCourses') 'Ongoing Courses') "#E0F2F9" "#0369A1" "learning")
+        (array "fa-circle-check" dashboardStats.completedCount (default (t 'test.dashboard.completedCourses') 'Completed Courses') "#DCFCE7" "#16A34A" "learning")
+        (array "fa-folder-open" portfolio.length (default (t 'test.dashboard.portfolioPublished') 'Portfolio Published') "#EDE9FE" "#7C3AED" "portfolio")
       )}}
         <button
           type="button"
@@ -92,15 +92,23 @@
     --}}
     <div
       class="rounded-xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition"
-      x-data="{ page: 1, perPage: 3, total: {{ongoingCourses.length}},
-                get pages() { return Math.max(1, Math.ceil(this.total / this.perPage)); },
-                get from() { return this.total === 0 ? 0 : (this.page - 1) * this.perPage + 1; },
-                get to() { return Math.min(this.page * this.perPage, this.total); },
-                shows(i) { return i > (this.page - 1) * this.perPage && i <= this.page * this.perPage; } }"
+      x-data="{
+        page: 1,
+        perPage: 3,
+        total: {{ongoingCourses.length}},
+        showingText: '{{default (t 'test.dashboard.showing') 'Showing'}}',
+        ofText: '{{default (t 'test.dashboard.of') 'of'}}',
+        courseText: '{{default (t 'test.dashboard.course') 'course'}}',
+        coursesPluralText: '{{default (t 'test.dashboard.coursesPlural') 'courses'}}',
+        get pages() { return Math.max(1, Math.ceil(this.total / this.perPage)); },
+        get from() { return this.total === 0 ? 0 : (this.page - 1) * this.perPage + 1; },
+        get to() { return Math.min(this.page * this.perPage, this.total); },
+        shows(i) { return i > (this.page - 1) * this.perPage && i <= this.page * this.perPage; }
+      }"
     >
       <div class="mb-5 flex items-center justify-between">
-        <h2 class="text-lg font-bold text-[#111827]">Continue Learning</h2>
-        <button type="button" @click="toggleActiveSection('learning')" class="text-sm font-semibold text-[#0369A1] hover:underline cursor-pointer">View All Programs <i class="fas fa-arrow-right text-xs"></i></button>
+        <h2 class="text-lg font-bold text-[#111827]">{{default (t 'test.dashboard.continueLearning') 'Continue Learning'}}</h2>
+        <button type="button" @click="toggleActiveSection('learning')" class="text-sm font-semibold text-[#0369A1] hover:underline cursor-pointer">{{default (t 'test.dashboard.viewAllPrograms') 'View All Programs'}} <i class="fas fa-arrow-right text-xs"></i></button>
       </div>
       {{#if ongoingCourses.length}}
         <div class="flex flex-col divide-y divide-[#E5E7EB]">
@@ -124,7 +132,7 @@
                 @click="selectCourseSection('{{this.course.id}}', 'uiux')"
                 class="shrink-0 rounded-lg border border-[#0369A1] px-5 py-2 text-sm font-semibold text-[#0369A1] transition hover:bg-[#E0F2F9] cursor-pointer"
               >
-                Continue <i class="fas fa-arrow-right text-xs"></i>
+                {{default (t 'test.dashboard.continueButton') 'Continue'}} <i class="fas fa-arrow-right text-xs"></i>
               </button>
             </div>
           {{/each}}
@@ -132,7 +140,7 @@
 
         <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#E5E7EB] pt-5">
           <span class="text-sm text-[#6B7280]">
-            Showing <span x-text="from"></span>-<span x-text="to"></span> of <span x-text="total"></span> course<template x-if="total !== 1"><span>s</span></template>
+            <span x-text="showingText"></span> <span x-text="from"></span>-<span x-text="to"></span> <span x-text="ofText"></span> <span x-text="total"></span> <template x-if="total === 1"><span x-text="courseText"></span></template><template x-if="total !== 1"><span x-text="coursesPluralText"></span></template>
           </span>
           <div class="flex items-center gap-2" x-show="pages > 1">
             <template x-for="p in pages" :key="p">
@@ -147,7 +155,7 @@
           </div>
         </div>
       {{else}}
-        <p class="text-sm text-[#6B7280]">No courses in progress right now - nice work keeping up, or time to start a new one from "My Learning".</p>
+        <p class="text-sm text-[#6B7280]">{{default (t 'test.dashboard.noCoursesInProgress') 'No courses in progress right now. Nice work keeping up, or time to start a new one from "My Learning".'}}</p>
       {{/if}}
     </div>
   </div>
@@ -158,11 +166,11 @@
       <i class="fas fa-compass text-2xl"></i>
     </span>
     <div class="flex flex-col gap-1.5">
-      <h3 class="text-lg font-bold text-[#111827]">You haven't joined a program yet</h3>
-      <p class="max-w-sm text-sm text-[#6B7280]">Browse our programs and pick one that fits your goals - your dashboard fills up as soon as you enroll.</p>
+      <h3 class="text-lg font-bold text-[#111827]">{{default (t 'test.dashboard.noPrograms') "You haven't joined a program yet"}}</h3>
+      <p class="max-w-sm text-sm text-[#6B7280]">{{default (t 'test.dashboard.noProgramsDescription') "Browse our programs and pick one that fits your goals - your dashboard fills up as soon as you enroll."}}</p>
     </div>
     <a href="/dashboard#courses-section" class="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#003060] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#00244a]">
-      Browse Programs<i class="fas fa-arrow-right text-xs"></i>
+      {{default (t 'test.dashboard.browsePrograms') 'Browse Programs'}}<i class="fas fa-arrow-right text-xs"></i>
     </a>
   </div>
 {{/if}}

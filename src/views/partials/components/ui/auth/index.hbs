@@ -18,7 +18,7 @@
   - components/ui/alert/index               -> alert success/error
 
   Props:
-  - variant               : login | register | forgot-password | reset-password | verify-email | verify-email-success (default: login)
+  - variant               : login | register | forgot-password | reset-password | send-verify-email | verify-email | verify-email-success (default: login)
   - action                : URL form action (default: "/login")
   - method                : method form (default: "post")
   - success               : Pesan success dari backend (opsional)
@@ -287,13 +287,65 @@
       </div>
     </div>
 
+  {{else if (or (eq variant 'send-verify-email') (eq variant 'verify-email'))}}
+    {{!-- CARD KHUSUS SEND VERIFY EMAIL (FIGMA Group 120 / Frame 235: 822px x 551px, border #ffffff, rounded-24px) --}}
+    <div class="w-full max-w-sm sm:max-w-md mx-auto p-6 sm:p-8 bg-white border border-[#ffffff] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:w-[822px] lg:max-w-[822px] lg:h-[551px] lg:min-h-[551px] lg:p-0 flex flex-col justify-start items-center lg:bg-[#FFFFFF87] lg:border-[#ffffff] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
+
+      {{!-- 1. LOGO KESATRIA ACADEMY (Mask group / Frame 1618876400: top 42px, 202.71px x 110.45px) --}}
+      <div class="w-full flex justify-center pt-2 sm:pt-4 lg:pt-[42px]">
+        {{> components/ui/icon/logo_kesatria/index class="w-[140px] sm:w-[160px] lg:w-[202.71px] h-auto lg:h-[110.45px]" wrapperClass="text-[#003060]" }}
+      </div>
+
+      {{!-- 2. CONTENT AREA (Frame 251 / Frame 240 / Frame 2147229440: top 190.95px, width 720px, gap 30px) --}}
+      <div class="w-full max-w-[720px] mx-auto mt-4 sm:mt-6 lg:mt-[38.5px] px-0 lg:px-0 flex flex-col items-center">
+        {{!-- Frame 240 / Frame 2147229440 (width 522px, gap 20px) --}}
+        <div class="w-full max-w-[522px] mx-auto flex flex-col items-center gap-3 sm:gap-4 lg:gap-[20px] text-center px-2 lg:px-0">
+          {{!-- si:mail-line (66x66) --}}
+          <div class="w-[50px] h-[50px] lg:w-[66px] lg:h-[66px] flex items-center justify-center shrink-0">
+            <svg class="w-[50px] h-[50px] lg:w-[66px] lg:h-[66px]" viewBox="0 0 66 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5.5" y="11" width="55" height="44" rx="4" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M5.5 13L33 35L60.5 13" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          {{!-- Title: Verify Email (522px x 36px, Inter 600, 30px/36px, #192E5B) --}}
+          <h2 class="w-full max-w-[522px] h-auto lg:h-[36px] font-inter font-semibold text-[22px] sm:text-[26px] leading-tight lg:text-[30px] lg:leading-[36px] text-center text-[#192E5B] m-0">
+            {{default title (t 'test.verify.verifyEmail')}}
+          </h2>
+
+          {{!-- Description: Please verify your email address... (430px x 44px, Inter 400, 18px/22px, rgba(45, 45, 45, 0.8)) --}}
+          <p class="w-full max-w-[430px] h-auto lg:h-[44px] font-inter font-normal text-xs sm:text-sm lg:text-[18px] leading-relaxed lg:leading-[22px] text-center text-[#2D2D2DCC] m-0">
+            {{default description (t 'test.verify.description')}}
+          </p>
+        </div>
+
+        {{!-- Alert Success & Error --}}
+        {{#if success}}
+          {{> components/ui/alert/index type="success" message=success dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
+        {{/if}}
+        {{#if error}}
+          {{> components/ui/alert/index type="error" message=error dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
+        {{/if}}
+
+        {{!-- 3. FRAME 252 (Button Resend: width 720px, height 59px, bg #003060, rounded 6px, shadow 0px 0px 4px rgba(0,0,0,0.25)) --}}
+        <div class="w-full max-w-[720px] mx-auto mt-6 sm:mt-8 lg:mt-[61px]">
+          <form action="{{action}}" method="{{default method 'post'}}" class="w-full" x-data="{ loading: false }" @submit="loading = true">
+            {{> components/ui/button/submit/index
+              text=(default submitText (t 'test.verify.sendButton'))
+              class="w-full h-11 sm:h-12 lg:h-[59px] rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] text-sm sm:text-base lg:text-[20px] font-medium"
+            }}
+          </form>
+        </div>
+      </div>
+    </div>
+
   {{else}}
     {{!-- CARD REGULER AUTH (LOGIN / REGISTER / FORGOT) — 100% PERSIS SEPERTI SEBELUMNYA (460px) --}}
     <div class="w-full max-w-sm mx-auto p-6 bg-white border border-[#D9D9D9] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:max-w-[460px] lg:p-9 lg:bg-[#FFFFFF87] lg:border-[#FFFFFF17] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
 
       {{!-- ICON / LOGO --}}
       {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-        <div class="flex justify-center w-full mt-32">
+        <div class="flex justify-center w-full mb-6">
           {{> components/ui/icon/logo_kesatria/index class=(default logoClass "max-h-96 w-auto text-[#003060]") wrapperClass="text-[#003060]" }}
         </div>
       {{else}}
@@ -302,7 +354,7 @@
 
       {{!-- ICON KHUSUS (Email / Success) --}}
       {{#if (or (eq variant 'verify-email') (eq variant 'verify-email-success'))}}
-        <div class="flex items-center justify-center {{#if (eq variant 'verify-email-success')}}-mt-32{{else}}-mt-40{{/if}}">
+        <div class="flex items-center justify-center mb-6">
           {{#if (eq variant 'verify-email-success')}}
             {{!-- Success Icon SVG --}}
             <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="-2 -2 78 78" fill="none">
