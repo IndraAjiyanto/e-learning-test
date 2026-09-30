@@ -29,12 +29,12 @@
     <div class="flex flex-col items-center gap-3 sm:gap-4 text-center w-full">
       {{!-- INFORMASI JADWAL (Inter 700 14px uppercase #003060) --}}
       <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-tight">
-        INFORMASI JADWAL
+        {{default (t 'test.paidProgram.schedule.eyebrow') 'INFORMASI JADWAL'}}
       </span>
 
       {{!-- Format Kelas & Jadwal Sesi (Montserrat 800 36px #0B1F3B) --}}
       <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
-        Format Kelas & Jadwal Sesi
+        {{default (t 'test.paidProgram.schedule.title') 'Format Kelas & Jadwal Sesi'}}
       </h2>
     </div>
 
@@ -44,29 +44,29 @@
       {{!-- Item 1: Tanggal Mulai --}}
       {{> components/ui/card/schedule_item/index
           iconType="calendar"
-          label="Tanggal Mulai"
+          label=(default (t 'test.paidProgram.schedule.startDate') 'Tanggal Mulai')
           value=(ternary course.startDate (formatDateDayMonthYear course.startDate lang) "21 April 2026")
       }}
 
       {{!-- Item 2: Tanggal Selesai --}}
       {{> components/ui/card/schedule_item/index
           iconType="calendar"
-          label="Tanggal Selesai"
+          label=(default (t 'test.paidProgram.schedule.endDate') 'Tanggal Selesai')
           value=(ternary course.startEnd (formatDateDayMonthYear course.startEnd lang) "30 April 2026")
       }}
 
       {{!-- Item 3: Tanggal Akhir Registration --}}
       {{> components/ui/card/schedule_item/index
           iconType="clock"
-          label="Tanggal Akhir Registration"
-          value=(ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) (ternary course.time_start (concat "Setiap Hari, " (formatTime course.time_start) " - " (formatTime course.time_end) " WIB") "Selasa & Kamis, 19:00 - 21:00 WIB"))
+          label=(default (t 'test.paidProgram.schedule.registrationDeadline') 'Tanggal Akhir Registrasi')
+          value=(ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) (ternary course.time_start (concat (default (t 'test.paidProgram.schedule.everyday') 'Setiap Hari') ", " (formatTime course.time_start) " - " (formatTime course.time_end) " WIB") (default (t 'test.paidProgram.schedule.tueThu') 'Selasa & Kamis, 19:00 - 21:00 WIB')))
       }}
 
       {{!-- Item 4: Opsi Format --}}
       {{> components/ui/card/schedule_item/index
           iconType="format"
-          label="Opsi Format"
-          value=(ternary course.method (concat (capitalize course.method) " (Online Zoom & Offline Meetup)") "Hybrid (Online Zoom & Offline Meetup)")
+          label=(default (t 'test.paidProgram.schedule.formatOption') 'Opsi Format')
+          value=(ternary course.method (concat (capitalize course.method) " (" (default (t 'test.paidProgram.schedule.hybridMeetup') 'Online Zoom & Offline Meetup') ")") (concat "Hybrid (" (default (t 'test.paidProgram.schedule.hybridMeetup') 'Online Zoom & Offline Meetup') ")"))
       }}
 
     </div>

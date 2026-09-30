@@ -1,4 +1,4 @@
-<div class="w-full min-h-[500px] flex items-center justify-center font-inter px-4 py-4 sm:px-8 sm:py-6">
+<div class="w-full min-h-[500px] flex items-center justify-center font-inter p-5">
   
   <div class="flex flex-col md:flex-row items-center gap-8 xl:gap-[50px] max-w-4xl mx-auto py-8">
     
@@ -14,11 +14,11 @@
     <!-- Right Content Block -->
     <div class="text-center md:text-left">
       <h2 class="font-inter font-semibold text-xl sm:text-2xl leading-tight text-[#003060] mb-4">
-        Join Group Class
+        {{default (t 'test.joinGroup.title') 'Join Group Class'}}
       </h2>
 
       <p class="font-sans font-normal text-sm leading-relaxed text-black max-w-[620px] mb-5">
-        Join your class group to receive important announcements, learning materials, schedules, and communicate with mentors and fellow participants.
+        {{default (t 'test.joinGroup.description') 'Join your class group to receive important announcements, learning materials, schedules, and communicate with mentors and fellow participants.'}}
       </p>
 
       {{!-- Tautan grup diambil dari kolom Course.group. Sebelumnya tautannya kosong,
@@ -32,11 +32,11 @@
           rel="noopener"
           class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
         >
-          Join Now
+          {{default (t 'test.joinGroup.joinNow') 'Join Now'}}
         </a>
       {{else}}
         <p class="font-inter text-sm text-[#737373]">
-          The group link has not been shared by your mentor yet.
+          {{default (t 'test.joinGroup.linkNotShared') 'The group link has not been shared by your mentor yet.'}}
         </p>
       {{/if}}
     </div>

@@ -170,10 +170,10 @@
     {{!-- Section Header (Figma: Frame 2147229479, gap 12px, text-center) --}}
     <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1608px]">
       <span class="font-outfit text-sm font-bold uppercase leading-[120%] tracking-wider text-[#93C5FD]">
-        KEY ADVANTAGES
+        {{default (t 'test.paidProgram.advantage.eyebrow') 'KEY ADVANTAGES'}}
       </span>
       <h2 class="font-outfit text-2xl sm:text-3xl lg:text-[32px] font-bold leading-[120%] text-white">
-        Why Study at Kesatria Academy?
+        {{default (t 'test.paidProgram.advantage.title') 'Why Study at Kesatria Academy?'}}
       </h2>
     </div>
 
@@ -219,32 +219,32 @@
         {{!-- Card 1: 1-on-1 Mentoring --}}
         {{> components/ui/card/advantage_card/index
             iconType="mentoring"
-            title="1-on-1 Mentoring"
-            description="Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio."
+            title=(default (t 'test.paidProgram.advantage.mentoringTitle') '1-on-1 Mentoring')
+            description=(default (t 'test.paidProgram.advantage.mentoringDesc') 'Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio.')
             lang=lang
         }}
 
         {{!-- Card 2: Real-World Portfolio --}}
         {{> components/ui/card/advantage_card/index
             iconType="portfolio"
-            title="Real-World Portfolio"
-            description="Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes."
+            title=(default (t 'test.paidProgram.advantage.portfolioTitle') 'Real-World Portfolio')
+            description=(default (t 'test.paidProgram.advantage.portfolioDesc') 'Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes.')
             lang=lang
         }}
 
         {{!-- Card 3: Career Support --}}
         {{> components/ui/card/advantage_card/index
             iconType="career"
-            title="Career Support"
-            description="CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network."
+            title=(default (t 'test.paidProgram.advantage.careerTitle') 'Career Support')
+            description=(default (t 'test.paidProgram.advantage.careerDesc') "CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network.")
             lang=lang
         }}
 
         {{!-- Card 4: Competency Certificate --}}
         {{> components/ui/card/advantage_card/index
             iconType="certificate"
-            title="Competency Certificate"
-            description="Earn an official graduation certificate to prove your practical skills to recruiters."
+            title=(default (t 'test.paidProgram.advantage.certificateTitle') 'Competency Certificate')
+            description=(default (t 'test.paidProgram.advantage.certificateDesc') 'Earn an official graduation certificate to prove your practical skills to recruiters.')
             lang=lang
         }}
 

@@ -14,7 +14,7 @@
       <div class="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
         <div class="content-stretch flex flex-col items-start relative shrink-0">
           <p class="[word-break:break-word] font-inter font-medium h-[37px] leading-[normal] relative shrink-0 text-sm text-[#003060]">
-            Attendance Status
+            {{default (t 'test.attendance.attendanceStatus') 'Attendance Status'}}
           </p>
         </div>
         <div class="bg-white content-stretch flex items-center relative shrink-0 w-full" @click.outside="statusDropdownOpen = false">
@@ -26,7 +26,7 @@
             <p
               class="[word-break:break-word] font-inter font-medium h-[27px] leading-[normal] relative shrink-0 text-lg text-left"
               :class="editStatus ? 'text-[#003060]' : 'text-[rgba(0,0,0,0.5)]'"
-              x-text="editStatus ? statusLabels[editStatus] : 'Select attendance status'"
+              x-text="editStatus ? statusLabels[editStatus] : '{{default (t 'test.attendance.selectStatus') 'Select attendance status'}}'"
             ></p>
             <div class="flex items-center justify-center relative shrink-0">
               <div class="-scale-y-100 flex-none transition-transform duration-200" :class="statusDropdownOpen ? 'rotate-180' : ''">
@@ -61,13 +61,13 @@
       <div class="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
         <div class="content-stretch flex flex-col items-start relative shrink-0">
           <p class="[word-break:break-word] font-inter font-medium h-[37px] leading-[normal] relative shrink-0 text-sm text-[#003060]">
-            Notes
+            {{default (t 'test.attendance.notes') 'Notes'}}
           </p>
         </div>
         <div class="bg-white content-stretch flex items-center relative shrink-0 w-full">
           <textarea
             x-model="editNotes"
-            placeholder="Enter attendance notes..."
+            placeholder="{{default (t 'test.attendance.placeholderNotes') 'Enter attendance notes...'}}"
             rows="2"
             class="bg-white content-stretch shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-inter font-medium leading-[normal] text-lg text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
           ></textarea>
@@ -82,13 +82,13 @@
           :class="!editStatus ? 'opacity-50 cursor-not-allowed' : ''"
           class="bg-[#003060] border border-[#003060] border-solid content-stretch hover:shadow-sm transition-shadow flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shrink-0 w-[244px]"
         >
-          <span class="font-inter font-medium leading-[normal] text-sm text-white">Save</span>
+          <span class="font-inter font-medium leading-[normal] text-sm text-white">{{default (t 'test.attendance.saveAttendance') 'Save'}}</span>
         </button>
         <button
           @click="showEditModal = false"
           class="border border-[#003060] border-solid content-stretch flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] hover:shadow-sm transition-shadow shrink-0 w-[244px] bg-white"
         >
-          <span class="font-inter font-medium leading-[normal] text-sm text-black">Cancel</span>
+          <span class="font-inter font-medium leading-[normal] text-sm text-black">{{default (t 'test.attendance.cancel') 'Cancel'}}</span>
         </button>
       </div>
 

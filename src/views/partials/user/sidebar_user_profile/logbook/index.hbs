@@ -16,6 +16,13 @@
 <div
   class='px-4 py-4 sm:px-8 sm:py-6'
   x-show="(activeCourseData?.programType ?? activeCourseData?.program_type) !== 'non_bootcamp'"
+  x-data="{
+    logbookStatusLabels: {
+      'approved': '{{default (t 'test.logbook.detailLogBook.approved') 'Approved'}}',
+      'process': '{{default (t 'test.logbook.detailLogBook.underReview') 'In review'}}',
+      'rejected': '{{default (t 'test.logbook.detailLogBook.rejected') 'Rejected'}}'
+    }
+  }"
 >
   <div class='flex flex-col gap-7 max-w-[1268px] mx-auto'>
 
@@ -33,7 +40,7 @@
             ) }}
       {{/if}}
       {{> components/ui/super_admin/description/index
-        text='View and monitor your submitted logbook entries throughout the program.'
+        text=(default (t 'test.logbook.logbookList.description') 'View and monitor your submitted logbook entries throughout the program.')
       }}
     </div>
 
@@ -49,8 +56,8 @@
             type='search'
             x-model='logbookSearchInput'
             @input='logbookCurrentPage = 1'
-            aria-label='Search logbook entries'
-            placeholder='Search activities, details, or issues...'
+            aria-label='{{default (t "test.logbook.logbookList.placeholderSearch") "Search activities, details, or issues..."}}'
+            placeholder='{{default (t "test.logbook.logbookList.placeholderSearch") "Search activities, details, or issues..."}}'
             class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-10 pr-3.5 font-inter text-base leading-6 text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
           />
         </div>
@@ -62,12 +69,12 @@
           @click="exportRowsToExcel({
             rows: filteredLogbooks,
             columns: [
-              { header: 'Date', width: 16, value: (r) => new Date(r.createdAt).toLocaleDateString('en-GB') },
-              { header: 'Activity', width: 28, value: (r) => r.activity || '' },
-              { header: 'Details', width: 40, value: (r) => r.activityDetails || '' },
-              { header: 'Issues', width: 28, value: (r) => r.obstacles || '' },
-              { header: 'Program', width: 26, value: (r) => r.session?.weeks?.course?.name || '' },
-              { header: 'Status', width: 14, value: (r) => r.process || '' }
+              { header: '{{default (t 'test.logbook.logbookList.date') 'Date'}}', width: 16, value: (r) => new Date(r.createdAt).toLocaleDateString('en-GB') },
+              { header: '{{default (t 'test.logbook.logbookList.activity') 'Activity'}}', width: 28, value: (r) => r.activity || '' },
+              { header: '{{default (t 'test.logbook.logbookList.details') 'Details'}}', width: 40, value: (r) => r.activityDetails || '' },
+              { header: '{{default (t 'test.logbook.logbookList.issues') 'Issues'}}', width: 28, value: (r) => r.obstacles || '' },
+              { header: '{{default (t 'test.logbook.logbookList.program') 'Program'}}', width: 26, value: (r) => r.session?.weeks?.course?.name || '' },
+              { header: '{{default (t 'test.logbook.logbookList.status') 'Status'}}', width: 14, value: (r) => r.process || '' }
             ],
             sheetName: 'Logbook',
             filePrefix: 'my-logbook'
@@ -75,7 +82,7 @@
           class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-4 font-inter text-sm font-semibold text-[#344054] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f9fafb]'
         >
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/><path d='M7 10l5 5 5-5'/><path d='M12 15V3'/></svg>
-          Export Excel
+          {{default (t 'test.logbook.logbookList.exportExcel') 'Export Excel'}}
         </button>
       </div>
 
@@ -85,14 +92,14 @@
           <table class='w-full min-w-[900px] border-collapse'>
             <thead>
               <tr class='border-b border-[#e5e5e5] bg-[#fafafa]'>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>No</th>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Date</th>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Activity</th>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Details</th>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Issues</th>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Program</th>
-                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Status</th>
-                <th class='px-5 py-3 text-right font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>Action</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.no') 'No'}}</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.date') 'Date'}}</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.activity') 'Activity'}}</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.details') 'Details'}}</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.issues') 'Issues'}}</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.program') 'Program'}}</th>
+                <th class='px-5 py-3 text-left font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.status') 'Status'}}</th>
+                <th class='px-5 py-3 text-right font-inter text-xs font-semibold uppercase tracking-wide text-[#737373]'>{{default (t 'test.logbook.logbookList.action') 'Action'}}</th>
               </tr>
             </thead>
             <tbody>
@@ -117,7 +124,7 @@
                   </td>
                   <td class='px-5 py-4'>
                     {{> components/ui/super_admin/badge/index
-                      text='logbook.process === "approved" ? "Approved" : (logbook.process === "process" ? "In review" : "Rejected")'
+                      text='logbookStatusLabels[logbook.process] || logbook.process'
                       dot=true
                       classExpr="logbook.process === 'approved' ? 'bg-[#f0fdf4] text-[#15803d]' : (logbook.process === 'process' ? 'bg-[#fffbeb] text-[#b45309]' : 'bg-[#fef2f2] text-[#b91c1c]')"
                       dotClassExpr="logbook.process === 'approved' ? 'bg-[#22c55e]' : (logbook.process === 'process' ? 'bg-[#f59e0b]' : 'bg-[#ef4444]')"
@@ -128,7 +135,7 @@
                       type='button'
                       @click="openDetailModal('logbook', logbook)"
                       class='inline-flex h-9 items-center rounded-lg border border-[#d4d4d4] bg-white px-3 font-inter text-sm font-medium text-[#344054] transition-colors hover:bg-[#f9fafb]'
-                    >View</button>
+                    >{{default (t 'test.logbook.logbookList.view') 'View'}}</button>
                   </td>
                 </tr>
               </template>
@@ -136,7 +143,7 @@
               <template x-if='filteredLogbooks.length === 0'>
                 <tr>
                   <td colspan='8' class='px-5 py-10 text-center font-inter text-sm text-[#737373]'>
-                    No logbook entries found for this program.
+                    {{default (t 'test.logbook.logbookList.empty') 'No logbook entries found for this program.'}}
                   </td>
                 </tr>
               </template>
@@ -147,7 +154,7 @@
         <div class='flex flex-wrap items-center justify-between gap-4'>
           <span
             class='font-inter text-sm text-[#737373]'
-            x-text="`Showing ${paginatedLogbooks.length} of ${filteredLogbooks.length} entries`"
+            x-text="`{{default (t 'test.logbook.logbookList.showing') 'Showing'}} ${paginatedLogbooks.length} {{default (t 'test.logbook.logbookList.of') 'of'}} ${filteredLogbooks.length} {{default (t 'test.logbook.logbookList.entries') 'entries'}}`"
           ></span>
 
           <div class='flex items-center gap-2' x-show='totalLogbookPages > 1'>
@@ -156,14 +163,14 @@
               @click='if (logbookCurrentPage > 1) logbookCurrentPage--'
               :disabled='logbookCurrentPage === 1'
               class='inline-flex h-9 items-center rounded-lg border border-[#d4d4d4] bg-white px-3 font-inter text-sm font-medium text-[#344054] transition-colors hover:bg-[#f9fafb] disabled:cursor-not-allowed disabled:opacity-50'
-            >Previous</button>
+            >{{default (t 'test.logbook.logbookList.previous') 'Previous'}}</button>
             <span class='font-inter text-sm text-[#737373]' x-text='`${logbookCurrentPage} / ${totalLogbookPages}`'></span>
             <button
               type='button'
               @click='if (logbookCurrentPage < totalLogbookPages) logbookCurrentPage++'
               :disabled='logbookCurrentPage === totalLogbookPages'
               class='inline-flex h-9 items-center rounded-lg border border-[#d4d4d4] bg-white px-3 font-inter text-sm font-medium text-[#344054] transition-colors hover:bg-[#f9fafb] disabled:cursor-not-allowed disabled:opacity-50'
-            >Next</button>
+            >{{default (t 'test.logbook.logbookList.next') 'Next'}}</button>
           </div>
         </div>
       </div>
@@ -172,43 +179,43 @@
 
   {{> components/ui/super_admin/table/export_excel }}
 
-  {{#> components/ui/super_admin/modal/detail/index name='logbook' title='Logbook Entry' maxWidth='max-w-[640px]'}}
+  {{#> components/ui/super_admin/modal/detail/index name='logbook' title=(default (t 'test.logbook.logbookList.logbookEntry') 'Logbook Entry') maxWidth='max-w-[640px]'}}
     <div class='flex flex-col gap-5'>
       <dl class='grid grid-cols-1 gap-5 sm:grid-cols-2'>
         <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Date</dt>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.date') 'Date'}}</dt>
           <dd class='font-inter text-sm text-[#171717]' x-text="new Date(row.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })"></dd>
         </div>
         <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Program</dt>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.program') 'Program'}}</dt>
           <dd class='font-inter text-sm text-[#171717]' x-text="row.session?.weeks?.course?.name || '—'"></dd>
         </div>
         <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Session</dt>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.session') 'Session'}}</dt>
           <dd class='font-inter text-sm text-[#171717]' x-text="row.session?.topic || '—'"></dd>
         </div>
         <div class='flex flex-col gap-1'>
-          <dt class='font-inter text-sm font-medium text-[#737373]'>Status</dt>
-          <dd class='font-inter text-sm text-[#171717]' x-text="row.process === 'approved' ? 'Approved' : (row.process === 'process' ? 'In review' : 'Rejected')"></dd>
+          <dt class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.status') 'Status'}}</dt>
+          <dd class='font-inter text-sm text-[#171717]' x-text="logbookStatusLabels[row.process] || row.process"></dd>
         </div>
       </dl>
 
       <div class='flex flex-col gap-1'>
-        <span class='font-inter text-sm font-medium text-[#737373]'>Activity</span>
+        <span class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.activity') 'Activity'}}</span>
         <p class='font-inter text-sm text-[#171717]' x-text="row.activity || '—'"></p>
       </div>
       <div class='flex flex-col gap-1'>
-        <span class='font-inter text-sm font-medium text-[#737373]'>Details</span>
+        <span class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.details') 'Details'}}</span>
         <p class='whitespace-pre-line font-inter text-sm text-[#171717]' x-text="row.activityDetails || '—'"></p>
       </div>
       <div class='flex flex-col gap-1'>
-        <span class='font-inter text-sm font-medium text-[#737373]'>Issues</span>
+        <span class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.issues') 'Issues'}}</span>
         <p class='whitespace-pre-line font-inter text-sm text-[#171717]' x-text="row.obstacles || '—'"></p>
       </div>
 
       <template x-if="row.documentation && row.documentation !== 'null'">
         <div class='flex flex-col gap-2'>
-          <span class='font-inter text-sm font-medium text-[#737373]'>Documentation</span>
+          <span class='font-inter text-sm font-medium text-[#737373]'>{{default (t 'test.logbook.logbookList.documentation') 'Documentation'}}</span>
           <a :href='row.documentation' target='_blank' rel='noopener' class='overflow-hidden rounded-lg border border-[#e5e5e5]'>
             <img :src='row.documentation' alt='Logbook documentation' class='w-full object-contain' />
           </a>

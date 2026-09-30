@@ -1,16 +1,3 @@
-{{!--
-  Tab Portfolio di halaman Start Learning.
-
-  Berbeda dengan tab lain, panel ini menampilkan karya SETIAP student di
-  program yang sedang dibuka, bukan hanya karya student itu sendiri. Karena
-  itu isinya diambil per program lewat GET /portfolio/fragment
-  (lihat sectionFragmentConfig di shell), dan panel ini tidak lagi tahu apa
-  pun tentang program lain.
-
-  Data datang sebagai satu pulau JSON di bawah, bukan lewat `window.*`:
-  shell menempelkan partial ini dengan `innerHTML`, dan skrip yang disisipkan
-  dengan cara itu tidak dieksekusi browser.
---}}
 <div
   class="px-4 py-4 sm:px-8 sm:py-6"
   x-data="{
@@ -31,6 +18,8 @@
     programName: '',
     programType: '',
     programCategory: '',
+    courseProgramType: '',
+    canCreatePortfolio: false,
     imageUploads: [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }],
     newForm: {
       title: '',
@@ -97,8 +86,10 @@
       }
 
       this.currentUserId = payload.currentUserId || '';
+      this.canCreatePortfolio = !!payload.canCreatePortfolio;
       this.courseId = (payload.course && payload.course.id) || '';
       this.programName = (payload.course && payload.course.name) || '';
+      this.courseProgramType = (payload.course && payload.course.programType) || 'bootcamp';
       this.programType = (payload.course && payload.course.courseType && payload.course.courseType.name) || '';
       this.programCategory = (payload.course && payload.course.category && payload.course.category.name) || '';
 
@@ -107,10 +98,10 @@
         title: p.title || '{{t 'test.myPortfolio.untitledPortfolio'}}',
         description: p.description || '',
         link: p.link || '',
-        overview: p.contentHtml || p.content || '',
+        overview: p.content || p.contentHtml|| '',
         // overview dipakai panel detail (HTML siap tampil); contentRaw
         // adalah JSON EditorJS aslinya, yang dibutuhkan mode edit.
-        contentRaw: p.content || '',
+        contentRaw: p.content || p.contentHtml || '',
         createdAt: p.createdAt || '',
         courseId: (p.course && p.course.id) || '',
         program: (p.course && p.course.name) || this.programName,
@@ -224,18 +215,106 @@
       return JSON.stringify(this.portfolioSnapshot()) !== this.formBaseline;
     },
 
-    // Isi awal editor saat menyunting. Yang tersimpan JSON EditorJS; kalau
-    // bentuknya bukan itu (mis. baris lama), editor dibiarkan kosong daripada
-    // gagal memuat.
+    // Isi awal editor saat menyunting. Mendukung format JSON EditorJS,
+    // HTML (mis. hasil render / seed), maupun teks polos.
     editorInitialData() {
       const raw = this.newForm.overview;
       if (!raw) return undefined;
-      try {
-        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        return parsed && Array.isArray(parsed.blocks) ? parsed : undefined;
-      } catch (e) {
-        return undefined;
+
+      let parsed = raw;
+      if (typeof parsed === 'string') {
+        const trimmed = parsed.trim();
+        if (!trimmed) return undefined;
+        try {
+          parsed = JSON.parse(trimmed);
+          if (typeof parsed === 'string') {
+            try { parsed = JSON.parse(parsed); } catch (e) {}
+          }
+        } catch (e) {
+          parsed = null;
+        }
       }
+
+      if (parsed && typeof parsed === 'object' && Array.isArray(parsed.blocks)) {
+        return parsed;
+      }
+
+      if (typeof raw === 'string' && raw.trim()) {
+        const trimmed = raw.trim();
+
+        if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+          try {
+            const doc = new DOMParser().parseFromString(trimmed, 'text/html');
+            const blocks = [];
+            const children = Array.from(doc.body.children);
+            if (children.length > 0) {
+              children.forEach((child) => {
+                const tag = child.tagName.toLowerCase();
+                if (/^h[1-6]$/.test(tag)) {
+                  blocks.push({
+                    type: 'header',
+                    data: {
+                      text: child.innerHTML || child.textContent || '',
+                      level: parseInt(tag[1], 10),
+                    },
+                  });
+                } else if (tag === 'ul' || tag === 'ol') {
+                  const lis = Array.from(child.querySelectorAll('li')).map(
+                    (li) => li.innerHTML || li.textContent || ''
+                  );
+                  blocks.push({
+                    type: 'list',
+                    data: {
+                      style: tag === 'ol' ? 'ordered' : 'unordered',
+                      items: lis,
+                    },
+                  });
+                } else if (tag === 'blockquote') {
+                  blocks.push({
+                    type: 'quote',
+                    data: {
+                      text: child.innerHTML || child.textContent || '',
+                    },
+                  });
+                } else {
+                  const text = child.innerHTML || child.textContent || '';
+                  if (text.trim()) {
+                    blocks.push({
+                      type: 'paragraph',
+                      data: { text },
+                    });
+                  }
+                }
+              });
+            }
+            if (blocks.length > 0) {
+              return { time: Date.now(), blocks };
+            }
+          } catch (e) {}
+        }
+
+        const paragraphs = trimmed
+          .split(/\n\s*\n/)
+          .map((p) => p.trim())
+          .filter(Boolean);
+
+        if (paragraphs.length > 0) {
+          return {
+            time: Date.now(),
+            blocks: paragraphs.map((p) => ({
+              type: 'paragraph',
+              data: { text: p.replace(/\n/g, '<br>') },
+            })),
+          };
+        }
+
+        return {
+          time: Date.now(),
+          blocks: [{ type: 'paragraph', data: { text: trimmed } }],
+        };
+      }
+
+      return undefined;
     },
 
     askDeletePortfolio(item) {
@@ -301,8 +380,22 @@
     async initOverviewEditor() {
       // Destroy previous instance if exists (for re-open scenarios)
       if (this.overviewEditorInstance) {
-        try { this.overviewEditorInstance.destroy(); } catch(e) {}
+        try {
+          if (typeof this.overviewEditorInstance.destroy === 'function') {
+            await this.overviewEditorInstance.destroy();
+          }
+        } catch (e) {}
         this.overviewEditorInstance = null;
+      }
+
+      // Ensure holder is a div element in case a previous fallback replaced it with textarea
+      let holder = document.getElementById('overviewEditor');
+      if (holder && holder.tagName.toLowerCase() === 'textarea') {
+        const div = document.createElement('div');
+        div.id = 'overviewEditor';
+        div.setAttribute('x-ignore', '');
+        div.className = 'min-h-[100px] max-h-[140px] overflow-y-auto w-full max-w-none rounded-[10px] border border-[#D4D4D4] bg-white p-4 text-left font-inter text-sm text-black transition-colors hover:shadow-sm focus-within:border-[#003060] sm:text-base';
+        holder.replaceWith(div);
       }
 
       // Wait for EditorJS library to load
@@ -323,7 +416,7 @@
         const check = () => {
           domAttempts++;
           const el = document.getElementById('overviewEditor');
-          if (el && el.offsetParent !== null) {
+          if (el && (el.offsetParent !== null || el.getClientRects().length > 0)) {
             resolve(el);
           } else if (domAttempts > 30) {
             reject(new Error('overviewEditor element not visible after 6s'));
@@ -336,14 +429,14 @@
 
       try {
         await waitForVisible();
-      } catch(e) {
+      } catch (e) {
         console.error('[Portfolio]', e.message);
         this.fallbackOverviewTextarea();
         return;
       }
 
       // Clear holder innerHTML before re-init
-      const holder = document.getElementById('overviewEditor');
+      holder = document.getElementById('overviewEditor');
       if (holder) holder.innerHTML = '';
 
       try {
@@ -398,17 +491,51 @@
       }
     },
 
+    getOverviewPlainText() {
+      const raw = this.newForm.overview;
+      if (!raw) return '';
+      if (typeof raw === 'string') {
+        const trimmed = raw.trim();
+        if (trimmed.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (parsed && Array.isArray(parsed.blocks)) {
+              return parsed.blocks
+                .map(b => {
+                  if (b.type === 'paragraph' || b.type === 'header') return b.data?.text || '';
+                  if (b.type === 'list') return (b.data?.items || []).join('\n');
+                  return b.data?.text || '';
+                })
+                .filter(Boolean)
+                .join('\n\n');
+            }
+          } catch (e) {}
+        }
+        if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+          try {
+            const doc = new DOMParser().parseFromString(trimmed, 'text/html');
+            return doc.body.textContent || '';
+          } catch (e) {}
+        }
+        return trimmed;
+      }
+      return '';
+    },
+
     fallbackOverviewTextarea() {
       const holder = document.getElementById('overviewEditor');
       if (!holder) return;
-      if (holder.tagName.toLowerCase() === 'textarea') return;
+      if (holder.tagName.toLowerCase() === 'textarea') {
+        holder.value = this.getOverviewPlainText();
+        return;
+      }
 
       const ta = document.createElement('textarea');
       ta.id = 'overviewEditor';
       ta.rows = 8;
       ta.placeholder = 'FALLBACK MODE: Enter your content here... (EditorJS failed to load)';
-      ta.value = this.newForm.overview || '';
-      ta.className = 'w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-inter text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm';
+      ta.value = this.getOverviewPlainText();
+      ta.className = 'w-full min-h-[140px] rounded-[10px] border border-slate-300 p-4 font-inter text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm';
       const self = this;
       ta.addEventListener('input', function () { self.newForm.overview = ta.value; });
       holder.replaceWith(ta);
@@ -522,25 +649,10 @@
     },
   }"
 >
-  {{!-- Satu-satunya jalan data masuk ke panel ini. `jsonSafe`, bukan `json`:
-       `contentHtml` portfolio orang lain berisi teks yang bisa memuat
-       `</script>`, dan blok script terpotong di situ. --}}
   <script type="application/json" id="portfolio-data">{{{jsonSafe portfolioData}}}</script>
 
-  <!-- LIST PORTOFOLIO VIEW -->
-  <div x-show="!showDetail" class="flex flex-col gap-7">
+    <div x-show="!showDetail" class="flex flex-col gap-7">
 
-    <!--
-      Filter.
-
-      Sempat berupa sidebar 280px di kiri yang disembunyikan begitu program
-      dibuka, sehingga di tab yang paling sering dipakai tidak ada filter
-      sama sekali. Sekarang jadi satu baris horizontal. Yang tersisa bukan
-      filter Category/Program Type: seluruh karya di panel ini berasal dari
-      program yang sama, jadi kedua nilainya cuma satu dan dropdown-nya tidak
-      pernah menyaring apa pun. Yang bisa membedakan karya satu sama lain
-      di dalam program adalah siapa, kapan, dan isinya.
-    -->
     <section class="flex flex-col gap-3 rounded-xl border border-[#d9d9d9] bg-white p-4">
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div class="relative w-full lg:max-w-sm">
@@ -593,13 +705,9 @@
             {{t 'test.myPortfolio.gallery.projectCount'}}
           </span>
 
-          {{!-- Student hanya boleh punya satu portfolio per program, jadi
-               setelah ada satu, yang tersisa adalah menyuntingnya. Tombol
-               Create disembunyikan - bukan hanya dinonaktifkan - karena
-              Uoizard yang tidak bisa dipakai adalah jebakan. --}}
           <button
             type="button"
-            x-show="!myPortfolio"
+            x-show="!myPortfolio && canCreatePortfolio"
             @click="openCreatePortfolio()"
             class="h-11 w-full cursor-pointer rounded-lg border border-[#003060] bg-[#003060] px-5 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f] sm:w-auto"
           >
@@ -626,28 +734,51 @@
           <span>{{t 'test.myPortfolio.gallery.editMine'}}</span>
         </button>
       </div>
+
+      <div
+        x-show="!canCreatePortfolio && !myPortfolio"
+        x-cloak
+        class="flex items-start gap-3 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB] px-4 py-3"
+      >
+        <i class="fa-solid fa-lock mt-0.5 shrink-0 text-sm text-[#D97706]"></i>
+        <p
+          class="font-inter text-sm text-[#92400E]"
+          x-text="(courseProgramType === 'bootcamp' || courseProgramType === 'lpk')
+            ? '{{t 'test.myPortfolio.emptyStateCourse.lockedNoticeBootcamp'}}'
+            : '{{t 'test.myPortfolio.emptyStateCourse.lockedNotice'}}'"
+        ></p>
+      </div>
     </section>
 
-    <!-- EMPTY STATE: belum ada karya sama sekali di program ini -->
-    <div
+        <div
       x-show="portfolios.length === 0"
       class="flex flex-col items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-4 py-12 text-center sm:py-16"
     >
       <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#E0F2F9]">
-        <i class="fa-regular fa-folder-open text-2xl text-[#0369A1]"></i>
+        <template x-if="canCreatePortfolio">
+          <i class="fa-regular fa-folder-open text-2xl text-[#0369A1]"></i>
+        </template>
+        <template x-if="!canCreatePortfolio">
+          <i class="fa-solid fa-lock text-2xl text-[#D97706]"></i>
+        </template>
       </div>
 
       <h2 class="mb-3 text-center font-inter text-xl font-semibold leading-none text-[#003060] sm:text-2xl">
         {{t 'test.myPortfolio.emptyStateCourse.title'}}
       </h2>
 
-      <p class="mb-8 text-center font-inter text-sm font-normal leading-relaxed text-[#666666]">
-        {{t 'test.myPortfolio.emptyStateCourse.description'}}
-      </p>
+      <p
+        class="mb-8 text-center font-inter text-sm font-normal leading-relaxed text-[#666666]"
+        x-text="canCreatePortfolio
+          ? '{{t 'test.myPortfolio.emptyStateCourse.description'}}'
+          : (courseProgramType === 'bootcamp' || courseProgramType === 'lpk')
+            ? '{{t 'test.myPortfolio.emptyStateCourse.lockedNoticeBootcamp'}}'
+            : '{{t 'test.myPortfolio.emptyStateCourse.lockedNotice'}}'"
+      ></p>
 
       <button
         type="button"
-        x-show="!myPortfolio"
+        x-show="!myPortfolio && canCreatePortfolio"
         @click="openCreatePortfolio()"
         class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#003060] px-6 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f]"
       >
@@ -656,8 +787,7 @@
       </button>
     </div>
 
-    <!-- EMPTY STATE: ada karya, tapi filter yang aktif menyingkirkan semuanya -->
-    <div
+        <div
       x-show="portfolios.length > 0 && filteredPortfolios().length === 0"
       class="flex flex-col items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-4 py-12 text-center sm:py-16"
     >
@@ -682,16 +812,13 @@
       </button>
     </div>
 
-    <!-- HAS DATA STATE: Portfolios Grid -->
-    <div x-show="filteredPortfolios().length > 0" class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+        <div x-show="filteredPortfolios().length > 0" class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
       <template x-for="item in filteredPortfolios()" :key="item.id">
-        {{!-- Pengait untuk pemeriksaan UI: satu kartu, satu id. --}}
         <div
           :data-portfolio-id="item.id"
           class="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] transition-all duration-300 flex flex-col overflow-hidden group"
         >
-          <!-- Image Mockup / Cover -->
-          <div class="relative aspect-[16/10] w-full bg-gray-100 overflow-hidden rounded-t-2xl">
+                    <div class="relative aspect-[16/10] w-full bg-gray-100 overflow-hidden rounded-t-2xl">
             <img
               :src="getFirstImage(item)"
               :alt="item.title"
@@ -701,31 +828,31 @@
             />
           </div>
 
-          <!-- Card Body -->
-          <div class="p-5 flex-1 flex flex-col">
-            <!-- Badges Row -->
-            <div class="flex flex-wrap items-center gap-2 mb-3">
-              <!-- Category Badge -->
-              <span
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                            <span
                 class="inline-flex items-center px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#EEF2FF] text-[#4F46E5]"
                 x-text="item.category || 'General'"
               ></span>
-              <!-- Class Type Badge -->
-              <span
+                            <span
                 class="inline-flex items-center px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#F1F5F9] text-[#64748B]"
                 x-text="item.classType || 'Program'"
               ></span>
             </div>
 
-            <!-- Project Title -->
-            <h3
-              class="font-bold text-[#0B1F3B] text-base leading-snug mb-4 line-clamp-2 min-h-[44px] group-hover:text-[#003060] transition-colors font-inter"
+                        <h3
+              class="font-bold text-[#0B1F3B] text-base leading-snug line-clamp-2 min-h-[44px] group-hover:text-[#003060] transition-colors font-inter"
               x-text="item.title || 'Untitled Project'"
               :title="item.title"
             ></h3>
 
-            <!-- Author Info Row -->
-            <div class="flex items-center gap-2.5 pt-3 border-t border-gray-100 mb-4">
+                        <p
+              class="text-xs text-[#64748B] font-inter line-clamp-2 leading-relaxed mb-4"
+              x-text="item.description || '-'"
+              :title="item.description"
+            ></p>
+
+                        <div class="flex items-center gap-2.5 pt-3 border-t border-gray-100 mb-4">
               <div class="size-8 rounded-full bg-[#E2E8F0] text-[#003060] font-bold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-gray-200">
                 <template x-if="item.avatar">
                   <img :src="item.avatar" :alt="item.author" class="w-full h-full object-cover">
@@ -745,8 +872,7 @@
               </div>
             </div>
 
-            <!-- Action Button: Detail / Edit / Delete -->
-            <div class="mt-auto space-y-2">
+                        <div class="mt-auto space-y-2">
               <button
                 type="button"
                 @click="selectedPortfolio = item; showDetail = true;"
@@ -780,13 +906,11 @@
 
   </div>
 
-  <!-- DETAIL PORTOFOLIO VIEW -->
-  <div x-show="showDetail" x-cloak style="display: none;" class="!mt-0">
+    <div x-show="showDetail" x-cloak style="display: none;" class="!mt-0">
     {{> user/sidebar_user_profile/my_portofolio/detail/index }}
   </div>
 
-  <!-- POP UP CREATE PORTOFOLIO MODAL -->
-  <div
+    <div
     x-cloak
     style="display: none;"
     x-show="createPortofolio"
@@ -799,28 +923,22 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
     @keydown.escape.window="if (!portfolioFormTouched()) closePortfolioModal()"
   >
-    {{!-- Hanya menutup selama isiannya masih kosong: dulu satu klik di luar
-         modal membuang formulir yang sudah terisi tanpa bertanya. --}}
     <div
       id="overviewModal"
       @click.away="if (!portfolioFormTouched()) closePortfolioModal()"
       class="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[24px] bg-white p-6 font-inter shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-10"
       style="color-scheme: light;"
     >
-      <!-- Title Header -->
-      <h2
+            <h2
         class="mb-8 font-inter text-2xl font-semibold leading-none text-[#003060] sm:text-4xl"
         x-text="editingId ? '{{t 'test.myPortfolio.modal.editTitle'}}' : '{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}'"
       >{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}</h2>
 
-      <!-- Form Grid (2 Columns on Desktop) -->
-      <form @submit.prevent="submitPortfolio()" class="space-y-8">
+            <form @submit.prevent="submitPortfolio()" class="space-y-8">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
 
-          <!-- LEFT COLUMN -->
-          <div class="space-y-6">
-            <!-- Portfolio Title -->
-            <div class="space-y-3">
+                    <div class="space-y-6">
+                        <div class="space-y-3">
               <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
                 {{t 'test.myPortfolio.createPortfolio.portfolioTittle'}}<span class="text-red-500">*</span>
               </label>
@@ -832,8 +950,7 @@
               >
             </div>
 
-            <!-- Description -->
-            <div class="space-y-3">
+                        <div class="space-y-3">
               <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
                 {{t 'test.myPortfolio.createPortfolio.description'}}
               </label>
@@ -845,13 +962,7 @@
               ></textarea>
             </div>
 
-            <!-- Program -->
-            {{!-- Tidak pernah jadi dropdown. Panel ini hanya menampilkan
-                 program yang sedang dibuka, dan satu student hanya boleh punya
-                 satu portfolio per program, jadi "pilih program" di sini
-                 hanya menawarkan satu jawaban yang sudah tahu. Ditampilkan
-                 terkunci dengan alasannya. --}}
-            <div class="space-y-3">
+                        <div class="space-y-3">
               <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
                 {{t 'test.myPortfolio.detailPortfolio.program'}}<span class="text-red-500">*</span>
               </label>
@@ -880,18 +991,16 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN -->
-          <div class="space-y-6">
+                    <div class="space-y-6">
 
-            <!-- Project Overview -->
-            <div class="space-y-3">
+                        <div class="space-y-3">
               <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
                 {{t 'test.myPortfolio.createPortfolio.overview'}}
               </label>
               <div
                 id="overviewEditor"
                 x-ignore
-                class="min-h-[300px] w-full max-w-none rounded-[10px] border border-[#D4D4D4] bg-white p-4 text-left font-inter text-sm text-black transition-colors hover:shadow-sm focus-within:border-[#003060] sm:text-base"
+                class="min-h-[100px] max-h-[140px] overflow-y-auto w-full max-w-none rounded-[10px] border border-[#D4D4D4] bg-white p-4 text-left font-inter text-sm text-black transition-colors hover:shadow-sm focus-within:border-[#003060] sm:text-base"
               ></div>
             </div>
 
@@ -901,15 +1010,10 @@
                 {{t 'test.myPortfolio.createPortfolio.uploadImages'}}<span class="text-red-500">*</span>
               </label>
 
-              {{!-- Gambar yang sudah tersimpan. Yang dibuang di sini ikut
-                   hilang begitu disimpan; sisanya dikirim lewat keepImages. --}}
               <template x-if="editingId && existingImages.length > 0">
                 <div class="mb-3 space-y-2">
                   <template x-for="url in existingImages" :key="url">
                     <div class="flex items-center gap-3 rounded-[10px] border border-[#D4D4D4] bg-white px-3 py-2">
-                      {{!-- Ikon di lapisan bawah, gambar menimpanya. Kalau
-                           URL-nya mati, gambarnya dibuang dan ikonnya yang
-                           terlihat - bukan kotak kosong. --}}
                       <span class="relative grid h-10 w-16 shrink-0 place-items-center overflow-hidden rounded bg-[#F1F5F9] text-[#94A3B8]">
                         <i class="fa-regular fa-image text-xs"></i>
                         <img :src="url" alt="" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
@@ -928,8 +1032,7 @@
                 </div>
               </template>
 
-              <!-- Dynamic File Chooser Rows -->
-              <div class="max-h-[185px] space-y-3 overflow-y-auto p-1">
+                            <div class="max-h-[185px] space-y-3 overflow-y-auto p-1">
                 <template x-for="(upload, idx) in imageUploads" :key="upload.id">
                   <div class="flex h-[52px] w-full items-center justify-between gap-3 rounded-[10px] border border-[#D4D4D4] bg-white px-3 hover:shadow-sm">
                     <div class="flex min-w-0 items-center gap-3">
@@ -939,8 +1042,7 @@
                       </label>
                       <span class="truncate font-inter text-sm text-[#676767]" x-text="upload.name"></span>
                     </div>
-                    <!-- Remove row button if more than 1 -->
-                    <button
+                                        <button
                       type="button"
                       x-show="imageUploads.length > 1"
                       @click="imageUploads.splice(idx, 1)"
@@ -953,13 +1055,9 @@
                 </template>
               </div>
 
-              <!-- Allowed format subtitle -->
-              <p class="pt-0.5 font-inter text-xs font-normal text-[#666666]">
+                            <p class="pt-0.5 font-inter text-xs font-normal text-[#666666]">
                 {{t 'test.myPortfolio.modal.formatSubtitle'}}
               </p>
-              {{!-- Pesan ini muncul begitu berkas dipilih, bukan setelah
-                   unggahannya ditolak server. Syaratnya sama persis dengan
-                   @ValidateImage pada POST /portfolio/create. --}}
               <template x-for="upload in imageUploads.filter(u => u.error)" :key="'err-' + upload.id">
                 <p class="flex items-start gap-1.5 font-inter text-xs text-[#dc2626]">
                   <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
@@ -967,8 +1065,7 @@
                 </p>
               </template>
 
-              <!-- Dotted Add Image Box -->
-              <div
+                            <div
                 @click="addImageRow()"
                 class="mt-3 flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#D4D4D4] font-inter text-sm font-medium text-[#666666] transition-colors hover:bg-[#FAFAFA] sm:text-base"
               >
@@ -976,11 +1073,7 @@
                 <span>{{t 'test.myPortfolio.createPortfolio.addImage'}}</span>
               </div>
             </div>
-          </div>
-
-        </div>
-
-        <!-- ACTION BUTTONS ROW (SAVE & CANCEL) -->
+            <!-- ACTION BUTTONS ROW (SAVE & CANCEL) -->
         <div class="flex items-center justify-center gap-4 pt-6">
           <button
             type="submit"
@@ -992,24 +1085,20 @@
           <button
             type="button"
             @click="closePortfolioModal()"
-            class="w-full max-w-[240px] cursor-pointer rounded-[8px] border border-[#003060] bg-white font-inter text-base font-semibold text-[#003060] shadow-sm transition-all hover:bg-[#FAFAFA] sm:text-lg"
+            class="w-full h-[48px] max-w-[240px] cursor-pointer rounded-[8px] border border-[#003060] bg-white font-inter text-base font-semibold text-[#003060] shadow-sm transition-all hover:bg-[#FAFAFA] sm:text-lg"
           >
             {{t 'test.myPortfolio.modal.cancel'}}
           </button>
         </div>
+          </div>
+
+        </div>
+
+        
       </form>
     </div>
   </div>
 
-  {{!--
-    Konfirmasi hapus.
-
-    Bentuknya mengikuti components/ui/super_admin/modal/delete_confirm, tetapi
-    tidak memakainya: komponen itu menahan submit sebuah <form> yang sudah ada
-    di halaman, sementara di sini yang dihapus baris dalam daftar Alpine. Yang
-    dikirim tetap form sungguhan (POST + _method=DELETE) supaya pesan sukses
-    dari server ikut tampil sesudah halaman kembali.
-  --}}
   <div
     x-show="deleteTarget"
     x-cloak
@@ -1104,7 +1193,11 @@
 
   .codex-editor__redactor {
     padding-left: 0 !important;
-    min-height: 280px;
+  }
+
+  #overviewEditor .codex-editor__redactor {
+    min-height: 80px !important;
+    padding-bottom: 16px !important;
   }
 
   #overviewEditor img,
@@ -1246,3 +1339,93 @@
     font-weight: 600;
   }
 </style>
+
+<script>
+  // Whitelist tag/atribut untuk HTML overview. Dipakai karena `contentHtml`
+  // di-inject lewat x-html, sedangkan sanitize-html hanya jalan di server.
+  var OVERVIEW_ALLOWED_TAGS = [
+    'P','BR','B','STRONG','I','EM','U','S','MARK','SMALL','SUB','SUP','SPAN','DIV',
+    'H1','H2','H3','H4','H5','H6','UL','OL','LI','A','BLOCKQUOTE','PRE','CODE','HR',
+    'FIGURE','FIGCAPTION','IMG','TABLE','THEAD','TBODY','TR','TH','TD'
+  ];
+  var OVERVIEW_ALLOWED_ATTRS = ['href','src','alt','title','colspan','rowspan','class'];
+
+  function sanitizeOverviewHtml(html) {
+    // DOMParser menghasilkan dokumen inert: script tidak jalan, resource tidak di-fetch.
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+
+    doc.body.querySelectorAll('*').forEach(function (el) {
+      if (OVERVIEW_ALLOWED_TAGS.indexOf(el.tagName) === -1) {
+        el.remove();
+        return;
+      }
+      Array.prototype.slice.call(el.attributes).forEach(function (attr) {
+        var name = attr.name.toLowerCase();
+        var value = (attr.value || '').replace(/[\s\u0000-\u001F]/g, '').toLowerCase();
+        if (OVERVIEW_ALLOWED_ATTRS.indexOf(name) === -1) {
+          el.removeAttribute(attr.name);
+        } else if ((name === 'href' || name === 'src') && /^(javascript|data|vbscript):/.test(value)) {
+          el.removeAttribute(attr.name);
+        }
+      });
+      if (el.tagName === 'A') {
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+
+    return doc.body.innerHTML;
+  }
+
+  function renderOverview(raw) {
+    if (!raw) return '';
+    if (typeof raw !== 'string') return '';
+    const trimmed = raw.trim();
+    if (!trimmed) return '';
+    // 1. Editor.js JSON (kolom `content`)
+    if (trimmed.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && Array.isArray(parsed.blocks)) {
+          return parsed.blocks.map(function (b) {
+            const d = b.data || {};
+            switch (b.type) {
+              case 'header': {
+                const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+                return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
+              }
+              case 'list': {
+                const items = (d.items || []).map(function (i) { 
+                  const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                  return '<li>' + content + '</li>'; 
+                }).join('');
+                return d.style === 'ordered' ? '<ol class="list-decimal pl-5">' + items + '</ol>' : '<ul class="list-disc pl-5">' + items + '</ul>';
+              }
+              case 'image':
+                return '<figure class="my-4"><img src="' + ((d.file && d.file.url) || '') + '" alt="overview image" class="max-w-full rounded-lg"/>' +
+                  (d.caption ? '<figcaption class="text-center text-sm text-[#737373] mt-2">' + d.caption + '</figcaption>' : '') + '</figure>';
+              case 'quote':
+                return '<blockquote class="border-l-4 border-[#D4D4D4] pl-4 italic my-4">' + (d.text || '') + '</blockquote>';
+              case 'code':
+                return '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto"><code>' + (d.code || '') + '</code></pre>';
+              case 'delimiter':
+                return '<hr class="my-6 border-t-2 border-[#E5E5E5]"/>';
+              default:
+                return '<p class="my-2">' + (d.text || '') + '</p>';
+            }
+          }).join('');
+        }
+      } catch (e) {
+        // not editor JSON, fallback below
+      }
+    }
+    // 2. HTML jadi hasil editorjsHTML.parse() di server (kolom `contentHtml`)
+    if (/<\/?[a-z][\s\S]*>/i.test(trimmed)) {
+      return sanitizeOverviewHtml(trimmed);
+    }
+    // 3. Teks biasa -> escape supaya aman
+    const el = document.createElement('div');
+    el.textContent = trimmed;
+    return el.innerHTML;
+  }
+</script>

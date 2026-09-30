@@ -14,6 +14,7 @@ import {
   Query,
   ValidationPipe,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
@@ -752,7 +753,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -766,6 +767,7 @@ export class CoursesController {
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
+    const portfolio = await this.usersService.findPortfolio(id);
 
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
@@ -814,6 +816,7 @@ export class CoursesController {
       courseType,
       userWithCourses,
       logbooks,
+      portfolio,
       activeSection: courseId ? 'uiux' : 'learning',
       initialSection,
       stats,
@@ -834,7 +837,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment')
   async myCourseFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -932,7 +935,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/assignment')
   async myCourseAssignmentFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {
@@ -1012,7 +1015,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/presentation')
   async myCoursePresentationFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -1051,7 +1054,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id/fragment/quiz')
   async myCourseQuizFragment(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Query('courseId') courseId?: string,
   ) {

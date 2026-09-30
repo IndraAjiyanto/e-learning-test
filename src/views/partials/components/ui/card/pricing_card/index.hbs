@@ -37,7 +37,7 @@
   
   {{!-- Card Title: Inter 700 22px #0B1F3B text-center --}}
   <h3 class="w-full text-center font-inter text-xl sm:text-[22px] font-bold leading-[27px] text-[#0B1F3B]">
-    Kickstart Your Career Today
+    {{default (t 'test.paidProgram.pricing.cardTitle') 'Kickstart Your Career Today'}}
   </h3>
 
   {{!-- Payment Toggle Tabs (Figma: width 100%, height 44px, bg #F1F5F9, rounded-full, p-1) --}}
@@ -49,7 +49,7 @@
       class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer"
       :class="tab === 'full' ? 'bg-[#003060] text-white shadow-xs' : 'border border-[#CBD5E1] text-[#64748B] hover:text-[#0B1F3B]'"
     >
-      Full Payment
+      {{default (t 'test.paidProgram.pricing.fullPayment') 'Full Payment'}}
     </button>
     
     {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
@@ -60,7 +60,7 @@
         class="flex flex-1 items-center justify-center py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 cursor-pointer"
         :class="tab === 'installment' ? 'bg-[#003060] text-white shadow-xs' : 'border border-[#CBD5E1] text-[#64748B] hover:text-[#0B1F3B]'"
       >
-        Installment
+        {{default (t 'test.paidProgram.pricing.installment') 'Installment'}}
       </button>
     {{/if}}
   </div>
@@ -77,7 +77,7 @@
             {{formatRupiah course.price}}
           </span>
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#D1FAE5] font-inter text-[11px] font-semibold text-[#059669]">
-            Save {{formatRupiah (subtract course.price course.promo)}}
+            {{default (t 'test.paidProgram.pricing.save') 'Save'}} {{formatRupiah (subtract course.price course.promo)}}
           </span>
         </div>
       {{/if}}
@@ -123,8 +123,8 @@
       <circle cx="12" cy="12" r="10"/>
       <polyline points="12 6 12 12 16 14"/>
     </svg>
-    <span>Offer Ends In</span>
-    <span class="font-bold text-[#DC2626]" x-text="countdown.days + ' Days'">15 Days</span>
+    <span>{{default (t 'test.paidProgram.pricing.offerEndsIn') 'Offer Ends In'}}</span>
+    <span class="font-bold text-[#DC2626]" x-text="countdown.days + ' {{default (t 'test.paidProgram.pricing.days') 'Days'}}'">15 {{default (t 'test.paidProgram.pricing.days') 'Days'}}</span>
     <span class="font-bold text-[#DC2626]" x-text="countdown.time">11 : 50 : 05</span>
   </div>
 
@@ -145,7 +145,7 @@
             <line x1="7" y1="7" x2="7.01" y2="7"/>
           </svg>
           <span class="font-inter text-[13px] font-bold text-[#B7791F]">
-            Installment Information
+            {{default (t 'test.paidProgram.pricing.installmentInfo') 'Installment Information'}}
           </span>
         </div>
 
@@ -162,19 +162,19 @@
       <div x-show="openInstallmentInfo" x-collapse class="flex flex-col gap-1.5 font-inter text-xs sm:text-[13px] leading-relaxed text-[#64748B] pl-1">
         <div class="flex items-start gap-2">
           <span class="font-normal text-[#64748B] shrink-0">1.</span>
-          <span>Down Payment (DP) is required as the first payment for enrollment</span>
+          <span>{{default (t 'test.paidProgram.pricing.point1') 'Down Payment (DP) is required as the first payment for enrollment'}}</span>
         </div>
         <div class="flex items-start gap-2">
           <span class="font-normal text-[#64748B] shrink-0">2.</span>
-          <span>No additional fees or interest</span>
+          <span>{{default (t 'test.paidProgram.pricing.point2') 'No additional fees or interest'}}</span>
         </div>
         <div class="flex items-start gap-2">
           <span class="font-normal text-[#64748B] shrink-0">3.</span>
-          <span>Pay monthly as per schedule below</span>
+          <span>{{default (t 'test.paidProgram.pricing.point3') 'Pay monthly as per schedule below'}}</span>
         </div>
         <div class="flex items-start gap-2">
           <span class="font-normal text-[#64748B] shrink-0">4.</span>
-          <span>Full access after DP payment</span>
+          <span>{{default (t 'test.paidProgram.pricing.point4') 'Full access after DP payment'}}</span>
         </div>
       </div>
     </div>
@@ -184,7 +184,7 @@
   <div class="flex w-full flex-col gap-2.5 rounded-xl bg-[#F9FAFB] p-4 font-inter text-xs text-[#374151]">
     {{!-- Registration --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
-      <span class="font-bold text-[#374151] shrink-0">Registration</span>
+      <span class="font-bold text-[#374151] shrink-0">{{default (t 'test.paidProgram.pricing.registration') 'Registration'}}</span>
       <span class="font-normal text-[#4B5563] sm:text-right">
         {{ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) "Friday, 21 August 2026"}}
       </span>
@@ -192,7 +192,7 @@
     
     {{!-- Start Learning --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
-      <span class="font-bold text-[#374151] shrink-0">Start Learning</span>
+      <span class="font-bold text-[#374151] shrink-0">{{default (t 'test.paidProgram.pricing.startLearning') 'Start Learning'}}</span>
       <span class="font-normal text-[#4B5563] sm:text-right">
         {{#if course.startDate}}
           {{formatDateDayMonthYear course.startDate lang}}{{#if course.startEnd}} - {{formatDateDayMonthYear course.startEnd lang}}{{/if}}
@@ -212,7 +212,7 @@
       href="{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}"
       class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#1E3A5F] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#152841] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
     >
-      Registration Now
+      {{default (t 'test.paidProgram.pricing.btnRegister') 'Registration Now'}}
     </a>
 
     <a
@@ -221,7 +221,7 @@
       rel="noopener noreferrer"
       class="font-inter text-[13px] font-semibold text-[#1E3A5F] underline hover:text-[#003060] text-center cursor-pointer"
     >
-      Free Consultation
+      {{default (t 'test.paidProgram.pricing.btnConsultation') 'Free Consultation'}}
     </a>
   </div>
 

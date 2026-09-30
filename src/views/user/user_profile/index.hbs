@@ -250,13 +250,14 @@
           </button>
 
           <!-- Logout Button -->
-          <a
-            href='/logout'
-            class="h-10 px-6 py-2.5 gap-2.5 rounded-lg transition-colors duration-150 flex items-center whitespace-nowrap text-sm font-semibold font-montserrat leading-5 text-[#C0392B] bg-white shadow-[0px_0px_4px_rgba(0,0,0,0.25)] hover:bg-[#fef2f2] cursor-pointer"
+          <button
+            type="button"
+            onclick="openLogoutModal()"
+            class="shrink-0 rounded-lg border border-[#C0392B] px-5 py-2 text-sm font-semibold text-[#C0392B] transition hover:bg-[#fef2f2] cursor-pointer flex items-center gap-2.5 bg-white whitespace-nowrap font-montserrat"
           >
             <i class="fa-solid fa-arrow-right-from-bracket text-[18px] w-[18px] text-center"></i>
             <span>Log Out</span>
-          </a>
+          </button>
 
         </nav>
       </div>
@@ -371,15 +372,16 @@
         {{!-- Warna Log Out ikut keadaan sidebar lewat CSS, bukan :class, dengan
              alasan yang sama seperti item lain: Alpine baru berjalan setelah
              halaman tergambar. --}}
-        <a
-          href='/logout'
+        <button
+          type="button"
+          onclick="openLogoutModal()"
           class="js-user-sidebar-item js-user-sidebar-logout-link rounded-lg transition-colors duration-150 flex items-center font-montserrat font-semibold leading-5 cursor-pointer"
         >
           <div class="w-5 flex justify-center items-center flex-shrink-0">
             <i class="fa-solid fa-arrow-right-from-bracket text-[18px]"></i>
           </div>
           <span class="js-user-sidebar-label whitespace-nowrap text-sm">Log Out</span>
-        </a>
+        </button>
       </div>
       {{/unless}}
 
@@ -570,7 +572,7 @@
             <button
               type="button"
               role="tab"
-              x-show="activeCaps.logbookEnabled !== false"
+              x-show="activeCaps.logbookEnabled !== false && (activeCourseData?.programType ?? activeCourseData?.program_type) !== 'non_bootcamp'"
               @click="toggleActiveSection('logbook')"
               class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
               :class="'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
@@ -755,3 +757,6 @@
      ada sebelum fragment masuk. --}}
 <script src="/public/js/portfolio-overview.js"></script>
 {{/if}}
+
+{{> components/ui/user/modal/logout_confirm/index }}
+

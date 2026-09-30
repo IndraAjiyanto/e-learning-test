@@ -11,11 +11,11 @@
     editStatus: '',
     editNotes: '',
     statusLabels: {
-      'present': 'Present',
-      'sick': 'Sick',
-      'permission': 'Permission',
-      'absent': 'Absent',
-      'no_information': 'No Information'
+      'present': '{{default (t 'test.attendance.present') 'Present'}}',
+      'sick': '{{default (t 'test.attendance.sick') 'Sick'}}',
+      'permission': '{{default (t 'test.attendance.permission') 'Permission'}}',
+      'absent': '{{default (t 'test.attendance.absent') 'Absent'}}',
+      'no_information': '{{default (t 'test.attendance.noInformation') 'No Information'}}'
     },
     {{!-- Rupa pil status, dipisah dari markup supaya ketiga keadaannya
          terbaca sekaligus. Kuncinya nilai kembalian

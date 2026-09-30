@@ -7,13 +7,6 @@
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
     x-data="{
       openQuestionId: {{#if questions.[0]}}'{{questions.[0].id}}'{{else}}null{{/if}},
-      handleBack() {
-        if (window.history.length > 1) {
-          window.history.back();
-        } else {
-          window.location.href = '{{#if syllabus}}/syllabus/{{syllabus.id}}{{else if courseId}}/program/detail/program/admin/{{courseId}}{{else}}/program{{/if}}';
-        }
-      },
       toggleQuestion(id) {
         this.openQuestionId = this.openQuestionId === id ? null : id;
       }
@@ -25,9 +18,8 @@
       {{!-- Frame 2147229598: Top row (Back button) --}}
       <div class='box-border w-full h-[20px] flex flex-row justify-between items-start gap-[24px]'>
         {{!-- Container: Back button --}}
-        <button
-          type='button'
-          @click='handleBack()'
+        <a
+          href='{{#if syllabus}}/syllabus/{{syllabus.id}}{{else if courseId}}/program/detail/program/admin/{{courseId}}{{else}}/program{{/if}}'
           class='h-[20px] flex flex-row items-center gap-[4px] text-[#718096] hover:text-[#003060] transition-colors focus:outline-none'>
           {{!-- SVG chevron-left icon --}}
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
@@ -36,7 +28,7 @@
           <span class='font-inter font-medium text-[16px] leading-[20px]'>
             Back
           </span>
-        </button>
+        </a>
       </div>
 
       {{!-- Frame 2147229617: Header info & actions --}}

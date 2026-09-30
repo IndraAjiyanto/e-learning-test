@@ -246,6 +246,7 @@ export class DashboardService {
       .leftJoinAndSelect('portfolio.course', 'course')
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.technologies', 'technologies')
       .leftJoinAndSelect('portfolio.user', 'user')
       .orderBy('portfolio.createdAt', 'DESC')
       .skip(skip)

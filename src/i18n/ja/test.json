@@ -418,20 +418,38 @@
   "portfolio": {
     "title": "ポートフォリオ",
     "description": "ブートキャンプ卒業生による優れたプロジェクトのコレクションをご覧ください。各ポートフォリオは技術的スキルと創造的なソリューションを紹介しています。",
+    "sidebarTitle": "作品を絞り込む",
     "filterTittle": "アクティブなフィルター",
     "resetFilters": "リセット",
     "noFilters": "アクティブなフィルターはありません",
+    "searchLabel": "検索",
+    "searchPlaceholder": "タイトル、スキル、または作成者を検索...",
+    "categoryLabel": "分野カテゴリー",
     "categoryTittle": "カテゴリー",
     "allCategory": "すべてのカテゴリー",
     "searchCategoryPlaceholder": "カテゴリーを検索...",
+    "classTypeLabel": "クラスタイプ / プログラム",
     "classTypeTittle": "クラスタイプ",
-    "allClassType": "すべて",
+    "allClassType": "すべてのクラスタイプ",
+    "allClassesShort": "すべてのクラス",
     "searchClassTypePlaceholder": "クラスタイプを検索...",
+    "totalAvailable": "利用可能な総作品数:",
+    "projectUnit": "プロジェクト",
     "projectAvailable": "利用可能なプロジェクト",
+    "applyFilters": "フィルターを適用",
+    "activeFilterPrefix": "適用中のフィルター:",
+    "showingResults": "表示中",
+    "fromResults": "/",
+    "resultsUnit": "件",
+    "alumniRole": "Kesatria Academy 卒業生",
     "detailButton": "詳細を見る",
     "projectNotFound": "プロジェクトが見つかりません",
     "tryAdjusting": "フィルターを調整して、より多くのプロジェクトを見つけてください。",
-    "resetAllFilters": "フィルターをリセット"
+    "resetAllFilters": "フィルターをリセット",
+    "generalCategory": "一般",
+    "defaultClassType": "プログラム",
+    "untitledProject": "無題のプロジェクト",
+    "defaultAuthor": "卒業生"
   },
   "blog": {
     "title": "ブログ",
@@ -658,7 +676,11 @@
     "programCompleted": "完了したプログラム",
     "completionDate": "完了日",
     "projectDuration": "プロジェクト期間",
-    "months": "ヶ月"
+    "months": "ヶ月",
+    "noDescription": "プロジェクトの説明はまだありません。",
+    "noOverview": "詳細なプロジェクト概要はまだありません。",
+    "defaultWebTech": "Web技術",
+    "defaultProgram": "セミナー - ポートフォリオショーケース"
   },
   "payment": {
     "shell": {
@@ -911,6 +933,7 @@
     "promoPrice": "プロモ価格",
     "normalPrice": "通常価格",
     "discount": "割引",
+    "promoCode": "プロモコード",
     "total": "合計",
     "programCategory": "プログラムカテゴリー",
     "programName": "プログラム名",
@@ -1203,7 +1226,9 @@
       "noProgramDescription": "いずれかのプログラムを開いて、そのポートフォリオを確認してください。",
       "noProgramTitle": "プログラムが開かれていません",
       "title": "ポートフォリオがまだありません",
-      "description": "このプログラムのポートフォリオはまだありません。今すぐ最初のポートフォリオを作成しましょう。"
+      "description": "このプログラムのポートフォリオはまだありません。今すぐ最初のポートフォリオを作成しましょう。",
+      "lockedNotice": "ポートフォリオを作成する前に、すべての学習コンテンツを完了してください。",
+      "lockedNoticeBootcamp": "ポートフォリオを作成する前に、すべての学習コンテンツを完了し、ファイナルアサインメントの承認を受けてください。"
     },
     "modal": {
       "editTitle": "ポートフォリオを編集",
@@ -1387,38 +1412,54 @@
     "absent": "欠席",
     "noInformation": "情報なし",
     "notes": "備考",
+    "selectStatus": "出席状況を選択",
+    "placeholderNotes": "出席備考を入力...",
     "saveAttendance": "出席を保存",
     "cancel": "キャンセル"
   },
   "material": {
+    "completeWeekHint": "次に進むには、各週を完了してください",
     "pdf": {
       "backToProgram": "プログラムに戻る",
       "noPDFSelected": "PDFが選択されていません",
       "selectPDFInstruction": "リストからPDFを選択して読み始める",
-      "materiProgram": "プログラム教材",
+      "materiProgram": "PDF教材",
       "downloadPDF": "PDFをダウンロード",
-      "noMateriAvailable": "教材がありません",
+      "noMateriAvailable": "このセッションで利用可能なPDF教材はありません",
       "spanNoMateriAvailable": "教材は近日中に追加されます"
     },
     "video": {
       "backToProgram": "プログラムに戻る",
       "noVideoSelected": "動画が選択されていません",
       "selectVideoInstruction": "リストから動画を選択して視聴を開始",
-      "materiProgram": "プログラム教材",
-      "noMateriAvailable": "教材がありません",
+      "materiProgram": "動画教材",
+      "noMateriAvailable": "このセッションで利用可能な動画教材はありません",
       "spanNoMateriAvailable": "教材は近日中に追加されます"
     },
     "ppt": {
       "backToProgram": "プログラムに戻る",
       "noPresentationSelected": "プレゼンテーションが選択されていません",
       "selectPPTInstruction": "リストからプレゼンテーションを選択して閲覧を開始",
-      "materiProgram": "プログラム教材",
+      "materiProgram": "PPT教材",
       "downloadPPT": "PPTをダウンロード",
-      "noMateriAvailable": "教材がありません",
+      "noMateriAvailable": "このセッションで利用可能なPPT教材はありません",
       "spanNoMateriAvailable": "教材は近日中に追加されます"
     },
     "unavailableTitle": "このファイルは利用できません",
     "unavailableBody": "ファイルはサーバーに保存されていません。メンターに再アップロードを依頼してください。"
+  },
+  "nonBootcamp": {
+    "title": "シラバス",
+    "scorePrefix": "スコア:",
+    "requirement": "条件: 最低スコア",
+    "requirementPrev": "（前のモジュール）",
+    "empty": "このプログラムで利用可能なシラバスはまだありません。"
+  },
+  "joinGroup": {
+    "title": "クラスグループに参加",
+    "description": "クラスグループに参加して、重要なお知らせ、学習教材、スケジュールを受け取り、メンターや他の受講生と交流しましょう。",
+    "joinNow": "今すぐ参加",
+    "linkNotShared": "メンターからグループリンクがまだ共有されていません。"
   },
   "logbook": {
     "createLogBook": {
@@ -1481,7 +1522,17 @@
       "action": "アクション",
       "noLogbookFound": "ログブックが見つかりません",
       "noLogBookDataMatch": "選択したフィルターに一致するログブックデータがありません。",
-      "resetFilters": "フィルターをリセット"
+      "resetFilters": "フィルターをリセット",
+      "description": "プログラム期間中に提出したログブックのエントリを表示および確認します。",
+      "empty": "このプログラムのログブックエントリは見つかりませんでした。",
+      "view": "表示",
+      "session": "セッション",
+      "showing": "表示中",
+      "of": "件 / 全",
+      "entries": "件",
+      "previous": "前へ",
+      "next": "次へ",
+      "logbookEntry": "ログブックエントリ"
     }
   },
   "quiz": {
@@ -1606,6 +1657,83 @@
     "gallery": {
       "description": "このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
       "seeAllOurGallery": "当社のギャラリーをすべて見る"
+    },
+    "hero": {
+      "paidProgramBadge": "有料プログラム",
+      "freeProgramBadge": "無料プログラム",
+      "bootcampBadge": "BOOTCAMP",
+      "defaultDescription": "トップ業界のメンターと共に実践的なスキルを習得するために設計された包括的集中学習プログラム。",
+      "btnRegister": "今すぐ登録",
+      "btnConsultation": "無料相談",
+      "quickStats": {
+        "startDate": "開始日",
+        "endDate": "終了日",
+        "month": "ヶ月",
+        "learningSystem": "学習システム",
+        "onlineOffline": "オンライン＆オフライン",
+        "classCapacity": "クラス定員",
+        "maxStudent": "最大 {{count}} 名"
+      }
+    },
+    "advantage": {
+      "eyebrow": "主なメリット",
+      "title": "なぜKesatria Academyで学ぶのか？",
+      "mentoringTitle": "1-on-1 Mentoring",
+      "mentoringDesc": "ポートフォリオを詳細にレビューするためのテック業界のエキスパートメンターとの週次個別セッション。",
+      "portfolioTitle": "実践的なポートフォリオ",
+      "portfolioDesc": "ユーザーリサーチからインタラクティブなプロトタイプまで、3つの実践的なプロジェクトを完成させます。",
+      "careerTitle": "キャリアサポート",
+      "careerDesc": "職務経歴書の作成、面接対策、Kesatria Academyの採用パートナーネットワークへの特別アクセス。",
+      "certificateTitle": "修了証書",
+      "certificateDesc": "採用担当者に実践的なスキルを証明する公式修了証書を取得。"
+    },
+    "curriculum": {
+      "badge": "ブートキャンプシラバス",
+      "title": "体系的かつ業界で実証されたカリキュラム",
+      "description": "現在のデジタル企業の業務基準に沿った実践的かつプロジェクトベースのカリキュラムを修了します。",
+      "modulePrefix": "モジュール ",
+      "defaultModuleDesc": "業界の実務メンターによる集中指導で、本モジュールの包括的な内容を学びます。"
+    },
+    "tools": {
+      "eyebrow": "ソフトウェア＆ツール",
+      "title": "習得するツール"
+    },
+    "schedule": {
+      "eyebrow": "スケジュール情報",
+      "title": "クラス形式とセッションスケジュール",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "registrationDeadline": "登録締切日",
+      "everyday": "毎日",
+      "tueThu": "火曜日 & 木曜日",
+      "formatOption": "形式オプション",
+      "hybridMeetup": "(オンラインZoom & 対面ミートアップ)"
+    },
+    "pricing": {
+      "eyebrow": "投資・料金情報",
+      "title": "ニーズに合わせたパッケージプラン",
+      "description": "分かりやすく良心的な支払いプランで、最適なメンタープログラムを提供します。",
+      "cardTitle": "今すぐキャリアをスタート",
+      "fullPayment": "一括払い",
+      "installment": "分割払い",
+      "save": "お得",
+      "offerEndsIn": "終了まで残り",
+      "days": "日",
+      "installmentInfo": "分割払いに関する情報",
+      "point1": "登録の初回支払いとして頭金（DP）が必要です",
+      "point2": "追加手数料や利息は一切ありません",
+      "point3": "以下のスケジュールに従って毎月お支払い",
+      "point4": "頭金支払い後に全機能へアクセス可能",
+      "registration": "登録",
+      "startLearning": "学習開始",
+      "btnRegister": "今すぐ申し込む",
+      "btnConsultation": "無料相談"
+    },
+    "finalCta": {
+      "eyebrow": "登録プロセス",
+      "titlePrefix": "でキャリアをスタート",
+      "titleSuffix": "今すぐ",
+      "description": "業界の実務エキスパートによる直接指導を受けられる貴重な機会をお見逃しなく。指導の質を維持するため定員は限定されています。"
     }
   },
   "special_program": {
@@ -1615,21 +1743,83 @@
       "placement": "就職率",
       "eyebrow": "プログラム",
       "description": "実践的なプロジェクトを中心に、メンター指導のもとで業界で通用するスキルを習得します。",
-      "buttonViewProgram": "プログラムを見る"
+      "tagText": "プレミアム留学プログラム",
+      "defaultHeadlineJapan": "日本で未来を変える — 語学からキャリアまで。",
+      "defaultHeadlineGeneral": "私たちと共に未来を変える — 学びからキャリアまで。",
+      "defaultSubheadingJapan": "意欲的な学習者のための体系的なカリキュラム：実践的な日本語研修、職場の即戦力化、長期的な成功に向けたサポート。",
+      "defaultSubheadingGeneral": "意欲的な学習者のための体系的なカリキュラム：実践的な業界研修、職場の即戦力化、長期的な成功に向けたサポート。",
+      "buttonRegister": "今すぐ登録",
+      "buttonViewProgram": "プログラムを見る",
+      "curriculumChipJapan": "JLPT N5対策カリキュラム",
+      "curriculumChipGeneral": "業界標準カリキュラム",
+      "supportChip": "キャリア＆学習サポート",
+      "snapshot1Title": "包括的なカリキュラム",
+      "snapshot1DescJapan": "語学 ＋ 文化 ＋ キャリア準備",
+      "snapshot1DescGeneral": "実践 ＋ 業界即戦力化",
+      "snapshot2Title": "メンター主導の学習",
+      "snapshot2Desc": "経験豊富な講師と手厚いサポート",
+      "snapshot3TitleJapan": "キャリア＆進路ルート",
+      "snapshot3TitleGeneral": "キャリア開発ルート",
+      "snapshot3DescJapan": "日本での次の一歩に向けたガイダンス",
+      "snapshot3DescGeneral": "プロフェッショナルな成長へのガイダンス"
     },
     "program": {
       "title": "対象プログラム：",
+      "choosePrefix": "選べる",
+      "chooseMiddle": "あなたの",
+      "japanProgram": "日本プログラム",
       "description": "自身の目標や情熱に合ったプログラムを選んでください。",
-      "month": "数ヶ月",
+      "defaultCardDesc": "基礎から職場の即戦力化、長期的なキャリア機会へと繋がる体系的な学習体験。",
+      "language": "語学",
+      "practical": "実践",
+      "day": "日",
+      "month": "ヶ月",
       "student": "学生",
+      "quota": "定員",
+      "culture": "文化",
+      "career": "キャリア",
+      "speaking": "スピーキング",
+      "listening": "リスニング",
+      "reading": "リーディング",
+      "writing": "ライティング",
+      "applications": "応募",
+      "interviews": "面接",
+      "planning": "プランニング",
+      "card1Title": "日本プログラム",
+      "card1Desc": "基礎語学から職場の即戦力化、長期的なキャリア機会へと繋がる体系的な旅。",
+      "card2Title": "日本語研修",
+      "card2Desc": "体系的なレッスンとインタラクティブな実践を通じて、確かなコミュニケーションスキルを育成します。",
+      "card3Title": "キャリア＆学習サポート",
+      "card3Desc": "出願、面接、日本での進路設計に関する総合的なサポートを提供します。",
       "eyebrow": "私たちのプログラム",
       "comingSoonTitle": "近日公開",
       "comingSoonText": "このカテゴリーの内容を準備中です。しばらくしてから再度ご確認いただくか、お問い合わせください。"
     },
     "whyChooseUs": {
       "title": "当社が選ばれる理由",
+      "titlePrefix": "選ばれる理由",
+      "titleSuffixJapan": "当社の日本プログラム",
+      "titleSuffixGeneral": "当社のプログラム",
       "description": "経験豊富な専門家の指導による実践的かつ体験型の学習を通じ、学生に業界で求められるスキルを習得させるよう設計されています。",
-      "eyebrow": "選ばれる理由"
+      "descJapan": "経験豊富なメンターの手厚い指導のもと、日本での進学や就職に自信を持って挑むために必要なスキル、語学力、文化理解を習得します。",
+      "descGeneral": "経験豊富なメンターの指導のもと、求められるスキル、実践的な経験、業界即戦力を身につけます。",
+      "eyebrow": "選ばれる理由",
+      "card1TitleJapan": "包括的な日本語研修",
+      "card1TitleGeneral": "包括的な業界カリキュラム",
+      "card1DescJapan": "日常およびビジネスで活用できるスピーキング、リスニング、リーディング、ライティングを体系的なレッスンで学びます。",
+      "card1DescGeneral": "業界パートナーと共同設計した実践的かつプロジェクト主導のカリキュラムを通じて、需要の高いスキルを習得します。",
+      "card2Title": "経験豊富なメンターと現役講師",
+      "card2Desc": "マンツーマンのフィードバック、実践的な知見、丁寧な指導を提供する熟練の業界プロから直接学びます。",
+      "card3TitleJapan": "JLPT対策＆資格取得",
+      "card3TitleGeneral": "業界認定＆ポートフォリオ",
+      "card3DescJapan": "目標レベルの達成に向けて、包括的な教材、模擬試験、効果的な攻略戦略でJLPT合格を目指します。",
+      "card3DescGeneral": "実践的なポートフォリオを構築し、認定資格を取得してキャリアの成長を加速させます。",
+      "card4Title": "キャリア＆就職支援",
+      "card4Desc": "履歴書添削、模擬面接、提携企業ネットワークへの限定アクセスなど、充実したキャリア支援を提供します。",
+      "card5Title": "実践的な体験＆実務プロジェクト",
+      "card5Desc": "実際の職場環境を再現したケーススタディ、実践的なクライアント課題、チーム開発を通じて学びます。",
+      "card6Title": "職場の即戦力化＆ソフトスキル",
+      "card6Desc": "プロとしての労働倫理、チームワーク、円滑なコミュニケーション能力を磨き、どのチームでも活躍できる人材へ。"
     },
     "topic": {
       "title": "トレーニングトピック",
@@ -1639,22 +1829,30 @@
     "alumni": {
       "title": "～の物語",
       "title2": "卒業生の活躍",
+      "storiesTitle": "リアルな体験談、確かな就職実績",
+      "storiesDescJapan": "日本でのキャリア構築に成功した卒業生たちの生の声をお聞きください。",
+      "storiesDescGeneral": "当社のプログラムを通じてキャリアを切り拓いた卒業生たちの体験談をご紹介します。",
       "description": "当社の社内研修プログラムが、受講者が実践的なスキルや業界への理解を深め、将来のキャリアに向けて自信を育む上でどのように役立ったか、その声をお聞きください。",
       "footer": "他にも、卒業生による感動的なストーリーが数多くあります。",
       "allStories": "卒業生の体験談をすべて見る",
       "badge": "卒業生の声"
     },
     "gallery": {
+      "badge": "キャンパスライフ",
+      "campusTitle": "ケサトリア・アカデミーでの毎日",
+      "campusDesc": "トレーニング環境、学習セッション、コミュニティイベントの様子をご覧ください。",
       "title": "<span class='text-black'>当ギャラリー</span>",
       "description": "このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
       "allGaleries": "ギャラリーをすべて見る"
     },
     "contact": {
       "title": "今すぐチームを変革しましょう",
-      "description": "貴社に合わせた研修プランをご提案いたします",
+      "description": "業界特有のニーズに合わせてカスタマイズされた研修プログラムで、貴社の組織を強化します。詳細はお気軽にお問い合わせください。",
+      "btnRegister": "今すぐ登録",
       "contact": "お問い合わせ"
     },
     "faq": {
+      "eyebrow": "よくあるご質問",
       "title": "<span class='text-black'>よくある質問</span>",
       "description": "当プログラムについて知っておくべきすべてのこと"
     }
@@ -1668,7 +1866,19 @@
       "capacity": "容量",
       "students": "学生",
       "regisUntil": "登録受付期間：～",
-      "regisNow": "ただいま登録受付中"
+      "regisNow": "今すぐ登録する",
+      "consultation": "無料相談",
+      "freeProgramBadge": "無料プログラム",
+      "defaultDescription": "実践的なデータ分析の基礎をゼロから学び、体系的にデータインサイトを深めます。",
+      "quickStats": {
+        "startDate": "開始日",
+        "endDate": "終了日",
+        "learningSystem": "学習システム",
+        "classCapacity": "クラス定員",
+        "maxPrefix": "最大",
+        "students": "名",
+        "onlineOffline": "オンライン＆オフライン"
+      }
     },
     "navMenu": {
       "participants": "参加者",
@@ -1683,6 +1893,23 @@
       "schedule": "スケジュール・料金",
       "gallery": "ギャラリー",
       "faq": "よくある質問"
+    },
+    "whatYouGet": {
+      "eyebrow": "主なメリット",
+      "title": "なぜKesatria Academyで学ぶのか？",
+      "card1Title": "1対1のメンタリング",
+      "card1Desc": "業界のエキスパートメンターによる週1回の個別セッションで、ポートフォリオを徹底レビュー。",
+      "card2Title": "実践的なポートフォリオ",
+      "card2Desc": "ユーザーリサーチから対話型プロトタイプまで、3つの本格的な実践プロジェクトを完成。",
+      "card3Title": "キャリアサポート",
+      "card3Desc": "履歴書作成、面接対策、Kesatria Academy提携パートナー企業ネットワークへの限定アクセス。",
+      "card4Title": "修了認定証",
+      "card4Desc": "実務スキルを採用担当者に証明できる公式修了証を取得。"
+    },
+    "sylabus": {
+      "badgeTitle": "クラスシラバス",
+      "title": "業界標準の体系的なカリキュラム",
+      "description": "最新のデジタルビジネス標準に準拠した、実践的プロジェクトベースのカリキュラム。"
     },
     "tools": {
       "eyebrow": "SOFTWARE & TOOLS",
@@ -1703,13 +1930,14 @@
       "cardTitle": "Kickstart Your Career Today",
       "registration": "登録",
       "start": "学習開始",
-      "regisNow": "ただいま登録受付中"
+      "regisNow": "今すぐ登録する"
     },
     "gallery": {
       "description": "このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
       "allGaleries": "ギャラリーをすべて見る"
     },
     "faq": {
+      "eyebrow": "よくある質問",
       "title": "よくある質問",
       "description": "よくある質問をご覧になり、必要な情報を素早く簡単に入手してください。"
     },
@@ -1718,6 +1946,62 @@
       "titlePrefix": "今すぐ",
       "titleSuffix": "のキャリアをスタートしよう",
       "description": "業界のエキスパートによる直接指導で学べる貴重な機会をお見逃しなく。メンタリングの質を維持するため定員に限りがあります。"
+    },
+    "registrationModal": {
+      "badge": "ショートクラス登録",
+      "title": "ショートクラスの登録",
+      "subtitle": "登録を確定するには以下のフォームにご入力ください",
+      "yourProgram": "選択プログラム",
+      "fullName": "氏名",
+      "fullNamePlaceholder": "氏名を入力してください",
+      "email": "メールアドレス",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "whatsapp": "WhatsApp番号",
+      "whatsappPlaceholder": "WhatsApp番号を入力してください",
+      "currentStatus": "現在のステータス",
+      "selectStatus": "現在のステータスを選択",
+      "statuses": {
+        "universityStudent": "大学生",
+        "freshGraduate": "新卒",
+        "jobSeeker": "求職中",
+        "employee": "会社員",
+        "freelancer": "フリーランス",
+        "entrepreneur": "起業家・事業主",
+        "other": "その他"
+      },
+      "referalSource": "このプログラムをどこで知りましたか？",
+      "selectOption": "選択してください",
+      "referals": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "知人の紹介",
+        "university": "大学",
+        "whatsappGroup": "WhatsAppグループ",
+        "webinar": "ウェビナー・イベント",
+        "website": "ウェブサイト",
+        "other": "その他"
+      },
+      "willAttend": "本プログラムに参加しますか？",
+      "yesAttend": "はい、参加します",
+      "noAttend": "いいえ、参加できません",
+      "consentText": "メールまたはWhatsAppでのセミナー情報受信に同意します。",
+      "yesAgree": "はい、同意します",
+      "btnCancel": "キャンセル",
+      "btnRegister": "今すぐ登録する",
+      "errorTitle": "登録に失敗しました",
+      "errorDefault": "登録中にエラーが発生しました。もう一度お試しください。",
+      "successTitle": "登録が完了しました！",
+      "successDesc": "プログラムへの登録が確認されました。開催日までに最新情報やご案内をお送りします。",
+      "btnContinueDashboard": "ダッシュボードへ進む",
+      "validation": {
+        "selectStatus": "現在のステータスを選択してください。",
+        "selectSource": "このプログラムをどこで知ったか選択してください。",
+        "alreadyRegistered": "登録に失敗したか、すでにこのプログラムに登録済みです。",
+        "networkError": "サーバーに接続できませんでした。通信環境をご確認の上、再度お試しください。",
+        "invalidFileType": "画像ファイル（JPG、JPEG、PNG）を選択してください",
+        "fileTooLarge": "ファイルサイズの上限は5MBです"
+      }
     }
   },
   "categoryFreeProgram": {
@@ -1728,7 +2012,22 @@
       "title3": " ",
       "button": "プログラムを見る",
       "eyebrow": "無料プログラム",
-      "description": "目標に合ったコースを選び、今日から実践的なスキルを身につけましょう。"
+      "defaultEyebrow": "プレミアム留学プログラム",
+      "defaultCategoryName": "ショートクラス",
+      "defaultDescription": "目標を持つ学習者のために設計された体系的なステップ：徹底した日本語トレーニング、就労準備、そして長期的な成功のための丁寧なサポート。",
+      "description": "目標に合ったコースを選び、今日から実践的なスキルを身につけましょう。",
+      "chips": {
+        "n5Readiness": "N5対策カリキュラム",
+        "careerSupport": "キャリア・進学サポート"
+      },
+      "snapshot": {
+        "item1Title": "包括的なカリキュラム",
+        "item1Desc": "語学＋文化＋キャリア準備",
+        "item2Title": "メンター主導の学習",
+        "item2Desc": "経験豊富な講師陣と万全のサポート",
+        "item3Title": "キャリア＆進学パスウェイ",
+        "item3Desc": "日本での次のステップへの確実なガイダンス"
+      }
     },
     "program": {
       "title": "あなたのために",
@@ -1738,14 +2037,58 @@
       "free": "無料",
       "day": "日",
       "students": "学生",
+      "quota": "定員",
       "detailProgram": "詳細プログラム",
-      "eyebrow": "プログラム一覧"
+      "eyebrow": "プログラム一覧",
+      "tags": {
+        "language": "語学",
+        "culture": "文化",
+        "career": "キャリア",
+        "speaking": "スピーキング",
+        "listening": "リスニング",
+        "reading": "リーディング",
+        "writing": "ライティング",
+        "applications": "出願対策",
+        "interviews": "面接対策",
+        "planning": "進路設計"
+      },
+      "fallbackCards": {
+        "card1": {
+          "name": "日本プログラム",
+          "desc": "基礎的な語学力から実務対応力、長期的なキャリア機会までを網羅した体系的プログラム。"
+        },
+        "card2": {
+          "name": "日本プログラム",
+          "desc": "体系的なレッスンと対話型の練習を通じて、確かなコミュニケーションスキルを養います。"
+        },
+        "card3": {
+          "name": "キャリア・進学サポート",
+          "desc": "出願、面接、日本での進路計画まで一貫したサポートを提供します。"
+        }
+      }
     },
     "benefit": {
       "title": "～に参加するメリット",
+      "sectionTitlePrefix": "選ばれる理由：",
+      "defaultProgramName": "当プログラム",
+      "sectionDesc": "経験豊富なメンターによる丁寧な指導のもと、日本での進学や就職のチャンスを確実につかむためのスキル、語学力、文化理解を身につけます。",
       "description1": "当社の無料サービスを最大限にご活用ください",
       "description2": "有益な学習効果を伴う",
-      "eyebrow": "メリット"
+      "eyebrow": "メリット",
+      "items": {
+        "item1Title": "包括的な日本語トレーニング",
+        "item1Desc": "日常会話からビジネスまで対応する、話す・聞く・読む・書くを網羅した体系的レッスンで確かな日本語力を育成。",
+        "item2Title": "経験豊富な講師陣",
+        "item2Desc": "実践的な知見、個別指導、効果的な学習法を提供する経験豊かなメンター陣から学べます。",
+        "item3Title": "JLPT（日本語能力試験）対策",
+        "item3Desc": "充実した教材、模擬試験、実績ある対策戦略で、目標レベルの合格をバックアップします。",
+        "item4Title": "キャリア＆進学サポート",
+        "item4Desc": "面接対策や出願支援を含め、日本での進学・インターンシップ・就職の実現に向けたサポートを提供。",
+        "item5Title": "実践的・対話型の学習",
+        "item5Desc": "対話型アクティビティ、実践的な会話、ロールプレイを通じて、実践的な自信とコミュニケーション力を培います。",
+        "item6Title": "日本文化理解と就労準備",
+        "item6Desc": "日本での生活や就労に自信を持って適応できるよう、文化、ビジネスマナー、専門的な対話スキルを習得。"
+      }
     },
     "alumni": {
       "title": "卒業生の声",
@@ -1779,14 +2122,33 @@
       "eyebrow": "ブートキャンプ",
       "nowOpen": "受付開始!",
       "registration": "お申し込み期間",
-      "startLearning": "学習開始"
+      "startLearning": "学習開始",
+      "fallbackChip1": "N5準備カリキュラム",
+      "fallbackChip2": "キャリア＆留学サポート",
+      "feature1Title": "包括的なカリキュラム",
+      "feature1Desc": "語学＋文化＋就職準備",
+      "feature2Title": "メンターによる指導",
+      "feature2Desc": "経験豊富な講師と手厚いサポート",
+      "feature3Title": "キャリア＆留学パス",
+      "feature3Desc": "日本での次のステップに向けたガイダンス"
     },
     "program": {
       "title": "ショートクラス <span class=\"text-[#111827]\">あなたに</span>",
       "description": "興味に合ったショートクラスを選び、実践的なスキルの構築を始めましょう。",
       "button": "詳細プログラム",
       "explore": "プログラムを見る",
-      "eyebrow": "学習パス"
+      "exploreProgram": "プログラムを見る",
+      "eyebrow": "学習パス",
+      "online": "オンライン",
+      "day": "日",
+      "month": "ヶ月",
+      "quota": "定員",
+      "fallbackCard1Title": "日本プログラム",
+      "fallbackCard1Desc": "語学の基礎から職場の即戦力、そして長期的なキャリアの機会までを網羅した体系的なコース。",
+      "fallbackCard2Title": "日本語トレーニング",
+      "fallbackCard2Desc": "体系的なレッスンとインタラクティブな実践を通じて確かなコミュニケーション力を養います。",
+      "fallbackCard3Title": "キャリア＆留学サポート",
+      "fallbackCard3Desc": "日本での出願、面接、将来の計画に向けた充実したサポートを受けられます。"
     },
     "benefit": {
       "title": "私たちの",
@@ -1842,7 +2204,21 @@
     "faq": {
       "eyebrow": "質問",
       "title": "よくあるご質問",
-      "description": "ご質問がありますか？コースの詳細や就職支援に関するよくある質問にお答えします。"
+      "description": "ご質問がありますか？コースの詳細や就職支援に関するよくある質問にお答えします。",
+      "q1": "このプログラムでは何を学びますか？",
+      "a1": "実践的なスキル、業界のワークフロー、そしてキャリアの機会に向けた実践的なプロジェクトを学びます。",
+      "q2": "プログラムはオンラインですか、それとも対面ですか？",
+      "a2": "柔軟な選択肢をご用意しています。プログラムに応じて、双方向のライブオンラインクラスとハイブリッドセッションを提供しています。",
+      "q3": "受講に事前の経験は必要ですか？",
+      "a3": "事前の経験は必要ありません。初心者の方も歓迎し、基礎から応用技術までステップバイステップで指導します。",
+      "q4": "修了後に証明書はもらえますか？",
+      "a4": "はい。コースワークと最終プロジェクトを修了すると、公式の修了証書が授与されます。",
+      "q5": "授業を欠席した場合はどうなりますか？",
+      "a5": "すべてのライブセッションは録画され、学習プラットフォームでいつでも復習できます。",
+      "q6": "申し込み方法を教えてください。",
+      "a6": "当ウェブサイトからご希望のプログラムを選択し、登録フォームを入力してお申し込みください。",
+      "q7": "卒業後の就職サポートはありますか？",
+      "a7": "はい。職務経歴書の添削、ポートフォリオ作成指導、模擬面接、採用パートナーとの連携サポートを提供しています。"
     }
   },
   "bdetail": {
@@ -1930,5 +2306,54 @@
     "rule4": "回答は自動的に保存されます。",
     "answerAllFirst": "すべての問題に答えると提出できます。",
     "timeLeft": "残り時間"
+  },
+  "notification": {
+    "title": "お知らせ",
+    "markAllAsRead": "すべて既読にする",
+    "viewAll": "すべてのお知らせを見る",
+    "empty": "新しいお知らせはありません",
+    "categories": {
+      "session": "セッション",
+      "week": "ウィーク",
+      "syllabus": "シラバス",
+      "quiz": "クイズ",
+      "sessionUser": "ユーザーセッション"
+    },
+    "mock": {
+      "sessionTitle": "新しい学習セッション",
+      "sessionDesc": "クラスで新しい学習セッションが利用可能になりました。教材を確認してください。",
+      "sessionTime": "10分前",
+      "weekTitle": "新しい学習ウィークが開始",
+      "weekDesc": "新しいウィークが解除されました！今週のモジュールにアクセスしてください。",
+      "weekTime": "1時間前",
+      "syllabusTitle": "シラバスの更新",
+      "syllabusDesc": "カリキュラムに新しいシラバスが追加されました。",
+      "syllabusTime": "3時間前",
+      "quizTitle": "新しいクイズが利用可能",
+      "quizDesc": "期限までに最新のクイズで理解度を確認しましょう。",
+      "quizTime": "1日前",
+      "sessionUserTitle": "新しいログインアクティビティ",
+      "sessionUserDesc": "新しいデバイスでログインセッションが記録されました。",
+      "sessionUserTime": "2日前"
+    }
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcomeBack": "おかえりなさい",
+    "welcomeSubtitle": "学び続け、成長し続けましょう。次の成果まであと一歩です！",
+    "ongoingCourses": "進行中のコース",
+    "completedCourses": "完了したコース",
+    "portfolioPublished": "公開されたポートフォリオ",
+    "continueLearning": "学習を続ける",
+    "viewAllPrograms": "すべてのプログラムを見る",
+    "continueButton": "続ける",
+    "showing": "表示中",
+    "of": "/",
+    "course": "コース",
+    "coursesPlural": "コース",
+    "noCoursesInProgress": "現在進行中のコースはありません。「My Learning」から新しいコースを始めましょう。",
+    "noPrograms": "まだプログラムに参加していません",
+    "noProgramsDescription": "プログラムを閲覧し、目標に合ったものを選択してください。登録するとダッシュボードに反映されます。",
+    "browsePrograms": "プログラムを見る"
   }
 }

@@ -88,19 +88,19 @@
             <!-- Category Badge -->
             <span
               class='inline-flex items-center px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#EEF2FF] text-[#4F46E5]'
-              x-text="getCategoryName(item) || 'General'"
+              x-text="getCategoryName(item) || '{{default (t 'test.portfolio.generalCategory') 'Umum'}}'"
             ></span>
             <!-- Class Type Badge -->
             <span
               class='inline-flex items-center px-2.5 py-1 text-[11px] font-medium rounded-md bg-[#F1F5F9] text-[#64748B]'
-              x-text="getJenisKelasName(item) || 'Program'"
+              x-text="getJenisKelasName(item) || '{{default (t 'test.portfolio.defaultClassType') 'Program'}}'"
             ></span>
           </div>
 
           <!-- Project Title -->
           <h3
             class='font-bold text-[#0B1F3B] text-base leading-snug mb-4 line-clamp-2 min-h-[44px] group-hover:text-[#003060] transition-colors font-inter'
-            x-text="item.title || 'Untitled Project'"
+            x-text="item.title || '{{default (t 'test.portfolio.untitledProject') 'Proyek Tanpa Judul'}}'"
             :title="item.title"
           ></h3>
 
@@ -117,7 +117,7 @@
             <div class='min-w-0 flex-1'>
               <p
                 class='text-xs font-bold text-[#0B1F3B] truncate leading-tight'
-                x-text="item.user ? item.user.username : 'Alumni'"
+                x-text="item.user ? item.user.username : '{{default (t 'test.portfolio.defaultAuthor') 'Alumni'}}'"
               ></p>
               <p class='text-[11px] text-[#94A3B8] font-normal truncate leading-tight mt-0.5'>
                 {{t "test.portfolio.alumniRole"}}
