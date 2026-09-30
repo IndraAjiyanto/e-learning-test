@@ -17,13 +17,13 @@
       {{else if faq.length}}
         {{#each faq}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
       {{else}}
-        { question: 'What will I learn in this program?', answer: 'You will learn practical skills, industry workflows, and complete hands-on projects designed to prepare you for career opportunities.' },
-        { question: 'Is the program online or offline?', answer: 'We offer flexible options: interactive live online classes and hybrid sessions depending on your program.' },
-        { question: 'Do I need prior experience to enroll?', answer: 'No prior experience is required. We welcome beginners and guide you step by step from the fundamentals to advanced techniques.' },
-        { question: 'Will I receive a certificate after completing the program?', answer: 'Yes. Upon completing the coursework and capstone project you will receive an official certificate of completion.' },
-        { question: 'What if I miss a class?', answer: 'All live sessions are recorded and available on the learning platform so you can catch up anytime.' },
-        { question: 'How can I register?', answer: 'Register through our website by choosing your program and completing the enrollment form.' },
-        { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections.' }
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q1') 'What will I learn in this program?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a1') 'You will learn practical skills, industry workflows, and complete hands-on projects designed to prepare you for career opportunities.'}}` },
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q2') 'Is the program online or offline?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a2') 'We offer flexible options: interactive live online classes and hybrid sessions depending on your program.'}}` },
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q3') 'Do I need prior experience to enroll?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a3') 'No prior experience is required. We welcome beginners and guide you step by step from the fundamentals to advanced techniques.'}}` },
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q4') 'Will I receive a certificate after completing the program?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a4') 'Yes. Upon completing the coursework and capstone project you will receive an official certificate of completion.'}}` },
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q5') 'What if I miss a class?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a5') 'All live sessions are recorded and available on the learning platform so you can catch up anytime.'}}` },
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q6') 'How can I register?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a6') 'Register through our website by choosing your program and completing the enrollment form.'}}` },
+        { question: `{{default (t 'test.categoryPaidProgram.faq.q7') 'Is there career support after graduation?'}}`, answer: `{{default (t 'test.categoryPaidProgram.faq.a7') 'Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections.'}}` }
       {{/if}}
     ],
     toggle(i) { this.activeIndex = this.activeIndex === i ? null : i; }
