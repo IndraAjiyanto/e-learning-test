@@ -4,16 +4,16 @@
     <!-- Back Link (Figma Layer: Back link) -->
     <div class="mb-8">
       {{> components/ui/button/back_link/index
-        label="Back"
+        label=(t 'test.payment.shell.back')
       }}
     </div>
 
     <!-- Page Header (Dynamic based on selected program) -->
     {{> components/ui/text/section_header/index
-      title=(default course.name "Program Registration")
+      title=(default course.name (t 'test.payment.shell.defaultTitle'))
       titleTag="h1"
       titleClass="font-montserrat font-bold text-2xl sm:text-3xl md:text-[34px] leading-tight md:leading-[42px] text-[#003060]"
-      description="Please complete your payment to verify your registration and activate your participation."
+      description=(t 'test.payment.shell.description')
       descClass="font-montserrat font-normal text-sm sm:text-base text-[#718096] mt-1"
       align="text-left"
       wrapperClass="mb-10 md:mb-14"

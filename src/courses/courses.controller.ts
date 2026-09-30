@@ -19,6 +19,7 @@ import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
 import { capabilitiesForCourse } from './program-type';
 import { CourseStatus } from 'src/entities/types/course-status';
+import { REFERAL_SOURCES } from 'src/entities/types/referal-source';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import {
@@ -1128,17 +1129,7 @@ export class CoursesController {
       'Entrepreneur',
       'Other',
     ];
-    const referalOptions = [
-      'Instagram',
-      'TikTok',
-      'LinkedIn',
-      'Friends',
-      'University',
-      'WhatsApp Group',
-      'Webinar/Event',
-      'Website',
-      'Other',
-    ];
+    const referalSourceOptions = REFERAL_SOURCES;
 
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
@@ -1155,7 +1146,7 @@ export class CoursesController {
         technologies,
         installments,
         currentStatusOptions: statusOptions,
-        referalSourceOptions: referalOptions,
+        referalSourceOptions,
       });
     } else {
       const course_flows = await this.coursesService.findCourseFlows(course.id);
@@ -1214,17 +1205,7 @@ export class CoursesController {
         'Entrepreneur',
         'Other',
       ];
-      const referalOptions = [
-        'Instagram',
-        'TikTok',
-        'LinkedIn',
-        'Friends',
-        'University',
-        'WhatsApp Group',
-        'Webinar/Event',
-        'Website',
-        'Other',
-      ];
+      const referalSourceOptions = REFERAL_SOURCES;
 
       if (course.checkPaid === false) {
         course.programBenefits = course_benefits;
@@ -1240,7 +1221,7 @@ export class CoursesController {
           userCourses,
           faqs,
           currentStatusOptions: statusOptions,
-          referalSourceOptions: referalOptions,
+          referalSourceOptions,
         });
       } else {
         const course_flows = await this.coursesService.findCourseFlows(id);
@@ -1304,17 +1285,7 @@ export class CoursesController {
           'Entrepreneur',
           'Other',
         ];
-        const referalOptions = [
-          'Instagram',
-          'TikTok',
-          'LinkedIn',
-          'Friends',
-          'University',
-          'WhatsApp Group',
-          'Webinar/Event',
-          'Website',
-          'Other',
-        ];
+        const referalSourceOptions = REFERAL_SOURCES;
 
         if (course.checkPaid === false) {
           const course_flows = await this.coursesService.findCourseFlows(id);
@@ -1330,7 +1301,7 @@ export class CoursesController {
             installments,
             faqs,
             currentStatusOptions: statusOptions,
-            referalSourceOptions: referalOptions,
+            referalSourceOptions,
           });
         } else {
           const course_flows = await this.coursesService.findCourseFlows(id);

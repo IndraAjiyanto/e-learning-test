@@ -19,7 +19,7 @@
       <i class="fa-solid fa-file-invoice text-lg text-[#3B82F6]"></i>
     </div>
     <h3 class="font-montserrat font-bold text-[18px] leading-[22px] text-[#1B2559]">
-      Payment Summary
+      {{t 'test.payment.installment.summaryTitle'}}
     </h3>
   </div>
 
@@ -33,10 +33,10 @@
       </div>
       <div class="flex flex-col gap-1 min-w-0 flex-1">
         <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559] truncate">
-          {{default courseTitle "Program Course"}}
+          {{default courseTitle (t 'test.payment.summary.defaultCourseTitle')}}
         </span>
         <span class="font-montserrat font-medium text-[12px] leading-[15px] text-[#718096]">
-          (Installment Payment - {{default month 3}} month)
+          {{t 'test.payment.installment.planMeta'}} {{default month 3}} {{t 'test.payment.installment.monthUnit'}}
         </span>
       </div>
     </div>
@@ -47,7 +47,7 @@
       <div class="flex justify-between items-center w-full h-[17px]">
         <div class="flex items-center gap-2">
           <span class="font-montserrat font-medium text-[14px] leading-[17px] text-[#718096]">
-            Down Payment (DP)
+            {{t 'test.payment.installment.downPayment'}}
           </span>
         </div>
         <span id="installment-detail-fee" class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559] shrink-0">
@@ -60,7 +60,7 @@
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-ticket text-xs text-[#718096]"></i>
           <span class="font-montserrat font-medium text-[14px] leading-[17px] text-[#718096]">
-            Discount Voucher (<span id="installment-display-promo" class="font-semibold text-emerald-700"></span>)
+            {{t 'test.payment.summary.discountVoucher'}} (<span id="installment-display-promo" class="font-semibold text-emerald-700"></span>)
           </span>
         </div>
         <span id="installment-detail-voucher" class="font-montserrat font-semibold text-[14px] leading-[17px] text-emerald-600 shrink-0">
@@ -74,7 +74,7 @@
       <!-- Subtotal Row (DP) -->
       <div class="flex justify-between items-center w-full h-5">
         <span class="font-montserrat font-bold text-[14px] leading-[17px] text-[#1B2559]">
-          Subtotal
+          {{t 'test.payment.summary.subtotal'}}
         </span>
         <span id="installment-detail-subtotal" class="font-montserrat font-bold text-[16px] leading-[20px] text-[#1B2559] shrink-0">
           {{formatRupiah (default downPayment 0)}}
@@ -88,12 +88,12 @@
         <div class="flex items-center gap-2 text-[#3B82F6]">
           <i class="fa-regular fa-calendar text-xs text-[#3B82F6]"></i>
           <span class="font-montserrat font-bold text-[13px] leading-[16px] text-[#1B2559]">
-            Installment Plan ({{default month 3}} months)
+            {{t 'test.payment.installment.installmentPlan'}} ({{default month 3}} {{t 'test.payment.installment.months'}})
           </span>
         </div>
         <span class="font-montserrat font-semibold text-[12px] leading-[15px] text-[#1B2559] shrink-0">
           {{#if pricePerMonth}}
-            {{formatRupiah pricePerMonth}} /month
+            {{formatRupiah pricePerMonth}} {{t 'test.payment.installment.perMonth'}}
           {{else}}
             -
           {{/if}}
@@ -103,14 +103,14 @@
         <div class="flex flex-col gap-1.5 pt-2 border-t border-[#E2E8F0]/60">
           {{#each installmentPrices}}
             <div class="flex justify-between items-center text-[11px] leading-[15px] text-[#718096]">
-              <span>Cicilan Bulan {{addOne @index}}</span>
+              <span>{{t 'test.payment.installment.monthLabel'}} {{addOne @index}}</span>
               <span class="font-semibold text-[#1B2559]">{{formatRupiah this}}</span>
             </div>
           {{/each}}
         </div>
       {{else}}
         <p class="font-montserrat font-normal text-[11px] leading-[16px] text-[#718096]">
-          Bayar Down Payment (DP) sekarang untuk konfirmasi pendaftaran. Sisa pembayaran dicicil per bulan.
+          {{t 'test.payment.installment.dpNote'}}
         </p>
       {{/if}}
     </div>
@@ -118,7 +118,7 @@
     <!-- Total Block (Figma: height 29px) -->
     <div class="flex justify-between items-center w-full h-[29px] pt-1">
       <span class="font-montserrat font-bold text-[20px] leading-[24px] text-[#1B2559]">
-        Total
+        {{t 'test.payment.summary.total'}}
       </span>
       <span id="installment-detail-total" class="font-montserrat font-extrabold text-[24px] leading-[29px] text-[#003060] shrink-0">
         {{formatRupiah (default downPayment 0)}}
@@ -128,7 +128,7 @@
     <!-- CTA: Payment Channel (Gateway / Manual) -->
     {{#> components/ui/card/payment_channel/index
       uid=(default uid "installment")
-      methodLabel=(default methodLabel "Installment Payment")
+      methodLabel=(default methodLabel (t 'test.payment.installment.title'))
       actionUrl=manualActionUrl
       gatewayEnabled=gatewayEnabled
       gatewayHidden=gatewayHidden
@@ -146,7 +146,7 @@
         "
       >
         <i class="fa-regular fa-credit-card text-base text-[#F3F3F3]"></i>
-        <span id="btn-pay-now-installment-text">Pay Now</span>
+        <span id="btn-pay-now-installment-text">{{t 'test.payment.summary.payNow'}}</span>
         <i class="fa-solid fa-arrow-right text-xs text-[#F3F3F3]"></i>
         <span id="btn-pay-now-installment-spinner" class="hidden absolute inset-0 flex items-center justify-center">
           <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

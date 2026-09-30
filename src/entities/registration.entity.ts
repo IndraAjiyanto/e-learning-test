@@ -11,6 +11,7 @@ import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
+import { REFERAL_SOURCES } from './types/referal-source';
 
 @Entity('registrations')
 export class Registration {
@@ -54,19 +55,11 @@ export class Registration {
   @Column({ nullable: true })
   attend_program: boolean;
 
+  // Sama seperti Payment.referalSource: satu konstanta untuk kedua kolom enum
+  // yang harus nilainya sama, `registrations_referal_source_enum`.
   @Column({
     type: 'enum',
-    enum: [
-      'Instagram',
-      'TikTok',
-      'LinkedIn',
-      'Friends',
-      'University',
-      'WhatsApp Group',
-      'Webinar/Event',
-      'Website',
-      'Other',
-    ],
+    enum: REFERAL_SOURCES,
     nullable: true,
   })
   referal_source: string;

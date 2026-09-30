@@ -7,6 +7,12 @@
   Props:
   - currentStep : number (opsional, default: 1)
   - class       : string (opsional, class tambahan wrapper)
+
+  Teksnya diambil langsung dari i18n, bukan lewat props, karena komponen ini
+  hanya dipakai satu halaman: src/views/payments/index.hbs. Menambah props
+  label di sini hanya menambah tempat yang harus diisi ulang kalau dipindah ke
+  halaman lain. Kalau nanti dipakai ulang, label sebaiknya jadi props dengan
+  default dari i18n.
 --}}
 
 <div class="relative w-full max-w-5xl mx-auto mb-10 md:mb-16 z-0 {{class}}">
@@ -25,10 +31,10 @@
       </div>
       <div class="mt-3 flex flex-col items-center">
         <span class="step-title font-inter font-bold text-xs sm:text-sm md:text-base text-[#1A56DB] transition-colors duration-300">
-          Your Information
+          {{t 'test.payment.stepper.step1.title'}}
         </span>
         <span class="step-subtitle font-inter font-normal text-[11px] sm:text-xs md:text-[13px] text-[#6B7280] transition-colors duration-300 mt-0.5">
-          Enter details
+          {{t 'test.payment.stepper.step1.subtitle'}}
         </span>
       </div>
     </div>
@@ -42,10 +48,10 @@
       </div>
       <div class="mt-3 flex flex-col items-center">
         <span class="step-title font-inter font-semibold text-xs sm:text-sm md:text-base text-[#6B7280] transition-colors duration-300">
-          Payment
+          {{t 'test.payment.stepper.step2.title'}}
         </span>
         <span class="step-subtitle font-inter font-normal text-[11px] sm:text-xs md:text-[13px] text-[#9CA3AF] transition-colors duration-300 mt-0.5">
-          Tuition fees
+          {{t 'test.payment.stepper.step2.subtitle'}}
         </span>
       </div>
     </div>
@@ -59,10 +65,10 @@
       </div>
       <div class="mt-3 flex flex-col items-center">
         <span class="step-title font-inter font-semibold text-xs sm:text-sm md:text-base text-[#6B7280] transition-colors duration-300">
-          Confirmation
+          {{t 'test.payment.stepper.step3.title'}}
         </span>
         <span class="step-subtitle font-inter font-normal text-[11px] sm:text-xs md:text-[13px] text-[#9CA3AF] transition-colors duration-300 mt-0.5">
-          Activate account
+          {{t 'test.payment.stepper.step3.subtitle'}}
         </span>
       </div>
     </div>

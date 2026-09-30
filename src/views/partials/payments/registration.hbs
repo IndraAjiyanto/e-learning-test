@@ -8,7 +8,7 @@
 
   <!-- Program Batch Info -->
   {{> components/ui/input/static_field/index
-    label="Program Batch"
+    label=(t 'test.payment.form.batch')
     required=true
     value=(concat course.group " : " course.name)
   }}
@@ -18,10 +18,10 @@
     name="fullName"
     id="fullName"
     type="text"
-    label="Full Name"
+    label=(t 'test.payment.form.fullName')
     required=true
     value=user.username
-    placeholder="Input Your Full Name"
+    placeholder=(t 'test.payment.form.fullNamePlaceholder')
   }}
 
   <!-- Email Field -->
@@ -29,10 +29,10 @@
     name="email"
     id="email"
     type="email"
-    label="Email"
+    label=(t 'test.payment.form.email')
     required=true
     value=user.email
-    placeholder="Input Your Email"
+    placeholder=(t 'test.payment.form.emailPlaceholder')
   }}
 
   <!-- WhatsApp Number (Accent Variant with Chat Icon) -->
@@ -40,26 +40,52 @@
     name="whatsappNumber"
     id="whatsappNumber"
     type="tel"
-    label="WhatsApp Number"
+    label=(t 'test.payment.form.whatsapp')
     required=true
     value=user.no_telp
-    placeholder="Input Your WhatsApp Number"
+    placeholder=(t 'test.payment.form.whatsappPlaceholder')
     icon="fa-regular fa-comment-dots"
     variant="accent"
   }}
 
   <!-- Referral Source Dropdown -->
+  {{!--
+    Opsi diambil dari `referalSourceI18nOptions` (dikirim payments.controller.ts
+    dari src/entities/types/referal-source.ts) karena kolomnya Postgres enum.
+    Dahulu daftar 4 opsi ditulis langsung di sini dan TIDAK cocok dengan enum -
+    "Social Media" membuat INSERT ditolak di jalur Xendit, dan tersimpan jadi
+    "Other" di jalur manual.
+
+    Yang ditampilkan adalah `labelKey` (diterjemahkan), tapi `value` yang
+    dikirim ke server tetap string kanonis milik enum. Menerjemahkan label
+    karena itu tidak mungkin mengubah isi database.
+
+    Blok `{{else}}` sengaja tetap ada: kalau prop-nya somehow tidak sampai,
+    select tidak boleh jadi kosong karena field ini `required` dan user akan
+    terkunci di halaman. Nilainya harus tetap sama dengan daftar di atas.
+  --}}
   {{#> components/ui/dropdown/select/index
     name="source"
     id="source-input"
-    label="How did you know About the Kesatria Academy Program?"
+    label=(t 'test.payment.form.sourceLabel')
     required=true
-    placeholder="Select How Did You Know"
+    placeholder=(t 'test.payment.form.sourcePlaceholder')
   }}
-    <option value="Friends">Friends</option>
-    <option value="Social Media">Social Media</option>
-    <option value="Website">Website</option>
-    <option value="Other">Other</option>
+    {{#if referalSourceI18nOptions}}
+      {{#each referalSourceI18nOptions}}
+        <option value="{{this.value}}">{{t this.labelKey}}</option>
+      {{/each}}
+    {{else}}
+      <option value="Instagram">{{t 'test.payment.form.sourceOptions.instagram'}}</option>
+      <option value="TikTok">{{t 'test.payment.form.sourceOptions.tiktok'}}</option>
+      <option value="LinkedIn">{{t 'test.payment.form.sourceOptions.linkedin'}}</option>
+      <option value="Friends">{{t 'test.payment.form.sourceOptions.friends'}}</option>
+      <option value="University">{{t 'test.payment.form.sourceOptions.university'}}</option>
+      <option value="WhatsApp Group">{{t 'test.payment.form.sourceOptions.whatsappGroup'}}</option>
+      <option value="Webinar/Event">{{t 'test.payment.form.sourceOptions.webinarEvent'}}</option>
+      <option value="Website">{{t 'test.payment.form.sourceOptions.website'}}</option>
+      <option value="Other">{{t 'test.payment.form.sourceOptions.other'}}</option>
+    {{/if}}
   {{/components/ui/dropdown/select/index}}
 
   <!-- Agreement Box -->
@@ -67,14 +93,24 @@
     name="agreement"
     id="agreement"
     required=true
-    label="I agree to participate in the program until its completion"
-    terms="By checking this box, you confirm your commitment to follow all learning sessions according to the scheduled curriculum."
+    label=(t 'test.payment.form.agreementLabel')
+    terms=(t 'test.payment.form.agreementTerms')
   }}
 
   <!-- Next / Save Changes Button -->
+  {{!--
+    `disabled=true` di-render dari server, bukan dari JS. First paint sudah
+    benar begitu karena checkbox agreement mustahil tercentang sebelum JS jalan,
+    jadi tidak ada tombol yang sempat tampil hidup lalu mati. Justru itu alasan
+    kata "disabled" TIDAK di-hardcode sebagai gaya saja: kalau JS gagal dimuat,
+    tombol tetap punya atribut disabled dan tidak bisa diklik.
+    `id` dipakai script di bawah untuk menyinkronkan statusnya.
+  --}}
   <div class="pt-4 w-full">
     {{> components/ui/button/btn_action/index
-      text="Save Changes"
+      id="btn-save-changes"
+      disabled=true
+      text=(t 'test.payment.form.saveChanges')
       type="button"
       variant="primary"
       class="w-full h-14 sm:h-[64px] rounded-[10px]"
@@ -88,7 +124,58 @@
 </form>
 
 <script>
-  (function initRegistrationDraftStorage() {
+  (function initRegistrationStepOne() {
+    //--- Bagian 1: status tombol "Save Changes" ---------------------------
+    //
+    // Sengaja DI ATAS semua yang menyangkut localStorage. Tombolnya dirender
+    // `disabled` dari server, jadi proses yang melepaskannya TIDAK boleh
+    // bergantung pada draft: kalau key-nya kosong atau rusak, tombol terkunci
+    // permanen dan user tidak bisa lanjut sama sekali. Penyimpanan draft boleh
+    // gagal, yang di sini tidak.
+
+    const form = document.getElementById('step-1-form');
+    if (!form) return;
+
+    const saveButton = document.getElementById('btn-save-changes');
+
+    // Tombol hidup hanya kalau SELURUH form sudah valid, bukan hanya checkbox
+    // agreement: nama, email, WhatsApp, dan sumber juga wajib terisi sebelum
+    // user boleh lanjut ke step 2.
+    //
+    // `checkValidity()` tidak dipakai di sini. Fungsi itu MEMUNCULKAN bubble
+    // validasi browser, jadi dipanggil setiap ketikan akan menggurui user di
+    // tengah mengetik. Yang dipakai adalah Constraint Validation API secara
+    // langsung: `validity.valid` dibaca per kontrol tanpa memicu event
+    // `invalid`, jadi pemeriksaannya diam.
+    //
+    // `form.elements` hanya berisi form control, semua punya `.validity`.
+    // Kontrol yang `disabled`/`readonly` otomatis bebas dari constraint
+    // validation, dan tombol `type="button"` di bawah tidak punya constraint,
+    // jadi keduanya tidak ikut menghalangi.
+    const isFormReady = () =>
+      Array.from(form.elements).every((el) => el.validity.valid);
+
+    const syncSaveButton = () => {
+      if (!saveButton) return;
+      const ready = isFormReady();
+      saveButton.disabled = !ready;
+      saveButton.setAttribute('aria-disabled', String(!ready));
+    };
+
+    // Dipanggil sinkron di body IIFE, bukan menunggu DOMContentLoaded: browser
+    // belum sempat paint apa pun, sehingga draft yang menyimpan
+    // `agreement: true` menyalakan tombol tanpa ada kedipan.
+    syncSaveButton();
+
+    // Satu handler untuk dua event: `input` menutupi pengetikan teks,
+    // `change` menutupi centang checkbox dan pilihan select. Dilepas di sini
+    // (bukan di bootstrap) karena tidak bergantung pada draft sama sekali, dan
+    // `form` sudah ada di DOM karena script ini berada di bawahnya.
+    form.addEventListener('input', syncSaveButton);
+    form.addEventListener('change', syncSaveButton);
+
+    //--- Bagian 2: penyimpanan draft ke localStorage ----------------------
+
     const userId = '{{user.id}}';
     const courseId = '{{course.id}}';
     if (!userId || !courseId) return;
@@ -97,8 +184,6 @@
       typeof window.getPaymentProgressStorageKey === 'function'
         ? window.getPaymentProgressStorageKey()
         : `payment-${userId}-${courseId}-form`;
-    const form = document.getElementById('step-1-form');
-    if (!form) return;
 
     const readDraft = () => {
       const raw = localStorage.getItem(storageKey);
@@ -199,6 +284,11 @@
         applyDraft(existingDraft);
         lastSavedPayload = JSON.stringify(existingDraft);
       }
+
+      // applyDraft menimpa nilai input dari draft, termasuk checkbox agreement
+      // dan select sumber. Status tombol harus dihitung ulang setelah itu,
+      // karena overwrite nilai bisa mengubah validity.
+      syncSaveButton();
 
       form.addEventListener('input', saveDraftIfChanged);
       form.addEventListener('change', saveDraftIfChanged);
