@@ -358,6 +358,7 @@ export class UsersController {
       req.user.id,
     );
     const logbooks = await this.usersService.findAllLogbooks(req.user.id);
+    const portfolio = await this.usersService.findPortfolio(req.user.id);
     const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
     const category = [
       ...new Map(
@@ -414,6 +415,7 @@ export class UsersController {
       user: user,
       userWithCourses,
       logbooks,
+      portfolio,
       course,
       category,
       courseType,

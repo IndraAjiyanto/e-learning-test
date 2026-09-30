@@ -766,6 +766,7 @@ export class CoursesController {
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
+    const portfolio = await this.usersService.findPortfolio(id);
 
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
@@ -814,6 +815,7 @@ export class CoursesController {
       courseType,
       userWithCourses,
       logbooks,
+      portfolio,
       activeSection: courseId ? 'uiux' : 'learning',
       initialSection,
       stats,

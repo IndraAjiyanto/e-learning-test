@@ -183,6 +183,7 @@ export class UsersService {
         'course.category',
         'course.technologies',
       ],
+      order: { createdAt: 'DESC' },
     });
   }
 
