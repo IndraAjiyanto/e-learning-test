@@ -46,6 +46,21 @@ export class Invoice {
 
   // ── Financial Fields ──
   @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  price: number | null;
+
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  promo: number | null;
+
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    nullable: true,
+    default: 0,
+  })
+  promo_code: number | null;
+
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
   subtotal: number | null;
 
   @Column({
