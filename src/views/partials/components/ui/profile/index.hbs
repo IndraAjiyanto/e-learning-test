@@ -48,10 +48,10 @@
     <div class='flex flex-col gap-1'>
       {{> components/ui/super_admin/page_header/index
         titleTag='h2'
-        title=(concat 'Welcome, ' user.username)
+        title=(concat (t 'test.profile.welcome') ', ' user.username)
       }}
       {{> components/ui/super_admin/description/index
-        text='Below is your profile information.'
+        text=(t 'test.profile.belowProfileInfo')
       }}
     </div>
 
@@ -82,7 +82,7 @@
           <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/></svg>
           </span>
-          <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>Profile Photo</h3>
+          <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.profilePhoto'}}</h3>
         </div>
 
         <div class='flex flex-col items-center gap-5'>
@@ -99,7 +99,7 @@
             <button
               type='button'
               @click='$refs.fileInput.click()'
-              aria-label='Update profile photo'
+              aria-label="{{t 'test.profile.updatePhoto'}}"
               class='absolute bottom-1 right-1 grid size-9 place-items-center rounded-full border border-[#d9d9d9] bg-white text-[#003060] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f4f7fc]'
             >
               <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7'/><path d='M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z'/></svg>
@@ -111,11 +111,11 @@
                @ValidateImage pada PATCH /users/update/profile/:userId dan
                pemeriksaan di modal crop - JPG/JPEG/PNG, maksimal 5 MB. --}}
           {{> components/ui/super_admin/form/button
-            label='Change Photo'
+            label=(t 'test.profile.changePhoto')
             variant='secondary'
             atClick='$refs.fileInput.click()'
           }}
-          <p class='text-center font-inter text-xs leading-relaxed text-[#737373]'>JPG or PNG, up to 5 MB.</p>
+          <p class='text-center font-inter text-xs leading-relaxed text-[#737373]'>{{t 'test.profile.jpgPngHint'}}</p>
 
           {{!-- Modal crop menaruh hasilnya ke $refs.fileInput lalu memanggil
                $refs.profileForm.submit(); nama ref dan name="profile" harus persis. --}}
@@ -143,9 +143,9 @@
               <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><circle cx='12' cy='12' r='4'/><path d='M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8'/></svg>
             </span>
             <div class='flex flex-col gap-1'>
-              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>Account</h3>
+              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.account'}}</h3>
               {{> components/ui/super_admin/description/index
-                text='The username and email you sign in with.'
+                text=(t 'test.profile.accountDesc')
               }}
             </div>
           </div>
@@ -155,22 +155,22 @@
               id='profile-username'
               name='username'
               field='username'
-              label='Username'
+              label=(t 'test.profile.username')
               iconLeft='user'
-              placeholder='Input Your Username'
+              placeholder=(t 'test.profile.placeholderUsername')
             }}
             {{> components/ui/super_admin/form/text_field
               id='profile-email'
               name='email'
               field='email'
-              label='Email'
+              label=(t 'test.profile.email')
               type='email'
               iconLeft='mail'
-              placeholder='Input Your Email'
+              placeholder=(t 'test.profile.placeholderEmail')
             }}
             <div>
               {{> components/ui/super_admin/form/button
-                label='Save Changes'
+                label=(t 'test.profile.saveChanges')
                 atClick='saveAccount()'
                 loading=true
                 disabled='!canSubmitAccount() || loading'
@@ -188,7 +188,7 @@
               <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
             </span>
             <div class='flex flex-col gap-1'>
-              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>Your Biodata</h3>
+              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.yourBiodata'}}</h3>
               {{!-- Keterangan lama di sini sama persis dengan subjudul halaman di
                    atasnya, jadi dibacanya dua kali tanpa menambah apa pun. Yang
                    ditulis sekarang satu akibat yang benar-benar ada: PDF sertifikat
@@ -196,7 +196,7 @@
                    ditolak selama baris biodata belum ada sama sekali
                    (certificates.controller). --}}
               {{> components/ui/super_admin/description/index
-                text='Your certificate is printed with the full name you save here.'
+                text=(t 'test.profile.certificateNotice')
               }}
             </div>
           </div>
@@ -217,7 +217,7 @@
             <div
               class='relative grid size-24 shrink-0 place-items-center self-center sm:self-auto'
               role='progressbar'
-              aria-label='Profile completeness'
+              aria-label="{{t 'test.profile.completeness'}}"
               :aria-valuenow='completionPercent'
               aria-valuemin='0'
               aria-valuemax='100'
@@ -235,7 +235,7 @@
 
             <div class='min-w-0 flex-1'>
               <p class='font-inter text-base font-bold text-[#171717]'>
-                <span x-text='completionDone'></span> of <span x-text='completionItems.length'></span> details filled in
+                <span x-text='completionDone'></span> {{t 'test.profile.of'}} <span x-text='completionItems.length'></span> {{t 'test.profile.detailsFilledIn'}}
               </p>
 
               <ul class='mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2'>
@@ -263,7 +263,7 @@
                 class='mt-4 flex items-start gap-2 rounded-lg bg-[#FEFCE8] p-3 font-inter text-sm text-[#854D0E]'
               >
                 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 h-4 w-4 shrink-0'><path d='M12 9v4'/><path d='M12 17h.01'/><circle cx='12' cy='12' r='10'/></svg>
-                <span>Save your full name first - a certificate cannot be issued without it.</span>
+                <span>{{t 'test.profile.saveNameFirstNotice'}}</span>
               </p>
             </div>
           </div>
@@ -273,9 +273,9 @@
               id='biodata-fullname'
               name='fullName'
               field='fullName'
-              label='Full Name'
+              label=(t 'test.profile.fullName')
               iconLeft='user'
-              placeholder='Input Your Full Name'
+              placeholder=(t 'test.profile.createBiodata.placeholderFullName')
               required=true
             }}
 
@@ -283,9 +283,9 @@
               id='biodata-city'
               name='city'
               field='city'
-              label='Address'
+              label=(t 'test.profile.address')
               iconLeft='map-pin'
-              placeholder='Input Your City'
+              placeholder=(t 'test.profile.createBiodata.placeholderCity')
               multiline=true
               heightClass='h-24'
               rows=3
@@ -296,18 +296,18 @@
                 id='biodata-education'
                 name='education'
                 field='education'
-                label='Education'
+                label=(t 'test.profile.education')
                 options='educationOptions'
                 iconLeft='graduation-cap'
-                placeholder='Select Your Education Level'
+                placeholder=(t 'test.profile.createBiodata.placeholderEducation')
               }}
               {{> components/ui/super_admin/form/text_field
                 id='biodata-studyprogram'
                 name='studyProgram'
                 field='studyProgram'
-                label='Studi Program'
+                label=(t 'test.profile.studyProgram')
                 iconLeft='book'
-                placeholder='Input Your Studi Program'
+                placeholder=(t 'test.profile.createBiodata.placeholderStudyProgram')
               }}
             </div>
 
@@ -316,26 +316,26 @@
                 id='biodata-gender'
                 name='gender'
                 field='gender'
-                label='Gender'
+                label=(t 'test.profile.gender')
                 options='genderOptions'
                 iconLeft='user'
-                placeholder='Select Your Gender'
+                placeholder=(t 'test.profile.placeholderGender')
               }}
               {{> components/ui/super_admin/form/text_field
                 id='biodata-no'
                 name='no'
                 field='no'
-                label='WhatsApp Number'
+                label=(t 'test.profile.createBiodata.whatsAppNumber')
                 type='tel'
                 iconLeft='phone'
-                placeholder='Input Your WhatsApp Number'
+                placeholder=(t 'test.profile.createBiodata.placeholderWhatsAppNumber')
               }}
             </div>
           </div>
 
           <div>
             {{> components/ui/super_admin/form/button
-              label='Save Changes'
+              label=(t 'test.profile.saveChanges')
               atClick='saveBiodata()'
               loading=true
               disabled='!canSubmitBiodata() || loading'
@@ -354,21 +354,21 @@
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/></svg>
           </span>
           <div class='flex flex-col gap-1'>
-            <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>Security</h3>
+            <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.security'}}</h3>
             {{> components/ui/super_admin/description/index
-              text='Update the password you use to sign in to Kesatria Academy.'
+              text=(t 'test.profile.securityDesc')
             }}
           </div>
         </div>
         <div>
           {{#if (eq user.role 'user')}}
             {{> components/ui/super_admin/form/button
-              label='Change Password'
+              label=(t 'test.profile.changePassword')
               atClick="toggleActiveSection('password')"
             }}
           {{else}}
             {{> components/ui/super_admin/form/button
-              label='Change Password'
+              label=(t 'test.profile.changePassword')
               as='link'
               href='/users/profile/password'
             }}
@@ -379,8 +379,19 @@
 
   </div>
 
-  {{> components/ui/modal/crop_photo/index cropImageId='cropImageUnified'}}
-  {{> components/ui/modal/preview_photo/index}}
+  {{> components/ui/modal/crop_photo/index
+    cropImageId='cropImageUnified'
+    title=(t 'test.profile.cropPhotoModal.title')
+    description=(t 'test.profile.cropPhotoModal.description')
+    cancelLabel=(t 'test.profile.cancel')
+    applyLabel=(t 'test.profile.cropPhotoModal.apply')
+  }}
+  {{> components/ui/modal/preview_photo/index
+    title=(t 'test.profile.profilePicturePreview')
+    invalidTitle=(t 'test.profile.invalidImage')
+    cancelLabel=(t 'test.profile.cancel')
+    saveLabel=(t 'test.profile.saveChanges')
+  }}
 </div>
 
 <script>
@@ -400,10 +411,10 @@
     // Pilihan pendidikan, dipakai dua kali: sebagai daftar option dan sebagai
     // acuan untuk merapikan nilai lama.
     const EDUCATION_OPTIONS = [
-      { value: 'SMP/Sederajat', label: 'SMP / Sederajat' },
-      { value: 'SMA/SMK/Sederajat', label: 'SMA / SMK / Sederajat' },
-      { value: 'Diploma(D3/D4)', label: 'Diploma (D3/D4)' },
-      { value: 'Sarjana(S1)', label: 'Sarjana (S1)' },
+      { value: 'SMP/Sederajat', label: "{{t 'test.profile.juniorHighSchool'}} / Sederajat" },
+      { value: 'SMA/SMK/Sederajat', label: "{{t 'test.profile.seniorHighSchool'}} / SMK / Sederajat" },
+      { value: 'Diploma(D3/D4)', label: "{{t 'test.profile.diploma'}}" },
+      { value: 'Sarjana(S1)', label: "{{t 'test.profile.bachelorDegree'}}" },
     ];
 
     // Nilai education yang tersimpan tidak selalu berasal dari daftar itu.
@@ -452,16 +463,16 @@
       const val = trim(value);
       switch (field) {
         case 'username':
-          if (!val) return 'Username is required.';
-          if (val.length < 3) return 'Username must be at least 3 characters.';
+          if (!val) return "{{t 'test.profile.validation.usernameRequired'}}";
+          if (val.length < 3) return "{{t 'test.profile.validation.usernameMin'}}";
           return '';
         case 'email':
-          if (!val) return 'Email is required.';
-          if (!EMAIL.test(val)) return 'Please enter a valid email address.';
+          if (!val) return "{{t 'test.profile.validation.emailRequired'}}";
+          if (!EMAIL.test(val)) return "{{t 'test.profile.validation.emailInvalid'}}";
           return '';
         case 'fullName':
-          if (!val) return 'Full name is required.';
-          if (val.length < 3) return 'Full name must be at least 3 characters.';
+          if (!val) return "{{t 'test.profile.validation.fullNameRequired'}}";
+          if (val.length < 3) return "{{t 'test.profile.validation.fullNameMin'}}";
           return '';
         case 'no': {
           // Nomor WhatsApp boleh dikosongkan - biodata memang tidak mewajibkannya.
@@ -469,11 +480,11 @@
           // apa pun, termasuk huruf.
           if (!val) return '';
           if (!/^\+?[0-9 ()-]+$/.test(val)) {
-            return 'Use digits only, with an optional leading + and spaces.';
+            return "{{t 'test.profile.validation.phoneDigits'}}";
           }
           const digits = val.replace(/\D/g, '');
           if (digits.length < 8 || digits.length > 15) {
-            return 'Phone number should be 8 to 15 digits.';
+            return "{{t 'test.profile.validation.phoneLength'}}";
           }
           return '';
         }
@@ -492,8 +503,8 @@
 
       educationOptions: EDUCATION_OPTIONS,
       genderOptions: [
-        { value: 'Laki laki', label: 'Laki laki' },
-        { value: 'Perempuan', label: 'Perempuan' },
+        { value: 'Laki laki', label: "{{t 'test.profile.male'}}" },
+        { value: 'Perempuan', label: "{{t 'test.profile.female'}}" },
       ],
 
       get initials() {
@@ -510,13 +521,13 @@
       get completionItems() {
         const f = this.formData;
         return [
-          { label: 'Profile photo', done: this.hasPhoto },
-          { label: 'Full name', done: !!trim(f.fullName) },
-          { label: 'Address', done: !!trim(f.city) },
-          { label: 'Education', done: !!trim(f.education) },
-          { label: 'Study program', done: !!trim(f.studyProgram) },
-          { label: 'Gender', done: !!trim(f.gender) },
-          { label: 'WhatsApp number', done: !!trim(f.no) },
+          { label: "{{t 'test.profile.profilePhoto'}}", done: this.hasPhoto },
+          { label: "{{t 'test.profile.fullName'}}", done: !!trim(f.fullName) },
+          { label: "{{t 'test.profile.address'}}", done: !!trim(f.city) },
+          { label: "{{t 'test.profile.education'}}", done: !!trim(f.education) },
+          { label: "{{t 'test.profile.studyProgram'}}", done: !!trim(f.studyProgram) },
+          { label: "{{t 'test.profile.gender'}}", done: !!trim(f.gender) },
+          { label: "{{t 'test.profile.createBiodata.whatsAppNumber'}}", done: !!trim(f.no) },
         ];
       },
 
@@ -592,7 +603,7 @@
         });
         if (res.type === 'opaqueredirect' || res.ok) return null;
         const data = await res.json().catch(() => null);
-        return data?.message || 'Failed to save. Please try again.';
+        return data?.message || "{{t 'test.profile.validation.failedToSave'}}";
       },
 
       async saveAccount() {
@@ -606,7 +617,7 @@
           if (error) throw new Error(error);
           window.location.href = '/users/profile';
         } catch (err) {
-          showErrorToast('Account not saved', err.message || 'Please try again in a moment.');
+          showErrorToast("{{t 'test.profile.validation.accountNotSaved'}}", err.message || "{{t 'test.profile.validation.tryAgainLater'}}");
         } finally {
           this.loading = false;
         }
@@ -632,7 +643,7 @@
           if (error) throw new Error(error);
           window.location.href = '/users/profile';
         } catch (err) {
-          showErrorToast('Biodata not saved', err.message || 'Please try again in a moment.');
+          showErrorToast("{{t 'test.profile.validation.biodataNotSaved'}}", err.message || "{{t 'test.profile.validation.tryAgainLater'}}");
         } finally {
           this.loading = false;
         }
@@ -664,7 +675,7 @@
 
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!allowedTypes.includes(file.type)) {
-          this.validationError = 'File type not allowed! Please upload JPG, JPEG, or PNG image only.';
+          this.validationError = "{{t 'test.profile.validation.fileTypeNotAllowed'}}";
           this.open = true;
           return;
         }
@@ -672,7 +683,7 @@
         const maxSize = 5 * 1024 * 1024;
         const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
         if (file.size > maxSize) {
-          this.validationError = `File size too large! Maximum 5MB allowed. Your file: ${fileSizeMB}MB`;
+          this.validationError = `{{t 'test.profile.validation.fileSizeTooLarge'}} (${fileSizeMB}MB)`;
           this.open = true;
           return;
         }
@@ -720,7 +731,7 @@
 
             img.onload = () => {
               this.previewUrl = objectUrl;
-              this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • Ready to upload`;
+              this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • {{t 'test.profile.validation.readyToUpload'}}`;
               this.validationError = '';
               this.open = true;
             };

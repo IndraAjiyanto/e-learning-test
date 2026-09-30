@@ -101,7 +101,24 @@
       }
     },
 
+    get rangeLabel() {
+      const total = this.totalItems;
+      if (total === 0) return 'No programs';
+      const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+      const end = Math.min(start + this.itemsPerPage - 1, total);
+      return `Showing ${start}-${end} of ${total} programs`;
+    },
+
+    get visiblePages() {
+      const t = this.totalPages, c = this.currentPage;
+      if (t <= 5) return Array.from({ length: t }, (_, i) => i + 1);
+      if (c <= 3) return [1, 2, 3, '...', t];
+      if (c >= t - 2) return [1, '...', t - 2, t - 1, t];
+      return [1, '...', c - 1, c, c + 1, '...', t];
+    },
+
     async changePage(page) {
+      if (page < 1 || page > this.totalPages || page === this.currentPage) return;
       this.currentPage = page;
       await this.fetchKelas();
     },
@@ -402,35 +419,56 @@
         </button>
       </div>
 
-      {{! --- PAGINASI --- }}
-      <div x-show="!loading && totalPages > 1" style="display:none" class="mt-8 flex items-center justify-center gap-2">
-        <button
-          type="button"
-          @click="changePage(Math.max(1, currentPage - 1))"
-          :disabled="currentPage === 1"
-          aria-label="Previous page"
-          class="grid size-10 place-items-center rounded-lg border border-[#E5E7EB] bg-white text-[#475569] transition-colors hover:bg-[#F4F7FC] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <i class="fa-solid fa-chevron-left text-xs"></i>
-        </button>
-        <template x-for="page in totalPages" :key="page">
+      {{! --- PAGINASI (Style Payment History) --- }}
+      <div x-show="!loading && totalPages > 1" style="display:none" class="box-border flex flex-wrap items-center justify-between gap-4 w-full min-h-[56px] px-6 sm:px-8 py-3 bg-white border border-[#D9D9D9] rounded-2xl mt-8">
+        <span class="font-montserrat font-medium text-sm leading-[17px] text-[#003060]" x-text="rangeLabel"></span>
+        <div class="flex items-center gap-2">
+          <!-- Chevron Left -->
           <button
             type="button"
-            @click="changePage(page)"
-            class="size-10 rounded-lg border font-inter text-sm font-semibold transition-colors"
-            :class="currentPage === page ? 'border-[#003060] bg-[#003060] text-white' : 'border-[#E5E7EB] bg-white text-[#475569] hover:bg-[#F4F7FC]'"
-            x-text="page"
-          ></button>
-        </template>
-        <button
-          type="button"
-          @click="changePage(Math.min(totalPages, currentPage + 1))"
-          :disabled="currentPage === totalPages"
-          aria-label="Next page"
-          class="grid size-10 place-items-center rounded-lg border border-[#E5E7EB] bg-white text-[#475569] transition-colors hover:bg-[#F4F7FC] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <i class="fa-solid fa-chevron-right text-xs"></i>
-        </button>
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1"
+            aria-label="Previous page"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+
+          <!-- Page Numbers -->
+          <template x-for="(page, idx) in visiblePages" :key="idx">
+            <div class="flex items-center">
+              <template x-if="page === '...'">
+                <span class="flex items-center justify-center w-8 h-8 font-montserrat font-semibold text-sm text-[#718096]">...</span>
+              </template>
+              <template x-if="page !== '...'">
+                <button
+                  type="button"
+                  @click="changePage(page)"
+                  :class="page === currentPage
+                    ? 'bg-[#003060] text-white border-transparent shadow-sm'
+                    : 'bg-white text-[#003060] border border-[#D9D9D9] hover:bg-slate-50'"
+                  class="flex flex-col justify-center items-center w-8 h-8 rounded-full font-montserrat font-semibold text-sm leading-[17px] transition-colors focus-visible:outline-none"
+                  x-text="page"
+                ></button>
+              </template>
+            </div>
+          </template>
+
+          <!-- Chevron Right -->
+          <button
+            type="button"
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= totalPages"
+            aria-label="Next page"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
     </div>
