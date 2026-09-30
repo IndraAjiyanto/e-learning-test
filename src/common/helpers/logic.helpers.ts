@@ -12,6 +12,15 @@ export const logicHelpers = {
   // Dipakai untuk menyembunyikan bagian yang bergantung pada sakelar, mis.
   // tab My Logbook pada program yang logbooknya dimatikan.
   not: (value: any) => !value,
+  isPaidProgram: (course: any) => {
+    if (!course) return false;
+    return Boolean(
+      course.checkPaid === true ||
+      (course.category && course.category.type === 'Paid Program') ||
+      (course.cat_type === 'Paid Program') ||
+      (course.price !== null && course.price !== undefined && Number(course.price) > 0)
+    );
+  },
   and: (...args: any[]) => {
     args.pop();
     return args.every(Boolean);

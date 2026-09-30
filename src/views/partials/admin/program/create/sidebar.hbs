@@ -10,9 +10,12 @@
 <div class='flex flex-col gap-[16px] w-full lg:w-[243px] shrink-0 lg:sticky lg:top-[24px] lg:self-start'>
 
   {{!-- Form Progress (Alpine-reactive via parent activeStep) --}}
+  {{!-- [DISABLED - ClickUp z8pbk8xwwx] Original 6 steps:
+    steps=(array "Basic Information" "Description" "Schedule & Location" "Tools & Lessons" "Learning Target" "Participan Criteria")
+  --}}
   {{> components/ui/admin/sidebar/form-progress
     alpineMode=true
-    steps=(array "Basic Information" "Description" "Schedule & Location" "Tools & Lessons" "Learning Target" "Participan Criteria")
+    steps=(array "Basic Information" "Description" "Schedule & Location" "Tools & Lessons")
   }}
 
   {{!-- Tips --}}

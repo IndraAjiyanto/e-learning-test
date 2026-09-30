@@ -63,28 +63,10 @@
       });
     },
     init() {
-      if (window.backendPortfolioData && window.backendPortfolioData.length > 0) {
-        this.portfolios = window.backendPortfolioData.map(p => ({
-          id: p.id,
-          title: p.title || 'Untitled Portfolio',
-          description: p.description || '',
-          link: p.link || '',
-          overview: p.contentHtml || p.content || '',
-          courseId: (p.course && p.course.id) ? p.course.id : '',
-          program: (p.course && p.course.name) ? p.course.name : '',
-          {{!-- overview dipakai panel detail (HTML siap tampil); contentRaw
-               adalah JSON EditorJS aslinya, yang dibutuhkan mode edit. --}}
-          contentRaw: p.content || '',
-          createdAt: p.createdAt || '',
-          classType: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : 'Class',
-          category: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : (p.course && p.course.title) ? p.course.title : 'Program',
-          technologies: (p.course && p.course.technologies) ? p.course.technologies : [],
-          author: (p.user && p.user.username) ? p.user.username : 'Author',
-          email: (p.user && p.user.email) ? p.user.email : '',
-          avatar: (p.user && p.user.profile) ? p.user.profile : '',
-          image: p.image && p.image.length > 0 ? p.image : [],
-          images: p.image && Array.isArray(p.image) ? p.image : []
-        }));
+      let payload = { currentUserId: '', course: null, items: [] };
+      const island = document.getElementById('portfolio-data');
+      if (island) {
+        try { payload = JSON.parse(island.textContent) || payload; } catch (e) {}
       }
 
       this.currentUserId = payload.currentUserId || '';
@@ -95,7 +77,11 @@
       this.programType = (payload.course && payload.course.courseType && payload.course.courseType.name) || '';
       this.programCategory = (payload.course && payload.course.category && payload.course.category.name) || '';
 
-      this.portfolios = (payload.items || []).map((p) => ({
+      const items = (payload.items && payload.items.length > 0)
+        ? payload.items
+        : (window.backendPortfolioData || []);
+
+      this.portfolios = (items || []).map((p) => ({
         id: p.id,
         title: p.title || '{{t 'test.myPortfolio.untitledPortfolio'}}',
         description: p.description || '',
@@ -489,6 +475,8 @@
     },
   }"
 >
+  <script type="application/json" id="portfolio-data">{{{jsonSafe portfolioData}}}</script>
+
   <!-- LIST PORTOFOLIO VIEW -->
   <div x-show="!showDetail" class="flex flex-col gap-7">
     <div class="flex flex-col gap-1">

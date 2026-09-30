@@ -96,6 +96,24 @@ function programData(mode) {
       return !msg;
     },
 
+    validateUrlField(elId, label) {
+      const value = this.val(elId);
+      let msg = this.nonEmpty(value, label);
+      if (!msg) {
+        try {
+          const u = new URL(value.trim());
+          if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+            msg = 'Please enter a valid URL (http/https)';
+          }
+        } catch (e) {
+          msg = 'Please enter a valid URL (http/https)';
+        }
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
     validateNumberField(elId, label, min, max) {
       const raw = this.val(elId);
       let msg = this.nonEmpty(raw, label);
@@ -286,7 +304,9 @@ function programData(mode) {
     initScrollObserver() {
       const self = this;
       const sections = [];
-      for (let i = 1; i <= 6; i++) {
+      // [DISABLED - ClickUp z8pbk8xwwx] Reduced from 6 to 4 sections
+      // for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 4; i++) {
         const el = document.getElementById('section-' + String(i).padStart(2, '0'));
         if (el) sections.push({ id: i, el: el });
       }
@@ -313,7 +333,9 @@ function programData(mode) {
       const section = target.closest('[id^="section-"]');
       if (!section) return;
       const num = parseInt(section.id.replace('section-', ''), 10);
-      if (!isNaN(num) && num >= 1 && num <= 6) {
+      // [DISABLED - ClickUp z8pbk8xwwx] Reduced from 6 to 4 sections
+      // if (!isNaN(num) && num >= 1 && num <= 6) {
+      if (!isNaN(num) && num >= 1 && num <= 4) {
         this.activeStep = num;
       }
     },
@@ -339,7 +361,7 @@ function programData(mode) {
       }
 
       results.push(this.validateTextField('name', 'Program Name'));
-      results.push(this.validateTextField('group', 'Group'));
+      results.push(this.validateUrlField('group', 'Group'));
       results.push(this.validateMultiLang('description', 'description', {
         id: 'Indonesian description', en: 'English description', ja: 'Japanese description'
       }));
@@ -399,6 +421,7 @@ function programData(mode) {
 
       results.push(this.validateLocationLink());
 
+      /* [DISABLED - ClickUp z8pbk8xwwx] Coment inputan Lessons, Learning Target dan Participants
       results.push(this.validateList('materialsId[]', 'materis_id', 'lesson (ID)'));
       results.push(this.validateList('materialsEn[]', 'materis_en', 'lesson (EN)'));
       results.push(this.validateList('materialsJa[]', 'materis_ja', 'lesson (JP)'));
@@ -408,6 +431,7 @@ function programData(mode) {
       results.push(this.validateList('criteriaId[]', 'criterias_id', 'criteria (ID)'));
       results.push(this.validateList('criteriaEn[]', 'criterias_en', 'criteria (EN)'));
       results.push(this.validateList('criteriaJa[]', 'criterias_ja', 'criteria (JP)'));
+      */
 
       return results.every(Boolean);
     },
