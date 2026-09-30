@@ -178,16 +178,16 @@ export class PaymentsService {
         if (existingWeekProgress) {
           await this.weekProgressRepository.save({
             id: existingWeekProgress.id,
-            weeks: weeks,
+            week: weeks,
             user: user,
-            proses: true,
+            process: true,
             quiz: false,
           });
         } else {
           await this.weekProgressRepository.save({
-            weeks: weeks,
+            week: weeks,
             user: user,
-            proses: true,
+            process: true,
             quiz: false,
           });
         }

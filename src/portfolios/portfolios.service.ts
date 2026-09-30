@@ -13,6 +13,8 @@ import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
+import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import * as ps from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -34,6 +36,11 @@ export class PortfoliosService {
 
     @InjectRepository(CourseType)
     private readonly courseTypeRepository: Repository<CourseType>,
+
+    @InjectRepository(UserCourse)
+    private readonly userCourseRepository: Repository<UserCourse>,
+
+    private readonly finalAssignmentService: FinalAssignmentService,
   ) {}
   async create(createPortfolioDto: CreatePortfolioDto) {
     const user = await this.userRepository.findOne({
@@ -58,6 +65,12 @@ export class PortfoliosService {
     if (!(await this.isEnrolledInCourse(user.id, course.id))) {
       throw new ForbiddenException(
         'You can only add a portfolio to a program you are enrolled in.',
+      );
+    }
+
+    if (!(await this.hasCompletedLearning(user.id, course.id))) {
+      throw new ForbiddenException(
+        'You must complete all learning requirements before creating a portfolio.',
       );
     }
 
@@ -180,6 +193,9 @@ export class PortfoliosService {
     return {
       id: course.id,
       name: course.name,
+      // Dibutuhkan oleh panel Portfolio untuk menentukan syarat tambahan
+      // create: bootcamp dan lpk wajib menyelesaikan final assignment juga.
+      programType: course.programType || 'bootcamp',
       category: course.category
         ? { id: course.category.id, name: course.category.name }
         : null,
@@ -217,6 +233,7 @@ export class PortfoliosService {
       .select([
         'course.id',
         'course.name',
+        'course.programType',
         'category.id',
         'category.name',
         'courseType.id',
@@ -250,6 +267,122 @@ export class PortfoliosService {
       .getCount();
 
     return count > 0;
+  }
+
+  /**
+   * Tombol Create Portfolio hanya muncul saat student sudah menyelesaikan
+   * seluruh pembelajaran di program itu.
+   *
+   * Syarat umum:
+   * 1. Jika program berbasis silabus (non_bootcamp), periksa apakah seluruh silabus
+   *    yang memiliki kuis telah lulus (atau jika user_courses.progress sudah true).
+   *    Jika seluruh silabus sudah lulus, perbarui user_courses.progress = true secara otomatis.
+   * 2. Jika program bootcamp/lpk, pastikan user_courses.progress = true (seluruh week selesai).
+   *
+   * Syarat tambahan untuk bootcamp dan lpk: student juga harus sudah
+   * mengumpulkan dan mendapat persetujuan (status='approved') pada final
+   * assignment program tersebut.
+   */
+  async hasCompletedLearning(
+    userId: string,
+    courseId?: string,
+  ): Promise<boolean> {
+    if (!userId || !courseId) {
+      return false;
+    }
+
+    const course = await this.courseRepository.findOne({
+      select: ['id', 'programType'],
+      where: { id: courseId },
+    });
+
+    const isNonBootcamp = course?.programType === 'non_bootcamp';
+
+    // Cek record enrollment user_courses
+    let userCourse = await this.userCourseRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+      },
+    });
+
+    if (!userCourse) {
+      return false;
+    }
+
+    // Untuk program berbasis silabus, verifikasi secara dinamis jika progress belum true
+    if (isNonBootcamp && !userCourse.progress) {
+      const syllabuses = await this.courseRepository.manager
+        .getRepository('Syllabus')
+        .find({
+          where: { course: { id: courseId } },
+          order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
+          relations: ['quiz'],
+        }) as any[];
+
+      if (syllabuses.length > 0) {
+        const quizIds = syllabuses
+          .flatMap((s) => s.quiz || [])
+          .map((q) => q.id)
+          .filter(Boolean);
+
+        let userScores: any[] = [];
+        if (quizIds.length > 0) {
+          userScores = await this.courseRepository.manager
+            .getRepository('Score')
+            .createQueryBuilder('score')
+            .innerJoinAndSelect('score.quiz', 'quiz')
+            .innerJoin('score.user', 'user')
+            .where('quiz.id IN (:...quizIds)', { quizIds })
+            .andWhere('user.id = :userId', { userId })
+            .getMany();
+        }
+
+        // Cek apakah setiap silabus sudah lulus kuisnya (jika ada kuis)
+        const allPassed = syllabuses.every((s) => {
+          const quiz = s.quiz?.[0] || null;
+          if (!quiz) return true; // Tidak ada kuis dianggap selesai
+          const minScore = quiz.minScore ?? 80;
+          const matchingScores = userScores.filter((sc) => sc.quiz?.id === quiz.id);
+          if (matchingScores.length === 0) return false;
+          const bestScore = Math.max(...matchingScores.map((sc) => Number(sc.score)));
+          return bestScore >= minScore;
+        });
+
+        if (allPassed) {
+          userCourse.progress = true;
+          await this.userCourseRepository.save(userCourse);
+        }
+      }
+    }
+
+    // Pastikan progress pembelajaran utama sudah selesai
+    if (!userCourse.progress) {
+      return false;
+    }
+
+    // Syarat 2 (bootcamp & lpk): final assignment harus sudah disetujui.
+    const needsFinalAssignment =
+      course?.programType === 'bootcamp' || course?.programType === 'lpk';
+
+    if (needsFinalAssignment) {
+      const finalAssignment =
+        await this.finalAssignmentService.findByCourse(courseId);
+      if (!finalAssignment) {
+        // Program belum punya soal final assignment sama sekali — kunci dulu.
+        return false;
+      }
+
+      const submission = await this.finalAssignmentService.findSubmissionByUser(
+        finalAssignment.id,
+        userId,
+      );
+      if (!submission || submission.status !== 'approved') {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   async findByUser(userId: string) {

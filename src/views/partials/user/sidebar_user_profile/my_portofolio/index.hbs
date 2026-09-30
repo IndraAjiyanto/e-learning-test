@@ -31,6 +31,8 @@
     programName: '',
     programType: '',
     programCategory: '',
+    courseProgramType: '',
+    canCreatePortfolio: false,
     imageUploads: [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }],
     newForm: {
       title: '',
@@ -97,8 +99,10 @@
       }
 
       this.currentUserId = payload.currentUserId || '';
+      this.canCreatePortfolio = !!payload.canCreatePortfolio;
       this.courseId = (payload.course && payload.course.id) || '';
       this.programName = (payload.course && payload.course.name) || '';
+      this.courseProgramType = (payload.course && payload.course.programType) || 'bootcamp';
       this.programType = (payload.course && payload.course.courseType && payload.course.courseType.name) || '';
       this.programCategory = (payload.course && payload.course.category && payload.course.category.name) || '';
 
@@ -596,10 +600,12 @@
           {{!-- Student hanya boleh punya satu portfolio per program, jadi
                setelah ada satu, yang tersisa adalah menyuntingnya. Tombol
                Create disembunyikan - bukan hanya dinonaktifkan - karena
-              Uoizard yang tidak bisa dipakai adalah jebakan. --}}
+              Uoizard yang tidak bisa dipakai adalah jebakan.
+               Selain itu, tombol juga disembunyikan sebelum student
+               menyelesaikan seluruh week atau syllabus di program ini. --}}
           <button
             type="button"
-            x-show="!myPortfolio"
+            x-show="!myPortfolio && canCreatePortfolio"
             @click="openCreatePortfolio()"
             class="h-11 w-full cursor-pointer rounded-lg border border-[#003060] bg-[#003060] px-5 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f] sm:w-auto"
           >
@@ -626,6 +632,24 @@
           <span>{{t 'test.myPortfolio.gallery.editMine'}}</span>
         </button>
       </div>
+
+      {{!-- Keterangan mengapa tombol Create tidak muncul: hanya ditampilkan
+           saat student belum menyelesaikan seluruh materi dan belum punya
+           portofolio (kalau sudah punya, banner "edit" di atas sudah cukup).
+           Pesan berbeda untuk bootcamp/lpk (wajib final assignment juga). --}}
+      <div
+        x-show="!canCreatePortfolio && !myPortfolio"
+        x-cloak
+        class="flex items-start gap-3 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB] px-4 py-3"
+      >
+        <i class="fa-solid fa-lock mt-0.5 shrink-0 text-sm text-[#D97706]"></i>
+        <p
+          class="font-inter text-sm text-[#92400E]"
+          x-text="(courseProgramType === 'bootcamp' || courseProgramType === 'lpk')
+            ? '{{t 'test.myPortfolio.emptyStateCourse.lockedNoticeBootcamp'}}'
+            : '{{t 'test.myPortfolio.emptyStateCourse.lockedNotice'}}'"
+        ></p>
+      </div>
     </section>
 
     <!-- EMPTY STATE: belum ada karya sama sekali di program ini -->
@@ -634,20 +658,30 @@
       class="flex flex-col items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-4 py-12 text-center sm:py-16"
     >
       <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#E0F2F9]">
-        <i class="fa-regular fa-folder-open text-2xl text-[#0369A1]"></i>
+        <template x-if="canCreatePortfolio">
+          <i class="fa-regular fa-folder-open text-2xl text-[#0369A1]"></i>
+        </template>
+        <template x-if="!canCreatePortfolio">
+          <i class="fa-solid fa-lock text-2xl text-[#D97706]"></i>
+        </template>
       </div>
 
       <h2 class="mb-3 text-center font-inter text-xl font-semibold leading-none text-[#003060] sm:text-2xl">
         {{t 'test.myPortfolio.emptyStateCourse.title'}}
       </h2>
 
-      <p class="mb-8 text-center font-inter text-sm font-normal leading-relaxed text-[#666666]">
-        {{t 'test.myPortfolio.emptyStateCourse.description'}}
-      </p>
+      <p
+        class="mb-8 text-center font-inter text-sm font-normal leading-relaxed text-[#666666]"
+        x-text="canCreatePortfolio
+          ? '{{t 'test.myPortfolio.emptyStateCourse.description'}}'
+          : (courseProgramType === 'bootcamp' || courseProgramType === 'lpk')
+            ? '{{t 'test.myPortfolio.emptyStateCourse.lockedNoticeBootcamp'}}'
+            : '{{t 'test.myPortfolio.emptyStateCourse.lockedNotice'}}'"
+      ></p>
 
       <button
         type="button"
-        x-show="!myPortfolio"
+        x-show="!myPortfolio && canCreatePortfolio"
         @click="openCreatePortfolio()"
         class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#003060] px-6 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f]"
       >
@@ -719,10 +753,17 @@
 
             <!-- Project Title -->
             <h3
-              class="font-bold text-[#0B1F3B] text-base leading-snug mb-4 line-clamp-2 min-h-[44px] group-hover:text-[#003060] transition-colors font-inter"
+              class="font-bold text-[#0B1F3B] text-base leading-snug line-clamp-2 min-h-[44px] group-hover:text-[#003060] transition-colors font-inter"
               x-text="item.title || 'Untitled Project'"
               :title="item.title"
             ></h3>
+
+            <!-- Project Description -->
+            <p
+              class="text-xs text-[#64748B] font-inter line-clamp-2 leading-relaxed mb-4"
+              x-text="item.description || '-'"
+              :title="item.description"
+            ></p>
 
             <!-- Author Info Row -->
             <div class="flex items-center gap-2.5 pt-3 border-t border-gray-100 mb-4">
