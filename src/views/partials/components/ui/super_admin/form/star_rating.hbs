@@ -1,0 +1,128 @@
+{{!--
+  Komponen: Star Rating Field (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/star_rating.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Pemilih rating 1–5 berbentuk bintang. Nilai dikirim lewat
+  <input type='hidden'> (string '1'..'5', cocok dengan enum `alumni_rating_enum`).
+
+  KONTRAK PEMAKAIAN
+  Pemanggil menyediakan state Alpine formData & formErrors — sama seperti
+  form/segmented.hbs. Key `field` dibaca langsung sebagai `formData.<field>`,
+  jadi path-nya harus sederhana (tanpa titik).
+
+  Kolom rating di DB bersifat NOT NULL, jadi pemanggil wajib menginisialisasi
+  `formData.<field>` dengan nilai valid (form alumni memakai '5' sebagai default).
+
+  Id yang dibentuk: hidden input memakai `{{id}}` (dibaca validateField/touch),
+  radiogroup memakai `{{id}}-group` (dipakai alumniForm.revealFirstInvalid untuk
+  memfokuskan serta memindai error pertama).
+
+  Bintang memakai SVG Lucide 24x24 inline, sama seperti ikon lain di design
+  system super_admin (lihat form/field_icon.hbs) — bukan FontAwesome yang dipakai
+  di sisi publik. Warna datang dari `text-*` (stroke='currentColor') dan
+  `:fill`; Tailwind tidak bisa menyetel fill dari `text-*`, jadi keduanya
+  ditoggle terpisah.
+
+  Props:
+  - id         : string (wajib)
+  - name       : string (wajib) — name hidden input
+  - label      : string (wajib)
+  - field      : string (wajib) — key state Alpine
+  - max        : number (opsional, default 5)
+  - required   : boolean (opsional)
+  - showValue  : boolean (opsional, default false) — tampilkan angka di kanan label
+  - hideLabel  : boolean (opsional) — label hanya untuk screen reader, dipakai
+                 pemanggil yang sudah punya judul sendiri di atas field
+  - hint       : string (opsional) — teks bantuan di bawah bintang
+  - iconClass  : kelas ukuran ikon (opsional, default 'size-5')
+  - onClass    : kelas warna bintang terisi (opsional, default amber)
+  - offClass   : kelas warna bintang kosong (opsional, default gray)
+
+  TINGGI WADAH
+   Wadah memakai `min-h-11`, bukan `h-11`, supaya `iconClass` yang lebih besar
+  (mis. size-12 untuk field rating alumni) tidak ikut terpotong. Pada ukuran
+  default (size-5) hasilnya tetap identik dengan h-11.
+
+  Contoh:
+    {{> components/ui/super_admin/form/star_rating
+      id='rating' name='rating' field='rating'
+      label='Rating' required=true showValue=true }}
+
+    Varian besar dengan judul sendiri di pemanggil:
+    {{> components/ui/super_admin/form/star_rating
+      id='rating' name='rating' field='rating'
+      label='Rating' required=true hideLabel=true iconClass='size-12' }}
+--}}
+<div class='flex flex-col gap-1.5'>
+  <div class='flex items-center justify-between gap-2'>
+    <span
+      id='{{id}}-label'
+      class='{{#unless hideLabel}}font-inter text-sm font-medium leading-5 text-[#404040]{{else}}sr-only{{/unless}}'
+    >
+      {{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}
+    </span>
+    {{#if showValue}}
+      <span
+        x-text="(formData.{{field}} || 0) + ' / {{#if max}}{{max}}{{else}}5{{/if}}'"
+        class='font-inter text-sm font-medium leading-5 text-[#525252]'
+      ></span>
+    {{/if}}
+  </div>
+
+  <input type='hidden' id='{{id}}' name='{{name}}' :value='formData.{{field}}' />
+
+  <div
+    id='{{id}}-group'
+    role='radiogroup'
+    aria-labelledby='{{id}}-label'
+    tabindex='-1'
+    x-data='{ hover: 0, shown: false }'
+    x-init="$watch('formData.{{field}}', () => shown = true); $el.closest('form')?.addEventListener('submit', () => shown = true)"
+    @mouseleave='hover = 0'
+    :class="formErrors.{{field}} ? 'border-[#fca5a5]' : shown ? 'border-[#22c55e]' : 'border-[#d4d4d4]'"
+    class='flex min-h-11 w-fit items-center gap-1 rounded-lg border bg-white px-2 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] focus-visible:outline-none'
+  >
+    <template x-for='star in {{#if max}}{{max}}{{else}}5{{/if}}' :key='star'>
+      <button
+        type='button'
+        role='radio'
+        :aria-checked='formData.{{field}} === String(star)'
+        :aria-label="star + ' of {{#if max}}{{max}}{{else}}5{{/if}}'"
+        :tabindex='formData.{{field}} === String(star) ? 0 : -1'
+        @click="formData.{{field}} = String(star); formErrors.{{field}} = ''; hover = 0"
+        @mouseenter='hover = star'
+        @focus='hover = star'
+        @blur='hover = 0'
+        @keydown.right.prevent="formData.{{field}} = String(Math.min({{#if max}}{{max}}{{else}}5{{/if}}, (Number(formData.{{field}}) || 0) + 1)); formErrors.{{field}} = ''; hover = 0"
+        @keydown.left.prevent="formData.{{field}} = String(Math.max(1, (Number(formData.{{field}}) || 0) - 1)); formErrors.{{field}} = ''; hover = 0"
+        class='rounded p-0.5 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:scale-90'
+      >
+        <svg
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          stroke-width='1.5'
+          stroke-linejoin='round'
+          class='{{#if iconClass}}{{iconClass}}{{else}}size-5{{/if}} transition-colors'
+          :class="star <= (hover || Number(formData.{{field}}) || 0)
+            ? '{{#if onClass}}{{onClass}}{{else}}text-[#f59e0b]{{/if}}'
+            : '{{#if offClass}}{{offClass}}{{else}}text-[#d4d4d4]{{/if}}'"
+          :fill="star <= (hover || Number(formData.{{field}}) || 0) ? 'currentColor' : 'none'"
+        >
+          <path d='M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z' />
+        </svg>
+      </button>
+    </template>
+  </div>
+
+  <p
+    x-show='formErrors.{{field}}'
+    x-cloak
+    x-text='formErrors.{{field}}'
+    class='font-inter text-sm leading-5 text-[#ef4444]'
+  ></p>
+
+  {{#if hint}}
+    <p class='font-inter text-sm leading-5 text-[#737373]'>{{hint}}</p>
+  {{/if}}
+</div>

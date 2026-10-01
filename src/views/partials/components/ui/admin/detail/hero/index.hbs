@@ -5,7 +5,7 @@
 
   Back to program (chevron-left #718096 + Montserrat 16 medium)
   Cover 500x264 #F8F9FA, image fill, Title 34 #003060 bold, Subtitle 14 #718096, 3 badges, Delete #FEF2F2 + Edit #003060
-  Sumber kebenaran: course.* (name, description, image, category.name, courseType.nameClassesType, quota, launch, checkPaid/form)
+  Sumber kebenaran: course.* (name, description, image, category.name, courseType.nameClassesType, launch, checkPaid/form)
 --}}
 <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] p-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px]'>
 
@@ -75,7 +75,7 @@
               <span class='text-[12px]/[normal] text-[#475569] font-inter font-medium whitespace-nowrap'>Unlaunch</span>
             </div>
           {{/if}}
-          {{!-- Badge Quota / Launch --}}
+          {{!-- Badge Launch --}}
           {{#if (or isSyllabus (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
             {{#if course.launch}}
               <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#F5F5F5] [outline-offset:-0.5px] rounded-[16px]'>
@@ -83,11 +83,6 @@
                 <span class='text-[12px]/[normal] text-[#171717] font-inter font-medium whitespace-nowrap'>Launched</span>
               </div>
             {{/if}}
-          {{else}}
-            <div class='box-border h-fit flex flex-row gap-[6px] p-[2px_8px_2px_6px] justify-center items-center bg-[#FFFFFF] [outline:1px_solid_#F5F5F5] [outline-offset:-0.5px] rounded-[16px]'>
-              <div class='w-[8px] h-[8px] rounded-full bg-[#EF4444]'></div>
-              <span class='text-[12px]/[normal] text-[#171717] font-inter font-medium whitespace-nowrap'>{{#if course.quota}}{{subtract course.quota course.userCourses.length}} Seats Left{{else}}- Seats Left{{/if}}</span>
-            </div>
           {{/if}}
         </div>
       </div>
