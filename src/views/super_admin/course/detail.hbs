@@ -71,12 +71,6 @@
 
             {{> components/ui/super_admin/detail/field/index label='Promo' value=(formatRupiah course.promo) }}
 
-            {{#if course.form}}
-              {{#> components/ui/super_admin/detail/field/index label='Form link'}}
-                <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
-              {{/components/ui/super_admin/detail/field/index}}
-            {{/if}}
-
             {{#> components/ui/super_admin/detail/field/index label='Type'}}
               <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>Paid</p>
             {{/components/ui/super_admin/detail/field/index}}
@@ -134,12 +128,6 @@
       {{#> components/ui/super_admin/detail/field/index label='Account Mentor'}}
         <p class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>
           {{#each course.mentorings}}{{this.user.username}}{{#unless @last}}, {{/unless}}{{else}}-{{/each}}
-        </p>
-      {{/components/ui/super_admin/detail/field/index}}
-
-      {{#> components/ui/super_admin/detail/field/index label='Target'}}
-        <p class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>
-          {{#each course.learningTargetsId}}{{this}}{{#unless @last}}, {{/unless}}{{else}}-{{/each}}
         </p>
       {{/components/ui/super_admin/detail/field/index}}
 

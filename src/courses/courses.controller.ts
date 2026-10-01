@@ -98,7 +98,11 @@ export class CoursesController {
       );
       res.redirect('/program');
     } catch (error: any) {
-      req.flash('error', error.message || 'program failed created');
+      const messages = error?.getResponse?.()?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages.join(', ')
+        : error.message || 'program failed created';
+      req.flash('error', errorMessage);
       res.redirect('/program');
     }
   }
@@ -198,6 +202,7 @@ export class CoursesController {
     @Param('categoryId') categoryId: string,
   ) {
     try {
+      body.categoryId = categoryId;
       const dto = await this.buildCreateDto(body, req.user);
       dto.categoryId = categoryId;
       const course = await this.coursesService.create(dto);
@@ -214,7 +219,11 @@ export class CoursesController {
       );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'program failed created');
+      const messages = error?.getResponse?.()?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages.join(', ')
+        : error.message || 'program failed created';
+      req.flash('error', errorMessage);
       res.redirect(`/category/${categoryId}`);
     }
   }
@@ -1411,7 +1420,11 @@ export class CoursesController {
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'failed update program');
+      const messages = error?.getResponse?.()?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages.join(', ')
+        : error.message || 'failed update program';
+      req.flash('error', errorMessage);
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

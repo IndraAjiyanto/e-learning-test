@@ -11,10 +11,10 @@
       {{#> components/ui/admin/form/form-field label="Time Start*" for="time_start" errorId="time_start_error"}}
         <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
           :class="borderClass('time_start')">
-          <input type='time' id='time_start' name='time_start' value='{{#if course}}{{formatTime course.time_start}}{{/if}}'
+          <input type='time' id='time_start' name='time_start' value='{{formTime course.time_start}}'
             :disabled='paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-            @blur='validateTimeFields()' @input='clearTimeErrors()' />
+            @blur='validateTimeFields()' @input='validateTimeFields()' @change='validateTimeFields()' />
         </div>
       {{/components/ui/admin/form/form-field}}
     </div>
@@ -22,10 +22,10 @@
       {{#> components/ui/admin/form/form-field label="Time End*" for="time_end" errorId="time_end_error"}}
         <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
           :class="borderClass('time_end')">
-          <input type='time' id='time_end' name='time_end' value='{{#if course}}{{formatTime course.time_end}}{{/if}}'
+          <input type='time' id='time_end' name='time_end' value='{{formTime course.time_end}}'
             :disabled='paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none [color-scheme:light] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-            @blur='validateTimeFields()' @input='clearTimeErrors()' />
+            @blur='validateTimeFields()' @input='validateTimeFields()' @change='validateTimeFields()' />
         </div>
       {{/components/ui/admin/form/form-field}}
     </div>

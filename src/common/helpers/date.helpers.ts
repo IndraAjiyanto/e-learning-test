@@ -82,6 +82,10 @@ export const dateHelpers = {
     return format(d, 'd MMM yyyy', { locale });
   },
   formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
+  formTime: (waktu: string | null | undefined): string => {
+    if (!waktu) return '';
+    return waktu.slice(0, 5);
+  },
   formatMinutes: (ms: number) => Math.floor(ms / 60000),
   /**
    * Mengubah string tanggal (YYYY-MM-DD, dari kolom date) menjadi Date lokal
