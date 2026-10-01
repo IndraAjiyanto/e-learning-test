@@ -88,9 +88,43 @@
         <template x-if="materi.fileType === 'pdf'">
           <div class="w-full h-[600px] bg-white">
             <iframe :src="materi.file"
-            type="application/pdf"
+                    type="application/pdf"
                     class="w-full h-full border rounded-lg bg-white"
                     frameborder="0">
+            </iframe>
+          </div>
+        </template>
+
+        <!-- Video Viewer -->
+        <template x-if="materi.fileType === 'video'">
+          <div class="w-full aspect-video max-h-[600px] bg-black rounded-lg overflow-hidden flex items-center justify-center">
+            <template x-if="isVideoEmbed(materi.file)">
+              <iframe :src="getVideoEmbedUrl(materi.file)"
+                      class="w-full h-full border-0"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen>
+              </iframe>
+            </template>
+            <template x-if="!isVideoEmbed(materi.file)">
+              <video :src="materi.file"
+                     controls
+                     autoplay
+                     class="w-full h-full object-contain bg-black">
+              </video>
+            </template>
+          </div>
+        </template>
+
+        <!-- PPT Viewer -->
+        <template x-if="materi.fileType === 'ppt'">
+          <div class="w-full h-[600px] bg-[#0F172A] rounded-lg overflow-hidden">
+            <iframe :src="getPptEmbedUrl(materi.file)"
+                    class="w-full h-full border-0 rounded-lg bg-slate-900"
+                    frameborder="0"
+                    allowfullscreen="true"
+                    mozallowfullscreen="true"
+                    webkitallowfullscreen="true">
             </iframe>
           </div>
         </template>
@@ -116,6 +150,28 @@ function materiModal() {
       title: '',
       fileType: '',
       file: '',
+    },
+
+    isVideoEmbed(url) {
+      if (!url) return false;
+      return url.includes('youtube.com') || url.includes('youtu.be');
+    },
+
+    getVideoEmbedUrl(url) {
+      if (!url) return '';
+      if (url.includes('youtube.com/watch?v=')) {
+        return url.replace('watch?v=', 'embed/');
+      }
+      if (url.includes('youtu.be/')) {
+        return url.replace('youtu.be/', 'youtube.com/embed/');
+      }
+      return url;
+    },
+
+    getPptEmbedUrl(url) {
+      if (!url) return '';
+      // Support Google Slides published link: replace /pub? with /pubembed?
+      return url.replace('/pub?', '/pubembed?');
     },
 
     get totalSlides() {

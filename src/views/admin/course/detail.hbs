@@ -32,7 +32,7 @@
       {name:'user',label:'User',url:'/program/userProgram/{{course.id}}'},
       {name:'log_book_user',label:'Logbook User',url:'/program/logbookUser/{{course.id}}'},
       {name:'log_book_mentor',label:'Logbook Mentor',url:'/program/logbookMentor/{{course.id}}'},
-      {name:'mentor',label:'Mentor',url:'/program/mentorProgram/{{course.id}}'}{{#if caps.finalAssignment}},
+      {name:'mentor',label:'Mentor',url:'/program/mentorProgram/{{course.id}}'}{{#if (and caps.finalAssignment lastWeek)}},
       {name:'final_assignment',label:'Final Assignment',url:'/final-assignment/course/{{course.id}}'}{{/if}}
     ] }">
       {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
@@ -60,7 +60,7 @@
       yang tidak punya tugas akhir. Kalau panelnya tidak ada, `x-show` tidak
       pernah mendapat opportunity untuk membukanya.
     --}}
-    {{#if caps.finalAssignment}}
+    {{#if (and caps.finalAssignment lastWeek)}}
     <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
     {{/if}}
 

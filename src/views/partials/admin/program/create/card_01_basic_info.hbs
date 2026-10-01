@@ -199,24 +199,6 @@
       {{/components/ui/admin/form/form-field}}
     </div>
 
-    {{!-- Sakelar logbook. Hanya aktif pada non-bootcamp: pada bootcamp dan
-         Japan Pathway logbook adalah bagian dari bentuk programnya, bukan
-         pilihan. --}}
-    <div class='flex-1 min-w-0' x-show='logbookConfigurable' x-cloak>
-      {{#> components/ui/admin/form/form-field label="Logbook"}}
-        {{> components/ui/admin/form/segmented-button
-          alpineVar="logbookEnabled"
-          options=(array
-            (obj 'label' 'On' 'value' 'true' 'onClick' 'logbookEnabled = true' 'activeIf' 'logbookEnabled')
-            (obj 'label' 'Off' 'value' 'false' 'onClick' 'logbookEnabled = false' 'activeIf' '!logbookEnabled')
-          )
-        }}
-      {{/components/ui/admin/form/form-field}}
-    </div>
-    {{!-- Selalu dikirim, termasuk saat pilihannya tidak terlihat: tanpa ini
-         program bootcamp mengirim medan kosong dan mapper menganggapnya false. --}}
-    <input type='hidden' name='logbook_enabled' :value='logbookConfigurable ? logbookEnabled : true' />
-
     {{!-- Paid Program --}}
     <div class='flex-1 min-w-0'>
       {{#> components/ui/admin/form/form-field label="Paid Program*"}}
