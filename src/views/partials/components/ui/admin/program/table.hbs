@@ -24,14 +24,14 @@
   <div x-show='!loading' class='table-scroll w-full min-h-[280px] overflow-x-auto [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
 
     {{!-- Header Row --}}
-    <div class='w-full min-w-[1168px] h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+    <div class='w-full {{#if isSuperAdmin}}min-w-[1168px]{{else}}min-w-[1043px]{{/if}} h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
       <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-center items-center'>
         <div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>No</div>
       </div>
       <div class='box-border w-[9.5%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Cover</div>
       </div>
-      <div class='box-border w-[14%] min-w-[180px] flex-1 max-w-[210px] h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+      <div class='box-border w-[14%] min-w-[180px] flex-1 {{#if isSuperAdmin}}max-w-[210px]{{/if}} h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Program Name</div>
       </div>
       <div class='box-border w-[11.5%] min-w-[130px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
@@ -49,9 +49,11 @@
       <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Student</div>
       </div>
+      {{#if isSuperAdmin}}
       <div class='box-border w-[10.5%] min-w-[125px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Status Program</div>
       </div>
+      {{/if}}
       <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Action</div>
       </div>
@@ -59,7 +61,7 @@
 
     {{!-- Body Rows --}}
     <template x-for='(course, index) in kelasList' :key='course.id'>
-      <div class='w-full min-w-[1168px] h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+      <div class='w-full {{#if isSuperAdmin}}min-w-[1168px]{{else}}min-w-[1043px]{{/if}} h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
 
         {{!-- No --}}
         <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-center items-center'>
@@ -79,7 +81,7 @@
         </div>
 
         {{!-- Program Name (flex-1, truncate + tooltip) --}}
-        <div class='box-border w-[14%] min-w-[180px] flex-1 max-w-[210px] h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+        <div class='box-border w-[14%] min-w-[180px] flex-1 {{#if isSuperAdmin}}max-w-[210px]{{/if}} h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
           <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text='course.name' :title='course.name'></div>
         </div>
 
@@ -119,6 +121,7 @@
           </div>
         </div>
 
+        {{#if isSuperAdmin}}
         {{!-- Status Program (Dropdown Lifecycle: Unlaunch -> Launch -> Learning -> Done) --}}
         <div class='box-border w-[10.5%] min-w-[125px] shrink-0 h-full flex flex-row p-[16px_8px] justify-start items-center relative'
              x-data='{ open: false }'
@@ -219,6 +222,7 @@
             </div>
           </template>
         </div>
+        {{/if}}
 
         {{!-- Action: View Detail + Users --}}
         <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-[4px] p-[16px_8px] justify-start items-center'>

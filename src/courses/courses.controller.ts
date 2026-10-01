@@ -1429,7 +1429,7 @@ export class CoursesController {
     }
   }
 
-  @Roles('admin', 'super_admin')
+  @Roles('super_admin')
   @Patch(':courseId/toggle-launch')
   async updateLaunch(
     @Param('courseId') courseId: string,
@@ -1451,7 +1451,7 @@ export class CoursesController {
     }
   }
 
-  @Roles('admin', 'super_admin')
+  @Roles('super_admin')
   @Patch(':courseId/toggle-launch-json')
   async updateLaunchJson(
     @Param('courseId') courseId: string,
@@ -1472,7 +1472,7 @@ export class CoursesController {
     }
   }
 
-  @Roles('admin', 'super_admin')
+  @Roles('super_admin')
   @Patch(':courseId/status-json')
   async updateStatusJson(
     @Param('courseId') courseId: string,
@@ -1497,7 +1497,7 @@ export class CoursesController {
     }
   }
 
-  @Roles('admin', 'super_admin')
+  @Roles('super_admin')
   @Patch(':courseId/toggle-status')
   async updateStatus(
     @Param('courseId') courseId: string,
