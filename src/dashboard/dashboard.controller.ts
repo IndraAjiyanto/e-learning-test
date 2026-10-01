@@ -207,6 +207,30 @@ export class DashboardController {
     });
   }
 
+  /**
+   * Sampel alumni acak untuk pop-up alumni mengambang
+   * (partials/components/ui/floating_alumni_popup.hbs).
+   *
+   * Sengaja TIDAK memakai `alumni/filter` di atas: pop-up dippasang di shell
+   * publik, artinya endpoint ini harus bisa dipanggil tamu yang belum login -
+   * itu sebabnya ia diletakkan di DashboardController yang tanpa guard, bukan
+   * di AlumniController yang seluruhnya `@UseGuards(AuthenticatedGuard)`.
+   *
+   * `limit` diklem supaya string dari query string tidak bisa jadi angka yang
+   * tidak terduga (atau negatif) untuk `take()`.
+   */
+  @Get('alumni/popup')
+  async alumniPopup(@Query('limit') limit?: string) {
+    const parsed = Number.parseInt(limit || '', 10);
+    const itemsPerRequest = Number.isFinite(parsed)
+      ? Math.min(Math.max(parsed, 1), 20)
+      : 8;
+
+    const data = await this.dashboardService.findRandomAlumni(itemsPerRequest);
+
+    return { data };
+  }
+
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
     const kelasList = await this.dashboardService.findCourses();
@@ -216,6 +240,10 @@ export class DashboardController {
       user: req.user,
       course: kelasList,
       kategoriList: kategoriList,
+      // Pop-up alumni dimatikan di halaman yang menjadi tujuan kliknya: this
+      // page already lists every alumni card, so the pop-up could only link
+      // back to itself.
+      hideAlumniPopup: true,
     });
   }
 

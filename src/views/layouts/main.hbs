@@ -132,6 +132,17 @@
       {{{ body }}}
     </main>
     {{> footer}}
+
+    {{!-- Pop-up alumni mengambang (pojok kiri bawah). Ditempatkan di dalam
+         cabang shell publik ini, bukan di luar, supaya otomatis tidak ikut
+         di shell admin/super_admin maupun di halaman `bareShell` (player,
+         logbook, dan sejenisnya) yang memang tanpa navbar. `isAuthPage` ->
+         jangan ganggu layar login; `hideAlumniPopup` -> halaman yang
+         mengoper flag ini sudah punya daftar alumni sendiri, yaitu halaman
+         /dashboard/alumni yang jadi tujuan klik pop-upnya. --}}
+    {{#unless (or isAuthPage hideAlumniPopup)}}
+      {{> components/ui/floating_alumni_popup}}
+    {{/unless}}
     {{/if}}
   {{/if}}
 
