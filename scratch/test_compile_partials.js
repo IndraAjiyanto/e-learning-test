@@ -4,15 +4,7 @@ const path = require('path');
 const { hbsHelpers } = require(path.join(__dirname, '../dist/common/helpers/index'));
 
 Handlebars.registerHelper(hbsHelpers);
-Handlebars.registerHelper('isPaidProgram', (course) => {
-  if (!course) return false;
-  return Boolean(
-    course.checkPaid === true ||
-    (course.category && course.category.type === 'Paid Program') ||
-    (course.cat_type === 'Paid Program') ||
-    (course.price !== null && course.price !== undefined && Number(course.price) > 0)
-  );
-});
+
 Handlebars.registerHelper('getByLang', (val, lang) => typeof val === 'object' && val ? val[lang] : val);
 Handlebars.registerHelper('default', (val, def) => val || def);
 

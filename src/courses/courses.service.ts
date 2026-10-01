@@ -125,11 +125,14 @@ export class CoursesService {
     if (!category) {
       throw new NotFoundException('category not Found');
     }
-    const courseType = await this.courseTypeRepository.findOne({
-      where: { id: createCourseDto.courseTypeId },
-    });
-    if (!courseType) {
-      throw new NotFoundException('type program not Found');
+    let courseType: CourseType | null = null;
+    if (createCourseDto.courseTypeId) {
+      courseType = await this.courseTypeRepository.findOne({
+        where: { id: createCourseDto.courseTypeId },
+      });
+      if (!courseType) {
+        throw new NotFoundException('type program not Found');
+      }
     }
 
     let technologies: Technology[] = [];
@@ -151,7 +154,7 @@ export class CoursesService {
         ? new Date(createCourseDto.date_registration)
         : undefined,
       category: category,
-      courseType: courseType,
+      courseType: courseType ?? undefined,
       technologies: technologies,
     });
     const saved = await this.courseRepository.save(course);

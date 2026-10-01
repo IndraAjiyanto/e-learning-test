@@ -11,15 +11,9 @@ const ds = new DataSource({
   synchronize: false,
 });
 
-function isPaidProgram(course) {
-  if (!course) return false;
-  return Boolean(
-    course.checkPaid === true ||
-    (course.category && course.category.type === 'Paid Program') ||
-    (course.cat_type === 'Paid Program') ||
-    (course.price !== null && course.price !== undefined && Number(course.price) > 0)
-  );
-}
+const path = require('path');
+const { logicHelpers } = require(path.resolve('./dist/common/helpers/logic.helpers'));
+const isPaidProgram = logicHelpers.isPaidProgram;
 
 ds.initialize().then(async () => {
   const courses = await ds.query(`

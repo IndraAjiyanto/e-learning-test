@@ -406,17 +406,21 @@ function programData(mode) {
       results.push(this.validateDateField('endDate', 'End Date', 'startDate', 'Start Date'));
 
       if (document.getElementById('form')) {
-        const formVal = this.val('form');
-        let formMsg = '';
-        if (formVal) {
-          try { new URL(formVal); } catch (e) {
-            formMsg = 'Registration Form Link must be a valid URL';
+        if (this.paidClass) {
+          this.clearField('form');
+        } else {
+          const formVal = this.val('form');
+          let formMsg = '';
+          if (formVal) {
+            try { new URL(formVal); } catch (e) {
+              formMsg = 'Registration Form Link must be a valid URL';
+            }
           }
+          this.setFieldError('form', formMsg);
+          // Opsional: kosong = netral, terisi valid = hijau, terisi salah = merah.
+          if (formVal) { this.setFieldStatus('form', !formMsg); } else { this.fieldStatus['form'] = ''; }
+          if (formMsg) results.push(false);
         }
-        this.setFieldError('form', formMsg);
-        // Opsional: kosong = netral, terisi valid = hijau, terisi salah = merah.
-        if (formVal) { this.setFieldStatus('form', !formMsg); } else { this.fieldStatus['form'] = ''; }
-        if (formMsg) results.push(false);
       }
 
       results.push(this.validateLocationLink());

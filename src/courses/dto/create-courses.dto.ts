@@ -30,10 +30,6 @@ export class CreateCoursesDto {
   name: string;
 
   @IsString()
-  @IsUrl(
-    { protocols: ['http', 'https'], require_protocol: true },
-    { message: 'Group must be a valid URL (http/https)' },
-  )
   group: string;
 
   @IsEnum(['online', 'offline'])
@@ -42,8 +38,9 @@ export class CreateCoursesDto {
   @IsUUID()
   categoryId: string;
 
+  @IsOptional()
   @IsUUID()
-  courseTypeId: string;
+  courseTypeId?: string;
 
   /**
    * Bentuk belajar program. Tidak wajib dikirim: program yang tidak

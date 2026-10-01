@@ -14,11 +14,11 @@ export const logicHelpers = {
   not: (value: any) => !value,
   isPaidProgram: (course: any) => {
     if (!course) return false;
+    if (course.checkPaid !== undefined && course.checkPaid !== null) {
+      return course.checkPaid === true || course.checkPaid === 'true';
+    }
     return Boolean(
-      course.checkPaid === true ||
-      (course.category && course.category.type === 'Paid Program') ||
-      (course.cat_type === 'Paid Program') ||
-      (course.price !== null && course.price !== undefined && Number(course.price) > 0)
+      course.price !== null && course.price !== undefined && Number(course.price) > 0,
     );
   },
   and: (...args: any[]) => {

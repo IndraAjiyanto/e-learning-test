@@ -131,7 +131,6 @@ export function mapCreateProgram(
     group: asText(body.group),
     method: toMethod(body.method),
     categoryId: asText(body.categoryId),
-    courseTypeId,
     description,
     locations,
     locationLink: asText(body.locationLink),
@@ -154,6 +153,8 @@ export function mapCreateProgram(
         ? toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true
         : true,
   };
+
+  if (courseTypeId) dto.courseTypeId = courseTypeId;
 
   const image = asArray(body.uploadedImageUrls)[0];
   if (image) dto.image = image;
@@ -209,10 +210,14 @@ export function mapCreateProgram(
   dto.checkPaid = paidCheckRaw;
   if (paidCheckRaw) {
     dto.form = '';
+    dto.day = 0;
+    dto.time_start = '';
+    dto.time_end = '';
     dto.promo = dto.promo ?? 0;
   } else {
     dto.price = 0;
     dto.promo = 0;
+    dto.month = 0;
   }
   if (role === 'super_admin') {
     dto.process = 'approved';
@@ -322,7 +327,20 @@ export function mapUpdateProgram(
   if (dateRegistration) dto.date_registration = dateRegistration;
 
   if (body.paid_check !== undefined) {
-    dto.checkPaid = toBool(body.paid_check);
+    const isPaid = toBool(body.paid_check) ?? false;
+    dto.checkPaid = isPaid;
+    if (isPaid) {
+      dto.form = '';
+      dto.day = 0;
+      dto.time_start = '';
+      dto.time_end = '';
+      dto.price = dto.price ?? 0;
+      dto.promo = dto.promo ?? 0;
+    } else {
+      dto.price = 0;
+      dto.promo = 0;
+      dto.month = 0;
+    }
   }
 
   const programType = toProgramType(body.program_type ?? body.programType);
