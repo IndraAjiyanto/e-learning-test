@@ -1381,6 +1381,11 @@ export class CoursesController {
     try {
       const course = await this.coursesService.findOne(courseId);
       const dto = mapUpdateProgram(req.body ?? body, req.user);
+      await this.createValidationPipe.transform(dto, {
+        type: 'body',
+        metatype: UpdateCoursesDto,
+        data: '',
+      });
       if (gambar) {
         await this.coursesService.deleteFile(course.image);
       }

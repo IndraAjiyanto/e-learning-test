@@ -7,6 +7,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsUrl,
   IsUUID,
 } from 'class-validator';
 import {
@@ -29,6 +30,10 @@ export class CreateCoursesDto {
   name: string;
 
   @IsString()
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'Group must be a valid URL (http/https)' },
+  )
   group: string;
 
   @IsEnum(['online', 'offline'])
@@ -68,29 +73,35 @@ export class CreateCoursesDto {
   @IsString()
   locationLink: string;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  materialsId: string[];
+  materialsId?: string[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  materialsEn: string[];
+  materialsEn?: string[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  materialsJa: string[];
+  materialsJa?: string[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  learningTargetsId: string[];
+  learningTargetsId?: string[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  learningTargetsEn: string[];
+  learningTargetsEn?: string[];
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  learningTargetsJa: string[];
+  learningTargetsJa?: string[];
 
   @IsOptional()
   @IsArray()
