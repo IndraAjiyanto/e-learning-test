@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
@@ -329,6 +329,52 @@ export class DashboardService {
       order: { createdAt: 'DESC' },
       take: 6,
     });
+  }
+
+  /**
+   * Sampel alumni acak untuk pop-up alumni mengambang.
+   *
+   * Berbeda dengan `findAlumni` yang mengurutkan `createdAt` untuk daftar
+   * direktori, di sini urutannya justru diacak: pop-up muncul di setiap page
+   * load, jadi selalu membuka alumni yang berbeda supaya tidak terasa seperti
+   * billboard alumni yang sama berulang-ulang. `RANDOM()` sudah dipakai di
+   * `courses.service.ts` untuk kebutuhan acak yang sama.
+   *
+   * Pengambilan dilakukan dua tahap, bukan satu query dengan join:
+   * `getMany()` yang memakai `take()` dan `leftJoinAndSelect` menjalankan
+   * query kedua berbentuk `SELECT DISTINCT "distinctAlias"."alumni_id" ...`
+   * untuk mengambil ID-nya, dan di situ alias `RANDOM()` tidak ikut ke select
+   * list - Postgres menolaknya dengan "for SELECT DISTINCT, ORDER BY
+   * expressions must appear in select list". `addSelect('RANDOM()', 'rand')`
+   * tidak menolong karena select list di query ID itulah yang jadi tempat
+   * ORDER BY dinilai.
+   *
+   * Jadi tahap pertama ambil ID acak tanpa join sama sekali (tidak ada
+   * `distinctAlias` kalau tidak ada relasi), tahap kedua ambil entitas untuk
+   * ID itu, lalu urutannya dipulihkan di memori mengikuti urutan acak tadi.
+   */
+  async findRandomAlumni(limit: number) {
+    const idRows = await this.alumniRepository
+      .createQueryBuilder('alumni')
+      .select('alumni.id', 'id')
+      .addSelect('RANDOM()', 'rand')
+      .orderBy('"rand"', 'ASC')
+      .limit(limit)
+      .getRawMany<{ id: string }>();
+
+    if (idRows.length === 0) return [];
+
+    const ids = idRows.map((row) => row.id);
+    const alumni = await this.alumniRepository.find({
+      where: { id: In(ids) },
+      relations: ['course', 'course.category'],
+    });
+
+    const byId = new Map(alumni.map((item) => [item.id, item]));
+
+    return ids
+      .map((id) => byId.get(id))
+      .filter((item): item is Alumni => item !== undefined);
   }
 
   // async findPortfolio() {
