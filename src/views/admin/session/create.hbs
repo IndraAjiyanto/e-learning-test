@@ -25,6 +25,19 @@
         {{!-- Feature Card - Fields --}}
         {{#> components/ui/admin/form/form-card noNumber=true}}
 
+          {{!-- Field Description (posts to `topic`) --}}
+          <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
+            <div class='flex-1 min-w-0'>
+              {{#> components/ui/admin/form/form-field label="Topic*" for="topic" errorId="topic_error"}}
+                {{> components/ui/admin/form/text-input
+                  id="topic" name="topic" rows="5" required=true
+                  placeholder="Enter session topic..."
+                }}
+              {{/components/ui/admin/form/form-field}}
+            </div>
+            <div class='hidden sm:block flex-1 min-w-0'></div>
+          </div>
+
           {{!-- Field Row: Location + Date --}}
           <div class='flex flex-col sm:flex-row gap-[12px] w-full'>
             <div class='flex-1 min-w-0'>
@@ -72,13 +85,7 @@
             </div>
           </div>
 
-          {{!-- Field Description (posts to `topic`) --}}
-          {{#> components/ui/admin/form/form-field label="Description*" for="topic" errorId="topic_error"}}
-            {{> components/ui/admin/form/textarea-input
-              id="topic" name="topic" rows="5" required=true
-              placeholder="Enter session description..."
-            }}
-           {{/components/ui/admin/form/form-field}}
+        
 
         {{/components/ui/admin/form/form-card}}
 
