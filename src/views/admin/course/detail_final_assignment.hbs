@@ -341,12 +341,31 @@ function detailFinalAssignmentData() {
     },
 
     approveSubmission(sub) {
-      this.reviewSubmission(sub, 'approved');
+      openConfirmModal({
+        title: 'Approve Submission?',
+        description: 'Are you sure you want to approve this final assignment submission?',
+        confirmLabel: 'Approve',
+        cancelLabel: 'Cancel',
+        onConfirm: () => {
+          this.reviewSubmission(sub, 'approved');
+        },
+      });
     },
 
     rejectSubmission(sub) {
-      this.reviewSubmission(sub, 'rejected');
+      openConfirmModal({
+        title: 'Reject Submission?',
+        description: 'Are you sure you want to reject this final assignment submission?',
+        confirmLabel: 'Reject',
+        cancelLabel: 'Cancel',
+        onConfirm: () => {
+          this.reviewSubmission(sub, 'rejected');
+        },
+      });
     }
   };
 }
 </script>
+
+{{!-- Modal konfirmasi Approve/Reject Submission --}}
+{{> components/ui/admin/modal/confirm_action/index}}
