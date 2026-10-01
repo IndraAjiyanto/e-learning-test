@@ -312,8 +312,8 @@ export class Course {
   vouchers: Voucher[];
 
   @Column({ name: 'time_start', nullable: true, type: 'time' })
-  time_start: string;
+  time_start: string | null;
 
   @Column({ name: 'time_end', nullable: true, type: 'time' })
-  time_end: string;
+  time_end: string | null;
 }
