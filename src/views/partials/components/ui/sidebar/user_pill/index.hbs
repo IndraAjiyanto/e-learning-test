@@ -6,9 +6,13 @@
   Menampilkan avatar + nama + role user. Saat pill diklik, muncul popover
   mengambang di atas pill berisi aksi "Edit Profile" dan "Logout"
 
+  Logout tidak langsung mengakhiri sesi: item ini membuka modal konfirmasi
+  per role (openSuperAdminLogoutModal / openAdminLogoutModal — lihat
+  components/ui/{super_admin,admin}/modal/logout_confirm). Modalnya sendiri
+  dirender sekali oleh partials/sidebar.hbs sesuai role yang sedang login.
+
   Props:
   - href         : string (opsional, default "/users/profile") tujuan Edit Profile
-  - logoutHref   : string (opsional, default "/logout")
   - username     : string (wajib) nama user
   - role         : string (wajib) role user
   - profile      : string (opsional) URL foto profil; bila kosong dipakai inisial
@@ -51,9 +55,10 @@
       <div class="h-px w-full bg-[#D9D9D9]"></div>
     </div>
 
-    <a
-      href="{{default logoutHref '/logout'}}"
+    <button
+      type="button"
       role="menuitem"
+      @click="userMenuOpen = false; {{#if (eq role 'super_admin')}}openSuperAdminLogoutModal(){{else}}openAdminLogoutModal(){{/if}}"
       class="flex items-center gap-[12px] w-full px-[12px] py-[10px] rounded-[6px]
         font-inter font-medium text-[14px] leading-[21px] text-[#C80606]
         transition-colors duration-150 hover:bg-[#FDECEC] active:bg-[#FBD5D5]
@@ -63,7 +68,7 @@
         {{> components/ui/sidebar/nav_icon/index name='icon_logout' size='16px'}}
       </span>
       <span>{{default logoutLabel 'Logout'}}</span>
-    </a>
+    </button>
   </div>
 
   {{!-- Pill profil --}}

@@ -51,7 +51,7 @@ export class DashboardController {
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        res.redirect('/users');
+        res.redirect('/information');
       } else if (req.user.role === 'admin') {
         res.redirect('/program');
       } else if (req.user.role === 'user') {

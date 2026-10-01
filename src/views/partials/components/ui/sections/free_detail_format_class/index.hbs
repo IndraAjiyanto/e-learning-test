@@ -123,15 +123,15 @@
             </span>
             <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
               {{#if (eq course.method 'online')}}
-                Online (Zoom Meeting)
+                {{default (t 'test.freeProgram.formatClass.methodOnline') 'Online (Zoom Meeting)'}}
               {{else if (eq course.method 'offline')}}
-                Offline (Meetup)
+                {{default (t 'test.freeProgram.formatClass.methodOffline') 'Offline (Meetup)'}}
               {{else if (eq course.method 'hybrid')}}
-                Hybrid (Online Zoom &amp; Offline Meetup)
+                {{default (t 'test.freeProgram.formatClass.methodHybrid') 'Hybrid (Online Zoom & Offline Meetup)'}}
               {{else if course.method}}
                 <span class="capitalize">{{course.method}}</span>
               {{else}}
-                Hybrid (Online Zoom &amp; Offline Meetup)
+                {{default (t 'test.freeProgram.formatClass.methodHybrid') 'Hybrid (Online Zoom & Offline Meetup)'}}
               {{/if}}
             </span>
           </div>
