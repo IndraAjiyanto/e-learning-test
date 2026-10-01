@@ -211,8 +211,8 @@ export function mapCreateProgram(
   if (paidCheckRaw) {
     dto.form = '';
     dto.day = 0;
-    dto.time_start = '';
-    dto.time_end = '';
+    delete dto.time_start;
+    delete dto.time_end;
     dto.promo = dto.promo ?? 0;
   } else {
     dto.price = 0;
@@ -332,8 +332,8 @@ export function mapUpdateProgram(
     if (isPaid) {
       dto.form = '';
       dto.day = 0;
-      dto.time_start = '';
-      dto.time_end = '';
+      delete dto.time_start;
+      delete dto.time_end;
       dto.price = dto.price ?? 0;
       dto.promo = dto.promo ?? 0;
     } else {

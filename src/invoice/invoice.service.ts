@@ -65,10 +65,10 @@ export class InvoiceService {
 
     const invoice = this.invoiceRepository.create({
       payment: payment,
-      price: course?.price ?? null,
-      promo: course?.promo ?? null,
+      price: course?.price ? Number(course.price) : null,
+      promo: course?.promo ? Number(course.promo) : null,
       promo_code: discountAmount ?? 0,
-      subtotal: subtotal,
+      subtotal: finalTotal,
       discount_amount: discountAmount,
       final_total: finalTotal,
       payment_method: paymentMethod,
@@ -132,6 +132,8 @@ export class InvoiceService {
     course: Course,
     user: User,
     installment?: Installment,
+    discountAmount: number = 0,
+    finalTotalParam?: number,
   ) {
     const isInstallment = !!installment;
     const price = course?.price ? Number(course.price) : null;
@@ -139,15 +141,18 @@ export class InvoiceService {
     const basePrice = isInstallment
       ? Number(installment.downPayment)
       : (promo && promo > 0 ? promo : (price ?? 0));
-    const finalTotal = basePrice;
+    const finalTotal =
+      finalTotalParam !== undefined
+        ? finalTotalParam
+        : Math.max(0, basePrice - (discountAmount || 0));
 
     const invoice = this.invoiceRepository.create({
       payment: payment,
       price: price,
       promo: promo,
-      promo_code: 0,
-      subtotal: basePrice,
-      discount_amount: 0,
+      promo_code: discountAmount || 0,
+      subtotal: finalTotal,
+      discount_amount: discountAmount || 0,
       final_total: finalTotal,
       payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
       invoice_number: payment.no,

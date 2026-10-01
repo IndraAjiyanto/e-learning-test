@@ -122,11 +122,13 @@
         method="POST"
         enctype="multipart/form-data"
         class="flex flex-col gap-3"
+        @submit="syncPromoCode($event)"
       >
         <input type="hidden" name="fullName" :value="formData.fullName" />
         <input type="hidden" name="email" :value="formData.email" />
         <input type="hidden" name="whatsappNumber" :value="formData.whatsappNumber" />
         <input type="hidden" name="source" :value="formData.source" />
+        <input type="hidden" name="promoCode" :value="getPromoCode()" />
 
         <label
           class="flex flex-col items-center justify-center gap-2 w-full min-h-[120px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-white hover:border-[#003060] transition-colors cursor-pointer p-4 text-center"
@@ -224,6 +226,38 @@
           }
         } catch (e) {
           /* abaikan draft rusak */
+        }
+      },
+
+      getPromoCode() {
+        if (typeof window !== 'undefined' && window.activePromo) {
+          return window.activePromo;
+        }
+        const input = document.getElementById('promo-input') || document.getElementById('promo-input-installment');
+        if (input && input.value) {
+          return input.value.trim().toUpperCase();
+        }
+        const key =
+          typeof window.getPaymentProgressStorageKey === 'function'
+            ? window.getPaymentProgressStorageKey()
+            : null;
+        if (key) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              return parsed?.forms?.form2?.voucherDiscount || '';
+            }
+          } catch (e) {}
+        }
+        return '';
+      },
+
+      syncPromoCode(event) {
+        const promo = this.getPromoCode();
+        const promoInput = event.target.querySelector('input[name="promoCode"]');
+        if (promoInput) {
+          promoInput.value = promo;
         }
       },
 

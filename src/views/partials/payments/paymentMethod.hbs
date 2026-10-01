@@ -217,6 +217,7 @@
         const { discount_amount, final_total, promo_code } = result.data;
 
         activePromo = promo_code;
+        window.activePromo = promo_code;
         const input = getVoucherInput();
         if (input) {
           input.disabled = true;
@@ -229,12 +230,14 @@
         showPromoMessage(result.message || I18N.applied, "success");
       } else {
         activePromo = null;
+        window.activePromo = null;
         updatePricingUI(0, currentSubtotal);
         showPromoMessage(result.message || I18N.invalid, "error");
       }
     } catch (error) {
       console.error("Promo check error:", error);
       activePromo = null;
+      window.activePromo = null;
       updatePricingUI(0, currentSubtotal);
       showPromoMessage(
           error.message === "Endpoint API tidak ditemukan (404)." ? I18N.apiNotFound : I18N.checkFailed,
@@ -258,6 +261,7 @@
 
   function removePromo() {
     activePromo = null;
+    window.activePromo = null;
 
     const input = getVoucherInput();
     if (input) {
