@@ -166,4 +166,28 @@ function cardData() {
     isOpen: false
   };
 }
+
+function submitReviewAnswer(button, status) {
+  var isApprove = status === 'approved';
+  openConfirmModal({
+    title: isApprove ? 'Approve Answer?' : 'Reject Answer?',
+    description: isApprove
+      ? 'Are you sure you want to approve this student answer?'
+      : 'Are you sure you want to reject this student answer?',
+    confirmLabel: isApprove ? 'Approve' : 'Reject',
+    cancelLabel: 'Cancel',
+    onConfirm: function() {
+      var form = button.closest('form');
+      if (!form) return;
+      var processInput = form.querySelector('.process-value');
+      if (processInput) {
+        processInput.value = status;
+      }
+      form.submit();
+    }
+  });
+}
 </script>
+
+{{!-- Modal konfirmasi Approve/Reject Answer --}}
+{{> components/ui/admin/modal/confirm_action/index}}
