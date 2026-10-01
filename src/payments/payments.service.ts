@@ -374,14 +374,6 @@ export class PaymentsService {
         const normalPrice = payment.course?.price ? Number(payment.course.price) : null;
         const fallbackPrice = promoPrice ?? normalPrice;
 
-        const subtotal = payment.invoice?.subtotal
-          ? Number(payment.invoice.subtotal)
-          : (fallbackPrice ?? (payment.invoice?.final_total ? Number(payment.invoice.final_total) : null));
-        const discount = payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0;
-        const amount = payment.invoice?.final_total
-          ? Number(payment.invoice.final_total)
-          : (subtotal !== null ? Math.max(0, subtotal - discount) : null);
-
         const price =
           payment.invoice?.price !== null && payment.invoice?.price !== undefined
             ? Number(payment.invoice.price)
@@ -394,10 +386,13 @@ export class PaymentsService {
           payment.invoice?.promo_code !== null && payment.invoice?.promo_code !== undefined
             ? Number(payment.invoice.promo_code)
             : (payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0);
-        const finalTotal =
-          payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
-            ? Number(payment.invoice.final_total)
-            : amount;
+        // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
+        const total =
+          payment.invoice?.subtotal !== null && payment.invoice?.subtotal !== undefined
+            ? Number(payment.invoice.subtotal)
+            : (payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
+                ? Number(payment.invoice.final_total)
+                : (fallbackPrice ?? 0));
 
         return {
           id: payment.id,
@@ -409,21 +404,23 @@ export class PaymentsService {
           method:
             payment.invoice?.payment_method ||
             (isInstallment ? 'Installment' : 'Full Payment'),
-          amount: finalTotal,
-          subtotal,
-          discount,
-          originalPrice: normalPrice,
+          amount: total,
+          subtotal: total,
+          total: total,
+          finalTotal: total,
+          discount: promoCode,
+          originalPrice: price,
           price,
           promo,
+          promoPrice: promo,
           promoCode,
-          finalTotal,
           proof: payment.file ?? null,
-          no: payment.no ?? null,
+          no: payment.invoice?.invoice_number || payment.no || null,
           paymentLink: payment.invoice?.xendit_invoice_url ?? null,
           keyword: payment.referalSource || (isInstallment ? 'Installment Plan' : 'Online Course'),
-          userName: payment.user_fullname || payment.user?.biodata?.fullName || payment.user?.username || null,
-          userEmail: payment.user_email || payment.user?.email || null,
-          userPhone: payment.user_no || payment.user?.biodata?.no || null,
+          userName: payment.invoice?.user_fullname || payment.user_fullname || payment.user?.biodata?.fullName || payment.user?.username || null,
+          userEmail: payment.invoice?.user_email || payment.user_email || payment.user?.email || null,
+          userPhone: payment.invoice?.user_phone || payment.user_no || payment.user?.biodata?.no || null,
           installmentDetail,
           ...statusOf(payment.process),
         };

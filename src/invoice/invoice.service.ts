@@ -65,10 +65,10 @@ export class InvoiceService {
 
     const invoice = this.invoiceRepository.create({
       payment: payment,
-      price: course?.price ?? null,
-      promo: course?.promo ?? null,
+      price: course?.price ? Number(course.price) : null,
+      promo: course?.promo ? Number(course.promo) : null,
       promo_code: discountAmount ?? 0,
-      subtotal: subtotal,
+      subtotal: finalTotal,
       discount_amount: discountAmount,
       final_total: finalTotal,
       payment_method: paymentMethod,
