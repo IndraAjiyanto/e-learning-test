@@ -23,7 +23,7 @@ export class AuthController {
 
   @Get('login')
   async getLogin(@Res() res: Response, @Req() req: any) {
-    if (req.user) {
+    if (req.user && req.user.isVerified) {
       return res.redirect('/dashboard');
     }
     res.render('login');
