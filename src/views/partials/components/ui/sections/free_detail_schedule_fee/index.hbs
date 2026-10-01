@@ -69,7 +69,11 @@
             </div>
             <div class="px-3 py-1 bg-[#DBEAFE] rounded-[20px] flex flex-row items-center justify-center">
               <span class="font-inter font-medium text-[13px] leading-[16px] text-[#1D4ED8] whitespace-nowrap">
-                {{#if (eq lang 'id')}}Sampai {{else if (eq lang 'ja')}}まで {{else}}Until {{/if}}{{formatDate course.date_registration lang}}
+                {{#if course.date_registration}}
+                  {{#if (eq lang 'id')}}Sampai {{else if (eq lang 'ja')}}まで {{else}}Until {{/if}}{{formatDate course.date_registration lang}}
+                {{else}}
+                  {{#if (eq lang 'ja')}}未設定{{else if (eq lang 'id')}}Belum diatur{{else}}Not set{{/if}}
+                {{/if}}
               </span>
             </div>
           </div>
