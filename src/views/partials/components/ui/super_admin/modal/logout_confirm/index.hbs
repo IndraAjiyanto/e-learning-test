@@ -1,0 +1,132 @@
+{{!--
+  Komponen: Logout Confirmation Modal (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/modal/logout_confirm/index.hbs
+  Duplikat dari components/ui/user/modal/logout_confirm/index.hbs — komponen
+  sengaja diduplikasi per role (bukan dikomponis ulang) supaya setiap role
+  punya namespace fungsi/event sendiri dan tidak saling menimpa di satu halaman.
+
+  Cara pakai:
+  1. Render sekali di layout sidebar backoffice (partials/sidebar.hbs):
+     {{> components/ui/super_admin/modal/logout_confirm/index }}
+  2. Panggil dari tombol mana saja:
+     <button type="button" onclick="openSuperAdminLogoutModal()">Log Out</button>
+--}}
+<div
+  x-data='superAdminLogoutConfirmModal()'
+  x-show='open'
+  x-cloak
+  @super-admin-logout-confirm:open.window='show($event.detail)'
+  @keydown.escape.window='close()'
+  class='fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur-[16px]'
+  @click.self='close()'
+>
+  <div
+    role='dialog'
+    aria-modal='true'
+    aria-labelledby='super-admin-logout-confirm-modal-title'
+    aria-describedby='super-admin-logout-confirm-modal-description'
+    @keydown.tab.prevent='cycleFocus($event)'
+    class='flex w-full max-w-[400px] flex-col gap-8 rounded-xl bg-white p-6 shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)]'
+  >
+    <div class='flex flex-col items-center gap-5'>
+      <span
+        class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#FEF2F2] bg-[#FEE2E2] text-[#C0392B]'
+      >
+        <i class="fa-solid fa-arrow-right-from-bracket text-[20px]"></i>
+      </span>
+
+      <div class='flex flex-col items-center gap-2'>
+        <h2
+          id='super-admin-logout-confirm-modal-title'
+          class='text-center font-inter text-lg font-semibold leading-7 text-[#171717]'
+          x-text='title'
+        >{{default title 'Log Out'}}</h2>
+
+        <p
+          id='super-admin-logout-confirm-modal-description'
+          class='text-center font-inter text-sm font-normal leading-5 text-[#525252]'
+          x-text='description'
+        >{{default description 'Are you sure you want to log out?'}}</p>
+      </div>
+    </div>
+
+    <div class='flex items-start gap-3'>
+      <button
+        type='button'
+        x-ref='cancelButton'
+        @click='close()'
+        :disabled='submitting'
+        class='inline-flex h-11 flex-1 cursor-pointer items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#404040]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60'
+        x-text='cancelLabel'
+      >{{default cancelLabel 'Cancel'}}</button>
+
+      <button
+        type='button'
+        x-ref='confirmButton'
+        @click='confirm()'
+        :disabled='submitting'
+        class='inline-flex h-11 flex-1 cursor-pointer items-center justify-center rounded-lg border border-[#C0392B] bg-[#C0392B] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a5311f] hover:bg-[#a5311f] active:bg-[#8e2a1b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C0392B]/40 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-80'
+        x-text='confirmLabel'
+      >{{default confirmLabel 'Log Out'}}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openSuperAdminLogoutModal(options = {}) {
+    window.dispatchEvent(
+      new CustomEvent('super-admin-logout-confirm:open', { detail: options || {} }),
+    );
+  }
+
+  function superAdminLogoutConfirmModal() {
+    return {
+      open: false,
+      title: 'Log Out',
+      description: 'Are you sure you want to log out?',
+      confirmLabel: 'Log Out',
+      cancelLabel: 'Cancel',
+      logoutUrl: '/logout',
+      lastTrigger: null,
+      submitting: false,
+
+      show(options = {}) {
+        const opts = options || {};
+        this.title = opts.title || 'Log Out';
+        this.description = opts.description || 'Are you sure you want to log out?';
+        this.confirmLabel = opts.confirmLabel || 'Log Out';
+        this.cancelLabel = opts.cancelLabel || 'Cancel';
+        this.logoutUrl = opts.url || '/logout';
+        this.lastTrigger = document.activeElement;
+        this.submitting = false;
+        this.open = true;
+        document.body.classList.add('overflow-hidden');
+
+        this.$nextTick(() => requestAnimationFrame(() => this.$refs.cancelButton?.focus()));
+      },
+
+      close() {
+        if (!this.open || this.submitting) return;
+
+        this.open = false;
+        document.body.classList.remove('overflow-hidden');
+        this.lastTrigger?.focus?.();
+        this.lastTrigger = null;
+      },
+
+      confirm() {
+        if (this.submitting) return;
+
+        this.submitting = true;
+        window.location.href = this.logoutUrl;
+      },
+
+      cycleFocus(event) {
+        const order = [this.$refs.cancelButton, this.$refs.confirmButton];
+        const current = order.indexOf(document.activeElement);
+        const step = event.shiftKey ? -1 : 1;
+        order[(current + step + order.length) % order.length]?.focus();
+      },
+    };
+  }
+</script>

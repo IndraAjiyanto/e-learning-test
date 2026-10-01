@@ -12,6 +12,11 @@
   - active            : path item daun yang sedang aktif
   - activeDropdown    : key dropdown level 1 yang terbuka
   - activeSubDropdown : key dropdown level 2 yang terbuka
+
+  Aksi Logout di pill profil tidak langsung mengakhiri sesi: modal konfirmasi
+  per role dipasang di ujung partial ini (satu modal per halaman, sesuai role
+  yang sedang login), lalu dipanggil lewat openSuperAdminLogoutModal() /
+  openAdminLogoutModal() dari user_pill.
 --}}
 
 <div
@@ -188,3 +193,11 @@
     </div>
   </aside>
 </div>
+
+{{!-- Modal konfirmasi logout per role: satu saja yang dirender per halaman,
+      mengikuti role yang sedang login. --}}
+{{#if (eq user.role 'super_admin')}}
+  {{> components/ui/super_admin/modal/logout_confirm/index}}
+{{else}}
+  {{> components/ui/admin/modal/logout_confirm/index}}
+{{/if}}
