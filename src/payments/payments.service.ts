@@ -82,10 +82,13 @@ export class PaymentsService {
 
     const course = await this.courseRepository.findOne({
       where: { id: createPaymentDto.courseId },
+      relations: ['category'],
     });
     if (!course) {
       return;
     }
+
+    const promoCode = createPaymentDto.promoCode;
 
     if (createPaymentDto.installmentId) {
       const installments = await this.installmentsRepository.findOne({
@@ -101,6 +104,28 @@ export class PaymentsService {
       if (check == false) {
         return false;
       } else {
+        const basePrice = Number(installments.downPayment) || 0;
+        let discountAmount = 0;
+        let finalTotal = basePrice;
+
+        if (promoCode) {
+          try {
+            const validationResult = await this.voucherService.validateVoucher(
+              promoCode,
+              createPaymentDto.courseId,
+              basePrice,
+              createPaymentDto.userId,
+            );
+            discountAmount = validationResult.discountAmount;
+            finalTotal = validationResult.finalTotal;
+          } catch (err: any) {
+            console.warn(
+              '[PaymentsService] Invalid voucher on manual installment:',
+              err?.message,
+            );
+          }
+        }
+
         const payment = await this.paymentRepository.create({
           ...createPaymentDto,
           user: user,
@@ -109,7 +134,14 @@ export class PaymentsService {
         });
         const saved = await this.paymentRepository.save(payment);
         await this.invoiceService
-          .createManualInvoice(saved, course, user, installments)
+          .createManualInvoice(
+            saved,
+            course,
+            user,
+            installments,
+            discountAmount,
+            finalTotal,
+          )
           .catch((err) => {
             console.error('[PaymentsService] Failed to create manual invoice:', err);
           });
@@ -124,6 +156,30 @@ export class PaymentsService {
     if (check == false) {
       return false;
     } else {
+      const promo = course?.promo ? Number(course.promo) : null;
+      const price = course?.price ? Number(course.price) : 0;
+      const basePrice = promo && promo > 0 ? promo : price;
+      let discountAmount = 0;
+      let finalTotal = basePrice;
+
+      if (promoCode) {
+        try {
+          const validationResult = await this.voucherService.validateVoucher(
+            promoCode,
+            createPaymentDto.courseId,
+            basePrice,
+            createPaymentDto.userId,
+          );
+          discountAmount = validationResult.discountAmount;
+          finalTotal = validationResult.finalTotal;
+        } catch (err: any) {
+          console.warn(
+            '[PaymentsService] Invalid voucher on manual payment:',
+            err?.message,
+          );
+        }
+      }
+
       const payment = await this.paymentRepository.create({
         ...createPaymentDto,
         user: user,
@@ -131,7 +187,14 @@ export class PaymentsService {
       });
       const saved = await this.paymentRepository.save(payment);
       await this.invoiceService
-        .createManualInvoice(saved, course, user)
+        .createManualInvoice(
+          saved,
+          course,
+          user,
+          undefined,
+          discountAmount,
+          finalTotal,
+        )
         .catch((err) => {
           console.error('[PaymentsService] Failed to create manual invoice:', err);
         });
