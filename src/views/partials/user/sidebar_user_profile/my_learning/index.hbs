@@ -11,6 +11,7 @@
     selectedCategory -> query `courseType`   (penamaan warisan dari landing)
     selectedMethod   -> query `method`
     searchQuery      -> query `search`
+    selectedStatus   -> query `status`       (done | ongoing)
 
   Sumber data: GET /dashboard/course/filter?userId=... yang hanya mengembalikan
   program yang benar-benar diikuti student dan sudah launch.
@@ -18,7 +19,7 @@
   Bilah filternya sengaja TIDAK menyalin `myProgram/filter.hbs`: bentuk landing
   itu satu blok tinggi dengan label bertumpuk, sedangkan frame backoffice
   menggambarkan satu baris ringkas [Filter] [All Category] [All Type]
-  [All Method] [Search]. Yang dibawa adalah perilakunya, bukan tata letaknya.
+  [All Method] [All Status] [Search]. Yang dibawa adalah perilakunya, bukan tata letaknya.
 
   Props dari controller: user, category[], courseType[], lang
 --}}
@@ -28,6 +29,7 @@
     tab: 'all',
     selectedCategory: 'all',
     selectedMethod: 'all',
+    selectedStatus: 'all',
     searchQuery: new URLSearchParams(window.location.search).get('search') || '',
     currentPage: 1,
     totalPages: 1,
@@ -39,6 +41,7 @@
     categoryOpen: false,
     typeOpen: false,
     methodOpen: false,
+    statusOpen: false,
 
     categories: [
       { value: 'all', title: '{{t "test.mycourse.allCategories"}}' }{{#each category}},
@@ -53,10 +56,18 @@
       { value: 'online', title: '{{t "test.home.programSection.online"}}' },
       { value: 'offline', title: '{{t "test.home.programSection.offline"}}' }
     ],
+    // Nilai 'done'/'ongoing' bukan true/false supaya tidak pernah ikut ke
+    // query string sebagai teks yang selalu dianggap benar di sisi server.
+    statuses: [
+      { value: 'all', title: '{{t "test.mycourse.allStatuses"}}' },
+      { value: 'ongoing', title: '{{t "test.mycourse.ongoing"}}' },
+      { value: 'done', title: '{{t "test.mycourse.completed"}}' }
+    ],
 
     get categoryLabel() { return (this.categories.find(c => c.value === this.tab) || this.categories[0]).title; },
     get typeLabel() { return (this.types.find(c => c.value === this.selectedCategory) || this.types[0]).title; },
     get methodLabel() { return (this.methods.find(m => m.value === this.selectedMethod) || this.methods[0]).title; },
+    get statusLabel() { return (this.statuses.find(s => s.value === this.selectedStatus) || this.statuses[0]).title; },
 
     getByLang(obj, lang) {
       if (!obj || typeof obj !== 'object') return '';
@@ -73,6 +84,7 @@
       this.$watch('tab', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedCategory', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedStatus', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
       await this.fetchKelas();
     },
@@ -85,6 +97,7 @@
         if (this.tab !== 'all') params.set('category', this.tab);
         if (this.selectedCategory !== 'all') params.set('courseType', this.selectedCategory);
         if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
+        if (this.selectedStatus !== 'all') params.set('status', this.selectedStatus);
         if (this.searchQuery) params.set('search', this.searchQuery);
         params.set('page', this.currentPage);
         params.set('limit', this.itemsPerPage);
@@ -127,6 +140,7 @@
       this.tab = 'all';
       this.selectedCategory = 'all';
       this.selectedMethod = 'all';
+      this.selectedStatus = 'all';
       this.searchQuery = '';
     },
   }"
@@ -147,7 +161,7 @@
     <div class="rounded-xl border border-[#E5E7EB] bg-white p-4 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] sm:p-6">
 
       {{! --- BILAH FILTER --- }}
-      <div class="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-3 lg:flex-row lg:items-center">
+      <div class="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-3 lg:flex-row lg:items-center lg:flex-wrap">
         <div class="flex shrink-0 items-center gap-2.5">
           <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#003060] text-white">
             <i class="fa-solid fa-filter text-xs"></i>
@@ -159,7 +173,7 @@
         <div class="relative lg:w-[190px]" @click.outside="categoryOpen = false">
           <button
             type="button"
-            @click="categoryOpen = !categoryOpen; typeOpen = false; methodOpen = false"
+            @click="categoryOpen = !categoryOpen; typeOpen = false; methodOpen = false; statusOpen = false"
             :aria-expanded="categoryOpen"
             class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
           >
@@ -190,7 +204,7 @@
         <div class="relative lg:w-[170px]" @click.outside="typeOpen = false">
           <button
             type="button"
-            @click="typeOpen = !typeOpen; categoryOpen = false; methodOpen = false"
+            @click="typeOpen = !typeOpen; categoryOpen = false; methodOpen = false; statusOpen = false"
             :aria-expanded="typeOpen"
             class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
           >
@@ -221,7 +235,7 @@
         <div class="relative lg:w-[180px]" @click.outside="methodOpen = false">
           <button
             type="button"
-            @click="methodOpen = !methodOpen; categoryOpen = false; typeOpen = false"
+            @click="methodOpen = !methodOpen; categoryOpen = false; typeOpen = false; statusOpen = false"
             :aria-expanded="methodOpen"
             class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
           >
@@ -242,6 +256,37 @@
                 >
                   <span class="truncate" x-text="option.title"></span>
                   <i x-show="selectedMethod === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
+
+        {{! Dropdown status penyelesaian -> query `status` (done | ongoing) }}
+        <div class="relative lg:w-[170px]" @click.outside="statusOpen = false">
+          <button
+            type="button"
+            @click="statusOpen = !statusOpen; categoryOpen = false; typeOpen = false; methodOpen = false"
+            :aria-expanded="statusOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-flag-checkered shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="statusLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="statusOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="statusOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in statuses" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="selectedStatus = option.value; statusOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="selectedStatus === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="selectedStatus === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
                 </button>
               </li>
             </template>
@@ -331,13 +376,22 @@
                  punya padding luar. --}}
             <div class="flex flex-1 flex-col gap-3 p-3">
 
-            {{! Chip kategori dan tipe kelas }}
+            {{! Chip kategori, tipe kelas, dan status penyelesaian }}
             <div class="flex flex-wrap items-center gap-2">
               <template x-if="course.category?.name">
                 <span class="rounded-full bg-[#F1F5F9] px-3 py-1 font-inter text-xs font-semibold text-[#334155]" x-text="course.category.name"></span>
               </template>
               <template x-if="course.courseType?.nameClassesType">
                 <span class="rounded-full bg-[#003060] px-3 py-1 font-inter text-xs font-semibold text-white" x-text="course.courseType.nameClassesType"></span>
+              </template>
+              {{!-- Tanpa chip ini kartu program yang selesai dan yang sedang
+                   berjalan terlihat sama persis, sehingga filter "Selesai"
+                   hanya membuang kartu tanpa menjelaskan kenapa. --}}
+              <template x-if="course.isCompleted">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-[#E7F8F0] px-3 py-1 font-inter text-xs font-semibold text-[#0F7B57]">
+                  <i class="fa-solid fa-circle-check text-xs"></i>
+                  <span>{{t "test.mycourse.completed"}}</span>
+                </span>
               </template>
             </div>
 
@@ -410,7 +464,7 @@
         <button
           type="button"
           @click="resetFilters()"
-          x-show="tab !== 'all' || selectedCategory !== 'all' || selectedMethod !== 'all' || searchQuery !== ''"
+          x-show="tab !== 'all' || selectedCategory !== 'all' || selectedMethod !== 'all' || selectedStatus !== 'all' || searchQuery !== ''"
           style="display:none"
           class="inline-flex h-10 items-center gap-2 rounded-lg border border-[#003060] px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#003060] hover:text-white"
         >

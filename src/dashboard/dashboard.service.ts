@@ -104,6 +104,7 @@ export class DashboardService {
     courseType?: string;
     method?: string;
     search?: string;
+    status?: 'done' | 'ongoing';
     page: number;
     limit: number;
   }) {
@@ -126,6 +127,16 @@ export class DashboardService {
         .andWhere('(course.status IS NULL OR course.status != :unlaunch)', {
           unlaunch: 'unlaunch',
         });
+
+      // Hanya bermakna di cabang ini. Tanpa userId, alias `userCourses` berisi
+      // baris milik semua user, jadi memfilter progress akan membuang program
+      // publik secara acak. Alias-nya sudah terkunci ke satu baris lewat where
+      // di atas, jadi menambahkan syarat progress tidak mengubah hitungan.
+      if (params.status === 'done' || params.status === 'ongoing') {
+        query.andWhere('userCourses.progress = :progress', {
+          progress: params.status === 'done',
+        });
+      }
     } else {
       // Landing page publik: hanya tampilkan program yang pendaftarannya buka
       query.where('course.launch = :launch', { launch: true });
@@ -156,6 +167,18 @@ export class DashboardService {
       .take(params.limit);
 
     const [data, total] = await query.getManyAndCount();
+
+    // Status penyelesaian ikut dibawa ke klien karena kartu My Learning perlu
+    // membedakan program yang sudah selesai dari yang masih berjalan. Diambil
+    // dari baris `userCourses` yang sudah di-join, BUKAN lewat
+    // loadRelationCountAndMap: subquery itu berdiri sendiri dan tidak ikut
+    // tersaring userId, persis seperti yang jadi catatan `enrolledCount` di atas.
+    if (params.userId) {
+      for (const course of data) {
+        course.isCompleted = course.userCourses?.[0]?.progress === true;
+      }
+    }
+
     return { data, total };
   }
 
