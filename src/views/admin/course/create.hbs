@@ -6,7 +6,7 @@
 --}}
 {{> admin/program/program_form_script}}
 
-<div class='py-10 px-6'>
+<div class='pt-10 pb-32 px-6'>
   <div class='max-w-[1100px] mx-auto'
     x-data='programData("create")'
     x-init='paidClass = false; methodOnline = true; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);'
@@ -40,6 +40,7 @@
           {{> admin/program/create/card_03_schedule}}
           {{> admin/program/create/card_04_tools}}
           {{!-- Section 05 + 06: one row, two columns --}}
+          {{!-- [DISABLED - ClickUp z8pbk8xwwx] Coment inputan Learning Target dan Participants
           <div class='flex flex-col sm:flex-row gap-[16px] w-full justify-start items-stretch sm:items-start'>
             <div class='flex-1 min-w-0'>
               {{> admin/program/create/card_05_learning}}
@@ -48,6 +49,7 @@
               {{> admin/program/create/card_06_criteria}}
             </div>
           </div>
+          --}}
           {{> admin/program/create/action_bar}}
         </div>
 

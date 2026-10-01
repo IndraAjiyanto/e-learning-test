@@ -36,8 +36,10 @@
         <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Group</span><span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{course.group}}</span></div>
         <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Program Type</span><span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.courseType}}{{course.courseType.nameClassesType}}{{else}}-{{/if}}</span></div>
         <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Location</span><span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.locations}}{{getByLang course.locations 'en'}}{{else}}-{{/if}}</span></div>
+        {{#unless (isPaidProgram course)}}
         <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Time Start</span><span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.time_start}}{{formatTime course.time_start}}{{else}}Not set{{/if}}</span></div>
         <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>Time End</span><span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.time_end}}{{formatTime course.time_end}}{{else}}Not set{{/if}}</span></div>
+        {{/unless}}
         <div class='w-full flex flex-col gap-[8px]'><span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold'>End Date</span><span class='text-[14px]/[normal] text-[#737373] font-inter font-medium'>{{#if course.startEnd}}{{formatDate course.startEnd}}{{else}}Not set{{/if}}</span></div>
       </div>
 

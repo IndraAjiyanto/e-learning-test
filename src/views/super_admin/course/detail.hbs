@@ -48,9 +48,11 @@
 
         {{> components/ui/super_admin/detail/field/index label='End Date' value=(formatDate course.startEnd) }}
 
+        {{#unless (isPaidProgram course)}}
         {{> components/ui/super_admin/detail/field/index label='Time Start' value=(formatTime course.time_start) }}
 
         {{> components/ui/super_admin/detail/field/index label='Time End' value=(formatTime course.time_end) }}
+        {{/unless}}
       </div>
 
       {{> components/ui/super_admin/detail/field/index
@@ -64,19 +66,35 @@
         {{#> components/ui/super_admin/detail/section_card/index
           title='Form & Information'
           iconPaths='<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'}}
-          {{#> components/ui/super_admin/detail/field/index label='Form link'}}
-            {{#if course.form}}
-              <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
-            {{else if course.locationLink}}
-              <a href='{{course.locationLink}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.locationLink}}</a>
-            {{else}}
-              <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
-            {{/if}}
-          {{/components/ui/super_admin/detail/field/index}}
+          {{#if (isPaidProgram course)}}
+            {{> components/ui/super_admin/detail/field/index label='Price' value=(formatRupiah course.price) }}
 
-          {{#> components/ui/super_admin/detail/field/index label='Type'}}
-            <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.checkPaid}}Paid{{else}}Free{{/if}}</p>
-          {{/components/ui/super_admin/detail/field/index}}
+            {{> components/ui/super_admin/detail/field/index label='Promo' value=(formatRupiah course.promo) }}
+
+            {{#if course.form}}
+              {{#> components/ui/super_admin/detail/field/index label='Form link'}}
+                <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
+              {{/components/ui/super_admin/detail/field/index}}
+            {{/if}}
+
+            {{#> components/ui/super_admin/detail/field/index label='Type'}}
+              <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>Paid</p>
+            {{/components/ui/super_admin/detail/field/index}}
+          {{else}}
+            {{#> components/ui/super_admin/detail/field/index label='Form link'}}
+              {{#if course.form}}
+                <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
+              {{else if course.locationLink}}
+                <a href='{{course.locationLink}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.locationLink}}</a>
+              {{else}}
+                <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
+              {{/if}}
+            {{/components/ui/super_admin/detail/field/index}}
+
+            {{#> components/ui/super_admin/detail/field/index label='Type'}}
+              <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>Free</p>
+            {{/components/ui/super_admin/detail/field/index}}
+          {{/if}}
         {{/components/ui/super_admin/detail/section_card/index}}
       </div>
 

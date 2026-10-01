@@ -1,0 +1,133 @@
+{{!--
+  Component: Share Card Portfolio
+  Path: components/ui/portfolio/share_card.hbs
+  Memenuhi ClickUp Task z8pbk8xwza:
+  - 4 platform: WhatsApp, LinkedIn, Twitter/X, Instagram
+  - Copy Link dengan umpan balik visual "Link Copied!" / "Copied!"
+  - Tautan mengarah langsung ke halaman publik portofolio (/dashboard/portfolio/:id)
+--}}
+<div 
+  class="bg-white border border-[#E5E5E5] rounded-[12px] p-6 shadow-sm space-y-4 font-inter {{class}}"
+  data-portfolio-id="{{portfolioId}}"
+  data-portfolio-title="{{portfolioTitle}}"
+  data-author="{{author}}"
+  x-data="{
+    copied: false,
+    shareUrl() {
+      const p = this.selectedPortfolio;
+      const staticId = this.$el.dataset.portfolioId;
+      const id = (p && p.id) || staticId;
+      if (id) {
+        return window.location.origin + '/dashboard/portfolio/' + id;
+      }
+      return window.location.href;
+    },
+    shareText() {
+      const p = this.selectedPortfolio;
+      const staticTitle = this.$el.dataset.portfolioTitle;
+      const staticAuthor = this.$el.dataset.author;
+      const title = (p && p.title) || staticTitle || 'Portofolio';
+      const author = (p && (p.author || (p.user && (p.user.username || p.user.name)))) || staticAuthor || '';
+      return author ? title + ' by ' + author : title;
+    },
+    openShare(target) {
+      const u = encodeURIComponent(this.shareUrl());
+      const t = encodeURIComponent(this.shareText());
+      if (target === 'instagram') {
+        this.copyLink();
+        window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+        return;
+      }
+      const urls = {
+        whatsapp: 'https://api.whatsapp.com/send?text=' + t + '%20' + u,
+        linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + u,
+        twitter: 'https://twitter.com/intent/tweet?url=' + u + '&text=' + t
+      };
+      if (urls[target]) {
+        window.open(urls[target], '_blank', 'noopener,noreferrer,width=600,height=600');
+      }
+    },
+    async copyLink() {
+      const url = this.shareUrl();
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (err) {}
+        document.body.removeChild(ta);
+      }
+      this.copied = true;
+      setTimeout(() => { this.copied = false; }, 2000);
+    }
+  }"
+>
+  <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+    {{default (t 'test.myPortfolio.detailPortfolio.shareTitle') 'Share This Portfolio'}}
+  </h3>
+  <p class="font-inter font-normal text-xs sm:text-sm text-[#666666] leading-relaxed">
+    {{default (t 'test.myPortfolio.detailPortfolio.shareDescription') 'Share this project to your social media so more people can see it.'}}
+  </p>
+
+  <!-- Social Media Buttons: WhatsApp, LinkedIn, Twitter/X, Instagram -->
+  <div class="flex flex-wrap items-center gap-3">
+    <button 
+      type="button" 
+      @click="openShare('whatsapp')"
+      aria-label="Share to WhatsApp"
+      title="WhatsApp"
+      class="w-11 h-11 rounded-full bg-[#25D366] hover:bg-[#1da851] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-whatsapp text-lg"></i>
+    </button>
+    <button 
+      type="button" 
+      @click="openShare('linkedin')"
+      aria-label="Share to LinkedIn"
+      title="LinkedIn"
+      class="w-11 h-11 rounded-full bg-[#0A66C2] hover:bg-[#084d94] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-linkedin-in text-lg"></i>
+    </button>
+    <button 
+      type="button" 
+      @click="openShare('twitter')"
+      aria-label="Share to X"
+      title="X (Twitter)"
+      class="w-11 h-11 rounded-full bg-black hover:bg-[#1f1f1f] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-x-twitter text-lg"></i>
+    </button>
+    <button 
+      type="button" 
+      @click="openShare('instagram')"
+      aria-label="Share to Instagram"
+      title="Instagram"
+      class="w-11 h-11 rounded-full bg-[#E1306C] hover:bg-[#c9245b] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-instagram text-lg"></i>
+    </button>
+  </div>
+
+  <!-- Copy Link -->
+  <div class="flex items-center gap-2 pt-1">
+    <input 
+      type="text" 
+      readonly
+      :value="shareUrl()"
+      class="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-[#E5E5E5] bg-[#FAFAFA] font-inter font-normal text-xs sm:text-sm text-[#666666] truncate focus:outline-none"
+    >
+    <button 
+      type="button" 
+      @click="copyLink()"
+      class="h-[42px] px-4 rounded-[8px] bg-[#CFE6F5] hover:bg-[#b9dcf0] text-[#003060] font-inter font-medium text-xs sm:text-sm flex items-center justify-center gap-2 flex-shrink-0 transition-all active:scale-95 cursor-pointer"
+    >
+      <i class="fa-solid text-sm" :class="copied ? 'fa-check text-green-600' : 'fa-link'"></i>
+      <span x-text="copied ? '{{default (t 'test.myPortfolio.detailPortfolio.copied') 'Copied!'}}' : '{{default (t 'test.myPortfolio.detailPortfolio.copy') 'Copy'}}'">{{default (t 'test.myPortfolio.detailPortfolio.copy') 'Copy'}}</span>
+    </button>
+  </div>
+</div>

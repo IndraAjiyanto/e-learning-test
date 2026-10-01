@@ -93,7 +93,11 @@
       this.programType = (payload.course && payload.course.courseType && payload.course.courseType.name) || '';
       this.programCategory = (payload.course && payload.course.category && payload.course.category.name) || '';
 
-      this.portfolios = (payload.items || []).map((p) => ({
+      const items = (payload.items && payload.items.length > 0)
+        ? payload.items
+        : (window.backendPortfolioData || []);
+
+      this.portfolios = (items || []).map((p) => ({
         id: p.id,
         title: p.title || '{{t 'test.myPortfolio.untitledPortfolio'}}',
         description: p.description || '',
@@ -669,6 +673,15 @@
   }"
 >
   <script type="application/json" id="portfolio-data">{{{jsonSafe portfolioData}}}</script>
+
+  <!-- LIST PORTOFOLIO VIEW -->
+  <div x-show="!showDetail" class="flex flex-col gap-7">
+    <div class="flex flex-col gap-1">
+      {{> components/ui/super_admin/page_header/index titleTag='h2' title=(t "test.myPortfolio.title") }}
+      {{> components/ui/super_admin/description/index
+        text=(t "test.myPortfolio.description")
+      }}
+    </div>
 
     <div x-show="!showDetail" class="flex flex-col gap-7">
 
