@@ -40,6 +40,8 @@
     name="whatsappNumber"
     id="whatsappNumber"
     type="tel"
+    inputmode="numeric"
+    pattern="[0-9]*"
     label=(t 'test.payment.form.whatsapp')
     required=true
     value=user.no_telp
@@ -166,6 +168,17 @@
     // belum sempat paint apa pun, sehingga draft yang menyimpan
     // `agreement: true` menyalakan tombol tanpa ada kedipan.
     syncSaveButton();
+
+    // Hanya izinkan angka untuk nomor WhatsApp
+    const whatsappInput = form.querySelector('input[name="whatsappNumber"]');
+    if (whatsappInput) {
+      whatsappInput.addEventListener('input', (e) => {
+        const cleaned = e.target.value.replace(/\D/g, '');
+        if (e.target.value !== cleaned) {
+          e.target.value = cleaned;
+        }
+      });
+    }
 
     // Satu handler untuk dua event: `input` menutupi pengetikan teks,
     // `change` menutupi centang checkbox dan pilihan select. Dilepas di sini

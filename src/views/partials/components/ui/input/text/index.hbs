@@ -16,6 +16,8 @@
   - readonly     : boolean (default: false)
   - icon         : string (opsional, class FontAwesome mis. 'fa-regular fa-comment-dots')
   - variant      : string ('default' | 'accent', default: 'default')
+  - pattern      : string (opsional)
+  - inputmode    : string (opsional)
   - hint         : string (opsional)
   - error        : string (opsional)
   - wrapperClass : string (opsional)
@@ -53,6 +55,8 @@
       name="{{default name 'text'}}"
       {{#if value}}value="{{value}}"{{/if}}
       placeholder="{{default placeholder 'Enter value'}}"
+      {{#if pattern}}pattern="{{pattern}}"{{/if}}
+      {{#if inputmode}}inputmode="{{inputmode}}"{{/if}}
       {{#if required}}required{{/if}}
       {{#if disabled}}disabled{{/if}}
       {{#if readonly}}readonly{{/if}}
