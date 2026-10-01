@@ -36,7 +36,7 @@
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='m6 9 6 6 6-6'/></svg>
         </div>
         <div x-show='showDropdown && filteredTools.length > 0'
-          class='absolute z-10 w-full mt-1 bg-white [outline:1px_solid_#D4D4D4] rounded-[8px] shadow-lg max-h-60 overflow-y-auto'>
+          class='absolute z-10 w-full mt-1 bg-white [outline:1px_solid_#D4D4D4] rounded-[8px] shadow-lg max-h-[140px] overscroll-contain overflow-y-auto'>
           <template x-for='tool in filteredTools' :key='tool.id'>
             <button type='button' @click='selectTool(tool)'
               class='w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F5F5F5] transition text-left border-b border-[#F5F5F5] last:border-0'>
@@ -56,15 +56,13 @@
     </div>
   </div>
 
-  {{!-- Lessons with Language Tabs --}}
+  {{!-- [DISABLED - ClickUp z8pbk8xwwx] Lessons with Language Tabs
   <div class='flex flex-col gap-[12px] w-full'
     x-data="{ lessonTab: 'id' }">
     <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Lessons*</label>
 
-    {{!-- Lesson Tabs --}}
     {{> components/ui/admin/form/language-tabs alpineVar="lessonTab" errId="materis_id" errEn="materis_en" errJa="materis_ja"}}
 
-    {{!-- Lesson Lists --}}
     <div x-show='lessonTab === "id"' x-data="{ items: {{#if course}}({{json course.materialsId}} || ['']){{else}}['']{{/if}} }">
       <template x-for='(item, index) in items' :key='index'>
         <div class='flex flex-row gap-[8px] justify-start items-center mb-[8px]'>
@@ -128,6 +126,7 @@
       <div id='materis_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
     </div>
   </div>
+  --}}
 
 </div>
 {{/components/ui/admin/form/form-card}}

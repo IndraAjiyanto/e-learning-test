@@ -1,6 +1,7 @@
 export const numberHelpers = {
   add: (a: any, b: any) => Number(a) + Number(b),
   addOne: (index: number) => index + 1,
+  padZero: (val: any, len = 2) => String(val ?? '').padStart(Number(len) || 2, '0'),
   mod: (a: number, b: number) => a % b,
   check: (a: number, b: number) => a < b,
   multiply: (a: number, b: number) => a * b,

@@ -123,4 +123,11 @@
       textClass='text-xs sm:text-sm font-semibold'
     }}
   </div>
+
+  <!-- Share Section (ClickUp z8pbk8xwza) -->
+  {{> components/ui/portfolio/share_card
+    portfolioId=portfolio.id
+    portfolioTitle=portfolio.title
+    author=portfolio.user.username
+  }}
 </div>
