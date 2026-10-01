@@ -88,10 +88,31 @@
         <template x-if="materi.fileType === 'pdf'">
           <div class="w-full h-[600px] bg-white">
             <iframe :src="materi.file"
-            type="application/pdf"
+                    type="application/pdf"
                     class="w-full h-full border rounded-lg bg-white"
                     frameborder="0">
             </iframe>
+          </div>
+        </template>
+
+        <!-- Video Viewer -->
+        <template x-if="materi.fileType === 'video'">
+          <div class="w-full aspect-video max-h-[600px] bg-black rounded-lg overflow-hidden flex items-center justify-center">
+            <template x-if="isVideoEmbed(materi.file)">
+              <iframe :src="getVideoEmbedUrl(materi.file)"
+                      class="w-full h-full border-0"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen>
+              </iframe>
+            </template>
+            <template x-if="!isVideoEmbed(materi.file)">
+              <video :src="materi.file"
+                     controls
+                     autoplay
+                     class="w-full h-full object-contain bg-black">
+              </video>
+            </template>
           </div>
         </template>
 
@@ -116,6 +137,22 @@ function materiModal() {
       title: '',
       fileType: '',
       file: '',
+    },
+
+    isVideoEmbed(url) {
+      if (!url) return false;
+      return url.includes('youtube.com') || url.includes('youtu.be');
+    },
+
+    getVideoEmbedUrl(url) {
+      if (!url) return '';
+      if (url.includes('youtube.com/watch?v=')) {
+        return url.replace('watch?v=', 'embed/');
+      }
+      if (url.includes('youtu.be/')) {
+        return url.replace('youtu.be/', 'youtube.com/embed/');
+      }
+      return url;
     },
 
     get totalSlides() {
