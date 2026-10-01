@@ -114,6 +114,8 @@
             type="tel"
             id="user_no"
             name="user_no"
+            inputmode="numeric"
+            pattern="[0-9]*"
             value="{{user.no_telp}}"
             required
             placeholder="{{default (t 'test.freeProgram.registrationModal.whatsappPlaceholder') 'Input Your WhatsApp Number'}}"
@@ -625,5 +627,16 @@
     const sourceSelect = document.getElementById('referal_source');
     handleSelectColor(statusSelect);
     handleSelectColor(sourceSelect);
+
+    // Hanya izinkan angka untuk nomor WhatsApp
+    const userNoInput = document.getElementById('user_no');
+    if (userNoInput) {
+      userNoInput.addEventListener('input', function (e) {
+        const cleaned = e.target.value.replace(/\D/g, '');
+        if (e.target.value !== cleaned) {
+          e.target.value = cleaned;
+        }
+      });
+    }
   });
 </script>

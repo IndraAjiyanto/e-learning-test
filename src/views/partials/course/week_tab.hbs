@@ -14,11 +14,8 @@
     <template x-for="(weeks, index) in data" :key='weeks.id'>
       <div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
 
-        {{!-- Texts --}}
-        <div class='flex flex-col gap-[2px] flex-1 min-w-0 justify-center items-start'>
-          <div class='text-[14px]/[normal] w-full text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text="'Pertemuan ' + String(weeks.weekNumber).padStart(2, '0')"></div>
-          <div class='text-[14px]/[normal] w-full text-[#737373] font-inter font-medium break-words' x-text='weeks.description' :title='weeks.description'></div>
-        </div>
+        {{!-- Texts — hanya description, class sesuai components/ui/admin/text/subtitle --}}
+        <div class='text-[16px]/[normal] flex-1 min-w-0 w-full text-[#718096] font-inter font-medium text-left break-words' x-text='weeks.description' :title='weeks.description'></div>
 
         {{!-- Delete --}}
         <form :action="'/week/' + weeks.id + '/{{course.id}}?_method=DELETE'" method='POST' class='box-border w-[44px] shrink-0 h-[44px]'>

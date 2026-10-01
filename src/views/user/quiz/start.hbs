@@ -28,6 +28,8 @@
 {{> user/quiz/start/content}}
 </div>
 
+{{> components/ui/admin/modal/confirm_action/index}}
+
 <script>
 let saveTimeout;
 
@@ -202,21 +204,12 @@ function prepareAndSubmit() {
 }
 
 function confirmQuizSubmit() {
-    Swal.fire({
+    openConfirmModal({
         title: "Confirmation",
-        text: "Are you sure you want to submit your answers?",
-        icon: "info",
-        showCancelButton: true,
-        buttonsStyling: false,
-        confirmButtonText: "Yes, continue",
-        cancelButtonText: "Cancel",
-        customClass: {
-            confirmButton: "px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition",
-            cancelButton: "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
-            actions: "flex gap-4 justify-center"
-        }
-    }).then((result) => {
-        if (result.isConfirmed) prepareAndSubmit();
+        description: "Are you sure you want to submit your answers?",
+        confirmLabel: "Yes, continue",
+        cancelLabel: "Cancel",
+        onConfirm: () => prepareAndSubmit()
     });
 }
 

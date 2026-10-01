@@ -21,11 +21,19 @@ export class DashboardController {
     @Query('courseType') courseType?: string,
     @Query('method') method?: string,
     @Query('search') search?: string,
+    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     const currentPage = parseInt(page || '1', 10);
     const itemsPerPage = parseInt(limit || '6', 10);
+
+    // Daftar putih, bukan `status === 'true'`: query string selalu berupa teks,
+    // dan 'false' yang lolos ke where akan terbaca sebagai selesai. Nilai lain
+    // diabaikan supaya filter status tidak bisa mengunci listing publik, yang
+    // memang tidak punya baris user_courses untuk disaring.
+    const statusFilter =
+      status === 'done' || status === 'ongoing' ? status : undefined;
 
     const result = await this.dashboardService.findCoursesPaginated({
       userId: userId || undefined,
@@ -33,6 +41,7 @@ export class DashboardController {
       courseType: courseType || undefined,
       method: method || undefined,
       search: search || undefined,
+      status: statusFilter,
       page: currentPage,
       limit: itemsPerPage,
     });

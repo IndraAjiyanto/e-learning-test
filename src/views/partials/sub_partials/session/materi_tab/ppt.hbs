@@ -4,7 +4,7 @@
   <template x-if="dataMateri && dataMateri.length > 0">
     <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
       <template x-for="materi in dataMateri" :key="materi.id">
-        {{> components/ui/admin/material/material-row showFileLink=true detailLink=true}}
+        {{> components/ui/admin/material/material-row showFileLink=true}}
       </template>
     </div>
   </template>

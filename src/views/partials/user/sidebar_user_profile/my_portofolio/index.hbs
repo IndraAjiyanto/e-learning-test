@@ -56,11 +56,17 @@
       const byOldest = (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
       const byTitle = (a, b) => a.title.localeCompare(b.title);
 
-      ///stable: newest dulu mengikuti urutan server, jadi tidak perlu diurutkan
-      // ulang setiap render.
-      if (this.sortBy === 'oldest') return [...list].sort(byOldest);
-      if (this.sortBy === 'title') return [...list].sort(byTitle);
-      return list;
+      let sorted = [...list];
+      if (this.sortBy === 'oldest') sorted.sort(byOldest);
+      else if (this.sortBy === 'title') sorted.sort(byTitle);
+      else sorted.sort(byNewest);
+
+      // Pastikan portfolio milik user sendiri selalu berada di paling pertama/kiri
+      return sorted.sort((a, b) => {
+        if (a.isMine && !b.isMine) return -1;
+        if (!a.isMine && b.isMine) return 1;
+        return 0;
+      });
     },
 
     getFirstImage(item) {
