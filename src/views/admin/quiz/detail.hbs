@@ -3,7 +3,7 @@
   Path: admin/quiz/detail.hbs
   Route: GET /quiz/:quizId — data: { quiz (weeks.course), scores (user), questions (answers) }}
   Feature Card - Quiz: back link, quiz info, Delete (red text) + Edit (navy)
-  Table Detail Quiz: underline tabs (Question + Answer), question accordion + answer table
+  Table Detail Quiz: underline tabs (Question), question accordion
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='box-border w-full max-w-[1052px] mx-auto flex flex-col gap-[16px] justify-start items-start'>
@@ -67,8 +67,7 @@
 
       {{!-- Tab Bar --}}
       <div x-data="{ tabs: [
-        {name:'question',label:'Question',url:''},
-        {name:'answer',label:'Answer',url:''}
+        {name:'question',label:'Question',url:''}
       ] }">
         {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="noop"}}
       </div>
@@ -139,31 +138,6 @@
           class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
           <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Question</span>
         </a>
-      </div>
-
-      {{!-- Answer Tab --}}
-      <div x-show="tab === 'answer'" x-cloak class='w-full'>
-        {{#if scores.length}}
-        <div class='flex flex-col gap-[10px] w-full'>
-          {{#each scores}}
-          <div class='box-border w-full shrink-0 h-[56px] flex flex-row gap-[12px] p-[12px_16px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px]'>
-            <div class='flex-1 min-w-0'>
-              <span class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>{{this.user.username}}</span>
-            </div>
-            <div class='box-border flex flex-row p-[2px_10px] justify-center items-center rounded-[16px]
-              {{#if (gte this.score ../quiz.minScore)}}bg-[#F0FDF4]{{else}}bg-[#FEF2F2]{{/if}}'>
-              <span class='text-[14px]/[normal] font-inter font-semibold whitespace-nowrap
-                {{#if (gte this.score ../quiz.minScore)}}text-[#15803D]{{else}}text-[#DC2626]{{/if}}'
-                x-text='{{this.score}}'></span>
-            </div>
-          </div>
-          {{/each}}
-        </div>
-        {{else}}
-        <div class='w-full h-[72px] flex items-center justify-center'>
-          <span class='font-inter text-sm text-[#A3A3A3]'>No scores yet. No user has completed this quiz.</span>
-        </div>
-        {{/if}}
       </div>
 
     </div>
