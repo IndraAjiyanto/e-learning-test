@@ -6,21 +6,17 @@
 <section class="w-full bg-[#FAFAFA] py-16 lg:py-24 font-inter">
   <div class="max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-10">
 
-    {{!-- section-header (Figma: width 1568px, gap 12px, text center) --}}
-    <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1568px]">
-      <h2 class="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#111827] text-center max-w-[707px]">
+    {{!-- section-header --}}
+    {{#> components/ui/text/section_header/index
+        titleClass="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#111827] text-center max-w-[707px]"
+        description=(t 'test.special_program.whyChooseUs.descJapan')
+        descClass="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280] text-center max-w-[760px]"
+        wrapperClass="gap-3 max-w-[760px]"
+    }}
+      {{#*inline "titleBlock"}}
         {{default (t 'test.special_program.whyChooseUs.titlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if (includes category.name 'japan')}}{{default (t 'test.special_program.whyChooseUs.titleSuffixJapan') 'Our Japan Program'}}{{else}}{{default (t 'test.special_program.whyChooseUs.titleSuffixGeneral') (concat 'Our ' (default category.name "Program"))}}{{/if}}</span>?
-      </h2>
-      <p class="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280] text-center max-w-[760px]">
-        {{#if (includes category.name 'japan')}}
-          {{default (t 'test.special_program.whyChooseUs.descJapan') 'Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.'}}
-        {{else if (getByLang category.description lang)}}
-          {{getByLang category.description lang}}
-        {{else}}
-          {{default (t 'test.special_program.whyChooseUs.descGeneral') 'Gain the skills, practical experience, and industry readiness needed with comprehensive guidance from experienced mentors.'}}
-        {{/if}}
-      </p>
-    </div>
+      {{/inline}}
+    {{/components/ui/text/section_header/index}}
 
     {{!-- feature-grid (Figma: width 1568px, gap 24px, 2 rows of 3 cards) --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1568px]">
