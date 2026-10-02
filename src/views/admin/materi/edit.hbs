@@ -1,0 +1,433 @@
+{{#if (eq jenis_file 'pdf')}}
+  <div class='py-10'>
+    <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+      <h2 class='text-2xl font-bold mb-6 text-gray-900'>Edit PDF Material</h2>
+
+      <form
+        action='/learning-material/pdf/{{materi.id}}?_method=PATCH'
+        method='POST'
+        enctype='multipart/form-data'
+        class='space-y-6'
+        x-data="{
+        loading: false,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        hasFile: false,
+        maxSize: 10 * 1024 * 1024,
+        validateFile(file) {
+          if (!file) {
+            this.hasFile = false;
+            this.errorMessage = '';
+            this.isValid = true;
+            return;
+          }
+
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+
+          if (file.type !== 'application/pdf') {
+            this.errorMessage = 'Only PDF files are allowed';
+            this.isValid = false;
+            return;
+          }
+
+          if (file.size > this.maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum ${(this.maxSize / 1024 / 1024).toFixed(0)}MB`;
+            this.isValid = false;
+            return;
+          }
+        },
+        clearFile() {
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.hasFile = false;
+          $refs.fileInput.value = null;
+        },
+        canSubmit() {
+          return this.isValid;
+        }
+      }"
+        @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix the file error before submitting.'); }"
+      >
+
+        <div>
+          <label
+            for='judul'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Material Title</label>
+          <input
+            type='text'
+            id='judul'
+            name='judul'
+            required
+            value='{{materi.judul}}'
+            placeholder='Enter PDF material title...'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          />
+        </div>
+
+        <div class='space-y-3'>
+          <label
+            for='file'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Replace PDF File
+            <span class='text-xs text-gray-500 font-normal'>(optional — leave empty to keep the current file, max 10MB, PDF only)</span>
+          </label>
+
+          <!-- Current file -->
+          <div class='flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg'>
+            <i class='fas fa-file-pdf text-gray-500'></i>
+            <span class='text-xs text-gray-600'>Current file:</span>
+            <a
+              href='{{materi.file}}'
+              target='_blank'
+              class='text-xs text-blue-600 underline truncate'
+            >{{materi.file}}</a>
+          </div>
+
+          <input
+            type='file'
+            id='file'
+            name='file'
+            accept='.pdf'
+            x-ref='fileInput'
+            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+            @change='validateFile($event.target.files[0])'
+          />
+
+          <!-- Error Message -->
+          <template x-if='!isValid && errorMessage'>
+            <div
+              class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <div>
+                <p class='text-sm font-semibold text-red-800'>Invalid File</p>
+                <p class='text-xs text-red-700' x-text='errorMessage'></p>
+              </div>
+            </div>
+          </template>
+
+          <!-- Success Message with File Info -->
+          <template x-if='hasFile && isValid'>
+            <div class='space-y-2'>
+              <div
+                class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <div class='flex items-center gap-2'>
+                  <i class='fas fa-check-circle text-green-500'></i>
+                  <div class='text-xs text-green-700'>
+                    <span class='font-semibold'>New file:</span>
+                    <span
+                      x-text='`${fileName} (${(fileSize / 1024).toFixed(1)}KB)`'
+                    ></span>
+                  </div>
+                </div>
+                <button
+                  type='button'
+                  class='text-red-500 hover:text-red-700 transition-colors'
+                  @click='clearFile()'
+                  title='Remove file'
+                >
+                  <i class='fas fa-times-circle'></i>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class='flex gap-3'>
+          <button
+            type='submit'
+            :disabled='!canSubmit() || loading'
+            :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+            class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          >
+            <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+            <span x-show='!loading'>Update PDF</span>
+          </button>
+          <a
+            href='/session/{{pertemuanId}}'
+            :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+            class='px-6 py-2 rounded-lg border border-gray-300 transition'
+          >
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+{{else if (eq jenis_file 'ppt')}}
+  <div class='py-10'>
+    <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+      <h2 class='text-2xl font-bold mb-6 text-gray-900'>Edit PPT Material</h2>
+
+      <form
+        action='/learning-material/ppt/{{materi.id}}?_method=PATCH'
+        method='POST'
+        class='space-y-6'
+        x-data="{
+        loading: false,
+        errorMessage: '',
+        isValid: true,
+        hasInput: true,
+        validateLink(value) {
+          this.errorMessage = '';
+          this.hasInput = value.length > 0;
+
+          if (!value) {
+            this.isValid = false;
+            return;
+          }
+
+          const googleSlidePattern = /^https:\/\/docs\.google\.com\/presentation\//;
+          if (!googleSlidePattern.test(value)) {
+            this.errorMessage = 'Please enter a valid Google Slides URL (https://docs.google.com/presentation/...)';
+            this.isValid = false;
+            return;
+          }
+
+          if (!value.includes('/pub') && !value.includes('/embed')) {
+            this.errorMessage = 'Please use the published/embed URL. In Google Slides: File → Share → Publish to web → Embed';
+            this.isValid = false;
+            return;
+          }
+
+          this.isValid = true;
+        },
+        canSubmit() {
+          return this.hasInput && this.isValid;
+        }
+      }"
+        x-init="validateLink($refs.fileInput.value)"
+        @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid Google Slides URL before submitting.'); }"
+      >
+
+        <div>
+          <label
+            for='judul'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Material Title</label>
+          <input
+            type='text'
+            id='judul'
+            name='judul'
+            required
+            value='{{materi.judul}}'
+            placeholder='Enter PPT material title...'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          />
+        </div>
+
+        <div class='space-y-3'>
+          <label
+            for='file'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Google Slides Link
+            <span class='text-xs text-gray-500 font-normal'>(Google Slides published URL only)</span>
+          </label>
+
+          <input
+            type='url'
+            id='file'
+            name='file'
+            required
+            x-ref='fileInput'
+            value='{{materi.file}}'
+            :class="hasInput && !isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full bg-white border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors'
+            @input='validateLink($event.target.value)'
+            placeholder='https://docs.google.com/presentation/d/e/xxxx/pub?...'
+          />
+
+          <!-- Hint -->
+          <div class='flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+            <i class='fas fa-info-circle text-blue-500 mt-0.5'></i>
+            <p class='text-xs text-blue-700'>
+              Cara mendapatkan link: Buka Google Slides →
+              <span class='font-semibold'>File → Share → Publish to web → Embed</span>
+              → Copy URL dari src iframe.
+            </p>
+          </div>
+
+          <!-- Error Message -->
+          <template x-if='hasInput && !isValid && errorMessage'>
+            <div class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <div>
+                <p class='text-sm font-semibold text-red-800'>Invalid URL</p>
+                <p class='text-xs text-red-700' x-text='errorMessage'></p>
+              </div>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='hasInput && isValid'>
+            <div class='flex items-center gap-2 p-3 bg-green-50 border border-green-300 rounded-lg'>
+              <i class='fas fa-check-circle text-green-500'></i>
+              <div class='text-xs text-green-700'>
+                <span class='font-semibold'>Valid Google Slides URL</span>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class='flex gap-3'>
+          <button
+            type='submit'
+            :disabled='!canSubmit() || loading'
+            :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+            class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          >
+            <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+            <span x-show='!loading'>Update PPT</span>
+          </button>
+          <a
+            href='/session/{{pertemuanId}}'
+            :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+            class='px-6 py-2 rounded-lg border border-gray-300 transition'
+          >
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+{{else if (eq jenis_file 'video')}}
+  <div class='py-10'>
+    <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+      <h2 class='text-2xl font-bold mb-6 text-gray-900'>Edit Video Material</h2>
+
+      <form
+        action='/learning-material/video/{{materi.id}}?_method=PATCH'
+        method='POST'
+        class='space-y-6'
+        x-data="{
+        loading: false,
+        errorMessage: '',
+        isValid: true,
+        hasInput: true,
+        validateLink(value) {
+          this.errorMessage = '';
+          this.hasInput = value.length > 0;
+
+          if (!value) {
+            this.isValid = false;
+            return;
+          }
+
+          const urlPattern = /^(https?:\/\/)[\w.-]+\.[a-z]{2,}/i;
+
+          if (!urlPattern.test(value)) {
+            this.errorMessage = 'Please enter a valid URL';
+            this.isValid = false;
+            return;
+          }
+
+          this.isValid = true;
+        },
+        canSubmit() {
+          return this.hasInput && this.isValid;
+        }
+      }"
+        x-init="validateLink($refs.fileInput.value)"
+        @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid URL before submitting.'); }"
+      >
+
+        <div>
+          <label
+            for='judul'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Material Title</label>
+          <input
+            type='text'
+            id='judul'
+            name='judul'
+            required
+            value='{{materi.judul}}'
+            placeholder='Enter video material title...'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          />
+        </div>
+
+        <div class='space-y-3'>
+          <label
+            for='file'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Video Link
+            <span class='text-xs text-gray-500 font-normal'>(video URL)</span>
+          </label>
+
+          <input
+            type='url'
+            id='file'
+            name='file'
+            required
+            x-ref='fileInput'
+            value='{{materi.file}}'
+            :class="hasInput && !isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full bg-white border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors'
+            @input='validateLink($event.target.value)'
+            placeholder='https://www.example.com'
+          />
+
+          <!-- Error Message -->
+          <template x-if='hasInput && !isValid && errorMessage'>
+            <div class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <div>
+                <p class='text-sm font-semibold text-red-800'>Invalid URL</p>
+                <p class='text-xs text-red-700' x-text='errorMessage'></p>
+              </div>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='hasInput && isValid'>
+            <div class='flex items-center gap-2 p-3 bg-green-50 border border-green-300 rounded-lg'>
+              <i class='fas fa-check-circle text-green-500'></i>
+              <div class='text-xs text-green-700'>
+                <span class='font-semibold'>Valid URL</span>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class='flex gap-3'>
+          <button
+            type='submit'
+            :disabled='!canSubmit() || loading'
+            :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+            class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          >
+            <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+            <span x-show='!loading'>Update Video</span>
+          </button>
+          <a
+            href='/session/{{pertemuanId}}'
+            :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+            class='px-6 py-2 rounded-lg border border-gray-300 transition'
+          >
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+{{/if}}

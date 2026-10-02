@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { validatePasswordStrength } from 'src/common/utils/password.util';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
@@ -381,7 +382,7 @@ export class UsersService {
   // ============================================
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const { email } = forgotPasswordDto;
+    const email = forgotPasswordDto.email.trim();
 
     const user = await this.userRepository.findOne({ where: { email } });
 
@@ -439,6 +440,8 @@ export class UsersService {
     if (password !== confirmPassword) {
       throw new BadRequestException('Passwords do not match');
     }
+
+    validatePasswordStrength(password);
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
