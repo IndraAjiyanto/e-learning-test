@@ -107,14 +107,14 @@
       </div>
     </div>
 
-    {{!-- hero-right: visual (448×616 = ~3:4 aspect) --}}
-    <div class="w-full lg:w-[448px] lg:shrink-0">
-      <div class="aspect-[3/4] w-full overflow-hidden">
+    {{!-- hero-right: visual (full width) --}}
+    <div class="w-full lg:flex-1">
+      <div class="aspect-[16/9] w-full overflow-hidden rounded-xl lg:rounded-2xl">
         <img
           src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
           alt="{{category.name}}"
           onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="size-full object-cover"
+          class="size-full object-cover object-center"
         />
       </div>
     </div>
