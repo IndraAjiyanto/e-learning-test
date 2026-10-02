@@ -168,7 +168,7 @@ export class SessionService {
         userCourses: { course: { id: courseId } },
         absent: { session: { id: sessionId } },
       },
-      relations: ['absent'],
+      relations: ['absent', 'biodata'],
     });
   }
 
@@ -182,14 +182,26 @@ export class SessionService {
   async findLogBook(sessionId: string) {
     return await this.logBookRepository.find({
       where: { session: { id: sessionId } },
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: [
+        'user',
+        'user.biodata',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+      ],
     });
   }
 
   async findLogBookMentor(sessionId: string) {
     return await this.mentorLogbookRepository.find({
       where: { session: { id: sessionId } },
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: [
+        'user',
+        'user.biodata',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+      ],
     });
   }
 
@@ -223,6 +235,15 @@ export class SessionService {
 
     if (updateSessionDto.isFinalCheck === 'true') {
       updateSessionDto.isFinal = true;
+      // Hanya satu session per week yang boleh final — lepas flag dari session
+      // lain di week yang sama agar findLastSession tidak ambigu/salah baca.
+      await this.sessionRepository
+        .createQueryBuilder()
+        .update()
+        .set({ isFinal: false })
+        .where('weeksId = :weeksId', { weeksId: session.weeks.id })
+        .andWhere('id != :id', { id })
+        .execute();
     } else {
       updateSessionDto.isFinal = false;
     }

@@ -11,6 +11,7 @@ import {
   Req,
   UseInterceptors,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { TechnologiesService } from './technologies.service';
 import { CreateTechnologiesDto } from './dto/create-technologies.dto';
@@ -23,6 +24,7 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseInterceptors(MulterErrorInterceptor)
@@ -61,12 +63,43 @@ export class TechnologiesController {
       }
 
       await this.technologiesService.create(createTechnologiesDto);
-      req.flash('success', 'Tech successfully created');
+      flashToast(
+        req,
+        'Tool Created',
+        'The tool has been added successfully.',
+      );
       res.redirect('/technology');
     } catch (error: any) {
-      req.flash('error', error.message || 'Tech failed to create');
+      req.flash('error', error.message || 'Tool failed to create');
       res.redirect('/technology');
     }
+  }
+
+  // Didaftarkan sebelum route ber-parameter supaya segmen statis 'filter'
+  // tidak pernah ditangkap sebagai id.
+  @Roles('super_admin')
+  @Get('filter')
+  async filterTechnologies(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '10', 10);
+
+    const result = await this.technologiesService.findAllPaginated({
+      search: search || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
   }
 
   @Roles('super_admin')
@@ -150,10 +183,14 @@ export class TechnologiesController {
       }
 
       await this.technologiesService.update(id, updateTechnologiesDto);
-      req.flash('success', 'Tech successfully updated');
+      flashToast(
+        req,
+        'Tool Updated',
+        'The changes to this tool have been saved.',
+      );
       res.redirect('/technology');
     } catch (error: any) {
-      req.flash('error', error.message || 'Tech failed to update');
+      req.flash('error', error.message || 'Tool failed to update');
       res.redirect(`/technology/formEdit/${id}`);
     }
   }
@@ -168,14 +205,18 @@ export class TechnologiesController {
     try {
       const technologies = await this.technologiesService.findOne(id);
       if (!technologies) {
-        req.flash('error', 'Tech not found');
+        req.flash('error', 'Tool not found');
         res.redirect('/technology');
       }
       await this.technologiesService.remove(id);
-      req.flash('success', 'Tech   successfully deleted');
+      flashToast(
+        req,
+        'Tool Deleted',
+        'The tool has been removed successfully.',
+      );
       res.redirect('/technology');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete tech');
+      req.flash('error', error.message || 'Failed to delete tool');
       res.redirect('/technology');
     }
   }

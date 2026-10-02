@@ -24,7 +24,7 @@
   {{!-- Tampilan dengan Form Button --}}
   {{> components/ui/auth/index
     variant="verify-email"
-    action=(concat "/users/send-verify-email?token=" user.verificationToken)
+    action="/users/resend-verification"
     method="post"
     title=(t 'test.verify.verifyEmail')
     description=(t 'test.verify.description')

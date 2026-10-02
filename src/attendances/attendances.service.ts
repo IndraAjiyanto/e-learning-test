@@ -42,6 +42,17 @@ export class AttendanceService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+    const duplicate = await this.attendanceRepository.findOne({
+      where: {
+        session: { id: CreateAttendanceDto.sessionId },
+        user: { id: CreateAttendanceDto.userId },
+      },
+    });
+    if (duplicate) {
+      throw new NotFoundException(
+        'User has already submitted attendance for this session',
+      );
+    }
     const attendance = await this.attendanceRepository.create({
       ...CreateAttendanceDto,
       session: session,
@@ -95,11 +106,24 @@ export class AttendanceService {
       where: { weeks: { session: { id: sessionId } } },
     });
     if (!course) {
-      return '';
+      return [];
     }
-    return await this.userRepository.find({
+    const enrolled = await this.userRepository.find({
       where: { role: 'user', userCourses: { course: { id: course.id } } },
     });
+    if (!enrolled.length) {
+      return [];
+    }
+    // Exclude users who already have an attendance record for this session,
+    // so they don't show up again in the admin "Add Attendance" dropdown.
+    const existing = await this.attendanceRepository.find({
+      where: { session: { id: sessionId } },
+      relations: ['user'],
+    });
+    const attendedIds = new Set(
+      existing.map((a) => a.user?.id).filter(Boolean),
+    );
+    return enrolled.filter((u) => !attendedIds.has(u.id));
   }
 
   async findCourse() {

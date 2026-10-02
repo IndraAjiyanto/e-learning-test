@@ -1,0 +1,64 @@
+{{!--
+  Komponen: Course Flow Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/course_flow/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Title + Description untuk ketiga bahasa. Dipanggil sekali oleh
+  super_admin/course_flows/{create,edit}.hbs; tidak menerima props.
+
+  Ketiga bahasa ditulis di sini, bukan diulang di halaman: create & edit memakai
+  field dan placeholder yang sama persis, jadi memanggil per bahasa dari
+  masing-masing halaman hanya menunggu copy-nya drift.
+
+  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
+  meski tab-nya tidak aktif; dengan x-if field tersembunyi hilang dari form dan
+  bahasa itu terhapus di backend.
+
+  Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `title-id`) — pola yang sama
+  dipakai form/course_flow/form untuk memindahkan fokus ke field pertama yang error.
+  Jangan diubah sepihak.
+
+  Pemanggil menyediakan state Alpine dari form/course_flow/form.
+--}}
+{{#*inline 'flowLangFields'}}
+  {{!-- x-cloak: Alpine dimuat `defer`, jadi tanpa ini ketiga blok bahasa sempat
+       tampil bertumpuk sebelum x-show bekerja. --}}
+  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'title-' code)
+      name=(concat 'title[' code ']')
+      field=(concat 'title.' code)
+      label='Title'
+      placeholder=titleHint
+      required=true
+    }}
+
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'content-' code)
+      name=(concat 'content[' code ']')
+      field=(concat 'content.' code)
+      label='Description'
+      multiline=true
+      placeholder=contentHint
+      required=true
+    }}
+  </div>
+{{/inline}}
+
+{{> flowLangFields
+  code='id'
+  titleHint='Judul (ID)'
+  contentHint='Deskripsi (ID)...'
+}}
+
+{{> flowLangFields
+  code='en'
+  titleHint='Title (EN)'
+  contentHint='Description (EN)...'
+}}
+
+{{> flowLangFields
+  code='ja'
+  titleHint='タイトル (JA)'
+  contentHint='説明 (JA)...'
+}}

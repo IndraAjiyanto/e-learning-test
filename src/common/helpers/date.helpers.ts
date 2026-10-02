@@ -35,7 +35,57 @@ export const dateHelpers = {
     };
     return d.toLocaleDateString('en-US', options);
   },
+  formatDateSimple: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => {
+    if (!date) return lang ? 'Not set' : '-';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    let locale;
+    switch (lang) {
+      case 'en':
+        locale = enUS;
+        break;
+      case 'ja':
+        locale = ja;
+        break;
+      case 'id':
+      default:
+        locale = id;
+    }
+    return format(d, 'd MMMM yyyy', { locale });
+  },
+  formatDateDayMonthYear: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => dateHelpers.formatDateSimple(date, lang),
+  formatDateShort: (
+    date: string | Date | null | undefined,
+    lang?: string,
+  ): string => {
+    if (!date) return '-';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    let locale;
+    switch (lang) {
+      case 'en':
+        locale = enUS;
+        break;
+      case 'ja':
+        locale = ja;
+        break;
+      case 'id':
+      default:
+        locale = id;
+    }
+    return format(d, 'd MMM yyyy', { locale });
+  },
   formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
+  formTime: (waktu: string | null | undefined): string => {
+    if (!waktu) return '';
+    return waktu.slice(0, 5);
+  },
   formatMinutes: (ms: number) => Math.floor(ms / 60000),
   /**
    * Mengubah string tanggal (YYYY-MM-DD, dari kolom date) menjadi Date lokal

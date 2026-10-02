@@ -1,0 +1,276 @@
+{{!--
+  Komponen: Program Registration Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/registration_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Registration" di halaman detail program Super Admin (Khusus Free Program) sesuai token Figma:
+  1. Card Wrapper: White (#FFFFFF, border #D9D9D9, radius 12px, p-3 sm:p-5) - Table Detail Week
+  2. Sub-tabs Status: All, Process, Accepted, Rejected (Montserrat 14px, underline #003060) - Frame 2147229582
+  3. Search bar: 44px outline dengan ikon pencarian
+  4. Registration Cards Grid: 2 Kolom kartu detail pendaftaran (Frame 2147229586)
+  5. Detail & Proof Modal: Verifikasi berkas dan persetujuan (Accept / Reject)
+
+  Props:
+  - courseId : string (wajib) — ID kursus
+--}}
+<div
+  class="flex flex-col gap-3 w-full"
+  x-data="registrationTab({{json courseId}})"
+  x-init="init()"
+>
+  <!-- Main Content Card Wrapper (Table Detail Week) -->
+  <div class="w-full bg-white border border-[#D9D9D9] rounded-xl p-3 sm:p-5 flex flex-col gap-5">
+    <!-- Status Filter Sub-Tabs & Search Bar -->
+    <div class="flex flex-col gap-4 w-full">
+      <!-- Status Tabs (Frame 2147229582) -->
+      <nav role="tablist" class="flex border-b border-[#D9D9D9] w-full overflow-x-auto">
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'all'"
+          :aria-selected="tabStatus === 'all'"
+          :class="tabStatus === 'all'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          All
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'process'"
+          :aria-selected="tabStatus === 'process'"
+          :class="tabStatus === 'process'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          Process
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'accepted'"
+          :aria-selected="tabStatus === 'accepted'"
+          :class="tabStatus === 'accepted'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          Accepted
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          @click="tabStatus = 'rejected'"
+          :aria-selected="tabStatus === 'rejected'"
+          :class="tabStatus === 'rejected'
+            ? 'border-[#003060] text-[#003060]'
+            : 'border-transparent text-[#737373] hover:border-[#D9D9D9] hover:text-[#003060]'"
+          class="-mb-px inline-flex h-10 shrink-0 items-center justify-center border-b-2 px-7 py-2.5 font-montserrat text-sm font-semibold leading-5 transition-colors focus-visible:outline-none"
+        >
+          Rejected
+        </button>
+      </nav>
+
+      <!-- Search Input Bar (Frame 2147229616) -->
+      <div class="w-full">
+        {{> components/ui/super_admin/input/search/index
+          model="searchQuery"
+          placeholder="Search..."
+        }}
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <template x-if="loading">
+      <div class="py-16 text-center">
+        <p class="font-inter text-sm leading-5 text-[#A3A3A3]">Loading registrations…</p>
+      </div>
+    </template>
+
+    <!-- Empty State -->
+    <template x-if="!loading && visibleItems.length === 0">
+      <div class="py-16 text-center w-full">
+        <div class="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+        </div>
+        <h3 class="text-base font-semibold text-slate-700 mb-1">No Registrations Found</h3>
+        <p class="text-sm text-slate-500">No student registrations match the selected filter or search query.</p>
+      </div>
+    </template>
+
+    <!-- 2-Column Grid of Registration Detail Cards (Frame 2147229586) -->
+    <div x-show="!loading && visibleItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+      <template x-for="(item, index) in visibleItems" :key="item.id">
+        {{> components/ui/super_admin/card/registration/index}}
+      </template>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detail Registrasi & Verifikasi Berkas -->
+{{#> components/ui/super_admin/modal/detail/index
+  name='registration-detail'
+  title='Registration Details'
+  maxWidth='max-w-[560px]'
+}}
+  <div class="flex flex-col gap-4 text-left">
+    <!-- Status & Date Header -->
+    <div class="flex items-center justify-between pb-3 border-b border-[#E5E5E5]">
+      <div>
+        <span class="font-inter text-xs text-[#737373]">Registration Date</span>
+        <p class="font-inter text-sm font-medium text-[#171717]" x-text="formatDate(row.createdAt)"></p>
+      </div>
+      <div>
+        {{> components/ui/super_admin/badge/index
+          dot=true
+          text='(row.process === "acc" || row.process === "approved") ? "Accepted" : (row.process === "proces" || row.process === "process") ? "Process" : "Rejected"'
+          classExpr="(row.process === 'acc' || row.process === 'approved') ? 'bg-[#F0FDF4] text-[#15803D]' : (row.process === 'proces' || row.process === 'process') ? 'bg-[#FEFCE8] text-[#A16207]' : 'bg-[#FEF2F2] text-[#B91C1C]'"
+          dotClassExpr="(row.process === 'acc' || row.process === 'approved') ? 'bg-[#22C55E]' : (row.process === 'proces' || row.process === 'process') ? 'bg-[#EAB308]' : 'bg-[#EF4444]'"
+        }}
+      </div>
+    </div>
+
+    <!-- Data Details -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter text-xs text-[#737373]">Full Name</span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.user_fullname || row.user?.fullname || row.user?.username || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter text-xs text-[#737373]">Email</span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.user_email || row.user?.email || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter text-xs text-[#737373]">Phone / WhatsApp</span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.user_no || row.user?.no || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter text-xs text-[#737373]">Current Status</span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.current_status || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter text-xs text-[#737373]">Referral / Keyword</span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.referal_source || '—'"></span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="font-inter text-xs text-[#737373]">Attend Program</span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.attend_program ? 'Yes' : 'No'"></span>
+      </div>
+    </div>
+
+    <!-- Registration Proof / Attachment -->
+    <template x-if="row.file">
+      <div class="flex flex-col gap-1.5 pt-3 border-t border-[#E5E5E5]">
+        <span class="font-inter text-xs text-[#737373]">Registration Proof / Attachment</span>
+        <a :href="row.file" target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-lg border border-[#E5E5E5] hover:opacity-90 transition-opacity">
+          <img :src="row.file" alt="Registration Proof" class="max-h-60 w-full object-contain bg-slate-50" />
+        </a>
+      </div>
+    </template>
+
+    <!-- Super Admin Actions (Accept / Reject) -->
+    <div class="flex items-center gap-3 pt-3 border-t border-[#E5E5E5]">
+      <template x-if="row.process !== 'approved' && row.process !== 'acc'">
+        <form :action="'/registration/approved/' + row.id + '?_method=PATCH'" method="post" class="flex-1">
+          <button
+            type="submit"
+            class="inline-flex h-11 w-full items-center justify-center rounded-lg border border-[#16a34a] bg-[#16a34a] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#15803d] hover:bg-[#15803d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16a34a]/40"
+          >
+            Accept
+          </button>
+        </form>
+      </template>
+
+      <template x-if="row.process !== 'rejected'">
+        <form :action="'/registration/rejected/' + row.id + '?_method=PATCH'" method="post" class="flex-1">
+          <button
+            type="submit"
+            class="inline-flex h-11 w-full items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#dc2626] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#dc2626] hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40"
+          >
+            Reject
+          </button>
+        </form>
+      </template>
+    </div>
+  </div>
+{{/components/ui/super_admin/modal/detail/index}}
+
+<script>
+  function registrationTab(courseId) {
+    return {
+      tabStatus: 'all',
+      searchQuery: '',
+      items: [],
+      loading: true,
+
+      async init() {
+        await this.fetchData();
+      },
+
+      async fetchData() {
+        this.loading = true;
+        try {
+          const response = await fetch('/program/register/' + courseId);
+          if (!response.ok) throw new Error('Request failed with status ' + response.status);
+
+          const data = await response.json();
+          this.items = Array.isArray(data) ? data : [];
+        } catch (error) {
+          console.error('Failed to load registrations:', error);
+          this.items = [];
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      get visibleItems() {
+        if (!Array.isArray(this.items)) return [];
+        return this.items.filter((item) => {
+          // Status filter
+          const status = (item.process || '').toLowerCase();
+          let matchesStatus = true;
+          if (this.tabStatus === 'accepted' || this.tabStatus === 'acc') {
+            matchesStatus = status === 'acc' || status === 'approved';
+          } else if (this.tabStatus === 'process' || this.tabStatus === 'proces') {
+            matchesStatus = status === 'proces' || status === 'process';
+          } else if (this.tabStatus === 'rejected') {
+            matchesStatus = status === 'rejected';
+          }
+
+          if (!matchesStatus) return false;
+
+          // Search query filter
+          if (!this.searchQuery || this.searchQuery.trim() === '') return true;
+          const q = this.searchQuery.toLowerCase().trim();
+          const username = (item.user_fullname || item.user?.fullname || item.user?.username || '').toLowerCase();
+          const email = (item.user_email || item.user?.email || '').toLowerCase();
+          const phone = (item.user_no || item.user?.no || '').toLowerCase();
+          const currentStatus = (item.current_status || '').toLowerCase();
+          const keyword = (item.referal_source || item.referalSource || item.keyword || '').toLowerCase();
+
+          return (
+            username.includes(q) ||
+            email.includes(q) ||
+            phone.includes(q) ||
+            currentStatus.includes(q) ||
+            keyword.includes(q)
+          );
+        });
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(value).toLocaleDateString('id-ID', options);
+      },
+    };
+  }
+</script>

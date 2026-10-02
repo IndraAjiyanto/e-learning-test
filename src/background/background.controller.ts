@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -16,6 +17,7 @@ import { UpdateBackgroundDto } from './dto/update-background.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('background')
@@ -33,11 +35,20 @@ export class BackgroundController {
       createBackgroundDto.backgroundOrder =
         await this.backgroundService.noBackground();
       await this.backgroundService.create(createBackgroundDto);
-      req.flash('success', 'background successfully created');
+      flashToast(
+        req,
+        'Background Created',
+        'The educational background has been added successfully.',
+      );
       res.redirect('/background');
-    } catch (error: any) {
-      req.flash('error', 'background failed to create');
-      res.redirect('/background');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'background failed to create',
+      );
+      res.redirect('/background/formCreate');
     }
   }
 
@@ -69,11 +80,20 @@ export class BackgroundController {
   ) {
     try {
       await this.backgroundService.update(id, updateBackgroundDto);
-      req.flash('success', 'background successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The educational background has been updated successfully.',
+      );
       res.redirect('/background');
-    } catch (error: any) {
-      req.flash('error', 'background failed to update');
-      res.redirect('/background');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'background failed to update',
+      );
+      res.redirect(`/background/formEdit/${id}`);
     }
   }
 
@@ -86,7 +106,11 @@ export class BackgroundController {
   ) {
     try {
       await this.backgroundService.remove(id);
-      req.flash('success', 'background successfully deleted');
+      flashToast(
+        req,
+        'Background Deleted',
+        'The educational background has been removed successfully.',
+      );
       res.redirect('/background');
     } catch (error: any) {
       req.flash('error', 'background failed to delete');

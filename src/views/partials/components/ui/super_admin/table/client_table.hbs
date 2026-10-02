@@ -1,0 +1,168 @@
+{{!--
+  Komponen: Client Table State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/table/client_table.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Menyediakan factory Alpine `clientTable()`: search + pagination di sisi client,
+  untuk halaman yang datanya sudah dikirim penuh oleh controller (tanpa endpoint
+  filter seperti /users/filter).
+
+  Sumber data boleh salah satu dari:
+  - `items` : array yang sudah dirender controller ke template (mayoritas halaman)
+  - `url`   : endpoint JSON yang diambil lewat load(), untuk panel yang datanya
+              belum ada saat render (mis. tab di halaman detail program)
+
+  `dataKey` dipakai bila endpoint membungkus arraynya dalam objek, mis.
+  GET /program/installment/:courseId yang membalas { availableMonths, installments }
+  — tanpa itu payloadnya bukan array dan tabel tampil kosong. Payload mentahnya
+  disimpan di `raw` supaya pemanggil bisa membaca field pendamping seperti
+  availableMonths.
+
+  `sortKey` mengurutkan data (dari `items` maupun load()) naik menurut path itu
+  (mis. "createdAt"), untuk query yang tidak memakai ORDER BY: tanpa itu Postgres
+  menaruh baris yang baru diedit di akhir, dan urutan tabel berubah setelah edit.
+
+  Kontrak state yang dihasilkan — sesuai yang diharapkan komponen lain:
+  - searchInput, handleSearch()          → ui/super_admin/table/toolbar
+  - currentPage, totalPages, changePage() → ui/super_admin/table/pagination
+  - rows                                  → dipakai <template x-for> di halaman
+  - size                                  → dipakai halaman untuk menomori baris
+  - loading                               → true selama load() berjalan; false bila
+                                            memakai `items` (datanya sudah ada saat render)
+
+  Filter hanya dijalankan sekali per pencarian (lihat applySearch), bukan tiap
+  render — `filtered` sengaja properti biasa, bukan getter.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+
+  Contoh:
+    {{> components/ui/super_admin/table/client_table }}
+    <div x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'>
+--}}
+<script>
+  // Membaca path bertitik ("categoryPartner.category") dengan aman —
+  // relasi bisa null, mis. partner tanpa kategori.
+  function valueAt(row, path) {
+    const value = path.split('.').reduce((acc, key) => (acc == null ? acc : acc[key]), row);
+    return value == null ? '' : String(value);
+  }
+
+  function clientTable({ items, size, searchKeys, url, dataKey, sortKey }) {
+    const byKey = (list) =>
+      sortKey
+        ? list.sort((a, b) => valueAt(a, sortKey).localeCompare(valueAt(b, sortKey)))
+        : list;
+    const allItems = byKey(items || []);
+
+    return {
+      items: allItems,
+      searchKeys: searchKeys || [],
+      searchInput: '',
+      // Hasil filter yang sedang aktif. Sengaja properti biasa, BUKAN getter:
+      // getter Alpine tidak di-memoize, sehingga satu render (pagination membaca
+      // totalPages, tbody membaca rows) akan menjalankan filter berkali-kali.
+      // Di sini filter hanya jalan sekali per pencarian, lewat applySearch().
+      // Nilai awal = seluruh item karena kotak search masih kosong.
+      filtered: allItems,
+      currentPage: 1,
+      size: size || 10,
+      loading: Boolean(url),
+      searchTimeout: null,
+      // Payload mentah hasil load(), untuk endpoint yang mengirim field lain di
+      // samping arraynya. Null bila datanya datang lewat `items`.
+      raw: null,
+
+      // Dipanggil lewat x-init oleh pemanggil yang memberi `url`. Tanpa `url`
+      // tidak melakukan apa-apa, sehingga aman dipasang di komponen yang dipakai
+      // dua-duanya.
+      async load() {
+        if (!url) return;
+
+        this.loading = true;
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
+          const data = await response.json();
+          this.raw = data;
+
+          const list = dataKey ? data?.[dataKey] : data;
+
+          // Bentuk yang tidak terduga JANGAN lewat diam-diam: tabel kosong tanpa
+          // pesan apa pun sulit dibedakan dari "memang belum ada data".
+          if (!Array.isArray(list)) {
+            console.error(
+              `clientTable: ${url} tidak mengembalikan array` +
+                (dataKey ? ` pada key "${dataKey}"` : '') +
+                '. Tabel dirender kosong.',
+            );
+          }
+
+          this.items = byKey(Array.isArray(list) ? list : []);
+        } catch (error) {
+          // Tabel tetap dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
+          console.error('Failed to load table data:', error);
+          this.raw = null;
+          this.items = [];
+        } finally {
+          this.loading = false;
+          this.currentPage = 1;
+          this.applySearch(this.searchInput);
+        }
+      },
+
+      // Membaca path bertitik ("categoryPartner.category") dengan aman —
+      // relasi bisa null, mis. partner tanpa kategori.
+      valueAt,
+
+      // Satu-satunya tempat filter dijalankan.
+      applySearch(keyword) {
+        const needle = String(keyword || '').trim().toLowerCase();
+
+        this.filtered = needle
+          ? this.items.filter((row) =>
+              this.searchKeys.some((path) => this.valueAt(row, path).toLowerCase().includes(needle)),
+            )
+          : this.items;
+
+        // Halaman aktif dijepit DI SINI, bukan di getter rows: kalau hanya rows
+        // yang dijepit, pagination tetap mencetak currentPage mentah dan labelnya
+        // bisa berbunyi "Page 3 of 2" sementara isi tabel menampilkan halaman 2.
+        if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+      },
+
+      // O(1) — hanya membaca panjang array yang sudah difilter.
+      get totalPages() {
+        return Math.max(1, Math.ceil(this.filtered.length / this.size));
+      },
+
+      get visiblePages() {
+        const t = this.totalPages, c = this.currentPage;
+        if (t <= 5) return Array.from({ length: t }, (_, i) => i + 1);
+        if (c <= 3) return [1, 2, 3, '...', t];
+        if (c >= t - 2) return [1, '...', t - 2, t - 1, t];
+        return [1, '...', c - 1, c, c + 1, '...', t];
+      },
+
+      // O(size) — tidak memfilter ulang.
+      get rows() {
+        const start = (this.currentPage - 1) * this.size;
+        return this.filtered.slice(start, start + this.size);
+      },
+
+      handleSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.currentPage = 1;
+          this.applySearch(this.searchInput);
+        }, 300);
+      },
+
+      changePage(page) {
+        if (page < 1 || page > this.totalPages) return;
+        this.currentPage = page;
+      },
+    };
+  }
+</script>

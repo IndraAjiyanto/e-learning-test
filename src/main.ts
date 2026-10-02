@@ -17,6 +17,11 @@ import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
 import { hbsHelpers } from './common/helpers';
+import {
+  readFlashToast,
+  readFlashToastError,
+  readFlashToastWarning,
+} from './common/utils/toast.util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -92,10 +97,38 @@ async function bootstrap() {
 
   app.use(flash());
 
+  // Sesi disimpan di Postgres (connect-pg-simple), jadi penulisannya asinkron:
+  // express-session baru menulis sesi saat res.end(), sesudah response terkirim.
+  // Pada POST -> redirect, browser mengikuti Location seketika (terukur 0ms jeda),
+  // sehingga GET berikutnya sempat membaca sesi LAMA dan flash yang baru ditulis
+  // hilang — notifikasi tidak pernah muncul. Tunggu sesi tersimpan dulu baru
+  // kirim redirect. Dipasang global supaya berlaku untuk semua controller dan
+  // kedua kanal notifikasi (flash `success` lama maupun flash `toast` baru).
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const redirect = res.redirect.bind(res) as (...args: any[]) => void;
+
+    res.redirect = ((...args: any[]) => {
+      if (!req.session) return redirect(...args);
+
+      req.session.save((err) => {
+        if (err) console.error('Gagal menyimpan sesi sebelum redirect:', err);
+        redirect(...args);
+      });
+    }) as Response['redirect'];
+
+    next();
+  });
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
+    res.locals.warning = req.flash('warning');
+    // Key terpisah dari 'success': partial `sweetalert` merender 'success'
+    // sebagai toast sendiri, jadi ini mencegah dua notifikasi untuk satu aksi.
+    res.locals.toast = readFlashToast(req);
+    res.locals.toastError = readFlashToastError(req);
+    res.locals.toastWarning = readFlashToastWarning(req);
     next();
   });
 
@@ -134,7 +167,7 @@ async function bootstrap() {
     // Auth screens (login/register/forgot/reset/verify) render over a photo bg -
     // navbar must be transparent there. Checked server-side so no Alpine flash.
     res.locals.isAuthPage =
-      /^\/(login|register|session-expired|verify-email)(\/|$)/.test(req.path) ||
+      /^\/(login|register|session-expired)(\/|$)/.test(req.path) ||
       /^\/users\/(forgot-password|reset-password|send-verify-email|verify-email)(\/|$)/.test(
         req.path,
       );

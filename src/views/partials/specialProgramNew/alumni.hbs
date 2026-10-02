@@ -12,7 +12,7 @@
   <div class="text-center mb-8 relative z-10 px-6 lg:px-20">
     
     <!-- Title with Animated Stabilo Highlight Sweep -->
-    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#000000] font-montserrat tracking-tight mb-6 flex flex-wrap items-center justify-center gap-2">
+    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#000000] font-inter tracking-tight mb-6 flex flex-wrap items-center justify-center gap-2">
       <span>{{t 'test.special_program.alumni.title'}}</span>
       
       <span 
@@ -32,7 +32,7 @@
         }"
       >
         <!-- Base Transparent Placeholder to Reserve Space -->
-        <span class="opacity-0 font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
+        <span class="opacity-0 font-inter font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
           {{t 'test.special_program.alumni.title2'}} {{category.name}}
         </span>
 
@@ -41,7 +41,7 @@
           class="absolute inset-y-0 left-0 bg-[#003060] rounded-[8px] sm:rounded-[10px] transition-all duration-[800ms] ease-out overflow-hidden flex items-center justify-center whitespace-nowrap shadow-md pointer-events-none"
           :class="isHighlighted ? 'w-full' : 'w-0'"
         >
-          <span class="font-montserrat font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
+          <span class="font-inter font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
             {{t 'test.special_program.alumni.title2'}} {{category.name}}
           </span>
         </span>
@@ -85,7 +85,7 @@
               <div class="flex items-center gap-4">
                 <img :src="item.photo" :alt="item.name" class="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover shadow-sm"/>
                 <div>
-                  <p class="font-montserrat font-[600] text-[#000000] text-[18px] md:text-[22.07px] leading-[100%] mb-1" x-text="item.name"></p>
+                  <p class="font-inter font-[600] text-[#000000] text-[18px] md:text-[22.07px] leading-[100%] mb-1" x-text="item.name"></p>
                   <p class="font-sans font-[400] text-[#000000]/80 text-[14px] md:text-[18px] leading-snug">
                     <span x-text="item.company"></span>
                     <template x-if="item.company">

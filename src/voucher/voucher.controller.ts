@@ -16,6 +16,7 @@ import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Roles('super_admin')
@@ -45,7 +46,6 @@ export class VoucherController {
     res.render('super_admin/voucher/index', {
       user: req.user,
       vouchers,
-      success: req.flash('success')[0],
       error: req.flash('error')[0],
     });
   }
@@ -75,7 +75,11 @@ export class VoucherController {
   ) {
     try {
       await this.voucherService.create(createVoucherDto);
-      req.flash('success', 'Voucher berhasil dibuat');
+      flashToast(
+        req,
+        'Voucher Created',
+        'The voucher has been issued successfully.',
+      );
       res.redirect('/voucher');
     } catch (error: any) {
       console.error(
@@ -127,7 +131,11 @@ export class VoucherController {
   ) {
     try {
       await this.voucherService.update(id, updateVoucherDto);
-      req.flash('success', 'Voucher berhasil diperbarui');
+      flashToast(
+        req,
+        'Voucher Updated',
+        'The changes to this voucher have been saved.',
+      );
       res.redirect('/voucher');
     } catch (error: any) {
       req.flash('error', error.message || 'Voucher gagal diperbarui');
@@ -147,7 +155,11 @@ export class VoucherController {
   ) {
     try {
       await this.voucherService.remove(id);
-      req.flash('success', 'Voucher berhasil dihapus');
+      flashToast(
+        req,
+        'Voucher Deleted',
+        'The voucher has been removed successfully.',
+      );
       res.redirect('/voucher');
     } catch (error: any) {
       req.flash('error', error.message || 'Voucher gagal dihapus');

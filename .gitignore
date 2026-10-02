@@ -6,6 +6,7 @@
 /public
 /src/common/public/css/style.css
 /src/common/public/assets/main.js
+/src/common/public/assets/fa-icons.json
 
 
 # Logs
@@ -80,10 +81,32 @@ src_backup/
 test-hbs.js
 test-voucher.json
 
+# Slicing documentation (local only)
+SLICING_NOTES.md
+pedoman-modular-komponen.md
+
+# Daily reports (local only)
+daily-report/
+daily-reports/
+LAPORAN_HARIAN*.md
+
+# Pen design files (local only, large binary)
+*.pen
+
 # Junk / temp files
 out.txt
 dummy.jpg
 search.js
 
-# Claude Code local settings
+# Local editor/tooling settings
 .claude/
+.opencode/
+.agents/
+.agent/
+.cursor/
+AGENTS.md
+GEMINI.md
+
+# Tangkapan layar hasil npm run test:ui (lokal saja)
+/test/ui/shots
+test/ui/tmp/

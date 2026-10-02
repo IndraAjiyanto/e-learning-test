@@ -1,0 +1,42 @@
+{{!--
+  Table Pagination (Super Admin) — label halaman + tombol Previous/Next.
+
+  Alpine yang disediakan pemanggil: currentPage, totalPages, changePage()
+
+  Disembunyikan saat totalPages <= 1: dengan satu halaman, label selalu berbunyi
+  "Page 1 of 1" dan kedua tombol permanen mati — kontrol yang tidak pernah bisa
+  dipakai, dan sempat dilaporkan sebagai pagination rusak di halaman Benefits
+  yang datanya hanya empat baris.
+
+  Props:
+  - paddingClass : padding pembungkus, default 'pb-4 pl-6 pr-6 pt-3' (inset kartu
+                   tabel). Dipakai literal oleh pemanggil yang memasangnya di luar
+                   kartu, mis. daftar kartu di tab User.
+--}}
+<div
+  x-show='totalPages > 1'
+  x-cloak
+  class='{{default paddingClass "pb-4 pl-6 pr-6 pt-3"}} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+  <p class='font-inter text-sm font-medium leading-5 text-[#404040]'>
+    Page <span x-text='currentPage'></span> of <span x-text='totalPages'></span>
+  </p>
+
+  <div class='flex items-center gap-3'>
+    <button
+      type='button'
+      @click='changePage(currentPage - 1)'
+      :disabled='currentPage <= 1'
+      class='inline-flex h-9 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-3.5 py-2 font-inter text-sm font-semibold leading-5 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#fafafa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white'
+    >
+      Previous
+    </button>
+    <button
+      type='button'
+      @click='changePage(currentPage + 1)'
+      :disabled='currentPage >= totalPages'
+      class='inline-flex h-9 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-3.5 py-2 font-inter text-sm font-semibold leading-5 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#fafafa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white'
+    >
+      Next
+    </button>
+  </div>
+</div>

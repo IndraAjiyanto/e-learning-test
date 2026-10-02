@@ -11,6 +11,7 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Score } from 'src/entities/score.entity';
 import { Logbook } from 'src/entities/logbook.entity';
+import { Certificates } from 'src/entities/certificate.entity';
 import { UploadService } from 'src/common/upload/upload.service';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { CommonModule } from 'src/common/common.module';
@@ -19,6 +20,7 @@ import { EmailService } from 'src/common/email/email.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Certificates,
       User,
       Course,
       Portofolios,

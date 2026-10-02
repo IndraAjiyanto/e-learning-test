@@ -27,7 +27,7 @@ export class Installment {
   @Column({ type: 'enum', enum: [3] })
   month: Month;
 
-  @Column({ type: 'date', array: true })
+  @Column({ type: 'date', array: true, default: [] })
   dueDates: string[];
 
   @CreateDateColumn()

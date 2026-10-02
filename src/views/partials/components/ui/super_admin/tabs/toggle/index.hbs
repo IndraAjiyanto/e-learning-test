@@ -1,0 +1,47 @@
+{{!--
+  Komponen: Segmented Tab Toggle (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/tabs/toggle/index.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Switch 2-tab presisi Figma (Frame 2147229617):
+  - Lebar: 1010px / w-full, Tinggi: 44px (h-11), gap: 12px (gap-3)
+  - Button 1 (Active/Inactive):
+    * box-sizing: border-box
+    * padding: 10px 18px (py-2.5 px-4)
+    * Aktif: bg #003060, border 1px solid #003060, text #FFFFFF, shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
+    * Non-aktif: bg #FFFFFF, border 1px solid #003060, text #003060
+    * Font: Inter 16px semibold (font-inter font-semibold text-base leading-6)
+    * Radius: 8px (rounded-lg)
+
+  Props:
+  - tab1Label : string (default 'Full Payment')
+  - tab1Value : string (default 'payment')
+  - tab1Url   : string (endpoint data)
+  - tab2Label : string (default 'Installment')
+  - tab2Value : string (default 'installment')
+  - tab2Url   : string (endpoint data)
+  - state     : string (default 'tab')
+--}}
+<div class="flex w-full items-center gap-3">
+  <button
+    type="button"
+    @click="if (typeof toggleFetch === 'function') { toggleFetch('{{tab1Url}}', '{{default tab1Value 'payment'}}') } else if (typeof toggleFetchMateri === 'function') { toggleFetchMateri('{{tab1Url}}', '{{default tab1Value 'payment'}}') } else { {{default state 'tab'}} = '{{default tab1Value 'payment'}}' }"
+    :class="{{default state 'tab'}} === '{{default tab1Value 'payment'}}'
+      ? 'bg-[#003060] text-white border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+      : 'bg-white text-[#003060] border-[#003060] hover:bg-slate-50'"
+    class="flex-1 flex items-center justify-center h-11 px-4 border rounded-lg font-inter font-semibold text-base leading-6 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40"
+  >
+    {{default tab1Label 'Full Payment'}}
+  </button>
+
+  <button
+    type="button"
+    @click="if (typeof toggleFetch === 'function') { toggleFetch('{{tab2Url}}', '{{default tab2Value 'installment'}}') } else if (typeof toggleFetchMateri === 'function') { toggleFetchMateri('{{tab2Url}}', '{{default tab2Value 'installment'}}') } else { {{default state 'tab'}} = '{{default tab2Value 'installment'}}' }"
+    :class="{{default state 'tab'}} === '{{default tab2Value 'installment'}}'
+      ? 'bg-[#003060] text-white border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+      : 'bg-white text-[#003060] border-[#003060] hover:bg-slate-50'"
+    class="flex-1 flex items-center justify-center h-11 px-4 border rounded-lg font-inter font-semibold text-base leading-6 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40"
+  >
+    {{default tab2Label 'Installment'}}
+  </button>
+</div>

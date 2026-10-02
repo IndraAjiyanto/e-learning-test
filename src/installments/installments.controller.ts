@@ -16,6 +16,7 @@ import { UpdateInstallmentsDto } from './dto/update-installments.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('installment')
@@ -76,7 +77,11 @@ export class InstallmentsController {
       createCicilanDto.month = Number(createCicilanDto.month) as 3;
 
       await this.installmentsService.create(createCicilanDto);
-      req.flash('success', 'Installment created successfully');
+      flashToast(
+        req,
+        'Installment Created',
+        'The installment plan has been added successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create installment');
@@ -109,7 +114,11 @@ export class InstallmentsController {
         id,
         updateCicilanDto,
       );
-      req.flash('success', 'Installment updated successfully');
+      flashToast(
+        req,
+        'Installment Updated',
+        'The changes to this installment plan have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${installments.course.id}`);
     } catch (error: any) {
       const installments = await this.installmentsService.findOne(id);
@@ -129,7 +138,11 @@ export class InstallmentsController {
       const installments = await this.installmentsService.findOne(id);
       const courseId = installments.course.id;
       await this.installmentsService.remove(id);
-      req.flash('success', 'Installment deleted successfully');
+      flashToast(
+        req,
+        'Installment Deleted',
+        'The installment plan has been removed successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       const installments = await this.installmentsService.findOne(id);

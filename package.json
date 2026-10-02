@@ -7,13 +7,14 @@
   "license": "UNLICENSED",
   "scripts": {
     "build:editor": "esbuild src/common/public/js/editor.js --bundle --outfile=src/common/public/assets/editor.bundle.js --minify",
+    "build:icons": "node scripts/generate-icon-index.js",
     "build:script": "esbuild src/common/public/js/alpine.js --bundle --outfile=src/common/public/assets/main.js --minify",
-    "build": "nest build && npm run build:css:prod && npm run build:script && npm run build:editor",
+    "build": "nest build && npm run build:css:prod && npm run build:script && npm run build:editor && npm run build:icons",
     "build:css": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/css/style.css --watch",
     "build:css:prod": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/css/style.css --minify",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "concurrently \"npm run build:css\" \"npm run build:script\" \"npm run build:editor\" \"nest start --watch\"",
+    "start:dev": "npm run build:icons && concurrently \"npm run build:css\" \"npm run build:script\" \"npm run build:editor\" \"nest start --watch\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node -r tsconfig-paths/register dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -29,8 +30,11 @@
     "migrate:run": "npm run build && npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "migrate:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
     "seed": "node dist/database/seeds/user.seed.js",
+    "seed:account": "node dist/database/seeds/account.seed.js",
     "seed:content": "node dist/database/seeds/content.seed.js",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/data-source.ts"
+    "seed:student": "node dist/database/seeds/student.seed.js",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/data-source.ts",
+    "test:ui": "node test/ui/design-check.mjs"
   },
   "dependencies": {
     "@alpinejs/collapse": "^3.15.12",
@@ -150,6 +154,7 @@
     "globals": "^16.0.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
+    "playwright": "^1.63.0",
     "postcss": "^8.4.31",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",

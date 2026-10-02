@@ -22,13 +22,22 @@ describe('InvoiceService', () => {
   const mockClient = {
     getInvoiceById: jest.fn(),
     createInvoice: jest.fn(),
+    expireInvoice: jest.fn(),
   };
 
   beforeEach(async () => {
+    mockClient.getInvoiceById.mockReset();
+    mockClient.createInvoice.mockReset();
+    mockClient.expireInvoice.mockReset();
     invoiceRepo = { save: jest.fn((x) => Promise.resolve(x)) };
-    paymentRepo = { findOne: jest.fn(), save: jest.fn((x) => Promise.resolve(x)) };
+    paymentRepo = {
+      findOne: jest.fn(),
+      save: jest.fn((x) => Promise.resolve(x)),
+    };
     userCourseRepo = { findOne: jest.fn() };
-    paymentsService = { addUserToCourse: jest.fn().mockResolvedValue(undefined) };
+    paymentsService = {
+      addUserToCourse: jest.fn().mockResolvedValue(undefined),
+    };
     installmentService = {
       findByNo: jest.fn(),
       save: jest.fn((x) => Promise.resolve(x)),
@@ -103,7 +112,9 @@ describe('InvoiceService', () => {
     });
 
     it('returns early when payment not in process', async () => {
-      paymentRepo.findOne.mockResolvedValue(makePayment({ process: 'approved' }));
+      paymentRepo.findOne.mockResolvedValue(
+        makePayment({ process: 'approved' }),
+      );
       const result = await service.settleStuckPayment('p1');
       expect(paymentRepo.save).not.toHaveBeenCalled();
       expect(result!.process).toBe('approved');
@@ -131,9 +142,7 @@ describe('InvoiceService', () => {
     });
 
     it('sets dpPaidAt for installment payment without re-enrolling', async () => {
-      paymentRepo.findOne.mockResolvedValue(
-        makePayment({ installment: {} }),
-      );
+      paymentRepo.findOne.mockResolvedValue(makePayment({ installment: {} }));
       mockClient.getInvoiceById.mockResolvedValue({
         status: 'PAID',
         paid_at: '2026-02-02T00:00:00.000Z',
@@ -143,7 +152,9 @@ describe('InvoiceService', () => {
       await service.settleStuckPayment('p1');
 
       expect(paymentRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ dpPaidAt: new Date('2026-02-02T00:00:00.000Z') }),
+        expect.objectContaining({
+          dpPaidAt: new Date('2026-02-02T00:00:00.000Z'),
+        }),
       );
       expect(paymentsService.addUserToCourse).not.toHaveBeenCalled();
     });
@@ -157,6 +168,31 @@ describe('InvoiceService', () => {
       expect(paymentRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({ process: 'rejected' }),
       );
+    });
+
+    it('returns already-approved payment without calling Xendit', async () => {
+      paymentRepo.findOne.mockResolvedValue(
+        makePayment({ process: 'approved' }),
+      );
+      const result = await service.settleStuckPayment('p1');
+      expect(mockClient.getInvoiceById).not.toHaveBeenCalled();
+      expect(result!.process).toBe('approved');
+    });
+
+    it('returns payment without invoice without error', async () => {
+      paymentRepo.findOne.mockResolvedValue(makePayment({ invoice: null }));
+      const result = await service.settleStuckPayment('p1');
+      expect(result!.process).toBe('process');
+    });
+
+    it('keeps process when Xendit returns PENDING', async () => {
+      paymentRepo.findOne.mockResolvedValue(makePayment());
+      mockClient.getInvoiceById.mockResolvedValue({ status: 'PENDING' });
+
+      const result = await service.settleStuckPayment('p1');
+
+      expect(paymentRepo.save).not.toHaveBeenCalled();
+      expect(result!.process).toBe('process');
     });
   });
 
@@ -199,6 +235,124 @@ describe('InvoiceService', () => {
         ),
       ).rejects.toThrow('Unauthorized');
       delete process.env.XENDIT_CALLBACK_TOKEN;
+    });
+
+    it('updates invoice status, channel, and paid_at when full payment PAID', async () => {
+      installmentService.findByNo.mockResolvedValue(null);
+      const invoiceObj = { id: 'inv1', status: 'pending', paid_at: null, payment_method: null, xendit_payment_channel: null };
+      const paymentObj = {
+        id: 'p1',
+        no: 'INV-12345',
+        process: 'process',
+        invoice: invoiceObj,
+        user: { id: 'u1' },
+        course: { id: 'c1' },
+        installment: null,
+      };
+      paymentRepo.findOne.mockResolvedValue(paymentObj);
+      userCourseRepo.findOne.mockResolvedValue(null);
+
+      await service.handleXenditWebhook(
+        {
+          external_id: 'INV-12345',
+          status: 'PAID',
+          payment_method: 'BANK_TRANSFER',
+          payment_channel: 'BCA',
+        },
+        '',
+      );
+
+      expect(paymentRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ process: 'approved' }),
+      );
+      expect(invoiceRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'paid',
+          payment_method: 'BANK_TRANSFER',
+          xendit_payment_channel: 'BCA',
+        }),
+      );
+      expect(paymentsService.addUserToCourse).toHaveBeenCalledWith('u1', 'c1');
+    });
+
+    it('marks invoice status expired when webhook status is EXPIRED', async () => {
+      installmentService.findByNo.mockResolvedValue(null);
+      const invoiceObj = { id: 'inv1', status: 'pending', expired_at: null };
+      const paymentObj = {
+        id: 'p1',
+        no: 'INV-12345',
+        process: 'process',
+        invoice: invoiceObj,
+        installment: null,
+      };
+      paymentRepo.findOne.mockResolvedValue(paymentObj);
+
+      await service.handleXenditWebhook(
+        { external_id: 'INV-12345', status: 'EXPIRED' },
+        '',
+      );
+
+      expect(paymentRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ process: 'rejected' }),
+      );
+      expect(invoiceRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'expired' }),
+      );
+    });
+  });
+
+  describe('expireAndClearInvoice', () => {
+    it('menutup invoice di Xendit lalu mengosongkan field', async () => {
+      mockClient.expireInvoice.mockResolvedValue({});
+      const invoice: any = {
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+
+      await service.expireAndClearInvoice(invoice);
+
+      expect(mockClient.expireInvoice).toHaveBeenCalledWith({
+        invoiceId: 'inv-1',
+      });
+      expect(invoice.xendit_invoice_id).toBe('');
+      expect(invoice.xendit_invoice_url).toBe('');
+      expect(invoiceRepo.save).toHaveBeenCalledWith(invoice);
+    });
+
+    it('tetap mengosongkan field walau expire Xendit gagal', async () => {
+      mockClient.expireInvoice.mockRejectedValue(new Error('xendit down'));
+      const invoice: any = {
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+
+      await expect(
+        service.expireAndClearInvoice(invoice),
+      ).resolves.toBeUndefined();
+
+      // Kegagalan Xendit tidak boleh menggagalkan perpindahan kanal manual.
+      expect(invoice.xendit_invoice_id).toBe('');
+      expect(invoice.xendit_invoice_url).toBe('');
+      expect(invoiceRepo.save).toHaveBeenCalledWith(invoice);
+    });
+
+    it('tidak memanggil Xendit kalau tidak ada invoice id', async () => {
+      const invoice: any = {
+        xendit_invoice_id: null,
+        xendit_invoice_url: '',
+      };
+
+      await service.expireAndClearInvoice(invoice);
+
+      expect(mockClient.expireInvoice).not.toHaveBeenCalled();
+      expect(invoiceRepo.save).toHaveBeenCalledWith(invoice);
+    });
+
+    it('tidak melakukan apa-apa untuk invoice kosong', async () => {
+      await service.expireAndClearInvoice(null as any);
+
+      expect(mockClient.expireInvoice).not.toHaveBeenCalled();
+      expect(invoiceRepo.save).not.toHaveBeenCalled();
     });
   });
 });

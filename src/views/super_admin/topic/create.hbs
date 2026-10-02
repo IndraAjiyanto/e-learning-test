@@ -72,6 +72,14 @@
       }
     }
   },
+  // Tombol Create selalu aktif: field kosong yang belum disentuh baru diberi
+  // pesan saat submit.
+  validateAll() {
+    this.validateField('icon', this.formData.icon);
+    ['name', 'description'].forEach((field) =>
+      ['id', 'en', 'ja'].forEach((lang) => this.validateField(field, lang, this.formData[field][lang])),
+    );
+  },
   canSubmit() {
     const descValid = Object.values(this.formValid.description).every(v => v);
     const namaValid = Object.values(this.formValid.name).every(v => v);
@@ -94,7 +102,7 @@ hasFormErrors() {
       method='post'
       class='space-y-6'
       x-data='{ loading: false }'
-      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
+      @submit='if (!canSubmit()) { $event.preventDefault(); validateAll(); $nextTick(() => $el.querySelector(".border-red-500")?.focus()); return; } loading = true;'
     >
 
       {{> super_admin/topic/create/name_input }}
@@ -105,8 +113,8 @@ hasFormErrors() {
       <div class='flex gap-2'>
         <button
           type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="(!canSubmit() || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          :disabled='loading'
+          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
         >
           <span

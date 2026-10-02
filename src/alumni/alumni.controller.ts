@@ -18,6 +18,7 @@ import { CreateAlumnusDto } from './dto/create-alumnus.dto';
 import { UpdateAlumnusDto } from './dto/update-alumnus.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -58,7 +59,11 @@ export class AlumniController {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       createAlumnusDto.courseId = courseId;
       await this.alumniService.create(createAlumnusDto);
-      req.flash('success', 'Alumni successfully created');
+      flashToast(
+        req,
+        'Alumni Created',
+        'The new alumni has been added to this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
@@ -90,7 +95,11 @@ export class AlumniController {
     try {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       await this.alumniService.create(createAlumnusDto);
-      req.flash('success', 'Alumni successfully created');
+      flashToast(
+        req,
+        'Alumni Created',
+        'The new alumni has been added to this category.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
@@ -182,7 +191,11 @@ export class AlumniController {
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
-      req.flash('success', 'Alumni successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The alumni information has been updated.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
@@ -220,7 +233,11 @@ export class AlumniController {
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
-      req.flash('success', 'Alumni successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The alumni information has been updated.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
@@ -276,7 +293,11 @@ export class AlumniController {
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
-      req.flash('success', 'Alumni successfully removed');
+      flashToast(
+        req,
+        'Alumni Removed',
+        'The alumni has been removed from this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');
@@ -300,7 +321,11 @@ export class AlumniController {
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
-      req.flash('success', 'Alumni successfully removed');
+      flashToast(
+        req,
+        'Alumni Deleted',
+        'The alumni has been permanently removed.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');

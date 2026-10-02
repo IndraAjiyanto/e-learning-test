@@ -25,6 +25,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { SessionService } from 'src/sessions/session.service';
 import { AnswersService } from 'src/answers/answers.service';
 import { UserAnswersService } from 'src/user_answers/user_answers.service';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 @UseGuards(AuthenticatedGuard)
 @Controller('question')
 export class QuestionsController {
@@ -66,10 +67,18 @@ export class QuestionsController {
         });
       }
 
-      req.flash('success', 'success create question');
+      flashToast(
+        req,
+        'Question Created',
+        'The new question has been added to this quiz.',
+      );
       return res.redirect(`/quiz/${quizId}`);
-    } catch (err) {
-      req.flash('error', err.message || 'unsuccess create question');
+    } catch (err: any) {
+      flashToastError(
+        req,
+        'Failed to Create Question',
+        err.message || 'Unable to create question.',
+      );
       return res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -110,33 +119,9 @@ export class QuestionsController {
       user: req.user,
       questions,
       session,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
-  @Roles('user')
-  @Get('quiz/user/:sessionId/:userId')
-  async findQuestionDetailsBySession(
-    @Param('sessionId') sessionId: string,
-    @Param('userId') userId: string,
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-    const session = await this.sessionService.findOne(sessionId);
-    const questions = await this.questionsService.findQuestions(sessionId);
-    const userAnswers = await this.userAnswersService.findAnswersByUser(userId);
-    const scores = await this.userAnswersService.calculateScore(
-      sessionId,
-      userId,
-    );
-    res.render('user/quiz/detail', {
-      user: req.user,
-      questions,
-      session,
-      userAnswers,
-      scores,
-    });
-  }
 
   @Roles('admin')
   @Patch(':questionId/:quizId')
@@ -165,10 +150,18 @@ export class QuestionsController {
         }
       }
       await this.questionsService.update(questionId, updateQuestionDto);
-      req.flash('success', 'successfuly update question');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The question information has been updated.',
+      );
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'unsuccess update question');
+      flashToastError(
+        req,
+        'Failed to Update Question',
+        error.message || 'Unable to update question.',
+      );
       res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -187,10 +180,18 @@ export class QuestionsController {
         await this.questionsService.deleteFile(questions.image);
       }
       await this.questionsService.remove(questionId);
-      req.flash('success', 'successfuly delete question');
+      flashToast(
+        req,
+        'Question Deleted',
+        'The question has been permanently removed.',
+      );
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'unsuccess delete question');
+      flashToastError(
+        req,
+        'Failed to Delete Question',
+        error.message || 'Unable to delete question.',
+      );
       res.redirect(`/quiz/${quizId}`);
     }
   }

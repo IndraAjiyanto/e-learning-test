@@ -9,6 +9,9 @@ import {
   UseGuards,
   Res,
   Req,
+  UsePipes,
+  ValidationPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
@@ -17,6 +20,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { UsersService } from 'src/users/users.service';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('quiz')
@@ -28,8 +32,9 @@ export class QuizController {
 
   @Roles('admin')
   @Post(':weeksId')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async create(
-    @Param('weeksId') weeksId: string,
+    @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
     @Body() createQuizDto: CreateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -37,10 +42,18 @@ export class QuizController {
     try {
       createQuizDto.weeksId = weeksId;
       await this.quizService.create(createQuizDto);
-      req.flash('success', 'Quiz created successfully');
+      flashToast(
+        req,
+        'Quiz Created',
+        'The new quiz has been added to this week.',
+      );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create quiz');
+      flashToastError(
+        req,
+        'Failed to Create Quiz',
+        error.message || 'Unable to create quiz.',
+      );
       res.redirect(`/week/${weeksId}`);
     }
   }
@@ -48,7 +61,7 @@ export class QuizController {
   @Roles('admin')
   @Get('formCreate/:weeksId')
   async formCreate(
-    @Param('weeksId') weeksId: string,
+    @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -63,6 +76,9 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
+    if (quiz?.syllabus) {
+      return res.redirect(`/syllabus/quiz/detail/${quiz.id}`);
+    }
     const scores = await this.quizService.findScore(quizId);
     const questions = await this.quizService.findQuestions(quizId);
     res.render('admin/quiz/detail', {
@@ -94,7 +110,36 @@ export class QuizController {
     const quiz = await this.quizService.findOne(quizId);
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
-    res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions });
+
+    // Riwayat nilai dulu hanya dua kolom - angka dan lencana lulus/gagal -
+    // tanpa nomor percobaan maupun tanggal, jadi empat baris "0 Failed"
+    // tidak bisa dibedakan satu sama lain. Nomor percobaan dihitung dari
+    // urutan waktu (terlama = percobaan 1), lalu dibalik supaya yang terbaru
+    // tampil paling atas.
+    const minScore = quiz?.minScore ?? 0;
+    const byTime = [...scores].sort(
+      (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt),
+    );
+    const attempts = byTime
+      .map((score, index) => ({
+        ...score,
+        attempt: index + 1,
+        passed: score.score >= minScore,
+      }))
+      .reverse();
+    const best = byTime.reduce((max, s) => Math.max(max, s.score), 0);
+
+    res.render('user/quiz/quiz', {
+      user: req.user,
+      quiz,
+      scores,
+      questions,
+      attempts,
+      best,
+      passed: byTime.length > 0 && best >= minScore,
+      questionCount: questions.length,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
@@ -120,39 +165,57 @@ export class QuizController {
     )?.course;
 
     if (check) {
-      res.render('user/user_profile/index', {
+      // res.render('user/user_profile/index', {
+      //   user: req.user,
+      //   userWithCourses,
+      //   logbooks,
+      //   portfolio,
+      //   activeCourse,
+      //   activeSection: 'quiz-start',
+      //   quizId,
+      //   questions,
+      //   check,
+      // });
+      res.render('user/quiz/start', {
         user: req.user,
-        userWithCourses,
-        logbooks,
-        portfolio,
-        activeCourse,
-        activeSection: 'quiz-start',
         quizId,
-        questions,
+        quiz,
+        pertanyaan: questions,
         check,
+        bareShell: true,
       });
     } else {
       const remainingTime = await this.quizService.getRemainingTime(
         req.user!.id,
         quizId,
       );
-      res.render('user/user_profile/index', {
+      // res.render('user/user_profile/index', {
+      //   user: req.user,
+      //   userWithCourses,
+      //   logbooks,
+      //   portfolio,
+      //   activeCourse,
+      //   activeSection: 'quiz-start',
+      //   quizId,
+      //   questions,
+      //   remainingTime,
+      //   check,
+      // });
+      res.render('user/quiz/start', {
         user: req.user,
-        userWithCourses,
-        logbooks,
-        portfolio,
-        activeCourse,
-        activeSection: 'quiz-start',
         quizId,
-        questions,
+        quiz,
+        pertanyaan: questions,
         remainingTime,
         check,
+        bareShell: true,
       });
     }
   }
 
   @Roles('admin')
   @Patch(':quizId')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async update(
     @Param('quizId') quizId: string,
     @Body() updateQuizDto: UpdateQuizDto,
@@ -161,10 +224,18 @@ export class QuizController {
   ) {
     try {
       await this.quizService.update(quizId, updateQuizDto);
-      req.flash('success', 'Quiz updated successfully');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The quiz information has been updated.',
+      );
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Quiz failed to updated ');
+      flashToastError(
+        req,
+        'Failed to Update Quiz',
+        error.message || 'Unable to update quiz.',
+      );
       res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -172,17 +243,21 @@ export class QuizController {
   @Roles('admin')
   @Delete(':quizId/:weeksId')
   async remove(
-    @Param('weeksId') weeksId: string,
-    @Param('quizId') quizId: string,
+    @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
+    @Param('quizId', new ParseUUIDPipe()) quizId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.quizService.remove(quizId);
-      req.flash('success', 'Quiz deleted successfully');
+      flashToast(req, 'Quiz Deleted', 'The quiz has been permanently removed.');
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Quiz Failed to deleted');
+      flashToastError(
+        req,
+        'Failed to Delete Quiz',
+        error.message || 'Unable to delete quiz.',
+      );
       res.redirect(`/week/${weeksId}`);
     }
   }

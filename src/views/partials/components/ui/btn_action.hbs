@@ -66,7 +66,8 @@
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
   {{#if xDisabled}}:disabled="{{xDisabled}}"{{/if}}
-  {{#if enabledClass}}{{#if disabledClass}}:class="({{xDisabled}}) ? '{{disabledClass}}' : '{{enabledClass}}'"{{/if}}{{/if}}
+  {{#if enabledClass}}{{#if disabledClass}}:class="({{xDisabled}}) ? '{{disabledClass}}' : '{{enabledClass}}'"{{/if}}
+  {{else}}{{#if xDisabled}}:class="({{xDisabled}}) ? 'opacity-50 cursor-not-allowed' : ''"{{/if}}{{/if}}
   class="
     inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
 
@@ -85,10 +86,6 @@
         {{/if}}
       {{/if}}
     {{/unless}}
-
-    {{#if xDisabled}}
-      {{xDisabled}} ? 'opacity-50 cursor-not-allowed' : ''
-    {{/if}}
 
     {{class}}
   "

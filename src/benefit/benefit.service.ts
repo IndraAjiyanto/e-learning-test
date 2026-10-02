@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,13 +12,28 @@ export class BenefitService {
     private readonly benefitRepository: Repository<Benefit>,
   ) {}
 
+  async count() {
+    return await this.benefitRepository.count();
+  }
+
   async create(createBenefitDto: CreateBenefitDto) {
+    const currentCount = await this.benefitRepository.count();
+    if (currentCount >= 5) {
+      throw new BadRequestException(
+        'Maksimal 5 benefit telah tercapai. Hapus atau edit benefit yang ada terlebih dahulu.',
+      );
+    }
     const benefit = await this.benefitRepository.create(createBenefitDto);
     return await this.benefitRepository.save(benefit);
   }
 
   async findAll() {
-    return await this.benefitRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.benefitRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
   async findOne(benefitId: string) {

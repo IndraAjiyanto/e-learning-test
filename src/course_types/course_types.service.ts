@@ -18,7 +18,38 @@ export class CourseTypesService {
   }
 
   async findAll() {
-    return await this.courseTypeRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.courseTypeRepository.find({
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  // Sumber data tabel /type-program (client-side fetch), sejajar dengan
+  // UsersService.findAllPaginated. `description` jsonb { id, en, ja } di-cast ke
+  // text supaya pencarian mengenai ketiga bahasa sekaligus, tanpa perlu tahu tab
+  // bahasa mana yang sedang aktif di UI.
+  async findAllPaginated(params: {
+    search?: string;
+    page: number;
+    limit: number;
+  }) {
+    const query = this.courseTypeRepository
+      .createQueryBuilder('course_type')
+      .orderBy('course_type.createdAt', 'DESC');
+
+    if (params.search) {
+      query.where(
+        '(course_type.nameClassesType ILIKE :search OR course_type.icon ILIKE :search OR CAST(course_type.description AS text) ILIKE :search)',
+        { search: `%${params.search}%` },
+      );
+    }
+
+    query.skip((params.page - 1) * params.limit).take(params.limit);
+
+    const [data, total] = await query.getManyAndCount();
+    return { data, total };
   }
 
   async findOne(courseTypeId: string) {

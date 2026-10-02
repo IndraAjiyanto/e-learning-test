@@ -18,6 +18,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -34,7 +35,11 @@ export class SocialController {
   ) {
     try {
       await this.socialService.create(createSocialDto);
-      req.flash('success', 'Social created successfully');
+      flashToast(
+        req,
+        'Social Media Created',
+        'The social media links have been added.',
+      );
       res.redirect('/social');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create social');
@@ -76,7 +81,11 @@ export class SocialController {
   ) {
     try {
       await this.socialService.update(id, updateSocialDto);
-      req.flash('success', 'Social updated successfully');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The social media links have been updated.',
+      );
       res.redirect('/social');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update social');
@@ -98,7 +107,11 @@ export class SocialController {
         res.redirect('/social');
       }
       await this.socialService.remove(id);
-      req.flash('success', 'Social deleted successfully');
+      flashToast(
+        req,
+        'Social Media Deleted',
+        'The social media links have been permanently removed.',
+      );
       res.redirect('/social');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete social');

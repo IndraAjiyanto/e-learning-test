@@ -10,9 +10,11 @@ import {
   Res,
   UseInterceptors,
   Delete,
+  Query,
   UseFilters,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -33,6 +35,19 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
+  /**
+   * Tab Portfolio sekarang dimuat per program, jadi halaman tujuan wajib
+   * membawa `courseId` program yang sedang dibuka. Tanpa itu setiap penyimpanan
+   * melempar student kembali ke program pertama yang ia ikuti, bukan ke
+   * program tempat ia sedang menyunting.
+   */
+  private portfolioRedirectUrl(courseId?: string) {
+    const query = courseId
+      ? `?tab=course-portfolio&courseId=${encodeURIComponent(courseId)}`
+      : '?tab=portfolio';
+    return `/users/profile${query}`;
+  }
+
   @Roles('user')
   @Post('upload-image')
   @UseInterceptors(
@@ -49,7 +64,11 @@ export class PortfoliosController {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolios failed to create');
+      flashToastError(
+        req,
+        'Portfolio not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/portfolios');
     }
   }
@@ -65,6 +84,12 @@ export class PortfoliosController {
     maxWidth: 1920,
     minHeight: 1000,
     maxHeight: 1080,
+    // Tipe dan ukuran berkas sudah lama dijanjikan keterangan di bawah kotak
+    // unggah ("JPG, JPEG, PNG, or GIF - max 5MB"), tetapi rute ini tidak
+    // memeriksa satu pun: berkas 40MB atau .bmp tetap lolos selama dimensinya
+    // pas. Sekarang yang dijanjikan layar dan yang dijaga server sama.
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'],
     folder: 'portfolio',
   })
   async create(
@@ -107,7 +132,7 @@ export class PortfoliosController {
       }
 
       req.flash('success', 'portofolios successfully upload');
-      res.redirect(`/program/${courseId}`);
+      res.redirect(this.portfolioRedirectUrl(courseId));
     } catch (error: any) {
       if (isAjax) {
         return res.status(400).json({
@@ -116,22 +141,13 @@ export class PortfoliosController {
         });
       }
 
-      req.flash('error', error.message || 'Failed to upload portofolios');
-      res.redirect(`/program/${createPortfolioDto.courseId || ''}`);
+      flashToastError(
+        req,
+        'Upload failed',
+        error.message || 'The image could not be uploaded. Please try again.',
+      );
+      res.redirect(this.portfolioRedirectUrl(createPortfolioDto.courseId));
     }
-  }
-
-  @Get()
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    const portfolio = await this.portfoliosService.findAll();
-    const category = await this.portfoliosService.findCategory();
-    const courseType = await this.portfoliosService.findCourseTypes();
-    res.render('portfolio', {
-      user: req.user,
-      portfolio,
-      category,
-      courseType,
-    });
   }
 
   @Roles('user')
@@ -161,7 +177,55 @@ export class PortfoliosController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    res.render('user/portofolios/create', { user: req.user, courseId });
+    res.render('user/portofolios/create', { user: req.user, courseId, bareShell: true });
+  }
+
+  @Roles('user')
+  @Get('fragment')
+  async fragment(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const userId = req.user?.id;
+    if (!userId || !courseId) {
+      return res.send('');
+    }
+
+    // Galeri ini menampilkan karya SETIAP student di program tersebut, jadi
+    // program yang boleh dibuka dibatasi ke yang benar-benar diikuti pemanggil.
+    // Tanpa baris ini `?courseId=` bisa diisi program mana saja.
+    if (!(await this.portfoliosService.isEnrolledInCourse(userId, courseId))) {
+      return res.send('');
+    }
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_portofolio/index',
+      {
+        // Satu berkas JSON untuk seluruh panel. Partial ini dimuat lewat
+        // loadCourseFragment yang menempelkannya dengan `innerHTML`, dan skrip
+        // yang disisipkan begitu TIDAK dieksekusi - jadi data tidak boleh lewat
+        // `window.x = ...` di dalam partial. `jsonSafe` menutup lubang `</script>`
+        // di dalam teks portfolio.
+        portfolioData: {
+          currentUserId: userId,
+          // Tombol Create Portfolio hanya muncul setelah student menyelesaikan
+          // seluruh week atau syllabus di program ini (user_courses.progress = true).
+          canCreatePortfolio: await this.portfoliosService.hasCompletedLearning(
+            userId,
+            String(courseId),
+          ),
+          course: await this.portfoliosService.findCourseForPortfolio(
+            String(courseId),
+          ),
+          items: await this.portfoliosService.findByCourse(
+            String(courseId),
+            userId,
+          ),
+        },
+        layout: false,
+      },
+    );
   }
 
   @Roles('user')
@@ -176,8 +240,7 @@ export class PortfoliosController {
     res.render('user/portofolios/detail', {
       user: req.user,
       portfolio,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
   @Roles('user')
@@ -188,12 +251,17 @@ export class PortfoliosController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const portfolio = await this.portfoliosService.findOne(portfolioId);
+    // Halaman formulir ikut dijaga, bukan hanya aksi simpannya: tanpa ini
+    // student lain tetap bisa membuka formulir edit karya orang lain hanya
+    // dengan menebak URL-nya, walau saving-nya nanti ditolak.
+    const portfolio = await this.portfoliosService.findOwnedOne(
+      portfolioId,
+      req.user?.id,
+    );
     res.render('user/portofolios/edit', {
       user: req.user,
       portfolio,
-      courseId,
-    });
+      courseId, bareShell: true });
   }
 
   @Roles('user')
@@ -216,8 +284,15 @@ export class PortfoliosController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isAjax =
+      req.xhr ||
+      (req.headers.accept && req.headers.accept.includes('application/json'));
+
     try {
-      const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
+      const oldPortfolio = await this.portfoliosService.findOwnedOne(
+        portfolioId,
+        req.user?.id,
+      );
 
       if (updatePortfolioDto.content) {
         await this.portfoliosService.ChangeImageEditorJS(
@@ -237,9 +312,21 @@ export class PortfoliosController {
         );
       }
 
-      updatePortfolioDto.image = updatePortfolioDto.image || [];
+      // Gambar lama yang dipertahankan dikirim lewat `keepImages`, bukan
+      // `image`: nama `image` dipakai juga oleh berkas yang diunggah, dan pada
+      // multipart keduanya bertabrakan - form edit lama mengirimnya sebagai
+      // `image[]` sehingga tidak pernah terbaca DTO, dan setiap penyimpanan
+      // menghapus seluruh gambar lamanya. `image` tetap dibaca sebagai
+      // cadangan untuk pemanggil lama.
+      const rawKeep = (req.body.keepImages ??
+        req.body['keepImages[]'] ??
+        updatePortfolioDto.image ??
+        []) as string | string[];
+      const keptImages = (Array.isArray(rawKeep) ? rawKeep : [rawKeep]).filter(
+        (url): url is string => typeof url === 'string' && url.length > 0,
+      );
       const combineImage = [
-        ...(updatePortfolioDto.image || []),
+        ...keptImages,
         ...(req.body.uploadedImageUrls || []),
       ];
       const newImageUrls = await this.portfoliosService.deleteUnusedImages(
@@ -250,6 +337,9 @@ export class PortfoliosController {
       const updateData = {
         title: updatePortfolioDto.title,
         description: updatePortfolioDto.description,
+        // `link` sempat tidak ikut di sini, jadi menyunting portfolio tidak
+        // pernah bisa mengubah tautan proyeknya.
+        link: updatePortfolioDto.link,
         image: newImageUrls,
         content: updatePortfolioDto.content,
         contentHtml: updatePortfolioDto.contentHtml,
@@ -257,11 +347,33 @@ export class PortfoliosController {
 
       await this.portfoliosService.update(portfolioId, updateData);
 
-      req.flash('success', 'Portfolios successfully updated');
-      return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
+      if (isAjax) {
+        return res.status(200).json({
+          success: true,
+          message: 'Portfolio successfully updated',
+        });
+      }
+
+      flashToast(
+        req,
+        'Portfolio updated',
+        'Your changes have been saved.',
+      );
+      return res.redirect(this.portfolioRedirectUrl(courseId));
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolios failed to update');
-      return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Failed to update portfolio',
+        });
+      }
+
+      flashToastError(
+        req,
+        'Portfolio not saved',
+        error.message || 'Please try again in a moment.',
+      );
+      return res.redirect(this.portfolioRedirectUrl(courseId));
     }
   }
 
@@ -273,19 +385,43 @@ export class PortfoliosController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isAjax =
+      req.xhr ||
+      (req.headers.accept && req.headers.accept.includes('application/json'));
+
     try {
-      const portfolio = await this.portfoliosService.findOne(portfolioId);
-      if (portfolio) {
-        for (const imageUrl of portfolio.image) {
-          await this.portfoliosService.deleteFile(imageUrl);
-        }
-        await this.portfoliosService.remove(portfolioId);
+      const portfolio = await this.portfoliosService.findOwnedOne(
+        portfolioId,
+        req.user?.id,
+      );
+      for (const imageUrl of portfolio.image ?? []) {
+        await this.portfoliosService.deleteFile(imageUrl);
       }
-      req.flash('success', 'Portfolios successfully deleted');
-      res.redirect(`/program/${courseId}`);
+      await this.portfoliosService.remove(portfolio);
+
+      if (isAjax) {
+        return res.status(200).json({
+          success: true,
+          message: 'Portfolio successfully deleted',
+        });
+      }
+
+      flashToast(req, 'Portfolio deleted', 'The portfolio has been removed.');
+      res.redirect(this.portfolioRedirectUrl(courseId));
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete portfolio');
-      res.redirect(`/program/${courseId}`);
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Failed to delete portfolio',
+        });
+      }
+
+      flashToastError(
+        req,
+        'Portfolio not deleted',
+        error.message || 'Please try again in a moment.',
+      );
+      res.redirect(this.portfolioRedirectUrl(courseId));
     }
   }
 }

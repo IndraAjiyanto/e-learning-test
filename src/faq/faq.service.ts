@@ -18,7 +18,12 @@ export class FaqService {
   }
 
   async findAll() {
-    return await this.faqRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.faqRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
   async findOne(id: string) {

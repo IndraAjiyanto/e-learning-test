@@ -70,6 +70,8 @@
   },
   "forgotPassword": {
     "title": "Lupa Kata Sandi",
+    "checkEmailTitle": "Periksa Email Anda!",
+    "checkEmailDesc": "Tautan verifikasi telah dikirimkan ke alamat email Anda. Silakan klik tautan tersebut untuk memverifikasi dan mengatur ulang kata sandi Anda.",
     "description": "Masukkan alamat email Anda di bawah ini dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.",
     "email": "Alamat Email",
     "placeholderEmail": "Masukkan Alamat Email Anda",
@@ -418,20 +420,38 @@
   "portfolio": {
     "title": "Portofolio",
     "description": "Jelajahi koleksi proyek luar biasa dari alumni bootcamp kami. Setiap portofolio menampilkan keterampilan teknis dan solusi kreatif.",
+    "sidebarTitle": "Penyaringan Karya",
     "filterTittle": "Filter Aktif",
     "resetFilters": "Reset",
     "noFilters": "Tidak ada filter aktif",
+    "searchLabel": "Pencarian",
+    "searchPlaceholder": "Cari judul, skill, atau kreator...",
+    "categoryLabel": "Kategori Bidang",
     "categoryTittle": "Kategori",
     "allCategory": "Semua Kategori",
     "searchCategoryPlaceholder": "Cari kategori...",
+    "classTypeLabel": "Tipe Kelas / Program",
     "classTypeTittle": "Tipe Kelas",
-    "allClassType": "Semua",
+    "allClassType": "Semua Tipe Kelas",
+    "allClassesShort": "Semua Kelas",
     "searchClassTypePlaceholder": "Cari tipe kelas...",
+    "totalAvailable": "Total Karya Tersedia:",
+    "projectUnit": "Proyek",
     "projectAvailable": "Proyek Tersedia",
+    "applyFilters": "Terapkan Filter",
+    "activeFilterPrefix": "Filter Aktif:",
+    "showingResults": "Menampilkan",
+    "fromResults": "dari",
+    "resultsUnit": "hasil",
+    "alumniRole": "Alumni Kesatria Academy",
     "detailButton": "Lihat Detail",
     "projectNotFound": "Proyek Tidak Ditemukan",
     "tryAdjusting": "Coba sesuaikan filter Anda untuk menemukan lebih banyak proyek.",
-    "resetAllFilters": "Reset Filter"
+    "resetAllFilters": "Reset Filter",
+    "generalCategory": "Umum",
+    "defaultClassType": "Program",
+    "untitledProject": "Proyek Tanpa Judul",
+    "defaultAuthor": "Alumni"
   },
   "blog": {
     "title": "Blog",
@@ -500,7 +520,11 @@
     "statAlumni": "Alumni",
     "statCareerGrowth": "Pertumbuhan Karir",
     "statHiringPartners": "Perusahaan Mitra",
-    "unknown": "Tidak Diketahui"
+    "unknown": "Tidak Diketahui",
+    "popup": {
+      "linkLabel": "Lihat semua cerita alumni",
+      "close": "Tutup"
+    }
   },
   "detailProgram": {
     "accountNumber": "Nomor Rekening",
@@ -658,7 +682,129 @@
     "programCompleted": "Program Diselesaikan",
     "completionDate": "Tanggal Penyelesaian",
     "projectDuration": "Durasi Proyek",
-    "months": "Bulan"
+    "months": "Bulan",
+    "noDescription": "Belum ada deskripsi proyek.",
+    "noOverview": "Belum ada ikhtisar proyek yang detail.",
+    "defaultWebTech": "Teknologi Web",
+    "defaultProgram": "SEMINAR - TAMPILAN PORTOFOLIO"
+  },
+  "payment": {
+    "shell": {
+      "back": "Kembali",
+      "defaultTitle": "Pendaftaran Program",
+      "description": "Selesaikan pembayaran Anda untuk memverifikasi pendaftaran dan mengaktifkan partisipasi Anda."
+    },
+    "stepper": {
+      "step1": {
+        "title": "Informasi Anda",
+        "subtitle": "Masukkan data"
+      },
+      "step2": {
+        "title": "Pembayaran",
+        "subtitle": "Biaya tuition"
+      },
+      "step3": {
+        "title": "Konfirmasi",
+        "subtitle": "Aktifkan akun"
+      }
+    },
+    "form": {
+      "batch": "Batch Program",
+      "fullName": "Nama Lengkap",
+      "fullNamePlaceholder": "Masukkan Nama Lengkap Anda",
+      "email": "Email",
+      "emailPlaceholder": "Masukkan Email Anda",
+      "whatsapp": "Nomor WhatsApp",
+      "whatsappPlaceholder": "Masukkan Nomor WhatsApp Anda",
+      "sourceLabel": "Bagaimana Anda mengetahui program Kesatria Academy?",
+      "sourcePlaceholder": "Pilih Sumber Informasi",
+      "agreementLabel": "Saya bersedia berpartisipasi dalam program hingga selesai",
+      "agreementTerms": "Dengan mencentang kotak ini, Anda mengonfirmasi komitmen untuk mengikuti seluruh sesi pembelajaran sesuai kurikulum yang telah dijadwalkan.",
+      "saveChanges": "Simpan Perubahan",
+      "sourceOptions": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "Teman",
+        "university": "Universitas",
+        "whatsappGroup": "Grup WhatsApp",
+        "webinarEvent": "Webinar/Event",
+        "website": "Website",
+        "other": "Lainnya"
+      }
+    },
+    "voucher": {
+      "title": "Diskon Voucher",
+      "placeholder": "Masukkan Kode Voucher",
+      "cancel": "Batal",
+      "checking": "Mengecek kode voucher...",
+      "typing": "Mengetik...",
+      "applied": "Kode voucher berhasil diterapkan!",
+      "invalid": "Kode voucher tidak valid atau telah kedaluwarsa.",
+      "apiNotFound": "Sistem sedang diperbarui, API sedang tidak tersedia.",
+      "checkFailed": "Terjadi kesalahan saat mengecek kode voucher."
+    },
+    "installment": {
+      "title": "Pembayaran Cicilan",
+      "subtitle": "Pilih metode pembayaran yang paling nyaman bagi Anda.",
+      "choosePeriod": "Pilih Periode Cicilan",
+      "months": "Bulan",
+      "schedule": "Jadwal Pembayaran",
+      "downPayment": "Uang Muka (DP)",
+      "payNowToEnroll": "Bayar sekarang untuk mendaftar",
+      "monthlyAfterDp": "Cicilan Bulanan (Setelah DP)",
+      "monthLabel": "Bulan",
+      "summaryTitle": "Ringkasan Pembayaran",
+      "installmentPlan": "Rencana Cicilan",
+      "perMonth": "/bulan",
+      "dpNote": "Bayar uang muka (DP) sekarang untuk konfirmasi pendaftaran. Sisa pembayaran dicicil setiap bulan.",
+      "planMeta": "(Pembayaran Cicilan -",
+      "monthUnit": "bulan)"
+    },
+    "summary": {
+      "title": "Selesaikan pembayaran Anda",
+      "fullPayment": "Pembayaran Penuh",
+      "promoPrice": "Harga Promo",
+      "coursePrice": "Harga Program",
+      "discountVoucher": "Diskon Voucher",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "payNow": "Bayar Sekarang",
+      "defaultCourseTitle": "Program",
+      "subtitle": "Pilih metode pembayaran yang paling nyaman untuk Anda."
+    },
+    "channel": {
+      "manualOnly": "Hanya pembayaran Manual (Bank Transfer) yang tersedia.",
+      "gatewayOnly": "Pembayaran cepat via Gateway (Xendit). Pembayaran manual sedang nonaktif.",
+      "allClosed": "Pembayaran untuk program ini sedang ditutup sementara.",
+      "gatewayTitle": "Pembayaran Gateway (Xendit)",
+      "gatewayHint": "Anda akan diarahkan ke halaman pembayaran Xendit setelah menekan tombol di bawah.",
+      "manualTitle": "Upload Bukti Pembayaran (Transfer Manual)",
+      "manualHint": "Transfer sesuai nominal di ringkasan, lalu kirim bukti transfer untuk diverifikasi admin (maks. 1x24 jam).",
+      "transferTo": "Transfer ke rekening berikut",
+      "copied": "Tersalin!",
+      "copyAccount": "Salin nomor rekening",
+      "accountName": "Atas nama",
+      "bankLabel": "Bank",
+      "manualInstruction": "Setelah transfer, upload bukti pembayaran. Admin akan memverifikasi maksimal 1x24 jam dan akun program akan aktif setelah disetujui.",
+      "uploadHint": "Upload bukti transfer (JPG/PNG, maks 5MB)",
+      "chooseFile": "Klik untuk memilih file",
+      "submit": "Kirim Bukti Pembayaran",
+      "uniqueNote": "Nomor unik pengajuan dibuat otomatis. Anda bisa memantau status di Riwayat Pembayaran.",
+      "fileTooLarge": "File terlalu besar",
+      "fileTooLargeBody": "Ukuran file maksimal 5MB."
+    },
+    "success": {
+      "title": "Terima kasih! Pembayaran Anda berhasil!",
+      "subtitle": "Kami akan segera menghubungi Anda dan program Anda sudah aktif.",
+      "imageAlt": "Pembayaran Berhasil",
+      "buttonText": "Kembali ke Beranda"
+    },
+    "toast": {
+      "paymentFailed": "Pembayaran gagal",
+      "processError": "Terjadi kesalahan saat memproses pembayaran.",
+      "connectionError": "Terjadi kesalahan koneksi saat menghubungi server pembayaran."
+    }
   },
   "historyPayment": {
     "title": "Riwayat Transaksi",
@@ -738,7 +884,87 @@
       "viewProgram": "Lihat Program",
       "noFreeProgram": "Tidak Ada Riwayat Program Gratis",
       "spanNoFreeProgram": "Anda belum mendaftar untuk kelas gratis. Mulai belajar hari ini!"
+    },
+    "filter": {
+      "dateRange": "Rentang Tanggal",
+      "fromDate": "Dari Tanggal",
+      "toDate": "Sampai Tanggal",
+      "paymentMethod": "Metode Pembayaran",
+      "paymentStatus": "Status Pembayaran",
+      "programCourse": "Program Kursus",
+      "clear": "Hapus",
+      "done": "Selesai",
+      "saveChanges": "Simpan Perubahan",
+      "reset": "Atur Ulang"
+    },
+    "noTransactions": "Tidak ada transaksi ditemukan",
+    "adjustFilters": "Coba sesuaikan filter atau kata kunci pencarian Anda.",
+    "resetFilters": "Atur Ulang Filter",
+    "searchPlaceholder": "Cari...",
+    "loading": "Memuat riwayat pembayaran Anda...",
+    "allMethods": "Semua Metode",
+    "allPrograms": "Semua Program",
+    "selectDateRange": "Pilih rentang tanggal",
+    "from": "Dari",
+    "until": "Sampai",
+    "noHistory": "Tidak ada riwayat",
+    "rangeTemplate": "Menampilkan {start}-{end} dari {total} riwayat",
+    "prev": "Halaman sebelumnya",
+    "next": "Halaman berikutnya",
+    "kind": {
+      "registration": "Pendaftaran",
+      "installment": "Pembayaran Cicilan",
+      "full": "Pembayaran Penuh"
     }
+  },
+  "transactionCard": {
+    "paymentMethod": "Metode Pembayaran",
+    "paymentStatus": "Status Pembayaran",
+    "schedule": "Jadwal",
+    "viewDetail": "Lihat Detail",
+    "installmentPlan": "Cicilan"
+  },
+  "transactionDetail": {
+    "paymentProof": "Bukti Pembayaran",
+    "invoiceImage": "Gambar Faktur",
+    "download": "Unduh",
+    "accountHolder": "Atas nama",
+    "bank": "Bank",
+    "email": "Email",
+    "name": "Nama",
+    "phone": "Nomor Telepon",
+    "keyword": "Kata Kunci",
+    "paymentInfo": "Informasi Pembayaran",
+    "price": "Harga",
+    "promoPrice": "Harga Promo",
+    "normalPrice": "Harga Normal",
+    "discount": "Diskon",
+    "promoCode": "Promo Code",
+    "total": "Total",
+    "programCategory": "Kategori Program",
+    "programName": "Nama Program",
+    "xenditLink": "Tautan Xendit",
+    "transferInstruction": "Transfer ke rekening berikut",
+    "uploadInstruction": "Upload bukti transfer (JPG/PNG, maks 5MB)",
+    "attachedProof": "Bukti Transfer Terlampir",
+    "viewOriginalFile": "Lihat file asli",
+    "uploadPaymentProof": "Upload Bukti Pembayaran",
+    "reupload": "Upload Ulang",
+    "pay": "Bayar",
+    "sendProof": "Kirim Bukti",
+    "sendMonthProof": "Kirim Bukti Bulan",
+    "monthlyInstallments": "Cicilan Bulanan",
+    "dueDate": "Jatuh Tempo",
+    "installmentPlan": "Rencana Cicilan",
+    "monthStatus": {
+      "paid": "Lunas",
+      "process": "Diproses",
+      "rejected": "Ditolak",
+      "due": "Jatuh tempo",
+      "upcoming": "Belum"
+    },
+    "paidProgress": "Lunas {paid} dari {total} ({percent}%)",
+    "uploadSizeAlert": "Ukuran file maksimal 5MB."
   },
   "profile": {
     "title": "Profil Saya",
@@ -770,6 +996,48 @@
     "seniorHighSchool": "SMA",
     "diploma": "Diploma (D3/D4)",
     "bachelorDegree": "Sarjana (S1)",
+    "welcome": "Selamat datang",
+    "belowProfileInfo": "Berikut adalah informasi profil Anda.",
+    "profilePhoto": "Foto Profil",
+    "changePhoto": "Ubah Foto",
+    "updatePhoto": "Perbarui foto profil",
+    "jpgPngHint": "JPG atau PNG, maks 5 MB.",
+    "account": "Akun",
+    "accountDesc": "Nama pengguna dan email yang Anda gunakan untuk masuk.",
+    "placeholderUsername": "Masukkan nama pengguna Anda",
+    "placeholderEmail": "Masukkan email Anda",
+    "placeholderGender": "Pilih jenis kelamin Anda",
+    "yourBiodata": "Biodata Anda",
+    "address": "Alamat",
+    "certificateNotice": "Sertifikat Anda dicetak dengan nama lengkap yang Anda simpan di sini.",
+    "completeness": "Kelengkapan profil",
+    "detailsFilledIn": "rincian terisi",
+    "of": "dari",
+    "saveNameFirstNotice": "Simpan nama lengkap Anda terlebih dahulu - sertifikat tidak dapat diterbitkan tanpanya.",
+    "security": "Keamanan",
+    "securityDesc": "Perbarui kata sandi yang Anda gunakan untuk masuk ke Kesatria Academy.",
+    "cropPhotoModal": {
+      "title": "Crop Foto Profil",
+      "description": "Sesuaikan area crop untuk foto profil Anda",
+      "apply": "Terapkan Crop"
+    },
+    "validation": {
+      "usernameRequired": "Nama pengguna wajib diisi.",
+      "usernameMin": "Nama pengguna minimal 3 karakter.",
+      "emailRequired": "Email wajib diisi.",
+      "emailInvalid": "Silakan masukkan alamat email yang valid.",
+      "fullNameRequired": "Nama lengkap wajib diisi.",
+      "fullNameMin": "Nama lengkap minimal 3 karakter.",
+      "phoneDigits": "Gunakan angka saja, opsional diawali + dan spasi.",
+      "phoneLength": "Nomor telepon harus 8 sampai 15 digit.",
+      "fileTypeNotAllowed": "Jenis berkas tidak diizinkan! Silakan unggah gambar JPG, JPEG, atau PNG saja.",
+      "fileSizeTooLarge": "Ukuran berkas terlalu besar! Maksimal 5MB.",
+      "readyToUpload": "Siap untuk diunggah",
+      "accountNotSaved": "Akun tidak tersimpan",
+      "biodataNotSaved": "Biodata tidak tersimpan",
+      "tryAgainLater": "Silakan coba lagi sebentar lagi.",
+      "failedToSave": "Gagal menyimpan. Silakan coba lagi."
+    },
     "editInfoProfile": {
       "title": "Edit Informasi Profil",
       "username": "Nama Pengguna",
@@ -779,11 +1047,13 @@
     },
     "editPassword": {
       "title": "Ubah Kata Sandi",
+      "subtitle": "Pilih kata sandi baru untuk akun Kesatria Academy kamu.",
       "currentPassword": "Kata Sandi Saat Ini",
       "placeholderCurrentPassword": "Masukkan kata sandi saat ini",
       "newPassword": "Kata Sandi Baru",
       "placeholderNewPassword": "Masukkan kata sandi baru",
       "confirmNewPassword": "Konfirmasi Kata Sandi Baru",
+      "placeholderConfirmNewPassword": "Konfirmasi kata sandi baru",
       "cancel": "Batal",
       "saveChanges": "Simpan Perubahan"
     },
@@ -843,6 +1113,20 @@
     "spanNoCompletedProgram": "Anda belum menyelesaikan program apa pun. Teruskan dan capai tujuan belajar Anda!"
   },
   "myPortfolio": {
+    "gallery": {
+      "editMine": "Sunting portofolio saya",
+      "mineNotice": "Anda sudah punya portofolio untuk program ini. Karya student lain ditampilkan di bawah.",
+      "projectCount": "proyek",
+      "scopeAll": "Semua student",
+      "scopeLabel": "Tampilkan",
+      "scopeMine": "Portofolio saya",
+      "sortLabel": "Urutkan",
+      "sortNewest": "Terbaru",
+      "sortOldest": "Terlama",
+      "sortTitle": "Judul A-Z",
+      "unknownType": "Kelas",
+      "yoursBadge": "Milik Anda"
+    },
     "title": "Portofolio Saya",
     "description": "Jelajahi koleksi proyek luar biasa dari alumni bootcamp kami. Setiap portofolio menampilkan keterampilan teknis dan solusi kreatif.",
     "filterTittle": "Filter Aktif",
@@ -859,6 +1143,20 @@
     "projectNotFound": "Proyek Tidak Ditemukan",
     "tryAdjusting": "Coba sesuaikan filter Anda untuk menemukan lebih banyak proyek.",
     "resetAllFilters": "Reset Filter",
+    "searchPortfolioPlaceholder": "Cari portofolio berdasarkan judul atau deskripsi...",
+    "noImage": "Tidak ada gambar yang diunggah",
+    "selectProgram": "Pilih Program",
+    "noProgramsEnrolled": "Belum terdaftar di program apa pun",
+    "programLockedNote": "Portofolio tetap terikat dengan program tempat ia dibuat.",
+    "chooseFile": "Pilih Berkas",
+    "noFileChosen": "Tidak ada berkas yang dipilih",
+    "allowedImageFormat": "JPG, JPEG, PNG, atau GIF · maks 5MB · 1900-1920 × 1000-1080 px",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "saveChanges": "Simpan Perubahan",
+    "cancel": "Batal",
+    "deleteConfirmTitle": "Hapus portofolio ini?",
+    "deleteConfirmDesc": "dan gambar yang diunggah bersamanya akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.",
     "createPortfolio": {
       "createYourPortfolio": "Buat Portofolio Anda",
       "overview": "Ikhtisar Proyek",
@@ -896,21 +1194,109 @@
     },
     "detailPortfolio": {
       "backProgram": "Kembali ke Program",
+      "backToList": "Kembali ke Daftar Portofolio",
       "description": "Pameran portofolio dan detail proyek",
       "projectDescription": "Deskripsi Proyek",
       "overview": "Ikhtisar Proyek",
+      "noOverview": "Belum ada ikhtisar proyek yang disertakan.",
       "projectLink": "Tautan Proyek",
       "visitProject": "Kunjungi Proyek",
       "technologiesUsed": "Teknologi yang Digunakan",
       "imageThumbnails": "Gambar Mini",
+      "studentProfile": "Profil Siswa",
+      "program": "Program",
+      "submitted": "Dikumpulkan",
+      "notRecorded": "Belum tercatat",
+      "shareTitle": "Bagikan Portofolio Ini",
+      "shareDescription": "Bagikan proyek ini ke media sosial Anda agar lebih banyak orang dapat melihatnya.",
+      "copy": "Salin",
+      "copied": "Tersalin!",
+      "instagramModalTitle": "Siapkan Postingan Instagram",
+      "instagramModalSubtitle": "Ikuti 3 langkah mudah berikut untuk membagikan portofolio Anda ke Instagram.",
+      "stepPreviewTitle": "1. Pratinjau & Unduh Gambar",
+      "instagramImageFormat": "Format siap diunggah ke Feed atau Story",
+      "downloadImage": "Unduh Gambar",
+      "downloading": "Mengunduh...",
+      "stepCaptionTitle": "2. Caption Postingan",
+      "captionBy": "Karya oleh",
+      "captionSeeMore": "Lihat selengkapnya di Kesatria Academy:",
+      "copyCaption": "Salin Caption",
+      "captionCopied": "Caption Tersalin!",
+      "openInstagram": "Buka Instagram",
+      "closeModal": "Tutup",
+      "instagramStep1": "Unduh gambar karya & salin caption yang sudah disiapkan.",
+      "instagramStep2": "Buka Instagram dan klik tombol (+) Buat Postingan.",
+      "instagramStep3": "Pilih gambar yang diunduh, lalu tempelkan (Paste) caption Anda.",
+      "noImageAvailable": "Tidak ada gambar pratinjau",
       "editPortfolio": "Edit Portofolio",
       "deletePortfolio": "Hapus Portofolio"
+    },
+    "header": {
+      "title": "Portofolio Saya",
+      "description": "Koleksi proyek Anda. Setiap portofolio menampilkan keterampilan teknis dan solusi yang Anda bangun selama program."
+    },
+    "search": {
+      "ariaLabel": "Cari portofolio",
+      "placeholder": "Cari portofolio berdasarkan judul atau deskripsi..."
+    },
+    "createButton": "Buat Portofolio",
+    "editButton": "Edit",
+    "deleteButton": "Hapus",
+    "viewDetailButton": "Lihat Detail",
+    "noImageUploaded": "Belum ada gambar yang diunggah",
+    "untitledPortfolio": "Portofolio Tanpa Judul",
+    "emptyStateCourse": {
+      "noProgramDescription": "Buka salah satu program Anda untuk melihat portofolionya.",
+      "noProgramTitle": "Belum ada program yang dibuka",
+      "title": "Belum Ada Portofolio",
+      "description": "Belum ada portofolio untuk program ini. Buat portofolio pertamamu sekarang.",
+      "lockedNotice": "Selesaikan seluruh materi pembelajaran terlebih dahulu untuk bisa membuat portofolio.",
+      "lockedNoticeBootcamp": "Selesaikan seluruh materi pembelajaran dan dapatkan persetujuan final assignment terlebih dahulu untuk bisa membuat portofolio."
+    },
+    "modal": {
+      "editTitle": "Edit Portofolio Anda",
+      "programLockedHint": "Portofolio tetap terikat dengan program tempat ia dibuat.",
+      "selectProgram": "Pilih Program",
+      "noProgramsEnrolled": "Belum ada program yang terdaftar",
+      "chooseFile": "Pilih Berkas",
+      "noFileChosen": "Tidak ada berkas yang dipilih",
+      "removeImage": "Hapus gambar",
+      "removeThisImage": "Hapus gambar ini",
+      "formatSubtitle": "JPG, JPEG, PNG, atau GIF · maks 5MB · 1900-1920 × 1000-1080 px",
+      "save": "Simpan",
+      "saveChanges": "Simpan Perubahan",
+      "saving": "Menyimpan...",
+      "cancel": "Batal"
+    },
+    "deleteConfirm": {
+      "title": "Hapus portofolio ini?",
+      "warningSuffix": "dan gambar yang diunggah bersamanya akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "delete": "Hapus"
+    },
+    "messages": {
+      "saveErrorTitle": "Portofolio tidak tersimpan",
+      "titleRequired": "Beri judul portofolio Anda terlebih dahulu.",
+      "imageRequiredCreate": "Unggah setidaknya satu gambar terlebih dahulu.",
+      "imageRequiredEdit": "Pertahankan setidaknya satu gambar, atau unggah gambar baru.",
+      "programRequired": "Pilih program tempat portofolio ini berada.",
+      "createdTitle": "Portofolio dibuat",
+      "createdDesc": "Proyek Anda kini ada di daftar portofolio Anda.",
+      "updatedTitle": "Portofolio diperbarui",
+      "updatedDesc": "Perubahan Anda telah disimpan.",
+      "tryAgain": "Silakan coba lagi sebentar lagi.",
+      "networkError": "Permintaan tidak dapat diproses. Periksa koneksi Anda dan coba lagi.",
+      "invalidType": "gunakan berkas JPG, PNG, atau GIF",
+      "fileTooLarge": "ukuran berkas lebih dari 5MB",
+      "unreadableImage": "berkas ini tidak dapat dibaca sebagai gambar",
+      "dimensionError": "px - ukuran harus 1900-1920 x 1000-1080"
     }
   },
   "startLearning": {
     "joinGroup": "Gabung Grup",
     "myLogbook": "Logbook Saya",
     "detailProgram": "Detail Program",
+    "portfolio": "Portofolio",
     "startLearning": "Mulai Belajar",
     "spanStartLearning": "Selesaikan setiap minggu untuk membuka yang berikutnya",
     "week": "Minggu",
@@ -925,6 +1311,8 @@
     "presentation": "Presentasi",
     "assignmentCompleted": "Tugas Selesai ✓",
     "startAssignment": "Mulai Tugas",
+    "assignmentUnderReview": "Tugas Dalam Tinjauan",
+    "reviseAssignment": "Revisi Tugas",
     "viewApprovedLogBook": "Lihat Logbook yang Disetujui",
     "updateRejectedLogBook": "Perbarui Logbook yang Ditolak",
     "logBookUnderReview": "Logbook Dalam Tinjauan",
@@ -943,47 +1331,160 @@
     "viewPortfolio": "Lihat Portofolio",
     "uploadPortfolio": "Unggah Portofolio",
     "completePreviousRequirements": "Selesaikan persyaratan sebelumnya untuk membuka",
-    "previousWeekQuizRequirement": "Kuis minggu sebelumnya harus memenuhi skor minimum untuk membuka konten ini."
+    "previousWeekQuizRequirement": "Kuis minggu sebelumnya harus memenuhi skor minimum untuk membuka konten ini.",
+    "allWeeksDone": "Seluruh minggu pada program ini sudah selesai.",
+    "inProgress": "Sedang berjalan",
+    "continue": "Lanjutkan",
+    "of": "dari",
+    "weeks": "minggu",
+    "completedLower": "selesai",
+    "programProgress": "Kemajuan program",
+    "sessions": "sesi",
+    "quiz": "Kuis",
+    "yourRecord": "Catatan Anda",
+    "assignment": "Tugas",
+    "certificate": "Sertifikat",
+    "locked": "Terkunci",
+    "sessionLower": "sesi",
+    "stepsDone": "langkah selesai",
+    "sessionProgress": "Kemajuan sesi",
+    "attendance": "Absensi",
+    "materialsLockedHint": "Isi absensi dulu untuk membuka materi sesi ini.",
+    "noMaterials": "Belum ada materi pada sesi ini.",
+    "notSubmitted": "Belum dikumpulkan",
+    "viewSubmission": "Lihat kiriman",
+    "noAssignments": "Tidak ada tugas pada sesi ini.",
+    "logbookHint": "Tuliskan apa yang Anda kerjakan pada sesi ini agar bisa ditinjau mentor.",
+    "viewLogbook": "Lihat logbook",
+    "sessionNav": "Navigasi sesi",
+    "previousSession": "Sesi sebelumnya",
+    "nextSession": "Sesi berikutnya",
+    "openSession": "Buka sesi",
+    "assignmentRejected": "Perlu revisi",
+    "assignmentInReview": "Sedang ditinjau",
+    "resubmitAssignment": "Kirim ulang",
+    "programTabs": "Bagian program",
+    "tabSessions": "Sesi",
+    "tabAttendance": "Absensi",
+    "assignmentIntro": "Tugas yang sudah dan belum Anda kerjakan pada program ini, dikelompokkan per minggu.",
+    "certificateNoCourse": "Buka salah satu program dulu untuk melihat sertifikatnya.",
+    "certificateReadyTitle": "Sertifikat Anda sudah siap",
+    "certificateReadyBody": "Anda telah menyelesaikan %s. Unduh sertifikatnya di bawah ini.",
+    "certificateLockedTitle": "Sertifikat belum tersedia",
+    "certificateLockedBody": "Selesaikan seluruh minggu pada program ini untuk membuka sertifikatnya.",
+    "downloadCertificate": "Unduh Sertifikat",
+    "totalWeeks": "Total minggu",
+    "remaining": "Tersisa",
+    "completedCount": "Selesai",
+    "attendanceHint": "Isi absensi untuk membuka materi tiap sesi.",
+    "submitted": "Terkirim",
+    "notSubmittedCount": "Belum dikirim",
+    "passed": "Lulus",
+    "inReviewCount": "Ditinjau",
+    "rejectedCount": "Perlu revisi",
+    "totalCount": "Total",
+    "attended": "Hadir",
+    "sessionsAttendedSuffix": "sesi dihadiri",
+    "assignmentsApprovedSuffix": "tugas disetujui",
+    "quizzesPassedSuffix": "kuis lulus",
+    "logbookApprovedSuffix": "logbook disetujui",
+    "attendedLower": "hadir",
+    "tasksLower": "tugas",
+    "submittedLower": "terkirim",
+    "quizLower": "kuis",
+    "noSessionsInWeek": "Belum ada sesi di minggu ini.",
+    "notRecorded": "Belum tercatat",
+    "reviewQuiz": "Lihat Kuis",
+    "quizLocked": "Selesaikan sesi minggu ini untuk membuka kuisnya.",
+    "editAttendanceUnavailable": "Kehadiranmu sudah tercatat. Hubungi mentor kalau perlu diubah.",
+    "markAttendanceShort": "Catat kehadiran",
+    "openTask": "Buka tugas",
+    "weekLockedHint": "Lulus kuis minggu sebelumnya untuk membuka minggu ini.",
+    "quizAvailable": "Tersedia",
+    "quizIntro": "Satu kuis tiap minggu. Lulus kuisnya untuk membuka minggu berikutnya.",
+    "quizNotUnlocked": "Belum terbuka",
+    "approved": "Disetujui",
+    "taskLower": "tugas",
+    "assignmentFile": "Berkas tugas",
+    "openFile": "Buka",
+    "yourSubmission": "Jawaban kamu",
+    "editSubmission": "Ubah jawaban",
+    "yourAnswer": "Jawaban kamu",
+    "answerHint": "Tautan GitHub, Google Drive, atau layanan berbagi berkas mana pun.",
+    "submitAnswerBtn": "Kirim jawaban",
+    "submittingBtn": "Mengirim...",
+    "cancelBtn": "Batal",
+    "submittedOn": "Dikirim",
+    "noAssignmentFile": "Tugas ini tidak dilampiri berkas.",
+    "finalAssignment": "Tugas Akhir",
+    "finalAssignmentIntro": "Satu tugas untuk program ini. Buka untuk membaca bahan tugas dan mengirim karyamu.",
+    "finalAssignmentNotSet": "Belum ada tugas akhir",
+    "finalAssignmentBrief": "Bahan Tugas",
+    "finalAssignmentReviseHint": "Baca catatan mentormu, lalu kirim karyamu lagi.",
+    "mentorNote": "Catatan mentor",
+    "backToAssignmentList": "Kembali ke daftar tugas",
+    "submissionFailed": "Karyamu belum terkirim. Silakan coba lagi.",
+    "finalAssignmentNoContent": "Belum ada isi untuk tugas akhir ini.",
+    "finalAssignmentLocked": "Tugas Akhir Masih Terkunci",
+    "finalAssignmentLockedHint": "Selesaikan seluruh minggu pembelajaran terlebih dahulu untuk membuka tugas akhir ini."
   },
   "attendance": {
     "title": "Formulir Kehadiran",
     "attendanceStatus": "Status Kehadiran",
+    "selectStatus": "Pilih status kehadiran",
     "present": "Hadir",
     "permission": "Izin",
     "sick": "Sakit",
     "absent": "Alpa",
     "noInformation": "Tidak Ada Informasi",
     "notes": "Catatan",
+    "placeholderNotes": "Masukkan catatan kehadiran...",
     "saveAttendance": "Simpan Kehadiran",
     "cancel": "Batal"
   },
   "material": {
+    "completeWeekHint": "Selesaikan setiap minggu untuk membuka yang berikutnya",
     "pdf": {
       "backToProgram": "Kembali ke Program",
       "noPDFSelected": "Tidak Ada PDF Dipilih",
       "selectPDFInstruction": "Pilih PDF dari daftar untuk mulai membaca",
-      "materiProgram": "Materi Program",
+      "materiProgram": "Materi PDF",
       "downloadPDF": "Unduh PDF",
-      "noMateriAvailable": "Tidak Ada Materi Tersedia",
+      "noMateriAvailable": "Tidak ada materi PDF yang tersedia untuk sesi ini",
       "spanNoMateriAvailable": "Materi akan segera ditambahkan"
     },
     "video": {
       "backToProgram": "Kembali ke Program",
       "noVideoSelected": "Tidak Ada Video Dipilih",
       "selectVideoInstruction": "Pilih video dari daftar untuk mulai menonton",
-      "materiProgram": "Materi Program",
-      "noMateriAvailable": "Tidak Ada Materi Tersedia",
+      "materiProgram": "Materi Video",
+      "noMateriAvailable": "Tidak ada materi Video yang tersedia untuk sesi ini",
       "spanNoMateriAvailable": "Materi akan segera ditambahkan"
     },
     "ppt": {
       "backToProgram": "Kembali ke Program",
       "noPresentationSelected": "Tidak Ada Presentasi Dipilih",
       "selectPPTInstruction": "Pilih presentasi dari daftar untuk mulai melihat",
-      "materiProgram": "Materi Program",
+      "materiProgram": "Materi PPT",
       "downloadPPT": "Unduh PPT",
-      "noMateriAvailable": "Tidak Ada Materi Tersedia",
+      "noMateriAvailable": "Tidak ada materi PPT yang tersedia untuk sesi ini",
       "spanNoMateriAvailable": "Materi akan segera ditambahkan"
-    }
+    },
+    "unavailableTitle": "Berkas ini tidak tersedia",
+    "unavailableBody": "Berkasnya sudah tidak ada di server. Silakan minta mentor mengunggahnya kembali."
+  },
+  "nonBootcamp": {
+    "title": "Silabus",
+    "scorePrefix": "Skor:",
+    "requirement": "Syarat: Minimal skor",
+    "requirementPrev": "pada modul sebelumnya",
+    "empty": "Belum ada silabus yang tersedia untuk program ini."
+  },
+  "joinGroup": {
+    "title": "Gabung Grup Kelas",
+    "description": "Bergabunglah dengan grup kelas Anda untuk menerima pengumuman penting, materi pembelajaran, jadwal, dan berkomunikasi dengan mentor serta sesama peserta.",
+    "joinNow": "Gabung Sekarang",
+    "linkNotShared": "Tautan grup belum dibagikan oleh mentor Anda."
   },
   "logbook": {
     "createLogBook": {
@@ -1016,6 +1517,7 @@
     },
     "detailLogBook": {
       "logbookDetail": "Detail Log Book",
+      "logbookDetailHint": "Dokumentasikan aktivitas belajar harian, kemajuan, dan kendala yang kamu temui di bawah ini.",
       "activity": "Aktivitas",
       "activityDetails": "Detail Aktivitas",
       "obstacles": "Kendala",
@@ -1045,7 +1547,17 @@
       "action": "Aksi",
       "noLogbookFound": "Logbook Tidak Ditemukan",
       "noLogBookDataMatch": "Tidak ada data logbook yang cocok dengan filter yang Anda pilih.",
-      "resetFilters": "Reset Filter"
+      "resetFilters": "Reset Filter",
+      "description": "Pantau dan lihat entri logbook yang Anda kirimkan selama program.",
+      "empty": "Belum ada entri logbook untuk program ini.",
+      "view": "Lihat",
+      "session": "Sesi",
+      "showing": "Menampilkan",
+      "of": "dari",
+      "entries": "entri",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "logbookEntry": "Entri Logbook"
     }
   },
   "quiz": {
@@ -1070,13 +1582,29 @@
       "next": "Berikutnya",
       "timeIsOver": "Waktu Habis",
       "submitAnswers": "Kirim Jawaban"
-    }
+    },
+    "duration": "Durasi",
+    "minutes": "menit",
+    "noTimeLimit": "Tanpa batas waktu",
+    "multipleChoice": "Pilihan ganda",
+    "questionsCount": "soal",
+    "attempts": "Percobaan",
+    "bestScore": "Nilai terbaik",
+    "attempt": "Percobaan",
+    "takenOn": "Dikerjakan",
+    "retakeQuiz": "Ulangi kuis",
+    "backToProgram": "Kembali ke program",
+    "overviewHint": "Uji pemahamanmu atas materi minggu ini.",
+    "alreadyPassed": "Kamu sudah lulus kuis ini. Mengulang akan menambah satu percobaan baru.",
+    "notPassedYet": "Nilaimu belum mencapai nilai minimum.",
+    "minute": "menit"
   },
   "assigment": {
     "backProgram": "Kembali ke Program",
     "assigment": "Tugas",
     "submitYourAnswer": "Kirim Jawaban Anda",
     "spanSubmitYourAnswer": "Masukkan tautan GitHub, Google Drive, atau tautan berbagi file online apa pun.",
+    "submitFileLink": "Kirim Tautan File",
     "submitAnswer": "Kirim Jawaban",
     "update": "Update Jawaban",
     "cancel": "Batal",
@@ -1098,6 +1626,9 @@
     "allTypesOfLearning": "Semua tipe pembelajaran",
     "allMethods": "Semua Metode",
     "showAllMethods": "Tampilkan semua metode pembelajaran",
+    "allStatuses": "Semua Status",
+    "ongoing": "Sedang Berjalan",
+    "completed": "Selesai",
     "learnFromAnywhere": "Belajar dari mana saja dengan kelas online",
     "inPersonClasses": "Kelas tatap muka di lokasi fisik"
   },
@@ -1154,6 +1685,83 @@
     "gallery": {
       "description": "Simaklah momen-momen penting dan pengalaman-pengalaman yang membuat program ini bermakna.",
       "seeAllOurGallery": "Lihat Semua Galeri Kami"
+    },
+    "hero": {
+      "paidProgramBadge": "Program Berbayar",
+      "freeProgramBadge": "Program Gratis",
+      "bootcampBadge": "BOOTCAMP",
+      "defaultDescription": "Program intensif pembelajaran komprehensif dirancang khusus untuk membimbing Anda menguasai keahlian nyata bersama para mentor industri terbaik.",
+      "btnRegister": "Daftar Sekarang",
+      "btnConsultation": "Konsultasi Gratis",
+      "quickStats": {
+        "startDate": "Tanggal Mulai",
+        "endDate": "Tanggal Selesai",
+        "month": "Bulan",
+        "learningSystem": "Sistem Belajar",
+        "onlineOffline": "Online & Offline",
+        "classCapacity": "Kapasitas Kelas",
+        "maxStudent": "Maks. {{count}} Siswa"
+      }
+    },
+    "advantage": {
+      "eyebrow": "KEUNGGULAN UTAMA",
+      "title": "Mengapa Belajar di Kesatria Academy?",
+      "mentoringTitle": "1-on-1 Mentoring",
+      "mentoringDesc": "Sesi privat mingguan bersama mentor ahli dari industri teknologi untuk review portofolio Anda secara mendalam.",
+      "portfolioTitle": "Portofolio Nyata",
+      "portfolioDesc": "Selesaikan 3 proyek capstone komprehensif mulai dari riset pengguna hingga prototipe interaktif.",
+      "careerTitle": "Dukungan Karier",
+      "careerDesc": "Pembuatan CV, persiapan wawancara, dan akses eksklusif ke jaringan mitra perekrut Kesatria Academy.",
+      "certificateTitle": "Sertifikat Kompetensi",
+      "certificateDesc": "Dapatkan sertifikat kelulusan resmi untuk membuktikan keahlian praktis Anda kepada perekrut."
+    },
+    "curriculum": {
+      "badge": "SILABUS BOOTCAMP",
+      "title": "Kurikulum Terstruktur & Teruji Industri",
+      "description": "Selesaikan kurikulum berbasis proyek praktik nyata yang dirancang selaras dengan standar operasional perusahaan digital saat ini.",
+      "modulePrefix": "Modul ",
+      "defaultModuleDesc": "Pelajari materi komprehensif pada modul ini dengan panduan intensif dari mentor praktisi industri."
+    },
+    "tools": {
+      "eyebrow": "SOFTWARE & TOOLS",
+      "title": "Tools yang Akan Anda Kuasai"
+    },
+    "schedule": {
+      "eyebrow": "INFORMASI JADWAL",
+      "title": "Format Kelas & Jadwal Sesi",
+      "startDate": "Tanggal Mulai",
+      "endDate": "Tanggal Selesai",
+      "registrationDeadline": "Tanggal Akhir Registrasi",
+      "everyday": "Setiap Hari",
+      "tueThu": "Selasa & Kamis",
+      "formatOption": "Opsi Format",
+      "hybridMeetup": "(Online Zoom & Offline Meetup)"
+    },
+    "pricing": {
+      "eyebrow": "INFORMASI INVESTASI",
+      "title": "Pilihan Paket Sesuai Kebutuhanmu",
+      "description": "Kami menyediakan program pendampingan yang optimal dengan skema pembiayaan bersahabat dan transparan.",
+      "cardTitle": "Mulai Kariermu Hari Ini",
+      "fullPayment": "Full Payment",
+      "installment": "Cicilan",
+      "save": "Hemat",
+      "offerEndsIn": "Penawaran Berakhir Dalam",
+      "days": "Hari",
+      "installmentInfo": "Informasi Cicilan",
+      "point1": "Uang Muka (DP) diperlukan sebagai pembayaran pertama untuk pendaftaran",
+      "point2": "Tanpa biaya tambahan atau bunga",
+      "point3": "Bayar bulanan sesuai jadwal di bawah ini",
+      "point4": "Akses penuh setelah pembayaran DP",
+      "registration": "Registrasi",
+      "startLearning": "Mulai Belajar",
+      "btnRegister": "Daftar Sekarang",
+      "btnConsultation": "Konsultasi Gratis"
+    },
+    "finalCta": {
+      "eyebrow": "PROSES PENDAFTARAN",
+      "titlePrefix": "Mulai Kariermu di",
+      "titleSuffix": "Sekarang",
+      "description": "Jangan lewatkan kesempatan untuk belajar secara eksklusif dengan bimbingan langsung dari praktisi industri. Kursi terbatas untuk menjaga kualitas mentoring."
     }
   },
   "special_program": {
@@ -1163,21 +1771,83 @@
       "placement": "Tingkat Penempatan",
       "eyebrow": "Program",
       "description": "Kuasai keterampilan siap industri lewat pelatihan praktik yang dibimbing mentor dan berbasis proyek nyata.",
-      "buttonViewProgram": "Lihat Program"
+      "tagText": "STUDI LUAR NEGERI PREMIUM",
+      "defaultHeadlineJapan": "Ubah Masa Depanmu di Jepang — dari Bahasa hingga Karier.",
+      "defaultHeadlineGeneral": "Ubah Masa Depanmu Bersama Kami — dari Pembelajaran hingga Karier.",
+      "defaultSubheadingJapan": "Perjalanan terstruktur untuk pembelajar ambisius: pelatihan bahasa Jepang intensif, kesiapan kerja, dan pendampingan terarah untuk kesuksesan jangka panjang.",
+      "defaultSubheadingGeneral": "Perjalanan terstruktur untuk pembelajar ambisius: pelatihan industri praktis, kesiapan kerja, dan pendampingan terarah untuk kesuksesan jangka panjang.",
+      "buttonRegister": "Daftar Sekarang",
+      "buttonViewProgram": "Lihat Program",
+      "curriculumChipJapan": "Kurikulum Kesiapan N5",
+      "curriculumChipGeneral": "Kurikulum Standar Industri",
+      "supportChip": "Dukungan Karier & Studi",
+      "snapshot1Title": "Kurikulum Komprehensif",
+      "snapshot1DescJapan": "Bahasa + Budaya + Persiapan Karier",
+      "snapshot1DescGeneral": "Praktis + Kesiapan Industri",
+      "snapshot2Title": "Pembelajaran Dibimbing Mentor",
+      "snapshot2Desc": "Instruktur Berpengalaman & Pendampingan",
+      "snapshot3TitleJapan": "Jalur Karier & Studi",
+      "snapshot3TitleGeneral": "Jalur Pengembangan Karier",
+      "snapshot3DescJapan": "Panduan Langkah Selanjutnya di Jepang",
+      "snapshot3DescGeneral": "Panduan untuk Pertumbuhan Profesional"
     },
     "program": {
       "title": "Program di",
+      "choosePrefix": "Pilih",
+      "chooseMiddle": "Program",
+      "japanProgram": "Program Jepang",
       "description": "Pilihlah program yang selaras dengan tujuan dan minat Anda.",
+      "defaultCardDesc": "Perjalanan terstruktur dari dasar hingga kesiapan kerja dan peluang karier jangka panjang.",
+      "language": "Bahasa",
+      "practical": "Praktikal",
+      "day": "Hari",
       "month": "Bulan",
       "student": "Siswa",
+      "quota": "Kuota",
+      "culture": "Budaya",
+      "career": "Karier",
+      "speaking": "Berbicara",
+      "listening": "Mendengarkan",
+      "reading": "Membaca",
+      "writing": "Menulis",
+      "applications": "Aplikasi",
+      "interviews": "Wawancara",
+      "planning": "Perencanaan",
+      "card1Title": "Program Jepang",
+      "card1Desc": "Perjalanan terstruktur dari dasar bahasa hingga kesiapan kerja dan peluang karier jangka panjang.",
+      "card2Title": "Pelatihan Bahasa Jepang",
+      "card2Desc": "Bangun keterampilan komunikasi yang kuat melalui pembelajaran terstruktur dan latihan interaktif.",
+      "card3Title": "Dukungan Karier & Studi",
+      "card3Desc": "Dapatkan dukungan untuk pendaftaran, wawancara, dan perencanaan masa depan Anda di Jepang.",
       "eyebrow": "Program Kami",
       "comingSoonTitle": "Segera Hadir",
       "comingSoonText": "Kami sedang menyiapkan sesuatu untuk kategori ini. Cek kembali nanti atau hubungi kami untuk detail."
     },
     "whyChooseUs": {
       "title": "Mengapa Memilih",
+      "titlePrefix": "Mengapa Memilih",
+      "titleSuffixJapan": "Program Jepang Kami",
+      "titleSuffixGeneral": "Program Kami",
       "description": "Dirancang untuk membekali mahasiswa dengan keterampilan yang relevan dengan industri melalui pembelajaran praktis dan langsung yang dipandu oleh para profesional berpengalaman.",
-      "eyebrow": "Kenapa Kami"
+      "descJapan": "Dapatkan keterampilan, kemahiran bahasa, dan pemahaman budaya yang dibutuhkan untuk percaya diri mengejar pendidikan atau peluang kerja di Jepang dengan bimbingan komprehensif dari para mentor berpengalaman.",
+      "descGeneral": "Dapatkan keterampilan, pengalaman praktis, dan kesiapan industri yang dibutuhkan dengan bimbingan komprehensif dari mentor berpengalaman.",
+      "eyebrow": "Kenapa Kami",
+      "card1TitleJapan": "Pelatihan Bahasa Jepang Komprehensif",
+      "card1TitleGeneral": "Kurikulum Industri Komprehensif",
+      "card1DescJapan": "Bangun kemampuan komunikasi bahasa Jepang yang kuat melalui pelajaran terstruktur mencakup berbicara, mendengar, membaca, dan menulis untuk penggunaan harian dan profesional.",
+      "card1DescGeneral": "Kuasai keterampilan yang banyak dicari melalui kurikulum terstruktur dan berbasis proyek yang dirancang bersama mitra industri.",
+      "card2Title": "Mentor & Praktisi Berpengalaman",
+      "card2Desc": "Belajar langsung dari praktisi industri berpengalaman yang memberikan umpan balik 1-on-1, wawasan praktis, dan bimbingan sepanjang perjalanan belajar Anda.",
+      "card3TitleJapan": "Persiapan & Sertifikasi JLPT",
+      "card3TitleGeneral": "Sertifikasi Industri & Portofolio",
+      "card3DescJapan": "Bersiap menghadapi JLPT dengan materi belajar komprehensif, latihan ujian, dan strategi terbukti untuk membantumu meraih level target.",
+      "card3DescGeneral": "Bangun portofolio terverifikasi berstandar industri dan raih sertifikat resmi untuk mempercepat perkembangan kariermu.",
+      "card4Title": "Dukungan Karier & Penempatan",
+      "card4Desc": "Dapatkan dukungan karier komprehensif, review CV, simulasi wawancara, dan akses eksklusif mitra perekrut untuk memulai perjalanan profesionalmu.",
+      "card5Title": "Praktik Langsung & Proyek Nyata",
+      "card5Desc": "Belajar melalui studi kasus dunia nyata, proyek klien langsung, dan alur kerja kolaboratif yang mensimulasikan kondisi tempat kerja sebenarnya.",
+      "card6Title": "Kesiapan Kerja & Soft Skills",
+      "card6Desc": "Tumbuhkan etos kerja profesional, kolaborasi tim, dan kemampuan komunikasi untuk unggul dalam tim mana pun."
     },
     "topic": {
       "title": "Topik Pelatihan",
@@ -1187,22 +1857,30 @@
     "alumni": {
       "title": "Kisah-kisah dari",
       "title2": "Alumni di",
+      "storiesTitle": "Kisah Nyata, Penempatan Nyata",
+      "storiesDescJapan": "Dengarkan langsung cerita para lulusan yang telah sukses membangun karier di Jepang.",
+      "storiesDescGeneral": "Dengarkan langsung cerita para lulusan yang telah sukses membangun karier melalui program kami.",
       "description": "Simak bagaimana program pelatihan internal kami telah membantu para peserta memperoleh keterampilan praktis, wawasan industri, dan kepercayaan diri yang lebih besar untuk karier masa depan mereka.",
       "footer": "Dan masih banyak lagi kisah inspiratif dari para alumni kami.",
       "allStories": "Lihat semua kisah alumni",
       "badge": "Kisah Alumni"
     },
     "gallery": {
+      "badge": "Kehidupan Kampus",
+      "campusTitle": "Kehidupan di Kesatria Academy",
+      "campusDesc": "Sekilas tentang lingkungan pelatihan kami, sesi belajar, dan kegiatan komunitas.",
       "title": "<span class='text-black'>Galeri</span> <span class='text-[#6EB6E5]'>Kami</span>",
       "description": "Simaklah momen-momen dan pengalaman penting yang menjadikan program ini bermakna.",
       "allGaleries": "Lihat Seluruh Galeri Kami"
     },
     "contact": {
       "title": "Transformasi Tim Anda Hari Ini",
-      "description": "Dapatkan proposal pelatihan yang disesuaikan untuk organisasi Anda",
-      "contact": "Hubungi kami"
+      "description": "Berdayakan tenaga kerja Anda dengan program pelatihan yang dirancang khusus untuk memenuhi kebutuhan industri Anda. Hubungi kami hari ini untuk informasi lebih lanjut.",
+      "btnRegister": "Daftar Sekarang",
+      "contact": "Hubungi Kami"
     },
     "faq": {
+      "eyebrow": "PERTANYAAN UMUM",
       "title": "<span class='text-black'>Pertanyaan yang Sering</span> <span class='text-[#6EB6E5]'>Diajukan</span>",
       "description": "Segala hal yang perlu Anda ketahui tentang program kami"
     }
@@ -1216,7 +1894,19 @@
       "capacity": "Kapasitas",
       "students": "Siswa",
       "regisUntil": "Pendaftaran dibuka hingga",
-      "regisNow": "Daftar Sekarang"
+      "regisNow": "Daftar Sekarang",
+      "consultation": "Konsultasi Gratis",
+      "freeProgramBadge": "PROGRAM GRATIS",
+      "defaultDescription": "Pelajari dasar-dasar analisis data dari awal untuk memahami wawasan data secara lebih terstruktur dan aplikatif.",
+      "quickStats": {
+        "startDate": "Tanggal Mulai",
+        "endDate": "Tanggal Selesai",
+        "learningSystem": "Sistem Pembelajaran",
+        "classCapacity": "Kapasitas Kelas",
+        "maxPrefix": "Maksimal",
+        "students": "Siswa",
+        "onlineOffline": "Online & Offline"
+      }
     },
     "navMenu": {
       "participants": "Peserta",
@@ -1232,11 +1922,45 @@
       "gallery": "Galeri",
       "faq": "Pertanyaan yang Sering Diajukan"
     },
+    "whatYouGet": {
+      "eyebrow": "KEUNGGULAN UTAMA",
+      "title": "Mengapa Belajar di Kesatria Academy?",
+      "card1Title": "Mentoring 1-on-1",
+      "card1Desc": "Sesi privat mingguan bersama mentor ahli dari industri untuk ulasan mendalam portofolio Anda.",
+      "card2Title": "Portofolio Nyata",
+      "card2Desc": "Selesaikan 3 proyek capstone komprehensif mulai dari riset pengguna hingga prototipe interaktif.",
+      "card3Title": "Dukungan Karier",
+      "card3Desc": "Pembuatan CV, persiapan wawancara, dan akses eksklusif ke jaringan mitra perekrut Kesatria Academy.",
+      "card4Title": "Sertifikat Kompetensi",
+      "card4Desc": "Dapatkan sertifikat kelulusan resmi untuk membuktikan keterampilan praktis Anda kepada perekrut."
+    },
+    "sylabus": {
+      "badgeTitle": "SILABUS KELAS",
+      "title": "Kurikulum Terstruktur & Terbukti di Industri",
+      "description": "Ikuti kurikulum berbasis proyek praktis yang dirancang sesuai standar operasional korporasi digital saat ini."
+    },
+    "tools": {
+      "eyebrow": "PERANGKAT LUNAK & ALAT",
+      "title": "Tools yang Akan Anda Kuasai"
+    },
+    "formatClass": {
+      "eyebrow": "INFORMASI JADWAL",
+      "title": "Format Kelas & Jadwal Sesi",
+      "startDate": "Tanggal Mulai",
+      "registrationEnd": "Tanggal Akhir Registrasi",
+      "sessionTime": "Jam Sesi",
+      "formatOption": "Opsi Format",
+      "methodOnline": "Online (Zoom Meeting)",
+      "methodOffline": "Offline (Tatap Muka)",
+      "methodHybrid": "Hybrid (Online Zoom & Tatap Muka)"
+    },
     "schedule": {
+      "scheduleHeader": "Jadwal",
       "title": "Tidak Perlu Pembayaran",
       "description": "Anda hanya perlu mendaftar untuk bergabung dengan program ini.",
+      "cardTitle": "Mulai Kariermu Hari Ini",
       "registration": "Pendaftaran",
-      "start": "Awal",
+      "start": "Mulai Belajar",
       "regisNow": "Daftar Sekarang"
     },
     "gallery": {
@@ -1244,8 +1968,71 @@
       "allGaleries": "Lihat Seluruh Galeri Kami"
     },
     "faq": {
+      "eyebrow": "FAQ",
       "title": "<span style='color: #0B1F3B;'>Pertanyaan yang Sering</span> <span style='color: #6EB6E5;'>Diajukan</span>",
       "description": "Telusuri pertanyaan umum dan dapatkan informasi yang Anda butuhkan dengan cepat dan mudah."
+    },
+    "cta": {
+      "eyebrow": "PROSES PENDAFTARAN",
+      "titlePrefix": "Mulai Kariermu di",
+      "titleSuffix": "Sekarang",
+      "description": "Jangan lewatkan kesempatan untuk belajar secara eksklusif dengan bimbingan langsung dari praktisi industri. Kursi terbatas untuk menjaga kualitas mentoring."
+    },
+    "registrationModal": {
+      "badge": "PENDAFTARAN SHORT CLASS",
+      "title": "Pendaftaran Short Class",
+      "subtitle": "Silakan lengkapi formulir di bawah ini untuk mengonfirmasi pendaftaran Anda",
+      "yourProgram": "Program Anda",
+      "fullName": "Nama Lengkap",
+      "fullNamePlaceholder": "Masukkan Nama Lengkap Anda",
+      "email": "Email",
+      "emailPlaceholder": "Masukkan Email Anda",
+      "whatsapp": "Nomor WhatsApp",
+      "whatsappPlaceholder": "Masukkan Nomor WhatsApp Anda",
+      "currentStatus": "Status Saat Ini",
+      "selectStatus": "Pilih status Anda saat ini",
+      "statuses": {
+        "universityStudent": "Mahasiswa",
+        "freshGraduate": "Lulusan Baru (Fresh Graduate)",
+        "jobSeeker": "Pencari Kerja",
+        "employee": "Karyawan",
+        "freelancer": "Freelancer",
+        "entrepreneur": "Wirausaha",
+        "other": "Lainnya"
+      },
+      "referalSource": "Dari mana Anda mengetahui program ini?",
+      "selectOption": "Pilih Opsi",
+      "referals": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "Teman",
+        "university": "Universitas",
+        "whatsappGroup": "Grup WhatsApp",
+        "webinar": "Webinar / Event",
+        "website": "Website",
+        "other": "Lainnya"
+      },
+      "willAttend": "Apakah Anda akan menghadiri program ini?",
+      "yesAttend": "Ya, saya akan hadir",
+      "noAttend": "Tidak, saya tidak bisa hadir",
+      "consentText": "Saya setuju menerima pembaruan seminar via email atau WhatsApp.",
+      "yesAgree": "Ya, saya setuju",
+      "btnCancel": "Batal",
+      "btnRegister": "Daftar Sekarang",
+      "errorTitle": "Pendaftaran Gagal",
+      "errorDefault": "Terjadi kesalahan saat mendaftar. Silakan coba lagi.",
+      "successTitle": "Pendaftaran Berhasil!",
+      "successDesc": "Pendaftaran program Anda telah dikonfirmasi. Kami akan mengirimkan pembaruan, pengingat, dan segala hal yang Anda butuhkan sebelum tanggal pelaksanaan.",
+      "btnContinueDashboard": "Lanjut ke Dashboard",
+      "validation": {
+        "selectStatus": "Silakan pilih status Anda saat ini.",
+        "selectSource": "Silakan pilih dari mana Anda mengetahui program ini.",
+        "alreadyRegistered": "Pendaftaran gagal atau kamu sudah pernah mendaftar program ini.",
+        "networkError": "Gagal menghubungi server. Periksa koneksi internet Anda dan coba lagi.",
+        "invalidFileType": "File harus berupa gambar JPG, JPEG, atau PNG",
+        "fileTooLarge": "Ukuran file maksimal 5MB"
+      }
     }
   },
   "categoryFreeProgram": {
@@ -1256,23 +2043,83 @@
       "title3": "Bersama Kesatria Academy",
       "button": "Lihat Program",
       "eyebrow": "Program Gratis",
-      "description": "Pilih jalur yang sesuai dengan tujuanmu dan mulai bangun keterampilan praktis hari ini."
+      "defaultEyebrow": "STUDI KE JEPANG PREMIUM",
+      "defaultCategoryName": "Kelas Singkat",
+      "defaultDescription": "Perjalanan terstruktur yang dirancang untuk pembelajar berambisi: pelatihan bahasa Jepang mendalam, kesiapan dunia kerja, dan bimbingan terarah untuk kesuksesan jangka panjang.",
+      "description": "Pilih jalur yang sesuai dengan tujuanmu dan mulai bangun keterampilan praktis hari ini.",
+      "chips": {
+        "n5Readiness": "Kurikulum kesiapan N5",
+        "careerSupport": "Dukungan karier & studi"
+      },
+      "snapshot": {
+        "item1Title": "Kurikulum komprehensif",
+        "item1Desc": "Bahasa + budaya + persiapan karier",
+        "item2Title": "Pembelajaran dipandu mentor",
+        "item2Desc": "Instruktur berpengalaman & dukungan penuh",
+        "item3Title": "Jalur karier & studi",
+        "item3Desc": "Panduan langkah selanjutnya di Jepang"
+      }
     },
     "program": {
       "title": "untukmu",
+      "description": "Pilihlah kelas yang sesuai dengan minat Anda dan mulailah mempelajari keterampilan praktis.",
       "description1": "Pilihlah kelas ",
       "description2": "yang sesuai dengan minat Anda dan mulailah mempelajari keterampilan praktis.",
       "free": "Gratis",
       "day": "Hari",
       "students": "Siswa",
+      "quota": "Kuota",
       "detailProgram": "Program Detail",
-      "eyebrow": "Daftar Program"
+      "eyebrow": "Daftar Program",
+      "tags": {
+        "language": "Bahasa",
+        "culture": "Budaya",
+        "career": "Karier",
+        "speaking": "Berbicara",
+        "listening": "Mendengarkan",
+        "reading": "Membaca",
+        "writing": "Menulis",
+        "applications": "Aplikasi",
+        "interviews": "Wawancara",
+        "planning": "Perencanaan"
+      },
+      "fallbackCards": {
+        "card1": {
+          "name": "Program Jepang",
+          "desc": "Perjalanan terstruktur dari dasar bahasa hingga kesiapan kerja dan peluang karier jangka panjang."
+        },
+        "card2": {
+          "name": "Program Jepang",
+          "desc": "Bangun keterampilan komunikasi yang kuat melalui pelajaran terstruktur dan latihan interaktif."
+        },
+        "card3": {
+          "name": "Dukungan Karier & Studi",
+          "desc": "Dapatkan dukungan untuk aplikasi, wawancara, dan perencanaan masa depan Anda di Jepang."
+        }
+      }
     },
     "benefit": {
       "title": "Manfaat Bergabung dengan",
+      "sectionTitlePrefix": "Mengapa Memilih",
+      "defaultProgramName": "Program Kami",
+      "sectionDesc": "Dapatkan keterampilan, kemahiran bahasa, dan pemahaman budaya yang dibutuhkan untuk meraih peluang studi atau karier di Jepang dengan bimbingan komprehensif dari mentor berpengalaman.",
       "description1": "Manfaatkan layanan gratis kami semaksimal mungkin",
       "description2": "dengan manfaat pembelajaran yang berharga",
-      "eyebrow": "Manfaat"
+      "eyebrow": "Manfaat",
+      "items": {
+        "item1Title": "Pelatihan Bahasa Jepang Komprehensif",
+        "item1Desc": "Bangun keterampilan komunikasi bahasa Jepang yang kuat melalui pelajaran terstruktur yang mencakup berbicara, mendengar, membaca, dan menulis untuk penggunaan sehari-hari maupun profesional.",
+        "item2Title": "Instruktur Berpengalaman",
+        "item2Desc": "Belajar dari mentor berpengalaman yang memberikan wawasan praktis, bimbingan personal, dan metode pengajaran yang efektif di sepanjang perjalanan belajar Anda.",
+        "item3Title": "Persiapan Ujian JLPT",
+        "item3Desc": "Persiapkan diri untuk JLPT dengan materi belajar komprehensif, latihan ujian, dan strategi teruji untuk membantu Anda meraih level target.",
+        "item4Title": "Dukungan Karier & Studi",
+        "item4Desc": "Dapatkan bimbingan untuk melanjutkan studi, magang, atau peluang karier di Jepang, termasuk persiapan wawancara dan bantuan aplikasi.",
+        "item5Title": "Pembelajaran Praktik & Interaktif",
+        "item5Desc": "Belajar melalui kegiatan interaktif, percakapan kehidupan nyata, simulasi peran, dan latihan praktis yang membangun rasa percaya diri serta kemampuan komunikasi nyata.",
+        "item6Title": "Budaya Jepang & Kesiapan Kerja",
+        "item6Desc": "Pahami budaya Jepang, etika tempat kerja, dan komunikasi profesional untuk beradaptasi dengan percaya diri saat tinggal dan bekerja di Jepang."
+      }
     },
     "alumni": {
       "title": "Kisah dari Alumni",
@@ -1286,25 +2133,72 @@
       "description": "Simaklah momen-momen dan pengalaman penting yang menjadikan program ini bermakna.",
       "allGaleries": "Lihat Seluruh Galeri Kami"
     },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "<span class='text-black'>Pertanyaan yang Sering</span> <span class='text-[#6EB6E5]'>Diajukan</span>",
+      "description": "Punya pertanyaan? Temukan jawaban cepat mengenai detail program dan informasi lainnya di sini."
+    },
     "cta": {
-      "title": "Ambil Kesempatan Belajar Gratis Ini",
-      "description": "Bergabunglah dengan ribuan pembelajar yang sedang mengembangkan keterampilan praktis dan mempersiapkan karier masa depan mereka melalui",
-      "description2": "kami",
-      "button": "Bergabunglah Sekarang"
+      "title": "Transformasikan Tim Anda Sekarang",
+      "description": "Dapatkan proposal pelatihan khusus untuk organisasi Anda.",
+      "button": "Hubungi Kami"
     }
   },
   "categoryPaidProgram": {
     "hero": {
-      "explore": "Jelajahi Jalur Pembelajaran",
-      "consultation": "Konsultasi",
+      "badge": "Pendaftaran Terbuka",
+      "consultation": "Tonton ringkasan",
+      "description": "Bangun keterampilan siap kerja dari dasar lewat bootcamp terstruktur yang dibimbing mentor.",
+      "explore": "Lihat Program",
       "eyebrow": "Bootcamp",
-      "description": "Bangun keterampilan siap kerja dari dasar lewat bootcamp terstruktur yang dibimbing mentor."
+      "nowOpen": "Sekarang Terbuka!",
+      "registration": "Registrasi",
+      "startLearning": "Mulai Belajar",
+      "fallbackChip1": "Kurikulum kesiapan N5",
+      "fallbackChip2": "Dukungan karier & studi",
+      "feature1Title": "Kurikulum komprehensif",
+      "feature1Desc": "Bahasa + budaya + persiapan karier",
+      "feature2Title": "Bimbingan mentor",
+      "feature2Desc": "Instruktur berpengalaman & dukungan penuh",
+      "feature3Title": "Jalur karier & studi",
+      "feature3Desc": "Panduan untuk langkah selanjutnya di Jepang"
     },
     "program": {
-      "title": "Pilih Jalur Belajarmu",
-      "description": "Pilihlah program yang selaras dengan tujuan dan minat Anda.",
+      "title": "Kelas Singkat <span class=\"text-[#111827]\">untuk Anda</span>",
+      "description": "Pilih kelas singkat yang sesuai dengan minat Anda dan mulailah membangun keterampilan praktis.",
       "button": "Detail Program",
-      "eyebrow": "Jalur Belajar"
+      "explore": "Jelajahi program",
+      "exploreProgram": "Jelajahi program",
+      "eyebrow": "Jalur Belajar",
+      "online": "Online",
+      "day": "Hari",
+      "month": "Bulan",
+      "quota": "Kuota",
+      "fallbackCard1Title": "Program Jepang",
+      "fallbackCard1Desc": "Perjalanan terstruktur dari dasar bahasa hingga kesiapan kerja dan peluang karier jangka panjang.",
+      "fallbackCard2Title": "Pelatihan Bahasa Jepang",
+      "fallbackCard2Desc": "Bangun keterampilan komunikasi yang kuat melalui pembelajaran terstruktur dan latihan interaktif.",
+      "fallbackCard3Title": "Dukungan Karier & Studi",
+      "fallbackCard3Desc": "Dapatkan dukungan untuk aplikasi, wawancara, dan perencanaan masa depan Anda di Jepang."
+    },
+    "benefit": {
+      "title": "Mengapa Memilih",
+      "titleSuffix": " Kami?",
+      "description": "Dapatkan keterampilan, kemahiran berbahasa, dan pemahaman budaya yang dibutuhkan untuk percaya diri mengejar peluang studi atau karier di Jepang dengan bimbingan komprehensif dari mentor berpengalaman.",
+      "items": {
+        "item1Title": "Pelatihan Bahasa Jepang Komprehensif",
+        "item1Desc": "Bangun keterampilan komunikasi bahasa Jepang yang kuat melalui pembelajaran terstruktur mencakup percakapan, mendengar, membaca, dan menulis untuk penggunaan sehari-hari maupun profesional.",
+        "item2Title": "Instruktur Berpengalaman",
+        "item2Desc": "Belajar dari mentor berpengalaman yang memberikan wawasan praktis, bimbingan personal, dan metode pengajaran efektif di sepanjang proses belajar Anda.",
+        "item3Title": "Persiapan JLPT",
+        "item3Desc": "Persiapkan ujian JLPT dengan materi belajar komprehensif, latihan soal, dan strategi terbukti untuk membantu Anda mencapai target level yang diinginkan.",
+        "item4Title": "Dukungan Karier & Studi",
+        "item4Desc": "Dapatkan panduan untuk mengejar peluang studi, magang, atau berkarier di Jepang, termasuk persiapan wawancara dan bantuan aplikasi dokumen.",
+        "item5Title": "Pembelajaran Praktik & Interaktif",
+        "item5Desc": "Belajar melalui aktivitas interaktif, percakapan nyata, role-play, dan latihan praktis yang membangun kepercayaan diri serta kemampuan komunikasi dunia nyata.",
+        "item6Title": "Budaya Jepang & Kesiapan Kerja",
+        "item6Desc": "Pahami budaya Jepang, etika tempat kerja, dan komunikasi profesional agar percaya diri beradaptasi dengan kehidupan dan pekerjaan di Jepang."
+      }
     },
     "advantage": {
       "title": "Kuasai Ilmu Dasar Lebih Dahulu",
@@ -1320,22 +2214,42 @@
       "eyebrow": "Portofolio"
     },
     "alumni": {
-      "title": "Kisah dari",
+      "title": "Kisah Nyata, Penyaluran Nyata",
       "title2": "Alumni",
-      "description": "Simak pendapat para peserta kami mengenai pengalaman belajar mereka dan dampak dari kelas singkat kami.",
+      "description": "Pelajari bagaimana lulusan kami bertransisi ke peran teknik utama di industri global.",
       "footer": "Dan masih banyak lagi kisah inspiratif dari para alumni kami",
       "allStories": "Lihat semua kisah alumni",
-      "badge": "Kisah Alumni"
+      "badge": "Kisah Sukses Alumni"
     },
     "gallery": {
-      "title": "<span class='text-black'>Galeri</span> <span class='text-[#6EB6E5]'>Kami</span>",
-      "description": "Simaklah momen-momen dan pengalaman penting yang menjadikan program ini bermakna.",
+      "badge": "Aktivitas Akademi",
+      "title": "Kehidupan di Kesatria Academy",
+      "description": "Jelajahi momen nyata dari kelas interaktif, bootcamp tatap muka, dan hackathon developer kami.",
       "allGaleries": "Lihat Seluruh Galeri Kami"
     },
     "cta": {
-      "title": "Lulusan yang Sukses Berkarier di Teknologi Digital",
-      "description": "Sekarang giliran kamu untuk memulai karier di bidang teknologi.",
-      "button": "Jelajahi Jalur Pembelajaran"
+      "title": "Transformasi tim Anda hari ini",
+      "description": "Dapatkan proposal pelatihan yang disesuaikan untuk organisasi Anda.",
+      "button": "Hubungi Kami"
+    },
+    "faq": {
+      "eyebrow": "Pertanyaan",
+      "title": "Pertanyaan yang Sering Diajukan",
+      "description": "Punya pertanyaan? Berikut jawaban langsung untuk pertanyaan umum seputar jalur belajar dan penyaluran kerja kami.",
+      "q1": "Apa yang akan saya pelajari di program ini?",
+      "a1": "Anda akan mempelajari keterampilan praktis, alur kerja industri, dan menyelesaikan proyek nyata untuk mempersiapkan peluang karier.",
+      "q2": "Apakah program ini online atau offline?",
+      "a2": "Kami menyediakan opsi fleksibel: kelas live online interaktif dan sesi hybrid sesuai dengan program Anda.",
+      "q3": "Apakah saya membutuhkan pengalaman sebelumnya untuk mendaftar?",
+      "a3": "Tidak memerlukan pengalaman sebelumnya. Kami menyambut pemula dan membimbing langkah demi langkah dari dasar hingga teknik tingkat lanjut.",
+      "q4": "Apakah saya akan mendapatkan sertifikat setelah menyelesaikan program?",
+      "a4": "Ya. Setelah menyelesaikan kurikulum dan proyek akhir, Anda akan menerima sertifikat kelulusan resmi.",
+      "q5": "Bagaimana jika saya berhalangan hadir di kelas?",
+      "a5": "Semua sesi langsung direkam dan dapat diakses di platform pembelajaran kapan saja.",
+      "q6": "Bagaimana cara mendaftar?",
+      "a6": "Daftar melalui situs web kami dengan memilih program Anda dan melengkapi formulir pendaftaran.",
+      "q7": "Apakah ada dukungan karier setelah lulus?",
+      "a7": "Ya: review CV/portofolio, simulasi wawancara, dan koneksi ke mitra perekrut."
     }
   },
   "bdetail": {
@@ -1397,5 +2311,80 @@
       "description": "Dapatkan proposal pelatihan yang disesuaikan untuk organisasi Anda.",
       "button": "Hubungi Kami"
     }
+  },
+  "common": {
+    "back": "Kembali",
+    "breadcrumb": "Remah roti",
+    "home": "Beranda"
+  },
+  "userSidebar": {
+    "dashboard": "Dasbor",
+    "profile": "Profil",
+    "myLearning": "Pembelajaran Saya",
+    "myPortfolio": "Portofolio Saya",
+    "paymentHistory": "Riwayat Pembayaran"
+  },
+  "quizStart": {
+    "answered": "Terjawab",
+    "questionGrid": "Daftar soal",
+    "legendActive": "Soal aktif",
+    "legendAnswered": "Sudah dijawab",
+    "legendUnanswered": "Belum dijawab",
+    "instructions": "Cara mengerjakan",
+    "rule1": "Pilih jawaban yang paling tepat untuk setiap soal.",
+    "rule2": "Jawab semua soal sebelum mengumpulkan.",
+    "rule3": "Jawaban tidak dapat diubah setelah kuis dikumpulkan.",
+    "rule4": "Jawabanmu tersimpan otomatis selama mengerjakan.",
+    "answerAllFirst": "Jawab semua soal dulu untuk mengumpulkan.",
+    "timeLeft": "Sisa waktu"
+  },
+  "notification": {
+    "title": "Notifikasi",
+    "markAllAsRead": "Tandai semua telah dibaca",
+    "viewAll": "Lihat semua notifikasi",
+    "empty": "Belum ada notifikasi baru",
+    "categories": {
+      "session": "Session",
+      "week": "Week",
+      "syllabus": "Silabus",
+      "quiz": "Quiz",
+      "sessionUser": "Session User"
+    },
+    "mock": {
+      "sessionTitle": "Session Pembelajaran Baru",
+      "sessionDesc": "Session pembelajaran baru telah tersedia di kelas Anda. Silakan cek materi.",
+      "sessionTime": "10 mnt lalu",
+      "weekTitle": "Week Pembelajaran Dibuka",
+      "weekDesc": "Week baru telah dibuka! Akses modul pekan ini.",
+      "weekTime": "1 jam lalu",
+      "syllabusTitle": "Pembaruan Silabus",
+      "syllabusDesc": "Silabus baru ditambahkan ke kurikulum program Anda.",
+      "syllabusTime": "3 jam lalu",
+      "quizTitle": "Quiz Baru Siap Dikerjakan",
+      "quizDesc": "Uji pemahaman pada quiz terbaru sebelum batas waktu berakhir.",
+      "quizTime": "1 hari lalu",
+      "sessionUserTitle": "Aktivitas Login Baru",
+      "sessionUserDesc": "Sesi login berhasil tercatat pada perangkat baru.",
+      "sessionUserTime": "2 hari lalu"
+    }
+  },
+  "dashboard": {
+    "title": "Dasbor",
+    "welcomeBack": "Selamat datang kembali",
+    "welcomeSubtitle": "Terus belajar, terus berkembang. Pencapaian Anda berikutnya tinggal selangkah lagi!",
+    "ongoingCourses": "Kursus Berjalan",
+    "completedCourses": "Kursus Selesai",
+    "portfolioPublished": "Portofolio Dipublikasikan",
+    "continueLearning": "Lanjut Belajar",
+    "viewAllPrograms": "Lihat Semua Program",
+    "continueButton": "Lanjutkan",
+    "showing": "Menampilkan",
+    "of": "dari",
+    "course": "kursus",
+    "coursesPlural": "kursus",
+    "noCoursesInProgress": "Tidak ada kursus yang sedang berjalan saat ini. Bagus, atau mulai yang baru dari \"My Learning\".",
+    "noPrograms": "Anda belum bergabung dengan program apa pun",
+    "noProgramsDescription": "Jelajahi program kami dan pilih yang sesuai dengan tujuan Anda - dasbor Anda akan terisi begitu Anda mendaftar.",
+    "browsePrograms": "Jelajahi Program"
   }
 }

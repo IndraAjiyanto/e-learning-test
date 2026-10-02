@@ -21,6 +21,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -95,7 +96,11 @@ export class CategoriesController {
       }
 
       await this.categoriesService.create(createCategoriesDto);
-      req.flash('success', 'category successfully created');
+      flashToast(
+        req,
+        'Category Created',
+        'The new category has been added to Kesatria Academy.',
+      );
       res.redirect('/category');
     } catch (error: any) {
       req.flash('error', error.message || 'category failed to create');
@@ -139,6 +144,11 @@ export class CategoriesController {
       category.id,
     );
     if (category?.type === 'Special Program') {
+      const isJapan = Boolean(
+        category.name &&
+        (category.name.toLowerCase().includes('japan') ||
+          category.name === 'LPK'),
+      );
       res.render('special_program', {
         category,
         user: req.user,
@@ -147,6 +157,7 @@ export class CategoriesController {
         benefit_category,
         faqs,
         gallery,
+        isJapan,
       });
     } else if (category?.type === 'Paid Program') {
       const portfolio = await this.categoriesService.findPortfolioByCategory(
@@ -170,6 +181,7 @@ export class CategoriesController {
         benefit_category,
         alumni,
         gallery,
+        faqs,
       });
     }
   }
@@ -326,7 +338,11 @@ export class CategoriesController {
       }
 
       await this.categoriesService.update(categoryId, updateCategoriesDto);
-      req.flash('success', 'category successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The category information has been updated.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       console.log(error);
@@ -344,13 +360,21 @@ export class CategoriesController {
   ) {
     try {
       const category = await this.categoriesService.findOne(categoryId);
-      await this.categoriesService.deleteFile(category.icon);
-      await this.categoriesService.deleteFile(category.hero_section_image);
       await this.categoriesService.remove(categoryId);
-      req.flash('success', 'category successfully deleted');
+      if (category.icon) await this.categoriesService.deleteFile(category.icon);
+      if (category.hero_section_image) {
+        await this.categoriesService.deleteFile(category.hero_section_image);
+      }
+      flashToast(
+        req,
+        'Category Deleted',
+        'The category has been permanently removed.',
+      );
       res.redirect('/category');
     } catch (error: any) {
-      req.flash('success', 'category failed to delete');
+      const errorMessage = error.message || 'category failed to delete';
+      flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
+      req.flash('error', errorMessage);
       res.redirect('/category');
     }
   }

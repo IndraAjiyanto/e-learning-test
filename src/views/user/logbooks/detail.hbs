@@ -1,107 +1,152 @@
-<div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
-  <div class="max-w-4xl mx-auto px-6">
-    <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
-      <div class="flex justify-start mb-8">
-  <a href="/program/myProgram/{{user.id}}?courseId={{logbook.session.weeks.course.id}}"
-     class="btn bg-white inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-    </svg>
-    {{t "test.logbook.detailLogBook.backToProgram"}}
-  </a>
-</div>
-      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">{{t "test.logbook.detailLogBook.logbookDetail"}}</h2>
+{{!--
+  Halaman: Log Book Detail (area student)
+  Rute   : GET /logbooks/:id  (lihat logbooks.controller.ts)
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <!-- Kolom Kiri -->
-        <div class="space-y-6">
-          <!-- Activity -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.activity"}}</p>
-            <p class="text-gray-900 text-lg leading-relaxed">{{logbook.activity}}</p>
+  Hanya tampilan. Data yang ditampilkan sama persis dengan sebelumnya
+  (logbook.activity, logbook.activityDetails, logbook.obstacles,
+  logbook.otherDocumentation, logbook.process, user.username,
+  logbook.documentation); yang berubah adalah susunannya mengikuti desain
+  "Profile content" di Figma.
+
+  Kerangkanya (kartu putih rounded 22px, kartu info bg #F8FAFC, label huruf
+  besar, badge status bulat) sengaja mengikuti halaman yang sudah redesign,
+  `components/ui/learning/assignment_page/index`, supaya dua halaman
+  backoffice student ini terlihat satu keluarga.
+
+  Lebar kolom foto di Figma (821px) tidak dipakai: foto di sini berasal dari
+  unggahan peserta dengan rasio apa saja, jadi wadahnya dibuat selebar
+  konten dan tingginya dibatasi 480px seperti di desain.
+
+  Data: user, logbook
+--}}
+{{#> user/shell_frame/index
+      user=user
+      active='learning'
+      pageTitle=(t 'test.startLearning.myLogbook')
+      back=false
+      trail=(array
+        (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+        (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+        (obj
+          'label' (t 'test.startLearning.startLearning')
+          'href' (concat '/program/myProgram/' user.id '?courseId=' logbook.session.weeks.course.id))
+        (obj 'label' (t 'test.startLearning.myLogbook')))}}
+<div class="w-full max-w-[1540px] mx-auto flex flex-col items-start px-[20px] sm:px-[50px] pt-[30px] sm:pt-[50px] pb-[40px] sm:pb-[80px] gap-[24px] sm:gap-[38px] font-inter">
+
+  {{!-- Page Header --}}
+  <div class="w-full flex flex-col items-start gap-[6px]">
+    <div class="w-full flex flex-col items-start gap-[4px]">
+      <h1 class="w-full font-montserrat font-bold text-[24px] leading-[30px] sm:text-[34px] sm:leading-[42px] text-[#003060]">
+        {{t "test.logbook.detailLogBook.logbookDetail"}}
+      </h1>
+      <p class="w-full font-inter font-normal text-[14px] leading-[20px] text-[#718096]">
+        {{t "test.logbook.detailLogBook.logbookDetailHint"}}
+      </p>
+    </div>
+  </div>
+
+  {{!-- My Learning page --}}
+  <div class="w-full bg-white rounded-[22px] flex flex-col items-start">
+
+    {{!-- Learning workspace --}}
+    <div class="w-full flex flex-col items-start px-[16px] sm:px-[24px] pt-[20px] pb-[28px] gap-[18px]">
+
+      {{!-- metadata-container --}}
+      <div class="w-full flex flex-col items-start gap-[16px]">
+
+        {{!-- grid-row-1 --}}
+        <div class="w-full flex flex-col sm:flex-row items-stretch gap-[16px]">
+          <div class="w-full sm:flex-1 flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.detailLogBook.activity"}}</p>
+            <p class="w-full font-inter font-medium text-[14px] leading-[18px] text-[#0F172A] whitespace-pre-line break-words">{{logbook.activity}}</p>
           </div>
 
-          <!-- Activity Details -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.activityDetails"}}</p>
-            <p class="text-gray-900 text-lg leading-relaxed whitespace-pre-line">{{logbook.activityDetails}}</p>
-          </div>
-
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">                  
-                {{t "test.logbook.createLogBook.linkDocumentation"}}
-              </p>
-            <a href="{{logbook.otherDocumentation}}" target="_blank" class="text-gray-900 text-lg leading-relaxed whitespace-pre-line">{{logbook.otherDocumentation}}</a>
+          <div class="w-full sm:flex-1 flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.detailLogBook.obstacles"}}</p>
+            <p class="w-full font-inter font-medium text-[14px] leading-[18px] text-[#0F172A] whitespace-pre-line break-words">{{logbook.obstacles}}</p>
           </div>
         </div>
 
-        <!-- Kolom Kanan -->
-        <div class="space-y-6">
-          <!-- Obstacle -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.obstacles"}}</p>
-            <p class="text-gray-900 text-lg leading-relaxed">{{logbook.obstacles}}</p>
+        {{!-- grid-row-2 --}}
+        <div class="w-full flex flex-col sm:flex-row items-stretch gap-[16px]">
+          <div class="w-full sm:flex-1 flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.detailLogBook.activityDetails"}}</p>
+            <p class="w-full font-inter font-medium text-[14px] leading-[18px] text-[#0F172A] whitespace-pre-line break-words">{{logbook.activityDetails}}</p>
           </div>
 
-          <!-- User -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.user"}}</p>
-            <p class="text-gray-900 text-lg">{{user.username}}</p>
+          <div class="w-full sm:flex-1 flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.detailLogBook.user"}}</p>
+            <p class="w-full font-inter font-medium text-[14px] leading-[18px] text-[#0F172A] break-words">{{user.username}}</p>
+          </div>
+        </div>
+
+        {{!-- grid-row-3 --}}
+        <div class="w-full flex flex-col sm:flex-row items-stretch gap-[16px]">
+          <div class="w-full sm:flex-1 flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.createLogBook.linkDocumentation"}}</p>
+            <a href="{{logbook.otherDocumentation}}" target="_blank" rel="noopener noreferrer" class="w-full font-inter font-medium text-[14px] leading-[18px] text-[#2563EB] underline break-all hover:text-[#1D4ED8]">{{logbook.otherDocumentation}}</a>
           </div>
 
-          <!-- Status -->
-          <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <p class="text-lg font-semibold text-gray-700 mb-3">{{t "test.logbook.detailLogBook.status"}}</p>
-            <span class="inline-flex items-center px-4 py-2 rounded-full text-base font-semibold shadow-sm
-{{#if (roles logbook.process 'acc')}}
-                bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 border border-emerald-200
+          <div class="w-full sm:flex-1 flex flex-col items-start gap-[8px] p-[16px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.detailLogBook.status"}}</p>
+            <span class="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-full font-inter font-semibold text-[12px] leading-[16px]
+{{#if (roles logbook.process 'approved')}}
+              bg-[#F0FDF4] text-[#15803D]
 {{else if (roles logbook.process 'rejected')}}
-                bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200
-              {{else}}
-                bg-gradient-to-r from-slate-50 to-gray-50 text-slate-700 border border-slate-200
-              {{/if}}">
-              {{#if (roles logbook.process 'acc')}}
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
+              bg-[#FEF2F2] text-[#B42318]
+{{else}}
+              bg-[#FEF3C7] text-[#D97706]
+{{/if}}">
+              <span class="block size-[6px] shrink-0 rounded-full
+{{#if (roles logbook.process 'approved')}}
+                bg-[#22C55E]
+{{else if (roles logbook.process 'rejected')}}
+                bg-[#EF4444]
+{{else}}
+                bg-[#F59E0B]
+{{/if}}"></span>
+              {{#if (roles logbook.process 'approved')}}
                 {{t "test.logbook.detailLogBook.approved"}}
               {{else if (roles logbook.process 'rejected')}}
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
                 {{t "test.logbook.detailLogBook.rejected"}}
               {{else}}
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
                 {{t "test.logbook.detailLogBook.underReview"}}
               {{/if}}
             </span>
           </div>
         </div>
-      </div>
+      </div>{{!-- /metadata-container --}}
 
-      <!-- Documentation Section (Full Width) -->
-      <div class="mt-8 bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl border border-slate-200 shadow-sm">
-        <p class="text-lg font-semibold text-gray-700 mb-4">{{t "test.logbook.detailLogBook.photoDocumentation"}}</p>
+      {{!-- photo-documentation-section --}}
+      <div class="w-full flex flex-col items-start gap-[12px]" x-data="{ full:false }">
+        <p class="w-full font-inter font-semibold text-[12px] leading-[16px] uppercase text-[#94A3B8]">{{t "test.logbook.detailLogBook.photoDocumentation"}}</p>
+
         {{#if logbook.documentation}}
-          <div class="flex justify-center">
-            <img src="{{logbook.documentation}}" alt="Dokumentasi" 
-                 class="w-64 h-64 object-cover rounded-xl border-2 border-slate-300 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div @click="full=true" class="w-full flex justify-center p-2 bg-white border border-[#E2E8F0] rounded-[12px] cursor-zoom-in hover:border-[#93C5FD] transition-colors">
+            <img src="{{logbook.documentation}}" alt="Dokumentasi"
+                 class="w-full max-h-[480px] min-h-[240px] object-contain rounded-[8px]">
+          </div>
+          <p class="w-full text-center font-inter font-normal text-[12px] leading-[16px] text-[#94A3B8]">Klik gambar untuk fullscreen</p>
+
+          <div x-show="full" x-transition.opacity x-cloak @click.self="full=false" @keydown.escape.window="full=false" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 sm:p-8">
+            <button @click="full=false" class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[#0F172A] hover:bg-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <img src="{{logbook.documentation}}" alt="Fullscreen" class="max-h-[88vh] max-w-[92vw] w-auto h-auto object-contain rounded-xl bg-white p-1">
           </div>
         {{else}}
-          <div class="text-center py-8">
-            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-full flex flex-col items-center justify-center gap-[12px] py-[48px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px]">
+            <div class="size-16 rounded-full bg-white border border-[#E2E8F0] flex items-center justify-center">
+              <svg class="size-8 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <p class="text-lg text-slate-500 font-medium">{{t "test.logbook.detailLogBook.noDocumentation"}}</p>
+            <p class="font-inter font-medium text-[14px] leading-[18px] text-[#718096]">{{t "test.logbook.detailLogBook.noDocumentation"}}</p>
           </div>
         {{/if}}
-      </div>
+      </div>{{!-- /photo-documentation-section --}}
 
-    </div>
-  </div>
-</div>
+    </div>{{!-- /learning-workspace --}}
+  </div>{{!-- /my-learning-page --}}
+</div>{{!-- /profile-content --}}
+{{/user/shell_frame/index}}

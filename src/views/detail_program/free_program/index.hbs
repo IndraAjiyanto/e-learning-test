@@ -1,116 +1,122 @@
-<div class="w-full text-slate-900"
-    x-data="{
-    activeTab: localStorage.getItem('activeDetailTab') || 'info',
+<script>
+  function freeProgramDetail() {
+    return {
+      activeTab: localStorage.getItem('activeDetailTab') || 'info',
 
-    benefit: null,
-    faq: null,
-    flow: null,
-    mentor: null,
-    lang: '{{lang}}',
-    
-    // Status loading per tab
-    loading: { benefit: false, faq: false, flow: false, mentor: false },
-    fetched: { benefit: false, faq: false, flow: false, mentor: false },
+      benefit: null,
+      faq: null,
+      flow: null,
+      mentor: null,
+      lang: '{{lang}}',
+      
+      // Status loading per tab
+      loading: { benefit: false, faq: false, flow: false, mentor: false },
+      fetched: { benefit: false, faq: false, flow: false, mentor: false },
 
-    // Modal registrasi state
-    showModal: false,
-    fileError: '',
-    isValidFile: false,
-    previewUrl: null,
-    fileInputTouched: false,
-    submitting: false,
+      // Modal registrasi state
+      showModal: false,
+      fileError: '',
+      isValidFile: false,
+      previewUrl: null,
+      fileInputTouched: false,
+      submitting: false,
 
-    init() {
+      init() {
         const savedTab = localStorage.getItem('activeDetailTab');
         if (savedTab) this.activeTab = savedTab;
         
         this.fetchTab(this.activeTab);
 
         this.$watch('activeTab', value => {
-            localStorage.setItem('activeDetailTab', value);
+          localStorage.setItem('activeDetailTab', value);
         });
-    },
+      },
 
-    async fetchTab(tab) {
-      if (tab === 'info') return;
-      if (this.fetched[tab]) return;
-      
-      this.loading[tab] = true;
-      try {
-        const map = {
-          benefit: '/program/api/detail/{{course.id}}/benefit',
-          faq:     '/program/api/detail/{{course.id}}/faq',
-          flow:    '/program/api/detail/{{course.id}}/flow',
-          mentor:  '/program/api/detail/{{course.id}}/mentor'
-        };
-        const res = await fetch(map[tab]);
-        this[tab] = await res.json();
-        this.fetched[tab] = true;
-      } catch(e) {
-        console.error('Gagal mengambil data tab:', e);
-    } finally {
-        this.loading[tab] = false;
-    }
-    },
+      async fetchTab(tab) {
+        if (tab === 'info') return;
+        if (this.fetched[tab]) return;
+        
+        this.loading[tab] = true;
+        try {
+          const map = {
+            benefit: '/program/api/detail/{{course.id}}/benefit',
+            faq:     '/program/api/detail/{{course.id}}/faq',
+            flow:    '/program/api/detail/{{course.id}}/flow',
+            mentor:  '/program/api/detail/{{course.id}}/mentor'
+          };
+          const res = await fetch(map[tab]);
+          this[tab] = await res.json();
+          this.fetched[tab] = true;
+        } catch(e) {
+          console.error('Gagal mengambil data tab:', e);
+        } finally {
+          this.loading[tab] = false;
+        }
+      },
 
-    switchTab(tab) {
-    this.activeTab = tab;
-    this.fetchTab(tab);
-    },
+      switchTab(tab) {
+        this.activeTab = tab;
+        this.fetchTab(tab);
+      },
 
-    openRegistrationModal() {
+      openRegistrationModal() {
         {{#if user}}
-            {{#if check_user}}
-                window.location.href = '/program/{{course.id}}';
-            {{else}}
-                this.showModal = true;
-                document.body.style.overflow = 'hidden';
-            {{/if}}
+          {{#if check_user}}
+            window.location.href = '/program/{{course.id}}';
+          {{else}}
+            this.showModal = true;
+            document.body.style.overflow = 'hidden';
+          {{/if}}
         {{else}}
-            window.location.href = '/login';
+          window.location.href = '/login';
         {{/if}}
-    },
+      },
 
-    closeRegistrationModal() {
+      closeRegistrationModal() {
         this.showModal = false;
         document.body.style.overflow = '';
         this.fileError = '';
         this.isValidFile = false;
         this.previewUrl = null;
         this.fileInputTouched = false;
-    },
+      },
 
-    validateFile(event) {
+      validateFile(event) {
         this.fileInputTouched = true;
         const file = event.target.files[0];
         if (!file) {
-            this.isValidFile = false;
-            this.previewUrl = null;
-            return;
+          this.isValidFile = false;
+          this.previewUrl = null;
+          return;
         }
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         const maxSize = 5 * 1024 * 1024;
         if (!allowedTypes.includes(file.type)) {
-            this.fileError = 'File harus berupa gambar JPG, JPEG, atau PNG';
-            this.isValidFile = false;
-            this.previewUrl = null;
-            return;
+          this.fileError = "{{default (t 'test.freeProgram.registrationModal.validation.invalidFileType') 'File harus berupa gambar JPG, JPEG, atau PNG'}}";
+          this.isValidFile = false;
+          this.previewUrl = null;
+          return;
         }
         if (file.size > maxSize) {
-            this.fileError = 'Ukuran file maksimal 5MB';
-            this.isValidFile = false;
-            this.previewUrl = null;
-            return;
+          this.fileError = "{{default (t 'test.freeProgram.registrationModal.validation.fileTooLarge') 'Ukuran file maksimal 5MB'}}";
+          this.isValidFile = false;
+          this.previewUrl = null;
+          return;
         }
         this.fileError = '';
         this.isValidFile = true;
         this.previewUrl = URL.createObjectURL(file);
-    }
-}"
->
+      }
+    };
+  }
+</script>
+
+<div class="w-full text-slate-900" x-data="freeProgramDetail()">
 
 <!-- Ganti semua awalan detail_free_program menjadi free_program -->
 {{> components/ui/sections/program_detail_hero/index
+  course=course
+  lang=lang
   showBatchPill=false
   showTime=true
   showLearnMore=true
@@ -118,27 +124,61 @@
   regisClick="openRegistrationModal()"
 }}
 
-{{#> components/ui/sections/program_detail_nav/index}}
-  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.freeProgram.navMenu.participants') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
-  {{> components/ui/text/nav_link/index href="#what-you-get" text=(t 'test.freeProgram.navMenu.benefit') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
-  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.freeProgram.navMenu.schedule') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
-  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.freeProgram.navMenu.gallery') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
-  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.freeProgram.navMenu.faq') linkClass="text-[#0B1F3B] hover:text-[#7AA3C4]" }}
-{{/components/ui/sections/program_detail_nav/index}}
+{{> components/ui/sections/free_detail_what_you_get/index
+  course=course
+  lang=lang
+}}
 
-{{> components/ui/sections/participants/index
+{{> components/ui/sections/bootcamp_sylabus/index
+  course_flows=course_flows
+  badgeTitle=(t 'test.freeProgram.sylabus.badgeTitle')
+  title=(t 'test.freeProgram.sylabus.title')
+  description=(t 'test.freeProgram.sylabus.description')
+  lang=lang
+}}
+
+{{> components/ui/sections/tools/index
+  technologies=technologies
+  eyebrow=(t 'test.freeProgram.tools.eyebrow')
+  title=(t 'test.freeProgram.tools.title')
+  lang=lang
+}}
+
+{{> components/ui/sections/free_detail_format_class/index
+  course=course
+  lang=lang
+}}
+
+{{> components/ui/sections/free_detail_schedule_fee/index
+  course=course
+  badgeTitle=(t 'test.freeProgram.badge.schedule')
+  title=(t 'test.freeProgram.schedule.title')
+  description=(t 'test.freeProgram.schedule.description')
+  cardTitle=(t 'test.freeProgram.schedule.cardTitle')
+  lang=lang
+}}
+
+{{!-- {{> components/ui/sections/participants/index
   badgeTitle=(t 'test.freeProgram.badge.participants')
   showDescription=false
   gridColsClass="grid-cols-1 md:grid-cols-3 max-w-[1100px]"
+}} --}}
+
+{{> components/ui/sections/program_detail_faq/index
+  faqs=faqs
+  courseQuestions=courseQuestions
+  badgeTitle=(t 'test.freeProgram.faq.eyebrow')
+  title=(t 'test.freeProgram.faq.title')
+  description=(t 'test.freeProgram.faq.description')
+  lang=lang
 }}
 
-{{> components/ui/sections/free_detail_what_you_get/index }}
-
-{{> components/ui/sections/free_detail_schedule_fee/index }}
-
-{{> components/ui/sections/program_detail_gallery/index }}
-
-{{> components/ui/sections/program_detail_faq/index }}
+{{> components/ui/sections/free_detail_cta/index
+  course=course
+  eyebrow=(t 'test.freeProgram.cta.eyebrow')
+  description=(t 'test.freeProgram.cta.description')
+  lang=lang
+}}
 
   <!-- Modal Registrasi Short Class -->
   <div
@@ -168,19 +208,9 @@
       x-transition:leave="transition ease-in duration-200"
       x-transition:leave-start="opacity-100 scale-100 translate-y-0"
       x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-      class="relative w-full max-w-[1140px] bg-white rounded-[24px] shadow-2xl max-h-[90vh] overflow-y-auto p-2 sm:p-6 my-auto z-10"
+      class="relative w-full max-w-[720px] max-h-[90vh] overflow-y-auto my-auto z-10 rounded-[16px] shadow-2xl"
     >
-      <!-- Close Button -->
-      <button
-        @click="closeRegistrationModal()"
-        type="button"
-        class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full focus:outline-none transition-colors z-20"
-        aria-label="Close modal"
-      >
-        <i class="fa-solid fa-xmark text-2xl"></i>
-      </button>
-
-      {{> free_program/form_daftar_program }}
+      {{> free_program/form_daftar_program course=course lang=lang user=user}}
     </div>
   </div>
 

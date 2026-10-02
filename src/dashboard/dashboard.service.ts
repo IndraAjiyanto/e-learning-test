@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
@@ -104,6 +104,7 @@ export class DashboardService {
     courseType?: string;
     method?: string;
     search?: string;
+    status?: 'done' | 'ongoing';
     page: number;
     limit: number;
   }) {
@@ -112,12 +113,33 @@ export class DashboardService {
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.courseType', 'courseType')
       .leftJoinAndSelect('course.userCourses', 'userCourses')
-      .where('course.launch = :launch', { launch: true });
+      // Jumlah peserta sebenarnya. Join `userCourses` di atas ikut tersaring
+      // oleh filter userId di bawah, sehingga `userCourses.length` selalu 1
+      // untuk student yang sedang login - bar kuota jadi selalu "1 / N".
+      // loadRelationCountAndMap memakai subquery sendiri, tidak terpengaruh.
+      .loadRelationCountAndMap('course.enrolledCount', 'course.userCourses');
 
     if (params.userId) {
-      query.andWhere('userCourses.user.id = :userId', {
-        userId: params.userId,
-      });
+      // ponytail: My Learning menampilkan program yang diikuti student (launch, learning, done).
+      // Jangan kunci pada launch = true karena saat fase learning, launch sengaja false agar pendaftaran publik ditutup.
+      query
+        .where('userCourses.user.id = :userId', { userId: params.userId })
+        .andWhere('(course.status IS NULL OR course.status != :unlaunch)', {
+          unlaunch: 'unlaunch',
+        });
+
+      // Hanya bermakna di cabang ini. Tanpa userId, alias `userCourses` berisi
+      // baris milik semua user, jadi memfilter progress akan membuang program
+      // publik secara acak. Alias-nya sudah terkunci ke satu baris lewat where
+      // di atas, jadi menambahkan syarat progress tidak mengubah hitungan.
+      if (params.status === 'done' || params.status === 'ongoing') {
+        query.andWhere('userCourses.progress = :progress', {
+          progress: params.status === 'done',
+        });
+      }
+    } else {
+      // Landing page publik: hanya tampilkan program yang pendaftarannya buka
+      query.where('course.launch = :launch', { launch: true });
     }
 
     if (params.category) {
@@ -145,6 +167,18 @@ export class DashboardService {
       .take(params.limit);
 
     const [data, total] = await query.getManyAndCount();
+
+    // Status penyelesaian ikut dibawa ke klien karena kartu My Learning perlu
+    // membedakan program yang sudah selesai dari yang masih berjalan. Diambil
+    // dari baris `userCourses` yang sudah di-join, BUKAN lewat
+    // loadRelationCountAndMap: subquery itu berdiri sendiri dan tidak ikut
+    // tersaring userId, persis seperti yang jadi catatan `enrolledCount` di atas.
+    if (params.userId) {
+      for (const course of data) {
+        course.isCompleted = course.userCourses?.[0]?.progress === true;
+      }
+    }
+
     return { data, total };
   }
 
@@ -222,6 +256,7 @@ export class DashboardService {
     userId?: string | null;
     categoryId?: string | null;
     courseTypeId?: string | null;
+    search?: string | null;
     page?: number;
     limit?: number;
   }) {
@@ -229,33 +264,42 @@ export class DashboardService {
     const limit = options?.limit || 6;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const qb = this.portfolioRepository
+      .createQueryBuilder('portfolio')
+      .leftJoinAndSelect('portfolio.course', 'course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.technologies', 'technologies')
+      .leftJoinAndSelect('portfolio.user', 'user')
+      .orderBy('portfolio.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
 
     if (options?.userId) {
-      where.user = { id: options.userId };
+      qb.andWhere('user.id = :userId', { userId: options.userId });
     }
 
     if (options?.categoryId) {
-      where.course = {
-        ...where.course,
-        category: { id: options.categoryId },
-      };
+      qb.andWhere('category.id = :categoryId', {
+        categoryId: options.categoryId,
+      });
     }
 
     if (options?.courseTypeId) {
-      where.course = {
-        ...where.course,
-        courseType: { id: options.courseTypeId },
-      };
+      qb.andWhere('courseType.id = :courseTypeId', {
+        courseTypeId: options.courseTypeId,
+      });
     }
 
-    const [data, total] = await this.portfolioRepository.findAndCount({
-      where,
-      relations: ['course', 'course.category', 'course.courseType', 'user'],
-      skip,
-      take: limit,
-    });
+    if (options?.search && options.search.trim() !== '') {
+      const keyword = `%${options.search.trim()}%`;
+      qb.andWhere(
+        '(portfolio.title ILIKE :keyword OR portfolio.description ILIKE :keyword OR user.username ILIKE :keyword OR course.name ILIKE :keyword)',
+        { keyword },
+      );
+    }
 
+    const [data, total] = await qb.getManyAndCount();
     return { data, total };
   }
 
@@ -308,6 +352,52 @@ export class DashboardService {
       order: { createdAt: 'DESC' },
       take: 6,
     });
+  }
+
+  /**
+   * Sampel alumni acak untuk pop-up alumni mengambang.
+   *
+   * Berbeda dengan `findAlumni` yang mengurutkan `createdAt` untuk daftar
+   * direktori, di sini urutannya justru diacak: pop-up muncul di setiap page
+   * load, jadi selalu membuka alumni yang berbeda supaya tidak terasa seperti
+   * billboard alumni yang sama berulang-ulang. `RANDOM()` sudah dipakai di
+   * `courses.service.ts` untuk kebutuhan acak yang sama.
+   *
+   * Pengambilan dilakukan dua tahap, bukan satu query dengan join:
+   * `getMany()` yang memakai `take()` dan `leftJoinAndSelect` menjalankan
+   * query kedua berbentuk `SELECT DISTINCT "distinctAlias"."alumni_id" ...`
+   * untuk mengambil ID-nya, dan di situ alias `RANDOM()` tidak ikut ke select
+   * list - Postgres menolaknya dengan "for SELECT DISTINCT, ORDER BY
+   * expressions must appear in select list". `addSelect('RANDOM()', 'rand')`
+   * tidak menolong karena select list di query ID itulah yang jadi tempat
+   * ORDER BY dinilai.
+   *
+   * Jadi tahap pertama ambil ID acak tanpa join sama sekali (tidak ada
+   * `distinctAlias` kalau tidak ada relasi), tahap kedua ambil entitas untuk
+   * ID itu, lalu urutannya dipulihkan di memori mengikuti urutan acak tadi.
+   */
+  async findRandomAlumni(limit: number) {
+    const idRows = await this.alumniRepository
+      .createQueryBuilder('alumni')
+      .select('alumni.id', 'id')
+      .addSelect('RANDOM()', 'rand')
+      .orderBy('"rand"', 'ASC')
+      .limit(limit)
+      .getRawMany<{ id: string }>();
+
+    if (idRows.length === 0) return [];
+
+    const ids = idRows.map((row) => row.id);
+    const alumni = await this.alumniRepository.find({
+      where: { id: In(ids) },
+      relations: ['course', 'course.category'],
+    });
+
+    const byId = new Map(alumni.map((item) => [item.id, item]));
+
+    return ids
+      .map((id) => byId.get(id))
+      .filter((item): item is Alumni => item !== undefined);
   }
 
   // async findPortfolio() {

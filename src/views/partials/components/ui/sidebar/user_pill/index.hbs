@@ -5,11 +5,14 @@
 
   Menampilkan avatar + nama + role user. Saat pill diklik, muncul popover
   mengambang di atas pill berisi aksi "Edit Profile" dan "Logout"
-  (Figma node 238:20262 — PROFILE POPOVER).
+
+  Logout tidak langsung mengakhiri sesi: item ini membuka modal konfirmasi
+  per role (openSuperAdminLogoutModal / openAdminLogoutModal — lihat
+  components/ui/{super_admin,admin}/modal/logout_confirm). Modalnya sendiri
+  dirender sekali oleh partials/sidebar.hbs sesuai role yang sedang login.
 
   Props:
   - href         : string (opsional, default "/users/profile") tujuan Edit Profile
-  - logoutHref   : string (opsional, default "/logout")
   - username     : string (wajib) nama user
   - role         : string (wajib) role user
   - profile      : string (opsional) URL foto profil; bila kosong dipakai inisial
@@ -38,7 +41,7 @@
       href="{{default href '/users/profile'}}"
       role="menuitem"
       class="flex items-center gap-[12px] w-full px-[12px] py-[10px] rounded-[6px]
-        font-montserrat font-medium text-[14px] leading-[21px] text-[#003060]
+        font-inter font-medium text-[14px] leading-[21px] text-[#003060]
         transition-colors duration-150 hover:bg-[#E7F3FB] active:bg-[#D7E9F6]
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40"
     >
@@ -52,11 +55,12 @@
       <div class="h-px w-full bg-[#D9D9D9]"></div>
     </div>
 
-    <a
-      href="{{default logoutHref '/logout'}}"
+    <button
+      type="button"
       role="menuitem"
+      @click="userMenuOpen = false; {{#if (eq role 'super_admin')}}openSuperAdminLogoutModal(){{else}}openAdminLogoutModal(){{/if}}"
       class="flex items-center gap-[12px] w-full px-[12px] py-[10px] rounded-[6px]
-        font-montserrat font-medium text-[14px] leading-[21px] text-[#C80606]
+        font-inter font-medium text-[14px] leading-[21px] text-[#C80606]
         transition-colors duration-150 hover:bg-[#FDECEC] active:bg-[#FBD5D5]
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C80606]/40"
     >
@@ -64,7 +68,7 @@
         {{> components/ui/sidebar/nav_icon/index name='icon_logout' size='16px'}}
       </span>
       <span>{{default logoutLabel 'Logout'}}</span>
-    </a>
+    </button>
   </div>
 
   {{!-- Pill profil --}}
@@ -78,7 +82,7 @@
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40"
   >
     <span class="flex items-center gap-[14px] min-w-0">
-      <span class="size-[40px] rounded-full overflow-hidden shrink-0 bg-[#003060] flex items-center justify-center">
+      <span class="size-[40px] rounded-full overflow-hidden shrink-0 bg-[#F9F5FF] flex items-center justify-center">
         {{#if profile}}
           <img
             src="{{profile}}"
@@ -87,12 +91,12 @@
             onerror="this.src='/public/image/orang.png'"
           />
         {{else}}
-          <span class="font-montserrat font-bold text-[15px] leading-[22.5px] text-white uppercase">{{initial}}</span>
+          <span class="font-inter font-medium text-[16px] leading-[24px] text-[#7F56D9] uppercase">{{initial}}</span>
         {{/if}}
       </span>
       <span class="flex flex-col items-start min-w-0 text-left">
-        <span class="font-montserrat font-semibold text-[14px] leading-[17.5px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
-        <span class="font-montserrat font-medium text-[12px] leading-[15px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
+        <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
+        <span class="font-inter font-medium text-[12px] leading-[16px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
       </span>
     </span>
     <span class="flex shrink-0 text-[#718096]">

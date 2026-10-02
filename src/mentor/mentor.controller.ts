@@ -21,6 +21,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('mentor')
@@ -61,7 +62,11 @@ export class MentorController {
       }
 
       await this.mentorService.create(createMentorDto);
-      req.flash('success', 'mentor successfully created');
+      flashToast(
+        req,
+        'Mentor Added',
+        'The mentor has been assigned to this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to create');
@@ -85,22 +90,6 @@ export class MentorController {
   }
 
   @Roles('super_admin', 'admin')
-  @Get(':mentorId')
-  async findOne(
-    @Param('mentorId') mentorId: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const mentor = await this.mentorService.findOne(mentorId);
-    const technologies = await this.mentorService.findTechnologies();
-    res.render('super_admin/mentor/detail', {
-      user: req.user,
-      mentor,
-      technologies,
-    });
-  }
-
-  @Roles('super_admin', 'admin')
   @Get('formEdit/:mentorId')
   async formEdit(
     @Param('mentorId') mentorId: string,
@@ -112,6 +101,24 @@ export class MentorController {
     res.render('super_admin/mentor/edit', {
       user: req.user,
       mentor,
+      courseId: mentor.course?.id,
+      technologies,
+    });
+  }
+
+  @Roles('super_admin', 'admin')
+  @Get(':mentorId')
+  async findOne(
+    @Param('mentorId') mentorId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const mentor = await this.mentorService.findOne(mentorId);
+    const technologies = await this.mentorService.findTechnologies();
+    res.render('super_admin/mentor/detail', {
+      user: req.user,
+      mentor,
+      courseId: mentor.course?.id,
       technologies,
     });
   }
@@ -154,7 +161,11 @@ export class MentorController {
       }
 
       await this.mentorService.update(mentorId, updateMentorDto);
-      req.flash('success', 'mentor successfully update');
+      flashToast(
+        req,
+        'Mentor Updated',
+        'The changes to this mentor have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to update');
@@ -163,10 +174,10 @@ export class MentorController {
   }
 
   @Roles('super_admin', 'admin')
-  @Delete(':mentorId/:courseId')
+  @Delete(':courseId/:mentorId')
   async remove(
-    @Param('mentorId') mentorId: string,
     @Param('courseId') courseId: string,
+    @Param('mentorId') mentorId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -178,7 +189,11 @@ export class MentorController {
       }
       await this.mentorService.deleteFile(mentor.profile);
       await this.mentorService.remove(mentorId);
-      req.flash('success', 'mentor successfully deleted');
+      flashToast(
+        req,
+        'Mentor Removed',
+        'The mentor has been removed from this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to delete');

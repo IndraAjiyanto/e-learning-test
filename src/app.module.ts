@@ -1,7 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -58,6 +55,7 @@ import { MissionsModule } from './missions/missions.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
 import { FaqModule } from './faq/faq.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { UserActivityMiddleware } from './user_activity/user-activity.middleware';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -68,10 +66,16 @@ import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
 import { VoucherModule } from './voucher/voucher.module';
+import { InformationModule } from './information/information.module';
+import { UserActivityModule } from './user_activity/user-activity.module';
 import { FooterModule } from './footer/footer.module';
 import { FooterMiddleware } from './footer/footer.middleware';
 import { InstallmentReminderModule } from './installment_reminder/installment-reminder.module';
 import { InstallmentPaymentModule } from './installment_payment/installment-payment.module';
+import { PaymentSettingsModule } from './payment-settings/payment-settings.module';
+import { SyllabusModule } from './syllabus/syllabus.module';
+import { FinalAssignmentModule } from './final_assignment/final_assignment.module';
+import { SearchModule } from './search/search.module';
 import path from 'path';
 
 @Module({
@@ -148,15 +152,20 @@ import path from 'path';
     CategoryPartnerModule,
     PartnerModule,
     VoucherModule,
+    InformationModule,
+    UserActivityModule,
     FooterModule,
     InstallmentReminderModule,
     InstallmentPaymentModule,
+    PaymentSettingsModule,
+    SyllabusModule,
+    FinalAssignmentModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(I18nMiddleware).forRoutes('*');
     consumer
@@ -182,9 +191,19 @@ export class AppModule {
         '/alumni/filter',
         '/dashboard',
         '/dashboard/*path',
+        '/api/search',
+        { path: '/invoice/webhook/xendit', method: RequestMethod.POST },
       )
       .forRoutes('*');
 
-    consumer.apply(FooterMiddleware).forRoutes('*');
+    consumer
+      .apply(UserActivityMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
+
+    consumer
+      .apply(FooterMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
   }
 }

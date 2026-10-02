@@ -12,7 +12,12 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_NAME,
   entities: ['dist/entities/*.entity.js'],
   migrations: ['dist/database/migrations/*.js'],
-  synchronize: process.env.SYNCHRONIZE === 'true',
+  // Migration adalah satu-satunya jalur perubahan skema di project ini, sama
+  // seperti DataSource runtime di database.providers.ts. Sebelumnya nilai ini
+  // dibaca dari env SYNCHRONIZE, yang menyesatkan: perbandingannya === 'true'
+  // sehingga SYNCHRONIZE=TRUE di .env justru menghasilkan false, dan kalaupun
+  // cocok, CLI TypeORM akan mengubah skema diam-diam di luar migration.
+  synchronize: false,
 };
 
 const dataSource = new DataSource(dataSourceOptions);

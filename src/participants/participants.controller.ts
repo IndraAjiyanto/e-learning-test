@@ -16,6 +16,7 @@ import { UpdateParticipantsDto } from './dto/update-participants.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('participants')
@@ -33,7 +34,11 @@ export class ParticipantsController {
     try {
       createParticipantsDto.courseId = courseId;
       await this.participantsService.create(createParticipantsDto);
-      req.flash('success', 'Participant successfully created');
+      flashToast(
+        req,
+        'Participant Added',
+        'The participant has been added to this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Participant failed to create');
@@ -79,7 +84,11 @@ export class ParticipantsController {
         participantId,
         updateParticipantsDto,
       );
-      req.flash('success', 'Participant successfully updated');
+      flashToast(
+        req,
+        'Participant Updated',
+        'The changes to this participant have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Participant failed to update');
@@ -101,7 +110,11 @@ export class ParticipantsController {
         req.flash('error', 'Participant not found');
       }
       await this.participantsService.remove(participantId);
-      req.flash('success', 'Participant successfully deleted');
+      flashToast(
+        req,
+        'Participant Removed',
+        'The participant has been removed from this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Participant failed to delete');

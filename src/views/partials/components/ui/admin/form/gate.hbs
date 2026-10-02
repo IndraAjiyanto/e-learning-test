@@ -1,0 +1,252 @@
+{{!--
+  Komponen: Form Gate (Admin) — helper gating tombol submit
+  Lokasi: src/views/partials/components/ui/admin/form/gate.hbs
+  Level: L0 — hanya mendefinisikan fungsi global, tidak merender apa pun.
+
+  MASALAH YANG DISELESAIKAN
+  Tombol submit di halaman admin tetap menyala pada form kosong; validasi baru
+  terasa setelah diklik (beberapa halaman bahkan memakai alert()). Helper ini
+  menyediakan satu sumber kebenaran "form ini layak dikirim" supaya tombolnya
+  bisa dimatikan sejak awal, sama seperti aturan di halaman super admin
+  (lihat docs/form-submit-gating.md).
+
+  KENAPA TIDAK checkValidity() SAJA
+  searchable_select menaruh nilainya di <input type="hidden">, dan constraint
+  validation bawaan browser MELEWATI field hidden — form dengan select wajib
+  yang masih kosong tetap terbaca valid. Karena itu hidden input yang wajib
+  ditandai `data-required` dan diperiksa terpisah.
+
+  CARA PAKAI
+    x-data="{ ...adminFormGate(), loading: false }"
+    x-init="initGate()"
+    @input="recomputeFormValid()"
+    @change="recomputeFormValid()"
+
+  Halaman create: tombol tidak disabled, form diberi
+    novalidate @focusout="markField($event.target)" @submit="submitGate($event)"
+  Halaman edit: kirim ke tombolnya disabled='!formValid || !isDirty'
+
+  `loading` tidak perlu ikut ditulis di sini — primary-button meng-OR-kannya
+  sendiri ke :disabled.
+--}}
+<script>
+
+  // Deteksi "sudah ada yang berubah" untuk halaman EDIT. Dipakai bersama
+  // canSubmit()/formValid: tombol Save baru aktif bila form valid DAN isinya
+  // benar-benar berbeda dari saat halaman dibuka.
+  //
+  // Sengaja di level DOM, bukan di dalam factory form: satu factory super admin
+  // dipakai halaman create dan edit sekaligus, sedangkan aturan ini hanya untuk
+  // edit. Membacanya dari <form> membuat halaman create tidak ikut terkunci.
+  function formDirtyGate() {
+    return {
+      isDirty: false,
+      _baseline: null,
+
+      // File tidak bisa di-JSON-kan, jadi diwakili nama+ukuran: input berkas yang
+      // tidak disentuh tetap sama, begitu user memilih berkas nilainya berubah.
+      _snapshot(form) {
+        const parts = [];
+        for (const el of form.elements) {
+          if (!el.name || el.disabled) continue;
+          if (el.type === 'file') {
+            parts.push(el.name + '=' + Array.from(el.files || [])
+              .map((f) => f.name + ':' + f.size).join('|'));
+          } else if (el.type === 'checkbox' || el.type === 'radio') {
+            parts.push(el.name + '=' + (el.checked ? el.value : ''));
+          } else {
+            parts.push(el.name + '=' + (el.value ?? ''));
+          }
+        }
+        return parts.join('\u0001');
+      },
+
+      _form() {
+        return this.$el.tagName === 'FORM'
+          ? this.$el
+          : this.$el.closest('form') || this.$el.querySelector('form');
+      },
+
+      captureBaseline() {
+        const form = this._form();
+        this._baseline = form ? this._snapshot(form) : null;
+        this.isDirty = false;
+        if (form) this._bindWatchers(form);
+      },
+
+      // @input/@change di markup tidak cukup: dropdown kustom (mis. pemilih
+      // kategori partner) menaruh nilainya di <input type="hidden"> lewat
+      // binding Alpine, dan menyetel .value secara langsung TIDAK memicu event
+      // apa pun. Tanpa ini, halaman yang seluruh field-nya berupa dropdown
+      // semacam itu tombolnya tidak pernah menyala. `click` menangkap pemilihan
+      // di dropdown, dan $nextTick menunggu Alpine menuliskan nilainya dulu.
+      _bindWatchers(form) {
+        if (form._dirtyWatchersBound) return;
+        form._dirtyWatchersBound = true;
+
+        const recompute = () => this.$nextTick(() => this.recomputeDirty());
+        ['input', 'change', 'click'].forEach((ev) =>
+          form.addEventListener(ev, recompute, true),
+        );
+      },
+
+      recomputeDirty() {
+        const form = this._form();
+        if (!form || this._baseline === null) { this.isDirty = false; return; }
+        this.isDirty = this._snapshot(form) !== this._baseline;
+      },
+    };
+  }
+
+  function adminFormGate() {
+    return {
+      ...formDirtyGate(),
+      formValid: false,
+
+      // Satu pintu masuk untuk x-init: rekam patokan dulu, baru hitung kelayakan.
+      // Urutannya penting — patokan harus diambil sebelum nilai apa pun berubah.
+      initGate() {
+        // Ditunda satu tick: sebagian halaman edit mengisi nilai awalnya lewat
+        // binding Alpine (mis. x-init prefill), yang baru diterapkan sesudah
+        // init. Mengambil patokan terlalu cepat membuat form langsung terbaca
+        // berubah padahal user belum menyentuh apa pun.
+        this.$nextTick(() => {
+          this.captureBaseline();
+          this.recomputeFormValid();
+        });
+      },
+
+      // Dihitung ulang dari nilai terkini, bukan dari pesan error yang kebetulan
+      // sudah tampil — jebakan yang sama sudah didokumentasikan untuk super admin.
+      recomputeFormValid() {
+        this.recomputeDirty();
+
+        // x-data kadang di <form> itu sendiri, kadang di div pembungkus di
+        // luarnya — jadi dicari ke atas dulu, baru ke bawah.
+        const form =
+          this.$el.tagName === 'FORM'
+            ? this.$el
+            : this.$el.closest('form') || this.$el.querySelector('form');
+        if (!form) { this.formValid = false; return; }
+
+        if (!form.checkValidity()) { this.formValid = false; return; }
+
+        // Hidden input tidak ikut checkValidity(), jadi diperiksa sendiri.
+        const hidden = form.querySelectorAll('input[type="hidden"][data-required]');
+        this.formValid = Array.from(hidden).every((i) => (i.value || '').trim() !== '');
+
+        this._paintSeen(form);
+      },
+
+      // Tombol submit halaman create tidak lagi disabled. Form dipasangi
+      // `novalidate` supaya event submit tetap sampai ke sini (tanpa itu browser
+      // menolak diam-diam dengan tooltip satu field saja), lalu semua field
+      // diwarnai: merah + pesan bila belum valid, hijau bila sudah.
+      // `extraOk` (boolean/fungsi) untuk syarat di luar constraint HTML, mis. berkas.
+      submitGate(event, extraOk = true) {
+        const form = this._form();
+        this.recomputeFormValid();
+        if (this.formValid && (typeof extraOk === 'function' ? extraOk() : extraOk)) {
+          this.loading = true;
+          return true;
+        }
+
+        event.preventDefault();
+        this._controls(form).forEach((el) => this._gateSeen.add(el));
+        this._paintSeen(form);
+        const first = this._controls(form).find((el) => !this._isValid(el));
+        const box = first && this._box(first);
+        if (box) {
+          box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          (first.type === 'hidden' || first.type === 'file' ? box.querySelector('input:not([type=hidden])') : first)?.focus({ preventScroll: true });
+        }
+        return false;
+      },
+
+      // Dipanggil dari @focusout: field baru diwarnai setelah ditinggalkan.
+      // $nextTick karena searchable_select baru mengisi hidden input-nya
+      // setelah klik opsi, sesudah fokus pindah.
+      markField(target) {
+        const form = this._form();
+        const el = this._controlFor(target);
+        if (!form || !el) return;
+        this._gateSeen.add(el);
+        this.$nextTick(() => this._paintSeen(form));
+      },
+
+      _gateSeen: new WeakSet(),
+
+      _controls(form) {
+        return Array.from(form.querySelectorAll('input, textarea, select')).filter(
+          (el) => el.name && !el.disabled && (el.type === 'hidden' ? el.hasAttribute('data-required') : el.willValidate),
+        );
+      },
+
+      _controlFor(target) {
+        if (!target || !target.closest) return null;
+        if (target.name && target.type !== 'hidden') return target;
+        return target.closest('.relative')?.querySelector('input[type=hidden][data-required]') || null;
+      },
+
+      _isValid(el) {
+        if (el.type === 'hidden') return (el.value || '').trim() !== '';
+        return el.checkValidity();
+      },
+
+      _box(el) {
+        if (el.type === 'file') return el.parentElement.querySelector(`label[for="${el.id}"]`) || el.parentElement;
+        if (el.type === 'hidden') return el.parentElement.querySelector('[class*="outline:1px"]');
+        return el.closest('[class*="outline:1px"]') || el;
+      },
+
+      // Bukan el.validationMessage: teks itu mengikuti bahasa browser, sehingga
+      // bisa tercampur dengan label form yang berbahasa Inggris.
+      _message(el) {
+        if (el.type === 'hidden') return 'This field is required.';
+        const v = el.validity;
+        if (v.valueMissing) {
+          if (el.type === 'file') return 'Please choose a file.';
+          if (el.type === 'radio' || el.type === 'checkbox') return 'Please select an option.';
+          return 'This field is required.';
+        }
+        if (v.typeMismatch) return el.type === 'email' ? 'Please enter a valid email address.' : 'Please enter a valid URL.';
+        if (v.badInput) return 'Please enter a valid value.';
+        if (v.tooShort) return `Please enter at least ${el.minLength} characters.`;
+        if (v.tooLong) return `Please enter no more than ${el.maxLength} characters.`;
+        if (v.rangeUnderflow) return `Value must be at least ${el.min}.`;
+        if (v.rangeOverflow) return `Value must be at most ${el.max}.`;
+        if (v.stepMismatch) return 'Please enter a valid value.';
+        if (v.patternMismatch) return el.title || 'Please match the requested format.';
+        return 'Please enter a valid value.';
+      },
+
+      _paintSeen(form) {
+        if (!form) return;
+        this._controls(form).forEach((el) => {
+          if (!this._gateSeen.has(el)) return;
+          const valid = this._isValid(el);
+          const color = valid ? '#16A34A' : '#DC2626';
+          const box = this._box(el);
+          if (box) {
+            if (box.className.includes('outline:1px')) box.style.outline = `1px solid ${color}`;
+            else box.style.borderColor = color;
+          }
+          el.setAttribute('aria-invalid', valid ? 'false' : 'true');
+
+          const message = valid ? '' : this._message(el);
+          let slot = document.getElementById(`${el.id || el.name}_error`);
+          if (!slot && box && !valid) {
+            slot = document.createElement('p');
+            slot.id = `${el.id || el.name}_error`;
+            slot.className = 'text-red-500 text-xs mt-1';
+            box.insertAdjacentElement('afterend', slot);
+          }
+          if (slot) {
+            slot.textContent = message;
+            slot.classList.toggle('hidden', valid);
+          }
+        });
+      },
+    };
+  }
+</script>

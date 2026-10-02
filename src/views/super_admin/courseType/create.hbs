@@ -1,156 +1,56 @@
-<div
-  class='py-10'
-  x-data="{
-  // Form validation states
-  formData: {
-    nameClassesType: '',
-    description: { id: '', en: '', ja: '' },
-    icon: ''
-  },
-  formErrors: {
-    nameClassesType: '',
-    description: { id: '', en: '', ja: '' },
-    icon: ''
-  },
-  formValid: {
-    nameClassesType: false,
-    description: { id: false, en: false, ja: false },
-    icon: true
-  },
-  formTouched: {
-    nameClassesType: false,
-    description: { id: false, en: false, ja: false },
-    icon: false
-  },
+{{!--
+  Halaman: Create Program Type — Super Admin
+  Lokasi: src/views/super_admin/courseType/create.hbs
+  Level: L4 Page
 
-  get computedClass() {
-    const raw = (this.formData.icon || '').toString().trim();
-    if (!raw) return 'fa-solid fa-circle-question';
-    const v = raw;
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-    if (hasFaPrefix) {
-      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-      return v;
-    }
-    if (!v.includes(' ')) return 'fa-solid fa-' + v;
-    return v;
-  },
+  Route: GET /type-program/formCreate -> POST /type-program (urlencoded).
 
-  validateField(field, value, lang = null) {
-    if (lang) {
-      this.formData[field][lang] = value;
-      this.formTouched[field][lang] = true;
-    } else {
-      this.formData[field] = value;
-      this.formTouched[field] = true;
-    }
-    
-    switch(field) {
-      case 'nameClassesType':
-        if (!value.trim()) {
-          this.formErrors.nameClassesType = 'Class type name is required';
-          this.formValid.nameClassesType = false;
-        } else if (value.trim().length < 2) {
-          this.formErrors.nameClassesType = 'Class type name must be at least 2 characters';
-          this.formValid.nameClassesType = false;
-        } else {
-          this.formErrors.nameClassesType = '';
-          this.formValid.nameClassesType = true;
-        }
-        break;
-        
-      case 'description':
-        if (!value.trim()) {
-          this.formErrors.description[lang] = 'Description is required';
-          this.formValid.description[lang] = false;
-        } else if (value.trim().length < 10) {
-          this.formErrors.description[lang] = 'Description must be at least 10 characters';
-          this.formValid.description[lang] = false;
-        } else {
-          this.formErrors.description[lang] = '';
-          this.formValid.description[lang] = true;
-        }
-        break;
-        
-      case 'icon':
-        // Icon is optional, no validation required
-        this.formErrors.icon = '';
-        this.formValid.icon = true;
-        break;
-    }
-  },
+  Field dikirim sebagai nameClassesType, icon, description[id|en|ja] — express
+  urlencoded extended merakitnya jadi objek sesuai kolom jsonb entity.
 
-  canSubmit() {
-    const deskripsiValid = Object.values(this.formValid.description).every(v => v);
-    return this.formValid.nameClassesType && deskripsiValid && this.formValid.icon;
-  },
+  Toast sukses tidak dirender di sini: submit redirect ke /type-program, jadi
+  notifikasinya muncul di index.hbs lewat flash `toast`.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
 
-  hasFormErrors() {
-    return this.formErrors.nameClassesType !== '' ||
-           Object.values(this.formErrors.description).some(e => e !== '') ||
-           this.formErrors.icon !== '';
-  }
-}"
->
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Program
-      Type</h2>
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Program Type'
+      }}
+
+      {{> components/ui/super_admin/description/index
+        text='Create a new program type for use across Kesatria Academy.'
+      }}
+    </div>
 
     <form
       action='/type-program'
       method='post'
-      class='space-y-6'
-      x-data='{ loading: false }'
-      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
+      novalidate
+      x-data='programTypeForm()'
+      @submit.prevent='submitForm($event)'
     >
+      {{#> components/ui/super_admin/form/program_type/fields }}
+        <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+          {{> components/ui/super_admin/form/button
+            as='link'
+            variant='secondary'
+            href='/type-program'
+            label='Cancel'
+            loading=true
+          }}
 
-    {{> super_admin/type_program/create/name_input }}
-    {{> super_admin/type_program/create/icon_input }}
-    {{> super_admin/type_program/create/description_input }}
-
-      <!-- Action Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a
-          href='/type-program'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
-
-      <!-- Submit Warning -->
-      <template x-if='hasFormErrors()'>
-        <div
-          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-        >
-          <i class='fas fa-exclamation-triangle text-red-500'></i>
-          <p class='text-sm text-red-800'>
-            <span class='font-semibold'>Cannot submit:</span>
-            Please fix all validation errors above.
-          </p>
+          {{> components/ui/super_admin/form/button
+            type='submit'
+            variant='primary'
+            label='Create Program Type'
+            loading=true
+          }}
         </div>
-      </template>
+      {{/components/ui/super_admin/form/program_type/fields}}
     </form>
   </div>
 </div>
 
-<!-- (Using inline x-data above for icon preview) -->
-
-<!-- Include Alpine.js (deferred). If the project already includes Alpine, this is harmless. -->
-<script src='https://unpkg.com/alpinejs@3.12.0/dist/cdn.min.js' defer></script>
-
-<!-- Optional: If Font Awesome isn't loaded globally, include the CDN link below (Font Awesome 6). Uncomment if you don't already include FA in your base layout. -->
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+{{> components/ui/super_admin/form/program_type/form }}

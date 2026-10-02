@@ -1,0 +1,126 @@
+{{!--
+  Komponen: Program Benefit Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/benefit_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Benefit" di halaman detail program dan detail category: search +
+  tabel benefit + pagination. Datanya diambil sendiri (GET /program/benefit/:courseId
+  atau GET /category/benefit/:categoryId), karena controller detail tidak ikut
+  mengirimnya saat render.
+
+  Judul dibaca sebagai objek { id, en, ja }; nama field-nya beda: program
+  `benefit`, category `title` (entity benefit_category menuliskannya string[],
+  tapi form mengirim title[id|en|ja]).
+
+  `lang` hidup di scope Alpine bersarang (sama seperti halaman super_admin/benefit):
+  getter `rows` dan `totalPages` milik clientTable() akan hilang bila state digabung.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+  - components/ui/super_admin/table/fa_icon       (faIconClass)
+  - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
+
+  Props:
+  - courseId   : string — mode program (/benefit-program/*)
+  - categoryId : string — mode category (/benefit_category/*)
+  Isi salah satunya; dipakai untuk endpoint, tombol create, dan aksi delete.
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  {{#if categoryId}}
+    x-data='clientTable({ url: "/category/benefit/" + {{json categoryId}}, sortKey: "createdAt", searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"] })'
+  {{else}}
+    x-data='clientTable({ url: "/program/benefit/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["benefit.id", "benefit.en", "benefit.ja", "description.id", "description.en", "description.ja"] })'
+  {{/if}}
+  x-init='load()'
+>
+  {{> components/ui/super_admin/table/toolbar
+    placeholder='Search benefit..'
+    searchLabel='Search program benefit'
+    createHref=(ternary categoryId (concat '/benefit_category/formCreate/' categoryId) (concat '/benefit-program/formCreate/' courseId))
+    createLabel='Add Benefit'
+    fullWidth=true
+  }}
+
+  {{!-- parentId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
+       yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
+  <div
+    class='flex flex-col gap-5'
+    {{#if categoryId}}
+      x-data='{ lang: "id", parentId: {{json categoryId}}, titleKey: "title" }'
+    {{else}}
+      x-data='{ lang: "id", parentId: {{json courseId}}, titleKey: "benefit" }'
+    {{/if}}
+  >
+    {{> components/ui/super_admin/tabs/language/index ariaLabel='Program benefit language' }}
+
+    {{#> components/ui/super_admin/table/card tableClass='min-w-[944px]'}}
+      <colgroup>
+        <col class='w-[73px]' />
+        <col class='w-[377px]' />
+        <col class='w-[378px]' />
+        <col class='w-[116px]' />
+      </colgroup>
+      <thead>
+        <tr>
+          {{> components/ui/super_admin/table/header_cell label='Icon' }}
+          {{> components/ui/super_admin/table/header_cell label='Benefit' }}
+          {{> components/ui/super_admin/table/header_cell label='Description' }}
+          {{> components/ui/super_admin/table/header_cell label='Action' }}
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for='row in rows' :key='row.id'>
+          <tr class='transition-colors hover:bg-[#fafafa]'>
+
+            {{#> components/ui/super_admin/table/cell}}
+              <i
+                class='flex h-5 w-5 items-center justify-center text-base text-[#525252]'
+                :class='faIconClass(row.icon)'
+                aria-hidden='true'
+              ></i>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row[titleKey] && row[titleKey][lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                x-text="(row.description && row.description[lang]) || '—'"
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell variant='action'}}
+              {{#if categoryId}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='benefit'
+                  deleteAction="'/benefit_category/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/benefit_category/formEdit/' + row.id"
+                }}
+              {{else}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='benefit'
+                  deleteAction="'/benefit-program/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/benefit-program/formEdit/' + row.id"
+                }}
+              {{/if}}
+            {{/components/ui/super_admin/table/cell}}
+          </tr>
+        </template>
+
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='4'}}
+          Loading benefits…
+        {{/components/ui/super_admin/table/message_row}}
+
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='4'}}
+          No benefits found.
+        {{/components/ui/super_admin/table/message_row}}
+      </tbody>
+    {{/components/ui/super_admin/table/card}}
+  </div>
+</div>

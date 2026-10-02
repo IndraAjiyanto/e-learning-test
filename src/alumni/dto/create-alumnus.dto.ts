@@ -1,4 +1,5 @@
-import { IsArray, IsInt, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsEnum, IsString, IsUUID } from 'class-validator';
+import { ALUMNI_RATINGS, AlumniRating } from 'src/entities/types/alumni-rating';
 
 export class CreateAlumnusDto {
   @IsString()
@@ -12,6 +13,9 @@ export class CreateAlumnusDto {
 
   @IsArray()
   currentPosition: string[];
+
+  @IsEnum(ALUMNI_RATINGS)
+  rating: AlumniRating;
 
   @IsUUID()
   courseId: string;

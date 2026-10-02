@@ -87,8 +87,7 @@ export class AnswerTasksController {
         user: req.user,
         assignment: assignments,
         assignment_answer: taskAnswers,
-        answerExists,
-      });
+        answerExists, bareShell: true });
     }
   }
 

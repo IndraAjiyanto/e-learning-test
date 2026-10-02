@@ -15,6 +15,7 @@ import { CreateBenefitCategoryDto } from './dto/create-benefit_category.dto';
 import { UpdateBenefitCategoryDto } from './dto/update-benefit_category.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
@@ -48,7 +49,11 @@ export class BenefitCategoryController {
     try {
       createBenefitCategoryDto.categoryId = categoryId;
       await this.benefitCategoryService.create(createBenefitCategoryDto);
-      req.flash('success', 'benefit category successfully created');
+      flashToast(
+        req,
+        'Benefit Created',
+        'The new benefit has been added to this category.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to create benefit category');
@@ -81,7 +86,11 @@ export class BenefitCategoryController {
   ) {
     try {
       await this.benefitCategoryService.update(id, updateBenefitCategoryDto);
-      req.flash('success', 'Benefit category successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The benefit information has been updated.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to update benefit category');
@@ -99,7 +108,11 @@ export class BenefitCategoryController {
   ) {
     try {
       await this.benefitCategoryService.remove(id);
-      req.flash('success', 'Benefit category successfully deleted');
+      flashToast(
+        req,
+        'Benefit Deleted',
+        'The benefit has been permanently removed.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to delete benefit category');

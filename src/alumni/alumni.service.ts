@@ -1,12 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateAlumnusDto } from './dto/create-alumnus.dto';
 import { UpdateAlumnusDto } from './dto/update-alumnus.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
+import { ALUMNI_RATINGS, AlumniRating } from 'src/entities/types/alumni-rating';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+
+const DEFAULT_RATING: AlumniRating = '5';
 
 @Injectable()
 export class AlumniService {
@@ -16,6 +19,26 @@ export class AlumniService {
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
   ) {}
+
+  /**
+   * Kolom `rating` bertipe enum di Postgres, jadi nilai dari form harus sudah
+   * berupa string '1'..'5'. Tidak ada global ValidationPipe di main.ts sehingga
+   * decorator pada DTO tidak aktif runtime — karena itu koersi dilakukan di sini.
+   * Nilai kosong (form lama / data preseed) jatuh ke default 5.
+   */
+  private resolveRating(value: unknown): AlumniRating {
+    if (value === undefined || value === null || value === '') {
+      return DEFAULT_RATING;
+    }
+
+    const normalized = String(value).trim() as AlumniRating;
+    if (!ALUMNI_RATINGS.includes(normalized)) {
+      throw new BadRequestException('Rating must be a number between 1 and 5');
+    }
+
+    return normalized;
+  }
+
   async create(createAlumnusDto: CreateAlumnusDto) {
     const course = await this.courseRepository.findOne({
       where: { id: createAlumnusDto.courseId },
@@ -25,6 +48,7 @@ export class AlumniService {
     }
     const alumni = await this.alumniRepository.create({
       ...createAlumnusDto,
+      rating: this.resolveRating(createAlumnusDto.rating),
       course: course,
     });
     await this.alumniRepository.save(alumni);
@@ -71,8 +95,14 @@ export class AlumniService {
       throw new NotFoundException('Alumni not found');
     }
 
-    const { courseId, ...rest } = updateAlumnusDto;
+    const { courseId, rating, ...rest } = updateAlumnusDto;
     Object.assign(alumni, rest);
+
+    // Rating tidak dikirim bila form versi lama atau pemanggil lain tidak
+    // menyertakannya — dalam hal itu nilai tersimpan dibiarkan, bukan di-overwrite.
+    if (rating !== undefined) {
+      alumni.rating = this.resolveRating(rating);
+    }
 
     if (courseId) {
       const course = await this.courseRepository.findOne({

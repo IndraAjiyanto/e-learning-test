@@ -1,0 +1,42 @@
+{{!--
+  Komponen: Client Formatters (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/table/formatters.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Menyediakan `formatRupiah(value)` dan `formatDate(value)` untuk baris tabel yang
+  dirender di sisi klien oleh Alpine — helper Handlebars dengan nama sama tidak
+  bisa dipakai di sana karena datanya baru ada setelah fetch.
+
+  Perilakunya sengaja disamakan dengan helper server di src/common/helpers:
+  nilai kosong jadi 'Not set', rupiah tanpa angka desimal (tidak memakai sen),
+  dan tanggal memakai format panjang en-US seperti dateHelpers.formatDate.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  function formatRupiah(value) {
+    if (value == null || value === '') return 'Not set';
+
+    const amount = Number(value);
+    if (Number.isNaN(amount)) return 'Not set';
+
+    return amount.toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    });
+  }
+
+  function formatDate(value) {
+    if (!value) return 'Not set';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Not set';
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+</script>

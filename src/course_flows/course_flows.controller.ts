@@ -16,6 +16,7 @@ import { UpdateCourseFlowDto } from './dto/update-course_flow.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('flow-program')
@@ -64,7 +65,11 @@ export class CourseFlowsController {
       const courseId = String(req.body.kelas_id);
       createCourseFlowDto.courseId = courseId;
       await this.courseFlowsService.create(createCourseFlowDto);
-      req.flash('success', 'Flow Program successfully created');
+      flashToast(
+        req,
+        'Flow Created',
+        'The program flow has been added successfully.',
+      );
       res.redirect(`/flow-program`);
     } catch (error: any) {
       req.flash('error', error.message || 'Flow Program failed to create');
@@ -83,7 +88,7 @@ export class CourseFlowsController {
     try {
       createCourseFlowDto.courseId = courseId;
       await this.courseFlowsService.create(createCourseFlowDto);
-      req.flash('success', 'alur course successfully created');
+      flashToast(req, 'Flow Added', 'The flow has been added to this program.');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'alur course failed to create');
@@ -126,7 +131,11 @@ export class CourseFlowsController {
   ) {
     try {
       await this.courseFlowsService.update(courseFlowId, updateCourseFlowDto);
-      req.flash('success', 'Flow Program successfully updated');
+      flashToast(
+        req,
+        'Flow Updated',
+        'The changes to this program flow have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Flow Program failed to update');
@@ -144,7 +153,11 @@ export class CourseFlowsController {
   ) {
     try {
       await this.courseFlowsService.remove(courseFlowId, courseId);
-      req.flash('success', 'Flow Program successfully deleted');
+      flashToast(
+        req,
+        'Flow Deleted',
+        'The program flow has been removed successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Flow Program failed to delete');

@@ -1,44 +1,34 @@
-<!-- HERO SECTION -->
-{{> components/ui/sections/program_detail_hero/index
-  showBatchPill=true
-  regisHref=(concat '/payment/registration/' course.id)
+{{!-- PAID PROGRAM DETAIL PAGE --}}
+
+{{!-- Section 1: Hero Section (Order 0) --}}
+{{> components/ui/sections/paid_detail_hero/index course=course category=course.category lang=lang}}
+
+{{!-- Section 2: Key Advantages / Why Choose (Order 1) --}}
+{{> components/ui/sections/paid_advantage/index course=course course_benefits=course_benefits benefit_category=benefit_category lang=lang}}
+
+{{!-- Section 3: Bootcamp Syllabus / Curriculum (Order 2) --}}
+{{> components/ui/sections/paid_curriculum/index course=course course_flows=course_flows lang=lang}}
+
+{{!-- Section 4: Software & Tools (Order 3) --}}
+{{> components/ui/sections/paid_tools/index course=course technologies=technologies portfolio=portfolio lang=lang}}
+
+{{!-- Section 5: Schedule / Informasi Jadwal (Order 4) --}}
+{{> components/ui/sections/paid_schedule/index course=course lang=lang}}
+
+{{!-- Section 6: Pricing / Informasi Investasi (Order 5) --}}
+{{> components/ui/sections/paid_pricing/index course=course category=course.category installments=installments lang=lang}}
+
+
+
+{{!-- Section 9: FAQ (Order 8) --}}
+{{> components/ui/sections/faq/index
+    faqs=faqs
+    faq=courseQuestions
+    eyebrowKey="test.categoryPaidProgram.faq.eyebrow"
+    titleKey="test.categoryPaidProgram.faq.title"
+    descKey="test.categoryPaidProgram.faq.description"
+    lang=lang
 }}
 
-<!-- Tabs Bar -->
-{{#> components/ui/sections/program_detail_nav/index}}
-  {{> components/ui/text/nav_link/index href="#participants" text=(t 'test.paidProgram.navbarMenu.participants') }}
-  {{> components/ui/text/nav_link/index href="#what-you-will-learn" text=(t 'test.paidProgram.navbarMenu.whatYouLearn') }}
-  {{> components/ui/text/nav_link/index href="#benefits" text=(t 'test.paidProgram.navbarMenu.benefits') }}
-  {{> components/ui/text/nav_link/index href="#learning-flow" text=(t 'test.paidProgram.navbarMenu.learningFlow') }}
-  {{> components/ui/text/nav_link/index href="#schedule-fees" text=(t 'test.paidProgram.navbarMenu.schedule&Fees') }}
-  {{> components/ui/text/nav_link/index href="#gallery" text=(t 'test.paidProgram.navbarMenu.gallery') }}
-  {{> components/ui/text/nav_link/index href="#faq" text=(t 'test.paidProgram.navbarMenu.FAQ') }}
-{{/components/ui/sections/program_detail_nav/index}}
-
-<!-- PARTICIPANTS SECTION -->
-{{> components/ui/sections/participants/index}}
-
-<!-- WHAT YOU'LL LEARN SECTION -->
-{{> components/ui/sections/paid_detail_what_you_learn/index}}
-
-<!-- BENEFITS SECTION -->
-{{> components/ui/sections/paid_detail_benefit/index}}
-
-<!-- LEARNING FLOW SECTION -->
-{{> components/ui/sections/paid_detail_learning_flow/index}}
-
-<!-- SCHEDULE & FEES SECTION -->
-{{> components/ui/sections/paid_detail_schedule_fee/index}}
-
-<!-- GALLERY SECTION -->
-{{> components/ui/sections/program_detail_gallery/index}}
-
-<!-- FAQ SECTION -->
-{{> components/ui/sections/program_detail_faq/index}}
-
-<style>
-  /* Untuk menyembunyikan scrollbar di menu tab namun tetap bisa di-scroll di HP */
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-</style>
+{{!-- Section 10: Final CTA / Start Your Career (Order 9) --}}
+{{> components/ui/sections/paid_final_cta/index course=course category=course.category lang=lang}}

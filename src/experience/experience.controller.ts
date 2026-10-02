@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -16,6 +17,7 @@ import { UpdateExperienceDto } from './dto/update-experience.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('experience')
@@ -33,11 +35,20 @@ export class ExperienceController {
       createExperienceDto.experienceOrder =
         await this.experienceService.noExperience();
       await this.experienceService.create(createExperienceDto);
-      req.flash('success', 'experience successfully created');
+      flashToast(
+        req,
+        'Experience Created',
+        'The experience has been added successfully.',
+      );
       res.redirect('/experience');
-    } catch (error: any) {
-      req.flash('error', 'experience failed to create');
-      res.redirect('/experience');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'experience failed to create',
+      );
+      res.redirect('/experience/formCreate');
     }
   }
 
@@ -69,11 +80,20 @@ export class ExperienceController {
   ) {
     try {
       await this.experienceService.update(id, updateExperienceDto);
-      req.flash('success', 'experience successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The experience has been updated successfully.',
+      );
       res.redirect('/experience');
-    } catch (error: any) {
-      req.flash('error', 'experience failed to update');
-      res.redirect('/experience');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof BadRequestException
+          ? error.message
+          : 'experience failed to update',
+      );
+      res.redirect(`/experience/formEdit/${id}`);
     }
   }
 
@@ -86,7 +106,11 @@ export class ExperienceController {
   ) {
     try {
       await this.experienceService.remove(id);
-      req.flash('success', 'experience successfully deleted');
+      flashToast(
+        req,
+        'Experience Deleted',
+        'The experience has been removed successfully.',
+      );
       res.redirect('/experience');
     } catch (error: any) {
       req.flash('error', 'experience failed to delete');

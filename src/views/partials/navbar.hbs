@@ -1,9 +1,9 @@
 <header
   {{#if isAuthPage}}
-  class="sticky inset-x-0 top-0 z-50 font-montserrat text-[#4A5568] transition-all duration-300"
+  class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
   :class="scrolled ? 'border-b border-white/40 bg-white/20 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.10)]' : 'border-b border-transparent bg-transparent shadow-none'"
   {{else}}
-  class="sticky inset-x-0 top-0 z-50 bg-white font-montserrat text-[#4A5568] transition-shadow duration-200"
+  class="sticky inset-x-0 top-0 z-50 bg-white font-inter text-[#4A5568] transition-shadow duration-200"
   :class="scrolled ? 'border-b-[3px] border-[#F3F4F6] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]' : 'border-b border-transparent shadow-none'"
   {{/if}}
   x-data="{
@@ -76,7 +76,7 @@
 
     {{!-- Logo --}}
     <a href="/dashboard" @click="setActive('/dashboard')" class="flex shrink-0 items-center">
-      <img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-7 w-auto object-contain sm:h-8 lg:h-[52px]" />
+      <img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-7 w-auto object-contain sm:h-8 lg:h-10" />
     </a>
 
     {{!-- Desktop nav links --}}
@@ -203,7 +203,7 @@
               </div>
               <div class="flex flex-col gap-5">
                 {{> components/ui/nav/dropdown_row/index href="/dashboard/alumni" icon="cap" title=(t 'test.navbar.alumni') desc=(t 'test.navbar.infoAlumniDesc') last=true }}
-                {{#unless isAuthenticated}}
+                {{#unless (and isAuthenticated user.isVerified)}}
                   {{#unless isAuthPage}}
                     <div class="flex items-center justify-between gap-4 rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
                       <div class="flex flex-col gap-1">
@@ -226,9 +226,10 @@
     <div class="hidden items-center gap-4 lg:flex">
       {{> components/ui/nav/lang_switcher/index }}
 
-      {{#if isAuthenticated}}
+      {{#if (and isAuthenticated user.isVerified)}}
         <a
           href="/users/profile"
+          {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}}
           :class="isUserActive() ? 'bg-gray-100' : 'hover:bg-gray-100'"
           class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
         >
@@ -311,8 +312,8 @@
         <a href="/dashboard/alumni" @click="setActive('/dashboard/alumni')" class="rounded-lg px-4 py-2.5 text-white/85 hover:bg-white/10">{{t 'test.navbar.alumni'}}</a>
       </div>
 
-      {{#if isAuthenticated}}
-        <a href="/users/profile" class="mt-2 flex items-center gap-3 border-t border-white/15 px-4 pt-4 hover:text-white/80">
+      {{#if (and isAuthenticated user.isVerified)}}
+        <a href="/users/profile" {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}} class="mt-2 flex items-center gap-3 border-t border-white/15 px-4 pt-4 hover:text-white/80">
           <span class="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white/30 bg-white/20">
             {{#if user.profile}}<img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />{{else}}<span class="font-bold">{{substring user.username 0 1}}</span>{{/if}}
           </span>

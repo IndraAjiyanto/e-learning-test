@@ -21,6 +21,9 @@ async function bootstrap() {
   const technologiesRepository = dataSource.getRepository(Technology);
   const mentoringRepository = dataSource.getRepository(Mentorings);
 
+  // isVerified wajib true: AuthController memblokir login user yang belum terverifikasi
+  // dan mengalihkannya ke /users/send-verify-email. Tanpa ini setiap akun hasil seed
+  // tidak bisa dipakai login sama sekali, dan selama ini harus di-flip manual lewat SQL.
   const hashedPassword = await bcrypt.hash('12345678', 10);
 
   const users = await userRepository.save([
@@ -29,18 +32,21 @@ async function bootstrap() {
       email: 'super@gmail.com',
       password: hashedPassword,
       role: 'super_admin',
+      isVerified: true,
     },
     {
       username: 'mentor',
       email: 'mentor@gmail.com',
       password: hashedPassword,
       role: 'admin',
+      isVerified: true,
     },
     {
       username: 'indra',
       email: 'indra@gmail.com',
       password: hashedPassword,
       role: 'user',
+      isVerified: true,
     },
   ]);
 
@@ -93,7 +99,10 @@ async function bootstrap() {
     {
       nameClassesType: 'Web Development',
       icon: 'web_development.png',
-      description: ['development', 'development', 'development'],
+      // Sebelumnya array 3 string yang diperlakukan sebagai [id, en, ja] secara
+      // posisional; bentuk sebenarnya di database (dan yang dikirim form
+      // create/edit) adalah objek per bahasa.
+      description: { id: 'development', en: 'development', ja: 'development' },
     },
   ]);
 
@@ -111,13 +120,21 @@ async function bootstrap() {
   const courses = await coursesRepository.save([
     {
       name: 'Full Stack Developer',
-      description: ['belajar menjadi full stack developer'],
+      description: {
+        id: 'belajar menjadi full stack developer',
+        en: 'belajar menjadi full stack developer',
+        ja: 'belajar menjadi full stack developer',
+      },
       image: 'logo.png',
       quota: 10,
       price: 1000000,
       promo: 5000000,
       group: 'grup whatsapp',
-      locations: ['kantor wiratek'],
+      locations: {
+        id: 'kantor wiratek',
+        en: 'kantor wiratek',
+        ja: 'kantor wiratek',
+      },
       locationLink: 'disini',
       method: 'offline',
       process: 'approved',

@@ -17,6 +17,7 @@ import { UpdateValueDto } from './dto/update-value.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 
 @UseGuards(AuthenticatedGuard)
@@ -35,7 +36,11 @@ export class ValueController {
     try {
       createValueDto.valueOrder = await this.valueService.noValue();
       await this.valueService.create(createValueDto);
-      req.flash('success', 'Value created successfully');
+      flashToast(
+        req,
+        'Value Created',
+        'The value has been added successfully.',
+      );
       res.redirect('/value');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create value');
@@ -77,7 +82,11 @@ export class ValueController {
   ) {
     try {
       await this.valueService.update(id, updateValueDto);
-      req.flash('success', 'Value updated successfully');
+      flashToast(
+        req,
+        'Value Updated',
+        'The changes to this value have been saved.',
+      );
       res.redirect('/value');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update value');
@@ -99,7 +108,11 @@ export class ValueController {
         res.redirect('/value');
       }
       await this.valueService.remove(id);
-      req.flash('success', 'Value deleted successfully');
+      flashToast(
+        req,
+        'Value Deleted',
+        'The value has been removed successfully.',
+      );
       res.redirect('/value');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete value');

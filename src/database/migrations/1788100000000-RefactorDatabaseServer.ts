@@ -894,7 +894,7 @@ export class RefactorDatabaseServer1788100000000 implements MigrationInterface {
          "filePath" varchar NOT NULL,
          "title" varchar NOT NULL,
          "description" varchar NULL,
-         "categoryId" integer NULL,
+         "categoryId" uuid NULL,
          "no" gallery_no_enum NOT NULL,
          CONSTRAINT "FK_gallery_category" FOREIGN KEY ("categoryId") REFERENCES "category"("id"))`);
     await q.query(`CREATE TABLE "participants" (

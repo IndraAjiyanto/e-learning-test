@@ -37,4 +37,8 @@ export class CreatePaymentDto {
   ])
   @IsOptional()
   referalSource: string;
+
+  @IsString()
+  @IsOptional()
+  promoCode?: string;
 }

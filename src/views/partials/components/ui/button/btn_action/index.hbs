@@ -6,6 +6,26 @@
 
   Props:
   - href        : URL tujuan. Jika diisi -> render <a>, jika kosong -> render <button>
+  - id          : string (opsional) — id elemen, supaya bisa ditarget dari JS
+                  vanilla. Berlaku untuk <a> dan <button>. Berguna di halaman
+                  yang tidak memakai Alpine, seperti alur pembayaran yang
+                  menyinkronkan enabled state dari form.
+  - disabled    : boolean (default: false, hanya <button>) — render atribut
+                  `disabled` plus styling redup + cursor-not-allowed.
+                  BEDA dari `xDisabled`: yang itu ekspresi Alpine, sedangkan ini
+                  atribut HTML biasa, jadi aman di halaman tanpa Alpine.
+
+                  PENTING: seluruh styling disabled WAJIB berupa varian
+                  `disabled:` (mis. `disabled:opacity-50`), JANGAN versi polos
+                  (`opacity-50`). Alasannya: `{{#if disabled}}` dievaluasi hanya
+                  sekali saat render di server, sedangkan atribut `disabled` bisa
+                  dilepas lagi oleh JS di klien (mis. tombol Simpan yang aktif
+                  setelah form valid). Kelas polos akan tetap menempel selamanya
+                  karena atribut class tidak di-render ulang — hasilnya tombol
+                  bisa diklik tapi tetap tampil redup.
+                  Varian `disabled:` aman karena CSS mengevaluasi ulang
+                  `:disabled` terhadap DOM tiap frame, jadi styling hilang
+                  otomatis begitu atributnya dilepas.
   - text        : Label teks pada tombol
   - icon        : Kelas ikon FontAwesome (contoh: "fas fa-rocket text-2xl")
   - iconPosition: left | right (default: left) - posisi ikon relatif terhadap teks
@@ -23,14 +43,19 @@
 {{#if href}}
 <a
   href="{{href}}"
+  {{#if id}}id="{{id}}"{{/if}}
   {{#if target}}target="{{target}}"{{/if}}
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
   class="
-    inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
+    inline-flex items-center justify-center font-semibold {{default roundedClass "rounded-[12px]"}} transition-all duration-300 shadow-md active:scale-95
 
     {{#if (eq variant 'secondary')}}
       bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else if (eq variant 'dark-navy')}}
+      bg-[#0B1F3B] hover:bg-[#08172c] text-white border border-[#0B1F3B] shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.15)]
+    {{else if (eq variant 'outline-gray')}}
+      bg-white text-[#0B1F3B] border border-[#E5E7EB] hover:bg-gray-50 shadow-none
     {{else}}
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
@@ -57,15 +82,21 @@
 
 {{else}}
 <button
+  {{#if id}}id="{{id}}"{{/if}}
   type="{{#if type}}{{type}}{{else}}button{{/if}}"
   {{#if onClick}}onclick="{{onClick}}"{{/if}}
   {{#if xClick}}@click="{{xClick}}"{{/if}}
-  {{#if xDisabled}}:disabled="{{xDisabled}}"{{/if}}
+  {{#if xDisabled}}:disabled="{{xDisabled}}" :class="({{xDisabled}}) ? 'opacity-50 cursor-not-allowed' : ''"{{/if}}
+  {{#if disabled}}disabled aria-disabled="true"{{/if}}
   class="
-    inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
+    inline-flex items-center justify-center font-semibold {{default roundedClass "rounded-[12px]"}} transition-all duration-300 shadow-md active:scale-95
 
     {{#if (eq variant 'secondary')}}
       bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else if (eq variant 'dark-navy')}}
+      bg-[#0B1F3B] hover:bg-[#08172c] text-white border border-[#0B1F3B] shadow-[0px_10px_24px_-8px_rgba(11,31,59,0.15)]
+    {{else if (eq variant 'outline-gray')}}
+      bg-white text-[#0B1F3B] border border-[#E5E7EB] hover:bg-gray-50 shadow-none
     {{else}}
       {{#if (eq variant 'outline')}}
         bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
@@ -82,18 +113,13 @@
       {{/if}}
     {{/if}}
 
-    {{#if xDisabled}}
-      {{xDisabled}} ? 'opacity-50 cursor-not-allowed' : ''
-    {{/if}}
-
     {{class}}
+
+    {{#if disabled}}disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#003060] disabled:active:scale-100{{/if}}
   "
 >
   {{#unless (eq iconPosition 'right')}}{{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}{{/unless}}
   <span class="{{textClass}}">{{text}}</span>
   {{#if (eq iconPosition 'right')}}{{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}{{/if}}
-  {{#if xDisabled}}
-    <span x-show="{{xDisabled}}" class="loading loading-spinner loading-sm ml-2"></span>
-  {{/if}}
 </button>
 {{/if}}

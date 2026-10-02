@@ -26,7 +26,22 @@ import * as path from 'path';
 import { InvoiceService } from 'src/invoice/invoice.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
+import { Invoice } from 'src/entities/invoice.entity';
 import { dateHelpers } from 'src/common/helpers';
+
+// Hasil `createXenditInvoice`. Kalau payment-nya sudah pernah dibuat, service
+// mengembalikan objek ringkas yang menyertakan invoice lama; kalau baru, objek
+// `Payment` yang sama dengan `createInvoiceForPayment`.
+export type XenditOrderResult =
+  | { process: 'approved' | 'process'; payment: Payment; invoice: Invoice }
+  | Payment;
+
+// Hasil `createMonthlyInstallmentInvoice`. `blocked: true` berarti invoice bulan
+// itu masih PENDING di Xendit, jadi pemanggil harus mengarahkan user ke link yang
+// sudah ada alih-alih membuat invoice kedua yang bisa dibayar dua kali.
+export type MonthlyInstallmentResult =
+  | { blocked: true; existingInvoiceUrl: string; message: string }
+  | InstallmentPayment;
 
 @Injectable()
 export class PaymentsService {
@@ -67,10 +82,13 @@ export class PaymentsService {
 
     const course = await this.courseRepository.findOne({
       where: { id: createPaymentDto.courseId },
+      relations: ['category'],
     });
     if (!course) {
       return;
     }
+
+    const promoCode = createPaymentDto.promoCode;
 
     if (createPaymentDto.installmentId) {
       const installments = await this.installmentsRepository.findOne({
@@ -86,13 +104,48 @@ export class PaymentsService {
       if (check == false) {
         return false;
       } else {
+        const basePrice = Number(installments.downPayment) || 0;
+        let discountAmount = 0;
+        let finalTotal = basePrice;
+
+        if (promoCode) {
+          try {
+            const validationResult = await this.voucherService.validateVoucher(
+              promoCode,
+              createPaymentDto.courseId,
+              basePrice,
+              createPaymentDto.userId,
+            );
+            discountAmount = validationResult.discountAmount;
+            finalTotal = validationResult.finalTotal;
+          } catch (err: any) {
+            console.warn(
+              '[PaymentsService] Invalid voucher on manual installment:',
+              err?.message,
+            );
+          }
+        }
+
         const payment = await this.paymentRepository.create({
           ...createPaymentDto,
           user: user,
           course: course,
           installment: installments,
         });
-        return await this.paymentRepository.save(payment);
+        const saved = await this.paymentRepository.save(payment);
+        await this.invoiceService
+          .createManualInvoice(
+            saved,
+            course,
+            user,
+            installments,
+            discountAmount,
+            finalTotal,
+          )
+          .catch((err) => {
+            console.error('[PaymentsService] Failed to create manual invoice:', err);
+          });
+        return saved;
       }
     }
 
@@ -103,12 +156,49 @@ export class PaymentsService {
     if (check == false) {
       return false;
     } else {
+      const promo = course?.promo ? Number(course.promo) : null;
+      const price = course?.price ? Number(course.price) : 0;
+      const basePrice = promo && promo > 0 ? promo : price;
+      let discountAmount = 0;
+      let finalTotal = basePrice;
+
+      if (promoCode) {
+        try {
+          const validationResult = await this.voucherService.validateVoucher(
+            promoCode,
+            createPaymentDto.courseId,
+            basePrice,
+            createPaymentDto.userId,
+          );
+          discountAmount = validationResult.discountAmount;
+          finalTotal = validationResult.finalTotal;
+        } catch (err: any) {
+          console.warn(
+            '[PaymentsService] Invalid voucher on manual payment:',
+            err?.message,
+          );
+        }
+      }
+
       const payment = await this.paymentRepository.create({
         ...createPaymentDto,
         user: user,
         course: course,
       });
-      return await this.paymentRepository.save(payment);
+      const saved = await this.paymentRepository.save(payment);
+      await this.invoiceService
+        .createManualInvoice(
+          saved,
+          course,
+          user,
+          undefined,
+          discountAmount,
+          finalTotal,
+        )
+        .catch((err) => {
+          console.error('[PaymentsService] Failed to create manual invoice:', err);
+        });
+      return saved;
     }
   }
 
@@ -163,16 +253,16 @@ export class PaymentsService {
         if (existingWeekProgress) {
           await this.weekProgressRepository.save({
             id: existingWeekProgress.id,
-            weeks: weeks,
+            week: weeks,
             user: user,
-            proses: true,
+            process: true,
             quiz: false,
           });
         } else {
           await this.weekProgressRepository.save({
-            weeks: weeks,
+            week: weeks,
             user: user,
-            proses: true,
+            process: true,
             quiz: false,
           });
         }
@@ -289,6 +379,157 @@ export class PaymentsService {
     return payments || [];
   }
 
+  /**
+   * Satu daftar riwayat pembayaran untuk area student.
+   *
+   * Desainnya (docs/design/user-area/payment-history.png) memperlihatkan SATU
+   * daftar, bukan tiga sub-tab, jadi tiga sumber di bawah digabung dan
+   * dinormalkan di sini supaya template tidak perlu tahu bentuk aslinya:
+   *   - pembayaran lunas   (payments tanpa installment)
+   *   - pembayaran cicilan (payments dengan installment)
+   *   - pendaftaran        (registrations)
+   *
+   * Status memakai tiga nilai yang memang ada di database. Desain juga
+   * menggambarkan "Pending", tetapi tidak ada padanannya di enum ProcessStatus,
+   * jadi tidak diada-adakan.
+   */
+  async findPaymentHistory(userId: string) {
+    await this.reconcileUserPayments(userId).catch(() => undefined);
+
+    const [payments, registrations] = await Promise.all([
+      this.paymentRepository.find({
+        where: { user: { id: userId } },
+        relations: ['user', 'user.biodata', 'course', 'course.category', 'installment', 'invoice'],
+      }),
+      this.registrationRepository.find({
+        where: { user: { id: userId } },
+        relations: ['user', 'user.biodata', 'course', 'course.category'],
+      }),
+    ]);
+
+    const statusOf = (process: string) =>
+      process === 'approved'
+        ? { status: 'paid', statusLabel: 'Paid' }
+        : process === 'process'
+          ? { status: 'processing', statusLabel: 'Processing' }
+          : { status: 'failed', statusLabel: 'Failed' };
+
+    const hasInstallments = payments.some((payment) => !!payment.installment);
+    const installmentDetails = hasInstallments
+      ? await this.getUserInstallmentDetail(userId).catch(() => [])
+      : [];
+    const installmentDetailMap = new Map(
+      installmentDetails.map((detail) => [detail.id, detail]),
+    );
+
+    const rows = [
+      ...payments.map((payment) => {
+        const isInstallment = !!payment.installment;
+        const installmentDetail = isInstallment
+          ? installmentDetailMap.get(payment.id) ?? null
+          : null;
+
+        const hasPromo =
+          payment.course?.promo !== null &&
+          payment.course?.promo !== undefined &&
+          Number(payment.course.promo) > 0;
+        const promoPrice = hasPromo ? Number(payment.course.promo) : null;
+        const normalPrice = payment.course?.price ? Number(payment.course.price) : null;
+        const fallbackPrice = promoPrice ?? normalPrice;
+
+        const price =
+          payment.invoice?.price !== null && payment.invoice?.price !== undefined
+            ? Number(payment.invoice.price)
+            : normalPrice;
+        const promo =
+          payment.invoice?.promo !== null && payment.invoice?.promo !== undefined
+            ? Number(payment.invoice.promo)
+            : promoPrice;
+        const promoCode =
+          payment.invoice?.promo_code !== null && payment.invoice?.promo_code !== undefined
+            ? Number(payment.invoice.promo_code)
+            : (payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0);
+        // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
+        const total =
+          payment.invoice?.subtotal !== null && payment.invoice?.subtotal !== undefined
+            ? Number(payment.invoice.subtotal)
+            : (payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
+                ? Number(payment.invoice.final_total)
+                : (fallbackPrice ?? 0));
+
+        return {
+          id: payment.id,
+          kind: isInstallment ? 'installment' : 'full',
+          courseId: payment.course?.id ?? null,
+          courseName: payment.course?.name ?? 'Program',
+          categoryName: payment.course?.category?.name ?? null,
+          date: payment.invoice?.paid_at ?? payment.createdAt,
+          method:
+            payment.invoice?.payment_method ||
+            (isInstallment ? 'Installment' : 'Full Payment'),
+          amount: total,
+          subtotal: total,
+          total: total,
+          finalTotal: total,
+          discount: promoCode,
+          originalPrice: price,
+          price,
+          promo,
+          promoPrice: promo,
+          promoCode,
+          proof: payment.file ?? null,
+          no: payment.invoice?.invoice_number || payment.no || null,
+          paymentLink: payment.invoice?.xendit_invoice_url ?? null,
+          keyword: payment.referalSource || (isInstallment ? 'Installment Plan' : 'Online Course'),
+          userName: payment.invoice?.user_fullname || payment.user_fullname || payment.user?.biodata?.fullName || payment.user?.username || null,
+          userEmail: payment.invoice?.user_email || payment.user_email || payment.user?.email || null,
+          userPhone: payment.invoice?.user_phone || payment.user_no || payment.user?.biodata?.no || null,
+          installmentDetail,
+          ...statusOf(payment.process),
+        };
+      }),
+      ...registrations.map((registration) => {
+        const hasPromo =
+          registration.course?.promo !== null &&
+          registration.course?.promo !== undefined &&
+          Number(registration.course.promo) > 0;
+        const promoPrice = hasPromo ? Number(registration.course.promo) : null;
+        const normalPrice = registration.course?.price ? Number(registration.course.price) : null;
+        const subtotal = promoPrice ?? normalPrice;
+        return {
+          id: registration.id,
+          kind: 'registration',
+          courseId: registration.course?.id ?? null,
+          courseName: registration.course?.name ?? 'Program',
+          categoryName: registration.course?.category?.name ?? null,
+          date: registration.createdAt,
+          method: 'Registration',
+          amount: subtotal,
+          subtotal,
+          discount: 0,
+          originalPrice: normalPrice,
+          price: normalPrice,
+          promo: promoPrice,
+          promoCode: 0,
+          finalTotal: subtotal,
+          proof: registration.file ?? null,
+          no: null,
+          paymentLink: null,
+          keyword: registration.referal_source || 'Registration',
+          userName: registration.user_fullname || registration.user?.biodata?.fullName || registration.user?.username || null,
+          userEmail: registration.user_email || registration.user?.email || null,
+          userPhone: registration.user_no || registration.user?.biodata?.no || null,
+          installmentDetail: null,
+          ...statusOf(registration.process),
+        };
+      }),
+    ];
+
+    return rows.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  }
+
   async findInstallments(userId: string) {
     return await this.paymentRepository.find({
       where: {
@@ -330,7 +571,9 @@ export class PaymentsService {
     // 3) Cicilan bulanan yang masih 'process' -> cek ke Xendit
     const processRows = (
       await Promise.all(
-        parents.map((p) => this.installmentPaymentService.findByPaymentId(p.id)),
+        parents.map((p) =>
+          this.installmentPaymentService.findByPaymentId(p.id),
+        ),
       )
     ).flat();
     for (const row of processRows) {
@@ -362,9 +605,10 @@ export class PaymentsService {
       order: { createdAt: 'DESC' },
     });
 
-    const installmentRows = await this.installmentPaymentService.findByPaymentIds(
-      parents.map((p) => p.id),
-    );
+    const installmentRows =
+      await this.installmentPaymentService.findByPaymentIds(
+        parents.map((p) => p.id),
+      );
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -381,6 +625,7 @@ export class PaymentsService {
         rows.filter((r) => r.status === 'approved').map((r) => r.month),
       );
 
+      let hasPreviousUnpaid = false;
       const monthlyStatus = schedule.map((amount, i) => {
         const month = i + 1;
         const dpDate = p.dpPaidAt ? new Date(p.dpPaidAt) : new Date();
@@ -388,11 +633,7 @@ export class PaymentsService {
         const storedDate = p.installment?.dueDates?.[month - 1];
         const dueDate = storedDate
           ? dateHelpers.toLocalDate(storedDate)
-          : dateHelpers.getMonthlyDueDate(
-              dpDate,
-              month,
-              dpDate.getDate(),
-            );
+          : dateHelpers.getMonthlyDueDate(dpDate, month, dpDate.getDate());
 
         const tx = rows.find((r) => r.month === month);
 
@@ -405,6 +646,13 @@ export class PaymentsService {
           status = 'due';
         }
 
+        const isDpApproved = p.process === 'approved';
+        const isPaid = status === 'paid';
+        const canPay = isDpApproved && !isPaid && !hasPreviousUnpaid;
+        if (!isPaid) {
+          hasPreviousUnpaid = true;
+        }
+
         return {
           month,
           amount,
@@ -412,12 +660,14 @@ export class PaymentsService {
           status,
           txId: tx?.id || null,
           process: tx?.status || null,
+          canPay,
         };
       });
 
       const paidMonths = Array.from(paidSet);
       const totalPaid = paidSet.size
-        ? dpAmount + paidMonths.reduce((acc, m) => acc + (schedule[m - 1] || 0), 0)
+        ? dpAmount +
+          paidMonths.reduce((acc, m) => acc + (schedule[m - 1] || 0), 0)
         : dpAmount;
 
       return {
@@ -496,7 +746,14 @@ export class PaymentsService {
   async findOne(paymentId: string) {
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
-      relations: ['user', 'course', 'invoice'],
+      relations: [
+        'user',
+        'course',
+        'course.category',
+        'invoice',
+        'installment',
+        'installmentPayments',
+      ],
     });
     if (!payment) {
       throw new NotFoundException('Payment not found');
@@ -530,14 +787,17 @@ export class PaymentsService {
     paymentMethod: string,
     promoCode?: string,
     formData?: any,
-  ) {
+  ): Promise<XenditOrderResult> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['installments'],
+      relations: ['installments', 'category'],
     });
     if (!course) throw new Error('Course not found');
 
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['biodata'],
+    });
     if (!user) throw new Error('User not found');
 
     let basePrice =
@@ -565,14 +825,14 @@ export class PaymentsService {
             process: 'approved',
             payment: existingPayment,
             invoice: existingPayment.invoice,
-          } as any;
+          };
         }
         if (existingPayment.invoice) {
           return {
             process: 'process',
             payment: existingPayment,
             invoice: existingPayment.invoice,
-          } as any;
+          };
         }
         throw new Error(
           'Anda sudah membuat pembayaran cicilan untuk program ini. Silakan lanjutkan pembayaran.',
@@ -625,6 +885,8 @@ export class PaymentsService {
       paymentMethod,
       basePrice,
       discountAmount,
+      user,
+      course,
     );
   }
 
@@ -649,7 +911,7 @@ export class PaymentsService {
     userId: string,
     parentPaymentId: string,
     month: number,
-  ) {
+  ): Promise<MonthlyInstallmentResult> {
     const parent = await this.paymentRepository.findOne({
       where: { id: parentPaymentId },
       relations: ['user', 'course', 'installment', 'installment.course'],
@@ -704,24 +966,37 @@ export class PaymentsService {
 
     let row = existingRow;
     if (row) {
+      // Status invoice Xendit yang sudah ada dicek sekali di sini, lalu dipakai
+      // untuk tiga keputusan: sudah lunas (tandai lunas), masih aktif (jangan
+      // buat invoice kedua), atau sudah mati (biarkan di-regenerate di bawah).
+      const xenditStatus = row.xendit_invoice_id
+        ? await this.invoiceService.getXenditInvoiceStatus(row.xendit_invoice_id)
+        : null;
+
       // Cegah double-charge: jika invoice lama ternyata sudah dibayar di Xendit
       // (webhook mungkin gagal), tandai lunas tanpa membuat invoice baru.
-      if (row.xendit_invoice_id) {
-        const xenditStatus = await this.invoiceService.getXenditInvoiceStatus(
-          row.xendit_invoice_id,
-        );
-        if (
-          xenditStatus &&
-          (xenditStatus.status === 'PAID' ||
-            xenditStatus.status === 'SETTLED')
-        ) {
-          row.status = 'approved';
-          row.paidAt = xenditStatus.paidAt || new Date();
-          return await this.installmentPaymentService.save(row);
-        }
+      if (
+        xenditStatus &&
+        (xenditStatus.status === 'PAID' || xenditStatus.status === 'SETTLED')
+      ) {
+        row.status = 'approved';
+        row.paidAt = xenditStatus.paidAt || new Date();
+        return await this.installmentPaymentService.save(row);
       }
 
-      // Belum dibayar -> regenerasi invoice baru agar user bisa membayar lagi.
+      // Invoice lama masih PENDING: kembalikan link yang sama supaya user tidak
+      // memegang dua link yang bisa dibayar dua kali untuk bulan yang sama.
+      if (xenditStatus?.status === 'PENDING' && row.xendit_invoice_url) {
+        return {
+          blocked: true,
+          existingInvoiceUrl: row.xendit_invoice_url,
+          message:
+            'Invoice bulan ini masih aktif. Lanjutkan pembayaran melalui link yang sudah ada.',
+        };
+      }
+
+      // Sudah EXPIRED/FAILED atau belum pernah dibuat -> regenerasi invoice
+      // baru agar user tetap bisa membayar.
       row.amount = amount;
       row.no = `INV-M${month}-${Date.now()}-${Math.random()
         .toString(36)
@@ -745,6 +1020,147 @@ export class PaymentsService {
       parent.user?.email || 'guest@example.com',
       course?.name || 'Program',
     );
+  }
+
+  // ======================== MANUAL PAYMENT RE-UPLOAD ========================
+
+  // Upload ulang bukti pembayaran manual untuk Full Payment & DP Installment.
+  // Mengubah record yang sama (tidak membuat record baru) dan mengembalikan
+  // statusnya ke `process` agar ditinjau ulang oleh super admin.
+  async reuploadManualProof(userId: string, paymentId: string, file: string) {
+    if (!file) {
+      throw new Error('Bukti pembayaran wajib diunggah');
+    }
+
+    const payment = await this.paymentRepository.findOne({
+      where: { id: paymentId },
+      relations: ['user', 'invoice'],
+    });
+    if (!payment) {
+      throw new Error('Pembayaran tidak ditemukan');
+    }
+    if (payment.user && payment.user.id !== userId) {
+      throw new Error('Payment tidak berhak diakses user ini');
+    }
+    // `approved` berarti pembayaran sudah lunas: manual berarti sudah diterima
+    // super admin, Xendit berarti sudah dibayar. Dua-duanya tidak perlu bukti
+    // lagi, dan membuka upload ulang hanya bisa membatalkan status yang sah.
+    if (payment.process === 'approved') {
+      throw new Error(
+        'Pembayaran ini sudah lunas dan diterima. Bukti tidak perlu diunggah lagi.',
+      );
+    }
+
+    // Bukti manual menggantikan kanal Xendit untuk payment ini, jadi invoice
+    // yang masih hidup harus ditutup dulu supaya tidak bisa dibayar dua kali.
+    await this.invoiceService.expireAndClearInvoice(payment.invoice);
+
+    const previousFile = payment.file;
+    payment.file = file;
+    payment.process = 'process';
+    const saved = await this.paymentRepository.save(payment);
+
+    if (previousFile && previousFile !== file) {
+      await this.deleteFile(previousFile);
+    }
+
+    return saved;
+  }
+
+  // Upload ulang bukti pembayaran manual untuk satu bulan cicilan.
+  // Cicilan yang sudah lunas (approved) tidak boleh di-upload ulang.
+  async createManualInstallmentPayment(
+    userId: string,
+    parentPaymentId: string,
+    month: number,
+    file: string,
+  ) {
+    if (!file) {
+      throw new Error('Bukti pembayaran wajib diunggah');
+    }
+
+    const parent = await this.paymentRepository.findOne({
+      where: { id: parentPaymentId },
+      relations: ['user', 'course', 'installment', 'installment.course'],
+    });
+    if (!parent || !parent.installment) {
+      throw new Error('Rencana cicilan tidak ditemukan');
+    }
+    if (parent.process !== 'approved') {
+      throw new Error('Pembayaran DP belum lunas/approved');
+    }
+    if (!parent.dpPaidAt) {
+      throw new Error('Pembayaran DP belum tercatat');
+    }
+    if (parent.user && parent.user.id !== userId) {
+      throw new Error('Payment tidak berhak diakses user ini');
+    }
+
+    const schedule = parent.installment.price || [];
+    if (month < 1 || month > schedule.length) {
+      throw new Error('Nomor cicilan tidak valid');
+    }
+
+    const existingRow =
+      await this.installmentPaymentService.findOneByPaymentAndMonth(
+        parentPaymentId,
+        month,
+      );
+    if (existingRow && existingRow.status === 'approved') {
+      throw new Error('Cicilan bulan ini sudah lunas');
+    }
+
+    // Pembayaran cicilan harus berurutan.
+    if (month > 1) {
+      const existingPayments =
+        await this.installmentPaymentService.findByPaymentId(parentPaymentId);
+      for (let m = 1; m < month; m++) {
+        const prevPayment = existingPayments.find((p) => p.month === m);
+        if (!prevPayment || prevPayment.status !== 'approved') {
+          throw new Error(
+            `Cicilan bulan ${m} belum lunas. Silakan bayar cicilan secara berurutan.`,
+          );
+        }
+      }
+    }
+
+    const amount = schedule[month - 1];
+    if (amount === undefined || amount === null) {
+      throw new Error('Nominal cicilan tidak ditemukan');
+    }
+
+    let row = existingRow;
+    if (row) {
+      // Bukti manual untuk bulan ini menggantikan kanal Xendit, jadi invoice
+      // lama yang masih hidup harus ditutup dan field-nya dikosongkan. Tanpa
+      // ini user memegang link Xendit dan bukti manual sekaligus untuk bulan
+      // yang sama, dan bisa membayar dua kali.
+      if (row.xendit_invoice_id) {
+        await this.invoiceService.expireXenditInvoice(row.xendit_invoice_id);
+        row.xendit_invoice_id = '';
+        row.xendit_invoice_url = '';
+      }
+
+      const previousFile = row.file;
+      row.amount = amount;
+      row.file = file;
+      row.status = 'process';
+      row.paidAt = null as unknown as Date;
+      row = await this.installmentPaymentService.save(row);
+      if (previousFile && previousFile !== file) {
+        await this.deleteFile(previousFile);
+      }
+      return row;
+    }
+
+    return this.installmentPaymentService.create({
+      payment: parent,
+      month,
+      amount,
+      file,
+      status: 'process',
+      no: `INV-M${month}-${Date.now()}`,
+    });
   }
 
   // Get course by ID

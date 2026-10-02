@@ -1,10 +1,7 @@
-{{> sub_partials/session/logbook_mentor_tab/header}}
-
-{{> sub_partials/session/logbook_mentor_tab/table}}
+{{!-- Logbook Mentor — Logbook Mentor in Detail Session (lDvy3) slice-accurate, prefix logbook-mentor- --}}
+{{> components/ui/admin/logbook/logbook-mentor-table sessionId=session.id}}
 
 {{> sub_partials/session/logbook_mentor_tab/modal_information}}
-
-{{> sub_partials/session/logbook_mentor_tab/pagination}}
 
 <script>
   function logBookMentorData() {
@@ -28,7 +25,7 @@
       get filteredData() {
         const filtered = this.data.filter(l =>
           (
-            `${l.activity} ${l.activityDetail} ${l.obstacle}`
+            `${l.activity} ${l.activityDetail} ${l.obstacle} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
           ).toLowerCase()
           .includes(this.search.toLowerCase())
         );
@@ -45,7 +42,7 @@
 
           const filtered = this.data.filter(l =>
             (
-              `${l.activity} ${l.activityDetail} ${l.obstacle}`
+              `${l.activity} ${l.activityDetail} ${l.obstacle} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
             ).toLowerCase().includes(s)
           );
 
@@ -57,6 +54,8 @@
             Documentation: log.documentation || "-",
             Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
+            Email: log.user?.email || "-",
+            LinkedIn: log.user?.linkedin || log.user?.biodata?.linkedin || "-",
             Date: this.formatDate(log.createdAt),
           }));
 
@@ -71,6 +70,8 @@
             { wch: 60 }, // Documentation
             { wch: 25 }, // Program
             { wch: 20 }, // User
+            { wch: 25 }, // Email
+            { wch: 30 }, // LinkedIn
             { wch: 20 }  // Date
           ];
 

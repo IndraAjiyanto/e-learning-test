@@ -1,0 +1,82 @@
+{{!--
+  Komponen: Assignment Page - Viewer (kartu brief)
+  Lokasi: src/views/partials/components/ui/learning/assignment_page/viewer/index.hbs
+  Level: L3 Section
+
+  Kolom kiri halaman assignment: kartu dengan kepala navy berisi judul brief,
+  lalu isi brief. Kepalanya identik di dua halaman yang memakai kerangka
+  `components/ui/learning/assignment_page/index` (tugas mingguan dan final
+  assignment), jadi bentuk, warna, dan tombolnya hanya ditulis di sini.
+
+  Isi kartu dikirim lewat block karena bentuknya berbeda per halaman:
+
+    - tugas mingguan: <iframe> berkas yang diunggah admin
+    - final assignment: rich text EditorJS
+
+  Isi diberi min-height:369px supaya kolomnya tidak ikut memendek saat brief-nya
+  pendek, dan kedua kolom workspace tetap sejajar.
+
+  Props:
+  - title           : string (wajib)    judul brief di kepala kartu
+  - fileUrl         : string (opsional) berkas untuk tombol berbagi & unduh
+  - showFileActions : boolean (opsional) tampilkan tombol berbagi dan unduh.
+                       Dikosongkan untuk final assignment karena brief-nya rich
+                       text, bukan berkas - tidak ada yang bisa diunduh, dan
+                       tautan kosongnya tidak berguna bila diklik.
+
+  Pakai:
+    {{#> components/ui/learning/assignment_page/viewer/index
+          title=assignment.title fileUrl=assignment.file showFileActions=true }}
+      ...isi brief...
+    {{/components/ui/learning/assignment_page/viewer/index}}
+--}}
+  <div class="flex flex-col items-start w-full 2xl:w-[912px] shrink-0 bg-white border border-[#E2E8F0] shadow-[0px_12px_24px_rgba(15,23,42,0.039)] rounded-[24px] overflow-hidden">
+
+    {{!-- viewer-header --}}
+    <div class="w-full flex flex-row justify-between items-center px-[24px] py-[14px] bg-[#003060]">
+
+      {{!-- viewer-file-info --}}
+      <div class="flex flex-row items-center gap-[10px]">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.33333 1.33334H4C3.26667 1.33334 2.67333 1.93334 2.67333 2.66667L2.66667 13.3333C2.66667 14.0667 3.26 14.6667 3.99333 14.6667H12C12.7333 14.6667 13.3333 14.0667 13.3333 13.3333V5.33334L9.33333 1.33334ZM12 13.3333H4V2.66667H8.66667V6.00001H12V13.3333Z" fill="#94A3B8"/>
+        </svg>
+        <span class="font-inter font-medium text-[13px] leading-[16px] text-[#E2E8F0] truncate max-w-[196px]">
+          {{title}}
+        </span>
+      </div>
+
+      {{!-- viewer-actions --}}
+      <div class="flex flex-row items-center gap-[16px]">
+        {{#if showFileActions}}
+          {{!-- share --}}
+          <a href="{{fileUrl}}" target="_blank" title="Share" class="text-[#94A3B8] hover:text-white transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 10.72C11.4933 10.72 11.04 10.92 10.6933 11.24L5.94 8.46667C5.97333 8.31333 6 8.16 6 8C6 7.84 5.97333 7.68667 5.94 7.53333L10.64 4.78667C11 5.12667 11.4733 5.33333 12 5.33333C13.1067 5.33333 14 4.44 14 3.33333C14 2.22667 13.1067 1.33333 12 1.33333C10.8933 1.33333 10 2.22667 10 3.33333C10 3.49333 10.0267 3.64667 10.06 3.8L5.36 6.54667C5 6.20667 4.52667 6 4 6C2.89333 6 2 6.89333 2 8C2 9.10667 2.89333 10 4 10C4.52667 10 5 9.79333 5.36 9.45333L10.1067 12.2333C10.0733 12.3733 10.0533 12.52 10.0533 12.6667C10.0533 13.74 10.9267 14.6133 12 14.6133C13.0733 14.6133 13.9467 13.74 13.9467 12.6667C13.9467 11.5933 13.0733 10.72 12 10.72Z" fill="#94A3B8"/>
+            </svg>
+          </a>
+          {{!-- download --}}
+          <a href="{{fileUrl}}" download title="Download" class="text-[#94A3B8] hover:text-white transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.6667 6H10V2H6V6H3.33333L8 10.6667L12.6667 6ZM3.33333 12V13.3333H12.6667V12H3.33333Z" fill="#94A3B8"/>
+            </svg>
+          </a>
+        {{/if}}
+        {{!-- print --}}
+        <button onclick="window.print()" title="Print" class="text-[#94A3B8] hover:text-white transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.6667 5.33333H3.33333C2.22667 5.33333 1.33333 6.22667 1.33333 7.33333V11.3333H3.33333V13.3333H12.6667V11.3333H14.6667V7.33333C14.6667 6.22667 13.7733 5.33333 12.6667 5.33333ZM11.3333 12H4.66667V9.33333H11.3333V12ZM12.6667 8C12.3 8 12 7.7 12 7.33333C12 6.96667 12.3 6.66667 12.6667 6.66667C13.0333 6.66667 13.3333 6.96667 13.3333 7.33333C13.3333 7.7 13.0333 8 12.6667 8ZM12 2.66667H4V4.66667H12V2.66667Z" fill="#94A3B8"/>
+          </svg>
+        </button>
+        {{!-- more --}}
+        <button title="More options" class="text-[#94A3B8] hover:text-white transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 3.33333C8.73333 3.33333 9.33333 2.73333 9.33333 2C9.33333 1.26667 8.73333 0.666667 8 0.666667C7.26667 0.666667 6.66667 1.26667 6.66667 2C6.66667 2.73333 7.26667 3.33333 8 3.33333ZM8 6.66667C7.26667 6.66667 6.66667 7.26667 6.66667 8C6.66667 8.73333 7.26667 9.33333 8 9.33333C8.73333 9.33333 9.33333 8.73333 9.33333 8C9.33333 7.26667 8.73333 6.66667 8 6.66667ZM8 12.6667C7.26667 12.6667 6.66667 13.2667 6.66667 14C6.66667 14.7333 7.26667 15.3333 8 15.3333C8.73333 15.3333 9.33333 14.7333 9.33333 14C9.33333 13.2667 8.73333 12.6667 8 12.6667Z" fill="#94A3B8"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  {{!-- inner-document-content --}}
+  <div class="w-full flex flex-col bg-[#F1F5F9]" style="min-height:369px;">
+    {{> @partial-block}}
+  </div>
+</div>

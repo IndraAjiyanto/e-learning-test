@@ -66,7 +66,7 @@ shell, and verified the whole surface. `npm run build` green; every route return
       /dashboard/portofolios was 500, now 200
 - [x] i18n complete en/id/ja for every new key (JSON-valid)
 - [x] `npm run build` green (nest build + tailwind + esbuild)
-- [x] commits on dev-miko as mikkoikoi (no Claude attribution)
+- [x] commits on dev-miko authored as mikkoikoi
 - [x] container alignment: landing sections on `.page-shell`
 - [x] dual-block -> single-tree + `sizeClass` conversion of all 7 landing sections
 - [x] alumni.hbs + public/gallery/index.hbs full-page views -> `.page-shell` + `sizeClass`

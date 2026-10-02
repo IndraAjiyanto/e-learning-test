@@ -24,6 +24,14 @@ export const stringHelpers = {
   },
   lookup: (str: any[], index: number) => (str ? str[index] : ''),
   json: (context: any) => JSON.stringify(context),
+  // Untuk data island: <script type="application/json">{{{jsonSafe x}}}</script>.
+  //
+  // `json` polosnya bisa berisi urutan `</script>`, dan browser memotong blok
+  // script di situ -sisanya jadi markup halaman, bukan JSON. Menyelipkan
+  // garis miring di depan '/' menutup lubang itu tanpa mengubah nilai
+  // JSON.parse-nya (JSON memperlakukan `\/` sama dengan `/`).
+  jsonSafe: (context: any) =>
+    String(JSON.stringify(context) ?? 'null').replace(/<\//g, '<\\/'),
   isJSON: (str: string) => {
     if (!str || typeof str !== 'string') return false;
     try {
@@ -55,8 +63,20 @@ export const stringHelpers = {
   },
   default: (value: any, defaultValue: any) => value || defaultValue,
   getByLang: (obj: any, lang: string) => {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || '';
+    if (!obj) return '';
+    if (typeof obj === 'string') {
+      try {
+        const parsed = JSON.parse(obj);
+        if (parsed && typeof parsed === 'object') {
+          return parsed[lang] || parsed['id'] || parsed['en'] || '';
+        }
+      } catch {
+        return obj;
+      }
+      return obj;
+    }
+    if (typeof obj !== 'object') return '';
+    return obj[lang] || obj['id'] || obj['en'] || '';
   },
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
@@ -89,9 +109,10 @@ export const stringHelpers = {
     const words = raw.split(/\s+/);
 
     // Bahasa tanpa spasi (Jepang/Cina/Korea): potong per karakter, bukan per kata
-    const isCjk = /[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(
-      raw,
-    );
+    const isCjk =
+      /[\u3000-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]/.test(
+        raw,
+      );
     if (words.length < 2 && isCjk) {
       const chars = Number(cjkCount) > 0 ? Number(cjkCount) : 4;
       const chunk = Array.from(raw);
@@ -105,7 +126,9 @@ export const stringHelpers = {
     const head = words.slice(0, Math.max(words.length - n, 0));
     const tail = words.slice(Math.max(words.length - n, 0));
     return new Handlebars.SafeString(
-      head.length ? `${esc(head.join(' '))} ${wrap(tail.join(' '))}` : wrap(tail.join(' ')),
+      head.length
+        ? `${esc(head.join(' '))} ${wrap(tail.join(' '))}`
+        : wrap(tail.join(' ')),
     );
   },
   concat: function (...args: any[]) {
@@ -117,4 +140,15 @@ export const stringHelpers = {
     typeof str === 'string' &&
     typeof suffix === 'string' &&
     str.toLowerCase().endsWith(suffix.toLowerCase()),
+  includes: (str: unknown, sub: unknown) =>
+    typeof str === 'string' &&
+    typeof sub === 'string' &&
+    str.toLowerCase().includes(sub.toLowerCase()),
+  lower: (str: unknown) =>
+    typeof str === 'string' ? str.toLowerCase() : '',
+  capitalize: (str: unknown) => {
+    if (typeof str !== 'string' || !str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
 };
+

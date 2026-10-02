@@ -14,7 +14,7 @@ export class InstallmentPayment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Payment, (payment) => payment.id, {
+  @ManyToOne(() => Payment, (payment) => payment.installmentPayments, {
     onDelete: 'CASCADE',
     nullable: false,
   })
@@ -36,7 +36,14 @@ export class InstallmentPayment {
   @Column({ nullable: true })
   xendit_invoice_url: string;
 
-  @Column({ type: 'enum', enum: ['process', 'approved', 'rejected'], default: 'process' })
+  @Column({ nullable: true })
+  file: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['process', 'approved', 'rejected'],
+    default: 'process',
+  })
   status: 'process' | 'approved' | 'rejected';
 
   @Column({ type: 'timestamp', nullable: true })

@@ -40,6 +40,8 @@ describe('PaymentsService', () => {
       settleStuckPayment: jest.fn().mockResolvedValue(undefined),
       createInvoiceForPayment: jest.fn(),
       createInvoiceForInstallment: jest.fn(),
+      expireXenditInvoice: jest.fn().mockResolvedValue({ expired: true }),
+      expireAndClearInvoice: jest.fn().mockResolvedValue(undefined),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -72,7 +74,11 @@ describe('PaymentsService', () => {
     it('calls settleStuckPayment for each process payment with invoice', async () => {
       paymentRepo.find
         .mockResolvedValueOnce([
-          { id: 'p1', process: 'process', invoice: { xendit_invoice_id: 'x1' } },
+          {
+            id: 'p1',
+            process: 'process',
+            invoice: { xendit_invoice_id: 'x1' },
+          },
           { id: 'p2', process: 'approved', invoice: {} },
         ])
         .mockResolvedValueOnce([]);
@@ -85,7 +91,9 @@ describe('PaymentsService', () => {
 
     it('reconciles installment rows via Xendit status', async () => {
       paymentRepo.find
-        .mockResolvedValueOnce([{ id: 'p1', process: 'approved', invoice: null }])
+        .mockResolvedValueOnce([
+          { id: 'p1', process: 'approved', invoice: null },
+        ])
         .mockResolvedValueOnce([{ id: 'p1' }]);
 
       installmentService.findByPaymentId.mockResolvedValue([
@@ -113,7 +121,9 @@ describe('PaymentsService', () => {
       installmentService.findByPaymentId.mockResolvedValue([
         { id: 'ip1', month: 1, status: 'process', xendit_invoice_id: 'xi1' },
       ]);
-      invoiceService.getXenditInvoiceStatus.mockResolvedValue({ status: 'EXPIRED' });
+      invoiceService.getXenditInvoiceStatus.mockResolvedValue({
+        status: 'EXPIRED',
+      });
 
       await service.reconcileUserPayments('u1');
 
@@ -128,7 +138,9 @@ describe('PaymentsService', () => {
       paymentRepo.find.mockResolvedValue([]);
       installmentService.findByPaymentIds.mockResolvedValue([]);
 
-      const spy = jest.spyOn(service, 'reconcileUserPayments').mockResolvedValue(undefined);
+      const spy = jest
+        .spyOn(service, 'reconcileUserPayments')
+        .mockResolvedValue(undefined);
 
       await service.getUserInstallmentDetail('u1');
 
@@ -142,13 +154,29 @@ describe('PaymentsService', () => {
         process: 'approved',
         dpPaidAt: new Date('2030-01-01'),
         createdAt: new Date('2030-01-01'),
-        installment: { downPayment: 1000000, price: [500000, 500000, 500000], month: 3 },
-        course: { id: 'c1', name: 'UI/UX', category: { name: 'Design' }, startDate: new Date(), startEnd: new Date() },
+        installment: {
+          downPayment: 1000000,
+          price: [500000, 500000, 500000],
+          month: 3,
+        },
+        course: {
+          id: 'c1',
+          name: 'UI/UX',
+          category: { name: 'Design' },
+          startDate: new Date(),
+          startEnd: new Date(),
+        },
         invoice: {},
       };
       paymentRepo.find.mockResolvedValue([parent]);
       installmentService.findByPaymentIds.mockResolvedValue([
-        { payment: { id: 'p1' }, month: 1, status: 'approved', xendit_invoice_id: 'x1', paidAt: new Date('2026-02-01') },
+        {
+          payment: { id: 'p1' },
+          month: 1,
+          status: 'approved',
+          xendit_invoice_id: 'x1',
+          paidAt: new Date('2026-02-01'),
+        },
       ]);
 
       jest.spyOn(service, 'reconcileUserPayments').mockResolvedValue(undefined);
@@ -210,17 +238,129 @@ describe('PaymentsService', () => {
         course: { name: 'UI/UX' },
       });
       installmentService.findOneByPaymentAndMonth.mockResolvedValue(null);
-      installmentService.create.mockResolvedValue({ id: 'ip1', month: 1, no: 'INV-M1-123' });
-      invoiceService.createInvoiceForInstallment.mockResolvedValue({ id: 'ip1', xendit_invoice_url: 'https://x.com' });
+      installmentService.create.mockResolvedValue({
+        id: 'ip1',
+        month: 1,
+        no: 'INV-M1-123',
+      });
+      invoiceService.createInvoiceForInstallment.mockResolvedValue({
+        id: 'ip1',
+        xendit_invoice_url: 'https://x.com',
+      });
 
-      const result = await service.createMonthlyInstallmentInvoice('u1', 'p1', 1);
+      const result = await service.createMonthlyInstallmentInvoice(
+        'u1',
+        'p1',
+        1,
+      );
 
       const createCall = installmentService.create.mock.calls[0][0];
       expect(createCall.month).toBe(1);
       expect(createCall.amount).toBe(500000);
       expect(createCall.payment.id).toBe('p1');
       expect(invoiceService.createInvoiceForInstallment).toHaveBeenCalled();
-      expect(result.xendit_invoice_url).toBe('https://x.com');
+      expect('blocked' in result).toBe(false);
+      expect(result).toMatchObject({ xendit_invoice_url: 'https://x.com' });
+    });
+  });
+
+  describe('reuploadManualProof', () => {
+    it('menolak payment yang sudah approved', async () => {
+      paymentRepo.findOne.mockResolvedValue({
+        id: 'p1',
+        process: 'approved',
+        user: { id: 'u1' },
+        file: 'old.png',
+        invoice: null,
+      });
+
+      await expect(
+        service.reuploadManualProof('u1', 'p1', 'new.png'),
+      ).rejects.toThrow('sudah lunas dan diterima');
+      expect(paymentRepo.save).not.toHaveBeenCalled();
+      expect(invoiceService.expireAndClearInvoice).not.toHaveBeenCalled();
+    });
+
+    it('menutup invoice Xendit sebelum attaching bukti manual', async () => {
+      const invoice = {
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+      const payment = {
+        id: 'p1',
+        process: 'process',
+        user: { id: 'u1' },
+        file: 'old.png',
+        invoice,
+      };
+      paymentRepo.findOne.mockResolvedValue(payment);
+
+      await service.reuploadManualProof('u1', 'p1', 'new.png');
+
+      expect(invoiceService.expireAndClearInvoice).toHaveBeenCalledWith(
+        invoice,
+      );
+      expect(paymentRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ file: 'new.png', process: 'process' }),
+      );
+    });
+  });
+
+  describe('createManualInstallmentPayment', () => {
+    const parentPayment = () => ({
+      id: 'p1',
+      process: 'approved',
+      dpPaidAt: new Date('2026-01-01'),
+      user: { id: 'u1' },
+      installment: { price: [500000, 500000] },
+    });
+
+    it('menutup dan mengosongkan invoice Xendit lama saat reuse baris', async () => {
+      paymentRepo.findOne.mockResolvedValue(parentPayment());
+      const row: Record<string, any> = {
+        id: 'ip1',
+        status: 'process',
+        month: 1,
+        file: 'old.png',
+        xendit_invoice_id: 'inv-1',
+        xendit_invoice_url: 'https://app.xendit.co/inv-1',
+      };
+      installmentService.findOneByPaymentAndMonth.mockResolvedValue(row);
+
+      await service.createManualInstallmentPayment(
+        'u1',
+        'p1',
+        1,
+        'new.png',
+      );
+
+      expect(invoiceService.expireXenditInvoice).toHaveBeenCalledWith('inv-1');
+      expect(row.xendit_invoice_id).toBe('');
+      expect(row.xendit_invoice_url).toBe('');
+      expect(installmentService.save).toHaveBeenCalledWith(
+        expect.objectContaining({ file: 'new.png', status: 'process' }),
+      );
+    });
+
+    it('tidak menyentuh Xendit untuk baris yang tidak punya invoice', async () => {
+      paymentRepo.findOne.mockResolvedValue(parentPayment());
+      installmentService.findOneByPaymentAndMonth.mockResolvedValue({
+        id: 'ip1',
+        status: 'process',
+        month: 1,
+        file: 'old.png',
+        xendit_invoice_id: null,
+        xendit_invoice_url: null,
+      });
+
+      await service.createManualInstallmentPayment(
+        'u1',
+        'p1',
+        1,
+        'new.png',
+      );
+
+      expect(invoiceService.expireXenditInvoice).not.toHaveBeenCalled();
     });
   });
 });

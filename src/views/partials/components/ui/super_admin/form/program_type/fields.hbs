@@ -1,0 +1,118 @@
+{{!--
+  Komponen: Program Type Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/program_type/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  dan "Program/Edit Program Type".
+
+  SATU KARTU, URUTAN NAME → ICON CODE → DESCRIPTION
+  Seperti form Teknologi, Figma menaruh semua field dalam satu kartu tanpa
+  header bernomor, dan baris tombol ikut di dalamnya.
+
+  Hanya Description yang bertanda wajib di Figma; Program Type Name dan Icon
+  Code tampil tanpa asterisk meski keduanya tetap divalidasi form/program_type/form.
+
+  `nameClassesType` bukan kolom multibahasa (varchar biasa), jadi hanya
+  `description` yang punya tab bahasa. Ketiga bahasa tetap di DOM (x-show,
+  bukan x-if) supaya nilainya ikut terkirim meski tab-nya tidak aktif; x-cloak
+  mencegah ketiganya sempat tampil bertumpuk sebelum Alpine (defer) jalan. Id
+  field `description-{kodeBahasa}` dipakai form/program_type/form untuk fokus ke
+  field yang error — jangan diubah sepihak.
+--}}
+{{#*inline 'programTypeLangPanel'}}
+  <div x-show="descriptionLang === '{{code}}'" x-cloak>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'description-' code)
+      name=(concat 'description[' code ']')
+      field=(concat 'description.' code)
+      label=(concat 'Description (' langName ')')
+      hideLabel=true
+      multiline=true
+      rows=6
+      placeholder='Enter a description...'
+    }}
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
+  {{> components/ui/super_admin/form/text_field
+    id='nameClassesType'
+    name='nameClassesType'
+    field='nameClassesType'
+    label='Program Type Name'
+    placeholder='Enter a program type name'
+  }}
+
+  {{!-- Type (enum hacker/hipster/hustler) dipilih lewat badge, bukan select
+       native: warna badge itu sendiri yang jadi peng groupingsinya, jadi
+       pilihan harus tampil sebagai badge sejak pertama dibuka. Radio sr-only
+       menjaga agar `name="type"` tetap terkirim lewat submit form biasa.
+
+       Bindersanya ke `formData.type`, sama seperti field di atas lewat
+       `field=`, supaya form/program_type/form yang memegang validasinya. --}}
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Type<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-wrap items-center gap-2'>
+      <template x-for='t in TYPE_BADGE_OPTIONS' :key='t.value'>
+        <label class='cursor-pointer select-none'>
+          <input
+            type='radio'
+            name='type'
+            :value='t.value'
+            x-model='formData.type'
+            class='sr-only'
+          />
+          <span
+            class='inline-flex items-center rounded-full border px-3 py-1 font-inter text-xs font-semibold transition-all duration-150'
+            :style='formData.type === t.value
+              ? `background:${t.bg}; color:${t.text}; border-color:${t.border}`
+              : `background:#F1F5F9; color:#475569; border-color:#E5E7EB`'
+          >
+            <span x-text='t.label'></span>
+          </span>
+        </label>
+      </template>
+    </div>
+
+    <span
+      x-show='formErrors.type'
+      x-text='formErrors.type'
+      class='font-inter text-xs leading-5 text-[#dc2626]'
+      x-cloak
+    ></span>
+  </div>
+
+  {{!-- Picker searchable menggantikan input biasa di Figma: label, placeholder,
+       dan hint-nya tetap sama persis, panel pencarian baru muncul saat field
+       difokuskan — jadi tampilan diamnya identik dengan desain. --}}
+  {{> components/ui/super_admin/form/icon_picker
+    id='icon'
+    name='icon'
+    field='icon'
+    label='Icon Code'
+    placeholder='Enter a icon code name'
+    hint='Type an icon name like code or fa-code. It will preview using Font Awesome 6 (e.g. fa-solid fa-code).'
+  }}
+
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Description<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-col gap-2'>
+      {{> components/ui/super_admin/tabs/language/index
+        state='descriptionLang'
+        ariaLabel='Description language'
+      }}
+
+      {{> programTypeLangPanel code='id' langName='Indonesian' }}
+      {{> programTypeLangPanel code='en' langName='English' }}
+      {{> programTypeLangPanel code='ja' langName='Japanese' }}
+    </div>
+  </div>
+
+  {{#if @partial-block}}
+    <div class='pt-2'>
+      {{> @partial-block}}
+    </div>
+  {{/if}}
+</div>

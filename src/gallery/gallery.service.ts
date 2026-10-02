@@ -7,6 +7,7 @@ import { Gallery } from './../entities/gallery.entity';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { Category } from 'src/entities/category.entity';
+import { noGallery } from 'src/entities/types/no-gallery';
 
 @Injectable()
 export class GalleryService {
@@ -18,12 +19,29 @@ export class GalleryService {
   ) {}
 
   async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {
-    const { categoryId, ...rest } = createGalleryDto;
+    const { categoryId, no, ...rest } = createGalleryDto;
     const gallery = this.galleryRepository.create({
       ...rest,
+      no: no ?? (await this.nextFreeNo(categoryId)),
       category: categoryId ? { id: categoryId } : null,
     });
     return this.galleryRepository.save(gallery);
+  }
+
+  // Layout halaman program punya 6 slot per kategori (lihat
+  // CategoriesService.findGalleryByCategory). Bila semua terisi, gambar tetap
+  // disimpan di slot 6 agar masih tampil di carousel dan /dashboard/gallery.
+  private async nextFreeNo(categoryId?: string): Promise<noGallery> {
+    if (!categoryId) return '1';
+
+    const used = await this.galleryRepository.find({
+      where: { category: { id: categoryId } },
+      select: { id: true, no: true },
+    });
+    const usedNos = new Set(used.map((g) => g.no));
+    const slots: noGallery[] = ['1', '2', '3', '4', '5', '6'];
+
+    return slots.find((slot) => !usedNos.has(slot)) ?? '6';
   }
 
   async findAll(): Promise<Gallery[]> {

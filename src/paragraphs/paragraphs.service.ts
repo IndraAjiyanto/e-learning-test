@@ -30,7 +30,13 @@ export class ParagraphsService {
   }
 
   async findAll() {
-    return await this.paragraphsRepository.find();
+    // Tanpa klausa order, Postgres mengembalikan baris sesuai urutan fisiknya,
+    // dan sebuah UPDATE memindahkan baris itu ke belakang. Akibatnya daftar
+    // teracak setiap kali ada yang diedit — halaman list menomori baris dari
+    // posisinya, jadi nomor ikut berubah padahal paragraphOrder tidak.
+    return await this.paragraphsRepository.find({
+      order: { paragraphOrder: 'ASC' },
+    });
   }
 
   async findOne(paragraphsId: string) {

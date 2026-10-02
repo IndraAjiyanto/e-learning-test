@@ -1,0 +1,260 @@
+{{!--
+  Komponen: Pop-up Alumni Mengambang (Global, shell publik)
+  Lokasi: src/views/partials/components/ui/floating_alumni_popup.hbs
+  Level: L1 Atomik
+
+  Kartu alumni kecil di pojok kiri bawah yang isinya berganti sendiri
+  (rotasi) dan mengarah ke halaman direktori alumni.
+
+  KONTRAK PEMAKAIAN
+  Dipasang dari layouts/main.hbs, jadi halaman tidak perlu memasangnya
+  sendiri. Halaman yang memang tidak boleh menampilkannya cukup mengoper
+  `hideAlumniPopup` lewat res.render (halaman /dashboard/alumni melakukannya
+  karena halaman itu sendiri adalah tujuan kliknya).
+
+  Isi kartu memakai partial `card_alumni` variant 'profile' yang sama dengan
+  yang dipakai carousel di landing page - bukan salinannya - supaya begitu
+  kartu direvisi, pop-up ikut mengikuti. Mode `isDesktop` pada kartu itu
+  membaca `item.*` dari state Alpine, jadi di sini `item` adalah getter yang
+  mengembalikan alumni yang sedang ditampilkan.
+
+  POJOK KIRI BAWAH
+  Tombol WhatsApp yang mengambang (floating_whatsapp_btn.hbs) sudah menempati
+  pojok kanan bawah; dengan sebaliknya di sini keduanya tidak pernah tumpang
+  tindih di layar kecil.
+
+  DATA
+  Diambil dari `GET /dashboard/alumni/popup?limit=8` (DashboardController,
+  publik) yang mengembalikan sampel alumni ACAK - jadi tiap page load membuka
+  alumni yang berbeda, tidak seperti direktori yang urutannya `createdAt`.
+  Gagal atau kosong -> komponen tetap tersembunyi, tidak pernah menampilkan
+  kartu kosong.
+
+  Props (opsional, semua punya default di dalam skrip):
+  - endpoint : string URL endpoint JSON (default '/dashboard/alumni/popup')
+  - count    : jumlah alumni yang dirotasi (default 8)
+  - interval : jeda rotasi dalam ms (default 3000)
+  - href     : tujuan klik kartu (default '/dashboard/alumni')
+--}}
+<div
+  {{!-- Semua string dibungkus `default` sebelum masuk ke `json`: helper json
+       mengembalikan undefined untuk props yang tidak dioper, dan Handlebars
+       menulisnya sebagai string kosong - `endpoint: ,` bukan JS yang valid,
+       jadi seluruh x-data gagal dievaluasi dan pop-up tidak pernah muncul. --}}
+  x-data='alumniPopup({
+    endpoint: {{json (default endpoint "/dashboard/alumni/popup")}},
+    href: {{json (default href "/dashboard/alumni")}},
+    count: {{default count 8}},
+    interval: {{default interval 3000}},
+    lang: {{json (default lang "id")}},
+    unknown: {{json (t "test.alumni.unknown")}},
+    linkLabel: {{json (t "test.alumni.popup.linkLabel")}},
+    closeLabel: {{json (t "test.alumni.popup.close")}}
+  })'
+  x-show='open'
+  x-cloak
+  x-transition:enter='transition ease-out duration-300'
+  x-transition:enter-start='opacity-0 translate-y-4'
+  x-transition:enter-end='opacity-100 translate-y-0'
+  x-transition:leave='transition ease-in duration-200'
+  x-transition:leave-start='opacity-100 translate-y-0'
+  x-transition:leave-end='opacity-0 translate-y-4'
+  @keydown.escape.window='close()'
+  @mouseenter='pause()'
+  @mouseleave='resume()'
+  class='fixed bottom-5 left-5 z-50 w-[calc(100vw-2.5rem)] max-w-[272px] md:bottom-6 md:left-6'
+  {{!-- role 'complementary': info tambahan yang boleh dilewati, bukan
+       pengumuman yang memaksa pembaca layar --}}
+  role='complementary'
+>
+  <a
+    :href='href'
+    :aria-label='linkLabel'
+    class='block focus-visible:rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
+  >
+    {{!-- Wrapper ini yang dianimasikan saat rotasi, bukan kartunya sendiri:
+         kartu yang sama sekali tidak pernah di-unmount, jadi animasi
+         masuk/keluar harus datang dari perubahan kelas di sini. --}}
+    <div
+      class='transition-all duration-300 motion-reduce:transition-none'
+      :class='fading ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"'
+    >
+      <template x-if='current'>
+        <div>
+          {{> components/ui/card/card_alumni/index
+            variant='profile'
+            isDesktop=true
+            compact=true
+            quoteClass='line-clamp-2' }}
+        </div>
+      </template>
+    </div>
+  </a>
+
+  {{!-- Tombol tutup di luar <a>, bukan di dalamnya: elemen interaktif di
+       dalam link tidak bisa difokus dan diaktifkan sendiri. --}}
+  <button
+    type='button'
+    @click='close()'
+    :aria-label='closeLabel'
+    class='absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#64748B] shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.18)] transition-colors duration-200 hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
+  >
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 14 14'
+      fill='none'
+      stroke='currentColor'
+      stroke-width='2'
+      stroke-linecap='round'
+      aria-hidden='true'
+      class='size-3.5'
+    >
+      <path d='M1 1 13 13M13 1 1 13' />
+    </svg>
+  </button>
+</div>
+
+<script>
+  window.__alumniPopupMounted = true;
+
+  function alumniPopup(config) {
+    return {
+      endpoint: config.endpoint || '/dashboard/alumni/popup',
+      href: config.href || '/dashboard/alumni',
+      count: config.count || 8,
+      interval: config.interval || 3000,
+      lang: config.lang || 'id',
+      unknown: config.unknown || '',
+      linkLabel: config.linkLabel || '',
+      closeLabel: config.closeLabel || '',
+
+      items: [],
+      index: 0,
+      open: false,
+      fading: false,
+      // Dideklarasikan di sini sejak awal, bukan baru diisi di resume():
+      // Alpine hanya membuat properti yang sudah ada saat init yang reaktif.
+      running: false,
+      timer: null,
+      swapTimer: null,
+
+      // Dipakai `card_alumni` variant 'profile' yang dirender dengan
+      // isDesktop=true: kartu itu membaca `item.*`, jadi di sini `item`
+      // disambungkan ke alumni yang sedang tampil.
+      get current() {
+        return this.items[this.index] || null;
+      },
+      get item() {
+        return this.current;
+      },
+
+      async init() {
+        try {
+          const res = await fetch(
+            this.endpoint + '?limit=' + encodeURIComponent(this.count),
+            { headers: { Accept: 'application/json' } },
+          );
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+
+          const json = await res.json();
+          this.items = (json.data || []).map((raw, i) =>
+            this.normalize(raw, i),
+          );
+        } catch (e) {
+          // Diamkan: di bawah ini komponen tetap tertutup karena `open` tidak
+          // pernah di-set true tanpa data.
+          console.warn('[alumni-popup] gagal memuat data alumni:', e);
+          this.items = [];
+        }
+
+        if (this.items.length === 0) return;
+
+        this.open = true;
+        this.$nextTick(() => this.resume());
+      },
+
+      // Kolom jsonb (name/message/currentPosition, dan name milik course)
+      // dikirim apa adanya; penerjemahannya tetap di sisi klien supaya
+      // satu payload bisa dipakai untuk tiga bahasa - sama seperti yang
+      // dilakukan halaman alumni.hbs pada data yang di-fetch-nya.
+      getByLang(value, fallback) {
+        if (!value) return fallback;
+        if (typeof value === 'string') {
+          // course.name kadang datang sebagai string berisi JSON, bukan objek.
+          try {
+            const parsed = JSON.parse(value);
+            if (parsed && typeof parsed === 'object') value = parsed;
+            else return value;
+          } catch (e) {
+            return value;
+          }
+        }
+        if (typeof value !== 'object') return fallback;
+        return value[this.lang] || value.id || value.en || fallback;
+      },
+
+      normalize(raw, i) {
+        const category = raw?.course?.category?.name || '';
+        const course = this.getByLang(raw?.course?.name, '');
+        const badge = [category, course].filter(Boolean).join(' · ');
+        // Kolom rating berupa enum string '1'..'5', tapi JSON bisa
+        // menyampaikannya sebagai angka - sama seperti di alumni.hbs.
+        const rating = Number(raw?.rating);
+        const validRating =
+          Number.isInteger(rating) && rating >= 1 && rating <= 5;
+
+        return {
+          id: raw?.id || 'alumni-popup-' + i,
+          name: this.getByLang(raw?.name, this.unknown),
+          position: this.getByLang(raw?.currentPosition, this.unknown),
+          company: course,
+          badge: badge,
+          photo: raw?.profile || '',
+          testimonial: this.getByLang(raw?.message, this.unknown),
+          rating: validRating ? rating : 5,
+        };
+      },
+
+      resume() {
+        if (!this.open || this.items.length < 2) return;
+        this.running = true;
+        clearInterval(this.timer);
+        this.timer = setInterval(() => this.rotate(), this.interval);
+      },
+
+      // Rotasi dijeda saat kursor di atas kartu: 3 detik terlalu singkat untuk
+      // membaca satu kutipan, dan kartu yang terus berganti tepat di bawah
+      // kursor terasa mengejar cursor, bukan informatif.
+      pause() {
+        this.running = false;
+        this.fading = false;
+        clearInterval(this.timer);
+        clearTimeout(this.swapTimer);
+      },
+
+      rotate() {
+        if (!this.running || this.items.length < 2) return;
+
+        this.fading = true;
+        this.swapTimer = setTimeout(() => {
+          this.index = (this.index + 1) % this.items.length;
+          this.$nextTick(() => {
+            this.fading = false;
+          });
+        }, 260);
+      },
+
+      // Close hanya berlaku untuk halaman ini: tidak ada storage, jadi pop-up
+      // muncul lagi begitu halaman di-refresh.
+      close() {
+        this.pause();
+        this.open = false;
+      },
+
+      destroy() {
+        clearInterval(this.timer);
+        clearTimeout(this.swapTimer);
+      },
+    };
+  }
+</script>

@@ -16,6 +16,7 @@ import { UpdateAwardDto } from './dto/update-award.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('award')
@@ -32,7 +33,11 @@ export class AwardController {
     try {
       createAwardDto.awardOrder = await this.awardService.noAward();
       await this.awardService.create(createAwardDto);
-      req.flash('success', 'award successfully created');
+      flashToast(
+        req,
+        'Award Created',
+        'The award has been added successfully.',
+      );
       res.redirect('/award');
     } catch (error: any) {
       req.flash('error', 'award failed to create');
@@ -68,7 +73,11 @@ export class AwardController {
   ) {
     try {
       await this.awardService.update(id, updateAwardDto);
-      req.flash('success', 'award successfully updated');
+      flashToast(
+        req,
+        'Award Updated',
+        'The changes to this award have been saved.',
+      );
       res.redirect('/award');
     } catch (error: any) {
       req.flash('error', 'award failed to update');
@@ -85,7 +94,11 @@ export class AwardController {
   ) {
     try {
       await this.awardService.remove(id);
-      req.flash('success', 'award successfully deleted');
+      flashToast(
+        req,
+        'Award Deleted',
+        'The award has been removed successfully.',
+      );
       res.redirect('/award');
     } catch (error: any) {
       req.flash('error', 'award failed to delete');
