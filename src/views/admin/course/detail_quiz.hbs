@@ -71,9 +71,10 @@
         {{!-- Frame 2147229574: Metadata grid rows (2 rows x 2 cols) --}}
         <div class='box-border w-full flex flex-col gap-[12px] items-start'>
 
-          {{!-- Frame 2147229575: Row 1 (Program + Minimum Score) --}}
+          {{!-- Frame 2147229575: Row 1 (Minimum Score) --}}
           <div class='box-border w-full flex flex-col sm:flex-row gap-[14px] items-start'>
-            
+
+            {{#unless (eq user.role 'admin')}}
             {{!-- Col 1: Program --}}
             <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>
               <div class='w-full font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
@@ -87,6 +88,7 @@
                 </div>
               </div>
             </div>
+            {{/unless}}
 
             {{!-- Col 2: Minimum Score --}}
             <div class='box-border flex-1 w-full flex flex-col gap-[4px] items-start'>

@@ -35,11 +35,11 @@
         </a>
       </div>
 
-      {{!-- Frame 2147229617: Main header row (Title + Badge + Actions) --}}
+      {{!-- Frame 2147229617: Main header row (Title + Actions) --}}
       <div class='box-border w-full flex flex-col gap-[20px] items-start'>
         <div class='box-border w-full flex flex-col sm:flex-row justify-between items-start gap-[12px]'>
 
-          {{!-- Frame 2147229599: Title + Badge --}}
+          {{!-- Frame 2147229599: Title --}}
           <div class='flex flex-col gap-[10px] items-start flex-1 min-w-0'>
             {{!-- Session Title --}}
             <h1 class='w-full font-inter font-bold text-[34px] leading-[38px] tracking-[-0.85px] text-[#003060] truncate'>
@@ -49,18 +49,9 @@
                 Session 01
               {{/if}}
             </h1>
-
-            {{!-- _Badge base: Pertemuan Terakhir --}}
-            {{#if syllabus.isFinal}}
-            <div class='h-[22px] bg-[#F5F5F5] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
-              <span class='font-inter font-medium text-[12px] leading-[18px] text-[#404040] text-center whitespace-nowrap'>
-                Pertemuan Terakhir
-              </span>
-            </div>
-            {{/if}}
           </div>
 
-          {{!-- Frame 2147229614: Buttons (Delete + Edit Session) --}}
+          {{!-- Frame 2147229614: Buttons (Delete + Edit Syllabus) --}}
           <div class='shrink-0 flex flex-row items-center gap-[12px]'>
             {{!-- Delete button --}}
             <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
@@ -74,12 +65,12 @@
               </button>
             </form>
 
-            {{!-- Edit Session button --}}
+            {{!-- Edit Syllabus button --}}
             <a
               href='/syllabus/formEdit/{{syllabus.id}}'
               class='box-border min-w-[132px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
               <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
-                Edit Session
+                Edit Syllabus
               </span>
             </a>
           </div>
