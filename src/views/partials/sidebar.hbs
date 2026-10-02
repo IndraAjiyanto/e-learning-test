@@ -23,7 +23,9 @@
   x-data="{
     isMobile: window.innerWidth < 1024,
     sidebarOpen: window.innerWidth >= 1024,
-    active: localStorage.getItem('activeLink') || '/dashboard',
+    active: (localStorage.getItem('activeLink') && localStorage.getItem('activeLink') !== '/dashboard')
+      ? localStorage.getItem('activeLink')
+      : ({{#if (eq user.role 'super_admin')}}'/information'{{else}}'/program'{{/if}}),
     activeDropdown: localStorage.getItem('activeDropdown') || null,
     activeSubDropdown: localStorage.getItem('activeSubDropdown') || null,
 
