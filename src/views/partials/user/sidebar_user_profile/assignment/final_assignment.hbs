@@ -52,20 +52,6 @@
 --}}
 <div class="w-full max-w-[1334px] mx-auto px-4 py-4 sm:px-8 sm:py-6">
 
-  {{> components/ui/learning/tab_summary/index
-      percent=(ternary (eq finalAssignmentSubmission.status 'approved') 100 0)
-      label=(concat
-        (ternary (eq finalAssignmentSubmission.status 'approved') 1 0)
-        ' ' (t 'test.startLearning.of') ' '
-        (ternary finalAssignment 1 0)
-        ' ' (t 'test.startLearning.assignmentsApprovedSuffix'))
-      hint=(t 'test.startLearning.finalAssignmentIntro')
-      items=(array
-        (obj 'label' (t 'test.startLearning.totalCount') 'value' (ternary finalAssignment 1 0) 'tone' 'navy')
-        (obj 'label' (t 'test.startLearning.submitted') 'value' (ternary finalAssignmentSubmission 1 0) 'tone' 'green')
-        (obj 'label' (t 'test.startLearning.notSubmittedCount') 'value' (ternary finalAssignmentSubmission 0 (ternary finalAssignment 1 0)) 'tone' 'amber')
-      ) }}
-
   {{#if finalAssignment}}
     {{#if isLocked}}
       <div
