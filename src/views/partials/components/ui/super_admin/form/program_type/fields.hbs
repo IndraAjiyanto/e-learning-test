@@ -43,6 +43,46 @@
     placeholder='Enter a program type name'
   }}
 
+  {{!-- Type (enum hacker/hipster/hustler) dipilih lewat badge, bukan select
+       native: warna badge itu sendiri yang jadi peng groupingsinya, jadi
+       pilihan harus tampil sebagai badge sejak pertama dibuka. Radio sr-only
+       menjaga agar `name="type"` tetap terkirim lewat submit form biasa.
+
+       Bindersanya ke `formData.type`, sama seperti field di atas lewat
+       `field=`, supaya form/program_type/form yang memegang validasinya. --}}
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Type<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-wrap items-center gap-2'>
+      <template x-for='t in TYPE_BADGE_OPTIONS' :key='t.value'>
+        <label class='cursor-pointer select-none'>
+          <input
+            type='radio'
+            name='type'
+            :value='t.value'
+            x-model='formData.type'
+            class='sr-only'
+          />
+          <span
+            class='inline-flex items-center rounded-full border px-3 py-1 font-inter text-xs font-semibold transition-all duration-150'
+            :style='formData.type === t.value
+              ? `background:${t.bg}; color:${t.text}; border-color:${t.border}`
+              : `background:#F1F5F9; color:#475569; border-color:#E5E7EB`'
+          >
+            <span x-text='t.label'></span>
+          </span>
+        </label>
+      </template>
+    </div>
+
+    <span
+      x-show='formErrors.type'
+      x-text='formErrors.type'
+      class='font-inter text-xs leading-5 text-[#dc2626]'
+      x-cloak
+    ></span>
+  </div>
+
   {{!-- Picker searchable menggantikan input biasa di Figma: label, placeholder,
        dan hint-nya tetap sama persis, panel pencarian baru muncul saat field
        difokuskan — jadi tampilan diamnya identik dengan desain. --}}

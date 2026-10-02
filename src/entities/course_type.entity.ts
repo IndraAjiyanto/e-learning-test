@@ -10,6 +10,7 @@ import {
 import { Course } from './course.entity';
 import { Category } from './category.entity';
 import { Exclude } from 'class-transformer';
+import { CourseTypeEnum } from './types/course-type-enum';
 
 @Entity('course_type')
 export class CourseType {
@@ -40,6 +41,13 @@ export class CourseType {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({
+    type: 'enum',
+    enum: ['hacker', 'hipster', 'hustler'],
+    nullable: true,
+  })
+  type?: CourseTypeEnum;
 
   @UpdateDateColumn()
   updatedAt: Date;
