@@ -84,21 +84,7 @@
 
     <!-- Installment Plan Box: Informasi cicilan menggunakan data installment kolom price -->
     <div class="w-full bg-[#F8FAFC] rounded-[16px] p-4 flex flex-col gap-3">
-      <div class="flex justify-between items-center w-full">
-        <div class="flex items-center gap-2 text-[#3B82F6]">
-          <i class="fa-regular fa-calendar text-xs text-[#3B82F6]"></i>
-          <span class="font-montserrat font-bold text-[13px] leading-[16px] text-[#1B2559]">
-            {{t 'test.payment.installment.installmentPlan'}} ({{default month 3}} {{t 'test.payment.installment.months'}})
-          </span>
-        </div>
-        <span class="font-montserrat font-semibold text-[12px] leading-[15px] text-[#1B2559] shrink-0">
-          {{#if pricePerMonth}}
-            {{formatRupiah pricePerMonth}} {{t 'test.payment.installment.perMonth'}}
-          {{else}}
-            -
-          {{/if}}
-        </span>
-      </div>
+
       {{#if installmentPrices}}
         <div class="flex flex-col gap-1.5 pt-2 border-t border-[#E2E8F0]/60">
           {{#each installmentPrices}}
