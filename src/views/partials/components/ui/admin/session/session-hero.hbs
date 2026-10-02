@@ -28,10 +28,7 @@
   {{!-- Title + actions --}}
   <div class='flex flex-col sm:flex-row gap-[12px] justify-between items-stretch sm:items-start w-full'>
     <div class='flex flex-col gap-[10px] justify-start items-start min-w-0'>
-      <div class='text-[34px]/[1.12] w-full text-[#003060] font-inter font-bold tracking-[-0.85px]'>Session {{session.sessionOrder}}</div>
-      <div class='box-border w-fit shrink-0 h-[22px] flex flex-row gap-[8px] p-[2px_8px] justify-center items-center bg-[#F5F5F5] rounded-[16px]'>
-        <span class='text-[12px]/[normal] text-[#404040] font-inter font-medium whitespace-nowrap'>Mentoring Batch #{{session.weeks.weekNumber}}</span>
-      </div>
+      <div class='text-[34px]/[1.12] w-full text-[#003060] font-inter font-bold tracking-[-0.85px]'>{{session.topic}}</div>
     </div>
     <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto shrink-0'>
       <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post' class='w-full sm:w-auto'>
@@ -51,9 +48,6 @@
     <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>
       <div class='flex-1 min-w-0'>
         {{> components/ui/admin/session/session-info-item label='Location' value=session.location}}
-      </div>
-      <div class='flex-1 min-w-0'>
-        {{> components/ui/admin/session/session-info-item label='Topic' value=session.topic}}
       </div>
     </div>
     <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>
