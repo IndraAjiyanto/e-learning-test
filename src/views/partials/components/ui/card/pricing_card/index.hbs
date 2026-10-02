@@ -117,16 +117,7 @@
 
   </div>
 
-  {{!-- Countdown Row (Shared): Offer Ends In 15 Days 11 : 50 : 05 --}}
-  <div class="flex items-center gap-2 font-inter text-xs text-[#4B5563]">
-    <svg class="size-3.5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-    <span>{{default (t 'test.paidProgram.pricing.offerEndsIn') 'Offer Ends In'}}</span>
-    <span class="font-bold text-[#DC2626]" x-text="countdown.days + ' {{default (t 'test.paidProgram.pricing.days') 'Days'}}'">15 {{default (t 'test.paidProgram.pricing.days') 'Days'}}</span>
-    <span class="font-bold text-[#DC2626]" x-text="countdown.time">11 : 50 : 05</span>
-  </div>
+
 
   {{!-- Divider (Only shown in Full Payment view) --}}
   <hr x-show="tab === 'full'" class="w-full border-t border-[#E5E7EB]" />
