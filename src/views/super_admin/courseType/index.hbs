@@ -50,6 +50,7 @@
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1000px]'}}
             <colgroup>
               <col class='w-[240px]' />
+              <col class='w-[140px]' />
               <col class='w-[366px]' />
               <col class='w-[199px]' />
               <col class='w-[103px]' />
@@ -58,6 +59,7 @@
             <thead>
               <tr>
                 {{> components/ui/super_admin/table/header_cell label='Program Type' }}
+                {{> components/ui/super_admin/table/header_cell label='Type' }}
                 {{> components/ui/super_admin/table/header_cell label='Description' }}
                 {{> components/ui/super_admin/table/header_cell label='Name Icon' }}
                 {{> components/ui/super_admin/table/header_cell label='Icon' }}
@@ -65,7 +67,7 @@
               </tr>
             </thead>
             <tbody>
-              {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
+              {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
                 <i class='fas fa-spinner fa-spin text-xl'></i>
               {{/components/ui/super_admin/table/message_row}}
 
@@ -77,6 +79,23 @@
                       class='block truncate font-inter text-sm leading-5 text-[#525252]'
                       x-text="row.nameClassesType || '—'"
                     ></span>
+                  {{/components/ui/super_admin/table/cell}}
+
+                  {{!-- Kolom "Type" menampilkan enum sebagai badge berwarna.
+                       Baris lama bisa masih null karena kolomnya nullable,
+                       jadi tetap ada cabang "—" untuk data sebelum migrasi. --}}
+                  {{#> components/ui/super_admin/table/cell}}
+                    <template x-if='row.type'>
+                      <span
+                        class='inline-flex items-center rounded-full border px-2.5 py-0.5 font-inter text-xs font-semibold capitalize'
+                        :style='typeBadgeStyle(row.type)'
+                        x-text='row.type'
+                      ></span>
+                    </template>
+                    <span
+                      x-show='!row.type'
+                      class='block font-inter text-sm leading-5 text-[#525252]'
+                    >—</span>
                   {{/components/ui/super_admin/table/cell}}
 
                   {{#> components/ui/super_admin/table/cell}}
@@ -108,7 +127,7 @@
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='!loading && items.length === 0' colspan='5'}}
+              {{#> components/ui/super_admin/table/message_row show='!loading && items.length === 0' colspan='6'}}
                 No program types found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>
@@ -138,6 +157,22 @@
     return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
   }
 
+  // Warna badge Type. Sama persis dengan yang dipakai form select di
+  // form/program_type/fields, supaya kartu di list dan pilihan di form
+  // dibaca sebagai satu bahasa warna yang sama.
+  const TYPE_BADGE = {
+    hacker: { background: '#DCFCE7', color: '#166534', borderColor: '#16A34A' },
+    hipster: { background: '#FEF3C7', color: '#92400E', borderColor: '#F59E0B' },
+    hustler: { background: '#DBEAFE', color: '#1E40AF', borderColor: '#3B82F6' },
+  };
+
+  function typeBadgeStyle(value) {
+    const v = String(value || '').trim().toLowerCase();
+    const m = TYPE_BADGE[v];
+    if (!m) return 'background:#F1F5F9; color:#475569; border-color:#E5E7EB;';
+    return `background:${m.background}; color:${m.color}; border-color:${m.borderColor};`;
+  }
+
   function programTypeTable() {
     return {
       items: [],
@@ -148,6 +183,8 @@
       size: 10,
       loading: false,
       searchTimeout: null,
+
+      typeBadgeStyle,
 
       async fetchProgramTypes() {
         this.loading = true;

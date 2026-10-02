@@ -31,7 +31,7 @@
         action='/type-program/{{courseType.id}}?_method=PATCH'
         method='post'
         novalidate
-        x-data='{ ...programTypeForm({ icon: {{json courseType.icon}}, nameClassesType: {{json courseType.nameClassesType}}, description: {{json courseType.description}} }), ...formDirtyGate() }'
+        x-data='{ ...programTypeForm({ icon: {{json courseType.icon}}, nameClassesType: {{json courseType.nameClassesType}}, description: {{json courseType.description}}, type: {{json courseType.type}} }), ...formDirtyGate() }'
         x-init='$nextTick(() => captureBaseline())'
         @input='recomputeDirty()'
         @change='recomputeDirty()'
