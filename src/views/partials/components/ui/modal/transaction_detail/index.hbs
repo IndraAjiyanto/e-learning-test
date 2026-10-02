@@ -698,20 +698,24 @@
         <!-- Summary (Figma: padding 12px 0 0, height 145px) -->
         <div class="flex flex-col w-full pt-3 shrink-0">
           <!-- 1. Harga Row: padding 8px 0px, height 32px -->
-          <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.price"}}</span>
-            <span class="font-inter font-normal text-[#9CA3AF] line-through" x-text="priceFormatted"></span>
-          </div>
-          <!-- Divider Row 1 -->
-          <div class="w-full h-px bg-[#D8E6F6]"></div>
+          <template x-if="row?.kind !== 'installment'">
+            <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
+              <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.price"}}</span>
+              <span class="font-inter font-normal text-[#9CA3AF] line-through" x-text="priceFormatted"></span>
+            </div>
+            <!-- Divider Row 1 -->
+            <div class="w-full h-px bg-[#D8E6F6]"></div>
+          </template>
 
           <!-- 2. Harga Promo Row: padding 8px 0px, height 32px -->
-          <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
-            <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.promoPrice"}}</span>
-            <span class="font-inter font-normal text-[#173B68]" x-text="promoPriceFormatted"></span>
-          </div>
-          <!-- Divider Row 2 -->
-          <div class="w-full h-px bg-[#D8E6F6]"></div>
+          <template x-if="row?.kind !== 'installment'">
+            <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
+              <span class="font-inter font-normal text-[#6B7280]">{{t "test.transactionDetail.promoPrice"}}</span>
+              <span class="font-inter font-normal text-[#173B68]" x-text="promoPriceFormatted"></span>
+            </div>
+            <!-- Divider Row 2 -->
+            <div class="w-full h-px bg-[#D8E6F6]"></div>
+          </template>
 
           <!-- 3. Promo Code Row: padding 8px 0px, height 32px -->
           <div class="flex flex-row justify-between items-center w-full py-2 text-[13px] leading-4">
@@ -757,12 +761,6 @@
             <span class="font-montserrat font-bold text-sm leading-[17px] text-[#003060]">
               {{t "test.transactionDetail.monthlyInstallments"}}
             </span>
-            <template x-if="installmentProgress">
-              <span
-                class="font-inter font-semibold text-[11px] leading-4 text-[#139B59] text-right"
-                x-text="formatPaidProgress(installmentProgress.paid, installmentProgress.total, installmentProgress.percent)"
-              ></span>
-            </template>
           </div>
           <div class="w-full h-px bg-[#D8E6F6]"></div>
 
