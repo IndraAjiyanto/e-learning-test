@@ -24,6 +24,13 @@ export class AuthController {
   @Get('login')
   async getLogin(@Res() res: Response, @Req() req: any) {
     if (req.user && req.user.isVerified) {
+      if (req.user.role === 'user') {
+        return res.redirect('/users/profile');
+      } else if (req.user.role === 'super_admin') {
+        return res.redirect('/information');
+      } else if (req.user.role === 'admin') {
+        return res.redirect('/program');
+      }
       return res.redirect('/dashboard');
     }
     res.render('login');
@@ -104,6 +111,10 @@ export class AuthController {
 
           if (user!.role === 'user') {
             return res.redirect('/users/profile');
+          } else if (user!.role === 'super_admin') {
+            return res.redirect('/information');
+          } else if (user!.role === 'admin') {
+            return res.redirect('/program');
           }
           return res.redirect('/dashboard');
         });
