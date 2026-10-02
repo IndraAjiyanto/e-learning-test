@@ -1,134 +1,67 @@
-<!-- Alumni Grid -->
-<div class='w-full mt-8'>
-  <!-- Alumni Cards -->
-  <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-    <template x-for='alumni in alumniItems' :key='alumni.id'>
-      <div
-        class='flex flex-col bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300'
-      >
-        <!-- Profile Header -->
-        <div
-          class='bg-[#E0F1F980] p-4'
-        >
-          <!-- Profile Image -->
-          <div class='flex items-center gap-3'>
-            <div class='relative flex-shrink-0'>
-              <img
-                :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
-                :alt='alumni.name'
-                class='w-12 h-12 rounded-full border-4 border-white shadow-md object-cover'
-              />
+<div class="w-full mt-6 lg:mt-8 flex flex-col justify-between">
+  <!-- UNIFIED ALUMNI CARDS GRID -->
+  <div x-show="alumniItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[500px]">
+    <template x-for="alumni in alumniItems" :key="alumni.id">
+      
+      <!-- Unified Responsive Card -->
+      <div class="flex flex-col relative w-full p-5 bg-[#E0F1F9]/50 rounded-[12px] shadow-[0px_0px_8px_rgba(0,0,0,0.5)] backdrop-blur-[3.3px] transition-all duration-300 hover:-translate-y-2 lg:min-h-[506px] lg:p-[29px_26px]">
+        
+        <!-- Kontainer Utama (Profil & Kutipan) -->
+        <div class="flex flex-col w-full gap-4 lg:gap-[30px]">
+          
+          <!-- Wrapper Profil (Gambar + Teks) -->
+          <div class="flex flex-row items-center w-full gap-3 lg:gap-[26px]">
+            <!-- Foto Profil -->
+            <img
+              :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
+              :alt="getByLang(alumni.name, lang)"
+              class="shrink-0 size-[60px] rounded-full object-cover lg:size-[100px]"
+            />
+            
+            <!-- Nama & Posisi -->
+            <div class="flex flex-col items-start overflow-hidden w-full gap-1 lg:gap-[6px]">
+              <h3 class="w-full font-sans font-semibold text-base leading-tight text-[#000000] truncate lg:text-[20px] lg:leading-[27px]" x-text="getByLang(alumni.name, lang)"></h3>
+              <p class="w-full font-sans font-normal text-xs leading-snug text-[#000000] line-clamp-2 lg:text-[20px] lg:leading-[27px]" x-text="getByLang(alumni.currentPosition, lang)"></p>
             </div>
-            <div class='flex-1 min-w-0'>
-              <h3
-                class='font-bold text-gray-900 text-lg truncate'
-                x-text='getByLang(alumni.name, lang)'
-              ></h3>
-               <p
-                  class='text-gray-900 text-sm'
-                  x-text='getByLang(alumni.currentPosition, lang)'
-                ></p>
-             
+          </div>
+
+          <!-- Wrapper Kutipan (Icon + Teks) -->
+          <div class="flex flex-col items-start w-full gap-2 lg:gap-[13px]">
+            <!-- Icon Kutipan -->
+            <div class="flex items-center justify-center shrink-0 size-[32px] text-[#0B1F3B] lg:size-[50px]">
+              <i class="fas fa-quote-left text-2xl lg:text-[40px]"></i>
             </div>
+            <!-- Teks Kutipan -->
+            <p class="w-full font-sans font-normal text-xs leading-relaxed text-[#000000] line-clamp-5 lg:text-[20px] lg:leading-[30px]" x-text="getByLang(alumni.message, lang)"></p>
           </div>
         </div>
 
-        <!-- Card Content -->
-        <div class='p-4 flex-1 flex flex-col justify-between'>
-          <!-- Current Position -->
-          {{!-- <div class='bg-gray-50 rounded-lg p-4 border border-gray-200'>
-            <div class='flex items-start gap-3'>
-              <div
-                class='w-10 h-10 bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-lg flex items-center justify-center flex-shrink-0'
-              >
-                <i class='fas fa-briefcase text-white text-sm'></i>
-              </div>
-              <div class='flex-1 min-w-0'>
-                <p
-                  class='text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1'
-                >
-                  {{t 'test.alumni.program'}}
-                </p>
-               
-                <p
-                  class='text-xs text-gray-500 mt-1'
-                  x-text="getByLang(alumni.program, lang) || 'Unknown'"
-                ></p>
-              </div>
-            </div>
-          </div> --}}
-
-          <!-- Testimonial -->
-          <div class='flex flex-col items-start gap-2.5'>
-            <div
-              class='w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5'
-            >
-              {{!-- <div
-                class='w-8 h-8 bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1'
-              > --}}
-                <i class='fas fa-quote-left text-white text-xs'></i>
-              </div>
-              <div class='flex-1 min-w-0'>
-                <p
-                  class='text-sm text-gray-700 leading-relaxed'
-                  x-text='getByLang(alumni.message, lang)'
-                ></p>
-              </div>
-            </div>
+        <!-- Wrapper Badge Program (Bawah) -->
+        <div class="flex flex-row items-center justify-center w-full mt-6 lg:mt-auto">
+          <div class="flex flex-row items-center justify-center h-[26px] gap-[10px] px-3.5 bg-[#F1EDFD] rounded-[6px] lg:px-[15px]">
+            <span class="max-w-full font-sans font-normal text-xs leading-none text-[#4F2CD7] truncate lg:text-[15px] lg:leading-[20px]" x-text="(alumni.kelas?.kategori?.nama_kategori || alumni.course?.category?.nama_kategori ? (alumni.kelas?.kategori?.nama_kategori || alumni.course?.category?.nama_kategori) + ': ' : '') + getKelasName(alumni)"></span>
           </div>
+        </div>
 
-        <!-- Kelas label -->
-        <p
-          class='text-sm font-medium text-teal-600 truncate'
-          x-text="(alumni.kelas?.kategori?.nama_kategori ? alumni.kelas.kategori.nama_kategori + ': ' : '') + getKelasName(alumni)"
-        ></p>
       </div>
+
     </template>
   </div>
 
   <!-- No Results Message -->
-  <div x-show='alumniItems.length === 0' class='text-center py-12'>
-    <div class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-      <i class='fas fa-users text-gray-400 text-2xl'></i>
-    </div>
-    <h3 class='text-xl font-semibold text-gray-900 mb-2'>{{t 'test.alumni.noAlumni'}}</h3>
-    <p class='text-gray-600 mb-6'>{{t 'test.alumni.tryAdjusting'}}</p>
-    <button
-      @click='resetFilters()'
-      class='bg-secondary text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700'
-    >
-      {{t 'test.alumni.resetFilters'}}
-    </button>
-  </div>
+  {{> components/ui/empty_state/index
+  show="alumniItems.length === 0"
+  icon="fas fa-users"
+  title=(t 'test.alumni.noAlumni')
+  description=(t 'test.alumni.tryAdjusting')
+  actionText=(t 'test.alumni.resetFilters')
+  onAction="resetFilters()"
+}}
 
   <!-- Pagination -->
-  <div
-    class='flex justify-center items-center gap-2 mt-12'
-    x-show='totalPages > 1'
-  >
-    <button
-      @click='changePage(Math.max(1, currentPage - 1))'
-      :disabled='currentPage === 1'
-      class='w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
-    >
-      <i class='fas fa-chevron-left text-sm'></i>
-    </button>
-
-    <template x-for='page in totalPages' :key='page'>
-      <button
-        @click='changePage(page)'
-        class='w-9 h-9 flex items-center justify-center rounded-full text-sm font-semibold border transition shadow-sm'
-        :class="currentPage === page ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
-        x-text='page'
-      ></button>
-    </template>
-
-    <button
-      @click='changePage(Math.min(totalPages, currentPage + 1))'
-      :disabled='currentPage === totalPages'
-      class='w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
-    >
-      <i class='fas fa-chevron-right text-sm'></i>
-    </button>
-  </div>
+   {{> components/ui/pagination/index
+    currentPage="currentPage"
+    totalPages="totalPages"
+    onPageChange="changePage"
+  }}
 </div>

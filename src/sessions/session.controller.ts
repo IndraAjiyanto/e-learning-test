@@ -17,6 +17,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { MaterialService } from 'src/materials/material.service';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('session')
@@ -34,10 +35,15 @@ export class SessionController {
     @Req() req: Request,
   ) {
     try {
-      CreateSessionDto.sessionOrder =
-        await this.sessionService.getNextOrder(CreateSessionDto.weeksId);
+      CreateSessionDto.sessionOrder = await this.sessionService.getNextOrder(
+        CreateSessionDto.weeksId,
+      );
       await this.sessionService.create(CreateSessionDto);
-      req.flash('success', 'session succesfuly create');
+      flashToast(
+        req,
+        'Session Created',
+        'The new session has been added to this week.',
+      );
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
@@ -50,7 +56,7 @@ export class SessionController {
   async createPertemuan(
     @Body() createPertemuanDto: CreateSessionDto,
     @Res() res: Response,
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Req() req: Request,
   ) {
     try {
@@ -58,7 +64,11 @@ export class SessionController {
       createPertemuanDto.sessionOrder =
         await this.sessionService.getNextOrder(weeksId);
       await this.sessionService.create(createPertemuanDto);
-      req.flash('success', 'session succesfuly create');
+      flashToast(
+        req,
+        'Session Created',
+        'The new session has been added to this week.',
+      );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
@@ -69,7 +79,7 @@ export class SessionController {
   @Roles('admin')
   @Get('formCreate/:weeksId')
   async formCreate(
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -81,7 +91,7 @@ export class SessionController {
   async formAdd(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     res.render('admin/course/createPertemuan', { user: req.user, id });
   }
@@ -91,17 +101,26 @@ export class SessionController {
   async formEdit(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     const session = await this.sessionService.findOne(id);
     const course = await this.sessionService.findAllCourses();
-    res.render('admin/session/edit', { user: req.user, course, session });
+    let maxSession = 0;
+    if (session && session.weeks) {
+      maxSession = await this.sessionService.findWeekSessions(session.weeks.id);
+    }
+    res.render('admin/session/edit', {
+      user: req.user,
+      course,
+      session,
+      maxSession,
+    });
   }
 
   @Roles('admin')
   @Get('logbooks/:sessionId')
   async getLogBook(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const logbooks = await this.sessionService.findLogBook(sessionId);
@@ -111,7 +130,7 @@ export class SessionController {
   @Roles('admin')
   @Get('logbooks-mentor/:sessionId')
   async getLogBookMentor(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const mentor_logbook =
@@ -121,10 +140,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('attendance/:sessionId')
-  async getAbsen(
-    @Param('sessionId') sessionId: number,
-    @Res() res: Response,
-  ) {
+  async getAbsen(@Param('sessionId') sessionId: string, @Res() res: Response) {
     const session = await this.sessionService.findOne(sessionId);
     const attendances = await this.sessionService.findStudentsInCourse(
       session.weeks.course.id,
@@ -135,10 +151,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('task/:sessionId')
-  async getTugas(
-    @Param('sessionId') sessionId: number,
-    @Res() res: Response,
-  ) {
+  async getTugas(@Param('sessionId') sessionId: string, @Res() res: Response) {
     const assignments = await this.sessionService.findTugas(sessionId);
     res.json(assignments);
   }
@@ -146,7 +159,7 @@ export class SessionController {
   @Roles('admin')
   @Get('pdf/:sessionId')
   async getMateriPdf(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const materialPdf = await this.materialService.findMaterialPdf(sessionId);
@@ -156,17 +169,18 @@ export class SessionController {
   @Roles('admin')
   @Get('video/:sessionId')
   async getMateriVideo(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
-    const materialVideo = await this.materialService.findMaterialVideo(sessionId);
+    const materialVideo =
+      await this.materialService.findMaterialVideo(sessionId);
     res.json(materialVideo);
   }
 
   @Roles('admin')
   @Get('ppt/:sessionId')
   async getMateriPpt(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
   ) {
     const materialPpt = await this.materialService.findMaterialPpt(sessionId);
@@ -176,7 +190,7 @@ export class SessionController {
   @Roles('admin')
   @Get(':sessionId')
   async findOne(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -190,14 +204,18 @@ export class SessionController {
   @Roles('admin')
   @Patch(':sessionId')
   async update(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Body() updateSessionDto: UpdateSessionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.sessionService.update(sessionId, updateSessionDto);
-      req.flash('success', 'Session successfuly update');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The session information has been updated.',
+      );
       const session = await this.sessionService.findOne(sessionId);
       res.redirect(`/week/${session.weeks.id}`);
     } catch (error: any) {
@@ -210,14 +228,18 @@ export class SessionController {
   @Roles('admin')
   @Delete(':id/:weeksId')
   async remove(
-    @Param('id') id: number,
-    @Param('weeksId') weeksId: number,
+    @Param('id') id: string,
+    @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.sessionService.remove(id, weeksId);
-      req.flash('success', 'session successfuly delete');
+      flashToast(
+        req,
+        'Session Deleted',
+        'The session has been permanently removed.',
+      );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces delete');

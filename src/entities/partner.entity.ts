@@ -11,8 +11,8 @@ import { CategoryPartner } from './category_partner.entity';
 
 @Entity()
 export class Partner {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   image: string;
@@ -23,15 +23,14 @@ export class Partner {
   @UpdateDateColumn()
   updatedAt: Date;
 
-   @ManyToOne(
+  @ManyToOne(
     () => CategoryPartner,
     (categoryPartner) => categoryPartner.partners,
     {
       nullable: false,
-      onDelete: "CASCADE", // opsional, sesuaikan kebutuhan
+      onDelete: 'CASCADE', // opsional, sesuaikan kebutuhan
     },
   )
-  @JoinColumn({ name: "categoryPartnerId" })
+  @JoinColumn({ name: 'categoryPartnerId' })
   categoryPartner: CategoryPartner;
-
 }

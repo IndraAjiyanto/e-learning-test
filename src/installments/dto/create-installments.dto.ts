@@ -1,4 +1,13 @@
-import { IsArray, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsUUID,
+} from 'class-validator';
 import { Month } from '../../entities/installment.entity';
 
 export class CreateInstallmentsDto {
@@ -6,15 +15,22 @@ export class CreateInstallmentsDto {
   @IsNotEmpty()
   price: number[];
 
-  @IsEnum([3, 6, 12])
+  @IsEnum([3])
   @IsNotEmpty()
   month: Month;
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  courseId: number;
+  courseId: string;
 
   @IsNumber()
   @IsNotEmpty()
   downPayment: number;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(3)
+  @IsDateString({}, { each: true })
+  @IsNotEmpty()
+  dueDates: string[];
 }

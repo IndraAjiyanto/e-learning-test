@@ -1,21 +1,31 @@
-import { Type } from "class-transformer";
-import { IsInt, IsNumber, IsOptional, IsString } from "class-validator"
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+import { noGallery } from 'src/entities/types/no-gallery';
 
 export class CreateGalleryDto {
+  @IsOptional()
+  @IsString()
+  filePath?: string;
 
-    @IsOptional()
-    @IsString()
-    filePath?: string
-
-     @IsString()
-    title:string
-
-    @IsOptional()
-     @IsString()
-    description: string
+  @IsString()
+  title: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  category_id?: number;
+  @IsString()
+  description: string;
+
+  @IsOptional()
+  @IsUUID()
+  categoryId?: string;
+
+  @IsOptional()
+  @IsEnum(['1', '2', '3', '4', '5', '6'])
+  no?: noGallery;
 }

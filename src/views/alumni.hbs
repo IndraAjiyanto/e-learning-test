@@ -1,43 +1,126 @@
-<div class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]' x-data='alumniApp()'>
+<div class="min-h-screen bg-[#F9FAFB] font-inter" x-data="alumniApp()">
 
-  <div class='container mx-auto px-4 pb-16 max-w-5xl'>
-    <!-- Header -->
-    <div class='text-center mb-8'>
-      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{t 'test.alumni.alumni'}}</span>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
-          'test.alumni.tittle'
-        }}}</h1>
-      <div class="border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded"></div>
-      <p class='text-gray-600 max-w-2xl mx-auto text-lg'>
-        {{t 'test.alumni.description'}}
-      </p>
-    </div>
+  <div class="page-shell py-12 lg:py-16 flex flex-col gap-9 items-center">
 
-    <!-- Stats -->
-    <div class='max-w-3xl mx-auto mb-12'>
-      <div class='grid grid-cols-3 bg-white/70 border border-slate-200 rounded-2xl shadow-sm divide-x divide-slate-200'>
-        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
-          <i class='fas fa-user-graduate text-blue-600 mb-1'></i>
-          <span class='text-2xl font-bold text-gray-900'>1000+</span>
-          <span class='text-xs text-gray-500'>Alumni</span>
+    <!-- ALUMNI HEADER -->
+    <header class="flex flex-col items-center gap-4 w-full">
+      {{> components/ui/text/section_header/index
+        wrapperClass="mb-0"
+        title=(t 'test.alumni.title')
+        titleTag="h1"
+        titleSize="display"
+        titleClass="font-bold text-[#111827] text-center font-inter"
+        showDivider=false
+        description=(t 'test.alumni.description')
+        descSize="lead"
+        descClass="max-w-[702px] text-center text-[#6B7280] font-inter font-normal"
+      }}
+    </header>
+
+    <!-- ALUMNI STATS -->
+    <section class="w-full max-w-[964px] bg-white border-2 border-[#E5E7EB] rounded-2xl shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06),0px_18px_44px_-12px_rgba(11,31,59,0.16)] p-8 flex flex-col md:flex-row justify-center items-center gap-6">
+      <!-- Alumni Stat -->
+      <div class="flex-1 flex flex-col items-center gap-2">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-users w-7 h-7 text-[#003060]"></i>
+          <span class="text-3xl lg:text-4xl font-bold text-[#003060]">1,000+</span>
         </div>
-        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
-          <i class='fas fa-chart-line text-blue-600 mb-1'></i>
-          <span class='text-2xl font-bold text-gray-900'>95%</span>
-          <span class='text-xs text-gray-500'>Career Growth</span>
-        </div>
-        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
-          <i class='fas fa-handshake text-blue-600 mb-1'></i>
-          <span class='text-2xl font-bold text-gray-900'>200+</span>
-          <span class='text-xs text-gray-500'>Hiring Partners</span>
-        </div>
+        <span class="text-sm font-medium tracking-[0.02em] uppercase text-[#6B7280]">{{t 'test.alumni.statAlumni'}}</span>
       </div>
-    </div>
+      <!-- Career Growth Stat -->
+      <div class="flex-1 flex flex-col items-center gap-2">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-chart-line w-7 h-7 text-[#003060]"></i>
+          <span class="text-3xl lg:text-4xl font-bold text-[#003060]">95%</span>
+        </div>
+        <span class="text-sm font-medium tracking-[0.02em] uppercase text-[#6B7280]">{{t 'test.alumni.statCareerGrowth'}}</span>
+      </div>
+      <!-- Hiring Partners Stat -->
+      <div class="flex-1 flex flex-col items-center gap-2">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-briefcase w-7 h-7 text-[#003060]"></i>
+          <span class="text-3xl lg:text-4xl font-bold text-[#003060]">200+</span>
+        </div>
+        <span class="text-sm font-medium tracking-[0.02em] uppercase text-[#6B7280]">{{t 'test.alumni.statHiringPartners'}}</span>
+      </div>
+    </section>
 
-    <div class='w-full mx-auto mb-12'>
-      {{> alumni/sidebar}}
-      {{> alumni/content}}
-    </div>
+    <!-- FILTER SECTION -->
+    <section class="w-full">
+      {{> components/ui/filter/program_filter/index
+          label=(t 'test.alumni.programTittle')
+          searchModel="searchQuery"
+          searchEvent="currentPage = 1; fetchAlumni()"
+          searchPlaceholder=(t 'test.alumni.searchAlumniPlaceholder')
+          items="categories"
+          selected="selectedKategoriId"
+          onSelect="selectKategori"
+          allLabel=(t 'test.alumni.allProgram')
+          onClear="resetFilters()"
+          showClear="selectedKategoriId || searchQuery"
+          clearLabel=(t 'test.gallery.clearFilter') }}
+    </section>
+
+    <!-- ALUMNI GRID -->
+    <section class="w-full flex flex-col items-center gap-8">
+      <div x-show="alumniItems.length > 0" class="w-full grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <template x-for="alumni in alumniItems" :key="alumni.id">
+          <article class="relative rounded-[20px] border border-[#E2E8F0] shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.03)] p-8 flex flex-col gap-5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]" style="background: linear-gradient(90deg, #FFFFFF 0%, #F1F5F9 100%);">
+            <!-- Decorative Quote -->
+            <span class="font-inter absolute right-6 top-4 text-8xl font-extrabold text-[#0B1F3B] opacity-5 select-none pointer-events-none">&ldquo;</span>
+
+            <!-- Profile -->
+            <div class="relative flex items-center gap-4">
+              <div class="w-[72px] h-[72px] rounded-full border-2 border-[#003060] p-[3px] flex items-center justify-center shrink-0">
+                <img
+                  :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
+                  :alt="getByLang(alumni.name, lang)"
+                  class="w-[60px] h-[60px] rounded-full object-cover"
+                />
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-base font-bold text-[#0F172A]" x-text="getByLang(alumni.name, lang)"></h3>
+                <p class="text-sm font-medium text-[#475569]" x-text="getByLang(alumni.currentPosition, lang)"></p>
+
+                <!-- Rating (1-5): bintang saja, angka disembunyikan -->
+                {{> components/ui/star_rating/index
+                  expr='getRating(alumni)'
+                  class='mt-1.5'
+                  size='size-3.5' }}
+              </div>
+            </div>
+
+            <!-- Quote -->
+            <p class="relative text-sm leading-relaxed text-[#0F172A]">
+              &ldquo;<span x-text="getByLang(alumni.message, lang)"></span>&rdquo;
+            </p>
+
+            <!-- Badge -->
+            <div class="relative">
+              <span class="inline-flex px-3.5 py-1.5 rounded-full text-xs font-semibold" :class="getBadgeColor(alumni.course?.category?.name)" x-text="(alumni.course?.category?.name ? alumni.course.category.name + ': ' : '') + getKelasName(alumni)"></span>
+            </div>
+          </article>
+        </template>
+      </div>
+
+      <!-- Empty State -->
+      {{> components/ui/empty_state/index
+        show="alumniItems.length === 0"
+        icon="fas fa-users"
+        title=(t 'test.alumni.noAlumni')
+        description=(t 'test.alumni.tryAdjusting')
+        actionText=(t 'test.alumni.resetFilters')
+        onAction="resetFilters()"
+      }}
+
+      <!-- Pagination -->
+      {{> components/ui/pagination/index
+        currentPage="currentPage"
+        totalPages="totalPages"
+        onPageChange="changePage"
+      }}
+    </section>
+
   </div>
 </div>
 
@@ -45,8 +128,8 @@
 function alumniApp() {
   return {
     selectedKategoriId: {{#if kategoriId}}{{kategoriId}}{{else}}null{{/if}},
-   kategoriList: {{#if kategoriList}}{{{json kategoriList}}}{{else}}[]{{/if}},
 
+    categories: {{#if kategoriList}}{{{json kategoriList}}}{{else}}[]{{/if}},
     kelasList: {{#if course}}{{{json course}}}{{else}}[]{{/if}},
     filteredKelasList: [],
 
@@ -56,37 +139,29 @@ function alumniApp() {
 
     currentPage: 1,
     totalPages: 1,
-    totalItems: 0,
-    loading: false,
     alumniItems: [],
     lang: '{{lang}}' || 'id',
+    unknown: "{{t 'test.alumni.unknown'}}",
+    loading: false,
 
     async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
         (a.name || '').localeCompare(b.name || '')
       );
-       this.filterKelasByKategori();
+      this.filterKelasByKategori();
       await this.fetchAlumni();
     },
     filterKelasByKategori() {
       if (this.selectedKategoriId) {
-        this.filteredKelasList = this.kelasList.filter(k =>  k.category?.id  == this.selectedKategoriId);
+        this.filteredKelasList = this.kelasList.filter(k => k.category?.id == this.selectedKategoriId);
       } else {
         this.filteredKelasList = [...this.kelasList];
-           }
-    },
-
-    // Hanya kelas/program yang sesuai kategori terpilih
-    get filteredKelasList() {
-      if (this.selectedKategoriId) {
-        return this.kelasList.filter(k => k.kategori?.id == this.selectedKategoriId);
       }
-      return this.kelasList;
     },
 
-     async selectKategori(kategoriId) {
+    async selectKategori(kategoriId) {
       this.selectedKategoriId = kategoriId;
-  this.selectedKelasId = null;
+      this.selectedKelasId = null;
       this.selectedKelas = '';
       this.currentPage = 1;
       
@@ -95,16 +170,26 @@ function alumniApp() {
     },
 
     getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
+      if (!obj) return '';
+      if (typeof obj === 'string') return obj;
+      if (typeof obj !== 'object') return '';
       return obj[lang] || obj.id || obj.en || '';
+    },
+
+    // Kolom rating di DB berupa enum string '1'..'5', tapi JSON bisa
+    // menyampaikannya sebagai angka. Data lama di-backfill '5' oleh migration,
+    // jadi fallback 5 hanya untuk jaga-jaga bila null.
+    getRating(alumni) {
+      const n = Number(alumni?.rating);
+      return Number.isInteger(n) && n >= 1 && n <= 5 ? n : 5;
     },
 
     filterPrograms() {
       const query = this.searchQuery.toLowerCase().trim();
-       const baseList = this.selectedKategoriId 
+      const baseList = this.selectedKategoriId 
         ? this.kelasList.filter(k => k.category?.id == this.selectedKategoriId)
         : this.kelasList;
-         this.filteredKelasList = query
+      this.filteredKelasList = query
         ? baseList.filter(k => k.name.toLowerCase().includes(query))
         : [...baseList];
     },
@@ -113,22 +198,17 @@ function alumniApp() {
       this.loading = true;
       try {
         const params = new URLSearchParams();
-         if (this.searchQuery && this.searchQuery.trim() !== '') {
-      params.set('search', this.searchQuery.trim());
-    }
         if (this.searchQuery && this.searchQuery.trim() !== '') {
-      params.set('search', this.searchQuery.trim());
-    }
-    
-    // 2. Parameter Kelas ID (Ditulis terpisah, tanpa ELSE IF)
-    if (this.selectedKelasId) {
-      params.set('course_id', this.selectedKelasId);
-    }
-    
-    // 3. Parameter Kategori ID (Selalu dikirim agar backend tahu category aktif saat ini)
-    if (this.selectedKategoriId) {
-      params.set('kategori_id', this.selectedKategoriId);
-    }
+          params.set('search', this.searchQuery.trim());
+        }
+
+        if (this.selectedKelasId) {
+          params.set('course_id', this.selectedKelasId);
+        }
+
+        if (this.selectedKategoriId) {
+          params.set('category_id', this.selectedKategoriId);
+        }
         params.set('page', this.currentPage);
         params.set('limit', 6);
 
@@ -138,7 +218,7 @@ function alumniApp() {
         this.alumniItems = json.data || [];
         this.totalItems = json.totalItems || 0;
         this.totalPages = json.totalPages || 1;
-        this.currentPage = json.currentPage || 1; 
+        this.currentPage = json.currentPage || 1;
       } catch (err) {
         console.error('Fetch alumni error:', err);
       } finally {
@@ -155,7 +235,6 @@ function alumniApp() {
         this.selectedKelas = course ? course.name : '';
       } else {
         this.selectedKelas = '';
-        // Jika program dihapus, keep kategori tetap aktif
       }
       await this.fetchAlumni();
     },
@@ -166,6 +245,7 @@ function alumniApp() {
     },
 
     async resetFilters() {
+      this.selectedKategoriId = null;
       this.selectedKelasId = null;
       this.selectedKelas = '';
       this.searchQuery = '';
@@ -175,7 +255,20 @@ function alumniApp() {
     },
 
     getKelasName(alumni) {
-      return alumni.course?.name || 'Unknown';
+      const name = alumni.course?.name;
+      return name ? (typeof name === 'object' ? this.getByLang(name, this.lang) : name) : this.unknown;
+    },
+
+    getBadgeColor(categoryName) {
+      const colorMap = {
+        'Bootcamp':          'bg-[#DBEAFE] text-[#1E40AF]',
+        'Short Class':       'bg-[#DCFCE7] text-[#166534]',
+        'In House Training': 'bg-[#FCE7F3] text-[#9D174D]',
+        'Internship':        'bg-[#E0E7FF] text-[#3730A3]',
+        'Free Program':      'bg-[#FEF3C7] text-[#92400E]',
+        'Special Program':   'bg-[#E0F2FE] text-[#0369A1]',
+      };
+      return colorMap[categoryName] || 'bg-[#F1F5F9] text-[#475569]';
     }
   };
 }

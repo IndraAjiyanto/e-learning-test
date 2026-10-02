@@ -16,6 +16,7 @@ import { UpdateCourseFlowDto } from './dto/update-course_flow.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('flow-program')
@@ -26,18 +27,24 @@ export class CourseFlowsController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const course_flows = await this.courseFlowsService.findAll();
-    res.render('super_admin/course_flows/index', { user: req.user, course_flows });
+    res.render('super_admin/course_flows/index', {
+      user: req.user,
+      course_flows,
+    });
   }
 
   @Roles('super_admin')
   @Get('detail/:courseFlowId')
   async findOneDetail(
-    @Param('courseFlowId') courseFlowId: number,
+    @Param('courseFlowId') courseFlowId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const course_flows = await this.courseFlowsService.findOne(courseFlowId);
-    res.render('super_admin/course_flows/detail', { user: req.user, course_flows });
+    res.render('super_admin/course_flows/detail', {
+      user: req.user,
+      course_flows,
+    });
   }
 
   @Roles('super_admin')
@@ -55,10 +62,14 @@ export class CourseFlowsController {
     @Req() req: Request,
   ) {
     try {
-      const courseId = Number(req.body.kelas_id);
+      const courseId = String(req.body.kelas_id);
       createCourseFlowDto.courseId = courseId;
       await this.courseFlowsService.create(createCourseFlowDto);
-      req.flash('success', 'Flow Program successfully created');
+      flashToast(
+        req,
+        'Flow Created',
+        'The program flow has been added successfully.',
+      );
       res.redirect(`/flow-program`);
     } catch (error: any) {
       req.flash('error', error.message || 'Flow Program failed to create');
@@ -69,7 +80,7 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createCourseFlowDto: CreateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -77,7 +88,7 @@ export class CourseFlowsController {
     try {
       createCourseFlowDto.courseId = courseId;
       await this.courseFlowsService.create(createCourseFlowDto);
-      req.flash('success', 'alur course successfully created');
+      flashToast(req, 'Flow Added', 'The flow has been added to this program.');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'alur course failed to create');
@@ -88,7 +99,7 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get('formCreate/:courseId')
   async formCreateWithKelas(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -98,26 +109,33 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get('formEdit/:courseFlowId')
   async formEdit(
-    @Param('courseFlowId') courseFlowId: number,
+    @Param('courseFlowId') courseFlowId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const course_flows = await this.courseFlowsService.findOne(courseFlowId);
-    res.render('super_admin/course_flows/edit', { user: req.user, course_flows });
+    res.render('super_admin/course_flows/edit', {
+      user: req.user,
+      course_flows,
+    });
   }
 
   @Roles('super_admin')
   @Patch(':courseFlowId/:courseId')
   async update(
-    @Param('courseFlowId') courseFlowId: number,
-    @Param('courseId') courseId: number,
+    @Param('courseFlowId') courseFlowId: string,
+    @Param('courseId') courseId: string,
     @Body() updateCourseFlowDto: UpdateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.courseFlowsService.update(courseFlowId, updateCourseFlowDto);
-      req.flash('success', 'Flow Program successfully updated');
+      flashToast(
+        req,
+        'Flow Updated',
+        'The changes to this program flow have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Flow Program failed to update');
@@ -128,14 +146,18 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Delete(':courseFlowId/:courseId')
   async remove(
-    @Param('courseFlowId') courseFlowId: number,
-    @Param('courseId') courseId: number,
+    @Param('courseFlowId') courseFlowId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.courseFlowsService.remove(courseFlowId, courseId);
-      req.flash('success', 'Flow Program successfully deleted');
+      flashToast(
+        req,
+        'Flow Deleted',
+        'The program flow has been removed successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Flow Program failed to delete');

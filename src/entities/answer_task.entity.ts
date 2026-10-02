@@ -15,8 +15,8 @@ import { ProcessStatus } from './types/process-status';
 
 @Entity()
 export class AnswerTask {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   file: string;

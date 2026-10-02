@@ -1,0 +1,112 @@
+{{!-- MY LEARNING - PPT MATERIAL PREVIEW VIEW --}}
+<div
+  class="w-full space-y-8 sm:space-y-10 md:space-y-12"
+  x-data="{
+    isPlaying: false,
+    currentPpt: null,
+    selectPpt(item) {
+      this.currentPpt = item;
+      this.isPlaying = true;
+    }
+  }"
+>
+  <!-- Header Row with Back Button -->
+  <div class="space-y-12">
+
+    <!-- Back Button -->
+    <button
+      type="button"
+      @click="activeMateri = null"
+      class="w-[50px] h-[50px] rounded-full border border-[#003060] bg-white hover:shadow-sm flex items-center justify-center text-[#003060] hover:bg-[#003060] hover:text-white transition-all duration-200 cursor-pointer group"
+      aria-label="Back to Start Learning"
+    >
+      <i class="fa-solid fa-arrow-left text-lg group-hover:-translate-x-0.5 transition-transform duration-200"></i>
+    </button>
+
+    <!-- Page Titles -->
+    <div class="space-y-5">
+      <h1 class="font-inter font-semibold text-2xl sm:text-3xl text-[#003060] leading-tight">
+        {{default (t 'test.material.ppt.selectPPTInstruction') 'Select a presentation from the list to start viewing'}}
+      </h1>
+      <p class="font-sans font-normal text-sm sm:text-base text-[#003060] leading-normal">
+        {{default (t 'test.material.completeWeekHint') (default (t 'test.startLearning.spanStartLearning') 'Complete each week to unlock the next')}}
+      </p>
+    </div>
+
+  </div>
+
+  <!-- PPT Viewer & Course Materials Right Panel Layout -->
+  <div class="flex flex-col xl:flex-row items-start gap-6 xl:gap-[30px] w-full">
+
+    <!-- PPT VIEWER -->
+    <div class="w-full xl:max-w-[726px] flex-1">
+      <div class="w-full h-[240px] sm:h-[320px] md:h-[402px] bg-black rounded-[11px] border border-[#d9d9d9] relative flex items-center justify-center overflow-hidden group">
+
+        <!-- PPT Playing State -->
+        <template x-if="isPlaying && currentPpt && currentPpt.file">
+          <iframe
+            :src="currentPpt.file"
+            class="w-full h-full rounded-[11px] bg-white"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </template>
+
+        <!-- PPT Placeholder Preview State -->
+        <div
+          x-show="!isPlaying"
+          class="w-full h-full flex flex-col items-center justify-center relative"
+        >
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+          <i class="fa-solid fa-file-powerpoint relative z-10 text-5xl text-white/80"></i>
+          <p class="relative z-10 mt-4 font-inter text-white/80 text-sm sm:text-base px-6 text-center">
+            {{default (t 'test.material.ppt.selectPPTInstruction') 'Select a presentation from the list to start viewing'}}
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL (Course Materials Playlist) -->
+    <div class="w-full xl:w-[438px] h-[510px] min-h-[510px] bg-white rounded-[12px] overflow-hidden flex flex-col border border-[#E5E7EB] shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] transition flex-shrink-0">
+
+      <!-- Header bar -->
+      <div class="h-[66px] bg-[#6EB6E5] rounded-t-[12px] px-6 flex items-center justify-start gap-3 flex-shrink-0">
+        <i class="fa-solid fa-file-powerpoint text-2xl"></i>
+        <h2 class="font-inter font-semibold text-black text-xl leading-none">
+          {{default (t 'test.material.ppt.materiProgram') 'PPT Materials'}}
+        </h2>
+      </div>
+
+      <!-- List rows (Scrollable inside 510px card) -->
+      <div class="flex-1 overflow-y-auto max-h-[444px] my-1">
+
+        <!-- Empty State -->
+        <template x-if="!(selectedMaterial && selectedMaterial.materials && selectedMaterial.materials.filter(m => m.fileType === 'ppt').length)">
+          <div class="h-full flex items-center justify-center px-6">
+            <p class="font-inter font-medium text-sm sm:text-base text-[#A3A3A3] text-center">
+              {{default (t 'test.material.ppt.noMateriAvailable') 'No PPT material available for this session'}}
+            </p>
+          </div>
+        </template>
+
+        <template x-for="item in (selectedMaterial && selectedMaterial.materials ? selectedMaterial.materials.filter(m => m.fileType === 'ppt') : [])" :key="item.id">
+          <div
+            @click="selectPpt(item)"
+            :class="currentPpt && currentPpt.id === item.id ? 'bg-white' : 'bg-white hover:bg-[#FAFAFA]'"
+            class="h-[60px] flex items-center px-6 border-y border-[#D9D9D9] transition-colors cursor-pointer"
+          >
+            <span
+              :class="currentPpt && currentPpt.id === item.id ? 'font-semibold text-black' : 'font-medium text-black'"
+              class="font-inter text-base sm:text-lg truncate leading-none"
+              x-text="item.title"
+            ></span>
+          </div>
+        </template>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -33,73 +33,48 @@
           </div>
         </template>
 
-        <!-- Preview Baru with validation success -->
-        <template x-if='previewUrl && isValid && hasNewImage'>
+        <!-- Success Message -->
+        <template x-if='hasNewImage && isValid'>
           <div class='space-y-2'>
-            <!-- Success Message -->
             <div
               class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
             >
               <div class='flex items-center gap-2'>
                 <i class='fas fa-check-circle text-green-500'></i>
                 <div class='text-xs text-green-700'>
-                  <span class='font-semibold'>Valid image:</span>
-                  <span
-                    x-text='`${fileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`'
-                  ></span>
+                  <span class='font-semibold'>Image cropped and ready</span>
                 </div>
               </div>
               <button
                 type='button'
                 class='text-red-500 hover:text-red-700 transition-colors'
                 @click='clearFile()'
+                title='Remove image'
               >
-                &times;
-              </button>
-            </div>
-
-            <!-- Image Preview -->
-            <div class='relative w-full max-w-md'>
-              <img
-                :src='previewUrl'
-                alt='New Image Preview'
-                class='w-full h-auto object-contain rounded-lg border-2 border-green-500 shadow-sm'
-              />
-
-              <button
-                type='button'
-                class='absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors'
-                @click='clearFile()'
-              >
-                <svg
-                  class='w-5 h-5'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M6 18L18 6M6 6l12 12'
-                  />
-                </svg>
+                <i class='fas fa-times-circle'></i>
               </button>
             </div>
           </div>
         </template>
 
-        <!-- Preview Lama -->
-        <template x-if='!hasNewImage && oldImage'>
-          <div class='space-y-2'>
-            <p class='text-xs text-gray-500 font-medium'>Current Image:</p>
-            <div class='relative w-full max-w-md'>
-              <img
-                :src='oldImage'
-                alt='Current Image'
-                class='w-full h-auto object-contain rounded-lg border border-gray-300 shadow-sm'
-              />
-            </div>
+        <!-- Preview (hasil crop atau gambar lama) -->
+        <template x-if="(previewUrl && isValid && hasNewImage) || (!hasNewImage && oldImage)">
+          <div class='relative w-32 h-32'>
+            <img
+              :src="previewUrl ? previewUrl : oldImage"
+              alt='Preview Image'
+              class='w-32 h-32 object-cover rounded-full border-2 border-gray-300 circular-preview'
+            />
+
+            <template x-if='previewUrl && hasNewImage'>
+              <button
+                type='button'
+                class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600'
+                @click='clearFile()'
+              >
+                &times;
+              </button>
+            </template>
           </div>
         </template>
       </div>

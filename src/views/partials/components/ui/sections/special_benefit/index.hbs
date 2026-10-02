@@ -1,0 +1,147 @@
+{{!--
+  Section: Special Benefit / "Why Choose" (L2)
+  Lokasi: src/views/partials/components/ui/sections/special_benefit/index.hbs
+  Props: category (.name), benefit_category[], lang, isJapan.
+--}}
+<section class="w-full bg-[#FAFAFA] py-16 lg:py-24 font-inter">
+  <div class="max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-10">
+
+    {{!-- section-header --}}
+    {{#> components/ui/text/section_header/index
+        titleClass="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#111827] text-center max-w-[707px]"
+        description=(t 'test.special_program.whyChooseUs.descJapan')
+        descClass="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280] text-center max-w-[760px]"
+        wrapperClass="gap-3 max-w-[760px]"
+    }}
+      {{#*inline "titleBlock"}}
+        {{default (t 'test.special_program.whyChooseUs.titlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if (includes category.name 'japan')}}{{default (t 'test.special_program.whyChooseUs.titleSuffixJapan') 'Our Japan Program'}}{{else}}{{default (t 'test.special_program.whyChooseUs.titleSuffixGeneral') (concat 'Our ' (default category.name "Program"))}}{{/if}}</span>?
+      {{/inline}}
+    {{/components/ui/text/section_header/index}}
+
+    {{!-- feature-grid (Figma: width 1568px, gap 24px, 2 rows of 3 cards) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1568px]">
+      {{#if benefit_category.length}}
+        {{#each benefit_category}}
+          {{!-- feature-card (Figma: 505x245px, p-6, gap 12px, rounded 20px, bg-white, border #E5E7EB) --}}
+          <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+            {{!-- Frame (Figma: 44x44, rounded 14px, bg rgba(110, 182, 229, 0.08)) --}}
+            <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0 text-[#0B1F3B]">
+              <i class="{{computeIcon this.icon}} text-[20px]" aria-hidden="true"></i>
+            </div>
+            <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+              {{getByLang this.title ../lang}}
+            </h3>
+            <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+              {{getByLang this.description ../lang}}
+            </p>
+          </div>
+        {{/each}}
+      {{else}}
+        {{!-- 6 Fallback Feature Cards --}}
+        
+        {{!-- Card 1: book-open --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.whyChooseUs.card1TitleJapan') 'Comprehensive Japanese Language Training'}}{{else}}{{default (t 'test.special_program.whyChooseUs.card1TitleGeneral') 'Comprehensive Industry Curriculum'}}{{/if}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.whyChooseUs.card1DescJapan') 'Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.'}}{{else}}{{default (t 'test.special_program.whyChooseUs.card1DescGeneral') 'Master in-demand skills through a structured, project-driven curriculum designed with industry partners.'}}{{/if}}
+          </p>
+        </div>
+
+        {{!-- Card 2: users --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{default (t 'test.special_program.whyChooseUs.card2Title') 'Experienced Mentors & Practitioners'}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{default (t 'test.special_program.whyChooseUs.card2Desc') 'Learn directly from seasoned industry practitioners who provide 1-on-1 feedback, practical insights, and guidance throughout your learning journey.'}}
+          </p>
+        </div>
+
+        {{!-- Card 3: award --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="7"></circle>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.whyChooseUs.card3TitleJapan') 'JLPT Preparation & Certification'}}{{else}}{{default (t 'test.special_program.whyChooseUs.card3TitleGeneral') 'Industry Certification & Portfolio'}}{{/if}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{#if (or isJapan (includes category.name 'japan'))}}{{default (t 'test.special_program.whyChooseUs.card3DescJapan') 'Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.'}}{{else}}{{default (t 'test.special_program.whyChooseUs.card3DescGeneral') 'Build verified, production-grade portfolios and gain recognized certificates to accelerate your career growth.'}}{{/if}}
+          </p>
+        </div>
+
+        {{!-- Card 4: briefcase --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{default (t 'test.special_program.whyChooseUs.card4Title') 'Career & Placement Support'}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{default (t 'test.special_program.whyChooseUs.card4Desc') 'Receive comprehensive career support, CV review, mock interviews, and exclusive hiring partner access to kickstart your professional journey.'}}
+          </p>
+        </div>
+
+        {{!-- Card 5: handshake --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.6-4.6a2 2 0 0 0 0-2.8l-3.2-3.2a2 2 0 0 0-2.8 0L11 10.4"></path>
+              <path d="m18 10 3.3-3.3a2 2 0 0 0 0-2.8l-.9-.9a2 2 0 0 0-2.8 0L14 6.6"></path>
+              <path d="m2 14 6 6"></path>
+              <path d="m3.4 12.6 6.3 6.3"></path>
+              <path d="m7 7 4.3 4.3"></path>
+              <path d="M7 7 3.7 3.7a2 2 0 0 0-2.8 0l-.9.9a2 2 0 0 0 0 2.8L3.3 10.7"></path>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{default (t 'test.special_program.whyChooseUs.card5Title') 'Hands-On & Real-World Practice'}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{default (t 'test.special_program.whyChooseUs.card5Desc') 'Learn through real-world case studies, hands-on client projects, and collaborative workflows that simulate actual workplace conditions.'}}
+          </p>
+        </div>
+
+        {{!-- Card 6: map-pin --}}
+        <div class="box-border flex flex-col items-start p-6 gap-3 w-full min-h-[245px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[20px] shadow-xs hover:border-[#6EB6E5]/50 hover:shadow-md transition-all duration-300">
+          <div class="flex flex-col justify-center items-center p-0 w-11 h-11 bg-[#6EB6E5]/[0.08] rounded-[14px] shrink-0">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <h3 class="w-full font-montserrat font-bold text-[18px] leading-[22px] text-[#111827]">
+            {{default (t 'test.special_program.whyChooseUs.card6Title') 'Workplace Readiness & Soft Skills'}}
+          </h3>
+          <p class="w-full font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+            {{default (t 'test.special_program.whyChooseUs.card6Desc') 'Cultivate professional work ethics, team collaboration, and communication skills to excel in any fast-paced engineering team.'}}
+          </p>
+        </div>
+      {{/if}}
+    </div>
+
+  </div>
+</section>

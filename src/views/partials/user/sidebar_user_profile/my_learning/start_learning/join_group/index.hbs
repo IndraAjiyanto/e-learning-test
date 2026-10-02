@@ -1,0 +1,46 @@
+<div class="w-full min-h-[500px] flex items-center justify-center font-inter p-5">
+  
+  <div class="flex flex-col md:flex-row items-center gap-8 xl:gap-[50px] max-w-4xl mx-auto py-8">
+    
+    <!-- Left Illustration / GIF -->
+    <div class="w-[150px] h-[150px] flex items-center justify-center flex-shrink-0">
+      <img 
+        src="/public/image/user_profile/gruopClass/whatsapp.gif" 
+        alt="Join Group Class" 
+        class="w-[150px] h-[150px] object-contain"
+      >
+    </div>
+
+    <!-- Right Content Block -->
+    <div class="text-center md:text-left">
+      <h2 class="font-inter font-semibold text-xl sm:text-2xl leading-tight text-[#003060] mb-4">
+        {{default (t 'test.joinGroup.title') 'Join Group Class'}}
+      </h2>
+
+      <p class="font-sans font-normal text-sm leading-relaxed text-black max-w-[620px] mb-5">
+        {{default (t 'test.joinGroup.description') 'Join your class group to receive important announcements, learning materials, schedules, and communicate with mentors and fellow participants.'}}
+      </p>
+
+      {{!-- Tautan grup diambil dari kolom Course.group. Sebelumnya tautannya kosong,
+           sehingga tombol Join Now tidak pernah membawa student ke mana pun.
+           Bila kolomnya belum diisi, yang muncul keterangan, bukan tombol mati
+           yang menjanjikan sesuatu yang tidak ada. --}}
+      {{#if course.group}}
+        <a
+          href="{{course.group}}"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+        >
+          {{default (t 'test.joinGroup.joinNow') 'Join Now'}}
+        </a>
+      {{else}}
+        <p class="font-inter text-sm text-[#737373]">
+          {{default (t 'test.joinGroup.linkNotShared') 'The group link has not been shared by your mentor yet.'}}
+        </p>
+      {{/if}}
+    </div>
+
+  </div>
+
+</div>

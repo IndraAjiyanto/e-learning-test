@@ -1,0 +1,131 @@
+{{!--
+  Section: Schedule & Fees - Free Program Detail (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/free_detail_schedule_fee/index.hbs
+
+  Props:
+  - course          : object (data course: date_registration, startDate, quota, userCourses)
+  - studentList     : number (opsional, total pendaftar saat ini)
+  - isQuotaFull     : boolean (opsional override status kuota penuh)
+  - isFull          : boolean (opsional override status kuota penuh)
+  - badgeTitle      : string (opsional)
+  - title           : string (opsional)
+  - description     : string (opsional)
+  - cardTitle       : string (opsional)
+  - lang            : string (opsional)
+--}}
+
+<!-- SCHEDULE & FEES SECTION -->
+<section id="schedule-fees" class="w-full bg-[#FAFAFA] py-16 md:py-[120px] px-4 sm:px-8 md:px-[80px] font-inter flex flex-col items-center gap-10 md:gap-[64px]">
+  
+  <!-- Pricing Header -->
+  <div class="w-full max-w-[1568px] flex flex-col items-center gap-4 text-center">
+    <!-- Schedule & Fees -->
+    <span class="font-inter font-bold text-[14px] leading-[17px] uppercase tracking-[0.5px] text-[#003060]">
+      {{default badgeTitle (t 'test.freeProgram.badge.schedule')}}
+    </span>
+
+    <!-- No Payment Required -->
+    <h2 class="font-inter font-extrabold text-[28px] md:text-[36px] leading-[36px] md:leading-[44px] text-center text-[#0B1F3B] m-0">
+      {{default title (t 'test.freeProgram.schedule.title')}}
+    </h2>
+
+    <!-- You only need to register to join this program. -->
+    <p class="max-w-[680px] font-inter font-normal text-[16px] leading-[19px] text-center text-[#64748B] m-0">
+      {{default description (t 'test.freeProgram.schedule.description')}}
+    </p>
+  </div>
+
+  <!-- Pricing Grid Columns -->
+  <div class="w-full max-w-[1568px] flex flex-row justify-center items-center">
+    
+    <!-- Pricing Card 1 -->
+    <div class="w-full max-w-[773px] bg-white rounded-[20px] shadow-[0px_8px_24px_rgba(0,0,0,0.0941176)] p-6 sm:p-8 md:p-[50px_36px] flex flex-col items-start gap-[27px]">
+      
+      <!-- card-title -->
+      <h3 class="w-full font-inter font-bold text-[20px] md:text-[24px] leading-[29px] text-center text-[#0B1F3B] m-0">
+        {{default cardTitle (default (t 'test.freeProgram.schedule.cardTitle') 'Kickstart Your Career Today')}}
+      </h3>
+
+      <!-- Frame 2147229718 & Frame 2147229719 -->
+      <div class="w-full flex flex-col items-start gap-[35px]">
+        
+        <!-- schedule-section -->
+        <div class="w-full bg-[#F8FAFC] rounded-[14px] overflow-hidden flex flex-col items-start">
+          
+          <!-- Schedule Header Bar -->
+          <div class="w-full bg-[#EEF2FF] px-4 py-3 flex flex-row items-start">
+            <span class="font-inter font-bold text-[11px] leading-[13px] tracking-[0.5px] uppercase text-[#4338CA]">
+              {{default (t 'test.freeProgram.schedule.scheduleHeader') 'SCHEDULE'}}
+            </span>
+          </div>
+
+          <!-- registration-row -->
+          <div class="w-full min-h-[52px] px-4 py-3.5 flex flex-row justify-between items-center gap-3">
+            <div class="flex flex-row items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#003060] flex-shrink-0"></span>
+              <span class="font-inter font-semibold text-[13px] leading-[16px] text-[#374151]">
+                {{t 'test.freeProgram.schedule.registration'}}
+              </span>
+            </div>
+            <div class="px-3 py-1 bg-[#DBEAFE] rounded-[20px] flex flex-row items-center justify-center">
+              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#1D4ED8] whitespace-nowrap">
+                {{#if course.date_registration}}
+                  {{#if (eq lang 'id')}}Sampai {{else if (eq lang 'ja')}}まで {{else}}Until {{/if}}{{formatDate course.date_registration lang}}
+                {{else}}
+                  {{#if (eq lang 'ja')}}未設定{{else if (eq lang 'id')}}Belum diatur{{else}}Not set{{/if}}
+                {{/if}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Rectangle Divider -->
+          <div class="w-full h-[1px] bg-[#E2E8F0]"></div>
+
+          <!-- start-learning-row -->
+          <div class="w-full min-h-[52px] px-4 py-3.5 flex flex-row justify-between items-center gap-3">
+            <div class="flex flex-row items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0"></span>
+              <span class="font-inter font-semibold text-[13px] leading-[16px] text-[#374151]">
+                {{t 'test.freeProgram.schedule.start'}}
+              </span>
+            </div>
+            <div class="px-3 py-1 bg-[#D1FAE5] rounded-[20px] flex flex-row items-center justify-center">
+              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#065F46] whitespace-nowrap">
+                {{formatDate course.startDate lang}}
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- cta-section -->
+        <div class="w-full flex flex-col items-start gap-3">
+          {{#if (or isFull isQuotaFull (and course.quota (gte (default studentList (default course.userCourses.length 0)) course.quota)))}}
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              class="w-full h-[45px] py-[14px] flex flex-row justify-center items-center bg-[#94A3B8] text-white rounded-[10px] font-inter font-bold text-[14px] leading-[17px] cursor-not-allowed opacity-60 select-none transition-colors"
+              title="{{t 'test.detailProgram.programIsFull'}}"
+            >
+              {{default (t 'test.detailProgram.programIsFull') (t 'test.freeProgram.schedule.regisNow')}}
+            </button>
+          {{else}}
+            <button
+              type="button"
+              @click="openRegistrationModal()"
+              class="w-full h-[45px] py-[14px] flex flex-row justify-center items-center bg-[#1E3A5F] hover:bg-[#152943] text-white rounded-[10px] font-inter font-bold text-[14px] leading-[17px] transition-colors cursor-pointer"
+            >
+              {{t 'test.freeProgram.schedule.regisNow'}}
+            </button>
+          {{/if}}
+          <div class="w-full h-[1px] bg-[#F1F5F9]"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

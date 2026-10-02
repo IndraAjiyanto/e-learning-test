@@ -21,8 +21,8 @@ export class CommentsController {
   @Roles('admin')
   @Post(':assignmentId/:assignment_answerId')
   async create(
-    @Param('assignmentId') assignmentId: number,
-    @Param('assignment_answerId') assignment_answerId: number,
+    @Param('assignmentId') assignmentId: string,
+    @Param('assignment_answerId') assignment_answerId: string,
     @Body() createCommentDto: CreateCommentsDto,
     @Req() req: Request,
     @Res() res: Response,

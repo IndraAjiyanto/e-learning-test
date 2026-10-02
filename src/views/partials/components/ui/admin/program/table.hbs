@@ -1,0 +1,261 @@
+{{!--
+  Component: Program Table (Admin) — SINGLE table component
+  Path: components/ui/admin/program/table.hbs
+  Dipakai: {{> components/ui/admin/program/table}}
+
+  Alpine (parent scope): kelasList, loading, currentPage, size, totalPages, changePage(), toggleLaunch()
+  Action: Edit (link) + View Detail (link) + Delete (form + confirm)
+  Pagination: menyatu di dalam card (border-top), tanpa gap
+  Anti-rusak: shrink-0 per kolom + truncate + min-w-0 di flex-1 + :title tooltip
+--}}
+<style>
+  .table-scroll::-webkit-scrollbar { height: 6px; }
+  .table-scroll::-webkit-scrollbar-track { background: transparent; }
+  .table-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 999px; }
+  .table-scroll::-webkit-scrollbar-thumb:hover { background: #A3A3A3; }
+</style>
+<div class='box-border w-full h-fit shrink-0 flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px] overflow-hidden'>
+
+  {{!-- Loading --}}
+  <div x-show='loading' class='w-full py-16 text-center font-inter text-sm text-[#A3A3A3]'>
+    <i class='fas fa-spinner fa-spin text-xl'></i>
+  </div>
+
+  <div x-show='!loading' class='table-scroll w-full min-h-[280px] overflow-x-auto [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
+
+    {{!-- Header Row --}}
+    <div class='w-full {{#if isSuperAdmin}}min-w-[1168px]{{else}}min-w-[1043px]{{/if}} h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+      <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-center items-center'>
+        <div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>No</div>
+      </div>
+      <div class='box-border w-[9.5%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Cover</div>
+      </div>
+      <div class='box-border w-[14%] min-w-[180px] flex-1 {{#if isSuperAdmin}}max-w-[210px]{{/if}} h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Program Name</div>
+      </div>
+      <div class='box-border w-[11.5%] min-w-[130px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Group</div>
+      </div>
+      <div class='box-border w-[12%] min-w-[140px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Category</div>
+      </div>
+      <div class='box-border w-[10.5%] min-w-[120px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Status</div>
+      </div>
+      <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Quota</div>
+      </div>
+      <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Student</div>
+      </div>
+      {{#if isSuperAdmin}}
+      <div class='box-border w-[10.5%] min-w-[125px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Status Program</div>
+      </div>
+      {{/if}}
+      <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
+        <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Action</div>
+      </div>
+    </div>
+
+    {{!-- Body Rows --}}
+    <template x-for='(course, index) in kelasList' :key='course.id'>
+      <div class='w-full {{#if isSuperAdmin}}min-w-[1168px]{{else}}min-w-[1043px]{{/if}} h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+
+        {{!-- No --}}
+        <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-center items-center'>
+          <div class='text-[14px]/[normal] text-[#525252] font-inter font-normal text-center whitespace-nowrap' x-text='(currentPage - 1) * size + index + 1'></div>
+        </div>
+
+        {{!-- Cover: 90x52 thumbnail, fallback initials --}}
+        <div class='box-border w-[9.5%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[10px] justify-start items-center'>
+          <div class='box-border w-[90px] shrink-0 h-[52px] flex flex-row gap-0 justify-center items-center bg-[#F9F5FF] [outline:1px_solid_#E9D7FE] [outline-offset:-0.5px] rounded-[12px] overflow-hidden'>
+            <template x-if='course.image'>
+              <img :src='course.image' :alt='course.name' class='h-full w-full object-cover' />
+            </template>
+            <template x-if='!course.image'>
+              <span class='text-[14px]/[normal] text-[#6941C6] font-inter font-semibold whitespace-nowrap' x-text='course.name?.substring(0,2).toUpperCase()'></span>
+            </template>
+          </div>
+        </div>
+
+        {{!-- Program Name (flex-1, truncate + tooltip) --}}
+        <div class='box-border w-[14%] min-w-[180px] flex-1 {{#if isSuperAdmin}}max-w-[210px]{{/if}} h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text='course.name' :title='course.name'></div>
+        </div>
+
+        {{!-- Group (blue, truncate + tooltip) --}}
+        <div class='box-border w-[11.5%] min-w-[130px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[13px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#3B82F6] font-inter font-normal text-left' x-text='course.group' :title='course.group'></div>
+        </div>
+
+        {{!-- Category (truncate + tooltip) --}}
+        <div class='box-border w-[12%] min-w-[140px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='text-[13px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text='course.category?.name' :title='course.category?.name'></div>
+        </div>
+
+        {{!-- Status Badge (Approved/Pending dari course.process) --}}
+        <div class='box-border w-[10.5%] min-w-[120px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[2px_8px] justify-start items-center rounded-[16px]'
+            :class="course.process === 'approved' ? 'bg-[#F0FDF4]' : 'bg-[#FEFCE8]'">
+            <div class='box-border w-[6px] shrink-0 h-[6px] rounded-full'
+              :class="course.process === 'approved' ? 'bg-[#22C55E]' : 'bg-[#EAB308]'"></div>
+            <div class='text-[12px]/[normal] font-inter font-medium whitespace-nowrap'
+              :class="course.process === 'approved' ? 'text-[#15803D]' : 'text-[#A16207]'"
+              x-text='course.process === "approved" ? "Approved" : "Pending"'></div>
+          </div>
+        </div>
+
+        {{!-- Quota pill --}}
+        <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[16px_8px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center bg-[#F9F5FF] rounded-[16px]'>
+            <div class='text-[12px]/[normal] text-[#6941C6] font-inter font-medium text-center whitespace-nowrap' x-text='course.quota ?? "-"'></div>
+          </div>
+        </div>
+
+        {{!-- Student pill --}}
+        <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[16px_8px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-0 p-[2px_8px] justify-center items-center bg-[#F9F5FF] rounded-[16px]'>
+            <div class='text-[12px]/[normal] text-[#6941C6] font-inter font-medium text-center whitespace-nowrap' x-text='course.userCourses?.length ?? 0'></div>
+          </div>
+        </div>
+
+        {{#if isSuperAdmin}}
+        {{!-- Status Program (Dropdown Lifecycle: Unlaunch -> Launch -> Learning -> Done) --}}
+        <div class='box-border w-[10.5%] min-w-[125px] shrink-0 h-full flex flex-row p-[16px_8px] justify-start items-center relative'
+             x-data='{ open: false }'
+             :class="open ? 'z-30' : 'z-10'"
+             @click.outside='open = false'>
+
+          {{!-- Jika Status Done (Terminal State): Tampilkan badge terkunci tanpa dropdown --}}
+          <template x-if="course.status === 'done'">
+            <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[3px_10px] justify-start items-center rounded-[16px] bg-[#F3E8FF] text-[#7E22CE] border border-[#E9D5FF]'>
+              <div class='box-border w-[6px] shrink-0 h-[6px] rounded-full bg-[#A855F7]'></div>
+              <span class='text-[12px] font-inter font-medium'>Done</span>
+              <svg class='w-3 h-3 text-[#A855F7] opacity-70 ml-0.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'/>
+              </svg>
+            </div>
+          </template>
+
+          {{!-- Jika Status Belum Done: Tampilkan Dropdown Trigger Button --}}
+          <template x-if="course.status !== 'done'">
+            <div class='relative'>
+              <button
+                type='button'
+                @click='open = !open'
+                class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[3px_10px] justify-start items-center rounded-[16px] border text-[12px] font-inter font-medium transition-all hover:shadow-sm focus:outline-none cursor-pointer'
+                :class="getStatusBadgeClass(course.status)"
+                :aria-expanded='open'
+              >
+                <div class='box-border w-[6px] shrink-0 h-[6px] rounded-full' :class='getStatusDotClass(course.status)'></div>
+                <span class='capitalize' :class='getStatusTextClass(course.status)' x-text='getStatusLabel(course.status)'></span>
+                <svg class='w-3.5 h-3.5 transition-transform duration-200' :class="open ? 'rotate-180' : ''" fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/>
+                </svg>
+              </button>
+
+              {{!-- Floating Dropdown Menu --}}
+              <div
+                x-show='open'
+                x-transition:enter='transition ease-out duration-100'
+                x-transition:enter-start='transform opacity-0 scale-95'
+                x-transition:enter-end='transform opacity-100 scale-100'
+                x-transition:leave='transition ease-in duration-75'
+                x-transition:leave-start='transform opacity-100 scale-100'
+                x-transition:leave-end='transform opacity-0 scale-95'
+                class='absolute left-0 w-44 rounded-lg bg-white shadow-[0px_4px_16px_rgba(0,0,0,0.12)] border border-[#E5E5E5] py-1 z-50'
+                :class="(index >= kelasList.length - 2 && kelasList.length > 3) ? 'bottom-full mb-1.5' : 'top-full mt-1.5'"
+                style='display: none;'
+              >
+                <div class='px-3 py-1 text-[10px] font-inter font-semibold text-[#A3A3A3] uppercase tracking-wider border-b border-[#F5F5F5]'>
+                  Ubah Status
+                </div>
+
+                {{!-- Opsi jika Unlaunch --}}
+                <template x-if="!course.status || course.status === 'unlaunch'">
+                  <button
+                    type='button'
+                    @click="open = false; confirmStatusChange(course.id, index, 'launch')"
+                    class='w-full px-3 py-2 text-left text-[12px] font-inter text-[#15803D] hover:bg-[#F0FDF4] flex items-center gap-2 transition-colors cursor-pointer'
+                  >
+                    <div class='w-2 h-2 rounded-full bg-[#22C55E]'></div>
+                    <span>Launch Program</span>
+                  </button>
+                </template>
+
+                {{!-- Opsi jika Launch --}}
+                <template x-if="course.status === 'launch'">
+                  <div>
+                    <button
+                      type='button'
+                      @click="open = false; confirmStatusChange(course.id, index, 'learning')"
+                      class='w-full px-3 py-2 text-left text-[12px] font-inter text-[#1D4ED8] hover:bg-[#EFF6FF] flex items-center gap-2 transition-colors cursor-pointer'
+                    >
+                      <div class='w-2 h-2 rounded-full bg-[#3B82F6]'></div>
+                      <span>Start Learning</span>
+                    </button>
+                    <button
+                      type='button'
+                      @click="open = false; confirmStatusChange(course.id, index, 'unlaunch')"
+                      class='w-full px-3 py-2 text-left text-[12px] font-inter text-[#EF4444] hover:bg-[#FEF2F2] flex items-center gap-2 transition-colors cursor-pointer'
+                    >
+                      <div class='w-2 h-2 rounded-full bg-[#EF4444]'></div>
+                      <span>Rollback to Unlaunch</span>
+                    </button>
+                  </div>
+                </template>
+
+                {{!-- Opsi jika Learning --}}
+                <template x-if="course.status === 'learning'">
+                  <button
+                    type='button'
+                    @click="open = false; confirmStatusChange(course.id, index, 'done')"
+                    class='w-full px-3 py-2 text-left text-[12px] font-inter text-[#7E22CE] hover:bg-[#FAF5FF] flex items-center gap-2 transition-colors cursor-pointer'
+                  >
+                    <div class='w-2 h-2 rounded-full bg-[#A855F7]'></div>
+                    <span>Mark as Done</span>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+        {{/if}}
+
+        {{!-- Action: View Detail + Users --}}
+        <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-[4px] p-[16px_8px] justify-start items-center'>
+          {{!-- View Detail Button (Eye Icon) — redirect ke halaman detail program admin --}}
+          <a :href="'/program/detail/program/admin/' + course.id"
+             class='box-border w-[40px] shrink-0 h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#EFF6FF] transition-colors'
+             title='View Detail' aria-label='View Detail'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#3B82F6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
+              <path d='M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'/>
+              <circle cx='12' cy='12' r='3'/>
+            </svg>
+          </a>
+          {{!-- Users Button — redirect ke halaman manajemen user program --}}
+          <a :href="'/program/addUser/' + course.id"
+             class='box-border w-[40px] shrink-0 h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#F0FDF4] transition-colors'
+             title='Manage Users' aria-label='Manage Users'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 15' preserveAspectRatio='none' class='box-border w-[20px] h-[13px] overflow-visible'>
+              <path d="M10.97833 10.3c1.01813-0.6636 1.79468-1.63832 2.214-2.779 0.41495-1.13408 0.44726-2.37282 0.092-3.527-0.3591-1.16005-1.08429-2.17258-2.067-2.886-0.99139-0.72042-2.1855-1.1083-3.411-1.108-1.2255-0.0003-2.41961 0.38758-3.411 1.108-0.98271 0.71342-1.7079 1.72595-2.067 2.886-0.35504 1.15387-0.32272 2.39222 0.092 3.526 0.41913 1.14104 1.1957 2.11614 2.214 2.78-1.84215 0.66224-3.42164 1.90087-4.504 3.532-0.11426 0.1661-0.15581 0.37162-0.11504 0.56906 0.04077 0.19744 0.16033 0.36969 0.33104 0.47694 0.35649 0.22762 0.82972 0.12647 1.062-0.227 0.69763-1.0498 1.64541-1.90961 2.758-2.502 1.1206-0.59624 2.37065-0.90772 3.64-0.907 1.2693-0.00031 2.51925 0.31115 3.64 0.907 1.11259 0.59239 2.06037 1.4522 2.758 2.502 0.2376 0.33941 0.70013 0.43192 1.05 0.21 0.16753-0.10525 0.28593-0.27321 0.32877-0.46637 0.04284-0.19315 0.00655-0.39542-0.10077-0.56163-1.0822-1.63151-2.66171-2.8705-4.504-3.533m-7.37-4.677c0-0.815 0.247-1.612 0.708-2.29 0.46551-0.67985 1.1207-1.20775 1.884-1.518 0.76836-0.31217 1.611-0.39383 2.425-0.235 0.81173 0.15632 1.55928 0.54871 2.149 1.128 0.58474 0.57295 0.98457 1.30783 1.148 2.11 0.162 0.8 0.08 1.63-0.239 2.382-0.32012 0.75625-0.85791 1.40022-1.545 1.85-1.66791 1.09272-3.87124 0.87896-5.298-0.514-0.78337-0.76731-1.22672-1.81645-1.231-2.913m20.046 9.246c-0.35304 0.2248-0.82084 0.12823-1.056-0.218-0.69622-1.05128-1.64432-1.91172-2.758-2.503-1.12028-0.59674-2.3707-0.90729-3.64-0.904-0.20188 0.00029-0.3958-0.07871-0.54-0.22-0.14219-0.1397-0.22228-0.33067-0.22228-0.53 0-0.19933 0.08009-0.3903 0.22228-0.53 0.14436-0.14092 0.33826-0.21956 0.54-0.219 0.618 0 1.229-0.135 1.788-0.394 0.55697-0.25823 1.05055-0.63541 1.446-1.105 0.39209-0.46642 0.67529-1.01437 0.829-1.604 0.15288-0.58763 0.17168-1.20212 0.055-1.798-0.1181-0.59747-0.36781-1.16112-0.731-1.65-0.36655-0.49134-0.8362-0.89649-1.376-1.187-1.10113-0.59126-2.40637-0.66914-3.57-0.213-0.28814 0.12218-0.62148 0.05906-0.845-0.16-0.14367-0.14344-0.22305-0.339-0.22-0.542 0.00372-0.20322 0.09088-0.39597 0.241-0.533 0.07533-0.06788 0.16289-0.12082 0.258-0.156 1.3157-0.51463 2.77368-0.53311 4.102-0.052 1.32016 0.47613 2.41827 1.42256 3.084 2.658 0.65752 1.22583 0.82891 2.65443 0.48 4.001-0.35308 1.35337-1.19813 2.52646-2.37 3.29 1.84252 0.66205 3.42239 1.9007 4.505 3.532 0.11077 0.16618 0.14967 0.37007 0.10787 0.56535-0.04181 0.19529-0.16077 0.36538-0.32987 0.47165" fill="#525252"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </template>
+
+    {{!-- Empty State --}}
+    <div x-show='!loading && kelasList.length === 0' class='w-full h-[72px] flex items-center justify-center'>
+      <span class='font-inter text-sm text-[#A3A3A3]'>No program found.</span>
+    </div>
+  </div>
+
+  {{!-- Pagination menyatu dengan card: border atas, radius bawah ikut parent overflow-hidden --}}
+  <div x-show='!loading && totalPages > 1' class='w-full [border-width:1px_0px_0px_0px] [border-style:solid] [border-color:#E5E5E5]'>
+    {{> components/ui/admin/table/pagination}}
+  </div>
+
+</div>

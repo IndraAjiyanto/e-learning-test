@@ -1,109 +1,56 @@
-<div
-  x-data="{
-    selectedType: 'all',
-    selectedMethod: 'all',
-    searchQuery: '',
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 6,
-    loading: false,
-    kelasItems: [],
-    lang: '{{lang}}',
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: #FFFFFF;
+  }
+</style>
 
-            courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
-        {{#each kategori.jenis_kelas}}
-        { value: '{{this.nama_jenis_kelas }}', icon: '{{computeIcon this.icon}}', title: '{{ this.nama_jenis_kelas }}', desc: '{{truncate (getByLang this.deskripsi ../lang) 10}}' },
-        {{/each}}
-      ],
+<div class="w-full bg-white">
+  {{> components/ui/sections/free_hero/index
+    category=category
+    lang=lang
+  }}
 
-      methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
-      ],
+  {{> components/ui/sections/free_program/index category=category courses=courses lang=lang}}
 
-    categoryDropdownOpen: false,
-    typeDropdownOpen: false,
-    methodDropdownOpen: false,
+  {{> components/ui/sections/free_benefit/index category=category benefit_category=benefit_category lang=lang}}
 
-    async init() {
-      this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
-      await this.fetchKelas();
-    },
+  {{!-- Alumni Section - reuse existing alumni component with paid variant --}}
+  {{!-- {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      showMobile=true
+      titleKey="test.categoryFreeProgram.alumni.title"
+      descKey="test.categoryFreeProgram.alumni.description"
+      footerTextKey="test.categoryFreeProgram.alumni.footer"
+      footerLinkTextKey="test.categoryFreeProgram.alumni.allStories"
+      alumni=alumni
+      category=category
+      lang=lang
+  }} --}}
 
-            getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj.id || obj.en || '';
-    },
+  {{!-- Gallery Section - reuse existing gallery component --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=false
+      showDivider=false
+      showBottomLink=true
+      titleKey="test.categoryFreeProgram.gallery.title"
+      descKey="test.categoryFreeProgram.gallery.description"
+      linkKey="test.categoryFreeProgram.gallery.allGaleries"
+      gallery=gallery
+  }}
 
-    async fetchKelas() {
-      this.loading = true;
-      try {
-        const params = new URLSearchParams();
-        params.set('kategori', `{{kategori.nama_kategori}}`);
-        if (this.selectedType !== 'all') params.set('jenis_kelas', this.selectedType);
-        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
-        if (this.searchQuery) params.set('search', this.searchQuery);
-        params.set('page', this.currentPage);
-        params.set('limit', this.itemsPerPage);
+  {{!-- FAQ Section - reuse existing faq component --}}
+  {{> components/ui/sections/faq/index
+      sectionClass="bg-[#F9FAFB]"
+      eyebrowKey="test.categoryFreeProgram.faq.eyebrow"
+      titleText=(default (t 'test.categoryFreeProgram.faq.title') (t 'test.home.faq.title'))
+      descText=(default (t 'test.categoryFreeProgram.faq.description') (t 'test.home.faq.description'))
+      faqs=faqs
+      lang=lang
+  }}
 
-        const res = await fetch(`/dashboard/kelas/filter?${params.toString()}`);
-        const json = await res.json();
-
-        this.kelasItems = json.data;
-        this.totalItems = json.totalItems;
-        this.totalPages = json.totalPages;
-        this.currentPage = json.currentPage;
-      } catch (err) {
-        console.error('Fetch kelas error:', err);
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async changePage(page) {
-      this.currentPage = page;
-      await this.fetchKelas();
-    },
-
-    async resetFilters() {
-      this.selectedType = 'all';
-      this.selectedMethod = 'all';
-      this.searchQuery = '';
-      // currentPage akan di-reset oleh $watch tab
-    },
-
-    // Computed tetap bisa pakai ini
-    get selectedTypeItem() {
-      return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
-    },
-    get selectedMethodItem() {
-      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-    },
-  }"
->
-
-{{> special_program/hero_section}}
-
-{{> special_program/benefit}}
-
-{{> special_program/topic}}
-
-{{> special_program/program_proses}}
-
-{{> special_program/alumni}}
-
-{{> special_program/program}}
-
-{{> special_program/contact}}
-
-{{> special_program/feature}}
-
-{{> special_program/faq}}
-
-
+  {{> components/ui/sections/free_cta/index category=category lang=lang}}
 </div>

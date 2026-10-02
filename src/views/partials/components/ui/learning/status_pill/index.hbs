@@ -1,0 +1,27 @@
+{{!--
+  Pil status yang isinya ditentukan Alpine.
+
+  Tiap tab dulu menulis pilnya sendiri: tab Attendance memakai
+  font-open-sans text-base dengan palet #12BD26/#F25151, tab Assignment memakai
+  komponen badge super_admin, dan tab Quiz tidak punya pil sama sekali. Tiga
+  bentuk untuk satu maksud yang sama. Bentuknya disatukan di sini.
+
+  Params (KEDUANYA ekspresi Alpine, bukan teks biasa):
+    tone  - menghasilkan 'green' | 'amber' | 'red' | 'gray'
+    label - menghasilkan teks yang ditampilkan
+--}}
+<span
+  class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-inter text-xs font-medium leading-none"
+  :class="({
+    green: 'border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]',
+    amber: 'border-[#FDE68A] bg-[#FFFBEB] text-[#B45309]',
+    red: 'border-[#FECACA] bg-[#FEF2F2] text-[#B42318]',
+    gray: 'border-[#E5E5E5] bg-[#F5F5F5] text-[#737373]'
+  })[{{{tone}}}] || 'border-[#E5E5E5] bg-[#F5F5F5] text-[#737373]'"
+>
+  <span
+    class="size-1.5 shrink-0 rounded-full"
+    :class="({ green: 'bg-[#22C55E]', amber: 'bg-[#F59E0B]', red: 'bg-[#EF4444]', gray: 'bg-[#A3A3A3]' })[{{{tone}}}] || 'bg-[#A3A3A3]'"
+  ></span>
+  <span x-text="{{{label}}}"></span>
+</span>

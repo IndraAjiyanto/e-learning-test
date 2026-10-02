@@ -13,8 +13,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('certificates')
 export class Certificates {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'certificate_file' })
   certificate: string;

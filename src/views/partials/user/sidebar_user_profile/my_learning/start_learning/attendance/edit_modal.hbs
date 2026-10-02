@@ -1,0 +1,137 @@
+<!-- Edit Attendance Popup Modal -->
+<div
+  x-show="showEditModal"
+  id="attendance-edit-modal"
+  class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+>
+  <div
+    class="bg-white rounded-[12px] w-[615px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] relative"
+    style="padding: 64px 56px;"
+  >
+    <div class="flex flex-col gap-[30px] items-start w-[503px]">
+
+      <!-- Attendance Status Field -->
+      <div class="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
+        <div class="content-stretch flex flex-col items-start relative shrink-0">
+          <p class="[word-break:break-word] font-inter font-medium h-[37px] leading-[normal] relative shrink-0 text-sm text-[#003060]">
+            {{default (t 'test.attendance.attendanceStatus') 'Attendance Status'}}
+          </p>
+        </div>
+        <div class="bg-white content-stretch flex items-center relative shrink-0 w-full" @click.outside="statusDropdownOpen = false">
+          <button
+            type="button"
+            @click="statusDropdownOpen = !statusDropdownOpen"
+            class="bg-white content-stretch shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex gap-[15px] h-[60px] items-center justify-between p-[10px] relative rounded-[12px] shrink-0 w-[503px] cursor-pointer"
+          >
+            <p
+              class="[word-break:break-word] font-inter font-medium h-[27px] leading-[normal] relative shrink-0 text-lg text-left"
+              :class="editStatus ? 'text-[#003060]' : 'text-[rgba(0,0,0,0.5)]'"
+              x-text="editStatus ? statusLabels[editStatus] : '{{default (t 'test.attendance.selectStatus') 'Select attendance status'}}'"
+            ></p>
+            <div class="flex items-center justify-center relative shrink-0">
+              <div class="-scale-y-100 flex-none transition-transform duration-200" :class="statusDropdownOpen ? 'rotate-180' : ''">
+                <div class="relative size-[35px]">
+                  <img alt="" class="absolute block inset-0 max-w-none size-full" src="/public/image/user_profile/arrow-down.svg" />
+                </div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Status Options -->
+          <div
+            x-show="statusDropdownOpen"
+            x-transition
+            class="absolute mt-[70px] bg-white rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[503px] py-[10px] z-10"
+            style="display: none;"
+          >
+            <template x-for="key in Object.keys(statusLabels)" :key="key">
+              <button
+                type="button"
+                @click="editStatus = key; statusDropdownOpen = false"
+                class="w-full text-left px-[20px] py-[10px] font-inter font-medium text-lg cursor-pointer hover:bg-[#F3F4F6]"
+                :class="editStatus === key ? 'text-[#003060]' : 'text-black'"
+                x-text="statusLabels[key]"
+              ></button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes Field -->
+      <div class="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
+        <div class="content-stretch flex flex-col items-start relative shrink-0">
+          <p class="[word-break:break-word] font-inter font-medium h-[37px] leading-[normal] relative shrink-0 text-sm text-[#003060]">
+            {{default (t 'test.attendance.notes') 'Notes'}}
+          </p>
+        </div>
+        <div class="bg-white content-stretch flex items-center relative shrink-0 w-full">
+          <textarea
+            x-model="editNotes"
+            placeholder="{{default (t 'test.attendance.placeholderNotes') 'Enter attendance notes...'}}"
+            rows="2"
+            class="bg-white content-stretch shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-inter font-medium leading-[normal] text-lg text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="content-stretch cursor-pointer flex gap-[15px] items-center justify-center relative shrink-0">
+        <button
+          @click="saveAttendance()"
+          :disabled="!editStatus"
+          :class="!editStatus ? 'opacity-50 cursor-not-allowed' : ''"
+          class="bg-[#003060] border border-[#003060] border-solid content-stretch hover:shadow-sm transition-shadow flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shrink-0 w-[244px]"
+        >
+          <span class="font-inter font-medium leading-[normal] text-sm text-white">{{default (t 'test.attendance.saveAttendance') 'Save'}}</span>
+        </button>
+        <button
+          @click="showEditModal = false"
+          class="border border-[#003060] border-solid content-stretch flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] hover:shadow-sm transition-shadow shrink-0 w-[244px] bg-white"
+        >
+          <span class="font-inter font-medium leading-[normal] text-sm text-black">{{default (t 'test.attendance.cancel') 'Cancel'}}</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Close Button -->
+    <button
+      @click="showEditModal = false"
+      class="absolute block cursor-pointer right-[29px] top-[29px] size-[35px]"
+    >
+      <img alt="Close" class="absolute block inset-0 max-w-none size-full" src="/public/image/user_profile/close.svg" />
+    </button>
+  </div>
+</div>
+
+<!-- Success Popup Modal -->
+<div
+  x-show="showSuccessPopup"
+  @click="showSuccessPopup = false"
+  id="attendance-success-modal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs transition-all duration-300 ease-out"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="attendance-success-title"
+>
+  <div
+    @click.stop
+    class="bg-white rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-8 w-[270px] scale-90 transition-all duration-300 ease-out flex flex-col items-center text-center space-y-4 relative"
+  >
+    <!-- Success Icon -->
+    <div class="mb-2">
+      <img
+        src="/public/image/user_profile/wavy-check.svg"
+        alt="Success"
+        class="w-[100px] h-[100px] mx-auto object-contain"
+      />
+    </div>
+
+    <!-- Success Title -->
+    <h2
+      class="font-inter font-medium text-sm leading-[normal] text-[#003060] text-center"
+    >
+      Success!
+    </h2>
+  </div>
+</div>

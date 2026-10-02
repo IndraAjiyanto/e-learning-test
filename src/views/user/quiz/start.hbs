@@ -1,9 +1,34 @@
-<div class="max-w-7xl mx-auto px-4 pt-28">
+{{!-- Dibungkus chrome backoffice. Halaman ini ditautkan dari dalam area
+     belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
+     dan footer. Controller-nya merender dengan bareShell: true.
+     Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
+{{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.quiz') back=false
+  trail=(array
+    (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+    (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+    (obj
+      'label' (t 'test.startLearning.startLearning')
+      'href' (concat '/program/myProgram/' user.id '?courseId=' (default quiz.syllabus.course.id quiz.weeks.course.id)))
+    (obj
+      'label' (ternary quiz.syllabus.id 'Syllabus' (concat (t 'test.startLearning.week') ' ' quiz.weeks.weekNumber))
+      'href' (ternary
+        quiz.syllabus.id
+        (concat '/syllabus/learn/' quiz.syllabus.id)
+        (concat '/program/myProgram/' user.id '?courseId=' (default quiz.syllabus.course.id quiz.weeks.course.id))))
+    (obj
+      'label' (t 'test.startLearning.quiz')
+      'href' (concat '/quiz/form/' quiz.id))
+    (obj 'label' (t 'test.quiz.startQuiz'))
+  )
+}}
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8">
 
 {{> user/quiz/start/header}}
 
 {{> user/quiz/start/content}}
 </div>
+
+{{> components/ui/admin/modal/confirm_action/index}}
 
 <script>
 let saveTimeout;
@@ -14,9 +39,9 @@ document.addEventListener("change", function(e){
 
         const radio = e.target;
         const name = radio.name;
-        const value = Number(radio.value);
+        const value = radio.value;
 
-        const questionId = Number(name.replace("q-", ""));
+        const questionId = name.replace("q-", "");
 
         // simpan ke localStorage dulu
         localStorage.setItem(name, value);
@@ -35,7 +60,7 @@ document.addEventListener("change", function(e){
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        userId: {{user.id}},
+                        userId: '{{user.id}}',
                         questionsId: questionId,
                         answersId: value
                     })
@@ -115,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function(){
             },
             
             updateAnsweredStatus() {
-                const questionIds = [{{#each questions}}{{#unless @first}},{{/unless}}{{id}}{{/each}}];
+                const questionIds = [{{#each pertanyaan}}{{#unless @first}},{{/unless}}"{{id}}"{{/each}}];
                 this.answeredQuestions = questionIds.map((qId, index) => {
                     const input = this.$el.querySelector(`input[name="q-${qId}"]:checked`);
                     return input !== null;
@@ -127,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function(){
             },
             
             nextQuestion() {
-                if (this.currentQuestion < {{questions.length}} - 1) {
+                if (this.currentQuestion < {{pertanyaan.length}} - 1) {
                     this.currentQuestion++;
                 }
             },
@@ -145,3 +170,60 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 </script>
 
+<script>
+function prepareAndSubmit() {
+    try {
+        if (typeof window.clearQuizStorage === "function") {
+            window.clearQuizStorage();
+        }
+    } catch (e) {}
+
+    const form = document.getElementById('formSubmit');
+    if (!form) return;
+
+    form.querySelectorAll('input[name^="answerUser"]').forEach((el) => el.remove());
+
+    const userId = '{{user.id}}';
+    const checked = form.querySelectorAll('input[type="radio"]:checked');
+
+    checked.forEach((radio, index) => {
+        const questionId = radio.name.replace("q-", "");
+        const append = (name, value) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        };
+        append(`answerUser[${index}][userId]`, userId);
+        append(`answerUser[${index}][questionsId]`, questionId);
+        append(`answerUser[${index}][answersId]`, radio.value);
+    });
+
+    form.submit();
+}
+
+function confirmQuizSubmit() {
+    openConfirmModal({
+        title: "Confirmation",
+        description: "Are you sure you want to submit your answers?",
+        confirmLabel: "Yes, continue",
+        cancelLabel: "Cancel",
+        onConfirm: () => prepareAndSubmit()
+    });
+}
+
+function timeOverSubmit() {
+    Swal.fire({
+        title: "Time's Up!",
+        text: "Quiz time is over, submitting your answers.",
+        icon: "info",
+        customClass: {
+            confirmButton: "px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition",
+        },
+    }).then((result) => {
+        if (result.isConfirmed) prepareAndSubmit();
+    });
+}
+</script>
+{{/user/shell_frame/index}}

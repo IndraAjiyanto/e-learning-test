@@ -13,6 +13,7 @@ import {
   UploadedFile,
   Query,
   UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,12 +31,14 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
+import { capabilitiesForCourse } from 'src/courses/program-type';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   // ============================================
   // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
@@ -45,19 +48,43 @@ export class UsersController {
   async forgotPasswordPage(
     @Res() res: Response,
     @Req() req: Request,
-    @Query('token') token: string,
+    @Query('token') token?: string,
+    @Query('expired') expired?: string,
   ) {
-    if (token === undefined) {
+    if (expired) {
+      req.flash(
+        'info',
+        'Verification time has expired. Please submit a new request if you have not reset your password.',
+      );
+      return res.redirect('/users/forgot-password');
+    }
+
+    if (!token) {
       return res.render('forgot-password');
     }
-    const user = await this.usersService.findUserByTokenPassword(token);
-    if (user.isVerified) {
-      const remainingMs = await this.usersService.tokenPasswordExpired(token);
-      return res.render('forgot-password', { remainingMs: remainingMs });
-    } else {
-      req.flash('error', 'Please verify your email first');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+
+    try {
+      const user = await this.usersService.findUserByTokenPassword(token);
+      if (user.isVerified) {
+        const remainingMs = await this.usersService.tokenPasswordExpired(token);
+        if (remainingMs && remainingMs > 0) {
+          return res.render('forgot-password', { remainingMs: remainingMs });
+        }
+      } else {
+        req.flash('error', 'Please verify your email first');
+        return res.redirect(
+          '/users/send-verify-email?token=' + user.verificationToken,
+        );
+      }
+    } catch {
+      // Token tidak ditemukan, expired, atau sudah di-null-kan setelah ganti password
     }
+
+    req.flash(
+      'info',
+      'Verification time has expired. Please submit a new request if you have not reset your password.',
+    );
+    return res.redirect('/users/forgot-password');
   }
 
   @Post('forgot-password')
@@ -72,16 +99,32 @@ export class UsersController {
         'success',
         'Password reset link has been sent to your email. Please check your inbox.',
       );
-      res.redirect('/users/forgot-password?token=' + token);
+      return res.redirect('/users/forgot-password?token=' + token);
     } catch (error: any) {
-      const user = await this.usersService.findUserByEmail(
-        forgotPasswordDto.email,
-      );
       req.flash(
         'error',
-        error.message || 'Failed to process password reset request',
+        error.message || 'Your email is not registered',
       );
-      res.redirect('/users/forgot-password?token=' + user.resetPasswordToken);
+
+      try {
+        const user = await this.usersService.findUserByEmail(
+          forgotPasswordDto.email,
+        );
+        if (
+          user &&
+          user.resetPasswordToken &&
+          user.resetPasswordExpires &&
+          user.resetPasswordExpires > new Date()
+        ) {
+          return res.redirect(
+            '/users/forgot-password?token=' + user.resetPasswordToken,
+          );
+        }
+      } catch {
+        // User tidak terdaftar di database, abaikan error pencarian
+      }
+
+      return res.redirect('/users/forgot-password');
     }
   }
 
@@ -134,12 +177,54 @@ export class UsersController {
     @Query('token') token: string,
   ) {
     try {
-      const user = await this.usersService.sendVerificationEmail(token);
-      req.flash('success', 'Verification email sent successfully');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      const currentUser = (req as any).user;
+      if (currentUser?.id) {
+        await this.usersService.resendVerificationByUser(currentUser.id);
+        req.flash(
+          'success',
+          'Verification email has been sent. Please check your inbox.',
+        );
+        return res.redirect('/users/send-verify-email');
+      }
+
+      if (token) {
+        await this.usersService.sendVerificationEmail(token);
+        req.flash('success', 'Verification email sent successfully');
+        return res.redirect('/users/send-verify-email');
+      }
+
+      req.flash('error', 'Silakan login untuk mengirim ulang email verifikasi.');
+      return res.redirect('/login');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
-      res.redirect('/users/send-verify-email');
+      return res.redirect('/users/send-verify-email');
+    }
+  }
+
+  @Post('resend-verification')
+  @UseGuards(AuthenticatedGuard)
+  async resendVerificationByUser(
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const currentUser = (req as any).user;
+      if (!currentUser?.id) {
+        return res.redirect('/login');
+      }
+
+      await this.usersService.resendVerificationByUser(currentUser.id);
+      req.flash(
+        'success',
+        'Verification email has been sent. Please check your inbox.',
+      );
+      return res.redirect('/users/send-verify-email');
+    } catch (error: any) {
+      req.flash(
+        'error',
+        error.message || 'Failed to send verification email',
+      );
+      return res.redirect('/users/send-verify-email');
     }
   }
 
@@ -150,12 +235,47 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-      const remainingMs = await this.usersService.tokenExpired(token);
-      const user = await this.usersService.findUserByToken(token);
-      return res.render('verify-email', {
-        remainingMs: remainingMs,
-        user: user,
-      });
+      if (token) {
+        const remainingMs = await this.usersService.tokenExpired(token);
+        const user = await this.usersService.findUserByToken(token);
+        return res.render('verify-email', {
+          remainingMs: remainingMs,
+          user: user,
+        });
+      }
+
+      const currentUser = (req as any).user;
+      if (currentUser?.id) {
+        const user = await this.usersService.findOne(currentUser.id);
+        if (!user) {
+          return res.redirect('/login');
+        }
+        if (user.isVerified) {
+          return res.redirect(
+            user.role === 'user' ? '/users/profile' : '/dashboard',
+          );
+        }
+
+        let remainingMs = 0;
+        if (
+          user.verificationToken &&
+          user.verificationTokenExpires &&
+          user.verificationTokenExpires > new Date()
+        ) {
+          remainingMs = user.verificationTokenExpires.getTime() - Date.now();
+        }
+
+        return res.render('verify-email', {
+          remainingMs: remainingMs,
+          user: user,
+        });
+      }
+
+      req.flash(
+        'error',
+        'Silakan login terlebih dahulu untuk mengakses halaman verifikasi.',
+      );
+      return res.redirect('/login');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
       return res.render('verify-email');
@@ -172,12 +292,16 @@ export class UsersController {
     try {
       await this.usersService.verifyEmail(token);
       req.flash('success', 'Email verified successfully! You can now login.');
-      res.redirect('/login');
+      return res.redirect('/users/verify-email-success');
     } catch (error: any) {
-      const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
-      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      return res.redirect('/login');
     }
+  }
+
+  @Get('verify-email-success')
+  async verifyEmailSuccess(@Res() res: Response) {
+    return res.render('verify-email-success');
   }
 
   // ============================================
@@ -207,9 +331,15 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
+      createUserDto.confirm_password =
+        createUserDto.confirm_password || createUserDto.password;
       createUserDto.profile = req.body.uploadedImageUrls?.[0];
       await this.usersService.create(createUserDto);
-      req.flash('success', 'User created successfully');
+      flashToast(
+        req,
+        'User Created',
+        'The new user account has been created and verification email sent.',
+      );
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create user');
@@ -224,20 +354,100 @@ export class UsersController {
       return res.redirect('/login');
     }
     const user = await this.usersService.findOne(req.user.id);
+    const userWithCourses = await this.usersService.findWithCourses(
+      req.user.id,
+    );
+    const logbooks = await this.usersService.findAllLogbooks(req.user.id);
     const portfolio = await this.usersService.findPortfolio(req.user.id);
-    return res.render('profile/index', { user: user, portfolio });
+    const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
+    const category = [
+      ...new Map(
+        course
+          .filter((c) => c.category)
+          .map((c) => [c.category.id, c.category]),
+      ).values(),
+    ];
+    // Dropdown "All Type" pada frame My Learning. Sama seperti `category`,
+    // isinya diturunkan dari program yang benar-benar diikuti student, jadi
+    // filter tidak pernah menawarkan tipe yang tak punya hasil.
+    const courseType = [
+      ...new Map(
+        course
+          .filter((c) => c.courseType)
+          .map((c) => [c.courseType.id, c.courseType]),
+      ).values(),
+    ];
+    const { dashboardStats, ongoingCourses, programComposition } =
+      await this.usersService.getDashboardData(user.id);
+    const requestedCourseId = String(req.query.courseId || '');
+    const activeCourse =
+      course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
+    const stats = null;
+    const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
+      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+    );
+    // Kapabilitas per tipe program. Template TIDAK PERNAH menyebut nama tipe
+    // programnya; ia membaca caps. Lihat courses/program-type.ts.
+    const caps = capabilitiesForCourse(activeCourse);
+
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    let initialSection = String(req.query.tab || '') || 'dashboard';
+    if (initialSection === 'portfolio' && requestedCourseId) {
+      initialSection = 'course-portfolio';
+    }
+    if (
+      initialSection === 'assignment' &&
+      !caps.finalAssignment &&
+      caps.structure !== 'weeks'
+    ) {
+      initialSection = 'dashboard';
+    }
+    // Peta untuk sisi klien: student bisa berpindah program tanpa memuat ulang
+    // halaman, jadi sakelar logbook harus ikut berpindah bersamanya.
+    const programCaps = Object.fromEntries(
+      course.map((c) => [c.id, capabilitiesForCourse(c)]),
+    );
+
+    return res.render('user/user_profile/index', {
+      user: user,
+      userWithCourses,
+      logbooks,
+      portfolio,
+      course,
+      category,
+      courseType,
+      dashboardStats,
+      ongoingCourses,
+      programComposition,
+      initialSection,
+      stats,
+      activeCourse,
+      activeCourseCompleted,
+      caps,
+      programCaps,
+      bareShell: true,
+    });
   }
 
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/password')
   async editPassword(@Res() res: Response, @Req() req: Request) {
-    return res.render('profile/editPassword', { user: req.user });
+    // bareShell mematikan navbar dan footer publik di layouts/main.hbs. Tanpa ini
+    // student yang membuka halaman ini langsung mendapat chrome landing di tengah
+    // area login, sementara admin tetap memakai sidebar CMS-nya sendiri.
+    return res.render('user/user_profile/password', {
+      user: req.user,
+      bareShell: true,
+    });
   }
 
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/info_account')
-  async editInfoAkun(@Res() res: Response, @Req() req: Request) {
-    return res.render('profile/editInfo', { user: req.user });
+  async editInfoAkun(@Res() res: Response) {
+    return res.redirect('/users/profile');
   }
 
   @Roles('super_admin')
@@ -275,7 +485,7 @@ export class UsersController {
   @Roles('super_admin')
   @Get('formEdit/:userId')
   async formEdit(
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -289,30 +499,25 @@ export class UsersController {
     res.render('super_admin/user/create', { user: req.user });
   }
 
-  @Roles('super_admin')
-  @Get('profile/:id')
-  async detailUser(
-    @Param('id') userId: number,
-    @Res() res: Response,
-  ) {
-
-    const user = await this.usersService.findOne(userId);
-    console.log('ID PARAM:', userId);
-    return res.render('super_admin/user/detail', { user });
-  }
-
   @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     try {
       if (req.user!.id == id) {
+        // Status verifikasi hanya boleh diubah Super Admin lewat
+        // PATCH /users/super_admin/:userId — bukan dari update profil sendiri.
+        delete updateUserDto.isVerified;
         await this.usersService.update(id, updateUserDto);
-        req.flash('success', 'User successfully updated');
+        flashToast(
+          req,
+          'Account Updated',
+          'The changes to your account have been saved.',
+        );
         res.redirect('/users/profile');
       } else {
         req.flash('error', 'Failed to update user');
@@ -341,7 +546,7 @@ export class UsersController {
   })
   async updateAdmin(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
     @Body() updateUserDto: UpdateUserDto,
     @Req() req: Request,
@@ -354,8 +559,18 @@ export class UsersController {
         }
         updateUserDto.profile = req.body.uploadedImageUrls?.[0];
       }
+      // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
+      // Belum ada global ValidationPipe, jadi coerce manual sebelum disimpan
+      // (string 'false' bersifat truthy di JS).
+      if (updateUserDto.isVerified !== undefined) {
+        updateUserDto.isVerified = `${updateUserDto.isVerified}` === 'true';
+      }
       await this.usersService.update(userId, updateUserDto);
-      req.flash('success', 'User successfully updated');
+      flashToast(
+        req,
+        'User Updated',
+        'The changes to this user account have been saved.',
+      );
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'User failed to update');
@@ -366,7 +581,7 @@ export class UsersController {
   @Roles('user', 'admin', 'super_admin')
   @Patch('password/:id')
   async updatePassword(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updatePasswordDto: UpdatePasswordDto,
@@ -374,15 +589,28 @@ export class UsersController {
     try {
       if (req.user!.id == id) {
         await this.usersService.updatePassword(id, updatePasswordDto);
-        req.flash('success', 'Password successfully updated');
+        flashToast(
+          req,
+          'Password Updated',
+          'Your password has been changed successfully.',
+        );
         res.redirect('/users/profile');
       } else {
-        req.flash('error', 'Unauthorized access');
+        flashToastError(
+          req,
+          'Password not changed',
+          'You can only change the password of your own account.',
+        );
         res.redirect('/users/profile');
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to update password';
-      req.flash('error', errorMessage);
+      // Pesan dari assertStrongPassword dan dari pemeriksaan password lama
+      // sudah menjelaskan dirinya sendiri, jadi diteruskan apa adanya.
+      flashToastError(
+        req,
+        'Password not changed',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }
@@ -400,7 +628,7 @@ export class UsersController {
     skipTransformation: true,
   })
   async updateProfile(
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
     @Res() res: Response,
     @Body() updateProfileDto: UpdateProfileDto,
     @UploadedFile() profile: Express.Multer.File,
@@ -415,11 +643,15 @@ export class UsersController {
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
       }
 
-      const userIdNum = Number(userId);
+      const userIdNum = String(userId);
 
       if (req.user!.id === userIdNum) {
         await this.usersService.updateProfile(userIdNum, updateProfileDto);
-        req.flash('success', 'update profile success');
+        flashToast(
+          req,
+          'Profile Updated',
+          'The changes to your profile have been saved.',
+        );
         res.redirect('/users/profile');
       } else {
         req.flash('error', 'update profile failed');
@@ -434,7 +666,7 @@ export class UsersController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -450,11 +682,41 @@ export class UsersController {
 
       await this.usersService.remove(id);
 
-      req.flash('success', 'User successfully deleted');
+      flashToast(
+        req,
+        'User Deleted',
+        'The user account has been permanently removed',
+      );
       res.redirect('/users');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete user');
       res.redirect('/users');
+    }
+  }
+
+  @Roles('super_admin')
+  @Post('resend-verification/:id')
+  async resendVerification(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.usersService.resendVerificationByAdmin(id);
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: 'Verification email resent successfully.',
+      });
+    } catch (error: any) {
+      return res
+        .status(
+          typeof error.getStatus === 'function'
+            ? error.getStatus()
+            : HttpStatus.INTERNAL_SERVER_ERROR,
+        )
+        .json({
+          success: false,
+          message: error.message || 'Failed to resend verification email.',
+        });
     }
   }
 }

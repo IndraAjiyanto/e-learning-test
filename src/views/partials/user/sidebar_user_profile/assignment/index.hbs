@@ -1,0 +1,20 @@
+{{!--
+  Tab Tugas Akhir. Isinya dipilih dari KAPABILITAS - bukan dari nama tipenya:
+
+    caps.finalAssignment = true          -> final_assignment.hbs  (bootcamp)
+    caps.finalAssignment = false &&
+    caps.structure = 'weeks'             -> weeks.hbs             (LPK)
+    selainnya (non_bootcamp)             -> pesan kosong
+
+  Controller mengirim `finalAssignment` + `finalAssignmentSubmission` hanya
+  untuk cabang yang memakainya; keduanya null di cabang lain.
+--}}
+{{#if caps.finalAssignment}}
+  {{> user/sidebar_user_profile/assignment/final_assignment}}
+{{else if (eq caps.structure 'weeks')}}
+  {{> user/sidebar_user_profile/assignment/weeks}}
+{{else}}
+  <div class="w-full px-4 py-12 text-center text-[#737373] font-inter text-sm">
+    {{t 'test.startLearning.noAssignments'}}
+  </div>
+{{/if}}

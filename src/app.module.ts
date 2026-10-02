@@ -1,7 +1,8 @@
-import { Logger, MiddlewareConsumer, Module, OnApplicationBootstrap } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { InvoiceModule } from './invoice/invoice.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { MaterialsModule } from './materials/material.module';
 import { CoursesModule } from './courses/courses.module';
@@ -28,18 +29,17 @@ import { FaqsModule } from './faqs/faqs.module';
 import { AlumniModule } from './alumni/alumni.module';
 import { CourseTypesModule } from './course_types/course_types.module';
 import { CertificatesModule } from './certificates/certificates.module';
-import { CollaborationsModule } from './collaborations/collaborations.module';
 import { CourseQuestionsModule } from './course_questions/course_questions.module';
 import { MentorLogbookModule } from './mentor_logbook/mentor_logbook.module';
 import { BenefitModule } from './benefit/benefit.module';
 import { MentorModule } from './mentor/mentor.module';
 import { CourseFlowsModule } from './course_flows/course_flows.module';
 import { ProgramBenefitModule } from './course_benefits/course_benefits.module';
+import { ParticipantsModule } from './participants/participants.module';
 import { TeamModule } from './team/team.module';
 import { VisionsModule } from './visions/visions.module';
 import { SocialModule } from './social/social.module';
 import { InstallmentsModule } from './installments/installments.module';
-import { ImageBenefitModule } from './image_benefit/image_benefit.module';
 import { AboutModule } from './about/about.module';
 import { TechnologiesModule } from './technologies/technologies.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
@@ -53,32 +53,30 @@ import { ExperienceModule } from './experience/experience.module';
 import { BackgroundModule } from './background/background.module';
 import { MissionsModule } from './missions/missions.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
-import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
-import { SuperiorityModule } from './superiority/superiority.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { UserActivityMiddleware } from './user_activity/user-activity.middleware';
 import {
   AcceptLanguageResolver,
   CookieResolver,
   I18nMiddleware,
   I18nModule,
 } from 'nestjs-i18n';
-import { OurExperienceModule } from './our_experience/our_experience.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
+import { PartnerModule } from './partner/partner.module';
+import { VoucherModule } from './voucher/voucher.module';
+import { InformationModule } from './information/information.module';
+import { UserActivityModule } from './user_activity/user-activity.module';
+import { FooterModule } from './footer/footer.module';
+import { FooterMiddleware } from './footer/footer.middleware';
+import { InstallmentReminderModule } from './installment_reminder/installment-reminder.module';
+import { InstallmentPaymentModule } from './installment_payment/installment-payment.module';
+import { PaymentSettingsModule } from './payment-settings/payment-settings.module';
+import { SyllabusModule } from './syllabus/syllabus.module';
+import { FinalAssignmentModule } from './final_assignment/final_assignment.module';
+import { SearchModule } from './search/search.module';
 import path from 'path';
-import { DataSource } from 'typeorm';
-
-const TABLES_WITH_SEQUENCE = [
-  'material', 'comments', 'answer_task', 'assignments', 'portofolios',
-  'course_type', 'faqs', 'category', 'installment', 'payments',
-  'certificates', 'user_courses', 'course_questions', 'technologies', 'mentors',
-  'course_flow', 'program_benefits', 'registrations', 'course', 'user_answers',
-  'answers', 'questions', 'scores', 'quiz_progresses', 'weeks',
-  'session_progresses', 'mentor_logbook', 'session', 'attendance', 'mentor_biodata',
-  'week_progresses', 'visions', 'paragraph', 'mission', 'image_benefit',
-  'collaborations', 'about',
-];
 
 @Module({
   imports: [
@@ -101,6 +99,7 @@ const TABLES_WITH_SEQUENCE = [
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
     UsersModule,
+    InvoiceModule,
     AttendancesModule,
     MaterialsModule,
     CoursesModule,
@@ -124,18 +123,17 @@ const TABLES_WITH_SEQUENCE = [
     AlumniModule,
     CourseTypesModule,
     CertificatesModule,
-    CollaborationsModule,
     CourseQuestionsModule,
     MentorLogbookModule,
     BenefitModule,
     MentorModule,
     CourseFlowsModule,
     ProgramBenefitModule,
+    ParticipantsModule,
     TeamModule,
     VisionsModule,
     SocialModule,
     InstallmentsModule,
-    ImageBenefitModule,
     AboutModule,
     TechnologiesModule,
     TeamLeadModule,
@@ -149,69 +147,63 @@ const TABLES_WITH_SEQUENCE = [
     BackgroundModule,
     MissionsModule,
     BenefitCategoryModule,
-    FlowCategoryModule,
     FaqModule,
-    SuperiorityModule,
-    OurExperienceModule,
     GalleryModule,
     CategoryPartnerModule,
+    PartnerModule,
+    VoucherModule,
+    InformationModule,
+    UserActivityModule,
+    FooterModule,
+    InstallmentReminderModule,
+    InstallmentPaymentModule,
+    PaymentSettingsModule,
+    SyllabusModule,
+    FinalAssignmentModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements OnApplicationBootstrap {
-  private readonly logger = new Logger(AppModule.name);
-
-  constructor(private readonly dataSource: DataSource) {}
-
-  async onApplicationBootstrap() {
-    for (const table of TABLES_WITH_SEQUENCE) {
-      try {
-        await this.dataSource.query(
-          `CREATE SEQUENCE IF NOT EXISTS "${table}_id_seq" OWNED BY "${table}"."id"`,
-        );
-        const result = await this.dataSource.query(
-          `SELECT COALESCE(MAX("id"), 0) AS "maxId" FROM "${table}"`,
-        );
-        const maxId = result[0]?.maxId ?? 0;
-        await this.dataSource.query(
-          `SELECT setval('"${table}_id_seq"', GREATEST(${maxId}, 1))`,
-        );
-        await this.dataSource.query(
-          `ALTER TABLE "${table}" ALTER COLUMN "id" SET DEFAULT nextval('"${table}_id_seq"')`,
-        );
-      } catch (e) {
-        this.logger.warn(`Skip sequence restore for "${table}": ${e.message}`);
-      }
-    }
-    this.logger.log('All sequence defaults restored');
-  }
-
+export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(I18nMiddleware).forRoutes('*');
-     consumer
-            .apply(AuthMiddleware)
-            .exclude(
-            '/',
-            '/login',
-            '/translation',
-            '/register',
-            'program/*path',
-            'category/*path',
-            'blog/*path',
-            '/register/:id',
-            '/session-expired',
-            '/users/send-verify-email',
-            '/users/verify-email',
-            '/users/reset-password',
-            '/users/forgot-password',
-            '/public/*path',
-            '/asset/*path',
-            '/uploads/*path',
-            '/alumni/filter',
-            '/dashboard',
-            '/dashboard/*path',
-            )
-            .forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        '/',
+        '/login',
+        '/translation',
+        '/register',
+        'program/*path',
+        'category/*path',
+        'blog/*path',
+        '/register/:id',
+        '/session-expired',
+        '/users/send-verify-email',
+        '/users/verify-email-success',
+        '/users/verify-email',
+        '/users/reset-password',
+        '/users/forgot-password',
+        '/public/*path',
+        '/asset/*path',
+        '/uploads/*path',
+        '/alumni/filter',
+        '/dashboard',
+        '/dashboard/*path',
+        '/api/search',
+        { path: '/invoice/webhook/xendit', method: RequestMethod.POST },
+      )
+      .forRoutes('*');
+
+    consumer
+      .apply(UserActivityMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
+
+    consumer
+      .apply(FooterMiddleware)
+      .exclude({ path: '/invoice/webhook/xendit', method: RequestMethod.POST })
+      .forRoutes('*');
   }
 }

@@ -24,7 +24,7 @@ export class CertificatesService {
     private readonly biodataRepository: Repository<Biodata>,
   ) {}
 
-  async generateCertificate(courseId: number, userId: number) {
+  async generateCertificate(courseId: string, userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['biodata'],
@@ -34,7 +34,13 @@ export class CertificatesService {
     }
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['weeks', 'weeks.quiz', 'courseType', 'category', 'mentorings'],
+      relations: [
+        'weeks',
+        'weeks.quiz',
+        'courseType',
+        'category',
+        'mentorings',
+      ],
     });
     if (!course) {
       throw new NotFoundException('course not found');
@@ -45,11 +51,16 @@ export class CertificatesService {
       relations: ['course'],
     });
     if (!certificates) {
+      // Berkasnya ada di src/common/assets/sertifikat.pdf. Path lama menunjuk
+      // <cwd>/common/assets/certificates.pdf — salah folder DAN salah nama, jadi
+      // pembuatan sertifikat selalu gagal ENOENT di environment mana pun.
+      // Dua font di bawah sudah memakai pola 'src/common/...' yang benar.
       const templatePath = path.join(
         process.cwd(),
+        'src',
         'common',
         'assets',
-        'certificates.pdf',
+        'sertifikat.pdf',
       );
       const templateBytes = fs.readFileSync(templatePath);
 
@@ -245,7 +256,7 @@ export class CertificatesService {
     }
   }
 
-  async findBiodata(userId: number) {
+  async findBiodata(userId: string) {
     return await this.biodataRepository.findOne({
       where: { user: { id: userId } },
     });

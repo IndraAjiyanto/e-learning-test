@@ -1,107 +1,320 @@
-<form id="step-1-form" class="space-y-6">
-  
-  <!-- Your Program -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
-      Your Program<span class="text-red-500">*</span>
-    </label>
-    <div class="relative w-full max-w-[760px] mb-4">
-      <input type="text" id="program-input" required class="absolute bottom-0 left-1/2 w-[1px] h-[1px] -z-10 opacity-0 pointer-events-none">
-      <div class="dropdown w-full">
-        <div tabindex="0" role="button" class="w-full h-[60px] rounded-[6px] p-[10px] px-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer">
-          <span id="program-text" class="text-slate-400">Select Your Program</span>
-          <i class="fa-solid fa-chevron-down w-5 h-5 flex items-center justify-center text-slate-500"></i>
-        </div>
-        <ul tabindex="0" class="dropdown-content menu bg-white rounded-box z-[1] w-full p-2 mt-1 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
-          <li><a onclick="selectDropdown('program', 'Batch 6.2: Flow Sense: UI/UX Design With Figma')">Batch 6.2: Flow Sense: UI/UX Design With Figma</a></li>
-          <li><a onclick="selectDropdown('program', 'Batch 6.1: Web Development Mastery')">Batch 6.1: Web Development Mastery</a></li>
-        </ul>
-      </div>
-    </div>
+{{!--
+  Partial: Registration Form (Step 1)
+  Lokasi: src/views/partials/payments/registration.hbs
+  Menggunakan komponen atomic & molekul dari components/ui
+--}}
+
+<form id="step-1-form" class="space-y-6 md:space-y-8 w-full">
+
+  <!-- Program Batch Info -->
+  {{> components/ui/input/static_field/index
+    label=(t 'test.payment.form.batch')
+    required=true
+    value=(concat course.group " : " course.name)
+  }}
+
+  <!-- Full Name Field -->
+  {{> components/ui/input/text/index
+    name="fullName"
+    id="fullName"
+    type="text"
+    label=(t 'test.payment.form.fullName')
+    required=true
+    value=user.username
+    placeholder=(t 'test.payment.form.fullNamePlaceholder')
+  }}
+
+  <!-- Email Field -->
+  {{> components/ui/input/text/index
+    name="email"
+    id="email"
+    type="email"
+    label=(t 'test.payment.form.email')
+    required=true
+    value=user.email
+    placeholder=(t 'test.payment.form.emailPlaceholder')
+  }}
+
+  <!-- WhatsApp Number (Accent Variant with Chat Icon) -->
+  {{> components/ui/input/text/index
+    name="whatsappNumber"
+    id="whatsappNumber"
+    type="tel"
+    inputmode="numeric"
+    pattern="[0-9]*"
+    numeric=true
+    label=(t 'test.payment.form.whatsapp')
+    required=true
+    value=user.no_telp
+    placeholder=(t 'test.payment.form.whatsappPlaceholder')
+    icon="fa-regular fa-comment-dots"
+    variant="accent"
+  }}
+
+  <!-- Referral Source Dropdown -->
+  {{!--
+    Opsi diambil dari `referalSourceI18nOptions` (dikirim payments.controller.ts
+    dari src/entities/types/referal-source.ts) karena kolomnya Postgres enum.
+    Dahulu daftar 4 opsi ditulis langsung di sini dan TIDAK cocok dengan enum -
+    "Social Media" membuat INSERT ditolak di jalur Xendit, dan tersimpan jadi
+    "Other" di jalur manual.
+
+    Yang ditampilkan adalah `labelKey` (diterjemahkan), tapi `value` yang
+    dikirim ke server tetap string kanonis milik enum. Menerjemahkan label
+    karena itu tidak mungkin mengubah isi database.
+
+    Blok `{{else}}` sengaja tetap ada: kalau prop-nya somehow tidak sampai,
+    select tidak boleh jadi kosong karena field ini `required` dan user akan
+    terkunci di halaman. Nilainya harus tetap sama dengan daftar di atas.
+  --}}
+  {{#> components/ui/dropdown/select/index
+    name="source"
+    id="source-input"
+    label=(t 'test.payment.form.sourceLabel')
+    required=true
+    placeholder=(t 'test.payment.form.sourcePlaceholder')
+  }}
+    {{#if referalSourceI18nOptions}}
+      {{#each referalSourceI18nOptions}}
+        <option value="{{this.value}}">{{t this.labelKey}}</option>
+      {{/each}}
+    {{else}}
+      <option value="Instagram">{{t 'test.payment.form.sourceOptions.instagram'}}</option>
+      <option value="TikTok">{{t 'test.payment.form.sourceOptions.tiktok'}}</option>
+      <option value="LinkedIn">{{t 'test.payment.form.sourceOptions.linkedin'}}</option>
+      <option value="Friends">{{t 'test.payment.form.sourceOptions.friends'}}</option>
+      <option value="University">{{t 'test.payment.form.sourceOptions.university'}}</option>
+      <option value="WhatsApp Group">{{t 'test.payment.form.sourceOptions.whatsappGroup'}}</option>
+      <option value="Webinar/Event">{{t 'test.payment.form.sourceOptions.webinarEvent'}}</option>
+      <option value="Website">{{t 'test.payment.form.sourceOptions.website'}}</option>
+      <option value="Other">{{t 'test.payment.form.sourceOptions.other'}}</option>
+    {{/if}}
+  {{/components/ui/dropdown/select/index}}
+
+  <!-- Agreement Box -->
+  {{> components/ui/input/agreement_box/index
+    name="agreement"
+    id="agreement"
+    required=true
+    label=(t 'test.payment.form.agreementLabel')
+    terms=(t 'test.payment.form.agreementTerms')
+  }}
+
+  <!-- Next / Save Changes Button -->
+  {{!--
+    `disabled=true` di-render dari server, bukan dari JS. First paint sudah
+    benar begitu karena checkbox agreement mustahil tercentang sebelum JS jalan,
+    jadi tidak ada tombol yang sempat tampil hidup lalu mati. Justru itu alasan
+    kata "disabled" TIDAK di-hardcode sebagai gaya saja: kalau JS gagal dimuat,
+    tombol tetap punya atribut disabled dan tidak bisa diklik.
+    `id` dipakai script di bawah untuk menyinkronkan statusnya.
+  --}}
+  <div class="pt-4 w-full">
+    {{> components/ui/button/btn_action/index
+      id="btn-save-changes"
+      disabled=true
+      text=(t 'test.payment.form.saveChanges')
+      type="button"
+      variant="primary"
+      class="w-full h-14 sm:h-[64px] rounded-[10px]"
+      textClass="font-montserrat font-semibold text-base sm:text-xl text-white"
+      icon="fa-solid fa-arrow-right text-lg ml-2"
+      iconPosition="right"
+      onClick="goToStep(2)"
+    }}
   </div>
 
-  <!-- Full Name -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
-      Full Name<span class="text-red-500">*</span>
-    </label>
-    <input type="text" required placeholder="Input Your Full Name" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400">
-  </div>
-
-  <!-- Email -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
-      Email<span class="text-red-500">*</span>
-    </label>
-    <input type="email" required placeholder="Input Your Email" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400">
-  </div>
-
-  <!-- WhatsApp Number -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
-      WhatsApp Number<span class="text-red-500">*</span>
-    </label>
-    <input type="tel" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400">
-  </div>
-
-  <!-- How did you know -->
-  <div>
-    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
-      How did you know About the Kesatria Academy Program?<span class="text-red-500">*</span>
-    </label>
-    <div class="relative w-full max-w-[760px] mb-4">
-      <input type="text" id="source-input" required class="absolute bottom-0 left-1/2 w-[1px] h-[1px] -z-10 opacity-0 pointer-events-none">
-      <div class="dropdown w-full">
-        <div tabindex="0" role="button" class="w-full h-[60px] rounded-[6px] p-[10px] px-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer">
-          <span id="source-text" class="text-slate-400">Select How Did You Know</span>
-          <i class="fa-solid fa-chevron-down w-5 h-5 flex items-center justify-center text-slate-500"></i>
-        </div>
-        <ul tabindex="0" class="dropdown-content menu bg-white rounded-box z-[1] w-full p-2 mt-1 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
-          <li><a onclick="selectDropdown('source', 'Friends')">Friends</a></li>
-          <li><a onclick="selectDropdown('source', 'Social Media')">Social Media</a></li>
-          <li><a onclick="selectDropdown('source', 'Website')">Website</a></li>
-          <li><a onclick="selectDropdown('source', 'Other')">Other</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- Agreement -->
-  <div class="pt-4 pb-2">
-    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
-      I agree to participate in the program until its completion
-    </label>
-    <label class="flex items-center gap-3 cursor-pointer group w-fit">
-      <div class="relative flex items-center justify-center">
-        <input type="checkbox" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
-        <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
-      </div>
-      <span class="text-slate-700 group-hover:text-[#0B3A68] transition-colors">Yes, I agree</span>
-    </label>
-  </div>
-
-  <!-- Next Button -->
-  <div class="pt-4 max-w-[760px]">
-    <button type="button" onclick="goToStep(2)" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center gap-[20px] font-semibold transition-colors">
-      <span>Next</span>
-      <i class="fa-solid fa-arrow-right text-xl pt-0.5"></i>
-    </button>
-  </div>
 </form>
 
 <script>
-  function selectDropdown(id, value) {
-    // Set the hidden input value for required validation
-    const input = document.getElementById(`${id}-input`);
-    input.value = value;
-    
-    // Update the dropdown label text
-    const textEl = document.getElementById(`${id}-text`);
-    textEl.textContent = value;
-    textEl.classList.remove('text-slate-400');
-    textEl.classList.add('text-[#0B3A68]', 'font-medium');
-    
-    // Close the DaisyUI dropdown by removing focus from the active element
-    document.activeElement.blur();
-  }
+  (function initRegistrationStepOne() {
+    //--- Bagian 1: status tombol "Save Changes" ---------------------------
+    //
+    // Sengaja DI ATAS semua yang menyangkut localStorage. Tombolnya dirender
+    // `disabled` dari server, jadi proses yang melepaskannya TIDAK boleh
+    // bergantung pada draft: kalau key-nya kosong atau rusak, tombol terkunci
+    // permanen dan user tidak bisa lanjut sama sekali. Penyimpanan draft boleh
+    // gagal, yang di sini tidak.
+
+    const form = document.getElementById('step-1-form');
+    if (!form) return;
+
+    const saveButton = document.getElementById('btn-save-changes');
+
+    // Tombol hidup hanya kalau SELURUH form sudah valid, bukan hanya checkbox
+    // agreement: nama, email, WhatsApp, dan sumber juga wajib terisi sebelum
+    // user boleh lanjut ke step 2.
+    //
+    // `checkValidity()` tidak dipakai di sini. Fungsi itu MEMUNCULKAN bubble
+    // validasi browser, jadi dipanggil setiap ketikan akan menggurui user di
+    // tengah mengetik. Yang dipakai adalah Constraint Validation API secara
+    // langsung: `validity.valid` dibaca per kontrol tanpa memicu event
+    // `invalid`, jadi pemeriksaannya diam.
+    //
+    // `form.elements` hanya berisi form control, semua punya `.validity`.
+    // Kontrol yang `disabled`/`readonly` otomatis bebas dari constraint
+    // validation, dan tombol `type="button"` di bawah tidak punya constraint,
+    // jadi keduanya tidak ikut menghalangi.
+    const isFormReady = () =>
+      Array.from(form.elements).every((el) => el.validity.valid);
+
+    const syncSaveButton = () => {
+      if (!saveButton) return;
+      const ready = isFormReady();
+      saveButton.disabled = !ready;
+      saveButton.setAttribute('aria-disabled', String(!ready));
+    };
+
+    // Dipanggil sinkron di body IIFE, bukan menunggu DOMContentLoaded: browser
+    // belum sempat paint apa pun, sehingga draft yang menyimpan
+    // `agreement: true` menyalakan tombol tanpa ada kedipan.
+    syncSaveButton();
+
+    // Hanya izinkan angka untuk nomor WhatsApp
+    const whatsappInput = form.querySelector('input[name="whatsappNumber"]');
+    if (whatsappInput) {
+      whatsappInput.addEventListener('input', (e) => {
+        const cleaned = e.target.value.replace(/\D/g, '');
+        if (e.target.value !== cleaned) {
+          e.target.value = cleaned;
+        }
+      });
+    }
+
+    // Satu handler untuk dua event: `input` menutupi pengetikan teks,
+    // `change` menutupi centang checkbox dan pilihan select. Dilepas di sini
+    // (bukan di bootstrap) karena tidak bergantung pada draft sama sekali, dan
+    // `form` sudah ada di DOM karena script ini berada di bawahnya.
+    form.addEventListener('input', syncSaveButton);
+    form.addEventListener('change', syncSaveButton);
+
+    //--- Bagian 2: penyimpanan draft ke localStorage ----------------------
+
+    const userId = '{{user.id}}';
+    const courseId = '{{course.id}}';
+    if (!userId || !courseId) return;
+
+    const storageKey =
+      typeof window.getPaymentProgressStorageKey === 'function'
+        ? window.getPaymentProgressStorageKey()
+        : `payment-${userId}-${courseId}-form`;
+
+    const readDraft = () => {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return null;
+
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const getCurrentProgress = () => {
+      const fromSession = Number(sessionStorage.getItem('currentPaymentStep') || 1);
+      const draft = readDraft();
+      return Number(draft?.form) || fromSession || 1;
+    };
+
+    const collectFormData = () => {
+      const fullName = form.querySelector('input[name="fullName"]')?.value?.trim() || '';
+      const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
+      const whatsappNumber = form.querySelector('input[name="whatsappNumber"]')?.value?.trim() || '';
+      const sourceInput = form.querySelector('input[name="source"], select[name="source"]');
+      const source = sourceInput?.value || '';
+      const agreement = Boolean(form.querySelector('input[name="agreement"]')?.checked);
+
+      return {
+        fullName,
+        email,
+        whatsappNumber,
+        source,
+        agreement,
+      };
+    };
+
+    const applySourceValue = (sourceValue) => {
+      if (!sourceValue) return;
+      const selectElement = form.querySelector('select[name="source"]');
+      if (selectElement) {
+        selectElement.value = sourceValue;
+        return;
+      }
+      const sourceContainer = document.getElementById('dropdown-source');
+      if (!sourceContainer || typeof sourceContainer.__selectOptionByValue !== 'function') return;
+      sourceContainer.__selectOptionByValue(sourceValue);
+    };
+
+    const applyDraft = (draft) => {
+      if (!draft) return;
+
+      const form1 = draft.forms?.form1 || draft.formData;
+      if (!form1) return;
+
+      const { fullName, email, whatsappNumber, source, agreement } = form1;
+
+      const fullNameInput = form.querySelector('input[name="fullName"]');
+      const emailInput = form.querySelector('input[name="email"]');
+      const whatsappInput = form.querySelector('input[name="whatsappNumber"]');
+      const agreementInput = form.querySelector('input[name="agreement"]');
+
+      if (fullNameInput && fullName) fullNameInput.value = fullName;
+      if (emailInput && email) emailInput.value = email;
+      if (whatsappInput && whatsappNumber) whatsappInput.value = whatsappNumber;
+      if (agreementInput) agreementInput.checked = Boolean(agreement);
+      applySourceValue(source);
+    };
+
+    let lastSavedPayload = null;
+
+    const saveDraftIfChanged = () => {
+      const existingDraft = readDraft() || {};
+      const payload = {
+        ...existingDraft,
+        userId,
+        courseId,
+        form: getCurrentProgress(),
+        forms: {
+          ...(existingDraft.forms || {}),
+          form1: collectFormData(),
+        },
+      };
+      const payloadString = JSON.stringify(payload);
+      if (payloadString === lastSavedPayload) return;
+
+      const existingRaw = localStorage.getItem(storageKey);
+      if (existingRaw === payloadString) {
+        lastSavedPayload = payloadString;
+        return;
+      }
+
+      localStorage.setItem(storageKey, payloadString);
+      lastSavedPayload = payloadString;
+    };
+
+    const bootstrap = () => {
+      const existingDraft = readDraft();
+      if (existingDraft) {
+        applyDraft(existingDraft);
+        lastSavedPayload = JSON.stringify(existingDraft);
+      }
+
+      // applyDraft menimpa nilai input dari draft, termasuk checkbox agreement
+      // dan select sumber. Status tombol harus dihitung ulang setelah itu,
+      // karena overwrite nilai bisa mengubah validity.
+      syncSaveButton();
+
+      form.addEventListener('input', saveDraftIfChanged);
+      form.addEventListener('change', saveDraftIfChanged);
+      document.addEventListener('payment:step-changed', saveDraftIfChanged);
+
+      saveDraftIfChanged();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      bootstrap();
+    }
+  })();
 </script>

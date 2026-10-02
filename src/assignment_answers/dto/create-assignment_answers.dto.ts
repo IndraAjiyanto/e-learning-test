@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateAssignmentAnswersDto {
@@ -9,11 +9,11 @@ export class CreateAssignmentAnswersDto {
   @IsOptional()
   comment: string;
 
-  @IsInt()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsInt()
-  taskId: number;
+  @IsUUID()
+  taskId: string;
 
   @IsEnum(['approved', 'process', 'rejected'])
   process: ProcessStatus;

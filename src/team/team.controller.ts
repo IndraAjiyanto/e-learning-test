@@ -24,6 +24,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -53,10 +54,15 @@ export class TeamController {
       createTeamDto.teamOrder = await this.teamService.getNextOrder();
 
       await this.teamService.create(createTeamDto);
-      req.flash('success', 'team successfully created');
+      flashToast(
+        req,
+        'Team Member Created',
+        'The new team member has been added.',
+      );
       res.redirect('/team');
     } catch (error: any) {
-      req.flash('error', error.message || 'team failed to create');
+      await this.teamService.deleteFile(req.body.uploadedImageUrls?.[0]);
+      req.flash('error', error.message || 'Failed to create team member');
       res.redirect('/team');
     }
   }
@@ -77,7 +83,7 @@ export class TeamController {
   @Roles('super_admin')
   @Get('formEdit/:teamId')
   async findOne(
-    @Param('teamId') teamId: number,
+    @Param('teamId') teamId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -97,22 +103,22 @@ export class TeamController {
     folder: 'profile_team',
   })
   async update(
-    @Param('teamId') teamId: number,
+    @Param('teamId') teamId: string,
     @Body() updateTeamDto: UpdateTeamDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const team = await this.teamService.findOne(teamId);
-      if (req.body.uploadedImageUrls?.length) {
-        await this.teamService.deleteFile(team.profile);
-        updateTeamDto.profile = req.body.uploadedImageUrls?.[0];
-      }
+      const newProfile = req.body.uploadedImageUrls?.[0];
+      if (newProfile) updateTeamDto.profile = newProfile;
       await this.teamService.update(teamId, updateTeamDto);
-      req.flash('success', 'team successfully updated');
+      if (newProfile) await this.teamService.deleteFile(team.profile);
+      flashToast(req, 'Changes Saved', 'The team member has been updated.');
       res.redirect('/team');
     } catch (error: any) {
-      req.flash('error', error.message || 'team failed to update');
+      await this.teamService.deleteFile(req.body.uploadedImageUrls?.[0]);
+      req.flash('error', error.message || 'Failed to update team member');
       res.redirect('/team');
     }
   }
@@ -120,7 +126,7 @@ export class TeamController {
   @Roles('super_admin')
   @Delete(':teamId')
   async remove(
-    @Param('teamId') teamId: number,
+    @Param('teamId') teamId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -128,10 +134,14 @@ export class TeamController {
       const team = await this.teamService.findOne(teamId);
       await this.teamService.deleteFile(team.profile);
       await this.teamService.remove(teamId);
-      req.flash('success', 'team successfully deleted');
+      flashToast(
+        req,
+        'Team Member Deleted',
+        'The team member has been permanently removed.',
+      );
       res.redirect('/team');
     } catch (error: any) {
-      req.flash('error', error.message || 'team failed to delete');
+      req.flash('error', error.message || 'Failed to delete team member');
       res.redirect('/team');
     }
   }

@@ -1,0 +1,14 @@
+{{!--
+  Halaman: Verify Email Success
+  Lokasi: src/views/verify-email-success.hbs
+  Menggunakan komponen global auth (src/views/partials/components/ui/auth/index.hbs)
+--}}
+
+{{> components/ui/auth/index
+  variant="verify-email-success"
+  title=(t 'test.verifySuccess.title')
+  description=(t 'test.verifySuccess.description')
+  submitText=(t 'test.verifySuccess.login')
+  buttonUrl="/login"
+  hideBottomLink=true
+}}

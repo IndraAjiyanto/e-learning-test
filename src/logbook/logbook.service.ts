@@ -6,6 +6,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
+import { capabilitiesForCourse } from 'src/courses/program-type';
 import { Session } from 'src/entities/session.entity';
 import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
@@ -54,14 +55,14 @@ export class LogbookService {
     return await this.logBookRepository.save(logbooks);
   }
 
-  async findByUser(userId: number) {
+  async findByUser(userId: string) {
     return await this.logBookRepository.find({
       where: { user: { id: userId } },
       relations: ['user'],
     });
   }
 
-  async findLogBook(userId: number, courseId: number) {
+  async findLogBook(userId: string, courseId: string) {
     return await this.logBookRepository.find({
       where: {
         user: { id: userId },
@@ -69,6 +70,7 @@ export class LogbookService {
       },
       relations: [
         'user',
+        'user.biodata',
         'session',
         'session.weeks',
         'session.weeks.course',
@@ -76,7 +78,7 @@ export class LogbookService {
     });
   }
 
-  async findCourseByUser(userId: number) {
+  async findCourseByUser(userId: string) {
     return await this.courseRepository.find({
       where: { userCourses: { user: { id: userId } } },
       relations: ['userCourses', 'userCourses.user', 'weeks'],
@@ -85,7 +87,7 @@ export class LogbookService {
 
   async findAllCourses() {
     return await this.courseRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -93,6 +95,7 @@ export class LogbookService {
     return await this.logBookRepository.find({
       relations: [
         'user',
+        'user.biodata',
         'session',
         'session.weeks',
         'session.weeks.course',
@@ -102,27 +105,27 @@ export class LogbookService {
 
   async findMentorLogbook() {
     return await this.mentorLogbookRepository.find({
-      relations: [
-        'user',
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-      ],
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
-  async findUsers(sessionId: number) {
+  async findUsers(sessionId: string) {
     return await this.userRepository.find({
       where: {
         userCourses: {
           course: { weeks: { session: { id: sessionId } } },
         },
       },
-      relations: ['userCourses', 'userCourses.user', 'userCourses.course'],
+      relations: [
+        'userCourses',
+        'userCourses.user',
+        'userCourses.course',
+        'biodata',
+      ],
     });
   }
 
-  async findSession(sessionId: number) {
+  async findSession(sessionId: string) {
     const session = await this.sessionRepository.findOne({
       where: { id: sessionId },
       relations: ['weeks', 'weeks.course'],
@@ -143,7 +146,7 @@ export class LogbookService {
     } catch (error) {}
   }
 
-  async findOne(logbookId: number) {
+  async findOne(logbookId: string) {
     const logbooks = await this.logBookRepository.findOne({
       where: { id: logbookId },
       relations: [
@@ -151,6 +154,7 @@ export class LogbookService {
         'session.weeks',
         'session.weeks.course',
         'user',
+        'user.biodata',
       ],
     });
     if (!logbooks) {
@@ -159,7 +163,31 @@ export class LogbookService {
     return logbooks;
   }
 
-  async findCapstoneProjects(kategoriId?: number) {
+  /**
+   * Apakah program yang menaungi sebuah sesi memang memakai logbook.
+   *
+   * Dipakai rute logbook student sebagai penjaga: pada program SPL yang
+   * logbooknya dimatikan, antarmukanya memang sudah tidak menampilkan tombol
+   * apa pun, tetapi URL-nya masih bisa diketik langsung atau tersimpan di
+   * riwayat peramban. Tanpa penjaga ini, logbook masih bisa dibuat untuk
+   * program yang seharusnya tidak punya logbook sama sekali.
+   */
+  async logbookEnabledForSession(sessionId: string): Promise<boolean> {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
+    });
+    return capabilitiesForCourse(session?.weeks?.course ?? null).logbookEnabled;
+  }
+
+  async logbookEnabledForCourse(courseId: string): Promise<boolean> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    return capabilitiesForCourse(course).logbookEnabled;
+  }
+
+  async findCapstoneProjects(kategoriId?: string) {
     const query = this.logBookRepository
       .createQueryBuilder('logbook')
       .where('logbook.documentation IS NOT NULL')
@@ -167,9 +195,10 @@ export class LogbookService {
       .orderBy('logbook.createdAt', 'DESC');
 
     // Join necessary relations to filter by kategoriId
-    query.leftJoin('logbook.pertemuan', 'pertemuan')
-         .leftJoin('pertemuan.minggu', 'minggu')
-         .leftJoin('minggu.kelas', 'kelas');
+    query
+      .leftJoin('logbook.pertemuan', 'pertemuan')
+      .leftJoin('pertemuan.minggu', 'minggu')
+      .leftJoin('minggu.kelas', 'kelas');
 
     if (kategoriId) {
       query.andWhere('kelas.id = :kategoriId', {
@@ -180,7 +209,7 @@ export class LogbookService {
     return query.getMany();
   }
 
-  async update(logbookId: number, updateLogbookDto: UpdateLogbookDto) {
+  async update(logbookId: string, updateLogbookDto: UpdateLogbookDto) {
     const logbooks = await this.findOne(logbookId);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');
@@ -223,20 +252,23 @@ export class LogbookService {
           if (quiz) {
             const existingQuizProgress =
               await this.progresQuizRepository.findOne({
-                where: { quiz: { id: quiz.id }, user: { id: logbooks.user.id } },
+                where: {
+                  quiz: { id: quiz.id },
+                  user: { id: logbooks.user.id },
+                },
               });
             if (existingQuizProgress) {
               await this.progresQuizRepository.save({
                 id: existingQuizProgress.id,
                 quiz: { id: quiz.id },
                 user: { id: logbooks.user.id },
-                proses: true,
+                process: true,
               });
             } else {
               await this.progresQuizRepository.save({
                 quiz: { id: quiz.id },
                 user: { id: logbooks.user.id },
-                proses: true,
+                process: true,
               });
             }
           }
@@ -299,7 +331,7 @@ export class LogbookService {
     return await this.logBookRepository.save(logbooks);
   }
 
-  async remove(logbookId: number) {
+  async remove(logbookId: string) {
     const logbooks = await this.findOne(logbookId);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');

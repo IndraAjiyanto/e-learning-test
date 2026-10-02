@@ -16,6 +16,7 @@ import { UpdateMissionDto } from './dto/update-mission.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('mission')
@@ -32,7 +33,11 @@ export class MissionController {
     try {
       createMissionDto.missionOrder = await this.missionService.getNextOrder();
       await this.missionService.create(createMissionDto);
-      req.flash('success', 'missions successfully created');
+      flashToast(
+        req,
+        'Misi Created',
+        'The misi statement has been added successfully.',
+      );
       res.redirect('/mission');
     } catch (error: any) {
       req.flash('error', 'missions failed to create');
@@ -44,31 +49,41 @@ export class MissionController {
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
     const mission = await this.missionService.findAll();
-    res.render('super_admin/missions/index', { user: req.user, missions: mission });
+    res.render('super_admin/missions/index', {
+      user: req.user,
+      missions: mission,
+    });
   }
 
   @Roles('super_admin')
   @Get('formEdit/:id')
   async Formedit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const mission = await this.missionService.findOne(id);
-    res.render('super_admin/missions/edit', { user: req.user, missions: mission });
+    res.render('super_admin/missions/edit', {
+      user: req.user,
+      missions: mission,
+    });
   }
 
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateMissionDto: UpdateMissionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.missionService.update(id, updateMissionDto);
-      req.flash('success', 'missions successfully updated');
+      flashToast(
+        req,
+        'Misi Updated',
+        'The changes to this misi statement have been saved.',
+      );
       res.redirect('/mission');
     } catch (error: any) {
       req.flash('error', 'missions failed to update');
@@ -79,13 +94,17 @@ export class MissionController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.missionService.remove(id);
-      req.flash('success', 'missions successfully deleted');
+      flashToast(
+        req,
+        'Misi Deleted',
+        'The misi statement has been removed successfully.',
+      );
       res.redirect('/mission');
     } catch (error: any) {
       req.flash('error', 'missions failed to delete');

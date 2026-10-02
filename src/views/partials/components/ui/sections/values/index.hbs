@@ -1,0 +1,45 @@
+{{!--
+  Section: Values (tab halaman About)
+  Lokasi: src/views/partials/components/ui/sections/values/index.hbs
+
+  Data (dari dashboard.about()):
+  - value : N baris urut valueOrder, icon + title + description (jsonb per-bahasa)
+
+  Satu pohon markup yang mengalir. L1: text/section_header, card/about_feature.
+--}}
+
+<div class="w-full font-inter">
+  {{!-- Hero --}}
+  {{> components/ui/text/section_header/index
+      align="text-left"
+      titleTag="h1"
+      titleSize="display"
+      title=(t 'test.about.value.title')
+      titleClass="font-inter font-bold text-[#003060]"
+      descSize="h3"
+      description=(t 'test.about.value.description')
+      descClass="font-inter font-medium text-[#4B5563] mt-3" }}
+
+  <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5">
+    {{#if value.length}}
+      {{#each value}}
+        {{> components/ui/card/about_feature/index
+            variant="value"
+            wide=@last
+            iconBase="/public/image/about/values/"
+            iconName=this.icon
+            fallbackIcon="/public/image/about/values/adaptability.svg"
+            title=(getByLang title ../lang)
+            description=(getByLang description ../lang) }}
+      {{/each}}
+    {{else}}
+      {{> components/ui/card/about_feature/index variant="value" icon="/public/image/about/values/adaptability.svg" title="Adaptability" description="We uphold speed and agility in facing technological trend shifts. We encourage continuous skill improvement to adapt effectively." }}
+      {{> components/ui/card/about_feature/index variant="value" icon="/public/image/about/values/authenticity.svg" title="Authenticity" description="We highly value the uniqueness of every individual and total transparency. We encourage every member to contribute with their true ideas and character." }}
+      {{> components/ui/card/about_feature/index variant="value" icon="/public/image/about/values/curiosity.svg" title="Curiosity" description="We position curiosity as the main key to innovation. We motivate unlimited exploration, continuous critical questioning, and the discovery of new frontiers." }}
+      {{> components/ui/card/about_feature/index variant="value" icon="/public/image/about/values/impact.svg" title="Impact" description="Every learning process must yield a tangible contribution. We are committed to creating solutions that have a positive and significant impact on our surrounding environment." }}
+      {{> components/ui/card/about_feature/index variant="value" icon="/public/image/about/values/resilience.svg" title="Resilience" description="For us, resilience is the main foundation of teamwork. Every member supports one another, stays adaptable, and continues to grow together in facing challenges and achieving greater goals." }}
+      {{> components/ui/card/about_feature/index variant="value" icon="/public/image/about/values/integrity.svg" title="Integrity" description="We uphold honesty, responsibility, and professionalism in every aspect of learning and corporate operations." }}
+      {{> components/ui/card/about_feature/index variant="value" wide=true class="lg:col-span-2" icon="/public/image/about/values/adaptability.svg" title="Ability" description="We are committed to professionally developing the potential, skills, and capabilities of the next generation of digital talent in the IT industry. We bridge raw promise with professional excellence." }}
+    {{/if}}
+  </div>
+</div>

@@ -1,0 +1,49 @@
+{{!--
+  Komponen: Excel Export (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/table/export_excel.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Memuat SheetJS dari CDN dan menyediakan `exportRowsToExcel({ rows, columns,
+  sheetName, filePrefix })`. Dipakai tab log book yang tabelnya read-only tapi
+  perlu diunduh sebagai .xlsx.
+
+  `columns` adalah daftar { header, width, value } — `value` sebuah fungsi yang
+  menerima satu baris dan mengembalikan isi selnya. Bentuk ini menjaga urutan
+  kolom file Excel tetap sama dengan urutan kolom di tabel, dan lebar kolomnya
+  ikut didefinisikan di tempat yang sama.
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'></script>
+
+<script>
+  function exportRowsToExcel({ rows, columns, sheetName, filePrefix }) {
+    // Dimuat dari CDN, jadi bisa saja belum siap (atau gagal) saat tombol ditekan.
+    if (typeof XLSX === 'undefined') {
+      console.error('Excel export: SheetJS belum termuat.');
+      return false;
+    }
+
+    try {
+      const data = (rows || []).map((row, index) =>
+        columns.reduce((acc, column) => {
+          const value = column.value(row, index);
+          acc[column.header] = value == null ? '' : value;
+          return acc;
+        }, {}),
+      );
+
+      const sheet = XLSX.utils.json_to_sheet(data);
+      sheet['!cols'] = columns.map((column) => ({ wch: column.width || 20 }));
+
+      const book = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book, sheet, sheetName);
+      XLSX.writeFile(book, `${filePrefix}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+      return true;
+    } catch (error) {
+      console.error('Excel export gagal:', error);
+      return false;
+    }
+  }
+</script>

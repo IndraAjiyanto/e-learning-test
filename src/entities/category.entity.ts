@@ -12,8 +12,6 @@ import { Course } from './course.entity';
 import { CourseType } from './course_type.entity';
 import { CategoryFaq } from './faqs.entity';
 import { BenefitCategory } from './benefit_category.entity';
-import { FlowCategory } from './flow_category.entity';
-import { Superiority } from './superiority.entity';
 import { Exclude } from 'class-transformer';
 import { Gallery } from './gallery.entity';
 
@@ -21,10 +19,10 @@ export type Type = 'Special Program' | 'Paid Program' | 'Free Program';
 
 @Entity()
 export class Category {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   name: string;
 
   @Column('jsonb', { nullable: true })
@@ -33,23 +31,14 @@ export class Category {
   @Column()
   icon: string;
 
+  @Column({ nullable: true })
+  hero_section_image: string;
+
   @Column('jsonb', { nullable: true })
   description: string[];
 
   @Column({ nullable: true })
   contact: string;
-
-  @Column('jsonb', { nullable: true })
-  for: string[];
-
-  @Column({ nullable: true, type: 'jsonb' })
-  infoId: string[];
-
-  @Column({ nullable: true, type: 'jsonb' })
-  infoEn: string[];
-
-  @Column({ nullable: true, type: 'jsonb' })
-  infoJa: string[];
 
   @Column({
     type: 'enum',
@@ -68,10 +57,7 @@ export class Category {
   @Exclude()
   courses: Course[];
 
-  @OneToMany(
-    () => CategoryFaq,
-    (faq) => faq.category,
-  )
+  @OneToMany(() => CategoryFaq, (faq) => faq.category)
   @Exclude()
   faqs: CategoryFaq[];
 
@@ -82,20 +68,12 @@ export class Category {
   @Exclude()
   benefit_category: BenefitCategory[];
 
-  @OneToMany(() => FlowCategory, (flow_category) => flow_category.category)
-  @Exclude()
-  flow_category: FlowCategory[];
-
-  @OneToMany(() => Superiority, (superiority) => superiority.category)
-  @Exclude()
-  superiority: Superiority[];
-
   @ManyToMany(() => CourseType, (courseType) => courseType.categories)
-  @JoinTable({name:'category_course_types'})
+  @JoinTable({ name: 'category_course_types' })
   @Exclude()
   courseTypes: CourseType[];
 
-   @OneToMany(() => Gallery, (gallery) => gallery.category)
+  @OneToMany(() => Gallery, (gallery) => gallery.category)
   @Exclude()
   gallery: Gallery[];
 }

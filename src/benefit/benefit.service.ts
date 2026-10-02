@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,16 +12,31 @@ export class BenefitService {
     private readonly benefitRepository: Repository<Benefit>,
   ) {}
 
+  async count() {
+    return await this.benefitRepository.count();
+  }
+
   async create(createBenefitDto: CreateBenefitDto) {
+    const currentCount = await this.benefitRepository.count();
+    if (currentCount >= 5) {
+      throw new BadRequestException(
+        'Maksimal 5 benefit telah tercapai. Hapus atau edit benefit yang ada terlebih dahulu.',
+      );
+    }
     const benefit = await this.benefitRepository.create(createBenefitDto);
     return await this.benefitRepository.save(benefit);
   }
 
   async findAll() {
-    return await this.benefitRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.benefitRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
-  async findOne(benefitId: number) {
+  async findOne(benefitId: string) {
     const benefit = await this.benefitRepository.findOne({
       where: { id: benefitId },
     });
@@ -32,16 +47,16 @@ export class BenefitService {
   }
 
   async findNo() {
-        const benefit = await this.findAll();
-      const usedNumbers = benefit.map((b) => Number(b.no));
-      
-      const availableNumbers = [1, 2, 3, 4, 5].filter(
-        (n) => !usedNumbers.includes(n)
-      );
-      return availableNumbers;
+    const benefit = await this.findAll();
+    const usedNumbers = benefit.map((b) => Number(b.no));
+
+    const availableNumbers = [1, 2, 3, 4, 5].filter(
+      (n) => !usedNumbers.includes(n),
+    );
+    return availableNumbers;
   }
 
-  async findNoForEdit(benefitId: number) {
+  async findNoForEdit(benefitId: string) {
     const benefit = await this.findOne(benefitId);
     const available = await this.findNo();
     // slot kosong + nomor milik benefit ini, lalu urutkan
@@ -50,29 +65,29 @@ export class BenefitService {
     );
   }
 
-  async update(benefitId: number, updateBenefitDto: UpdateBenefitDto) {
+  async update(benefitId: string, updateBenefitDto: UpdateBenefitDto) {
     const benefit = await this.findOne(benefitId);
 
     if (!benefit) {
       throw new NotFoundException('benefit not found');
     }
 
-      // Cek apakah no yang diinginkan sudah dipakai data lain
-  const no_used = await this.benefitRepository.findOne({
-    where: { no: updateBenefitDto.no },
-  });
+    // Cek apakah no yang diinginkan sudah dipakai data lain
+    const no_used = await this.benefitRepository.findOne({
+      where: { no: updateBenefitDto.no },
+    });
 
-  // Kalau sudah dipakai dan bukan data yang sama, swap nomor
-  if (no_used && no_used.id !== benefitId) {
-    no_used.no = benefit.no; // data lain ambil no lama
-    await this.benefitRepository.save(no_used);
-  }
+    // Kalau sudah dipakai dan bukan data yang sama, swap nomor
+    if (no_used && no_used.id !== benefitId) {
+      no_used.no = benefit.no; // data lain ambil no lama
+      await this.benefitRepository.save(no_used);
+    }
 
     Object.assign(benefit, updateBenefitDto);
     return await this.benefitRepository.save(benefit);
   }
 
-  async remove(benefitId: number) {
+  async remove(benefitId: string) {
     const benefit = await this.findOne(benefitId);
     if (!benefit) {
       throw new NotFoundException('benefit not found');

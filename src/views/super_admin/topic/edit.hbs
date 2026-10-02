@@ -98,7 +98,10 @@
       action='/topic/{{topic.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
-      x-data='{ loading: false }'
+      x-data='{ ...{ loading: false }, ...formDirtyGate() }'
+      x-init='$nextTick(() => captureBaseline())'
+      @input='recomputeDirty()'
+      @change='recomputeDirty()'
       x-init='init()'
       @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
     >
@@ -111,7 +114,7 @@
       <div class='flex gap-2 mt-6'>
         <button
           type='submit'
-          :disabled='!canSubmit() || loading'
+          :disabled='!canSubmit() || !isDirty || loading'
           :class="(!canSubmit() || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
         >

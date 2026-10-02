@@ -1,0 +1,79 @@
+{{!--
+  Komponen: Curriculum / Syllabus Item (Level 1 - Atomic Accordion Card)
+  Lokasi: src/views/partials/components/ui/card/curriculum_item/index.hbs
+
+  Spesifikasi Figma:
+  - Container: bg #FFFFFF, border 1px solid #E2E8F0, rounded 12px (rounded-xl), p-6 (24px), gap 16px
+  - Top Row: justify-between, items-center
+  - Icon Frame: 44x44px, rounded 14px, bg rgba(110, 182, 229, 0.08) (#6EB6E5/10), icon award stroke #0B1F3B
+  - Title: Inter 700 22px leading 27px #0B1F3B
+  - Chevron Icon: 20x20px stroke #64748B, rotasi 180° saat terbuka
+  - Description: Inter 400 16px leading 150% (24px) #66738C
+
+  Props:
+  - index       : number (0-based)
+  - title       : string | object (multibahasa via getByLang)
+  - description : string | object (multibahasa via getByLang)
+  - lang        : string
+  - class       : string
+--}}
+
+<div 
+  class="box-border flex w-full flex-col items-start rounded-xl border border-[#E2E8F0] bg-white p-5 sm:p-6 transition-all duration-300 shadow-2xs hover:border-[#CBD5E1] {{class}}"
+  :class="activeIndex === {{index}} ? 'border-[#003060]/30 shadow-md ring-1 ring-[#003060]/10' : ''"
+>
+  {{!-- Top Header Row (Clickable Accordion Trigger) --}}
+  <button
+    type="button"
+    @click="activeIndex = activeIndex === {{index}} ? null : {{index}}"
+    :aria-expanded="activeIndex === {{index}}"
+    class="flex w-full items-center justify-between gap-4 text-left cursor-pointer select-none focus:outline-none"
+  >
+    {{!-- Left Group: Icon Frame + Title --}}
+    <div class="flex items-center gap-3.5 sm:gap-4 min-w-0">
+      {{!-- Icon Frame 44x44 rounded 14px --}}
+      <div class="flex size-10 sm:size-11 shrink-0 items-center justify-center rounded-[14px] bg-[#6EB6E5]/[0.08] text-[#0B1F3B]">
+        <svg class="size-5 sm:size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#0B1F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+        </svg>
+      </div>
+
+      {{!-- Title: Inter 700 18px-22px #0B1F3B --}}
+      <h3 class="font-inter text-base sm:text-lg lg:text-[22px] font-bold leading-snug sm:leading-[27px] text-[#0B1F3B]">
+        {{default (getByLang title lang) title}}
+      </h3>
+    </div>
+
+    {{!-- Right: Chevron Icon 20x20 --}}
+    <div class="flex size-8 shrink-0 items-center justify-center rounded-full transition-colors duration-200">
+      <svg 
+        class="size-5 transition-transform duration-300 text-[#64748B]" 
+        :class="activeIndex === {{index}} ? 'rotate-180 text-[#003060]' : 'rotate-0 text-[#64748B]'"
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  </button>
+
+  {{!-- Collapsible Content: Inter 400 16px leading 150% #66738C --}}
+  <div 
+    x-cloak 
+    x-show="activeIndex === {{index}}" 
+    x-collapse
+    class="w-full"
+  >
+    <div class="pt-3.5 sm:pt-4 border-t border-[#F1F5F9] mt-3.5 sm:mt-4">
+      <p class="font-inter text-sm sm:text-base font-normal leading-[150%] sm:leading-[24px] text-[#66738C]">
+        {{default (getByLang description lang) description}}
+      </p>
+    </div>
+  </div>
+
+</div>

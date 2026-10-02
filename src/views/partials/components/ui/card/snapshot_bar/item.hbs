@@ -1,0 +1,30 @@
+{{!--
+  Komponen: Snapshot Bar Item (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/card/snapshot_bar/item.hbs
+
+  Satu item fitur di dalam floating snapshot bar.
+  Props:
+  - icon        : Icon class FontAwesome atau custom SVG
+  - title       : Judul fitur (Montserrat Bold 14px #111827)
+  - description : Deskripsi fitur (Inter Regular 12px #4B5563)
+--}}
+<div class="flex flex-1 items-center gap-4">
+  <div class="grid size-12 shrink-0 place-items-center rounded-full bg-[#6EB6E5]/12 text-[#0B1F3B]">
+    {{#if icon}}
+      <i class="{{icon}} text-lg text-[#0B1F3B]"></i>
+    {{else}}
+      <svg class="size-5 text-[#0B1F3B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    {{/if}}
+  </div>
+  <div class="flex flex-col gap-1 text-left min-w-0">
+    <h4 class="font-montserrat text-sm font-bold leading-tight text-[#111827] truncate">
+      {{title}}
+    </h4>
+    <p class="font-inter text-xs leading-normal text-[#4B5563] truncate">
+      {{description}}
+    </p>
+  </div>
+</div>

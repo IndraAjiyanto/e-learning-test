@@ -36,14 +36,14 @@ export class QuestionsService {
     return await this.questionRepository.save(questions);
   }
 
-  async findQuestions(quizId: number) {
+  async findQuestions(quizId: string) {
     return await this.questionRepository.find({
       where: { quiz: { id: quizId } },
       relations: ['answers.userAnswers'],
     });
   }
 
-  async findOne(questionId: number) {
+  async findOne(questionId: string) {
     const questions = await this.questionRepository.findOne({
       where: { id: questionId },
       relations: ['answers', 'quiz'],
@@ -54,7 +54,7 @@ export class QuestionsService {
     return questions;
   }
 
-  async update(questionId: number, updateQuestionDto: UpdateQuestionDto) {
+  async update(questionId: string, updateQuestionDto: UpdateQuestionDto) {
     const questions = await this.findOne(questionId);
     if (!questions) {
       throw new NotFoundException('Question not found');
@@ -85,7 +85,7 @@ export class QuestionsService {
     return await this.answerRepository.save(newAnswers);
   }
 
-  async remove(questionId: number) {
+  async remove(questionId: string) {
     const questions = await this.findOne(questionId);
     const answers = await this.answerRepository.find({
       where: { question: { id: questionId } },

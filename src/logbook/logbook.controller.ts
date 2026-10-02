@@ -11,7 +11,6 @@ import {
   UploadedFile,
   Res,
   Req,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { LogbookService } from './logbook.service';
 import { CreateLogbookDto } from './dto/create-logbook.dto';
@@ -24,6 +23,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { Request, Response } from 'express';
 import { ProcessStatus } from 'src/entities/types/process-status';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('logbooks')
@@ -42,21 +42,27 @@ export class LogbookController {
     folder: 'logbook_user',
   })
   async create(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Body() createLogbookDto: CreateLogbookDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-
-      
-      // if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
-      //   throw new Error('Image upload failed. Please try again.');
-      // }
+      // Penjaga yang sama dengan formCreate, tetapi di jalur tulisnya: form
+      // bisa saja dikirim dari halaman yang sudah terbuka sebelum admin
+      // mematikan sakelarnya.
+      if (!(await this.logbookService.logbookEnabledForSession(sessionId))) {
+        flashToastError(
+          req,
+          'Logbook is off for this program',
+          'This program does not use logbooks.',
+        );
+        return res.redirect('/users/profile');
+      }
 
       createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
-        createLogbookDto.userId = req.user!.id;
+        createLogbookDto.userId = req.user.id;
         createLogbookDto.process = 'process';
       } else if (req.user?.role === 'admin') {
         createLogbookDto.process = 'approved';
@@ -64,20 +70,38 @@ export class LogbookController {
       createLogbookDto.sessionId = sessionId;
       await this.logbookService.create(createLogbookDto);
       const session = await this.logbookService.findSession(sessionId);
-      req.flash('success', 'Log book added successfully');
       if (req.user?.role === 'admin') {
+        flashToast(
+          req,
+          'Logbook Created',
+          'The new logbook entry has been added to this session.',
+        );
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
+        flashToast(
+          req,
+          'Logbook Created',
+          'Your logbook has been submitted and is under review.',
+        );
+        // res.redirect(
+        //   `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
+        // );
         res.redirect(`/program/${session.weeks.course.id}`);
       }
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);
       const errorMessage = error.message || 'Failed to add log book';
-      req.flash('error', errorMessage);
+      flashToastError(
+        req,
+        'Logbook not saved',
+        errorMessage,
+      );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
+        );
       }
     }
   }
@@ -87,34 +111,52 @@ export class LogbookController {
   async findLogBook(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     const logbooks = await this.logbookService.findLogBook(
       req.user!.id,
       courseId,
     );
-    res.render('user/logbooks/index', { user: req.user, logbooks, logbook: logbooks, courseId });
+    res.render('user/logbooks/index', {
+      user: req.user,
+      logbooks,
+      logbook: logbooks,
+      courseId,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
   @Get('formCreate/:sessionId/:courseId')
   async createLogbook(
-    @Param('sessionId', ParseIntPipe) sessionId: number,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('courseId') courseId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    // Program SPL bisa mematikan logbook. Antarmukanya memang sudah tidak
+    // menampilkan tombol apa pun, tetapi URL ini masih bisa diketik langsung
+    // atau tersimpan di riwayat peramban.
+    if (!(await this.logbookService.logbookEnabledForCourse(courseId))) {
+      flashToastError(
+        req,
+        'Logbook is off for this program',
+        'This program does not use logbooks.',
+      );
+      return res.redirect(`/program/${courseId}`);
+    }
     res.render('user/logbooks/createLog', {
       user: req.user,
       sessionId,
       courseId,
+      bareShell: true,
     });
   }
 
   @Roles('user', 'admin')
   @Get('formEdit/:logbookId')
   async formEdit(
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -122,25 +164,33 @@ export class LogbookController {
     if (req.user!.role === 'admin') {
       res.render('admin/logbooks/edit', { user: req.user, logbook: logbooks });
     } else {
-      res.render('user/logbooks/edit', { user: req.user, logbook: logbooks });
+      res.render('user/logbooks/edit', {
+        user: req.user,
+        logbook: logbooks,
+        bareShell: true,
+      });
     }
   }
 
   @Roles('user', 'admin')
   @Get(':logbookId')
   async findOne(
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
-    res.render('user/logbooks/detail', { user: req.user, logbook: logbooks });
+    res.render('user/logbooks/detail', {
+      user: req.user,
+      logbook: logbooks,
+      bareShell: true,
+    });
   }
 
   @Roles('admin')
   @Get('create/:sessionId')
   async createLogbookUser(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -161,7 +211,7 @@ export class LogbookController {
   })
   async update(
     @UploadedFile() documentation: Express.Multer.File,
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Body() updateLogbookDto: UpdateLogbookDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -170,31 +220,37 @@ export class LogbookController {
       const logbooks = await this.logbookService.findOne(logbookId);
       if (documentation && documentation.size > 0) {
         if (logbooks.documentation) {
-        await this.logbookService.deleteFile(logbooks.documentation);
-      }
+          await this.logbookService.deleteFile(logbooks.documentation);
+        }
         updateLogbookDto.documentation =
           req.body.uploadedImageUrls?.[0] || documentation.path;
       }
       updateLogbookDto.process = 'process';
       await this.logbookService.update(logbookId, updateLogbookDto);
-      req.flash('success', 'logbooks successfully updated');
+      flashToast(req, 'Changes Saved', 'The logbook has been updated.');
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${logbooks.session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${logbooks.session.weeks.course.id}`,
+        );
       }
     } catch (error: any) {
-
       console.log('====== ERROR UPDATE LOGBOOK ======');
       console.error(error.response || error.message || error);
 
-
       const logbooks = await this.logbookService.findOne(logbookId);
-      req.flash('error', error.message || 'logbooks failed to update');
+      flashToastError(
+        req,
+        'Logbook not saved',
+        error.message || 'Please try again in a moment.',
+      );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${logbooks.session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${logbooks.session.weeks.course.id}`,
+        );
       }
     }
   }
@@ -203,7 +259,7 @@ export class LogbookController {
   @Patch(':logbookId/:proses')
   async updateProses(
     @Body() updateLogbookDto: UpdateLogbookDto,
-    @Param('logbookId') logbookId: number,
+    @Param('logbookId') logbookId: string,
     @Param('proses') proses: ProcessStatus,
     @Req() req: Request,
     @Res() res: Response,
@@ -212,7 +268,7 @@ export class LogbookController {
       const logbooks = await this.logbookService.findOne(logbookId);
       updateLogbookDto.process = proses;
       await this.logbookService.update(logbookId, updateLogbookDto);
-      req.flash('success', 'logbooks successfully update proses');
+      flashToast(req, 'Status Updated', 'The logbook status has been updated.');
       res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
       const logbooks = await this.logbookService.findOne(logbookId);
@@ -224,8 +280,8 @@ export class LogbookController {
   @Roles('admin')
   @Delete(':sessionId/:logbookId')
   async remove(
-    @Param('logbookId') logbookId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('logbookId') logbookId: string,
+    @Param('sessionId') sessionId: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -235,7 +291,11 @@ export class LogbookController {
         await this.logbookService.deleteFile(logbooks.documentation);
       }
       await this.logbookService.remove(logbookId);
-      req.flash('success', 'logbooks successfully deleted');
+      flashToast(
+        req,
+        'Logbook Deleted',
+        'The logbook has been permanently removed.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'logbooks failed to delete');

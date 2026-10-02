@@ -1,0 +1,243 @@
+{{!--
+  Halaman: Create Partnership — Super Admin
+  Lokasi: src/views/super_admin/partner/create.hbs
+  Level: L4 Page
+
+  Spesifikasi visual:
+  - page bg #f3f3f3, padding 42px 34px, jarak judul -> card 28px
+  - card putih border 1px #d9d9d9, radius 12, padding 20, gap antar-blok 24
+  - stack field gap 20; baris aksi border-top #d9d9d9 + padding-top 24, rata kanan gap 16
+  - Sidebar disediakan layouts/main.hbs
+
+  Route: GET /partnership/formCreate -> POST /partnership
+  (multipart: image + categoryPartnerId). Data: { categories }.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
+    {{!-- Title (gap 4px) --}}
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Partnership'
+      }}
+
+      {{> components/ui/super_admin/description/index
+        text='Organize partner organizations and manage partnership categories.'
+      }}
+    </div>
+
+    {{!-- Feature Card: Partnership.
+         Kontrak backend (tidak diubah): POST /partnership multipart/form-data
+         dengan field categoryPartnerId dan image. --}}
+    <form
+      action='/partnership'
+      method='post'
+      enctype='multipart/form-data'
+      novalidate
+      x-data='createPartnerForm({ categories: {{json categories}} })'
+      @submit.prevent='submitForm($event)'
+      class='rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'
+    >
+      <div class='flex flex-col gap-6'>
+        {{!-- Section heading — Montserrat SemiBold 16/24 #003060 --}}
+        {{> components/ui/super_admin/description/index
+          text='Partnership Detail'
+          class='font-inter text-base font-semibold leading-6 text-[#003060]'
+        }}
+
+        <div class='flex flex-col gap-5'>
+          {{> components/ui/super_admin/form/select_field
+            id='categoryPartnerId'
+            name='categoryPartnerId'
+            field='categoryPartnerId'
+            label='Partner Category'
+            placeholder='Select a category'
+            hint='Select the category that best matches this partner.'
+            options='categoryOptions'
+            required=true
+          }}
+
+          {{!-- Crop 1:1 mengikuti tampilan publik: logo dirender di kotak persegi. --}}
+          {{> components/ui/super_admin/form/image_dropzone
+            id='image'
+            name='image'
+            label='Cover Program'
+            meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
+            required=true
+            crop=true
+          }}
+
+          {{!-- Primary actions. Dirangkai di sini (bukan form/button row=true)
+               karena mode baris menambah padding-top 8 di atas border, sedangkan
+               desain menempel langsung pada gap 20 stack field. --}}
+          <div class='flex flex-col-reverse gap-4 border-t border-[#d9d9d9] pt-6 sm:flex-row sm:justify-end'>
+            {{> components/ui/super_admin/form/button
+              as='link'
+              variant='secondary'
+              href='/partnership'
+              label='Cancel'
+              loading=true
+            }}
+
+            {{> components/ui/super_admin/form/button
+              type='submit'
+              variant='primary'
+              label='Create Partner'
+              loading=true
+            }}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function createPartnerForm({ categories }) {
+    return {
+      loading: false,
+
+      // Opsi kategori berasal dari BE (GET /partnership/formCreate -> categories)
+      categoryOptions: (categories || []).map((c) => ({ value: c.id, label: c.category })),
+
+      // Cover image
+      previewUrl: null,
+      errorMessage: '',
+      isValid: true,
+      fileName: '',
+      hasFile: false,
+
+      formData: { categoryPartnerId: '' },
+      formErrors: { categoryPartnerId: '' },
+      // Error hanya ditampilkan setelah field disentuh atau setelah submit ditekan
+      touched: { categoryPartnerId: false },
+
+      // Batas mengikuti kontrak backend (ValidateImage pada PartnerController):
+      // JPG/PNG, 300–2000 px, maks 5 MB.
+      validateImage(file) {
+        this.clearPreview();
+
+        if (!file) return;
+
+        this.hasFile = true;
+        this.fileName = file.name;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.setImageError('Only JPG and PNG formats are allowed');
+          return;
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          this.setImageError(
+            `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+          );
+          return;
+        }
+
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+          if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError(
+              `Image is ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`,
+            );
+            return;
+          }
+
+          this.previewUrl = objectUrl;
+          this.isValid = true;
+          this.errorMessage = '';
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          this.setImageError('Failed to load image');
+        };
+
+        img.src = objectUrl;
+      },
+
+      setImageError(message) {
+        this.errorMessage = message;
+        this.isValid = false;
+        this.previewUrl = null;
+      },
+
+      clearPreview() {
+        if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+        this.previewUrl = null;
+        this.errorMessage = '';
+        this.isValid = true;
+        this.fileName = '';
+        this.hasFile = false;
+      },
+
+      clearFile() {
+        this.clearPreview();
+        this.$refs.dropInput.value = null;
+      },
+
+      errorFor(field, val) {
+        if (field === 'categoryPartnerId') return val ? '' : 'Please select a partner category.';
+        return '';
+      },
+
+      // Dipanggil select_field saat sebuah option dipilih
+      touch(field) {
+        this.touched[field] = true;
+        this.formErrors[field] = this.errorFor(field, this.formData[field]);
+      },
+
+      validateAll() {
+        Object.keys(this.formData).forEach((field) => {
+          this.touched[field] = true;
+          this.formErrors[field] = this.errorFor(field, this.formData[field]);
+        });
+
+        // Gambar wajib — backend menolak partner tanpa image
+        if (!this.hasFile) this.setImageError('Please upload a cover image.');
+      },
+
+      hasFormErrors() {
+        return Object.values(this.formErrors).some((error) => error !== '');
+      },
+
+      // Dihitung ulang dari nilai formData, bukan dari hasFormErrors(): formErrors
+      // hanya terisi untuk field yang sudah disentuh, sehingga form kosong yang
+      // belum disentuh akan terbaca "tanpa error" dan tombol ikut menyala.
+      canSubmit() {
+        const fieldsOk = Object.keys(this.formData).every(
+          (field) => this.errorFor(field, this.formData[field]) === '',
+        );
+
+        return this.hasFile && this.isValid && fieldsOk;
+      },
+
+      // Arahkan user ke masalah pertama sesuai urutan field.
+      focusFirstInvalid() {
+        const firstInvalid = Object.keys(this.formErrors).find((f) => this.formErrors[f]);
+        if (firstInvalid) {
+          document.getElementById(`${firstInvalid}-trigger`)?.focus();
+          return;
+        }
+
+        if (!this.isValid || !this.hasFile) this.$refs.dropInput.parentElement.scrollIntoView({ block: 'center' });
+      },
+
+      // Tombol Create Partner selalu aktif; validasi dijalankan di sini.
+      submitForm(event) {
+        this.validateAll();
+        if (!this.canSubmit()) {
+          this.focusFirstInvalid();
+          return;
+        }
+
+        this.loading = true;
+        event.target.submit();
+      },
+    };
+  }
+</script>

@@ -1,0 +1,290 @@
+{{!--
+  Komponen: Payment Channel Toggle (Gateway | Manual) — Level 2 Molekul
+  Lokasi: src/views/partials/components/ui/card/payment_channel/index.hbs
+
+  Digunakan di dalam summary card pembayaran (Full & Installment). Memberi user
+  pilihan kanal pembayaran:
+  - Gateway : CTA asli (Tombol Pay Now / partial-block) → API Xendit.
+  - Manual  : Kartu rekening bank + form upload bukti transfer → rute manual
+              verifikasi super admin.
+
+  Props:
+  - uid           : string (pembeda id, contoh 'full' | 'installment')
+  - methodLabel   : string (label metode, contoh 'Full Payment')
+  - actionUrl     : string (endpoint POST formulir manual)
+  - gatewayEnabled: boolean — toggle gateway aktif
+  - gatewayHidden : boolean — gateway ditolak otomatis (kunci Xendit kosong)
+  - manualEnabled : boolean — toggle manual aktif
+
+  @partial-block: konten CTA Gateway (biasanya tombol Pay Now lama).
+--}}
+
+<div
+  x-data="paymentChannel({
+    gatewayEnabled: {{#if gatewayEnabled}}true{{else}}false{{/if}},
+    gatewayHidden: {{#if gatewayHidden}}true{{else}}false{{/if}},
+    manualEnabled: {{#if manualEnabled}}true{{else}}false{{/if}},
+    copyCopied: '{{{t 'test.payment.channel.copied'}}}',
+    copyAccountLabel: '{{{t 'test.payment.channel.copyAccount'}}}'
+  })"
+  class="flex flex-col gap-3 w-full"
+>
+  {{!-- Informasi kanal yang sedang aktif. Hanya satu kanal yang boleh aktif
+       (ditegakkan di PaymentSettingsService), jadi layar "pilih kanal" tidak
+       ada; kanal aktif langsung ditampilkan di bawah. --}}
+  <template x-if="!gatewayAvailable && manualAvailable">
+    <div class="flex items-center gap-2 rounded-lg bg-[#F1F5F9] px-3 py-2">
+      <i class="fa-solid fa-building-columns text-xs text-[#003060]"></i>
+      <span class="font-inter text-xs text-[#475569]">
+        {{t 'test.payment.channel.manualOnly'}}
+      </span>
+    </div>
+  </template>
+  <template x-if="gatewayAvailable && !manualAvailable">
+    <div class="flex items-center gap-2 rounded-lg bg-[#F1F5F9] px-3 py-2">
+      <i class="fa-solid fa-bolt text-xs text-[#003060]"></i>
+      <span class="font-inter text-xs text-[#475569]">
+        {{t 'test.payment.channel.gatewayOnly'}}
+      </span>
+    </div>
+  </template>
+  <template x-if="!gatewayAvailable && !manualAvailable">
+    <div class="flex items-center gap-2 rounded-lg bg-[#FEF2F2] border border-[#FECACA] px-3 py-2">
+      <i class="fa-solid fa-circle-exclamation text-xs text-[#D9333F]"></i>
+      <span class="font-inter text-xs text-[#D9333F]">
+        {{t 'test.payment.channel.allClosed'}}
+      </span>
+    </div>
+  </template>
+
+  {{!-- VIEW: Gateway (halaman Xendit — CTA asli via partial-block) --}}
+  <div x-show="channel === 'gateway' && gatewayAvailable" x-cloak class="flex flex-col gap-3 w-full">
+    <div class="flex flex-col gap-1">
+      <p class="font-montserrat font-semibold text-sm text-[#003060]">
+        {{t 'test.payment.channel.gatewayTitle'}}
+      </p>
+      <p class="font-inter text-[11px] leading-[15px] text-[#8A94A6]">
+        {{t 'test.payment.channel.gatewayHint'}}
+      </p>
+    </div>
+    {{> @partial-block}}
+  </div>
+
+  {{!-- VIEW: Manual (halaman upload bukti transfer) --}}
+  <div x-show="channel === 'manual' && manualAvailable" x-cloak class="flex flex-col gap-3 w-full">
+    <div class="flex flex-col gap-1">
+      <p class="font-montserrat font-semibold text-sm text-[#003060]">
+        {{t 'test.payment.channel.manualTitle'}}
+      </p>
+
+    </div>
+
+    {{!-- Kartu Rekening --}}
+    <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-2xl p-5 flex flex-col gap-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-[11px] text-slate-300">{{t 'test.payment.channel.transferTo'}}</p>
+          <p class="text-xl font-bold tracking-wider mt-1">2847 9237 4298 1234</p>
+        </div>
+        <button
+          type="button"
+          @click="copyBank()"
+          class="p-2 rounded-full bg-slate-700/60 hover:bg-emerald-600 transition-colors"
+          :class="{'bg-emerald-600': copied}"
+          :title="copied ? copyCopied : copyAccountLabel"
+        >
+          <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+        </button>
+      </div>
+      <div class="flex justify-between items-end gap-3 pt-3 border-t border-slate-700">
+        <div>
+          <p class="text-[11px] text-slate-300">{{t 'test.payment.channel.accountName'}}</p>
+          <p class="text-sm font-semibold">PT. WIRATEK SOLUSI ASIA</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[11px] text-slate-300">{{t 'test.payment.channel.bankLabel'}}</p>
+          <p class="text-sm font-semibold">BANK BCA</p>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Instruksi + Form Upload --}}
+    <div class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 flex flex-col gap-3">
+
+
+      <form
+        id="manual-form-{{uid}}"
+        action="{{actionUrl}}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="flex flex-col gap-3"
+        @submit="syncPromoCode($event)"
+      >
+        <input type="hidden" name="fullName" :value="formData.fullName" />
+        <input type="hidden" name="email" :value="formData.email" />
+        <input type="hidden" name="whatsappNumber" :value="formData.whatsappNumber" />
+        <input type="hidden" name="source" :value="formData.source" />
+        <input type="hidden" name="promoCode" :value="getPromoCode()" />
+
+        <label
+          class="flex flex-col items-center justify-center gap-2 w-full min-h-[120px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-white hover:border-[#003060] transition-colors cursor-pointer p-4 text-center"
+          :class="file ? 'border-emerald-400 bg-emerald-50' : ''"
+        >
+          <i class="fa-solid fa-cloud-arrow-up text-xl text-[#64748B]" x-show="!file"></i>
+          <i class="fa-solid fa-file-image text-xl text-emerald-500" x-show="file"></i>
+          <span class="font-inter text-[13px] text-[#475569]" x-show="!file">
+            {{t 'test.payment.channel.uploadHint'}}
+          </span>
+          <span class="font-inter text-[13px] font-semibold text-[#003060]" x-show="file" x-text="fileName"></span>
+          <span class="font-inter text-[11px] text-[#94A3B8]">
+            {{t 'test.payment.channel.chooseFile'}}
+          </span>
+          <input
+            type="file"
+            name="file"
+            accept="image/jpeg,image/jpg,image/png"
+            required
+            class="hidden"
+            @change="onFileChange($event)"
+          />
+        </label>
+
+        <button
+          type="submit"
+          class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-3 font-inter font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+          {{t 'test.payment.channel.submit'}}
+        </button>
+      </form>
+
+      <p class="font-inter text-[11px] text-[#94A3B8] text-center">
+        {{t 'test.payment.channel.uniqueNote'}}
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Dua nilai di bawah dirender tanpa escaping (tiga kurung) supaya tanda
+  // kutip di dalam terjemahan tidak menutup literal JS.
+  const CHANNEL_FILE_TOO_LARGE_TITLE = '{{{t 'test.payment.channel.fileTooLarge'}}}';
+  const CHANNEL_FILE_TOO_LARGE_BODY = '{{{t 'test.payment.channel.fileTooLargeBody'}}}';
+
+  function paymentChannel(data) {
+    return {
+      gatewayEnabled: !!data?.gatewayEnabled,
+      gatewayHidden: !!data?.gatewayHidden,
+      manualEnabled: !!data?.manualEnabled,
+      channel: 'gateway',
+      copied: false,
+      file: null,
+      fileName: '',
+      formData: { fullName: '', email: '', whatsappNumber: '', source: '' },
+
+      get gatewayAvailable() {
+        return this.gatewayEnabled && !this.gatewayHidden;
+      },
+
+      get manualAvailable() {
+        return this.manualEnabled;
+      },
+
+      // Jaring pengaman: kanal kosong hanya mungkin bila data tidak sinkron.
+      get noChannel() {
+        return !this.gatewayAvailable && !this.manualAvailable;
+      },
+
+      init() {
+        // Hanya satu kanal yang aktif, jadi tampilan langsung ke kanal itu
+        // tanpa perlu user memilih.
+        this.channel = this.gatewayAvailable ? 'gateway' : 'manual';
+        this.fillFromDraft();
+        document.addEventListener('payment:step-changed', () => this.fillFromDraft());
+      },
+
+      fillFromDraft() {
+        const key =
+          typeof window.getPaymentProgressStorageKey === 'function'
+            ? window.getPaymentProgressStorageKey()
+            : null;
+        if (!key) return;
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          const f1 = parsed?.forms?.form1;
+          if (f1) {
+            this.formData.fullName = f1.fullName || '';
+            this.formData.email = f1.email || '';
+            this.formData.whatsappNumber = f1.whatsappNumber || '';
+            this.formData.source = f1.source || '';
+          }
+        } catch (e) {
+          /* abaikan draft rusak */
+        }
+      },
+
+      getPromoCode() {
+        if (typeof window !== 'undefined' && window.activePromo) {
+          return window.activePromo;
+        }
+        const input = document.getElementById('promo-input') || document.getElementById('promo-input-installment');
+        if (input && input.value) {
+          return input.value.trim().toUpperCase();
+        }
+        const key =
+          typeof window.getPaymentProgressStorageKey === 'function'
+            ? window.getPaymentProgressStorageKey()
+            : null;
+        if (key) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              return parsed?.forms?.form2?.voucherDiscount || '';
+            }
+          } catch (e) {}
+        }
+        return '';
+      },
+
+      syncPromoCode(event) {
+        const promo = this.getPromoCode();
+        const promoInput = event.target.querySelector('input[name="promoCode"]');
+        if (promoInput) {
+          promoInput.value = promo;
+        }
+      },
+
+      onFileChange(event) {
+        const input = event.target;
+        const selected = input.files && input.files[0];
+        if (!selected) {
+          this.file = null;
+          this.fileName = '';
+          return;
+        }
+        if (selected.size > 5 * 1024 * 1024) {
+          showWarningToast(CHANNEL_FILE_TOO_LARGE_TITLE, CHANNEL_FILE_TOO_LARGE_BODY);
+          input.value = '';
+          this.file = null;
+          this.fileName = '';
+          return;
+        }
+        this.file = selected;
+        this.fileName = selected.name;
+      },
+
+      async copyBank() {
+        try {
+          await navigator.clipboard.writeText('2847923742981234');
+          this.copied = true;
+          setTimeout(() => (this.copied = false), 1800);
+        } catch (e) {
+          /* clipboard tidak tersedia */
+        }
+      },
+    };
+  }
+</script>

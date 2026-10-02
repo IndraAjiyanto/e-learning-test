@@ -8,8 +8,8 @@ import {
 
 @Entity('team_leads')
 export class TeamLead {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   profile: string;

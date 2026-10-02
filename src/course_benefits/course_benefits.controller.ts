@@ -16,6 +16,7 @@ import { UpdateCourseBenefitDto } from './dto/update-course_benefit.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('benefit-program')
@@ -25,7 +26,7 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createProgramBenefitDto: CreateCourseBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -33,7 +34,11 @@ export class ProgramBenefitController {
     try {
       createProgramBenefitDto.courseId = courseId;
       await this.programBenefitService.create(createProgramBenefitDto);
-      req.flash('success', 'Benefit Program successfully created');
+      flashToast(
+        req,
+        'Benefit Created',
+        'The program benefit has been added successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Benefit Program failed to create');
@@ -46,15 +51,18 @@ export class ProgramBenefitController {
   async formCreateWithKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
   ) {
-    res.render('super_admin/course_benefits/create', { user: req.user, courseId });
+    res.render('super_admin/course_benefits/create', {
+      user: req.user,
+      courseId,
+    });
   }
 
   @Roles('super_admin')
   @Get('formEdit/:programBenefitId')
   async formEdit(
-    @Param('programBenefitId') programBenefitId: number,
+    @Param('programBenefitId') programBenefitId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -69,8 +77,8 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Patch(':programBenefitId/:courseId')
   async update(
-    @Param('programBenefitId') programBenefitId: number,
-    @Param('courseId') courseId: number,
+    @Param('programBenefitId') programBenefitId: string,
+    @Param('courseId') courseId: string,
     @Body() updateProgramBenefitDto: UpdateCourseBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -80,7 +88,11 @@ export class ProgramBenefitController {
         programBenefitId,
         updateProgramBenefitDto,
       );
-      req.flash('success', 'Benefit Program successfully updated');
+      flashToast(
+        req,
+        'Benefit Updated',
+        'The changes to this program benefit have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Benefit Program failed to update');
@@ -91,8 +103,8 @@ export class ProgramBenefitController {
   @Roles('super_admin')
   @Delete(':programBenefitId/:courseId')
   async remove(
-    @Param('programBenefitId') programBenefitId: number,
-    @Param('courseId') courseId: number,
+    @Param('programBenefitId') programBenefitId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -103,7 +115,11 @@ export class ProgramBenefitController {
         req.flash('error', 'Benefit Program not found');
       }
       await this.programBenefitService.remove(programBenefitId);
-      req.flash('success', 'Benefit Program successfully deleted');
+      flashToast(
+        req,
+        'Benefit Deleted',
+        'The program benefit has been removed successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Benefit Program failed to delete');

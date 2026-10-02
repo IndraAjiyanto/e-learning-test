@@ -152,7 +152,7 @@ export class LibreOfficeService {
   async convertAndUploadPptToCloudinary(
     inputPath: string,
     outputDir: string,
-    sessionId: number,
+    sessionId: string,
   ): Promise<{ pptUrl: string; slideUrls: string[] }> {
     try {
       const slidePaths = await this.convertPptToPng(inputPath, outputDir);

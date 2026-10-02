@@ -13,17 +13,17 @@ import { ProcessStatus } from './types/process-status';
 
 @Entity()
 export class Logbook {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'activity', nullable:true })
+  @Column({ name: 'activity', nullable: true })
   activity: string;
 
-  @Column({ name: 'activity_details', nullable:true })
+  @Column({ name: 'activity_details', nullable: true })
   activityDetails: string;
 
-  @Column({ type:'varchar', nullable: true })
-  documentation?: string| null;
+  @Column({ type: 'varchar', nullable: true })
+  documentation?: string | null;
 
   @Column({
     type: 'enum',
@@ -32,10 +32,10 @@ export class Logbook {
   })
   process: ProcessStatus;
 
-  @Column({ name: 'obstacles', nullable:true })
+  @Column({ name: 'obstacles', nullable: true })
   obstacles: string;
 
-  @Column({ name: 'other_documentation', nullable:true })
+  @Column({ name: 'other_documentation', nullable: true })
   otherDocumentation: string;
 
   @CreateDateColumn()

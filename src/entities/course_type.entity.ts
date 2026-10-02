@@ -10,11 +10,12 @@ import {
 import { Course } from './course.entity';
 import { Category } from './category.entity';
 import { Exclude } from 'class-transformer';
+import { CourseTypeEnum } from './types/course-type-enum';
 
 @Entity('course_type')
 export class CourseType {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   nameClassesType: string;
@@ -22,8 +23,13 @@ export class CourseType {
   @Column()
   icon: string;
 
+  // Kolom multibahasa, sejajar dengan Course.description — BUKAN array.
+  // Tipe sebelumnya (`string[]`) tidak pernah cocok dengan isi tabel: form
+  // create/edit selalu mengirim description[id]/[en]/[ja] dan baris yang ada
+  // di database berbentuk objek. Kolomnya jsonb, jadi koreksi ini murni tipe
+  // TypeScript dan tidak butuh migrasi.
   @Column('jsonb', { nullable: true })
-  description: string[];
+  description: { id: string; en: string; ja: string };
 
   @OneToMany(() => Course, (course) => course.courseType)
   @Exclude()
@@ -35,6 +41,13 @@ export class CourseType {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({
+    type: 'enum',
+    enum: ['hacker', 'hipster', 'hustler'],
+    nullable: true,
+  })
+  type?: CourseTypeEnum;
 
   @UpdateDateColumn()
   updatedAt: Date;

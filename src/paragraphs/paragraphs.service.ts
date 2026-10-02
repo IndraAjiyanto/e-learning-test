@@ -30,10 +30,16 @@ export class ParagraphsService {
   }
 
   async findAll() {
-    return await this.paragraphsRepository.find();
+    // Tanpa klausa order, Postgres mengembalikan baris sesuai urutan fisiknya,
+    // dan sebuah UPDATE memindahkan baris itu ke belakang. Akibatnya daftar
+    // teracak setiap kali ada yang diedit — halaman list menomori baris dari
+    // posisinya, jadi nomor ikut berubah padahal paragraphOrder tidak.
+    return await this.paragraphsRepository.find({
+      order: { paragraphOrder: 'ASC' },
+    });
   }
 
-  async findOne(paragraphsId: number) {
+  async findOne(paragraphsId: string) {
     const paragraphs = await this.paragraphsRepository.findOne({
       where: { id: paragraphsId },
     });
@@ -43,7 +49,7 @@ export class ParagraphsService {
     return paragraphs;
   }
 
-  async update(paragraphsId: number, updateParagraphsDto: UpdateParagraphsDto) {
+  async update(paragraphsId: string, updateParagraphsDto: UpdateParagraphsDto) {
     const paragraphs = await this.findOne(paragraphsId);
     if (!paragraphs) {
       throw new NotFoundException('paragraphs not found');
@@ -52,7 +58,7 @@ export class ParagraphsService {
     return await this.paragraphsRepository.save(paragraphs);
   }
 
-  async remove(paragraphsId: number) {
+  async remove(paragraphsId: string) {
     const paragraphs = await this.findOne(paragraphsId);
     if (!paragraphs) {
       throw new NotFoundException('paragraphs not found');

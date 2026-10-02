@@ -1,4 +1,4 @@
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsString, IsUUID } from 'class-validator';
 
 export class CreateMentorLogbookDto {
   @IsString()
@@ -13,9 +13,9 @@ export class CreateMentorLogbookDto {
   @IsString()
   obstacle: string;
 
-  @IsInt()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsInt()
-  sessionId: number;
+  @IsUUID()
+  sessionId: string;
 }

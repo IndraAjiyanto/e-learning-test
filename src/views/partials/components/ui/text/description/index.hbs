@@ -1,0 +1,17 @@
+{{!--
+  Komponen: Text Description (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/text/description/index.hbs
+
+  Menampilkan paragraf deskripsi dengan styling konsisten & responsif.
+
+  Props (semua support shorthand & raw value):
+  - text   : Teks deskripsi (wajib)
+  - align  : left | center | right | justify (default: center)
+  - size   : xs | sm | md | lg | xl | 2xl | 3xl | 4xl (default: sm)
+  - color  : primary | secondary | dark | muted | gray | white (default: muted)
+  - font   : sans | inter (default: sans)
+  - class  : Kelas tambahan untuk layout/spacing (default: "")
+  - tag    : Elemen HTML: p | span | div (default: p)
+--}}
+
+<{{default tag 'p'}} class="{{sizeClass size}} {{colorClass (default color 'muted')}} {{alignClass (default align 'center')}} {{fontClass (default font 'sans')}} {{class}}">{{text}}</{{default tag 'p'}}>

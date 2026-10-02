@@ -30,12 +30,17 @@ export class CommitmentService {
   }
 
   async findAll(): Promise<Commitment[]> {
+    // commitmentOrder, bukan createdAt: kolom itu yang benar-benar dipelihara —
+    // diisi getNextOrder() saat create dan diindeks ulang saat ada yang dihapus —
+    // jadi dialah urutan yang dimaksud, dan menaik supaya nomor baris di halaman
+    // list cocok dengan nilainya. Sebelumnya createdAt DESC membuat daftar
+    // tampil terbalik (TC-064).
     return await this.commitmentRepository.find({
-      order: { createdAt: 'DESC' },
+      order: { commitmentOrder: 'ASC' },
     });
   }
 
-  async findOne(id: number): Promise<Commitment> {
+  async findOne(id: string): Promise<Commitment> {
     const commitment = await this.commitmentRepository.findOne({
       where: { id },
     });
@@ -46,7 +51,7 @@ export class CommitmentService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateCommitmentDto: UpdateCommitmentDto,
   ): Promise<Commitment> {
     const commitment = await this.findOne(id);
@@ -54,7 +59,7 @@ export class CommitmentService {
     return await this.commitmentRepository.save(commitment);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const commitment = await this.findOne(id);
     await this.commitmentRepository.remove(commitment);
     const allCommitment = await this.commitmentRepository.find();

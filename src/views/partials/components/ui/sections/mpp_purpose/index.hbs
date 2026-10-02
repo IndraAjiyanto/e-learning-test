@@ -1,0 +1,80 @@
+<section
+    class="w-full overflow-hidden bg-[url('/public/image/mpp/background.png')] mb-24 bg-cover bg-center py-16 sm:py-20 lg:py-24"
+>
+    <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
+
+        <!-- Header -->
+        <div class="mx-auto max-w-4xl text-center">
+
+            <!-- Label -->
+            <div class="mb-5 flex justify-center">
+                {{> components/ui/text/badge/index
+                    text="Tujuan Program"
+                    tag="span"
+                    bgColor="bg-white/80"
+                    class="text-sm sm:text-base backdrop-blur-sm"
+                }}
+            </div>
+
+            <!-- Title -->
+            {{> components/ui/text/sub_title/index
+                text="Tujuan Marketing Partner Program"
+                color="text-white"
+                size="xl"
+                class="text-[36px] leading-tight"
+            }}
+
+            <!-- Description -->
+            {{> components/ui/text/description/index
+                text="Program ini dirancang untuk membantu Kesatria Academy memperoleh peserta IT Bootcamp melalui kemitraan pemasaran bersama mahasiswa aktif dan fresh graduate."
+                color="text-white"
+                size="lg"
+                class="mt-5 text-[20px] leading-7"
+            }}
+
+        </div>
+
+        <!-- Cards -->
+        <div
+            class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-8"
+        >
+
+            <!-- Card 1 -->
+            {{> components/ui/icon/icon_card/index
+                icon="fa-solid fa-bolt"
+                title="Efisien"
+                description="Akuisisi peserta dilakukan dengan biaya yang lebih optimal dan efektif."
+                wrapperClass="h-[405px] max-w-[379px] bg-[#FFFFFFBF]/75 border-gray-100 hover:-translate-y-1 hover:shadow-lg"
+                iconContainerClass="mb-12 mt-12 flex h-16 w-16 items-center justify-center rounded-2xl text-[#003060] transition-colors duration-300 group-hover:text-white"
+                iconClass="text-[96px]"
+                titleClass="text-[25px] font-semibold text-gray-900 mb-12"
+                descClass="mt-2 text-[20px] leading-6 text-gray-900"
+            }}
+
+            <!-- Card 2 -->
+            {{> components/ui/icon/icon_card/index
+                icon="fa-solid fa-arrow-trend-up"
+                title="Scalable"
+                description="Program mudah diperluas ke berbagai kampus dan komunitas."
+                wrapperClass="h-[405px] max-w-[379px] bg-[#FFFFFFBF]/75 border-gray-100 hover:-translate-y-1 hover:shadow-lg"
+                iconContainerClass="mb-12 mt-12 flex h-16 w-16 items-center justify-center rounded-2xl text-[#003060] transition-colors duration-300 group-hover:text-white"
+                iconClass="text-[96px]"
+                titleClass="text-[25px] font-semibold text-gray-900 mb-12"
+                descClass="mt-2 text-[20px] leading-6 text-gray-900"
+            }}
+
+            <!-- Card 3 -->
+            {{> components/ui/icon/icon_card/index
+                icon="fa-solid fa-arrows-rotate"
+                title="Berkelanjutan"
+                description="Menciptakan peserta konsisten melalui kemitraan berkelanjutan."
+                wrapperClass="h-[405px] max-w-[379px] bg-[#FFFFFFBF]/75 border-gray-100 hover:-translate-y-1 hover:shadow-lg"
+                iconContainerClass="mb-12 mt-12 flex h-16 w-16 items-center justify-center rounded-2xl text-[#003060] transition-colors duration-300 group-hover:text-white"
+                iconClass="text-[96px]"
+                titleClass="text-[25px] font-semibold text-gray-900 mb-12"
+                descClass="mt-2 text-[20px] leading-6 text-gray-900"
+            }}
+
+        </div>
+    </div>
+</section>

@@ -55,12 +55,9 @@ export class UserAnswersService {
       });
 
       if (!questions)
-        throw new NotFoundException(
-          `Question id ${j.questionsId} not found`,
-        );
+        throw new NotFoundException(`Question id ${j.questionsId} not found`);
 
-      if (!user)
-        throw new NotFoundException(`User id ${j.userId} not found`);
+      if (!user) throw new NotFoundException(`User id ${j.userId} not found`);
 
       const answers = j.answersId
         ? await this.answerRepository.findOne({ where: { id: j.answersId } })
@@ -78,7 +75,7 @@ export class UserAnswersService {
     return await this.userAnswerRepository.save(answersToInsert);
   }
 
-  async searchAnswerUser(quizId: number, userId: number) {
+  async searchAnswerUser(quizId: string, userId: string) {
     return await this.userAnswerRepository.find({
       where: { question: { quiz: { id: quizId } }, user: { id: userId } },
       relations: ['answer', 'user'],
@@ -133,13 +130,14 @@ export class UserAnswersService {
     }
   }
 
-  async createScore(UserAnswer: UserAnswer[], quizId: number, userId: number) {
+  async createScore(UserAnswer: UserAnswer[], quizId: string, userId: string) {
     if (UserAnswer.length === 0) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
       user.quizStart = false;
+      user.countdownQuiz = null;
       await this.userRepository.save(user);
 
       await this.scoreRepository.save({
@@ -149,7 +147,7 @@ export class UserAnswersService {
       });
     } else {
       const answerIds = UserAnswer.map((j) => j.answer?.id).filter(
-        (id): id is number => id !== undefined && id !== null,
+        (id): id is string => id !== undefined && id !== null,
       );
       const correctAnswers = await this.answerRepository.findBy({
         id: In(answerIds),
@@ -175,19 +173,39 @@ export class UserAnswersService {
 
       const quiz = await this.quizRepository.findOne({
         where: { id: quizId },
-        relations: ['weeks'],
+        relations: ['weeks', 'syllabus', 'syllabus.course'],
       });
 
       if (!quiz) {
         throw new NotFoundException('quiz not found');
       }
 
-      if (scores >= quiz.minScore) {
+      if (scores >= quiz.minScore && quiz.weeks) {
         await this.weekProgress(quiz.weeks.id, userId);
         await this.updateWeekProgress(quiz.weeks.id, userId);
       }
 
+      // Syllabus final selesai → tandai user_courses.progress = true.
+      // Tanpa ini student yang menyelesaikan program non_bootcamp tidak pernah
+      // mendapat `progress = true`, sehingga tombol Create Portfolio tidak
+      // pernah muncul walaupun seluruh silabus sudah dikerjakan.
+      if (scores >= quiz.minScore && quiz.syllabus?.isFinal && quiz.syllabus.course) {
+        const existingUserCourse = await this.userCourseRepository.findOne({
+          where: {
+            course: { id: quiz.syllabus.course.id },
+            user: { id: userId },
+          },
+        });
+        if (existingUserCourse && !existingUserCourse.progress) {
+          await this.userCourseRepository.save({
+            id: existingUserCourse.id,
+            progress: true,
+          });
+        }
+      }
+
       user.quizStart = false;
+      user.countdownQuiz = null;
       await this.userRepository.save(user);
 
       await this.scoreRepository.save({
@@ -198,21 +216,27 @@ export class UserAnswersService {
     }
   }
 
-  async updateWeekProgress(weeksId: number, userId: number) {
-    const weekProgresses = await this.weekProgressRepository.findOne({
+  async updateWeekProgress(weeksId: string, userId: string) {
+    let weekProgresses = await this.weekProgressRepository.findOne({
       where: { week: { id: weeksId }, user: { id: userId } },
     });
     if (!weekProgresses) {
-      throw new NotFoundException('weekProgresses not found');
+      weekProgresses = this.weekProgressRepository.create({
+        week: { id: weeksId },
+        user: { id: userId },
+        process: true,
+        quiz: true,
+      });
+    } else {
+      weekProgresses.quiz = true;
     }
 
-    weekProgresses.quiz = true;
     await this.weekProgressRepository.save(weekProgresses);
 
     return weekProgresses;
   }
 
-  async weekProgress(weeksId: number, userId: number) {
+  async weekProgress(weeksId: string, userId: string) {
     const currentWeek = await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
@@ -300,21 +324,21 @@ export class UserAnswersService {
     }
   }
 
-  async findByUserAndQuestion(userId: number, questionId: number) {
+  async findByUserAndQuestion(userId: string, questionId: string) {
     return await this.userAnswerRepository.find({
       where: { user: { id: userId }, question: { id: questionId } },
       relations: ['answer'],
     });
   }
 
-  async findAnswersByUser(userId: number) {
+  async findAnswersByUser(userId: string) {
     return await this.userAnswerRepository.find({
       where: { user: { id: userId } },
       relations: ['answer'],
     });
   }
 
-  async calculateScore(weeksId: number, userId: number) {
+  async calculateScore(weeksId: string, userId: string) {
     const answers = await this.userAnswerRepository.find({
       where: { question: { quiz: { id: weeksId } }, user: { id: userId } },
       relations: ['answer'],
@@ -333,7 +357,7 @@ export class UserAnswersService {
     return totalScore;
   }
 
-  async deleteAnswerUser(userId: number, quizId: number) {
+  async deleteAnswerUser(userId: string, quizId: string) {
     const questions = await this.questionRepository.find({
       where: { quiz: { id: quizId } },
       select: ['id'],
@@ -345,5 +369,12 @@ export class UserAnswersService {
       user: { id: userId },
       question: { id: In(ids) },
     });
+  }
+  async resetQuizState(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) return;
+    user.quizStart = false;
+    user.countdownQuiz = null;
+    await this.userRepository.save(user);
   }
 }

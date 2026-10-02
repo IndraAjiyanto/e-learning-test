@@ -1,0 +1,136 @@
+{{!--
+  Halaman: Voucher — Super Admin
+  Lokasi: src/views/super_admin/voucher/index.hbs
+  Level: L4 Page
+
+  - Sidebar sudah disediakan oleh layouts/main.hbs (offset lg:ml-[319px])
+
+  Data: GET /voucher → { vouchers }. Tiap baris sudah dilengkapi controller
+  dengan `target_users_label` (nama user yang diizinkan, atau "Public (All Users)").
+
+  Memakai clientTable, BUKAN endpoint filter seperti /technology: label target
+  user dirakit controller saat me-list, jadi memindahkannya ke endpoint
+  paginasi berarti menduplikasi logika itu tanpa keuntungan — baris voucher
+  kecil dan tidak memuat blob seperti kolom svg milik Tech.
+
+  Halaman lama tidak punya pencarian maupun paginasi sama sekali; keduanya
+  ikut didapat dari clientTable.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
+
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Voucher'
+      }}
+
+      {{> components/ui/super_admin/description/index
+        text='Manage discount and free-access vouchers, and who is allowed to redeem them.'
+      }}
+    </div>
+
+    <div
+      class='flex flex-col gap-2.5'
+      x-data='clientTable({ items: {{json vouchers}}, searchKeys: ["code_voucher", "type", "target_users_label"] })'
+    >
+      {{> components/ui/super_admin/table/toolbar
+        placeholder='Search voucher..'
+        searchLabel='Search voucher'
+        createHref='/voucher/formCreate'
+        createLabel='Create Voucher'
+      }}
+
+      {{#> components/ui/super_admin/table/card tableClass='min-w-[1002px]'}}
+        <colgroup>
+          <col class='w-[150px]' />
+          <col class='w-[110px]' />
+          <col class='w-[90px]' />
+          <col class='w-[120px]' />
+          <col class='w-[110px]' />
+          <col class='w-[306px]' />
+          <col class='w-[116px]' />
+        </colgroup>
+        <thead>
+          <tr>
+            {{> components/ui/super_admin/table/header_cell label='Code' }}
+            {{> components/ui/super_admin/table/header_cell label='Type' }}
+            {{> components/ui/super_admin/table/header_cell label='Percent' }}
+            {{> components/ui/super_admin/table/header_cell label='Status' }}
+            {{> components/ui/super_admin/table/header_cell label='Programs' }}
+            {{> components/ui/super_admin/table/header_cell label='Target Users' }}
+            {{> components/ui/super_admin/table/header_cell label='Action' }}
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for='row in rows' :key='row.id'>
+            <tr class='transition-colors hover:bg-[#fafafa]'>
+
+              {{#> components/ui/super_admin/table/cell}}
+                <span
+                  class='block truncate font-mono text-sm leading-5 text-[#171717]'
+                  x-text="row.code_voucher || '—'"
+                ></span>
+              {{/components/ui/super_admin/table/cell}}
+
+              {{#> components/ui/super_admin/table/cell}}
+                {{> components/ui/super_admin/badge/index
+                  text='row.type === "free" ? "Free" : "Discount"'
+                  classExpr="row.type === 'free' ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#f9f5ff] text-[#6941c6]'"
+                }}
+              {{/components/ui/super_admin/table/cell}}
+
+              {{!-- Persen hanya bermakna untuk voucher discount; voucher free
+                   selalu menampilkan strip, bukan 0%. --}}
+              {{> components/ui/super_admin/table/cell
+                text='row.type === "discount" && row.percent != null ? row.percent + "%" : "—"'
+              }}
+
+              {{#> components/ui/super_admin/table/cell}}
+                {{> components/ui/super_admin/badge/index
+                  dot=true
+                  text='row.active ? "Active" : "Inactive"'
+                  classExpr="row.active ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#f1f1f1] text-[#718096]'"
+                  dotClassExpr="row.active ? 'bg-[#22c55e]' : 'bg-[#718096]'"
+                }}
+              {{/components/ui/super_admin/table/cell}}
+
+              {{!-- Voucher tanpa program berlaku untuk semua program. --}}
+              {{> components/ui/super_admin/table/cell
+                text='row.courses && row.courses.length ? row.courses.length + " program" : "All programs"'
+              }}
+
+              {{#> components/ui/super_admin/table/cell}}
+                <span
+                  class='block truncate font-inter text-sm leading-5 text-[#525252]'
+                  :title='row.target_users_label'
+                  x-text="row.target_users_label || '—'"
+                ></span>
+              {{/components/ui/super_admin/table/cell}}
+
+              {{#> components/ui/super_admin/table/cell variant='action'}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='voucher'
+                  editHref="'/voucher/formEdit/' + row.id"
+                  deleteAction="'/voucher/' + row.id + '?_method=DELETE'"
+                }}
+              {{/components/ui/super_admin/table/cell}}
+            </tr>
+          </template>
+
+          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='7'}}
+            No vouchers found.
+          {{/components/ui/super_admin/table/message_row}}
+        </tbody>
+      {{/components/ui/super_admin/table/card}}
+    </div>
+  </div>
+</div>
+
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Voucher?'
+  description='Are you sure you want to delete this voucher? Anyone holding the code will no longer be able to redeem it. This action cannot be undone.'
+}}
+
+{{> components/ui/super_admin/toast/success/index toast=toast }}
+
+{{> components/ui/super_admin/table/client_table }}

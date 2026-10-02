@@ -1,17 +1,22 @@
 import {
-  IsString,
-  IsOptional,
-  IsEnum,
   IsArray,
+  IsEnum,
   IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateCategoriesDto {
   @IsString()
- name: string;
+  name: string;
 
   @IsString()
   icon: string;
+
+  @IsOptional()
+  @IsString()
+  hero_section_image?: string;
 
   @IsArray()
   description: string[];
@@ -26,27 +31,8 @@ export class CreateCategoriesDto {
 
   @IsOptional()
   @IsArray()
-  for?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsNumber({}, { each: true })
-  courseType?: number[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  infoId?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  infoEn?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  infoJa?: string[];
+  @IsUUID('all', { each: true })
+  courseType?: string[];
 
   @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';

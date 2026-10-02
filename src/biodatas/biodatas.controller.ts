@@ -10,6 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { BiodatasService } from './biodatas.service';
+import { flashToastError } from 'src/common/utils/toast.util';
 import { CreateBiodataDto } from './dto/create-biodata.dto';
 import { UpdateBiodataDto } from './dto/update-biodata.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -21,7 +22,7 @@ import { Request, Response } from 'express';
 export class BiodatasController {
   constructor(private readonly biodatasService: BiodatasService) {}
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Post()
   async create(
     @Body() createBiodataDto: CreateBiodataDto,
@@ -36,7 +37,11 @@ export class BiodatasController {
       req.flash('success', 'biodata successfully create');
       res.redirect('/users/profile');
     } catch (error: any) {
-      req.flash('error', error.message || 'biodata failed to create');
+      flashToastError(
+        req,
+        'Biodata not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }
@@ -50,7 +55,7 @@ export class BiodatasController {
   @Roles('user')
   @Get('formEdit/:biodataId')
   async formEdit(
-    @Param('biodataId') biodataId: number,
+    @Param('biodataId') biodataId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -58,10 +63,10 @@ export class BiodatasController {
     res.render('user/biodata/edit', { user: req.user, biodata });
   }
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Patch(':biodataId')
   async update(
-    @Param('biodataId') biodataId: number,
+    @Param('biodataId') biodataId: string,
     @Body() updateBiodataDto: UpdateBiodataDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -71,7 +76,11 @@ export class BiodatasController {
       req.flash('success', 'biodata successfully update');
       res.redirect('/users/profile');
     } catch (error: any) {
-      req.flash('error', error.message || 'biodata failed to update');
+      flashToastError(
+        req,
+        'Biodata not saved',
+        error.message || 'Please try again in a moment.',
+      );
       res.redirect('/users/profile');
     }
   }

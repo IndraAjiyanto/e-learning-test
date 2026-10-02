@@ -1,0 +1,184 @@
+{{!--
+  Komponen: Form Select Field (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/select_field.hbs
+  Level: L1 Atomik (scoped super_admin)
+
+  Trigger (identik di semua varian)
+  - sama persis dengan text_field: h 44, radius 8, border #d4d4d4, shadow 0 1px 2px rgba(0,0,0,0.05)
+  - placeholder Inter Regular 16/24 #737373, chevron-down 20px #737373 (padding kanan 14)
+
+  Menu punya DUA varian yang berbeda:
+
+  variant='menu' (default), dipakai Role
+  - menu min-w 320, item h 44, px 14, py 10, gap 8
+  - item Montserrat 16/24 #4a5568; terpilih bg #e4f1f7, Montserrat Medium #055c90
+  - ikon check 20px #055c90
+
+  variant='dropdown', dipakai Status
+  - menu w 240, item h 40, px 16, py 10, gap 12
+  - item Montserrat 16/20 #404040 (berat teks tidak berubah saat terpilih); terpilih bg #e4f1f7
+  - ikon check 20px #404040
+
+  Keduanya: bg #ffffff, border #e5e5e5, radius 8, padding-y 4,
+  shadow 0 4px 6px -2px rgba(0,0,0,0.03) + 0 12px 16px -4px rgba(0,0,0,0.08)
+
+  Indikator titik (dot 10px) bersifat data-driven, bukan varian: bila sebuah option
+  punya property `dot` (nama class bg Tailwind), titik itu tampil di menu DAN di trigger.
+  Dipakai Status — Verified #22c55e, Unverified #718096.
+
+  Menggunakan listbox Alpine (bukan <select> native) agar menu bisa di-styling penuh.
+  Nilai terpilih dikirim ke backend lewat <input type='hidden'>.
+
+  Props:
+  - id          : string (wajib)
+  - name        : string (wajib) — name hidden input
+  - label       : string (wajib)
+  - field       : string (wajib) — key state Alpine (formData/formErrors)
+  - options     : string (wajib) — nama variabel Alpine berisi
+                  [{ value, label, dot? }]; `dot` = class bg (mis. 'bg-[#22c55e]')
+  - iconLeft    : 'user' | 'mail' | 'map-pin' | 'graduation-cap' | 'book' | 'phone'
+                  ikon 16px di kiri trigger. Aditif, default tanpa ikon.
+  - variant     : 'menu' (default) | 'dropdown'
+  - placeholder : string (opsional)
+  - hint        : string (opsional)
+  - required    : boolean (opsional)
+  - searchable  : boolean (default true) — kotak cari di atas menu; kata kunci dikosongkan
+                  tiap menu dibuka agar semua opsi tetap muncul. Matikan dengan searchable=false
+  - highlight   : boolean (opsional) — latar trigger kuning #fefce8
+  - disabled    : boolean (opsional) — trigger tak bisa dibuka; nilai tetap terkirim lewat hidden input
+--}}
+<div
+  class='flex flex-col gap-1.5'
+  x-data='{ open: false, q: "" }'
+  @keydown.escape.stop='open = false'
+  @click.outside='open = false'
+>
+  <label
+    id='{{id}}-label'
+    class='font-inter text-sm font-medium leading-5 text-[#404040]'
+  >{{label}}{{#if required}}<span class='text-[#dc2626]'>*</span>{{/if}}</label>
+
+  <div class='relative'>
+    <input type='hidden' id='{{id}}' name='{{name}}' x-model='formData.{{field}}' />
+
+    <button
+      type='button'
+      id='{{id}}-trigger'
+      {{#if disabled}}disabled{{/if}}
+      @click="open = !open; q = ''{{#unless (eq searchable false)}}; if (open) $nextTick(() => $refs.search.focus()){{/unless}}"
+      :aria-expanded='open'
+      :aria-invalid="formErrors.{{field}} ? 'true' : 'false'"
+      aria-haspopup='listbox'
+      aria-labelledby='{{id}}-label'
+      x-data='{ seen: false }'
+      {{#unless disabled}}x-init="$el.form?.addEventListener('submit', () => seen = true); $watch('formData.{{field}}', () => seen = true)"{{/unless}}
+      :class="formErrors.{{field}}
+        ? 'border-[#fca5a5] focus:border-[#ef4444] focus:ring-[#ef4444]/20'
+        : seen
+          ? 'border-[#22c55e] focus:border-[#16a34a] focus:ring-[#16a34a]/20'
+          : 'border-[#d4d4d4] hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-[#003060]/20'"
+      class='flex h-11 w-full items-center justify-between gap-2 rounded-lg border {{#if highlight}}bg-[#fefce8]{{else}}bg-white{{/if}} py-2.5 pl-3.5 pr-3.5 text-left font-inter text-base leading-6 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f5f5f5]'
+    >
+      <span class='flex min-w-0 items-center gap-2'>
+        {{#if iconLeft}}
+          <span class='pointer-events-none flex h-4 w-4 shrink-0 items-center justify-center text-[#737373]' aria-hidden='true'>
+            {{> components/ui/super_admin/form/field_icon name=iconLeft }}
+          </span>
+        {{/if}}
+        {{!-- dot 10px — hanya tampil bila option terpilih memang punya `dot` --}}
+        <span
+          x-show='({{options}}.find(o => o.value === formData.{{field}}) || {}).dot'
+          x-cloak
+          class='h-2.5 w-2.5 shrink-0 rounded-full'
+          :class="({{options}}.find(o => o.value === formData.{{field}}) || {}).dot"
+        ></span>
+        <span
+          class='truncate'
+          :class="formData.{{field}} ? 'text-[#171717]' : 'text-[#737373]'"
+          x-text="({{options}}.find(o => o.value === formData.{{field}}) || {}).label || '{{default placeholder "Select an option"}}'"
+        ></span>
+      </span>
+      <span
+        class='flex h-5 w-5 shrink-0 items-center justify-center transition-transform'
+        :class="[open ? 'rotate-180' : '', formErrors.{{field}} ? 'text-[#dc2626]' : 'text-[#737373]']"
+      >
+        {{!-- lucide: chevron-down --}}
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+          <path d='m6 9 6 6 6-6' />
+        </svg>
+      </span>
+    </button>
+
+    <ul
+      x-show='open'
+      x-cloak
+      x-transition.opacity.duration.150ms
+      role='listbox'
+      aria-labelledby='{{id}}-label'
+      class='absolute left-0 top-[calc(100%+6px)] z-20 w-full max-w-full {{#unless (eq searchable false)}}max-h-72 overflow-y-auto{{else}}overflow-hidden{{/unless}} {{#if (eq variant 'dropdown')}}sm:w-60{{else}}sm:min-w-[320px]{{/if}} rounded-lg border border-[#e5e5e5] bg-white py-1 shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
+    >
+      {{#unless (eq searchable false)}}
+        <li class='px-2 py-1'>
+          <input
+            type='text'
+            x-ref='search'
+            x-model='q'
+            @keydown.enter.prevent
+            placeholder='Search...'
+            aria-label='Search {{label}}'
+            class='h-9 w-full rounded-md border border-[#d4d4d4] bg-white px-3 font-inter text-sm leading-5 text-[#171717] placeholder:text-[#737373] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+          />
+        </li>
+      {{/unless}}
+      <template x-for="option in {{#unless (eq searchable false)}}{{options}}.filter(o => !q || String(o.label).toLowerCase().includes(q.trim().toLowerCase())){{else}}{{options}}{{/unless}}" :key='String(option.value)'>
+        <li>
+          <button
+            type='button'
+            role='option'
+            :aria-selected='formData.{{field}} === option.value'
+            @click='formData.{{field}} = option.value; touch("{{field}}"); open = false'
+            :class="formData.{{field}} === option.value
+              ? '{{#if (eq variant 'dropdown')}}bg-[#e4f1f7]{{else}}bg-[#e4f1f7] font-medium text-[#055c90]{{/if}}'
+              : 'hover:bg-[#f5f5f5] active:bg-[#ededed]{{#unless (eq variant 'dropdown')}} text-[#4a5568]{{/unless}}'"
+            class='flex w-full items-center text-left font-inter transition-colors focus:outline-none focus-visible:bg-[#f5f5f5] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#003060]/40 {{#if (eq variant 'dropdown')}}h-10 gap-3 px-4 py-2.5 text-base leading-5 text-[#404040]{{else}}h-11 justify-between gap-2 px-3.5 py-2.5 text-base leading-6{{/if}}'
+          >
+            {{!-- dot 10px — data-driven, ikut ada/tidaknya `dot` pada option --}}
+            <template x-if='option.dot'>
+              <span class='h-2.5 w-2.5 shrink-0 rounded-full' :class='option.dot'></span>
+            </template>
+            <span{{#if (eq variant 'dropdown')}} class='flex-1 truncate'{{/if}} x-text='option.label'></span>
+            <span
+              x-show='formData.{{field}} === option.value'
+              class='flex h-5 w-5 shrink-0 items-center justify-center {{#if (eq variant 'dropdown')}}text-[#404040]{{else}}text-[#055c90]{{/if}}'
+            >
+              {{!-- lucide: check --}}
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                <path d='M20 6 9 17l-5-5' />
+              </svg>
+            </span>
+          </button>
+        </li>
+      </template>
+      {{#unless (eq searchable false)}}
+        <li
+          x-show='!{{options}}.filter(o => !q || String(o.label).toLowerCase().includes(q.trim().toLowerCase())).length'
+          class='px-3.5 py-2.5 font-inter text-sm leading-5 text-[#737373]'
+        >No results found</li>
+      {{/unless}}
+    </ul>
+  </div>
+
+  <p
+    x-show='formErrors.{{field}}'
+    x-cloak
+    x-text='formErrors.{{field}}'
+    class='font-inter text-sm leading-5 text-[#ef4444]'
+  ></p>
+
+  {{#if hint}}
+    <p
+      x-show='!formErrors.{{field}}'
+      class='font-inter text-sm leading-5 text-[#525252]'
+    >{{hint}}</p>
+  {{/if}}
+</div>

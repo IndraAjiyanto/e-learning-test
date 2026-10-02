@@ -1,172 +1,75 @@
-<div class="w-full mx-auto px-6 py-10"
-     x-data="kelasTable()"
-     x-init="fetchKelas()">
+{{!--
+  Page: Admin Program List V2
+  Layout: main.hbs (res.render layout default via express-handlebars)
+  Komponen modular: partials/components/ui/admin/
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'
+     x-data='kelasTable()'
+     x-init='fetchKelas()'>
 
-  <div class="mb-6">
-    <div class="flex justify-between items-center mb-4">
-      <div class="flex items-center gap-2">
-        <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Program</h2>
+  <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-stretch'>
 
-        <select
-          x-model="alphabetFilter"
-          @change="currentPage = 1; fetchKelas()"
-          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >
-          <option value="">All</option>
-          <template x-for="letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')" :key="letter">
-            <option :value="letter" x-text="letter"></option>
-          </template>
-        </select>
+    {{!-- Title --}}
+    {{> components/ui/admin/text/page-header title='Program List' subtitle='Manage programs, quotas, and students.'}}
+
+    {{!-- Payment Settings (super admin only) --}}
+    {{#if isSuperAdmin}}
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
+        {{> components/ui/admin/payment_settings/index
+            manualEnabled=paymentSettings.manual_enabled
+            gatewayEnabled=paymentSettings.gateway_enabled
+            gatewayHidden=paymentSettings.gateway_hidden_because_key_missing }}
       </div>
+    {{/if}}
 
-      <div class="flex items-center gap-3">
-        <div class="relative w-full md:w-64">
-          <input
-            type="text"
-            placeholder="Search program..."
-            x-model="searchInput"
-            @input="handleSearch()"
-            class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
-          />
-          <button
-            @click="handleSearch()"
-            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
-            </svg>
-          </button>
+    {{!-- Content --}}
+    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
+
+      {{!-- Toolbar --}}
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
+        {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
+        <div class='w-[158px] shrink-0 self-end sm:self-auto'>
+          {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
         </div>
-
-        <a href="/program/create"
-           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Create Program
-        </a>
       </div>
+
+      {{!-- Table (1 komponen) --}}
+      {{> components/ui/admin/program/table isSuperAdmin=isSuperAdmin}}
+
     </div>
   </div>
 
-  <!-- Table -->
-  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
-
-    <!-- Loading -->
-    <div x-show="loading" class="py-12 text-center text-gray-500">
-      <i class="fas fa-spinner fa-spin text-2xl"></i>
-    </div>
-
-    <table x-show="!loading" class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Cover</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name Program</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Group</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category Program</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Proses</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kuota</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Student</th>
-          {{#if (roles user.role "super_admin")}}
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Mentor</th>
-          {{/if}}
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Launch</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        <template x-for="(course, index) in kelasList" :key="course.id">
-          <tr class="hover:bg-gray-50 transition">
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="(currentPage - 1) * size + index + 1"></td>
-            <td class="px-6 py-4 text-sm text-gray-800">
-              <img :src="course.image" :alt="course.name" class="w-full h-full rounded-btn object-cover border" />
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="course.name"></td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="course.group"></td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="course.category?.name"></td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="course.process"></td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="course.quota"></td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="course.userCourses?.length ?? 0"></td>
-            {{#if (roles user.role "super_admin")}}
-            <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="mentor in course.mentoring" :key="mentor.id">
-                <span x-text="mentor.user?.username + ' '"></span>
-              </template>
-            </td>
-            {{/if}}
-
-            <!-- Toggle Launch -->
-<td class="px-6 py-4 text-sm text-gray-800">
-  <form :action="'/program/' + course.id + '/toggle-launch?_method=PATCH'" method="POST">
-    <button type="button"
-      @click="confirmAction($el, course.launch ? 'Are you sure cancel launch this program?' : 'Are you sure launch this program?')"
-      :class="course.launch ? 'bg-green-500' : 'bg-gray-300'"
-      class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none">
-      <span
-        :class="course.launch ? 'translate-x-6' : 'translate-x-1'"
-        class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform">
-      </span>
-    </button>
-  </form>
-</td>
-
-            <!-- Action -->
-            <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
-              <a :href="'/program/detail/program/admin/' + course.id"
-                 @click.prevent="localStorage.setItem('kelasPrevUrl', window.location.href); window.location.href = '/program/detail/program/admin/' + course.id"
-                 class="p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition" title="View Kelas">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c-4.5 0-8.25 2.25-10.5 6 2.25 3.75 6 6 10.5 6s8.25-2.25 10.5-6c-2.25-3.75-6-6-10.5-6z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                </svg>
-              </a>
-
-              <a :href="'/program/addUser/' + course.id"
-                 class="p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition" title="View Murid">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.388 9.388 0 01-6 0M4.5 9a4.5 4.5 0 109 0 4.5 4.5 0 00-9 0zm15 0a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-                </svg>
-              </a>
-            </td>
-          </tr>
-        </template>
-
-        <!-- Empty -->
-        <tr x-show="!loading && kelasList.length === 0">
-          <td colspan="11" class="px-6 py-12 text-center text-gray-400">No program found.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Pagination -->
-  <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center" x-show="totalPages > 1">
-    <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
-      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
-      :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }">Prev</button>
-
-    <template x-for="page in totalPages" :key="page">
-      <button @click="changePage(page)"
-        class="px-3 py-1 rounded"
-        :class="{ 'bg-gray-900 text-white font-bold': page === currentPage }"
-        x-text="page">
-      </button>
-    </template>
-
-    <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
-      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
-      :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }">Next</button>
-  </div>
+  {{!-- Modal konfirmasi toggle launch — dipicu confirmToggleLaunch() di kelasTable() --}}
+  {{> components/ui/admin/modal/confirm_action/index}}
 </div>
+
+<script>
+  function confirmDelete(el, name) {
+    Swal.fire({
+      title: 'Delete Program',
+      text: 'Are you sure you want to delete "' + name + '"?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#DC2626',
+      cancelButtonColor: '#525252',
+      confirmButtonText: 'Delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        el.closest('form').submit();
+      }
+    });
+  }
+</script>
 
 <script>
 function kelasTable() {
   return {
     kelasList: [],
     searchInput: '',
-    alphabetFilter: '',
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    size: 5,
+    size: 10,
     loading: false,
     searchTimeout: null,
 
@@ -175,7 +78,6 @@ function kelasTable() {
       try {
         const params = new URLSearchParams();
         if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
-        if (this.alphabetFilter) params.set('alphabet', this.alphabetFilter);
         params.set('page', this.currentPage);
         params.set('limit', this.size);
 
@@ -206,6 +108,174 @@ function kelasTable() {
       this.currentPage = page;
       await this.fetchKelas();
     },
+
+    // Program Status Lifecycle Helpers
+    getStatus(status) {
+      return status || 'unlaunch';
+    },
+
+    getStatusLabel(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'Launch';
+        case 'learning': return 'Learning';
+        case 'done': return 'Done';
+        default: return 'Unlaunch';
+      }
+    },
+
+    getStatusBadgeClass(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'bg-[#DCFCE7]';
+        case 'learning': return 'bg-[#DBEAFE]';
+        case 'done': return 'bg-[#F3E8FF]';
+        default: return 'bg-[#F1F5F9]';
+      }
+    },
+
+    getStatusDotClass(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'bg-[#22C55E]';
+        case 'learning': return 'bg-[#3B82F6]';
+        case 'done': return 'bg-[#A855F7]';
+        default: return 'bg-[#94A3B8]';
+      }
+    },
+
+    getStatusTextClass(status) {
+      const s = status || 'unlaunch';
+      switch (s) {
+        case 'launch': return 'text-[#15803D]';
+        case 'learning': return 'text-[#1D4ED8]';
+        case 'done': return 'text-[#7E22CE]';
+        default: return 'text-[#475569]';
+      }
+    },
+
+    confirmStatusChange(courseId, index, targetStatus) {
+      const course = this.kelasList[index];
+      const configs = {
+        launch: {
+          title: 'Launch Program?',
+          description: `Are you sure you want to launch "${course.name}"? Program will be visible on the landing page for user registration.`,
+          confirmLabel: 'Launch',
+        },
+        unlaunch: {
+          title: 'Rollback to Unlaunch?',
+          description: `Are you sure you want to rollback "${course.name}" to Unlaunch? Program will be hidden from the landing page.`,
+          confirmLabel: 'Rollback',
+        },
+        learning: {
+          title: 'Start Learning Phase?',
+          description: `Are you sure you want to start learning for "${course.name}"? Registration on the landing page will be closed and learning sessions will begin.`,
+          confirmLabel: 'Start Learning',
+        },
+        done: {
+          title: 'Mark Program as Done?',
+          description: `Are you sure you want to mark "${course.name}" as Done? Participants will have finished learning and portfolios. This is the terminal state.`,
+          confirmLabel: 'Mark Done',
+        },
+      };
+
+      const config = configs[targetStatus] || {
+        title: 'Change Program Status?',
+        description: `Are you sure you want to change status to "${targetStatus}"?`,
+        confirmLabel: 'Confirm',
+      };
+
+      openConfirmModal({
+        title: config.title,
+        description: config.description,
+        confirmLabel: config.confirmLabel,
+        cancelLabel: 'Cancel',
+        onConfirm: () => this.updateStatus(courseId, index, targetStatus),
+      });
+    },
+
+    async updateStatus(courseId, index, targetStatus) {
+      const prevStatus = this.kelasList[index].status;
+      const prevLaunch = this.kelasList[index].launch;
+      try {
+        const res = await fetch(`/program/${courseId}/status-json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: targetStatus }),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          this.kelasList[index].status = json.status;
+          this.kelasList[index].launch = json.launch;
+        } else {
+          console.error('Update status failed:', json.message);
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Failed',
+              text: json.message || 'Failed to update program status',
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Update status error:', err);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Network or server error while updating status',
+          });
+        }
+      }
+    },
+
+    // Dipanggil dari legacy toggle switch bila ada
+    confirmToggleLaunch(courseId, index, event) {
+      const course = this.kelasList[index];
+      const willLaunch = !course.launch;
+      if (event && event.target) {
+        event.target.checked = course.launch;
+      }
+
+      openConfirmModal({
+        title: willLaunch ? 'Launch Program?' : 'Unlaunch Program?',
+        description: `Are you sure you want to ${willLaunch ? 'launch' : 'unlaunch'} "${course.name}"?`,
+        confirmLabel: willLaunch ? 'Launch' : 'Unlaunch',
+        cancelLabel: 'Cancel',
+        onConfirm: () => this.toggleLaunch(courseId, index),
+      });
+    },
+
+    async toggleLaunch(courseId, index) {
+      const prev = this.kelasList[index].launch;
+      try {
+        const res = await fetch(`/program/${courseId}/toggle-launch-json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          this.kelasList[index].launch = json.launch;
+          if (json.status) this.kelasList[index].status = json.status;
+        } else {
+          this.kelasList[index].launch = prev;
+          console.error('Toggle launch failed:', json.message);
+        }
+      } catch (err) {
+        this.kelasList[index].launch = prev;
+        console.error('Toggle launch error:', err);
+      }
+    },
   }
 }
 </script>
+
+{{!-- Toast sukses untuk proses program (create, switch launch/status, delete)
+     yang redirect balik ke /program. Dipicu via flashToast() di courses.controller. --}}
+{{> components/ui/admin/toast/success/index toast=toast }}

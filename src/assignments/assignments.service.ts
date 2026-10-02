@@ -29,7 +29,7 @@ export class AssignmentsService {
     return await this.assignmentRepository.save(task);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const task = await this.assignmentRepository.findOne({ where: { id: id } });
     if (!task) {
       throw new NotFoundException('assignments not found');
@@ -37,7 +37,7 @@ export class AssignmentsService {
     return task;
   }
 
-  update(id: number, updateAssignmentDto: UpdateAssignmentsDto) {
+  update(id: string, updateAssignmentDto: UpdateAssignmentsDto) {
     return `This action updates a #${id} assignments`;
   }
   async deleteFile(url: string) {
@@ -50,7 +50,7 @@ export class AssignmentsService {
     } catch (error) {}
   }
 
-  async remove(assignmentId: number) {
+  async remove(assignmentId: string) {
     const task = await this.assignmentRepository.findOne({
       where: { id: assignmentId },
     });

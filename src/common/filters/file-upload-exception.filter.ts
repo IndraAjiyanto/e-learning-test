@@ -39,10 +39,19 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
       (exception as any).storageErrors;
 
     if (isFileError) {
+      const isAjax =
+        request.xhr ||
+        (request.headers.accept &&
+          request.headers.accept.includes('application/json')) ||
+        request.path?.includes('upload-image') ||
+        request.path?.includes('fetch-image');
+
+      if (isAjax) {
+        return response.status(400).json({ success: 0, message: message });
+      }
+
       (request as any).flash('error', message);
-
       const referer = request.get('Referer') || '/';
-
       return response.redirect(referer);
     }
 

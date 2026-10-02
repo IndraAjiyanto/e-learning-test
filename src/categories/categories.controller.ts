@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  BadRequestException,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
@@ -18,10 +19,9 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -32,27 +32,75 @@ export class CategoriesController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('icon', multerConfigMemoryOnly),
-    ValidateImageInterceptor,
+    FileFieldsInterceptor(
+      [
+        { name: 'icon', maxCount: 1 },
+        { name: 'hero_section_image', maxCount: 1 },
+      ],
+      multerConfigMemoryOnly,
+    ),
   )
-  @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 2000,
-    minHeight: 1000,
-    maxHeight: 2000,
-    folder: 'category',
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-  })
   async create(
     @Body() createCategoriesDto: CreateCategoriesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createCategoriesDto.icon = req.body.uploadedImageUrls?.[0];
+      const files = req.files as {
+        icon?: Express.Multer.File[];
+        hero_section_image?: Express.Multer.File[];
+      };
+
+      const iconFile = files?.icon?.[0];
+      const heroFile = files?.hero_section_image?.[0];
+
+      if (iconFile && iconFile.size > 0) {
+        await this.categoriesService.validateImage(iconFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
+        });
+
+        if (!iconFile.mimetype.includes('svg')) {
+          await this.categoriesService.validateImageDimensions(iconFile, {
+            minWidth: 1000,
+            maxWidth: 2000,
+            minHeight: 1000,
+            maxHeight: 2000,
+          });
+        }
+
+        createCategoriesDto.icon = await this.categoriesService.saveFile(
+          iconFile,
+          'category',
+        );
+      }
+
+      if (heroFile && heroFile.size > 0) {
+        await this.categoriesService.validateImage(heroFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
+        });
+
+        createCategoriesDto.hero_section_image =
+          await this.categoriesService.saveFile(heroFile, 'category');
+      }
+
       await this.categoriesService.create(createCategoriesDto);
-      req.flash('success', 'category successfully created');
+      flashToast(
+        req,
+        'Category Created',
+        'The new category has been added to Kesatria Academy.',
+      );
       res.redirect('/category');
     } catch (error: any) {
       req.flash('error', error.message || 'category failed to create');
@@ -81,46 +129,67 @@ export class CategoriesController {
     @Res() res: Response,
   ) {
     const category = await this.categoriesService.findOneCategory(categoryName);
+    category.contact = category.contact?.replace(/^0/, '62');
     const benefit_category = await this.categoriesService.findBenefitByCategory(
       category.id,
     );
-    const flow_category = await this.categoriesService.findFlowByCategory(
+    const gallery = await this.categoriesService.findGalleryByCategory(
       category.id,
     );
-    const superiority = await this.categoriesService.findSuperiorityByCategory(
-      category.id,
-    );
-    const faqs = await this.categoriesService.findFaqByCategory(
-      category.id,
-    );
+    const faqs = await this.categoriesService.findFaqByCategory(category.id);
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
-    // const courses = await this.categoriesService.findCourseByCategory(category.id);
+    const courses = await this.categoriesService.findCourseByCategory(
+      category.id,
+    );
     if (category?.type === 'Special Program') {
+      const isJapan = Boolean(
+        category.name &&
+        (category.name.toLowerCase().includes('japan') ||
+          category.name === 'LPK'),
+      );
       res.render('special_program', {
         category,
         user: req.user,
-        // courses,
+        courses,
         alumni,
         benefit_category,
-        flow_category,
-        superiority,
         faqs,
+        gallery,
+        isJapan,
+      });
+    } else if (category?.type === 'Paid Program') {
+      const portfolio = await this.categoriesService.findPortfolioByCategory(
+        category.id,
+      );
+      res.render('paid_program', {
+        category,
+        user: req.user,
+        courses,
+        alumni,
+        portfolio,
+        benefit_category,
+        faqs,
+        gallery,
       });
     } else if (category?.type === 'Free Program') {
-      if (category.name === 'Short Class') {
-        res.render('short_class', { category, user: req.user, alumni });
-      } else {
-        res.render('program', { category, user: req.user, alumni });
-      }
+      res.render('free_program', {
+        category,
+        user: req.user,
+        courses,
+        benefit_category,
+        alumni,
+        gallery,
+        faqs,
+      });
     }
   }
 
   @Roles('super_admin')
   @Get('benefit/:categoryId')
   async findBenefitByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
     const benefit_category =
@@ -129,42 +198,19 @@ export class CategoriesController {
   }
 
   @Roles('super_admin')
-  @Get('flow/:categoryId')
-  async findFlowByCategory(
-    @Param('categoryId') categoryId: number,
-    @Res() res: Response,
-  ) {
-    const flow_category =
-      await this.categoriesService.findFlowByCategory(categoryId);
-    res.json(flow_category);
-  }
-
-  @Roles('super_admin')
-  @Get('superiority/:categoryId')
-  async findSuperiorityByCategory(
-    @Param('categoryId') categoryId: number,
-    @Res() res: Response,
-  ) {
-    const superiority =
-      await this.categoriesService.findSuperiorityByCategory(categoryId);
-    res.json(superiority);
-  }
-
-  @Roles('super_admin')
   @Get('faq/:categoryId')
   async findFaqByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
-    const faqs =
-      await this.categoriesService.findFaqByCategory(categoryId);
+    const faqs = await this.categoriesService.findFaqByCategory(categoryId);
     res.json(faqs);
   }
 
   @Roles('super_admin')
   @Get('admin/program/:categoryId')
   async findCourseByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
     const courses =
@@ -175,17 +221,18 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('alumni/:categoryId')
   async findAlumniByCategory(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
-    const alumni = await this.categoriesService.findAlumniByCategory(categoryId);
+    const alumni =
+      await this.categoriesService.findAlumniByCategory(categoryId);
     res.json(alumni);
   }
 
   @Roles('super_admin')
   @Get(':categoryId')
   async findOne(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -200,7 +247,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('formEdit/:categoryId')
   async formEdit(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -216,32 +263,86 @@ export class CategoriesController {
   @Roles('super_admin')
   @Patch(':categoryId')
   @UseInterceptors(
-    FileInterceptor('icon', multerConfigMemoryOnly),
-    ValidateImageInterceptor,
+    FileFieldsInterceptor(
+      [
+        { name: 'icon', maxCount: 1 },
+        { name: 'hero_section_image', maxCount: 1 },
+      ],
+      multerConfigMemoryOnly,
+    ),
   )
-  @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 2000,
-    minHeight: 1000,
-    maxHeight: 2000,
-    folder: 'category',
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-  })
   async update(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Body() updateCategoriesDto: UpdateCategoriesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const category = await this.categoriesService.findOne(categoryId);
-      if (req.body.uploadedImageUrls) {
-        await this.categoriesService.deleteFile(category.icon);
-        updateCategoriesDto.icon = req.body.uploadedImageUrls?.[0];
+
+      const files = req.files as {
+        icon?: Express.Multer.File[];
+        hero_section_image?: Express.Multer.File[];
+      };
+
+      const iconFile = files?.icon?.[0];
+      const heroFile = files?.hero_section_image?.[0];
+
+      if (iconFile && iconFile.size > 0) {
+        await this.categoriesService.validateImage(iconFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
+        });
+
+        if (!iconFile.mimetype.includes('svg')) {
+          await this.categoriesService.validateImageDimensions(iconFile, {
+            minWidth: 1000,
+            maxWidth: 2000,
+            minHeight: 1000,
+            maxHeight: 2000,
+          });
+        }
+
+        if (category.icon) {
+          await this.categoriesService.deleteFile(category.icon);
+        }
+
+        updateCategoriesDto.icon = await this.categoriesService.saveFile(
+          iconFile,
+          'category',
+        );
       }
+
+      if (heroFile && heroFile.size > 0) {
+        await this.categoriesService.validateImage(heroFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
+        });
+
+        if (category.hero_section_image) {
+          await this.categoriesService.deleteFile(category.hero_section_image);
+        }
+
+        updateCategoriesDto.hero_section_image =
+          await this.categoriesService.saveFile(heroFile, 'category');
+      }
+
       await this.categoriesService.update(categoryId, updateCategoriesDto);
-      req.flash('success', 'category successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The category information has been updated.',
+      );
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
       console.log(error);
@@ -253,18 +354,27 @@ export class CategoriesController {
   @Roles('super_admin')
   @Delete(':categoryId')
   async remove(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const category = await this.categoriesService.findOne(categoryId);
-      await this.categoriesService.deleteFile(category.icon);
       await this.categoriesService.remove(categoryId);
-      req.flash('success', 'category successfully deleted');
+      if (category.icon) await this.categoriesService.deleteFile(category.icon);
+      if (category.hero_section_image) {
+        await this.categoriesService.deleteFile(category.hero_section_image);
+      }
+      flashToast(
+        req,
+        'Category Deleted',
+        'The category has been permanently removed.',
+      );
       res.redirect('/category');
     } catch (error: any) {
-      req.flash('success', 'category failed to delete');
+      const errorMessage = error.message || 'category failed to delete';
+      flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
+      req.flash('error', errorMessage);
       res.redirect('/category');
     }
   }

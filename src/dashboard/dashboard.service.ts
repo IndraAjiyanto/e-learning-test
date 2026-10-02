@@ -1,13 +1,13 @@
-import { Repository, ILike } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
-import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
+import { CategoryPartner } from 'src/entities/category_partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -22,7 +22,7 @@ import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
 import { Faq } from 'src/entities/faq.entity';
-import { OurExperience } from 'src/entities/our_experience.entity';
+import { Gallery } from 'src/entities/gallery.entity';
 
 @Injectable()
 export class DashboardService {
@@ -33,14 +33,14 @@ export class DashboardService {
     private readonly alumniRepository: Repository<Alumni>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
-    @InjectRepository(ImageBenefit)
-    private readonly imageBenefitRepository: Repository<ImageBenefit>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(CourseType)
     private readonly courseTypeRepository: Repository<CourseType>,
     @InjectRepository(Partner)
     private readonly partnerRepository: Repository<Partner>,
+    @InjectRepository(CategoryPartner)
+    private readonly categoryPartnerRepository: Repository<CategoryPartner>,
     @InjectRepository(Benefit)
     private readonly benefitRepository: Repository<Benefit>,
     @InjectRepository(Team)
@@ -69,25 +69,25 @@ export class DashboardService {
     private readonly paragraphRepository: Repository<Paragraph>,
     @InjectRepository(Faq)
     private readonly faqRepository: Repository<Faq>,
-    @InjectRepository(OurExperience)
-    private readonly ourExperienceRepository: Repository<OurExperience>,
+    @InjectRepository(Gallery)
+    private readonly galleryRepository: Repository<Gallery>,
   ) {}
 
+  async findAllCategories() {
+    return await this.categoryRepository.find({ order: { createdAt: 'ASC' } });
+  }
 
-async findAllCategories() {
-  return await this.categoryRepository.find({ order: { id: 'ASC' } });
-}
-
-  async findOurExperience() {
-    return await this.ourExperienceRepository.find({
-      order: { id: 'ASC' },
+  async findAllPartners() {
+    return await this.partnerRepository.find({
+      relations: ['categoryPartner'],
+      order: { createdAt: 'ASC' },
     });
   }
 
   async findAllCourses() {
     return await this.courseRepository.find({
       where: { launch: true },
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       relations: [
         'category',
         'courseType',
@@ -99,44 +99,88 @@ async findAllCategories() {
   }
 
   async findCoursesPaginated(params: {
-    userId?: number;
-  category?: string;
-  courseType?: string;
-  method?: string;
-  search?: string;
-  page: number;
-  limit: number;
-}) {
-  const query = this.courseRepository.createQueryBuilder('course')
-    .leftJoinAndSelect('course.category', 'category')
-    .leftJoinAndSelect('course.courseType', 'courseType')
-    .leftJoinAndSelect('course.userCourses', 'userCourses')
-    .where('course.launch = :launch', { launch: true });
+    userId?: string;
+    category?: string;
+    courseType?: string;
+    method?: string;
+    search?: string;
+    status?: 'done' | 'ongoing';
+    page: number;
+    limit: number;
+  }) {
+    const query = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.userCourses', 'userCourses')
+      // Jumlah peserta sebenarnya. Join `userCourses` di atas ikut tersaring
+      // oleh filter userId di bawah, sehingga `userCourses.length` selalu 1
+      // untuk student yang sedang login - bar kuota jadi selalu "1 / N".
+      // loadRelationCountAndMap memakai subquery sendiri, tidak terpengaruh.
+      .loadRelationCountAndMap('course.enrolledCount', 'course.userCourses');
 
-    if(params.userId){
-      query.andWhere('userCourses.user.id = :userId', { userId: params.userId });
+    if (params.userId) {
+      // ponytail: My Learning menampilkan program yang diikuti student (launch, learning, done).
+      // Jangan kunci pada launch = true karena saat fase learning, launch sengaja false agar pendaftaran publik ditutup.
+      query
+        .where('userCourses.user.id = :userId', { userId: params.userId })
+        .andWhere('(course.status IS NULL OR course.status != :unlaunch)', {
+          unlaunch: 'unlaunch',
+        });
+
+      // Hanya bermakna di cabang ini. Tanpa userId, alias `userCourses` berisi
+      // baris milik semua user, jadi memfilter progress akan membuang program
+      // publik secara acak. Alias-nya sudah terkunci ke satu baris lewat where
+      // di atas, jadi menambahkan syarat progress tidak mengubah hitungan.
+      if (params.status === 'done' || params.status === 'ongoing') {
+        query.andWhere('userCourses.progress = :progress', {
+          progress: params.status === 'done',
+        });
+      }
+    } else {
+      // Landing page publik: hanya tampilkan program yang pendaftarannya buka
+      query.where('course.launch = :launch', { launch: true });
     }
 
-  if (params.category) {
-    query.andWhere('category.name = :category', { category: params.category });
-  }
-  if (params.courseType) {
-    query.andWhere('courseType.nameClassesType = :courseType', { courseType: params.courseType });
-  }
-  if (params.method) {
-    query.andWhere('course.method = :method', { method: params.method });
-  }
-  if (params.search) {
-    query.andWhere('course.name ILIKE :search', { search: `%${params.search}%` });
-  }
+    if (params.category) {
+      query.andWhere('category.name = :category', {
+        category: params.category,
+      });
+    }
+    if (params.courseType) {
+      query.andWhere('courseType.nameClassesType = :courseType', {
+        courseType: params.courseType,
+      });
+    }
+    if (params.method) {
+      query.andWhere('course.method = :method', { method: params.method });
+    }
+    if (params.search) {
+      query.andWhere('course.name ILIKE :search', {
+        search: `%${params.search}%`,
+      });
+    }
 
-  query.orderBy('course.id', 'DESC')
-    .skip((params.page - 1) * params.limit)
-    .take(params.limit);
+    query
+      .orderBy('course.createdAt', 'DESC')
+      .skip((params.page - 1) * params.limit)
+      .take(params.limit);
 
-  const [data, total] = await query.getManyAndCount();
-  return { data, total };
-}
+    const [data, total] = await query.getManyAndCount();
+
+    // Status penyelesaian ikut dibawa ke klien karena kartu My Learning perlu
+    // membedakan program yang sudah selesai dari yang masih berjalan. Diambil
+    // dari baris `userCourses` yang sudah di-join, BUKAN lewat
+    // loadRelationCountAndMap: subquery itu berdiri sendiri dan tidak ikut
+    // tersaring userId, persis seperti yang jadi catatan `enrolledCount` di atas.
+    if (params.userId) {
+      for (const course of data) {
+        course.isCompleted = course.userCourses?.[0]?.progress === true;
+      }
+    }
+
+    return { data, total };
+  }
 
   async findVisionsMissions() {
     return await this.visionRepository.find();
@@ -152,7 +196,7 @@ async findAllCategories() {
     return await this.valueRepository.find({ order: { valueOrder: 'ASC' } });
   }
 
-  async findCoursesByMentoring(userId: number) {
+  async findCoursesByMentoring(userId: string) {
     return await this.courseRepository.find({
       where: { mentorings: { user: { id: userId } } },
       relations: [
@@ -170,7 +214,9 @@ async findAllCategories() {
   }
 
   async findMission() {
-    return await this.missionRepository.find({ order: { missionOrder: 'ASC' } });
+    return await this.missionRepository.find({
+      order: { missionOrder: 'ASC' },
+    });
   }
 
   async findExperience() {
@@ -188,7 +234,9 @@ async findAllCategories() {
   }
 
   async findAboutParagraphs() {
-    return await this.paragraphRepository.find({ order: { paragraphOrder: 'ASC' } });
+    return await this.paragraphRepository.find({
+      order: { paragraphOrder: 'ASC' },
+    });
   }
 
   async findBackground() {
@@ -199,95 +247,104 @@ async findAllCategories() {
 
   async findCourses() {
     return await this.courseRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
       relations: ['category', 'courseType', 'userCourses'],
     });
   }
 
-async findPortfolio(options?: {
-  userId?: number | null;
-  categoryId?: string | null;
-  courseTypeId?: string | null;
-  page?: number;
-  limit?: number;
-}) {
-  const page = options?.page || 1;
-  const limit = options?.limit || 6;
-  const skip = (page - 1) * limit;
+  async findPortfolio(options?: {
+    userId?: string | null;
+    categoryId?: string | null;
+    courseTypeId?: string | null;
+    search?: string | null;
+    page?: number;
+    limit?: number;
+  }) {
+    const page = options?.page || 1;
+    const limit = options?.limit || 6;
+    const skip = (page - 1) * limit;
 
-  const where: any = {};
+    const qb = this.portfolioRepository
+      .createQueryBuilder('portfolio')
+      .leftJoinAndSelect('portfolio.course', 'course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.technologies', 'technologies')
+      .leftJoinAndSelect('portfolio.user', 'user')
+      .orderBy('portfolio.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
 
-  if (options?.userId) {
-    where.user = { id: options.userId };
+    if (options?.userId) {
+      qb.andWhere('user.id = :userId', { userId: options.userId });
+    }
+
+    if (options?.categoryId) {
+      qb.andWhere('category.id = :categoryId', {
+        categoryId: options.categoryId,
+      });
+    }
+
+    if (options?.courseTypeId) {
+      qb.andWhere('courseType.id = :courseTypeId', {
+        courseTypeId: options.courseTypeId,
+      });
+    }
+
+    if (options?.search && options.search.trim() !== '') {
+      const keyword = `%${options.search.trim()}%`;
+      qb.andWhere(
+        '(portfolio.title ILIKE :keyword OR portfolio.description ILIKE :keyword OR user.username ILIKE :keyword OR course.name ILIKE :keyword)',
+        { keyword },
+      );
+    }
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, total };
   }
 
-  if (options?.categoryId) {
-    where.course = {
-      ...where.course,
-      category: { id: options.categoryId }
-    };
+  async findAlumni(options?: {
+    courseId?: string | null;
+    search?: string | null;
+    categoryId?: string | null;
+    page?: number;
+    limit?: number;
+  }) {
+    const page = options?.page || 1;
+    const limit = options?.limit || 6;
+    const skip = (page - 1) * limit;
+
+    const qb = this.alumniRepository
+      .createQueryBuilder('alumni')
+      .leftJoinAndSelect('alumni.course', 'course')
+      .leftJoinAndSelect('course.category', 'category')
+      .orderBy('alumni.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+
+    if (options?.courseId) {
+      qb.andWhere('course.id = :courseId', { courseId: options.courseId });
+    } else if (options?.categoryId) {
+      qb.andWhere('category.id = :categoryId', {
+        categoryId: options.categoryId,
+      });
+    }
+
+    // Pencarian nama & posisi saat ini (kolom jsonb -> cast ke text agar ILIKE valid)
+    if (options?.search && options.search.trim() !== '') {
+      const keyword = `%${options.search.trim()}%`;
+      qb.andWhere(
+        '(alumni.name::text ILIKE :keyword OR alumni."currentPosition"::text ILIKE :keyword)',
+        {
+          keyword,
+        },
+      );
+    }
+
+    const [data, total] = await qb.getManyAndCount();
+
+    return { data, total };
   }
-
-  if (options?.courseTypeId) {
-    where.course = {
-      ...where.course,
-      courseType: { id: options.courseTypeId }
-    };
-  }
-
-  const [data, total] = await this.portfolioRepository.findAndCount({
-    where,
-    relations: ['course', 'course.category', 'course.courseType', 'user'],
-    skip,
-    take: limit,
-  });
-
-  return { data, total };
-}
-
-
-async findAlumni(options?: {
-  courseId?: string | null;
-  search?: string | null;
-  categoryId?: string | null; 
-  page?: number;
-  limit?: number;
-}) {
-  const page = options?.page || 1;
-  const limit = options?.limit || 6;
-  const skip = (page - 1) * limit;
-
-  const qb = this.alumniRepository
-    .createQueryBuilder('alumni')
-    .leftJoinAndSelect('alumni.kelas', 'kelas')
-    .leftJoinAndSelect('kelas.kategori', 'kategori')
-    .orderBy('alumni.createdAt', 'DESC')
-    .skip(skip)
-    .take(limit);
-
-    const where: any = {};
-
-  // Logika filter course atau category global
-  if (options?.courseId) {
-    where.course = { id: options.courseId };
-  } else if (options?.categoryId) {
-    where.course = { category: { id: options.categoryId } };
-  }
- if (options?.search && options.search.trim() !== '') {
-    const keyword = `%${options.search.trim()}%`;
-    where.nama = ILike(keyword);
-  }
-
-  const [data, total] = await this.alumniRepository.findAndCount({
-    where,
-    relations: ['course', 'course.category'],
-    order: { createdAt: 'DESC' },
-    skip,
-    take: limit,
-  });
-
-  return { data, total };
-}
 
   async findAllAlumni() {
     return await this.alumniRepository.find({
@@ -297,13 +354,59 @@ async findAlumni(options?: {
     });
   }
 
+  /**
+   * Sampel alumni acak untuk pop-up alumni mengambang.
+   *
+   * Berbeda dengan `findAlumni` yang mengurutkan `createdAt` untuk daftar
+   * direktori, di sini urutannya justru diacak: pop-up muncul di setiap page
+   * load, jadi selalu membuka alumni yang berbeda supaya tidak terasa seperti
+   * billboard alumni yang sama berulang-ulang. `RANDOM()` sudah dipakai di
+   * `courses.service.ts` untuk kebutuhan acak yang sama.
+   *
+   * Pengambilan dilakukan dua tahap, bukan satu query dengan join:
+   * `getMany()` yang memakai `take()` dan `leftJoinAndSelect` menjalankan
+   * query kedua berbentuk `SELECT DISTINCT "distinctAlias"."alumni_id" ...`
+   * untuk mengambil ID-nya, dan di situ alias `RANDOM()` tidak ikut ke select
+   * list - Postgres menolaknya dengan "for SELECT DISTINCT, ORDER BY
+   * expressions must appear in select list". `addSelect('RANDOM()', 'rand')`
+   * tidak menolong karena select list di query ID itulah yang jadi tempat
+   * ORDER BY dinilai.
+   *
+   * Jadi tahap pertama ambil ID acak tanpa join sama sekali (tidak ada
+   * `distinctAlias` kalau tidak ada relasi), tahap kedua ambil entitas untuk
+   * ID itu, lalu urutannya dipulihkan di memori mengikuti urutan acak tadi.
+   */
+  async findRandomAlumni(limit: number) {
+    const idRows = await this.alumniRepository
+      .createQueryBuilder('alumni')
+      .select('alumni.id', 'id')
+      .addSelect('RANDOM()', 'rand')
+      .orderBy('"rand"', 'ASC')
+      .limit(limit)
+      .getRawMany<{ id: string }>();
+
+    if (idRows.length === 0) return [];
+
+    const ids = idRows.map((row) => row.id);
+    const alumni = await this.alumniRepository.find({
+      where: { id: In(ids) },
+      relations: ['course', 'course.category'],
+    });
+
+    const byId = new Map(alumni.map((item) => [item.id, item]));
+
+    return ids
+      .map((id) => byId.get(id))
+      .filter((item): item is Alumni => item !== undefined);
+  }
+
   // async findPortfolio() {
   //   return await this.portfolioRepository.find({
   //     relations: ['course', 'course.category', 'course.courseType', 'user'],
   //   });
   // }
 
-  async findOnePortfolio(portfolioId: number) {
+  async findOnePortfolio(portfolioId: string) {
     return await this.portfolioRepository.findOne({
       where: { id: portfolioId },
       relations: ['course', 'course.category', 'course.technologies', 'user'],
@@ -324,6 +427,13 @@ async findAlumni(options?: {
 
   async findCollaborations() {
     return await this.partnerRepository.find({
+      relations: ['categoryPartner'],
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  async findCategoryPartners() {
+    return await this.categoryPartnerRepository.find({
       order: { createdAt: 'ASC' },
     });
   }
@@ -375,19 +485,10 @@ async findAlumni(options?: {
     return await this.courseTypeRepository.find();
   }
 
-  async findImage1() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 1 } });
-  }
-
-  async findImage2() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 2 } });
-  }
-
-  async findImage3() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 3 } });
-  }
-
-  async findImage4() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 4 } });
+  async findAllGallery(): Promise<Gallery[]> {
+    return this.galleryRepository.find({
+      relations: ['category'],
+      order: { no: 'ASC' },
+    });
   }
 }

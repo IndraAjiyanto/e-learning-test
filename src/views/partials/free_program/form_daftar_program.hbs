@@ -1,0 +1,642 @@
+{{!--
+  Partial: Form Pendaftaran Short Class / Free Program
+  Lokasi: src/views/partials/free_program/form_daftar_program.hbs
+  Referensi Figma: Node 1158-1495 (form-card) - Font: Inter
+--}}
+
+<div class="relative w-full max-w-[720px] mx-auto bg-white rounded-[16px] shadow-[0px_12px_40px_-4px_rgba(15,23,42,0.0313726)] p-6 sm:p-8 md:p-[48px] flex flex-col gap-8 isolate text-left font-inter">
+  
+  <!-- close-button (Node 1158-1495) -->
+  <button
+    type="button"
+    @click="closeRegistrationModal()"
+    class="close-modal-trigger absolute top-4 right-6 sm:top-4 sm:right-[34px] w-9 h-9 flex items-center justify-center text-[#666666] hover:text-[#0F172A] rounded-full transition-colors font-inter text-[20px] leading-[24px] z-10 cursor-pointer focus:outline-none"
+    aria-label="Close"
+  >
+    ✕
+  </button>
+
+  <!-- card-header -->
+  <div class="w-full flex flex-col items-start gap-3">
+    <!-- badge -->
+    <div class="inline-flex items-center px-3 py-1.5 bg-[#003060]/[0.05] rounded-full">
+      <span class="font-inter font-bold text-[12px] leading-[16px] uppercase tracking-wider text-[#003060]">
+        {{default (t 'test.freeProgram.registrationModal.badge') 'SHORT CLASS REGISTRATION'}}
+      </span>
+    </div>
+
+    <!-- title -->
+    <h1 class="font-inter font-bold text-[28px] sm:text-[32px] leading-[36px] sm:leading-[40px] text-[#003060] m-0">
+      {{default (t 'test.freeProgram.registrationModal.title') 'Short Class Registration'}}
+    </h1>
+
+    <!-- subtitle -->
+    <p class="font-inter font-normal text-[14px] sm:text-[15px] leading-[20px] text-[#64748B] m-0">
+      {{default (t 'test.freeProgram.registrationModal.subtitle') 'Please complete the form below to confirm your registration'}}
+    </p>
+  </div>
+
+  <!-- Registration Form (form-fields + action-bar) -->
+  <form id="short-class-form" class="w-full flex flex-col gap-6 sm:gap-8">
+    
+    <!-- form-fields -->
+    <div class="w-full flex flex-col gap-6">
+
+      <!-- field-your-program -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            {{default (t 'test.freeProgram.registrationModal.yourProgram') 'Your Program'}}
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        
+        <!-- program-banner -->
+        <div class="w-full min-h-[52px] px-4 py-3 sm:py-3.5 bg-[#003060]/[0.05] border border-[#003060]/[0.15] rounded-lg flex items-center gap-3">
+          <svg class="w-5 h-5 text-[#003060] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+          <span class="font-inter font-semibold text-[15px] leading-[20px] text-[#003060] truncate">
+            {{course.name}}
+          </span>
+        </div>
+      </div>
+
+      <!-- field-Full Name -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label for="user_fullname" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            {{default (t 'test.freeProgram.registrationModal.fullName') 'Full Name'}}
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        <input
+          type="text"
+          id="user_fullname"
+          name="user_fullname"
+          value="{{#if user.fullname}}{{user.fullname}}{{else}}{{user.username}}{{/if}}"
+          required
+          placeholder="{{default (t 'test.freeProgram.registrationModal.fullNamePlaceholder') 'Input Your Full Name'}}"
+          class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+        />
+      </div>
+
+      <!-- contact-row -->
+      <div class="w-full flex flex-col sm:flex-row items-start gap-5">
+        <!-- field-Email -->
+        <div class="w-full sm:flex-1 flex flex-col gap-2">
+          <div class="flex items-center gap-1">
+            <label for="user_email" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+              {{default (t 'test.freeProgram.registrationModal.email') 'Email'}}
+            </label>
+            <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+          </div>
+          <input
+            type="email"
+            id="user_email"
+            name="user_email"
+            value="{{user.email}}"
+            required
+            placeholder="{{default (t 'test.freeProgram.registrationModal.emailPlaceholder') 'Input Your Email'}}"
+            class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+          />
+        </div>
+
+        <!-- field-WhatsApp Number -->
+        <div class="w-full sm:flex-1 flex flex-col gap-2">
+          <div class="flex items-center gap-1">
+            <label for="user_no" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+              {{default (t 'test.freeProgram.registrationModal.whatsapp') 'WhatsApp Number'}}
+            </label>
+            <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+          </div>
+          <input
+            type="tel"
+            id="user_no"
+            name="user_no"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            value="{{user.no_telp}}"
+            required
+            placeholder="{{default (t 'test.freeProgram.registrationModal.whatsappPlaceholder') 'Input Your WhatsApp Number'}}"
+            class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+          />
+        </div>
+      </div>
+
+      <!-- field-Current Status -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label for="current_status" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            {{default (t 'test.freeProgram.registrationModal.currentStatus') 'Current Status'}}
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        <div class="relative w-full" id="dropdown-status">
+          <select
+            id="current_status"
+            name="current_status"
+            required
+            class="w-full h-[48px] px-4 pr-10 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors appearance-none cursor-pointer"
+          >
+            <option value="" disabled selected hidden>{{default (t 'test.freeProgram.registrationModal.selectStatus') 'Select your current status'}}</option>
+            {{#if currentStatusOptions}}
+              {{#each currentStatusOptions}}
+                <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
+              {{/each}}
+            {{else}}
+              <option value="University Student" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.universityStudent') 'University Student'}}</option>
+              <option value="Fresh Graduate" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freshGraduate') 'Fresh Graduate'}}</option>
+              <option value="Job Seeker" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.jobSeeker') 'Job Seeker'}}</option>
+              <option value="Employee" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.employee') 'Employee'}}</option>
+              <option value="Freelancer" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freelancer') 'Freelancer'}}</option>
+              <option value="Entrepreneur" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.entrepreneur') 'Entrepreneur'}}</option>
+              <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.other') 'Other'}}</option>
+            {{/if}}
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#64748B]">
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- field-How did you know About the program? -->
+      <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-1">
+          <label for="referal_source" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            {{default (t 'test.freeProgram.registrationModal.referalSource') 'How did you know About the program?'}}
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        <div class="relative w-full" id="dropdown-source">
+          <select
+            id="referal_source"
+            name="referal_source"
+            required
+            class="w-full h-[48px] px-4 pr-10 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors appearance-none cursor-pointer"
+          >
+            <option value="" disabled selected hidden>{{default (t 'test.freeProgram.registrationModal.selectOption') 'Select Option'}}</option>
+            {{#if referalSourceOptions}}
+              {{#each referalSourceOptions}}
+                <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
+              {{/each}}
+            {{else}}
+              <option value="Instagram" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.instagram') 'Instagram'}}</option>
+              <option value="TikTok" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.tiktok') 'TikTok'}}</option>
+              <option value="LinkedIn" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.linkedin') 'LinkedIn'}}</option>
+              <option value="Friends" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.friends') 'Friends'}}</option>
+              <option value="University" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.university') 'University'}}</option>
+              <option value="WhatsApp Group" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.whatsappGroup') 'WhatsApp Group'}}</option>
+              <option value="Webinar/Event" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.webinar') 'Webinar/Event'}}</option>
+              <option value="Website" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.website') 'Website'}}</option>
+              <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.other') 'Other'}}</option>
+            {{/if}}
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#64748B]">
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- field-will-attend -->
+      <div class="w-full flex flex-col gap-3">
+        <div class="flex items-center gap-1">
+          <label class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
+            {{default (t 'test.freeProgram.registrationModal.willAttend') 'Will you attend this program?'}}
+          </label>
+          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
+        </div>
+        
+        <!-- radio-group -->
+        <div class="w-full flex flex-col sm:flex-row items-center gap-4">
+          <!-- radio-option-yes -->
+          <label id="radio-label-yes" class="radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border-[1.5px] border-[#003060] rounded-[10px] cursor-pointer transition-all">
+            <input type="radio" name="attend_program" value="true" checked class="sr-only" />
+            <div class="radio-outer w-5 h-5 rounded-full border-2 border-[#003060] flex items-center justify-center shrink-0">
+              <div class="radio-inner w-2.5 h-2.5 rounded-full bg-[#003060]"></div>
+            </div>
+            <span class="radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]">
+              {{default (t 'test.freeProgram.registrationModal.yesAttend') 'Yes, I will attend'}}
+            </span>
+          </label>
+
+          <!-- radio-option-no -->
+          <label id="radio-label-no" class="radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border border-[#D9D9D9] rounded-[10px] cursor-pointer transition-all">
+            <input type="radio" name="attend_program" value="false" class="sr-only" />
+            <div class="radio-outer w-5 h-5 rounded-full border-2 border-[#D9D9D9] flex items-center justify-center shrink-0">
+              <div class="radio-inner w-2.5 h-2.5 rounded-full bg-[#003060] hidden"></div>
+            </div>
+            <span class="radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]">
+              {{default (t 'test.freeProgram.registrationModal.noAttend') "No, I can't attend"}}
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- field-consent -->
+      <div class="w-full pt-2 flex flex-col gap-3">
+        <p class="font-inter font-semibold text-[15px] leading-[20px] text-[#003060] m-0">
+          {{default (t 'test.freeProgram.registrationModal.consentText') 'I agree to receive seminar updates via email or WhatsApp.'}}
+        </p>
+        <label class="inline-flex items-center gap-3 cursor-pointer select-none w-fit group">
+          <div class="relative flex items-center justify-center">
+            <input
+              type="checkbox"
+              id="consent-checkbox"
+              name="agreement"
+              required
+              checked
+              class="peer appearance-none w-[22px] h-[22px] bg-[#003060] border border-[#003060] rounded-[6px] checked:bg-[#003060] checked:border-[#003060] transition-all cursor-pointer"
+            />
+            <svg class="w-3.5 h-3.5 text-white absolute pointer-events-none stroke-[2.5] opacity-100 peer-checked:opacity-100 peer-not-checked:opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+          <span class="font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]">
+            {{default (t 'test.freeProgram.registrationModal.yesAgree') 'Yes, I agree'}}
+          </span>
+        </label>
+      </div>
+
+    </div>
+
+    <!-- Error Alert Message -->
+    <div
+      id="form-error-alert"
+      class="hidden w-full p-4 rounded-xl bg-[#FEF2F2] border border-[#FCA5A5] text-[#991B1B] font-inter text-[14px] leading-[20px] flex items-start gap-3 transition-all"
+      role="alert"
+    >
+      <svg class="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <div class="flex-1">
+        <p id="form-error-title" class="font-semibold m-0">{{default (t 'test.freeProgram.registrationModal.errorTitle') 'Registration Failed'}}</p>
+        <p id="form-error-message" class="font-normal text-[13px] mt-0.5 text-[#B91C1C] m-0">{{default (t 'test.freeProgram.registrationModal.errorDefault') 'An error occurred while registering. Please try again.'}}</p>
+      </div>
+      <button
+        type="button"
+        id="btn-dismiss-error"
+        class="text-[#DC2626] hover:text-[#991B1B] transition-colors p-1 cursor-pointer focus:outline-none"
+        aria-label="Tutup pesan error"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- action-bar -->
+    <div class="w-full pt-4 flex flex-col-reverse sm:flex-row items-center gap-4">
+      <!-- button-cancel -->
+      <button
+        type="button"
+        id="btn-cancel-form"
+        @click="closeRegistrationModal()"
+        class="w-full sm:flex-1 h-[49px] px-7 rounded-lg border-[1.5px] border-[#003060] bg-transparent hover:bg-[#003060]/[0.05] font-inter font-semibold text-[16px] leading-[21px] text-[#003060] flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+      >
+        {{default (t 'test.freeProgram.registrationModal.btnCancel') 'Cancel'}}
+      </button>
+
+      <!-- button-register -->
+      <button
+        type="submit"
+        id="btn-register-form"
+        class="w-full sm:flex-1 h-[49px] px-7 rounded-lg bg-[#003060] hover:bg-[#002244] shadow-[0px_4px_12px_rgba(0,48,96,0.2)] font-inter font-semibold text-[16px] leading-[21px] text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none relative"
+      >
+        <span id="btn-register-text">{{default (t 'test.freeProgram.registrationModal.btnRegister') 'Register Now'}}</span>
+        <span id="btn-register-spinner" class="hidden absolute inset-0 flex items-center justify-center">
+          <i class="fa-solid fa-spinner fa-spin text-white"></i>
+        </span>
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Pop Up Sukses (Figma Node 1158-1487) -->
+<div id="success-popup-modal" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs invisible opacity-0 transition-all duration-300 font-inter">
+  <div class="w-full max-w-[585px] bg-white border border-[#E7EEF5] shadow-[0px_18px_48px_rgba(0,48,96,0.0784314)] rounded-[20px] p-6 sm:p-8 flex flex-col items-start gap-6 relative">
+    
+    <!-- success-hero -->
+    <div class="w-full flex flex-col items-center gap-5">
+      
+      <!-- success-badge (Node 1158-1487) -->
+      <div class="w-[96px] h-[96px] rounded-full bg-[#EAF8EF] flex items-center justify-center shrink-0">
+        <!-- ci:wavy-check -->
+        <svg class="w-[96px] h-[96px] block" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g id="ci:wavy-check">
+            <path id="Vector" d="M62.5 41.6667L45.8333 58.3333L37.5 50M55.1917 14.4125L60.2792 18.7458C61.5625 19.8375 63.1542 20.4958 64.8292 20.6333L71.4958 21.1667C73.3907 21.318 75.1698 22.1391 76.5143 23.4828C77.8588 24.8266 78.681 26.6052 78.8333 28.5L79.3625 35.1667C79.5 36.8458 80.1625 38.4417 81.2542 39.7208L85.5875 44.8042C86.8225 46.2521 87.5009 48.0928 87.5009 49.9958C87.5009 51.8989 86.8225 53.7396 85.5875 55.1875L81.2542 60.275C80.1625 61.5583 79.5 63.15 79.3667 64.8292L78.8333 71.4958C78.682 73.3907 77.8609 75.1698 76.5172 76.5143C75.1734 77.8589 73.3948 78.681 71.5 78.8333L64.8333 79.3667C63.1549 79.4996 61.5612 80.1586 60.2792 81.25L55.1917 85.5833C53.7438 86.8183 51.9031 87.4967 50 87.4967C48.0969 87.4967 46.2562 86.8183 44.8083 85.5833L39.725 81.25C38.4418 80.1578 36.8465 79.4987 35.1667 79.3667L28.5 78.8333C26.6046 78.6808 24.8254 77.8581 23.4816 76.5127C22.1377 75.1674 21.317 73.3873 21.1667 71.4917L20.6333 64.8292C20.4984 63.1517 19.8379 61.5596 18.7458 60.2792L14.4125 55.1875C13.1797 53.7402 12.5026 51.9012 12.5026 50C12.5026 48.0988 13.1797 46.2598 14.4125 44.8125L18.7458 39.7208C19.8417 38.4375 20.4958 36.8458 20.6292 35.1667L21.1625 28.5042C21.3142 26.6073 22.1371 24.8267 23.4834 23.4819C24.8297 22.1371 26.6113 21.3162 28.5083 21.1667L35.1667 20.6375C36.8456 20.5034 38.4393 19.8429 39.7208 18.75L44.8083 14.4167C46.2562 13.1817 48.0969 12.5033 50 12.5033C51.9031 12.5033 53.7438 13.1775 55.1917 14.4125Z" stroke="#12BD26" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- copy -->
+      <div class="w-full flex flex-col items-center gap-3 text-center">
+        <!-- You're all set. -->
+        <h2 class="font-inter font-bold text-[26px] sm:text-[32px] leading-[32px] sm:leading-[40px] text-[#003060] m-0 text-center">
+          {{default (t 'test.freeProgram.registrationModal.successTitle') "You're all set."}}
+        </h2>
+
+        <!-- Description -->
+        <p class="font-inter font-normal text-[15px] sm:text-[18px] leading-[24px] sm:leading-[30px] text-[#4B6470] m-0 text-center">
+          {{default (t 'test.freeProgram.registrationModal.successDesc') "Your program registration is confirmed. We'll send updates, reminders, and everything you need before the scheduled date."}}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- primary-cta -->
+    <button
+      type="button"
+      id="btn-continue-dashboard"
+      class="w-full h-[52px] py-4 px-6 bg-[#003060] hover:bg-[#002244] shadow-[0px_10px_24px_rgba(0,48,96,0.121569)] rounded-[14px] font-inter font-semibold text-[16px] leading-[20px] text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+    >
+      {{default (t 'test.freeProgram.registrationModal.btnContinueDashboard') 'Continue to dashboard'}}
+    </button>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Inject ID dari Backend Handlebars
+    const USER_ID = "{{user.id}}";
+    const COURSE_ID = "{{course.id}}";
+
+    const MSG_ERROR_TITLE = "{{default (t 'test.freeProgram.registrationModal.errorTitle') 'Registration Failed'}}";
+    const MSG_SELECT_STATUS = "{{default (t 'test.freeProgram.registrationModal.validation.selectStatus') 'Please select your current status.'}}";
+    const MSG_SELECT_SOURCE = "{{default (t 'test.freeProgram.registrationModal.validation.selectSource') 'Please select how you knew about this program.'}}";
+    const MSG_ALREADY_REGISTERED = "{{default (t 'test.freeProgram.registrationModal.validation.alreadyRegistered') 'Registration failed or you have already registered for this program.'}}";
+    const MSG_ERROR_DEFAULT = "{{default (t 'test.freeProgram.registrationModal.errorDefault') 'An error occurred while processing registration.'}}";
+    const MSG_NETWORK_ERROR = "{{default (t 'test.freeProgram.registrationModal.validation.networkError') 'Failed to connect to the server. Please check your internet connection and try again.'}}";
+
+    const form = document.getElementById('short-class-form');
+    const successModal = document.getElementById('success-popup-modal');
+    const continueDashboardBtn = document.getElementById('btn-continue-dashboard');
+    const dismissErrorBtn = document.getElementById('btn-dismiss-error');
+    let redirectUrl = '/users/profile?tab=dashboard';
+    
+    // Close modal triggers fallback (for Alpine or direct JS click)
+    const closeTriggers = document.querySelectorAll('.close-modal-trigger, #btn-cancel-form');
+    closeTriggers.forEach(btn => {
+      btn.addEventListener('click', function () {
+        // Trigger Alpine method if available
+        const alpineEl = document.querySelector('[x-data]');
+        if (alpineEl && alpineEl._x_dataStack && alpineEl._x_dataStack[0]?.closeRegistrationModal) {
+          alpineEl._x_dataStack[0].closeRegistrationModal();
+        }
+      });
+    });
+
+    function openSuccessModal() {
+      if (!successModal) return;
+      successModal.classList.remove('invisible', 'opacity-0');
+      successModal.classList.add('visible', 'opacity-100');
+    }
+
+    function showError(message, title = MSG_ERROR_TITLE) {
+      const errorAlert = document.getElementById('form-error-alert');
+      const errorTitle = document.getElementById('form-error-title');
+      const errorMsg = document.getElementById('form-error-message');
+
+      if (errorTitle) errorTitle.textContent = title;
+      if (errorMsg) errorMsg.textContent = message;
+      if (errorAlert) {
+        errorAlert.classList.remove('hidden');
+        errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      if (window.Swal) {
+        window.Swal.fire({
+          icon: 'error',
+          title: title,
+          text: message,
+          confirmButtonColor: '#003060',
+          customClass: {
+            popup: 'font-inter rounded-2xl',
+            confirmButton: 'font-inter font-semibold rounded-lg px-6 py-2.5',
+          },
+        });
+      }
+    }
+
+    function hideError() {
+      const errorAlert = document.getElementById('form-error-alert');
+      if (errorAlert) {
+        errorAlert.classList.add('hidden');
+      }
+    }
+
+    if (dismissErrorBtn) {
+      dismissErrorBtn.addEventListener('click', hideError);
+    }
+
+    if (form) {
+      // Submit form -> validasi + kirim data + buka pop up sukses HANYA jika berhasil
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const statusSelect = document.getElementById('current_status');
+        const sourceSelect = document.getElementById('referal_source');
+
+        if (!statusSelect || !statusSelect.value) {
+          showError(MSG_SELECT_STATUS);
+          statusSelect?.focus();
+          return;
+        }
+
+        if (!sourceSelect || !sourceSelect.value) {
+          showError(MSG_SELECT_SOURCE);
+          sourceSelect?.focus();
+          return;
+        }
+
+        hideError();
+
+        const registerBtn = document.getElementById('btn-register-form');
+        const registerText = document.getElementById('btn-register-text');
+        const registerSpinner = document.getElementById('btn-register-spinner');
+
+        if (registerBtn) registerBtn.disabled = true;
+        if (registerText) registerText.classList.add('opacity-0');
+        if (registerSpinner) registerSpinner.classList.remove('hidden');
+
+        try {
+          const formData = new FormData(form);
+
+          // Simpan ke localStorage sebagai backup
+          const dataObj = {};
+          formData.forEach((value, key) => { dataObj[key] = value; });
+          const storageKey = `registrations-${USER_ID}-${COURSE_ID}`;
+          localStorage.setItem(storageKey, JSON.stringify(dataObj));
+
+          const response = await fetch(`/registration/${USER_ID}/${COURSE_ID}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: formData,
+          });
+
+          let responseData = null;
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            responseData = await response.json().catch(() => null);
+          }
+
+          if (response.ok) {
+            if (responseData && responseData.redirectUrl) {
+              redirectUrl = responseData.redirectUrl;
+            } else if (response.redirected && response.url) {
+              redirectUrl = response.url;
+            }
+            // Munculkan Pop Up Sukses hanya bila berhasil
+            openSuccessModal();
+          } else {
+            // Jika gagal, jangan buka popup sukses; tampilkan pesan error
+            const errorMessage =
+              responseData?.message ||
+              (response.status === 400
+                ? MSG_ALREADY_REGISTERED
+                : MSG_ERROR_DEFAULT);
+            showError(errorMessage);
+          }
+        } catch (error) {
+          console.error('Registration error:', error);
+          showError(
+            error.message || MSG_NETWORK_ERROR
+          );
+        } finally {
+          if (registerBtn) registerBtn.disabled = false;
+          if (registerText) registerText.classList.remove('opacity-0');
+          if (registerSpinner) registerSpinner.classList.add('hidden');
+        }
+      });
+    }
+
+    // Tombol "Continue to dashboard" di pop up sukses
+    if (continueDashboardBtn) {
+      continueDashboardBtn.addEventListener('click', function () {
+        window.location.href = redirectUrl;
+      });
+    }
+
+    // Klik overlay backdrop pop up sukses -> navigate to dashboard
+    if (successModal) {
+      successModal.addEventListener('click', function (e) {
+        if (e.target === successModal) {
+          window.location.href = redirectUrl;
+        }
+      });
+    }
+
+    // Radio button attend interactive styling
+    const radioInputs = document.querySelectorAll('input[name="attend_program"]');
+    const labelYes = document.getElementById('radio-label-yes');
+    const labelNo = document.getElementById('radio-label-no');
+
+    function updateRadioState() {
+      const selected = document.querySelector('input[name="attend_program"]:checked')?.value;
+      if (selected === 'true') {
+        if (labelYes) {
+          labelYes.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border-[1.5px] border-[#003060] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelYes.querySelector('.radio-outer');
+          const inner = labelYes.querySelector('.radio-inner');
+          const text = labelYes.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#003060] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.remove('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]';
+        }
+        if (labelNo) {
+          labelNo.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border border-[#D9D9D9] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelNo.querySelector('.radio-outer');
+          const inner = labelNo.querySelector('.radio-inner');
+          const text = labelNo.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#D9D9D9] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.add('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]';
+        }
+      } else {
+        if (labelYes) {
+          labelYes.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border border-[#D9D9D9] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelYes.querySelector('.radio-outer');
+          const inner = labelYes.querySelector('.radio-inner');
+          const text = labelYes.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#D9D9D9] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.add('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#64748B]';
+        }
+        if (labelNo) {
+          labelNo.className = 'radio-card relative flex-1 w-full flex items-center px-5 py-3.5 gap-3 bg-white border-[1.5px] border-[#003060] rounded-[10px] cursor-pointer transition-all';
+          const outer = labelNo.querySelector('.radio-outer');
+          const inner = labelNo.querySelector('.radio-inner');
+          const text = labelNo.querySelector('.radio-text');
+          if (outer) outer.className = 'radio-outer w-5 h-5 rounded-full border-2 border-[#003060] flex items-center justify-center shrink-0';
+          if (inner) inner.classList.remove('hidden');
+          if (text) text.className = 'radio-text font-inter font-medium text-[15px] leading-[20px] text-[#0F172A]';
+        }
+      }
+    }
+
+    radioInputs.forEach(input => {
+      input.addEventListener('change', updateRadioState);
+    });
+
+    // Consent Checkbox style toggle
+    const consentCheckbox = document.getElementById('consent-checkbox');
+    if (consentCheckbox) {
+      function updateConsentStyle() {
+        if (consentCheckbox.checked) {
+          consentCheckbox.classList.remove('bg-white', 'border-[#D9D9D9]');
+          consentCheckbox.classList.add('bg-[#003060]', 'border-[#003060]');
+        } else {
+          consentCheckbox.classList.remove('bg-[#003060]', 'border-[#003060]');
+          consentCheckbox.classList.add('bg-white', 'border-[#D9D9D9]');
+        }
+      }
+      consentCheckbox.addEventListener('change', updateConsentStyle);
+    }
+
+    // Dynamic text color for selects (placeholder vs selected)
+    function handleSelectColor(selectEl) {
+      if (!selectEl) return;
+      const update = () => {
+        if (selectEl.value) {
+          selectEl.classList.remove('text-[#94A3B8]');
+          selectEl.classList.add('text-[#0F172A]');
+        } else {
+          selectEl.classList.remove('text-[#0F172A]');
+          selectEl.classList.add('text-[#94A3B8]');
+        }
+      };
+      selectEl.addEventListener('change', update);
+      update();
+    }
+
+    const statusSelect = document.getElementById('current_status');
+    const sourceSelect = document.getElementById('referal_source');
+    handleSelectColor(statusSelect);
+    handleSelectColor(sourceSelect);
+
+    // Hanya izinkan angka untuk nomor WhatsApp
+    const userNoInput = document.getElementById('user_no');
+    if (userNoInput) {
+      userNoInput.addEventListener('input', function (e) {
+        const cleaned = e.target.value.replace(/\D/g, '');
+        if (e.target.value !== cleaned) {
+          e.target.value = cleaned;
+        }
+      });
+    }
+  });
+</script>

@@ -1,124 +1,69 @@
-<div
-  x-data="{
-    selectedType: 'all',
-    selectedMethod: 'all',
-    searchQuery: '',
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 6,
-    loading: false,
-    kelasItems: [],
-    lang: '{{lang}}',
-
-            courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
-        {{#each category.courseType}}
-        { value: '{{this.nameClassesType }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.nameClassesType }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
-        {{/each}}
-      ],
-      
-      methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
-      ],
-
-    categoryDropdownOpen: false,
-    typeDropdownOpen: false,
-    methodDropdownOpen: false,
-
-    async init() {
-      this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
-      await this.fetchKelas();
-    },
-
-            getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj.id || obj.en || '';
-    },
-
-    async fetchKelas() {
-      this.loading = true;
-      try {
-        const params = new URLSearchParams();
-        params.set('category', `{{category.name}}`);
-        if (this.selectedType !== 'all') params.set('courseType', this.selectedType);
-        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
-        if (this.searchQuery) params.set('search', this.searchQuery);
-        params.set('page', this.currentPage);
-        params.set('limit', this.itemsPerPage);
-
-        const res = await fetch(`/dashboard/course/filter?${params.toString()}`);
-        const json = await res.json();
-
-        this.kelasItems = json.data;
-        this.totalItems = json.totalItems;
-        this.totalPages = json.totalPages;
-        this.currentPage = json.currentPage;
-      } catch (err) {
-        console.error('Fetch course error:', err);
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async changePage(page) {
-      this.currentPage = page;
-      await this.fetchKelas();
-    },
-
-    async resetFilters() {
-      this.selectedType = 'all';
-      this.selectedMethod = 'all';
-      this.searchQuery = '';
-      // currentPage akan di-reset oleh $watch tab
-    },
-
-    // Computed tetap bisa pakai ini
-    get selectedTypeItem() {
-      return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
-    },
-    get selectedMethodItem() {
-      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-    },
-  }"
->
-
 <style>
   html {
     scroll-behavior: smooth;
   }
+  body {
+    background-color: #FAFAFA;
+  }
 </style>
-{{> special_program/hero_section}}
 
-<!-- NEW KESATRIAN ACADEMY STICKY NAV & SECTIONS -->
-{{> special_program/nav_sticky}}
-{{> special_program/participants_dummy}}
-{{> special_program/what_you_learn_dummy}}
-{{> special_program/benefits_dummy}}
-{{> special_program/learning_flow_dummy}}
-{{> special_program/schedule_fees_dummy}}
-{{> special_program/gallery_dummy}}
-{{> special_program/faq_dummy}}
-<!-- END NEW KESATRIAN ACADEMY SECTIONS -->
+<div class="w-full bg-[#FAFAFA]">
+  {{!-- Layer 1 & 2: Hero Section with Floating Snapshot Bar --}}
+  {{> components/ui/sections/japan_hero/index category=category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
-<!-- OLD SECTIONS RETAINED BUT COMMENTED OUT PER USER REQUEST -->
-<!--
-{{> special_program/benefit}}
+  {{!-- Layer 3: Program Selection --}}
+  {{> components/ui/sections/special_program/index category=category courses=courses lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
-{{> special_program/topic}}
+  {{!-- Layer 4: Why Choose ("Why Choose Our Program?") --}}
+  {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
-{{> special_program/alumni}}
+  {{!-- Layer 5: Alumni Stories ("Real Stories, Real Placement") --}}
+  {{> components/ui/sections/alumni/index
+      headerVariant="paid"
+      variant="special"
+      isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))
+      showMobile=true
+      badgeKey="test.special_program.alumni.badge"
+      dotColor="#6EB6E5"
+      titleKey="test.special_program.alumni.storiesTitle"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descKey=(ternary (or isJapan (includes category.name 'japan') (eq category.name 'LPK')) "test.special_program.alumni.storiesDescJapan" "test.special_program.alumni.storiesDescGeneral")
+      descClass="max-w-[760px] text-center"
+      hideDivider=false
+      dividerClass="h-1 w-[60px]"
+      footerTextKey="test.special_program.alumni.footer"
+      footerLinkTextKey="test.special_program.alumni.allStories"
+      desktopBgStyle="background: linear-gradient(90deg, rgba(252, 231, 243, 0.22) 0%, rgba(224, 242, 254, 0.22) 100%), #FFFFFF;"
+      alumni=alumni
+      category=category
+      lang=lang
+  }}
 
-{{> special_program/gallery}}
+  {{!-- Layer 6: Gallery ("Life at Kesatria Academy") --}}
+  {{> components/ui/sections/gallery/index
+      renderMobile=true
+      showBadge=true
+      badgeKey="test.special_program.gallery.badge"
+      dotColor="#6EB6E5"
+      titleKey="test.special_program.gallery.campusTitle"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      descKey="test.special_program.gallery.campusDesc"
+      linkKey="test.special_program.gallery.allGaleries"
+      showDivider=false
+      showBottomLink=true
+      gallery=gallery
+  }}
 
-{{> special_program/contact}}
+  {{!-- Layer 7: FAQ ("Frequently Asked Questions") --}}
+  {{> components/ui/sections/faq/index
+      eyebrowKey="test.special_program.faq.eyebrow"
+      titleKey="test.special_program.faq.title"
+      descKey="test.special_program.faq.description"
+      titleClass="font-montserrat text-3xl sm:text-[40px] font-bold text-[#0B1F3B] leading-[1.2] sm:leading-[49px]"
+      faqs=faqs
+      lang=lang
+  }}
 
-{{> special_program/faq}}
--->
-
+  {{!-- Layer 8: Final CTA ("Transform your team today" + Contact Us) --}}
+  {{> components/ui/sections/special_cta/index category=category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 </div>
-

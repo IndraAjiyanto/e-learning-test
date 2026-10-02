@@ -1,0 +1,13 @@
+{{!--
+  Section: Special Program Hero (L2) - reskin ke standar internal modern.
+  Lokasi: src/views/partials/components/ui/sections/special_hero/index.hbs
+--}}
+{{> components/ui/sections/japan_hero/index 
+    category=category 
+    course=course 
+    lang=lang 
+    tagText=tagText 
+    headline=headline 
+    subheading=subheading
+    isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))
+}}

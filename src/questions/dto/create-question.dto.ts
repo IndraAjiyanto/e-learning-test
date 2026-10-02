@@ -1,11 +1,11 @@
-import { IsArray, IsInt, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsInt, IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class CreateQuestionDto {
   @IsString()
   questionText: string;
 
-  @IsInt()
-  quizId: number;
+  @IsUUID()
+  quizId: string;
 
   @IsArray()
   @IsString({ each: true })

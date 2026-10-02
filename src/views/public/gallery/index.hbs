@@ -1,209 +1,142 @@
+{{!--
+  Halaman: Gallery (user)
+  Lokasi: src/views/public/gallery/index.hbs
+  Satu pohon markup, base + lg. .page-shell, sizeClass.
+  Header polos (tanpa eyebrow/divider) -> filter (label + search + pill "All Programs" + Clear)
+  -> sub-header "Our Activities" -> masonry 3 kolom (gambar + gradient + caption), semua item
+  tampil sekaligus (pagination dihapus per instruksi desainer, yana WA 2026-09-10).
+--}}
+{{!-- data goes through a <script> var, not the x-data attribute: {{{json}}} emits raw quotes that would terminate the attribute --}}
 <div
-  class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]'
-  x-data='galleryTable({ gallery: {{{json gallery}}}, programs: {{{json programs}}} })'
+  class="w-full min-h-screen bg-[#F9FAFB] py-12 font-inter lg:py-16"
+  x-data="galleryTable(window.__galleryPage || {})"
 >
-  <div class='container mx-auto px-4 pb-8 max-w-5xl'>
-    <div class='flex flex-col items-center text-center mb-8'>
-      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{{t
-          'test.gallery.gallery'
-        }}}</span>
-    </div>
-    <div class='text-center mb-10'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
-          'test.gallery.title'
-        }}}</h1>
-      <div
-        class='border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded'
-      ></div>
-      <p class='text-gray-600 max-w-2xl mx-auto text-lg'>{{t
-          'test.gallery.description'
-        }}</p>
+  <div class="page-shell flex flex-col items-center gap-12 lg:gap-[50px]">
+
+    {{!-- ============ PAGE HEADER ============ --}}
+    <div class="flex max-w-[760px] flex-col items-center gap-4 text-center">
+      <h1 class="{{sizeClass 'display'}} font-inter font-bold tracking-tight text-[#111827]">
+        {{t 'test.gallery.title'}}
+      </h1>
+      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">
+        {{t 'test.gallery.description'}}
+      </p>
     </div>
 
-    <!-- Header & Search -->
-    <div
-      class=' flex w-full justify-end md:items-center gap-4'
-      x-data='{ open: false }'
-    >
-      <!-- Trigger -->
-      <div class='relative inline-block text-left'>
-        <button
-          @click='open = !open'
-          type='button'
-          class='inline-flex items-center justify-between w-56 rounded-xl border border-gray-300 bg-[#E0F1F9] px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none'
-          aria-haspopup='true'
-          :aria-expanded='open'
+    {{!-- ============ FILTER ============ --}}
+    {{> components/ui/filter/program_filter/index
+        label=(t 'test.gallery.filterByProgram')
+        searchModel="search"
+        searchPlaceholder=(t 'test.gallery.searchPlaceholder')
+        items="programs"
+        selected="selectedProgram"
+        onSelect="selectProgram"
+        allLabel=(t 'test.gallery.allPrograms')
+        onClear="resetFilters()"
+        showClear="hasFilter"
+        clearLabel=(t 'test.gallery.clearFilter') }}
+
+    {{!-- ============ ACTIVITIES ============ --}}
+    <div class="flex w-full flex-col items-center gap-8 lg:gap-10">
+      <div class="flex flex-col items-center gap-2 text-center">
+        <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0F172A]">{{t 'test.gallery.activitiesTitle'}}</h2>
+        <p class="{{sizeClass 'body'}} max-w-[560px] font-inter text-[#475569]">{{t 'test.gallery.activitiesSubtitle'}}</p>
+      </div>
+
+      <div class="flex w-full flex-col">
+
+        {{!-- masonry: explicit columns (round-robin distribution) + checkerboard tall/short --}}
+        <div x-show="amount > 0" class="flex flex-col gap-6 sm:flex-row sm:items-start">
+          <template x-for="(col, ci) in masonryColumns" :key="ci">
+            <div class="flex flex-1 flex-col gap-6">
+              <template x-for="(item, ri) in col" :key="item.id">
+                <a
+                  :href="item.filePath"
+                  target="_blank"
+                  rel="noopener"
+                  class="group block overflow-hidden rounded-[20px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]"
+                >
+                  <div class="relative w-full" :class="((ci + ri) % 2 === 0) ? 'aspect-[11/10]' : 'aspect-[16/10]'">
+                    <img
+                      :src="item.filePath"
+                      :alt="getByLang(item.title, lang)"
+                      onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {{!-- flat 40% black wash + caption top-left --}}
+                    <div class="absolute inset-0 bg-black/40 transition group-hover:bg-black/50"></div>
+                    <div class="absolute inset-x-0 top-0 flex flex-col gap-1.5 p-4">
+                      <h3 class="font-inter text-base font-bold leading-snug text-white" x-text="getByLang(item.title, lang)"></h3>
+                      <p x-show="item.description" class="font-inter text-[13px] leading-relaxed text-white/90" x-text="item.description"></p>
+                    </div>
+                  </div>
+                </a>
+              </template>
+            </div>
+          </template>
+        </div>
+
+        {{!-- "View All Activities": no dedicated activities page exists yet, so it points to the landing page for now --}}
+        <a
+          x-show="amount > 0"
+          href="/dashboard"
+          class="mt-8 self-center font-inter text-base font-semibold text-[#003060] underline decoration-1 underline-offset-4 transition hover:text-[#00244a]"
         >
-          <span
-            x-text="selectedProgramName || '{{t "test.gallery.program"}}'"
-          ></span>
-          <svg
-            class='w-5 h-5 ml-2'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M19.5 8.25l-7.5 7.5-7.5-7.5'
-            />
-          </svg>
-        </button>
+          {{t 'test.gallery.viewAllActivities'}}
+        </a>
 
-        <!-- Dropdown -->
-        <div
-          x-show='open'
-          @click.outside='open = false'
-          x-transition
-          class='absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-200 z-50'
-        >
-          <div class='py-1'>
-            <button
-              type='button'
-              @click='selectProgram(null); open = false'
-              class='block w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
-              :class="{ 'font-semibold bg-gray-50': selectedProgram === null }"
-            >
-              {{t 'test.gallery.allPrograms'}}
-            </button>
-
-            {{#each programs}}
-              <button
-                type='button'
-                @click="selectProgram('{{this.id}}', '{{this.nama_kategori}}'); open = false"
-                class='block w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
-                :class="{ 'font-semibold bg-gray-50': selectedProgram === '{{this.id}}' }"
-              >
-                {{this.nama_kategori}}
-              </button>
-            {{/each}}
-          </div>
-        </div>
-      </div>
-
-      <div class='flex items-center gap-3'>
-        <div class='relative w-full md:w-64'>
-          <input
-            type='text'
-            placeholder='Search gallery...'
-            x-model='searchInput'
-            @input='search = searchInput; pageNumber = 0'
-            class='border border-gray-300 bg-[#E0F1F9] text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
-          />
-          <button
-            @click='search = searchInput; pageNumber = 0'
-            class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              class='h-5 w-5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
-              />
-            </svg>
-          </button>
-        </div>
+        {{> components/ui/empty_state/index
+          show="amount === 0"
+          icon="fas fa-image text-3xl lg:text-4xl"
+          title=(t 'test.gallery.noResults')
+        }}
       </div>
     </div>
-  </div>
-
-  <div class='mb-10'></div>
-
-  <!-- Grid Cards -->
-  <div class='container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl'>
-    {{#each gallery}}
-      <div
-        class='bg-white shadow-lg rounded-xl overflow-hidden group'
-        x-show="filteredGallery.includes('{{id}}')"
-      >
-        <div class='aspect-[4/3] bg-gray-100 overflow-hidden'>
-          <img
-            src='{{filePath}}'
-            alt='{{title}}'
-            class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-          />
-        </div>
-        <div class='p-4'>
-          <h3 class='font-semibold text-gray-900'>{{title}}</h3>
-        </div>
-      </div>
-    {{/each}}
-  </div>
-
-  <!-- Empty state -->
-  <div
-    class='container mx-auto px-4 max-w-5xl text-center py-16'
-    x-show='amount === 0'
-  >
-    <p class='text-gray-500 text-lg'>No gallery found.</p>
-  </div>
-
-  <!-- Pagination -->
-  <div
-    class='mx-auto py-10 flex justify-center gap-2 items-center'
-    x-show='pageCount() > 1'
-  >
-    <button
-      @click='prevPage'
-      :disabled='pageNumber==0'
-      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
-      :class="{ 'opacity-40 cursor-not-allowed': pageNumber==0 }"
-    >
-      <i class='fas fa-chevron-left text-sm'></i>
-    </button>
-
-    <template x-for='(page,index) in pages()' :key='index'>
-      <button
-        @click='viewPage(index)'
-        class='w-9 h-9 flex items-center justify-center rounded-full border transition'
-        :class="index===pageNumber ? 'bg-gray-900 text-white border-gray-900 font-bold' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-        x-text='index+1'
-      ></button>
-    </template>
-
-    <button
-      @click='nextPage'
-      :disabled='pageNumber >= pageCount()-1'
-      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
-      :class="{ 'opacity-40 cursor-not-allowed': pageNumber >= pageCount()-1 }"
-    >
-      <i class='fas fa-chevron-right text-sm'></i>
-    </button>
   </div>
 </div>
 
 <script>
-function galleryTable({ gallery, programs }) {
+  window.__galleryPage = {
+    gallery: {{{json gallery}}},
+    programs: {{{json programs}}}
+  };
+
+function galleryTable(data) {
+  const { gallery, programs } = data || {};
   return {
-    gallery,
-    programs,
+    gallery: gallery || [],
+    programs: programs || [],
 
     search: "",
-    searchInput: "",
-    pageNumber: 0,
-    size: 9,
-
     selectedProgram: null,
-    selectedProgramName: "",
+    colCount: 3,
+
+    lang: '{{lang}}' || 'id',
+
+    init() {
+      const sync = () => {
+        this.colCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+      };
+      sync();
+      window.addEventListener('resize', sync);
+    },
+
+    getByLang(obj, lang) {
+      if (!obj) return '';
+      if (typeof obj === 'string') return obj;
+      if (typeof obj !== 'object') return '';
+      return obj[lang] || obj['id'] || obj['en'] || '';
+    },
 
     get filteredGalleryFull() {
       return this.gallery.filter((item) => {
-        const matchSearch = item.title
+        const matchSearch = this.getByLang(item.title, this.lang)
           .toLowerCase()
           .includes(this.search.toLowerCase());
 
         const matchProgram =
           this.selectedProgram === null ||
-          String(item.kategori?.id) === String(this.selectedProgram);
+          String(item.category?.id) === String(this.selectedProgram);
 
         return matchSearch && matchProgram;
       });
@@ -213,38 +146,23 @@ function galleryTable({ gallery, programs }) {
       return this.filteredGalleryFull.length;
     },
 
-    get filteredGallery() {
-      const start = this.pageNumber * this.size;
-      const end = start + this.size;
-      return this.filteredGalleryFull
-        .slice(start, end)
-        .map((i) => i.id.toString());
+    get hasFilter() {
+      return !!this.search || this.selectedProgram !== null;
     },
 
-    pageCount() {
-      return Math.max(1, Math.ceil(this.amount / this.size));
+    get masonryColumns() {
+      const cols = Array.from({ length: this.colCount }, () => []);
+      this.filteredGalleryFull.forEach((item, i) => cols[i % this.colCount].push(item));
+      return cols;
     },
 
-    pages() {
-      return Array.from({ length: this.pageCount() });
+    resetFilters() {
+      this.search = "";
+      this.selectedProgram = null;
     },
 
-    nextPage() {
-      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
-    },
-
-    prevPage() {
-      if (this.pageNumber > 0) this.pageNumber--;
-    },
-
-    viewPage(index) {
-      this.pageNumber = index;
-    },
-
-    selectProgram(id, name = "") {
+    selectProgram(id) {
       this.selectedProgram = id === null ? null : String(id);
-      this.selectedProgramName = name;
-      this.pageNumber = 0;
     },
   };
 }

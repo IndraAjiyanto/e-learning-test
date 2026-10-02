@@ -8,7 +8,10 @@ import { CommonModule } from 'src/common/common.module';
 import { Technology } from 'src/entities/technology.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Mentors, Course, Technology]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([Mentors, Course, Technology]),
+    CommonModule,
+  ],
   controllers: [MentorController],
   providers: [MentorService],
   exports: [MentorService],

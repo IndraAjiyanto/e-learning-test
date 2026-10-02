@@ -16,6 +16,7 @@ import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('attendance')
@@ -25,26 +26,49 @@ export class AttendanceController {
   @Roles('user')
   @Post(':sessionId/:userId/:courseId')
   async create(
-    @Param('sessionId') sessionId: number,
-    @Param('courseId') courseId: number,
-    @Param('userId') userId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Body() createAttendanceDto: CreateAttendanceDto,
     @Req() req: Request,
   ) {
+    // :userId in the path is legacy — kept so the existing HTML form
+    // (src/views/user/attendance/create.hbs) keeps working unmodified —
+    // but the authoritative value is always the authenticated user, never
+    // a client-supplied param (that param was previously trusted as-is,
+    // letting any 'user'-role caller submit attendance for someone else's
+    // id by editing the URL).
+    const wantsJson = req.headers.accept?.includes('application/json');
+    if (!req.user) {
+      if (wantsJson) {
+        return res
+          .status(401)
+          .json({ success: false, message: 'Unauthorized' });
+      }
+      return res.redirect('/login');
+    }
+    const userId = req.user.id;
     try {
       createAttendanceDto.sessionId = sessionId;
       createAttendanceDto.userId = userId;
       createAttendanceDto.attendanceTime = new Date();
       await this.attendanceService.create(createAttendanceDto);
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: 'Successfully submitted attendance',
+        });
+      }
       req.flash('success', 'Successfully submitted attendance');
       res.redirect(`/program/${courseId}`);
     } catch (error: any) {
-      req.flash(
-        'error',
+      const message =
         error.message ||
-          'You have already submitted attendance for this meeting',
-      );
+        'You have already submitted attendance for this meeting';
+      if (wantsJson) {
+        return res.status(400).json({ success: false, message });
+      }
+      req.flash('error', message);
       res.redirect(`/program/${courseId}`);
     }
   }
@@ -52,7 +76,7 @@ export class AttendanceController {
   @Roles('admin')
   @Post(':sessionId')
   async createAttendance(
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Body() createAttendanceDto: CreateAttendanceDto,
     @Req() req: Request,
@@ -60,7 +84,11 @@ export class AttendanceController {
     try {
       createAttendanceDto.sessionId = sessionId;
       await this.attendanceService.create(createAttendanceDto);
-      req.flash('success', 'Successfully added attendance');
+      flashToast(
+        req,
+        'Attendance Added',
+        'The attendance record has been added to this session.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash(
@@ -75,11 +103,15 @@ export class AttendanceController {
   @Get('form/:id')
   async formAttendance(
     @Res() res: Response,
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
   ) {
     const session = await this.attendanceService.findSession(id);
-    res.render('user/attendance/create', { session, user: req.user });
+    res.render('user/attendance/create', {
+      session,
+      user: req.user,
+      bareShell: true,
+    });
   }
 
   @Roles('admin')
@@ -94,7 +126,7 @@ export class AttendanceController {
   async attendanceCreate(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('sessionId') sessionId: number,
+    @Param('sessionId') sessionId: string,
   ) {
     const users = await this.attendanceService.findUsers(sessionId);
     res.render('admin/attendance/create', { user: req.user, users, sessionId });
@@ -103,7 +135,7 @@ export class AttendanceController {
   @Roles('admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: any,
   ) {
@@ -114,7 +146,7 @@ export class AttendanceController {
   @Roles('admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -125,15 +157,19 @@ export class AttendanceController {
   @Roles('admin')
   @Patch(':attendanceId/:sessionId')
   async update(
-    @Param('sessionId') sessionId: number,
-    @Param('attendanceId') attendanceId: number,
+    @Param('sessionId') sessionId: string,
+    @Param('attendanceId') attendanceId: string,
     @Body() updateAttendanceDto: UpdateAttendanceDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.attendanceService.update(attendanceId, updateAttendanceDto);
-      req.flash('success', 'Successfully updated attendance');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The attendance record has been updated.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update attendance');
@@ -144,14 +180,18 @@ export class AttendanceController {
   @Roles('admin')
   @Delete(':attendanceId/:sessionId')
   async remove(
-    @Param('attendanceId') attendanceId: number,
-    @Param('sessionId') sessionId: number,
+    @Param('attendanceId') attendanceId: string,
+    @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.attendanceService.remove(attendanceId, sessionId);
-      req.flash('success', 'Successfully delete attendace');
+      flashToast(
+        req,
+        'Attendance Deleted',
+        'The attendance record has been permanently removed.',
+      );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete attendance');

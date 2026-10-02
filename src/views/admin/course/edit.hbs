@@ -1,145 +1,99 @@
-    <div class="py-10">
-        <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg" x-data='{ 
-            coverValid: true,
-            coverHasFile: false,
-            categorySelected: {{json course.category}} || null,
-            paidClass: {{#if course.checkPaid}}true{{else}}false{{/if}},
-            formData: { description: { id: "", en: "", ja: "" }, lokasi: { id: "", en: "", ja: "" }, link_lokasi: "" },
-            formErrors: { link_lokasi: "" },
-            formValid: { link_lokasi: true },
-            updateCoverValidation(isValid, hasFile) {
-                this.coverValid = isValid;
-                this.coverHasFile = hasFile;
-            },
-            validateField(field, value) {
-                if (field === "link_lokasi") {
-                    if (!value.trim()) {
-                        this.formErrors.link_lokasi = "Link Location is required";
-                        this.formValid.link_lokasi = false;
-                    } else {
-                        try {
-                            new URL(value);
-                            this.formErrors.link_lokasi = "";
-                            this.formValid.link_lokasi = true;
-                        } catch {
-                            this.formErrors.link_lokasi = "Please enter a valid URL";
-                            this.formValid.link_lokasi = false;
-                        }
-                    }
-                    return;
-                }
-                const fieldName = `${field}_${value}`;
-                const errorElement = document.getElementById(`${fieldName}_error`);
-                if (errorElement) {
-                    const val = this.formData[field] && this.formData[field][value];
-                    if (!val || val.trim() === "") {
-                        errorElement.classList.remove("hidden");
-                    } else {
-                        errorElement.classList.add("hidden");
-                    }
-                }
-            }
-        }'
-        x-init="formData.description = { id: '{{course.description.id}}', en: '{{course.description.en}}', ja: '{{course.description.ja}}' }, formData.location = { id: '{{course.location.id}}', en: '{{course.location.en}}', ja: '{{course.location.ja}}' }, formData.link_lokasi = '{{course.link_lokasi}}'">
-            <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Edit Program</h2>
+{{!--
+  Page: Admin - Edit Program (course endpoint)
+  Path: admin/course/edit.hbs
+  Route: GET /program/edit/:courseId (formEdit) -> PATCH /program/:courseId (update)
+  Layout kartu + sidebar + script shared dengan halaman create.
+  Prefill: x-init (paidClass/methodOnline/formData) + {{#if course}} di kartu.
+--}}
+{{> admin/program/program_form_script}}
 
-            <form method="POST" action="/program/{{course.id}}?_method=PATCH" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data" x-data="{loading:false}" @submit="loading = true">
-                
-                <!-- LEFT COLUMN -->
-                <div class="space-y-6">
+<div class='py-10 px-6'>
+  <div class='max-w-[1100px] mx-auto'
+    x-data='{ ...programData("edit"), ...formDirtyGate() }'
+    x-init='paidClass = {{#if course.checkPaid}}true{{else}}false{{/if}}; programType = "{{default course.programType 'bootcamp'}}"; logbookEnabled = {{#if (eq course.logbookEnabled false)}}false{{else}}true{{/if}}; methodOnline = {{#if (eq course.method 'offline')}}false{{else}}true{{/if}}; formData.description = {{#if course.description}}{{json course.description}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.location = {{#if course.locations}}{{json course.locations}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.locationLink = {{#if course.locationLink}}"{{course.locationLink}}"{{else}}""{{/if}}; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);; $nextTick(() => captureBaseline())'
+    @input='recomputeDirty()'
+    @change='recomputeDirty()'
+  >
 
-                  {{> admin/program/edit/left_column/cover_input}}
-
-{{> admin/program/edit/left_column/name_program_input}}
-
-{{> admin/program/edit/left_column/group_input}}
-
-{{> admin/program/edit/left_column/description_input}}
-
-{{> admin/program/edit/left_column/metode_input}}
-
-{{> admin/program/edit/left_column/location_input}}
-
-{{> admin/program/edit/left_column/link_location_input}}
-
-{{> admin/program/edit/left_column/toggle_input}}
-
-                </div>
-
-                <!-- RIGHT COLUMN -->
-                <div class="space-y-6">
-
-                  {{> admin/program/edit/right_column/category_input}}
-
-{{> admin/program/edit/right_column/type_input}}
-
-{{> admin/program/edit/right_column/month_input}}
-
-{{> admin/program/edit/right_column/day_input}}
-
-{{> admin/program/edit/right_column/start_date_input}}
-
-{{> admin/program/edit/right_column/end_date_input}}
-
-{{> admin/program/edit/right_column/mentor_input}}
-
-{{> admin/program/edit/right_column/technology_input}}
-
-{{> admin/program/edit/right_column/lessons_input}}
-
-{{> admin/program/edit/right_column/learning_input}}
-
-{{> admin/program/edit/right_column/criteria_input}}
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    
-
-
-
-
-
-
-
-                </div>
-
-                <!-- BUTTONS - Full Width -->
-                <div class="lg:col-span-2 space-y-4">
-                    <!-- Submit Warning -->
-                    <template x-if='coverHasFile && !coverValid'>
-                        <div class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
-                            <i class='fas fa-exclamation-triangle text-red-500'></i>
-                            <p class='text-sm text-red-800'>Please fix the cover image validation errors before submitting.</p>
-                        </div>
-                    </template>
-
-                    <div class='flex space-x-4'>
-                        <button 
-                            type="submit" 
-                            :disabled='coverHasFile && !coverValid || loading'
-                            :class="coverHasFile && !coverValid || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
-                            class='text-white px-6 py-2 rounded-lg shadow transition'
-                        >
-                            <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-                            <span x-show="!loading">Update</span>
-                        </button>
-                        <a href="/program/detail/program/admin/{{course.id}}" :disabled='loading'           :disabled='loading'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'>
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
+    {{!-- Page Header --}}
+    <div class='flex flex-col gap-[4px] mb-[24px]'>
+      {{> components/ui/admin/text/title text="Edit Program"}}
+      {{> components/ui/admin/text/subtitle text="Update an existing program in the system"}}
     </div>
+
+    {{!-- Main Layout: Content + Sidebar --}}
+    <form
+      method='POST'
+      action='/program/{{course.id}}?_method=PATCH'
+      enctype='multipart/form-data'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
+      @input.capture="onInputCapture($event)"
+      @change="updateCompleteness()"
+      @click="scheduleUpdate(); activateSection($event.target)"
+      @focusin.capture="activateSection($event.target)"
+      @focusout.capture="onBlurCapture($event)"
+    >
+      <div class='flex flex-col lg:flex-row gap-[16px] justify-start items-stretch lg:items-start'>
+
+        {{!-- Left Column - Cards (shared dengan create, prefill via {{#if course}}) --}}
+        <div class='flex-1 min-w-0 flex flex-col gap-[16px]'>
+          {{> admin/program/create/card_01_basic_info}}
+          {{> admin/program/create/card_02_description}}
+          {{> admin/program/create/card_03_schedule}}
+          {{> admin/program/create/card_04_tools}}
+          {{!-- Section 05 + 06: one row, two columns --}}
+          {{!-- [DISABLED - ClickUp z8pbk8xwwx] Coment inputan Learning Target dan Participants
+          <div class='flex flex-col sm:flex-row gap-[16px] w-full justify-start items-stretch sm:items-start'>
+            <div class='flex-1 min-w-0'>
+              {{> admin/program/create/card_05_learning}}
+            </div>
+            <div class='flex-1 min-w-0'>
+              {{> admin/program/create/card_06_criteria}}
+            </div>
+          </div>
+          --}}
+
+          {{!-- Action Bar (edit: Update + Cancel, tanpa ubah launch) --}}
+          <div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[12px] p-[16px_24px] justify-between items-stretch sm:items-center bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px]'>
+            <a href='/program/detail/program/admin/{{course.id}}'
+              class='box-border shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] border border-[#D4D4D4] rounded-[8px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:bg-[#F5F5F5] transition-colors'>
+              <span class='text-[16px]/[24px] text-[#003060] font-inter font-semibold whitespace-nowrap'>Cancel</span>
+            </a>
+            <button type='submit'
+              :disabled='!formComplete || loading'
+              :class="!formComplete || loading ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"
+              class='box-border w-[158px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] transition-colors'>
+              <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+              <span x-show='!loading' class='text-[16px]/[24px] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Update</span>
+            </button>
+          </div>
+        </div>
+
+        {{!-- Right Column - Sidebar --}}
+        {{> admin/program/create/sidebar}}
+
+      </div>
+
+      {{!-- Cover Warning --}}
+      <template x-if='coverHasFile && !coverValid'>
+        <div class='flex items-center gap-2 p-3 mt-[16px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix the cover image validation errors above.
+          </p>
+        </div>
+      </template>
+
+      {{!-- Submit Warning --}}
+      <template x-if='hasVisibleErrors()'>
+        <div class='flex items-center gap-2 p-3 mt-[8px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+
+    </form>
+  </div>
+</div>

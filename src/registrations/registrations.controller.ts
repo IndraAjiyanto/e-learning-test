@@ -38,40 +38,89 @@ export class RegistrationsController {
     folder: 'registration',
   })
   async create(
-    @Param('userId') userId: number,
-    @Param('courseId') courseId: number,
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
     @Body() createRegistrationDto: CreateRegistrationsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      console.log('🔵 [Registration] Attempt:', { userId, courseId, file: req.file, body: req.body, uploadedImageUrls: req.body.uploadedImageUrls });
+      console.log('🔵 [Registration] Attempt:', {
+        userId,
+        courseId,
+        file: req.file,
+        body: req.body,
+        uploadedImageUrls: req.body.uploadedImageUrls,
+      });
       createRegistrationDto.file = req.body.uploadedImageUrls?.[0];
       console.log('🔵 [Registration] File URL:', createRegistrationDto.file);
       createRegistrationDto.courseId = courseId;
       createRegistrationDto.userId = userId;
-      createRegistrationDto.process = 'process';
-      const registration =
-        await this.registrationsService.create(createRegistrationDto);
-      console.log('🔵 [Registration] Result:', registration);
+      createRegistrationDto.process = 'approved';
+      createRegistrationDto.user_fullname = req.body.user_fullname;
+      createRegistrationDto.user_email = req.body.user_email;
+      createRegistrationDto.user_no = req.body.user_no;
+      createRegistrationDto.current_status = req.body.current_status;
+      createRegistrationDto.referal_source = req.body.referal_source;
+      createRegistrationDto.attend_program = req.body.attend_program === 'true';
+      const registration = await this.registrationsService.create(
+        createRegistrationDto,
+      );
+      const isJson =
+        Boolean(req.xhr) ||
+        Boolean(req.headers.accept?.includes('application/json')) ||
+        req.headers['x-requested-with'] === 'XMLHttpRequest';
+
       if (registration == false) {
         await this.registrationsService.deleteFile(createRegistrationDto.file);
-        req.flash(
-          'info',
-          'you have already submitted the registration proof, please wait for further information from the admin',
-        );
-        res.redirect(`/payment/history/${userId}#pendaftaran`);
+        if (isJson) {
+          return res.status(400).json({
+            success: false,
+            message: 'You have already registered for this program',
+          });
+        }
+        req.flash('info', 'you have already registered for this program');
+        return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
+      } else if (!registration) {
+        if (isJson) {
+          return res.status(400).json({
+            success: false,
+            message: 'Registration failed. User or course not found.',
+          });
+        }
+        req.flash('error', 'Registration failed');
+        return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
       } else {
+        try {
+          await this.registrationsService.addUserToCourse(userId, courseId);
+        } catch (error: any) {}
+        if (isJson) {
+          return res.status(200).json({
+            success: true,
+            message: 'Registration successful! You are now enrolled in the program.',
+            redirectUrl: '/users/profile?tab=dashboard',
+          });
+        }
         req.flash(
           'success',
-          'registration proof successfully sent, please wait for the admin',
+          'Registration successful! You are now enrolled in the program.',
         );
-        res.redirect(`/payment/history/${userId}#pendaftaran`);
+        return res.redirect(`/users/profile?tab=dashboard`);
       }
     } catch (error: any) {
       console.error('🔴 [Registration] Error:', error);
-      req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
-      res.redirect(`/payment/history/${userId}`);
+      const isJson =
+        Boolean(req.xhr) ||
+        Boolean(req.headers.accept?.includes('application/json')) ||
+        req.headers['x-requested-with'] === 'XMLHttpRequest';
+      if (isJson) {
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Registration failed',
+        });
+      }
+      req.flash('error', error.message || 'Registration failed');
+      return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
     }
   }
 
@@ -84,18 +133,19 @@ export class RegistrationsController {
   @Roles('super_admin')
   @Patch(':proses/:pendaftaranId')
   async update(
-    @Param('pendaftaranId') registrationId: number,
+    @Param('pendaftaranId') registrationId: string,
     @Param('proses') processStatus: string,
     @Body() updateRegistrationDto: UpdateRegistrationsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const registration = await this.registrationsService.findOne(registrationId);
+      const registration =
+        await this.registrationsService.findOne(registrationId);
       if (!registration) {
         return null;
       }
-      if (processStatus === 'approved') {
+      if (processStatus === 'approved' || processStatus === 'acc') {
         updateRegistrationDto.file = registration['file'];
         updateRegistrationDto.userId = registration['user']['id'];
         updateRegistrationDto.courseId = registration['course']['id'];
@@ -132,13 +182,16 @@ export class RegistrationsController {
         } catch (error: any) {}
         req.flash('success', 'Process successfully changed to rejected');
         res.redirect(
-          `/program/detail/program/admin/${[registration]['course']['id']}`,
+          `/program/detail/program/admin/${registration['course']['id']}`,
         );
       }
     } catch (error: any) {
-      const registration = await this.registrationsService.findOne(registrationId);
+      const registration =
+        await this.registrationsService.findOne(registrationId);
       req.flash('error', error.message || 'Failed to update process');
-      res.redirect(`/program/detail/program/admin/${registration['course']['id']}`);
+      res.redirect(
+        `/program/detail/program/admin/${registration['course']['id']}`,
+      );
     }
   }
 }

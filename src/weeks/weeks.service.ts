@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWeeksDto } from './dto/create-weeks.dto';
 import { UpdateWeeksDto } from './dto/update-weeks.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,7 +36,7 @@ export class WeeksService {
     private readonly quizRepository: Repository<Quiz>,
   ) {}
 
-  async create(createWeekDto: CreateWeeksDto, courseId: number) {
+  async create(createWeekDto: CreateWeeksDto, courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
@@ -88,9 +92,7 @@ export class WeeksService {
       });
 
       if (!weeks) {
-        throw new NotFoundException(
-          'Previous week must be created first',
-        );
+        throw new NotFoundException('Previous week must be created first');
       } else if (!weeks.isFinal) {
         if (createWeekDto.isFinalCheck === 'true') {
           createWeekDto.isFinal = true;
@@ -127,13 +129,13 @@ export class WeeksService {
     }
   }
 
-  async getSessionNumber(courseId: number) {
+  async getSessionNumber(courseId: string) {
     const lastWeek = await this.findCourseWeeks(courseId);
     const newWeek = lastWeek + 1;
     return newWeek;
   }
 
-  async findCourseWeeks(courseId: number) {
+  async findCourseWeeks(courseId: string) {
     const weeks = await this.weeksRepository.findOne({
       where: { course: { id: courseId } },
       order: { weekNumber: 'DESC' },
@@ -144,52 +146,58 @@ export class WeeksService {
     return weeks.weekNumber;
   }
 
-  async findOne(weeksId: number) {
+  async findOne(weeksId: string) {
     return await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
     });
   }
 
-  async findSession(weeksId: number) {
+  async findSession(weeksId: string) {
     return await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       order: { sessionOrder: 'ASC' },
     });
   }
 
-  async findQuiz(weeksId: number) {
+  async findQuiz(weeksId: string) {
     return await this.quizRepository.find({
       where: { weeks: { id: weeksId } },
     });
   }
 
-  async findLastSession(weeksId: number) {
-    return await this.sessionRepository.findOne({
-      where: { weeks: { id: weeksId }, isFinal: true },
-    });
+  async findLastSession(weeksId: string) {
+    // Query builder eksplisit dengan kolom FK langsung — menghindari ambiguitas
+    // filter relasi bersarang ({ weeks: { id } }) yang dipakai gate tab Quiz.
+    return await this.sessionRepository
+      .createQueryBuilder('session')
+      .where('session.weeksId = :weeksId', { weeksId })
+      .andWhere('session.isFinal = :isFinal', { isFinal: true })
+      .getOne();
   }
 
-  async update(id: number, updateWeekDto: UpdateWeeksDto) {
+  async update(id: string, updateWeekDto: UpdateWeeksDto) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
     }
 
-    if (weeks.isFinal) {
-      throw new BadRequestException('Finalized week cannot be updated');
+    const finalWeek = await this.weeksRepository.findOne({
+      where: { course: { id: weeks.course.id }, isFinal: true },
+    });
+
+    if (finalWeek && finalWeek.id !== weeks.id) {
+      updateWeekDto.isFinal = false;
+      updateWeekDto.isFinalCheck = 'false';
+    } else {
+      updateWeekDto.isFinal = updateWeekDto.isFinalCheck === 'true';
     }
 
-    if (updateWeekDto.isFinalCheck === 'true') {
-      updateWeekDto.isFinal = true;
-    } else {
-      updateWeekDto.isFinal = false;
-    }
     Object.assign(weeks, updateWeekDto);
     return await this.weeksRepository.save(weeks);
   }
 
-  async remove(id: number, courseId: number) {
+  async remove(id: string, courseId: string) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');

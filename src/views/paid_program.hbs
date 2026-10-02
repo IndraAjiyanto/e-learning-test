@@ -1,89 +1,46 @@
-<div
-  x-data="{
-    selectedType: 'all',
-    selectedMethod: 'all',
-    searchQuery: '',
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 6,
-    loading: false,
-    kelasItems: [],
+{{!-- PAID PROGRAM PAGE --}}
+{{!-- Hero Section - khusus paid program --}}
+{{> components/ui/sections/paid_hero/index category=category lang=lang}}
 
-            courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
-        {{#each category.courseType}}
-        { value: '{{this.nameClassesType }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.nameClassesType }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
-        {{/each}}
-      ],
-      
-      methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
-      ],
+{{!-- Program Section - khusus paid (card/category/paid) --}}
+{{> components/ui/sections/paid_program/index category=category courses=courses lang=lang}}
 
-    categoryDropdownOpen: false,
-    typeDropdownOpen: false,
-    methodDropdownOpen: false,
+{{!-- Benefit Section - khusus paid program --}}
+{{> components/ui/sections/paid_benefit/index category=category benefit_category=benefit_category lang=lang}}
 
-    async init() {
-      // Hapus $watch lama, ganti dengan watch yang trigger fetch
-      this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
-      await this.fetchKelas();
-    },
+{{!-- Advantage Section - khusus paid --}}
+{{!-- {{> components/ui/sections/paid_advantage/index}} --}}
 
-    async fetchKelas() {
-      this.loading = true;
-      try {
-        const params = new URLSearchParams();
-        params.set('category', `{{category.name}}`);
-        if (this.selectedType !== 'all') params.set('courseType', this.selectedType);
-        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
-        if (this.searchQuery) params.set('search', this.searchQuery);
-        params.set('page', this.currentPage);
-        params.set('limit', this.itemsPerPage);
+{{!-- Flow Section - khusus paid (portfolio showcase) --}}
+{{!-- {{> components/ui/sections/paid_flow/index}} --}}
 
-        const res = await fetch(`/dashboard/course/filter?${params.toString()}`);
-        const json = await res.json();
+{{!-- Alumni Section - reuse section alumni dengan headerVariant paid --}}
+{{> components/ui/sections/alumni/index
+    headerVariant="paid"
+    showMobile=false
+    showFooter=false
+    titleKey="test.categoryPaidProgram.alumni.title"
+    descKey="test.categoryPaidProgram.alumni.description"
+    alumni=alumni
+    category=category
+    lang=lang
+}}
 
-        this.kelasItems = json.data;
-        this.totalItems = json.totalItems;
-        this.totalPages = json.totalPages;
-        this.currentPage = json.currentPage;
-      } catch (err) {
-        console.error('Fetch course error:', err);
-      } finally {
-        this.loading = false;
-      }
-    },
+{{!-- Gallery Section - reuse section gallery dengan konfigurasi paid --}}
+{{> components/ui/sections/gallery/index
+    badgeKey="test.categoryPaidProgram.gallery.badge"
+    titleKey="test.categoryPaidProgram.gallery.title"
+    descKey="test.categoryPaidProgram.gallery.description"
+    linkKey="test.categoryPaidProgram.gallery.allGaleries"
+}}
 
-    async changePage(page) {
-      this.currentPage = page;
-      await this.fetchKelas();
-    },
+{{!-- FAQ Section - khusus paid program --}}
+{{> components/ui/sections/paid_faq/index
+    category=category
+    faqs=(default faqs category.faqs)
+    faq=faq
+    lang=lang
+}}
 
-    async resetFilters() {
-      this.selectedType = 'all';
-      this.selectedMethod = 'all';
-      this.searchQuery = '';
-      // currentPage akan di-reset oleh $watch tab
-    },
-
-    // Computed tetap bisa pakai ini
-    get selectedTypeItem() {
-      return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
-    },
-    get selectedMethodItem() {
-      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-    },
-  }"
->
-
-{{> program/header}}
-
-{{> program/program}}
-
-</div>
+{{!-- CTA Section - khusus paid --}}
+{{> components/ui/sections/paid_cta/index}}

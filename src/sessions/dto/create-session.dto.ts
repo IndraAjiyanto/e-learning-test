@@ -1,8 +1,9 @@
 import {
-  IsString,
+  IsBooleanString,
   IsDateString,
   IsInt,
-  IsBooleanString,
+  IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateSessionDto {
@@ -30,6 +31,6 @@ export class CreateSessionDto {
   @IsString()
   isFinalCheck: string;
 
-  @IsInt()
-  weeksId: number;
+  @IsUUID()
+  weeksId: string;
 }

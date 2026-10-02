@@ -6,8 +6,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('user_answers')
 export class UserAnswer {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Question, (question) => question.userAnswers, {
     onDelete: 'CASCADE',
@@ -18,7 +18,7 @@ export class UserAnswer {
 
   @ManyToOne(() => Answer, (answer) => answer.userAnswers, {
     onDelete: 'CASCADE',
-    nullable: true
+    nullable: true,
   })
   @JoinColumn({ name: 'answerId' })
   @Exclude()
@@ -29,4 +29,3 @@ export class UserAnswer {
   @Exclude()
   user: User;
 }
-

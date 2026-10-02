@@ -1,0 +1,276 @@
+<!-- ATTENDANCE FORM CONTENT PARTIAL -->
+<div class="px-4 py-4 sm:px-8 sm:py-6 space-y-4 font-inter"
+  x-data="{
+    courseId: '{{course.id}}',
+    currentUserId: '{{user.id}}',
+    showEditModal: false,
+    showSuccessPopup: false,
+    statusDropdownOpen: false,
+    editAttendanceId: null,
+    editSessionId: null,
+    editStatus: '',
+    editNotes: '',
+    statusLabels: {
+      'present': '{{default (t 'test.attendance.present') 'Present'}}',
+      'sick': '{{default (t 'test.attendance.sick') 'Sick'}}',
+      'permission': '{{default (t 'test.attendance.permission') 'Permission'}}',
+      'absent': '{{default (t 'test.attendance.absent') 'Absent'}}',
+      'no_information': '{{default (t 'test.attendance.noInformation') 'No Information'}}'
+    },
+    {{!-- Rupa pil status, dipisah dari markup supaya ketiga keadaannya
+         terbaca sekaligus. Kuncinya nilai kembalian
+         sessionUnlock.getAttendanceStatus: LOCKED, COMPLETED, UNLOCKED. --}}
+    statusTone: { LOCKED: 'gray', COMPLETED: 'green', UNLOCKED: 'amber' },
+    statusText: {
+      LOCKED: '{{t 'test.startLearning.locked'}}',
+      COMPLETED: '{{t 'test.startLearning.attendaceRecorded'}}',
+      UNLOCKED: '{{t 'test.startLearning.attendanceRequired'}}'
+    },
+    openWeek: null,
+    sessions: [],
+    sessionsLoading: false,
+    sessionsError: false,
+    loadedWeekId: null,
+    sessionsCache: {},
+    async loadSessions(weekId) {
+      this.loadedWeekId = weekId;
+      this.sessionsError = false;
+
+      if (this.sessionsCache[weekId]) {
+        this.sessions = this.sessionsCache[weekId];
+        this.sessionsLoading = false;
+        return;
+      }
+
+      this.sessions = [];
+      this.sessionsLoading = true;
+      try {
+        const res = await fetch('/program/session/' + weekId);
+        if (!res.ok) throw new Error('Request failed');
+        const data = await res.json();
+        if (this.loadedWeekId !== weekId) return;
+        const list = Array.isArray(data) ? data : [];
+        this.sessionsCache[weekId] = list;
+        this.sessions = list;
+      } catch (e) {
+        if (this.loadedWeekId !== weekId) return;
+        this.sessionsError = true;
+      } finally {
+        if (this.loadedWeekId === weekId) this.sessionsLoading = false;
+      }
+    },
+    // Unlock/attendance/logbook status is derived from the single shared
+    // helper (Alpine.store('sessionUnlock')) — see PRD-sequential-session-unlock.md.
+    // No unlock condition is written here; these are thin delegations.
+    isSessionAttended(session) {
+      return Alpine.store('sessionUnlock').isAttended(session);
+    },
+    canOpenNextSession(session) {
+      return Alpine.store('sessionUnlock').canOpenNextSession(session);
+    },
+    isSessionUnlocked(index) {
+      return Alpine.store('sessionUnlock').isSessionUnlocked(this.sessions, this.sessions[index]);
+    },
+    attendanceStatus(index) {
+      return Alpine.store('sessionUnlock').getAttendanceStatus(this.sessions, this.sessions[index]);
+    },
+    sessionLabel(session) {
+      return 'Session ' + session.sessionOrder + ' : ' + session.topic;
+    },
+    attendanceOf(session) {
+      return (session.attendances && session.attendances.length)
+        ? session.attendances[0]
+        : null;
+    },
+    openEditModalForSession(session) {
+      const attendance = this.attendanceOf(session);
+      this.openEditModal(
+        attendance ? attendance.id : null,
+        session.id,
+        attendance ? attendance.status : '',
+        attendance ? attendance.notes : ''
+      );
+    },
+    openEditModal(attendanceId, sessionId, currentStatus, currentNotes) {
+      this.editAttendanceId = attendanceId;
+      this.editSessionId = sessionId;
+      this.editStatus = currentStatus || '';
+      this.editNotes = currentNotes || '';
+      this.statusDropdownOpen = false;
+      this.showEditModal = true;
+    },
+    async saveAttendance() {
+      if (!this.editStatus) return;
+      if (this.editAttendanceId) {
+        // No user-role update endpoint exists yet (only an admin-only
+        // PATCH /attendance/:attendanceId/:sessionId) — editing an
+        // already-submitted attendance record is not wired up.
+        showErrorToast('Attendance not updated', '{{t 'test.startLearning.editAttendanceUnavailable'}}');
+        return;
+      }
+      try {
+        // Reuses the existing POST /attendance/:sessionId/:userId/:courseId
+        // (the same route the legacy full-page form at
+        // src/views/user/attendance/create.hbs already submits to) — the
+        // Accept header switches its response from a redirect to JSON.
+        const response = await fetch(`/attendance/${this.editSessionId}/${this.currentUserId}/${this.courseId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            status: this.editStatus,
+            notes: this.editNotes
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          this.showEditModal = false;
+          this.showSuccessPopup = true;
+          if (this.loadedWeekId !== null) {
+            delete this.sessionsCache[this.loadedWeekId];
+            this.loadSessions(this.loadedWeekId);
+          }
+        } else {
+          showErrorToast('Attendance not updated', data.message || 'Please try again in a moment.');
+        }
+      } catch (error) {
+        showErrorToast('Attendance not updated', 'The request did not go through. Check your connection and try again.');
+      }
+    }
+  }"
+>
+
+  {{> components/ui/learning/tab_summary/index
+      percent=stats.sessions.percent
+      label=(concat stats.sessions.attended ' ' (t 'test.startLearning.of') ' ' stats.sessions.total ' ' (t 'test.startLearning.sessionsAttendedSuffix'))
+      hint=(t 'test.startLearning.attendanceHint')
+      items=(array
+        (obj 'label' (t 'test.startLearning.totalCount') 'value' stats.sessions.total 'tone' 'navy')
+        (obj 'label' (t 'test.startLearning.attended') 'value' stats.sessions.attended 'tone' 'green')
+      ) }}
+
+  {{#if course.weeks.length}}
+    {{! The first week is always unlocked; any later week unlocks only when a WeekProgress row exists for it and the current user }}
+    {{#each course.weeks}}
+    <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+
+      {{#if (or (weekUnlocked weekProgresses) @first)}}
+      <button
+        type="button"
+        @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; loadSessions('{{id}}') }"
+        :aria-expanded="openWeek === {{weekNumber}} ? 'true' : 'false'"
+        class="group flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
+      >
+        {{> components/ui/learning/week_row/index
+            number=weekNumber
+            title=(concat (t 'test.startLearning.week') ' ' weekNumber)
+            summary=(lookup ../weekSummaries id)
+            kind='attendance'
+            expanded=(concat 'openWeek === ' weekNumber) }}
+      </button>
+
+      {{!--
+        Isi akordeon. Sebelumnya tanpa padding mendatar sama sekali dan dengan
+        mt-[31px] yang menyisakan lubang kosong di bawah kepala minggu: judul
+        sesi menempel ke tepi kartu, dan tombol di kanan terpotong oleh
+        `overflow-hidden` kartunya sendiri. Sekarang padding dan garis
+        pemisahnya sama dengan kepala minggu.
+      --}}
+      <div x-show="openWeek === {{weekNumber}}" x-transition class="border-t border-[#E5E5E5]" style="display: none;">
+
+        <!-- Sessions Loading State -->
+        <template x-if="openWeek === {{weekNumber}} && sessionsLoading">
+          <div class="px-5 py-8 text-center">
+            <div class="mx-auto mb-3 size-7 animate-spin rounded-full border-2 border-[#003060] border-t-transparent"></div>
+            <p class="font-inter text-sm text-[#737373]">Loading sessions...</p>
+          </div>
+        </template>
+
+        <!-- Sessions Error State -->
+        <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
+          <div class="space-y-2 px-5 py-8 text-center">
+            <p class="font-inter text-sm text-[#B42318]">Failed to load sessions. Please try again.</p>
+            <button type="button" @click="loadSessions('{{id}}')" class="cursor-pointer font-inter text-sm font-semibold text-[#003060] underline">
+              Retry
+            </button>
+          </div>
+        </template>
+
+        <!-- Sessions Empty State -->
+        <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError && sessions.length === 0">
+          <div class="px-5 py-8 text-center">
+            <p class="font-inter text-sm text-[#737373]">{{t 'test.startLearning.noSessionsInWeek'}}</p>
+          </div>
+        </template>
+
+        <!-- Session Rows -->
+        <ul class="divide-y divide-[#F0F0F0]">
+          <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError ? sessions : [])" :key="session.id">
+            <li class="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5">
+              <span
+                class="min-w-0 flex-1 truncate font-inter text-sm font-semibold text-[#171717]"
+                x-text="sessionLabel(session)"
+              ></span>
+
+              {{!-- Pil status memakai komponen bersama; tiga tab ini dulu
+                   menggambar pilnya masing-masing dengan ukuran dan palet yang
+                   berbeda. --}}
+              {{> components/ui/learning/status_pill/index
+                  tone="statusTone[attendanceStatus(sIndex)] || 'amber'"
+                  label="statusText[attendanceStatus(sIndex)] || statusText.UNLOCKED" }}
+
+              {{!--
+                Aksinya cuma muncul saat memang ada yang bisa dilakukan.
+                Sebelumnya tautan "Edit" selalu tampil pada sesi yang terbuka,
+                termasuk yang absensinya SUDAH tercatat - dan menekannya hanya
+                memunculkan alert "not available yet". Tombol yang tidak pernah
+                bisa dipakai lebih buruk daripada tidak ada tombol.
+              --}}
+              <template x-if="attendanceStatus(sIndex) === 'UNLOCKED'">
+                <button
+                  type="button"
+                  @click="openEditModalForSession(session)"
+                  class="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-3.5 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+                >
+                  <i class="fa-solid fa-user-check text-xs"></i>
+                  {{t 'test.startLearning.markAttendanceShort'}}
+                </button>
+              </template>
+
+              <template x-if="attendanceStatus(sIndex) === 'LOCKED'">
+                <span class="inline-flex size-9 shrink-0 items-center justify-center text-[#a3a3a3]" :title="'{{t 'test.startLearning.completeThePreviousSession'}}'">
+                  <i class="fa-solid fa-lock text-sm"></i>
+                </span>
+              </template>
+            </li>
+          </template>
+        </ul>
+
+      </div>
+      {{else}}
+      {{!-- Minggu terkunci. Dulu barisnya dirender tanpa padding sama sekali,
+           jadi judulnya menempel ke tepi kartu. --}}
+      <div class="flex w-full items-center gap-3 px-5 py-4">
+        <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#F5F5F5] font-inter text-sm font-bold text-[#a3a3a3]">{{weekNumber}}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate font-inter text-base font-bold text-[#a3a3a3]">{{t 'test.startLearning.week'}} {{weekNumber}}</span>
+          <span class="mt-0.5 block truncate font-inter text-xs text-[#a3a3a3]">{{t 'test.startLearning.weekLockedHint'}}</span>
+        </span>
+        <i class="fa-solid fa-lock shrink-0 text-sm text-[#a3a3a3]"></i>
+      </div>
+      {{/if}}
+
+    </div>
+    {{/each}}
+  {{else}}
+  <!-- Weeks Empty State -->
+  <div class="rounded-xl border border-[#E5E5E5] bg-white px-5 py-10 text-center">
+    <p class="font-inter text-sm text-[#737373]">
+      No weeks available for this program yet.
+    </p>
+  </div>
+  {{/if}}
+
+  <!-- Edit Attendance Modal -->
+  {{> user/sidebar_user_profile/my_learning/start_learning/attendance/edit_modal }}
+
+</div>

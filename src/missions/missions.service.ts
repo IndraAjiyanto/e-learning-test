@@ -18,7 +18,12 @@ export class MissionService {
   }
 
   async findAll(): Promise<Mission[]> {
-    return await this.missionRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.missionRepository.find({
+      order: { missionOrder: 'ASC' },
+    });
   }
 
   async getNextOrder() {
@@ -33,16 +38,19 @@ export class MissionService {
     return mission_new;
   }
 
-  async findOne(id: number): Promise<Mission | null> {
+  async findOne(id: string): Promise<Mission | null> {
     return await this.missionRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateMissionDto: UpdateMissionDto): Promise<Mission | null> {
+  async update(
+    id: string,
+    updateMissionDto: UpdateMissionDto,
+  ): Promise<Mission | null> {
     await this.missionRepository.update(id, updateMissionDto);
     return await this.findOne(id);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const mission = await this.findOne(id);
     if (!mission) {
       throw new Error('Mision not found');

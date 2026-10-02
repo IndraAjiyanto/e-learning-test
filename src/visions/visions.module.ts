@@ -10,4 +10,4 @@ import { Vision } from 'src/entities/visions.entity';
   providers: [VisionsService],
   exports: [VisionsService],
 })
-export class VisionsModule { }
+export class VisionsModule {}

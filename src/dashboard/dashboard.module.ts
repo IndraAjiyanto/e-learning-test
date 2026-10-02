@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
-import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
+import { CategoryPartner } from 'src/entities/category_partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -23,9 +23,10 @@ import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
-import { OurExperience } from 'src/entities/our_experience.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
 import { GalleryModule } from 'src/gallery/gallery.module';
+import { Gallery } from 'src/entities/gallery.entity';
+import { CategoriesModule } from 'src/categories/categories.module';
 
 @Module({
   imports: [
@@ -42,7 +43,6 @@ import { GalleryModule } from 'src/gallery/gallery.module';
       Faq,
       Alumni,
       Portofolios,
-      ImageBenefit,
       Category,
       CourseType,
       Partner,
@@ -52,13 +52,15 @@ import { GalleryModule } from 'src/gallery/gallery.module';
       Background,
       Paragraph,
       Faq,
-      OurExperience,
+      CategoryPartner,
+      Gallery,
     ]),
     TranslationModule, // Import TranslationModule
     GalleryModule,
+    CategoriesModule,
   ],
   controllers: [DashboardController],
   providers: [DashboardService],
   exports: [DashboardService],
 })
-export class DashboardModule { }
+export class DashboardModule {}

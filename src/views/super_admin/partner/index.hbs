@@ -1,0 +1,107 @@
+{{!--
+  Halaman: Partnership — Super Admin
+  Lokasi: src/views/super_admin/partner/index.hbs
+  Level: L4 Page
+
+  - lebar kolom tabel: 88 / 780 / 142 (total 1010)
+  - Sidebar sudah disediakan oleh layouts/main.hbs
+
+  Data: GET /partnership → { partners } dengan relasi categoryPartner.
+  Tidak ada endpoint filter seperti /users/filter, jadi search & pagination
+  dijalankan di client lewat clientTable().
+
+  Partner hanya punya `image` + relasi `categoryPartner`; tidak ada field nama.
+  sampai field nama tersedia di backend.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
+    
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Partner'
+      }}
+
+      {{> components/ui/super_admin/description/index
+        text='Manage partnerships and organize partner categories for Kesatria Academy.'
+      }}
+    </div>
+
+    <div
+      class='flex flex-col gap-3.5'
+      x-data='clientTable({ items: {{json partners}}, sortKey: "createdAt", searchKeys: ["categoryPartner.category"] })'
+    >
+      {{> components/ui/super_admin/table/toolbar
+        placeholder='Search partner..'
+        searchLabel='Search partner'
+        createHref='/partnership/formCreate'
+        createLabel='Create Partnership'
+      }}
+
+      
+      <div class='rounded-xl border border-[#d9d9d9] bg-white px-5 pb-5 pt-3'>
+        <div class='flex flex-col gap-5'>
+          {{> components/ui/super_admin/tabs/partner/index active='partnership' }}
+
+          {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
+            <colgroup>
+              <col class='w-[88px]' />
+              <col class='w-[780px]' />
+              <col class='w-[142px]' />
+            </colgroup>
+            <thead>
+              <tr>
+                {{> components/ui/super_admin/table/header_cell label='Logo' }}
+                {{> components/ui/super_admin/table/header_cell label='Partner Name' }}
+                {{> components/ui/super_admin/table/header_cell label='Action' }}
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for='row in rows' :key='row.id'>
+                <tr class='transition-colors hover:bg-[#fafafa]'>
+                  
+                  {{#> components/ui/super_admin/table/cell}}
+                    {{> components/ui/super_admin/table/avatar
+                      src='row.image'
+                      name='(row.categoryPartner || {}).category'
+                      alt='((row.categoryPartner || {}).category) || "Partner logo"'
+                    }}
+                  {{/components/ui/super_admin/table/cell}}
+
+                  
+                  {{> components/ui/super_admin/table/cell
+                    text='((row.categoryPartner || {}).category) || "-"'
+                  }}
+
+                  
+                  {{#> components/ui/super_admin/table/cell variant='action'}}
+                    {{> components/ui/super_admin/table/row_actions
+                      entity='partnership'
+                      deleteAction="'/partnership/' + row.id + '?_method=DELETE'"
+                      editHref="'/partnership/formEdit/' + row.id"
+                    }}
+                  {{/components/ui/super_admin/table/cell}}
+                </tr>
+              </template>
+
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='3'}}
+                No partnerships found.
+              {{/components/ui/super_admin/table/message_row}}
+            </tbody>
+          {{/components/ui/super_admin/table/card}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Konfirmasi delete — dipanggil di luar x-data lain agar overlay menutup
+     seluruh viewport. Tombol trash di row_actions memakai openDeleteModal(this);
+     fungsi itu didefinisikan oleh komponen modal, bukan halaman ini. --}}
+{{> components/ui/super_admin/modal/delete_confirm/index
+  title='Delete Partnership?'
+  description='Are you sure you want to delete this partnership? This action will permanently remove the partnership and cannot be undone.'
+}}
+
+{{> components/ui/super_admin/toast/success/index toast=toast }}
+
+{{> components/ui/super_admin/table/client_table }}

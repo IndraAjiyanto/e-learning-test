@@ -1,0 +1,88 @@
+{{!--
+  Section: Gallery (L2) - reusable (home + paid program)
+  Lokasi: src/views/partials/components/ui/sections/gallery/index.hbs
+  Satu pohon markup, base + lg. sizeClass, .page-shell.
+
+  Props (opsional, default = home):
+  - badgeKey, titleKey, descKey, linkKey : i18n keys
+  - showBadge / showDivider / showBottomLink : bool (default true)
+  - sectionClass / wrapperClass : override kelas (alias lama: desktopSectionClass / desktopWrapperClass)
+--}}
+<section
+  id="gallery"
+  class="{{default sectionClass (default desktopSectionClass 'w-full bg-[#F8F9FA] py-12 lg:pt-[50px] lg:pb-[24px]')}}"
+  x-data="galleryCarousel(window.__galleryItems || [])"
+>
+  <div class="{{default wrapperClass (default desktopWrapperClass 'page-shell max-w-[1562px] flex flex-col items-center gap-12 lg:gap-16')}}">
+
+    <div class="flex flex-col items-center gap-5 text-center">
+      {{#unless (eq showBadge false)}}
+        {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.home.gallery.gallery'))) fontClass="font-montserrat" dotColor=dotColor }}
+      {{/unless}}
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center">{{{default titleText (t (default titleKey 'test.home.gallery.title'))}}}</h2>
+      <p class="max-w-[658px] font-open-sans text-sm sm:text-base lg:text-[20px] font-normal leading-relaxed lg:leading-[160%] text-[#4A5568] text-center">{{default descText (t (default descKey 'test.home.gallery.description'))}}</p>
+      {{#unless (eq showDivider false)}}
+        <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+      {{/unless}}
+    </div>
+
+    {{!-- up to 3 cards per row; 450px height on desktop, 16px radius --}}
+    <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <template x-for="(item, i) in visible" :key="i">
+        <div class="h-[280px] sm:h-[360px] lg:h-[450px] overflow-hidden rounded-[16px] bg-gray-200">
+          <img :src="item" alt="Gallery" class="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+        </div>
+      </template>
+    </div>
+
+    <div class="flex flex-col items-center gap-[30px]">
+      {{#unless (eq showBottomLink false)}}
+        <a href="{{default linkHref '/dashboard/gallery'}}" class="inline-flex items-center gap-2 border-b border-[#0B1F3B] pb-1 font-montserrat text-base font-semibold leading-5 text-[#003060] transition hover:border-[#7AA3C4] hover:text-[#7AA3C4]">
+          <span>{{default linkText (t (default linkKey 'test.home.gallery.chooseGallery'))}}</span>
+          <svg class="size-4 shrink-0 text-[#003060]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.33334 8H12.6667M12.6667 8L8.66668 4M12.6667 8L8.66668 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      {{/unless}}
+      {{> components/ui/nav/carousel_nav/index
+        count="pages"
+        index="page"
+        goTo="goTo"
+        dotsClass="flex items-center gap-3"
+        activeDotClass="bg-[#111827] scale-100"
+        inactiveDotClass="bg-[#D1D5DB] hover:bg-[#9CA3AF]"
+      }}
+    </div>
+  </div>
+</section>
+
+<script>
+  window.__galleryItems = [
+    {{#each gallery}}{{{json this.filePath}}}{{#unless @last}},{{/unless}}{{/each}}
+  ];
+  if (!window.__galleryItems.length) {
+    window.__galleryItems = [
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&h=500&fit=crop'
+    ];
+  }
+  function galleryCarousel(items) {
+    return {
+      items: items,
+      page: 0,
+      per: 3,
+      _timer: null,
+      get pages() { return Math.max(1, Math.ceil(this.items.length / this.per)); },
+      get visible() { return this.items.slice(this.page * this.per, this.page * this.per + this.per); },
+      init() { this._restart(); },
+      goTo(i) { this.page = Math.max(0, Math.min(i, this.pages - 1)); this._restart(); },
+      _restart() {
+        clearInterval(this._timer);
+        if (this.pages <= 1) return;
+        // auto-scroll left every 5s per design (yana, WA 2026-09-10)
+        this._timer = setInterval(() => { this.page = (this.page + 1) % this.pages; }, 5000);
+      },
+    };
+  }
+</script>

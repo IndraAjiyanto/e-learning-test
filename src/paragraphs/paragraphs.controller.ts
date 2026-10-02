@@ -16,6 +16,7 @@ import { UpdateParagraphsDto } from './dto/update-paragraphs.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('paragraphs')
@@ -30,9 +31,10 @@ export class ParagraphsController {
     @Res() res: Response,
   ) {
     try {
-      createParagraphsDto.paragraphOrder = await this.paragraphsService.getNextOrder();
+      createParagraphsDto.paragraphOrder =
+        await this.paragraphsService.getNextOrder();
       await this.paragraphsService.create(createParagraphsDto);
-      req.flash('success', 'paragraph succesfuly create');
+      flashToast(req, 'Paragraph Created', 'The new paragraph has been added.');
       res.redirect('/paragraphs');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create paragraph');
@@ -56,7 +58,7 @@ export class ParagraphsController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -67,14 +69,14 @@ export class ParagraphsController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateParagraphsDto: UpdateParagraphsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.paragraphsService.update(id, updateParagraphsDto);
-      req.flash('success', 'paragraph succesfuly update');
+      flashToast(req, 'Changes Saved', 'The paragraph has been updated.');
       res.redirect('/paragraphs');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to update paragraph');
@@ -85,13 +87,17 @@ export class ParagraphsController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.paragraphsService.remove(id);
-      req.flash('success', 'paragraph succesfuly delete');
+      flashToast(
+        req,
+        'Paragraph Deleted',
+        'The paragraph has been permanently removed.',
+      );
       res.redirect('/paragraphs');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete paragraph');
