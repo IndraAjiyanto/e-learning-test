@@ -20,7 +20,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { UsersService } from 'src/users/users.service';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('quiz')
@@ -49,7 +49,11 @@ export class QuizController {
       );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create quiz');
+      flashToastError(
+        req,
+        'Failed to Create Quiz',
+        error.message || 'Unable to create quiz.',
+      );
       res.redirect(`/week/${weeksId}`);
     }
   }
@@ -227,7 +231,11 @@ export class QuizController {
       );
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Quiz failed to updated ');
+      flashToastError(
+        req,
+        'Failed to Update Quiz',
+        error.message || 'Unable to update quiz.',
+      );
       res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -245,7 +253,11 @@ export class QuizController {
       flashToast(req, 'Quiz Deleted', 'The quiz has been permanently removed.');
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Quiz Failed to deleted');
+      flashToastError(
+        req,
+        'Failed to Delete Quiz',
+        error.message || 'Unable to delete quiz.',
+      );
       res.redirect(`/week/${weeksId}`);
     }
   }
