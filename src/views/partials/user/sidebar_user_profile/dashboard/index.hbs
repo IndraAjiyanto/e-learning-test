@@ -56,13 +56,13 @@
     {{!-- Stat cards --}}
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
       {{#each (array
-        (array "fa-book-open" dashboardStats.ongoingCount (default (t 'test.dashboard.ongoingCourses') 'Ongoing Courses') "#E0F2F9" "#0369A1" "learning")
-        (array "fa-circle-check" dashboardStats.completedCount (default (t 'test.dashboard.completedCourses') 'Completed Courses') "#DCFCE7" "#16A34A" "learning")
-        (array "fa-folder-open" portfolio.length (default (t 'test.dashboard.portfolioPublished') 'Portfolio Published') "#EDE9FE" "#7C3AED" "portfolio")
+        (array "fa-book-open"   dashboardStats.ongoingCount   (default (t 'test.dashboard.ongoingCourses')   'Ongoing Courses')   "#E0F2F9" "#0369A1" "learning" "all")
+        (array "fa-circle-check" dashboardStats.completedCount (default (t 'test.dashboard.completedCourses') 'Completed Courses') "#DCFCE7" "#16A34A" "learning" "done")
+        (array "fa-folder-open" portfolio.length               (default (t 'test.dashboard.portfolioPublished') 'Portfolio Published') "#EDE9FE" "#7C3AED" "portfolio" "all")
       )}}
         <button
           type="button"
-          @click="toggleActiveSection('{{lookup this 5}}')"
+          @click="goToLearningSection('{{lookup this 5}}', '{{lookup this 6}}')"
           class="flex items-center gap-4 rounded-xl border border-[#E5E7EB] bg-white p-6 text-left shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition hover:shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.1)] cursor-pointer"
         >
           {{!-- Frame memakai lingkaran penuh, bukan kotak membulat. --}}

@@ -121,7 +121,7 @@
       get promoPriceFormatted() {
         const val = this.row?.promo !== undefined && this.row?.promo !== null
           ? Number(this.row.promo)
-          : null;
+          : (this.row?.promoPrice !== undefined && this.row?.promoPrice !== null ? Number(this.row.promoPrice) : null);
         if (val !== null && val > 0) {
           return 'Rp ' + val.toLocaleString('id-ID');
         }
@@ -137,9 +137,12 @@
       },
 
       get finalTotalFormatted() {
-        const total = this.row?.finalTotal !== undefined && this.row?.finalTotal !== null
-          ? Number(this.row.finalTotal)
-          : (this.row?.amount !== undefined && this.row?.amount !== null ? Number(this.row.amount) : 0);
+        // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
+        const total = this.row?.subtotal !== undefined && this.row?.subtotal !== null
+          ? Number(this.row.subtotal)
+          : (this.row?.total !== undefined && this.row?.total !== null
+              ? Number(this.row.total)
+              : (this.row?.finalTotal !== undefined && this.row?.finalTotal !== null ? Number(this.row.finalTotal) : (this.row?.amount ? Number(this.row.amount) : 0)));
         return 'Rp ' + total.toLocaleString('id-ID');
       },
 

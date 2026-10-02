@@ -148,6 +148,14 @@ export class CoursesService {
     const { endDate, ...restDto } = createCourseDto;
     const course = await this.courseRepository.create({
       ...restDto,
+      time_start:
+        createCourseDto.time_start && createCourseDto.time_start.trim() !== ''
+          ? createCourseDto.time_start.trim()
+          : null,
+      time_end:
+        createCourseDto.time_end && createCourseDto.time_end.trim() !== ''
+          ? createCourseDto.time_end.trim()
+          : null,
       startDate: new Date(createCourseDto.startDate),
       startEnd: new Date(endDate),
       date_registration: createCourseDto.date_registration
@@ -1658,6 +1666,20 @@ export class CoursesService {
     delete persistable.categoryId;
     delete persistable.technologiesIds;
     delete persistable.mentoringsId;
+    if ('time_start' in persistable) {
+      persistable.time_start =
+        typeof persistable.time_start === 'string' &&
+        persistable.time_start.trim() !== ''
+          ? persistable.time_start.trim()
+          : null;
+    }
+    if ('time_end' in persistable) {
+      persistable.time_end =
+        typeof persistable.time_end === 'string' &&
+        persistable.time_end.trim() !== ''
+          ? persistable.time_end.trim()
+          : null;
+    }
     Object.assign(course, persistable);
     if (updateCourseDto.startDate) {
       course.startDate = new Date(updateCourseDto.startDate);

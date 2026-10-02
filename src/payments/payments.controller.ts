@@ -248,6 +248,10 @@ export class PaymentsController {
       (dto as any).user_fullname = body.fullName;
       (dto as any).user_email = body.email;
       (dto as any).user_no = body.whatsappNumber;
+      dto.promoCode =
+        typeof body.promoCode === 'string' && body.promoCode.trim() !== ''
+          ? body.promoCode.trim()
+          : undefined;
 
       const result = await this.paymentsService.create(dto);
       if (!result) {
@@ -387,6 +391,11 @@ export class PaymentsController {
       if (!createPaymentDto.no) {
         createPaymentDto.no = 'MAND-' + Date.now();
       }
+      createPaymentDto.promoCode =
+        typeof (req.body as any)?.promoCode === 'string' &&
+        (req.body as any).promoCode.trim() !== ''
+          ? (req.body as any).promoCode.trim()
+          : undefined;
 
       const result = await this.paymentsService.create(createPaymentDto);
       if (!result) {

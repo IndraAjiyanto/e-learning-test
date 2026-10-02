@@ -196,6 +196,14 @@ export class Course {
   // Bukan kolom tabel, jadi tidak ada @Column di sini.
   enrolledCount?: number;
 
+  /**
+   * True kalau student yang sedang login sudah menyelesaikan program ini
+   * (`user_courses.progress`). Diisi di `findCoursesPaginated` pada cabang yang
+   * punya `userId`, karena tanpa itu `userCourses` berisi baris semua user dan
+   * `userCourses[0]` tidak berarti apa-apa.
+   */
+  isCompleted?: boolean;
+
   @OneToMany(() => Mentorings, (mentoring) => mentoring.course, {
     cascade: true,
     onDelete: 'CASCADE',
@@ -312,8 +320,8 @@ export class Course {
   vouchers: Voucher[];
 
   @Column({ name: 'time_start', nullable: true, type: 'time' })
-  time_start: string;
+  time_start: string | null;
 
   @Column({ name: 'time_end', nullable: true, type: 'time' })
-  time_end: string;
+  time_end: string | null;
 }

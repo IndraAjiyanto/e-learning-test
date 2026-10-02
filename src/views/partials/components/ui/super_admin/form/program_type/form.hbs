@@ -19,11 +19,11 @@
   (() => {
     const LANGS = ['id', 'en', 'ja'];
     const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
-    const LABEL = { icon: 'Icon', nameClassesType: 'Program Type Name', description: 'Description' };
+    const LABEL = { icon: 'Icon', nameClassesType: 'Program Type Name', description: 'Description', type: 'Type' };
     const MIN = { icon: 2, nameClassesType: 2, description: 10 };
 
     // Urutan ini juga urutan fokus saat submit gagal.
-    const PATHS = ['icon', 'nameClassesType', ...LANGS.map((l) => `description.${l}`)];
+    const PATHS = ['icon', 'nameClassesType', ...LANGS.map((l) => `description.${l}`), 'type'];
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
 
@@ -44,7 +44,7 @@
 
       const label = lang ? `${LABEL[field]} (${LANG_LABEL[lang]})` : LABEL[field];
       if (!val) return `${label} is required.`;
-      if (val.length < MIN[field]) return `${label} must be at least ${MIN[field]} characters.`;
+      if (MIN[field] && val.length < MIN[field]) return `${label} must be at least ${MIN[field]} characters.`;
 
       return '';
     };
@@ -59,22 +59,33 @@
       return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
     };
 
-    window.programTypeForm = function programTypeForm({ icon, nameClassesType, description } = {}) {
+    // Warna badge Type. Sama persis dengan typeBadgeStyle() di halaman list,
+    // supaya pilihan di form dan kartu di tabel dibaca sebagai satu bahasa
+    // warna yang sama. Nilai enum-nya wajib sama dengan kolom DB.
+    const TYPE_BADGE_OPTIONS = [
+      { value: 'hacker', label: 'Hacker', bg: '#DCFCE7', text: '#166534', border: '#16A34A' },
+      { value: 'hipster', label: 'Hipster', bg: '#FEF3C7', text: '#92400E', border: '#F59E0B' },
+      { value: 'hustler', label: 'Hustler', bg: '#DBEAFE', text: '#1E40AF', border: '#3B82F6' },
+    ];
+
+    window.programTypeForm = function programTypeForm({ icon, nameClassesType, description, type } = {}) {
       // Kolom jsonb nullable: data lama bisa belum punya salah satu bahasa.
       const initial = (src) => byLang((l) => (src && src[l]) || '');
 
       return {
         loading: false,
         descriptionLang: 'id',
+        TYPE_BADGE_OPTIONS,
 
         formData: {
           icon: icon || '',
           nameClassesType: nameClassesType || '',
           description: initial(description),
+          type: type || '',
         },
-        formErrors: { icon: '', nameClassesType: '', description: byLang(() => '') },
+        formErrors: { icon: '', nameClassesType: '', description: byLang(() => ''), type: '' },
         // Error baru muncul setelah field disentuh atau setelah submit ditekan.
-        touched: { icon: false, nameClassesType: false, description: byLang(() => false) },
+        touched: { icon: false, nameClassesType: false, description: byLang(() => false), type: false },
 
         get iconClass() {
           return toIconClass(this.formData.icon);
