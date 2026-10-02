@@ -164,6 +164,7 @@
           {{> components/ui/super_admin/tabs/panel/index name='registration' label='Registration' }}
         {{/if}}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
+        {{> components/ui/super_admin/tabs/panel/index name='FAQs' label='FAQs' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_mentor' label='Log Book Mentor' }}
@@ -173,7 +174,7 @@
       <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'FAQs'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
       {{#if course.checkPaid}}
         <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
         <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
