@@ -29,7 +29,10 @@
     tab: 'all',
     selectedCategory: 'all',
     selectedMethod: 'all',
-    selectedStatus: 'all',
+    selectedStatus: (() => {
+      const s = new URLSearchParams(window.location.search).get('status');
+      return (s === 'done' || s === 'ongoing') ? s : 'all';
+    })(),
     searchQuery: new URLSearchParams(window.location.search).get('search') || '',
     currentPage: 1,
     totalPages: 1,
@@ -84,7 +87,14 @@
       this.$watch('tab', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedCategory', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('selectedStatus', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.    $watch('selectedStatus', () => {
+      this.currentPage = 1;
+      this.fetchKelas();
+      const url = new URL(window.location);
+      if (this.selectedStatus !== 'all') url.searchParams.set('status', this.selectedStatus);
+      else url.searchParams.delete('status');
+      history.replaceState({}, '', url);
+    });
       this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
       await this.fetchKelas();
     },
