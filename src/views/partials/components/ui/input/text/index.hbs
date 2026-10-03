@@ -18,6 +18,10 @@
   - variant      : string ('default' | 'accent', default: 'default')
   - pattern      : string (opsional)
   - inputmode    : string (opsional)
+  - numeric      : boolean (default: false). Paksa input hanya menerima karakter
+                   angka '0'-'9'. Nol di depan tetap utuh karena tidak ada
+                   konversi number di jalur ini, jadi '0812...' tidak berubah
+                   jadi '812...'.
   - hint         : string (opsional)
   - error        : string (opsional)
   - wrapperClass : string (opsional)
@@ -57,6 +61,24 @@
       placeholder="{{default placeholder 'Enter value'}}"
       {{#if pattern}}pattern="{{pattern}}"{{/if}}
       {{#if inputmode}}inputmode="{{inputmode}}"{{/if}}
+      {{#if numeric}}
+        {{!--
+          HTML murni, bukan Alpine, supaya tetap berlaku walau bundle JS gagal
+          dimuat. `oninput` menutup semua sumber sekaligus: ketik, paste, drag
+          drop, dan delete. Pilihannya '0-9' eksplisit supaya '0' ikut
+          dipertahankan; bentuk '/\D/g' sebenarnya sama saja, hanya ini lebih
+          enak dibaca.
+
+          `onkeydown` membuat karakter non-angka tidak pernah sempat muncul,
+          bukan muncul lalu dihapus. Syarat `key.length === 1` hanya menyasar
+          karakter printable, sehingga Backspace, Delete, Tab, Enter, Arrow*,
+          Home, dan End tetap lewat. Pengecualian ctrl/meta menjaga
+          Ctrl+A/C/V/X yang tidak boleh diblokir. '/' ikut diizinkan karena
+          tombol '/' di numpad dipakai untuk mengetik angka saat NumLock mati.
+        --}}
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+        onkeydown="if (event.key.length === 1 && !/^[0-9/]$/.test(event.key) && !event.ctrlKey && !event.metaKey) event.preventDefault();"
+      {{/if}}
       {{#if required}}required{{/if}}
       {{#if disabled}}disabled{{/if}}
       {{#if readonly}}readonly{{/if}}

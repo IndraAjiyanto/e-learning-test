@@ -9,8 +9,6 @@
     searchQuery: '',
     categoryFilter: 'all',
     classTypeFilter: 'all',
-    categorySearch: '',
-    classTypeSearch: '',
     sortBy: 'newest',
     categoryOpen: false,
     classTypeOpen: false,
@@ -521,7 +519,6 @@
         <!-- Category -->
         <div class="space-y-2">
           <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-tag"></i> {{t "test.myPortfolio.categoryTittle"}}</label>
-          <input type="text" x-model="categorySearch" placeholder="{{t "test.myPortfolio.searchCategoryPlaceholder"}}" class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
           
           <div class="relative" x-data="{ open: false }" @click.outside="open = false">
             <button
@@ -548,7 +545,7 @@
                 <span>{{t "test.myPortfolio.allCategory"}}</span>
                 <i class="fas fa-check text-xs" x-show="categoryFilter === 'all'"></i>
               </button>
-              <template x-for="c in categoryOptions.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase()))" :key="c">
+              <template x-for="c in categoryOptions" :key="c">
                 <button
                   type="button"
                   @click="categoryFilter = c; open = false"
@@ -566,7 +563,6 @@
         <!-- Class Type -->
         <div class="space-y-2">
           <label class="font-inter font-semibold text-xs text-[#003060] flex items-center gap-1.5"><i class="fa-solid fa-layer-group"></i> {{t "test.myPortfolio.programTypeTittle"}}</label>
-          <input type="text" x-model="classTypeSearch" placeholder="{{t "test.myPortfolio.searchClassTypePlaceholder"}}" class="h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3.5 font-inter text-sm text-[#171717] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#737373] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20">
           
           <div class="relative" x-data="{ open: false }" @click.outside="open = false">
             <button
@@ -593,7 +589,7 @@
                 <span>{{t "test.myPortfolio.allProgramType"}}</span>
                 <i class="fas fa-check text-xs" x-show="classTypeFilter === 'all'"></i>
               </button>
-              <template x-for="c in classTypeOptions.filter(c => c.toLowerCase().includes(classTypeSearch.toLowerCase()))" :key="c">
+              <template x-for="c in classTypeOptions" :key="c">
                 <button
                   type="button"
                   @click="classTypeFilter = c; open = false"
