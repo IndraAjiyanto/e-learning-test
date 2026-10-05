@@ -560,6 +560,25 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     const course = await this.coursesService.findOne(courseId);
+    if (!course) {
+      req.flash('error', 'Program not found');
+      return res.redirect('/program');
+    }
+
+    const participantCount = course.userCourses?.length || 0;
+    if (participantCount > 0) {
+      flashToastError(
+        req,
+        'Gagal Mengedit Program',
+        `Program "${course.name}" tidak dapat diedit karena sudah memiliki ${participantCount} peserta.`,
+      );
+      req.flash(
+        'error',
+        `Program "${course.name}" tidak dapat diedit karena sudah memiliki ${participantCount} peserta.`,
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+
     const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
@@ -1424,6 +1443,7 @@ export class CoursesController {
       const errorMessage = Array.isArray(messages)
         ? messages.join(', ')
         : error.message || 'failed update program';
+      flashToastError(req, 'Gagal Mengedit Program', errorMessage);
       req.flash('error', errorMessage);
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }

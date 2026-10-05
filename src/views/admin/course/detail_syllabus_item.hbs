@@ -52,6 +52,7 @@
           </div>
 
           {{!-- Frame 2147229614: Buttons (Delete + Edit Syllabus) --}}
+          {{#unless isCompleted}}
           <div class='shrink-0 flex flex-row items-center gap-[12px]'>
             {{!-- Delete button --}}
             <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
@@ -74,6 +75,7 @@
               </span>
             </a>
           </div>
+          {{/unless}}
 
         </div>
       </div>

@@ -99,9 +99,7 @@
       this.programType = (payload.course && payload.course.courseType && payload.course.courseType.name) || '';
       this.programCategory = (payload.course && payload.course.category && payload.course.category.name) || '';
 
-      const items = (payload.items && payload.items.length > 0)
-        ? payload.items
-        : (window.backendPortfolioData || []);
+      const items = Array.isArray(payload.items) ? payload.items : [];
 
       this.portfolios = (items || []).map((p) => ({
         id: p.id,
