@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -227,10 +231,27 @@ export class SessionService {
     return session;
   }
 
+  async hasCompletedUser(sessionId: string): Promise<boolean> {
+    const count = await this.logBookRepository.count({
+      where: {
+        session: { id: sessionId },
+        process: 'approved',
+      },
+    });
+    return count > 0;
+  }
+
   async update(id: string, updateSessionDto: UpdateSessionDto) {
     const session = await this.findOne(id);
     if (!session) {
       throw new NotFoundException('session tidak ditemukan');
+    }
+
+    const isCompleted = await this.hasCompletedUser(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Session cannot be edited because it has already been completed by user',
+      );
     }
 
     if (updateSessionDto.isFinalCheck === 'true') {
@@ -256,6 +277,14 @@ export class SessionService {
     if (!session) {
       throw new NotFoundException('session tidak ditemukan');
     }
+
+    const isCompleted = await this.hasCompletedUser(sessionId);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Session cannot be deleted because it has already been completed by user',
+      );
+    }
+
     await this.sessionRepository.remove(session);
     const semuaPertemuan = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },

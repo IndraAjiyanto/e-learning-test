@@ -7,11 +7,21 @@ export const logicHelpers = {
   lt: (a: any, b: any) => Number(a) < Number(b),
   or: (...args: any[]) => {
     args.pop();
-    return args.some(Boolean);
+    return args.some((arg) => {
+      if (Array.isArray(arg)) return arg.length > 0;
+      if (arg && typeof arg === 'object' && Object.keys(arg).length === 0) return false;
+      return Boolean(arg);
+    });
   },
-  // Dipakai untuk menyembunyikan bagian yang bergantung pada sakelar, mis.
-  // tab My Logbook pada program yang logbooknya dimatikan.
   not: (value: any) => !value,
+  coalesce: (...args: any[]) => {
+    args.pop();
+    for (const a of args) {
+      if (Array.isArray(a) && a.length > 0) return a[0];
+      if (a !== undefined && a !== null && a !== '' && !Array.isArray(a)) return a;
+    }
+    return '';
+  },
   isPaidProgram: (course: any) => {
     if (!course) return false;
     if (course.checkPaid !== undefined && course.checkPaid !== null) {
@@ -23,7 +33,11 @@ export const logicHelpers = {
   },
   and: (...args: any[]) => {
     args.pop();
-    return args.every(Boolean);
+    return args.every((arg) => {
+      if (Array.isArray(arg)) return arg.length > 0;
+      if (arg && typeof arg === 'object' && Object.keys(arg).length === 0) return false;
+      return Boolean(arg);
+    });
   },
   weekUnlocked: (weekProgresses: { process?: boolean }[]) =>
     !!(

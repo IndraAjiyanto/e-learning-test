@@ -266,6 +266,14 @@ export class LogbookController {
   ) {
     try {
       const logbooks = await this.logbookService.findOne(logbookId);
+      if (logbooks.process === 'approved' || logbooks.process === 'rejected') {
+        flashToastError(
+          req,
+          'Status Locked',
+          'Logbook status cannot be changed once approved or rejected.',
+        );
+        return res.redirect(`/session/${logbooks.session.id}`);
+      }
       updateLogbookDto.process = proses;
       await this.logbookService.update(logbookId, updateLogbookDto);
       flashToast(req, 'Status Updated', 'The logbook status has been updated.');
