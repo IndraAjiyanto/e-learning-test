@@ -1447,11 +1447,34 @@ export class CoursesService {
   }
 
   async findCourseWeeks(courseId: string) {
-    return await this.weeksRepository.find({
+    const weeks = await this.weeksRepository.find({
       where: { course: { id: courseId } },
       order: { weekNumber: 'ASC' },
       relations: ['session'],
     });
+
+    if (weeks.length === 0) {
+      return [];
+    }
+
+    const completedWeekProgresses = await this.weekProgressRepository
+      .createQueryBuilder('wp')
+      .select('wp.weekId', 'weekId')
+      .where('wp.weekId IN (:...weekIds)', {
+        weekIds: weeks.map((w) => w.id),
+      })
+      .andWhere('wp.quiz = :quiz', { quiz: true })
+      .groupBy('wp.weekId')
+      .getRawMany();
+
+    const completedWeekIds = new Set(
+      completedWeekProgresses.map((item) => item.weekId),
+    );
+
+    return weeks.map((w) => ({
+      ...w,
+      hasCompletedUser: completedWeekIds.has(w.id),
+    }));
   }
 
   async findCourseMentors(courseId: string) {

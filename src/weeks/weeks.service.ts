@@ -176,10 +176,24 @@ export class WeeksService {
       .getOne();
   }
 
+  async hasCompletedUser(weeksId: string): Promise<boolean> {
+    const count = await this.weekProgressRepository.count({
+      where: { week: { id: weeksId }, quiz: true },
+    });
+    return count > 0;
+  }
+
   async update(id: string, updateWeekDto: UpdateWeeksDto) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
+    }
+
+    const isCompleted = await this.hasCompletedUser(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Week cannot be edited because it has already been completed by user',
+      );
     }
 
     const finalWeek = await this.weeksRepository.findOne({
@@ -202,6 +216,14 @@ export class WeeksService {
     if (!weeks) {
       throw new NotFoundException('week not found');
     }
+
+    const isCompleted = await this.hasCompletedUser(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Week cannot be deleted because it has already been completed by user',
+      );
+    }
+
     await this.weeksRepository.remove(weeks);
     const allWeeks = await this.weeksRepository.find({
       where: { course: { id: courseId } },
