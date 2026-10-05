@@ -63,13 +63,20 @@ export class InvoiceService {
     const invoiceStatus: InvoiceStatus =
       finalTotal <= 0 ? 'paid' : 'pending';
 
+    const coursePrice = course?.price ? Number(course.price) : null;
+    const coursePromo = course?.promo ? Number(course.promo) : null;
+    const courseDiscount =
+      coursePrice && coursePromo && coursePrice > coursePromo
+        ? coursePrice - coursePromo
+        : 0;
+
     const invoice = this.invoiceRepository.create({
       payment: payment,
-      price: course?.price ? Number(course.price) : null,
-      promo: course?.promo ? Number(course.promo) : null,
+      price: coursePrice,
+      promo: coursePromo,
       promo_code: discountAmount ?? 0,
       subtotal: finalTotal,
-      discount_amount: discountAmount,
+      discount_amount: courseDiscount,
       final_total: finalTotal,
       payment_method: paymentMethod,
       invoice_number: payment.no,
@@ -146,13 +153,18 @@ export class InvoiceService {
         ? finalTotalParam
         : Math.max(0, basePrice - (discountAmount || 0));
 
+    const courseDiscount =
+      !isInstallment && price && promo && price > promo
+        ? price - promo
+        : 0;
+
     const invoice = this.invoiceRepository.create({
       payment: payment,
       price: price,
       promo: promo,
       promo_code: discountAmount || 0,
       subtotal: finalTotal,
-      discount_amount: discountAmount || 0,
+      discount_amount: courseDiscount,
       final_total: finalTotal,
       payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
       invoice_number: payment.no,

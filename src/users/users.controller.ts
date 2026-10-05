@@ -31,7 +31,12 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast, flashToastError } from 'src/common/utils/toast.util';
+import {
+  flashToast,
+  flashToastError,
+  flashToastInfo,
+  flashToastWarning,
+} from 'src/common/utils/toast.util';
 import { capabilitiesForCourse } from 'src/courses/program-type';
 
 @UseFilters(FileUploadExceptionFilter)
@@ -52,8 +57,9 @@ export class UsersController {
     @Query('expired') expired?: string,
   ) {
     if (expired) {
-      req.flash(
-        'info',
+      flashToastInfo(
+        req,
+        'Verification Time Expired',
         'Verification time has expired. Please submit a new request if you have not reset your password.',
       );
       return res.redirect('/users/forgot-password');
@@ -71,7 +77,11 @@ export class UsersController {
           return res.render('forgot-password', { remainingMs: remainingMs });
         }
       } else {
-        req.flash('error', 'Please verify your email first');
+        flashToastWarning(
+          req,
+          'Email Not Verified',
+          'Please verify your email address first.',
+        );
         return res.redirect(
           '/users/send-verify-email?token=' + user.verificationToken,
         );
@@ -80,8 +90,9 @@ export class UsersController {
       // Token tidak ditemukan, expired, atau sudah di-null-kan setelah ganti password
     }
 
-    req.flash(
-      'info',
+    flashToastInfo(
+      req,
+      'Verification Time Expired',
       'Verification time has expired. Please submit a new request if you have not reset your password.',
     );
     return res.redirect('/users/forgot-password');
@@ -95,14 +106,16 @@ export class UsersController {
   ) {
     try {
       const token = await this.usersService.forgotPassword(forgotPasswordDto);
-      req.flash(
-        'success',
+      flashToast(
+        req,
+        'Reset Link Sent',
         'Password reset link has been sent to your email. Please check your inbox.',
       );
       return res.redirect('/users/forgot-password?token=' + token);
     } catch (error: any) {
-      req.flash(
-        'error',
+      flashToastError(
+        req,
+        'Failed to Send Reset Link',
         error.message || 'Your email is not registered',
       );
 
@@ -140,7 +153,11 @@ export class UsersController {
       return res.render('reset-password', { token });
     } catch (error: any) {
       const token = await this.usersService.findUserByEmail(email);
-      req.flash('error', 'Invalid or missing reset token');
+      flashToastError(
+        req,
+        'Invalid Reset Token',
+        'Invalid or missing reset token. Please request a new link.',
+      );
       return res.redirect(
         '/users/forgot-password?token=' + token.resetPasswordToken,
       );
@@ -155,13 +172,18 @@ export class UsersController {
   ) {
     try {
       await this.usersService.resetPassword(resetPasswordDto);
-      req.flash(
-        'success',
-        'Password has been reset successfully! You can now login with your new password.',
+      flashToast(
+        req,
+        'Password Reset Successful',
+        'Your password has been reset successfully! You can now login with your new password.',
       );
       res.redirect('/login');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to reset password');
+      flashToastError(
+        req,
+        'Failed to Reset Password',
+        error.message || 'Failed to reset password',
+      );
       res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
     }
   }
@@ -180,8 +202,9 @@ export class UsersController {
       const currentUser = (req as any).user;
       if (currentUser?.id) {
         await this.usersService.resendVerificationByUser(currentUser.id);
-        req.flash(
-          'success',
+        flashToast(
+          req,
+          'Verification Email Sent',
           'Verification email has been sent. Please check your inbox.',
         );
         return res.redirect('/users/send-verify-email');
@@ -189,14 +212,26 @@ export class UsersController {
 
       if (token) {
         await this.usersService.sendVerificationEmail(token);
-        req.flash('success', 'Verification email sent successfully');
+        flashToast(
+          req,
+          'Verification Email Sent',
+          'Verification email sent successfully. Please check your inbox.',
+        );
         return res.redirect('/users/send-verify-email');
       }
 
-      req.flash('error', 'Silakan login untuk mengirim ulang email verifikasi.');
+      flashToastError(
+        req,
+        'Authentication Required',
+        'Please login to resend verification email.',
+      );
       return res.redirect('/login');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to send verification email');
+      flashToastError(
+        req,
+        'Failed to Send Verification Email',
+        error.message || 'Failed to send verification email',
+      );
       return res.redirect('/users/send-verify-email');
     }
   }
@@ -214,14 +249,16 @@ export class UsersController {
       }
 
       await this.usersService.resendVerificationByUser(currentUser.id);
-      req.flash(
-        'success',
+      flashToast(
+        req,
+        'Verification Email Sent',
         'Verification email has been sent. Please check your inbox.',
       );
       return res.redirect('/users/send-verify-email');
     } catch (error: any) {
-      req.flash(
-        'error',
+      flashToastError(
+        req,
+        'Failed to Send Verification Email',
         error.message || 'Failed to send verification email',
       );
       return res.redirect('/users/send-verify-email');
@@ -271,13 +308,18 @@ export class UsersController {
         });
       }
 
-      req.flash(
-        'error',
-        'Silakan login terlebih dahulu untuk mengakses halaman verifikasi.',
+      flashToastError(
+        req,
+        'Authentication Required',
+        'Please login first to access the verification page.',
       );
       return res.redirect('/login');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to send verification email');
+      flashToastError(
+        req,
+        'Verification Error',
+        error.message || 'Failed to load verification page.',
+      );
       return res.render('verify-email');
     }
   }
@@ -291,10 +333,18 @@ export class UsersController {
   ) {
     try {
       await this.usersService.verifyEmail(token);
-      req.flash('success', 'Email verified successfully! You can now login.');
+      flashToast(
+        req,
+        'Email Verified',
+        'Email verified successfully! You can now login.',
+      );
       return res.redirect('/users/verify-email-success');
     } catch (error: any) {
-      req.flash('error', error.message || 'Email verification failed');
+      flashToastError(
+        req,
+        'Verification Failed',
+        error.message || 'Email verification failed or token has expired.',
+      );
       return res.redirect('/login');
     }
   }
