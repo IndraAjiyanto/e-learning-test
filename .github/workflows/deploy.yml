@@ -47,7 +47,7 @@ jobs:
             # doesn't source ~/.bashrc, so without this it falls back to the system Node (v18).
             export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm use 20 >/dev/null 2>&1 || nvm use default >/dev/null 2>&1 || true
+            nvm use 24 >/dev/null 2>&1 || nvm install 24
 
             # Helper: send a message to Telegram (won't fail the deploy if curl errors)
             notify() {
