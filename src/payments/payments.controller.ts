@@ -509,6 +509,18 @@ export class PaymentsController {
         );
         return res.redirect('/program');
       }
+      if (row.status === 'approved' || row.status === 'rejected') {
+        flashToastError(
+          req,
+          'Status Terkunci',
+          'Status cicilan tidak dapat diubah setelah disetujui atau ditolak.',
+        );
+        const courseId = row.payment?.course?.id;
+        if (courseId) {
+          return res.redirect(`/program/detail/program/admin/${courseId}`);
+        }
+        return res.redirect('/program');
+      }
       const approved = proses === 'approved';
       if (proses === 'approved') {
         row.status = 'approved';
@@ -749,6 +761,17 @@ export class PaymentsController {
           req,
           'Data Pembayaran Tidak Lengkap',
           'Pembayaran tidak terhubung ke user atau program.',
+        );
+        return res.redirect(backTo(courseId));
+      }
+      if (
+        payment.process === 'approved' ||
+        payment.process === 'rejected'
+      ) {
+        flashToastError(
+          req,
+          'Status Terkunci',
+          'Status pembayaran tidak dapat diubah setelah disetujui atau ditolak.',
         );
         return res.redirect(backTo(courseId));
       }

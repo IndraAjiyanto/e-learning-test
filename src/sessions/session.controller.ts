@@ -103,6 +103,15 @@ export class SessionController {
     @Req() req: Request,
     @Param('id') id: string,
   ) {
+    const isCompleted = await this.sessionService.hasCompletedUser(id);
+    if (isCompleted) {
+      req.flash(
+        'error',
+        'Session cannot be edited because it has already been completed by user',
+      );
+      return res.redirect(`/session/${id}`);
+    }
+
     const session = await this.sessionService.findOne(id);
     const course = await this.sessionService.findAllCourses();
     let maxSession = 0;
@@ -194,10 +203,14 @@ export class SessionController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const session = await this.sessionService.findOne(sessionId);
+    const [session, hasCompletedUser] = await Promise.all([
+      this.sessionService.findOne(sessionId),
+      this.sessionService.hasCompletedUser(sessionId),
+    ]);
     res.render('admin/session/detail', {
       user: req.user,
       session,
+      hasCompletedUser,
     });
   }
 

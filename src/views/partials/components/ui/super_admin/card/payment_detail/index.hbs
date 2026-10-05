@@ -130,10 +130,8 @@
       </div>
 
       <!-- Aksi verifikasi payment utama (Full Payment / DP).
-           Tombol muncul untuk payment apa pun yang punya bukti transfer,
-           tanpa memandang statusnya — supaya status bisa diubah bolak-balik
-           (accepted -> rejected -> accepted) tanpa halaman di-reload manual. -->
-      <template x-if="item.file">
+           Hanya tampil jika status masih dalam proses (belum accepted / rejected). -->
+      <template x-if="item.file && item.process !== 'approved' && item.process !== 'acc' && item.process !== 'rejected'">
         <div class="flex items-center justify-end gap-2 pt-2.5 border-t border-[#E5E5E5]">
           <button
             type="button"
@@ -211,10 +209,9 @@
                   </a>
                 </template>
 
-                <!-- Approve / Reject term yang punya bukti transfer. Sama seperti
-                     tombol payment utama di atas: status tidak membatasi, jadi
-                     termin yang sudah approved/rejected tetap bisa diubah. -->
-                <template x-if="typeof reviewTerm === 'function' && getTerm(item, idx + 1)?.file">
+                <!-- Approve / Reject term yang punya bukti transfer.
+                     Hanya tampil jika termin belum disetujui / ditolak. -->
+                <template x-if="typeof reviewTerm === 'function' && getTerm(item, idx + 1)?.file && getTermStatus(item, idx + 1) !== 'approved' && getTermStatus(item, idx + 1) !== 'rejected'">
                   <div class="flex items-center gap-1.5 shrink-0">
                     <button
                       type="button"
