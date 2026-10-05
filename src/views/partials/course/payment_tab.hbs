@@ -1,16 +1,25 @@
-<div class="w-full mx-auto px-6 py-10" 
+<div class="w-full max-w-[1010px] mx-auto flex flex-col gap-3 py-6" 
      x-data="PaymentData()" x-init="init()">
 
-{{> sub_partials/program/payment_tab/payment}}
+  <!-- 1. Top Toggle Tabs (Full Payment / Installment) -->
+  {{> sub_partials/program/payment_tab/payment}}
 
-{{> sub_partials/program/payment_tab/status}}
+  <!-- 2. Main Content Card Wrapper (Table Detail Week) -->
+  <div class="w-full bg-white border border-[#D9D9D9] rounded-xl p-3 sm:p-5 flex flex-col gap-5">
+    <!-- Status Filter Sub-Tabs & Search Bar -->
+    {{> sub_partials/program/payment_tab/status}}
 
-{{> sub_partials/program/payment_tab/full_payment}}
+    <!-- Full Payment List -->
+    {{> sub_partials/program/payment_tab/full_payment}}
 
-{{> sub_partials/program/payment_tab/installment}}
+    <!-- Installment List -->
+    {{> sub_partials/program/payment_tab/installment}}
 
-{{> sub_partials/program/payment_tab/registration}}
+    <!-- Registration List (for free programs) -->
+    {{> sub_partials/program/payment_tab/registration}}
+  </div>
 
+  <!-- Modal Payment Proof -->
   <div x-show="open" 
        class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
        x-transition:enter="transition ease-out duration-300"
@@ -19,9 +28,10 @@
        x-transition:leave="transition ease-in duration-200"
        x-transition:leave-start="opacity-100"
        x-transition:leave-end="opacity-0"
-       @click.self="open = false">
+       @click.self="open = false"
+       style="display: none;">
 
-    <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative"
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative"
          x-transition:enter="transition ease-out duration-300 transform"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -29,77 +39,141 @@
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95">
       
-      <div class="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-        <h3 class="text-xl font-bold text-slate-900">Payment Proof</h3>
+      <div class="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
+        <h3 class="text-lg font-bold text-slate-900">Payment Proof</h3>
         <button @click="open = false" 
-                class="p-2 hover:bg-slate-200 rounded-full transition-colors duration-200 text-slate-600 hover:text-slate-900">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-600 hover:text-slate-900">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>
 
-      <div class="p-6 max-h-[calc(90vh-120px)] overflow-auto">
-        <img :src="imageSrc" alt="Payment Proof" class="rounded-2xl w-full h-auto object-contain shadow-lg border border-slate-200">
+      <div class="p-6 max-h-[calc(90vh-100px)] overflow-auto">
+        <img :src="imageSrc" alt="Payment Proof" class="rounded-xl w-full h-auto object-contain shadow-sm border border-slate-200">
       </div>
     </div>
   </div>
 </div>
 
-
-
 <script>
   function PaymentData() {
-  return {
-    tab: localStorage.getItem('tabPayment'),
-    data: localStorage.getItem('dataPayment') ? JSON.parse(localStorage.getItem('dataPayment')) : [],
-    imageSrc: '',
-    tabStatus: localStorage.getItem('statusPayment') || 'all',
-    open: false,
+    return {
+      tab: localStorage.getItem('tabPayment') || 'payment',
+      data: [],
+      searchQuery: '',
+      imageSrc: '',
+      tabStatus: localStorage.getItem('statusPayment') || 'all',
+      selectedInstallment: null,
+      open: false,
 
-    async init() {
-      const urlMap = {
-        payment: '/program/payment/{{course.id}}',
-        installment: '/program/paymentInstallment/{{course.id}}',
-        register: '/program/register/{{course.id}}'
-      }
+      async init() {
+        const urlMap = {
+          payment: '/program/payment/{{course.id}}',
+          installment: '/program/paymentInstallment/{{course.id}}',
+          register: '/program/register/{{course.id}}'
+        };
 
-      if (!this.tab || !urlMap[this.tab]) {
-        {{#if course.checkPaid}}
-        this.tab = 'payment';
-        {{else}}
-        this.tab = 'register';
-        {{/if}}
-      }
+        if (!this.tab || !urlMap[this.tab]) {
+          {{#if course.checkPaid}}
+          this.tab = 'payment';
+          {{else}}
+          this.tab = 'register';
+          {{/if}}
+        }
 
-      await this.toggleFetchMateri(urlMap[this.tab], this.tab);
-    },
+        await this.toggleFetchMateri(urlMap[this.tab], this.tab);
+      },
 
-    async toggleFetchMateri(url, jenis) {
-      this.tab = jenis;
-      if(this.tabStatus === null){
-        this.tabStatus = 'all';
-      }
-      localStorage.setItem('tabPayment', jenis);
-      try{
-      const res = await fetch(url);
-      this.data = await res.json();
-  
-      localStorage.setItem('dataPayment', JSON.stringify(this.data));
-      } catch (error) {
-        console.error('❌ Error:', error);
-      }
+      async toggleFetchMateri(url, jenis) {
+        this.tab = jenis;
+        this.selectedInstallment = null;
+        if (!this.tabStatus) {
+          this.tabStatus = 'all';
+        }
+        localStorage.setItem('tabPayment', jenis);
+        try {
+          const res = await fetch(url);
+          this.data = await res.json();
+        } catch (error) {
+          console.error('❌ Error fetching payment data:', error);
+        }
+      },
 
-    },
+      toggleTabStatus(status) {
+        this.tabStatus = status;
+        localStorage.setItem('statusPayment', status);
+      },
 
-    async toggleTabStatus(status) {
-      this.tabStatus = status;
-      localStorage.setItem('statusPayment', status);
-    },
-        formatDate(value) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(value).toLocaleDateString('id-ID', options);
-    },
+      get filteredData() {
+        if (!Array.isArray(this.data)) return [];
+        return this.data.filter((item) => {
+          // Status filter
+          const status = (item.process || '').toLowerCase();
+          let matchesStatus = true;
+          if (this.tabStatus === 'acc') {
+            matchesStatus = status === 'acc' || status === 'approved';
+          } else if (this.tabStatus === 'proces' || this.tabStatus === 'process') {
+            matchesStatus = status === 'proces' || status === 'process';
+          } else if (this.tabStatus === 'rejected') {
+            matchesStatus = status === 'rejected';
+          }
+
+          if (!matchesStatus) return false;
+
+          // Search query filter
+          if (!this.searchQuery || this.searchQuery.trim() === '') return true;
+          const q = this.searchQuery.toLowerCase().trim();
+          const username = (item.user_fullname || item.user?.username || '').toLowerCase();
+          const email = (item.user_email || item.user?.email || '').toLowerCase();
+          const invoiceNo = (item.invoice?.xendit_invoice_id || item.no || '').toLowerCase();
+          const phone = (item.user_no || item.user?.no || '').toLowerCase();
+          const keyword = (item.referalSource || item.keyword || '').toLowerCase();
+
+          return (
+            username.includes(q) ||
+            email.includes(q) ||
+            invoiceNo.includes(q) ||
+            phone.includes(q) ||
+            keyword.includes(q)
+          );
+        });
+      },
+
+      formatCurrency(value) {
+        const num = Number(value);
+        if (isNaN(num)) return 'Rp 0';
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 0,
+        }).format(num);
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(value).toLocaleDateString('id-ID', options);
+      },
+
+      getTerm(item, month) {
+        if (!item.installmentPayments || !Array.isArray(item.installmentPayments)) return null;
+        return item.installmentPayments.find((p) => Number(p.month) === Number(month));
+      },
+
+      getTermStatus(item, month) {
+        const term = this.getTerm(item, month);
+        if (!term) return 'unpaid';
+        return term.status || 'process';
+      },
+
+      getTermStatusLabel(item, month) {
+        const status = this.getTermStatus(item, month);
+        if (status === 'approved') return 'Lunas';
+        if (status === 'process') return 'Diproses';
+        if (status === 'rejected') return 'Ditolak';
+        return 'Belum Bayar';
+      },
+    };
   }
-}
 </script>

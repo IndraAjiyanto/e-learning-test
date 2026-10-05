@@ -26,6 +26,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { CategoryPartnerService } from 'src/category_partner/category_partner.service';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -60,7 +61,11 @@ export class PartnerController {
     try {
       createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
-      req.flash('success', 'partner successfully created');
+      flashToast(
+        req,
+        'Partnership Created',
+        'The partnership has been added successfully',
+      );
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to create');
@@ -88,7 +93,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Get(':partnerId')
   async findOne(
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -99,7 +104,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Get('formEdit/:partnerId')
   async formEdit(
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -129,7 +134,7 @@ export class PartnerController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Body() updatePartnerDto: UpdatePartnerDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -141,7 +146,11 @@ export class PartnerController {
         updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.PartnerService.update(partnerId, updatePartnerDto);
-      req.flash('success', 'partner successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The partnership has been updated successfully.',
+      );
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to update');
@@ -152,7 +161,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Delete(':partnerId')
   async remove(
-    @Param('partnerId') partnerId: number,
+    @Param('partnerId') partnerId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -165,7 +174,11 @@ export class PartnerController {
       }
       await this.PartnerService.deleteFile(partner.image);
       await this.PartnerService.remove(partnerId);
-      req.flash('success', 'partner successfully removed');
+      flashToast(
+        req,
+        'Partner Deleted',
+        'The partner has been permanently removed.',
+      );
       res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to remove');

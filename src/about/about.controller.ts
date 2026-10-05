@@ -25,6 +25,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -56,7 +57,11 @@ export class AboutController {
     try {
       createTentangDto.image = req.body.uploadedImageUrls?.[0];
       await this.aboutService.create(createTentangDto);
-      req.flash('success', 'Header successfully created');
+      flashToast(
+        req,
+        'Header Created',
+        'The header has been added successfully.',
+      );
       res.redirect('/about');
     } catch (error: any) {
       req.flash('error', error.message || 'Header failed to create');
@@ -68,8 +73,7 @@ export class AboutController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const about = await this.aboutService.findAll();
-    res.json(about);
-    // res.render('super_admin/about/index', { user: req.user, about });
+    res.render('super_admin/about/index', { user: req.user, about });
   }
 
   @Roles('super_admin')
@@ -81,18 +85,18 @@ export class AboutController {
   @Roles('super_admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const about = await this.aboutService.findOne(id);
-    res.render('super_admin/about/detail', { user: req.user, about });
+    res.redirect(`/about/formEdit/${id}`);
   }
 
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -117,7 +121,7 @@ export class AboutController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateTentangDto: UpdateAboutDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -129,7 +133,11 @@ export class AboutController {
         updateTentangDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.aboutService.update(id, updateTentangDto);
-      req.flash('success', 'Header successfully updated');
+      flashToast(
+        req,
+        'Header Updated',
+        'The header has been updated successfully.',
+      );
       res.redirect('/about');
     } catch (error: any) {
       req.flash('error', error.message || 'Header failed to update');
@@ -140,7 +148,7 @@ export class AboutController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -148,7 +156,11 @@ export class AboutController {
       const about = await this.aboutService.findOne(id);
       await this.aboutService.deleteFile(about.image);
       await this.aboutService.remove(id);
-      req.flash('success', 'Header successfully deleted');
+      flashToast(
+        req,
+        'Header Deleted',
+        'The header has been deleted successfully.',
+      );
       res.redirect('/about');
     } catch (error: any) {
       req.flash('error', error.message || 'Header failed to delete');

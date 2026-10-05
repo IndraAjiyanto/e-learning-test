@@ -18,6 +18,7 @@ import { CreateAlumnusDto } from './dto/create-alumnus.dto';
 import { UpdateAlumnusDto } from './dto/update-alumnus.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -49,7 +50,7 @@ export class AlumniController {
     folder: 'alumni',
   })
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createAlumnusDto: CreateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -58,7 +59,11 @@ export class AlumniController {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       createAlumnusDto.courseId = courseId;
       await this.alumniService.create(createAlumnusDto);
-      req.flash('success', 'Alumni successfully created');
+      flashToast(
+        req,
+        'Alumni Created',
+        'The new alumni has been added to this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
@@ -82,7 +87,7 @@ export class AlumniController {
     folder: 'alumni',
   })
   async createAlumni(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Body() createAlumnusDto: CreateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -90,7 +95,11 @@ export class AlumniController {
     try {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       await this.alumniService.create(createAlumnusDto);
-      req.flash('success', 'Alumni successfully created');
+      flashToast(
+        req,
+        'Alumni Created',
+        'The new alumni has been added to this category.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
@@ -101,7 +110,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formCreate/:courseId')
   async formCreate(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -111,7 +120,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('category/formCreate/:categoryId')
   async formCreateByKategori(
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -126,7 +135,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formEdit/:alumniId')
   async formEdit(
-    @Param('alumniId') alumniId: number,
+    @Param('alumniId') alumniId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -137,12 +146,19 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('category/formEdit/:alumniId')
   async formEditAlumni(
-    @Param('alumniId') alumniId: number,
+    @Param('alumniId') alumniId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const alumni = await this.alumniService.findOne(alumniId);
-    res.render('super_admin/alumni/editAlumni', { user: req.user, alumni });
+    const course = await this.alumniService.findCourseByKategori(
+      alumni.course.category.id,
+    );
+    res.render('super_admin/alumni/editAlumni', {
+      user: req.user,
+      alumni,
+      course,
+    });
   }
 
   @Roles('super_admin')
@@ -162,8 +178,8 @@ export class AlumniController {
   })
   async update(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('alumniId') alumniId: number,
-    @Param('courseId') courseId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('courseId') courseId: string,
     @Body() updateAlumnusDto: UpdateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -175,7 +191,11 @@ export class AlumniController {
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
-      req.flash('success', 'Alumni successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The alumni information has been updated.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
@@ -200,8 +220,8 @@ export class AlumniController {
   })
   async updateAlumni(
     @UploadedFile() profile: Express.Multer.File,
-    @Param('alumniId') alumniId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('categoryId') categoryId: string,
     @Body() updateAlumnusDto: UpdateAlumnusDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -213,7 +233,11 @@ export class AlumniController {
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
-      req.flash('success', 'Alumni successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The alumni information has been updated.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
@@ -222,13 +246,14 @@ export class AlumniController {
   }
 
   @Get('filter')
-  async filterAlumni(
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  async filterAlumni(@Req() req: Request, @Res() res: Response) {
     try {
-      const kategoriId = req.query.category_id ? Number(req.query.category_id) : undefined;
-      const courseId = req.query.course_id ? Number(req.query.course_id) : undefined;
+      const kategoriId = req.query.category_id
+        ? String(req.query.category_id)
+        : undefined;
+      const courseId = req.query.course_id
+        ? String(req.query.course_id)
+        : undefined;
       const search = req.query.search ? String(req.query.search) : undefined;
       const page = req.query.page ? Number(req.query.page) : 1;
       const limit = req.query.limit ? Number(req.query.limit) : 6;
@@ -255,8 +280,8 @@ export class AlumniController {
   @Roles('super_admin')
   @Delete(':alumniId/:courseId')
   async remove(
-    @Param('alumniId') alumniId: number,
-    @Param('courseId') courseId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -268,7 +293,11 @@ export class AlumniController {
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
-      req.flash('success', 'Alumni successfully removed');
+      flashToast(
+        req,
+        'Alumni Removed',
+        'The alumni has been removed from this program.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');
@@ -279,8 +308,8 @@ export class AlumniController {
   @Roles('super_admin')
   @Delete('category/:alumniId/:categoryId')
   async removeAlumni(
-    @Param('alumniId') alumniId: number,
-    @Param('categoryId') categoryId: number,
+    @Param('alumniId') alumniId: string,
+    @Param('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -292,7 +321,11 @@ export class AlumniController {
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
-      req.flash('success', 'Alumni successfully removed');
+      flashToast(
+        req,
+        'Alumni Deleted',
+        'The alumni has been permanently removed.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');

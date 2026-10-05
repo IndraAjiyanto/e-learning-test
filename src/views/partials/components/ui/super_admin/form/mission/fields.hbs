@@ -1,0 +1,87 @@
+{{!--
+  Komponen: Mission Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/mission/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Satu kartu tanpa header bernomor, mengikuti bentuk yang sudah terverifikasi
+  di frame Figma Teknologi dan Program Type.
+
+  DUA FIELD, SATU KALIMAT
+  Di halaman publik, satu misi dirender sebagai satu baris bernomor:
+  `content` menjadi bagian tebal di depan ("To Become a Leading Provider:") dan
+  `items` menjadi lanjutan kalimatnya. Lihat
+  components/ui/sections/mission/index.hbs (lead=content, body=items).
+  Label di sini mengikuti peran itu, bukan nama kolomnya, supaya super admin
+  tahu apa yang sedang diisi.
+
+  Keduanya multibahasa (kolom jsonb { id, en, ja } — lihat catatan di
+  entities/mission.entity.ts) dan punya tab bahasa masing-masing. Ketiga bahasa
+  tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim meski tabnya
+  tidak aktif. Id field `{field}-{kodeBahasa}` dipakai form/mission/form untuk
+  fokus ke field yang error — jangan diubah sepihak.
+
+  `missionOrder` sengaja TIDAK ada di form: MissionsService yang menentukannya
+  (max + 1 saat create) dan menata ulang sisanya saat ada yang dihapus.
+--}}
+{{#*inline 'missionLangPanel'}}
+  {{!-- hint=false WAJIB di bawah: partial mewarisi konteks induk, jadi tanpa
+       override eksplisit text_field ikut melihat `hint` milik missionLangField
+       dan merendernya sekali lagi di bawah textarea — teks bantunya jadi dobel. --}}
+  <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat field '-' code)
+      name=(concat field '[' code ']')
+      field=(concat field '.' code)
+      label=(concat label ' (' langName ')')
+      hideLabel=true
+      multiline=true
+      rows=4
+      heightClass=heightClass
+      placeholder=placeholder
+      hint=false
+    }}
+  </div>
+{{/inline}}
+
+{{#*inline 'missionLangField'}}
+  <div class='flex flex-col gap-2'>
+    <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>{{label}}<span class='text-[#dc2626]'>*</span></span>
+
+    <div class='flex flex-col gap-2'>
+      {{> components/ui/super_admin/tabs/language/index
+        state=(concat field 'Lang')
+        ariaLabel=(concat label ' language')
+      }}
+
+      {{> missionLangPanel code='id' langName='Indonesian' }}
+      {{> missionLangPanel code='en' langName='English' }}
+      {{> missionLangPanel code='ja' langName='Japanese' }}
+    </div>
+
+    <p class='font-inter text-sm leading-5 text-[#525252]'>{{hint}}</p>
+  </div>
+{{/inline}}
+
+<div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-4 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-5'>
+  {{> missionLangField
+    field='content'
+    label='Mission Title'
+    heightClass='h-[92px]'
+    placeholder='To Become a Leading Provider:'
+    hint='Rendered in bold at the start of the mission line.'
+  }}
+
+  {{> missionLangField
+    field='items'
+    label='Mission Description'
+    heightClass='h-[124px]'
+    placeholder='of digital education that continuously innovates...'
+    hint='Continues the sentence after the title, in regular weight.'
+  }}
+
+  {{#if @partial-block}}
+    <div class='pt-2'>
+      {{> @partial-block}}
+    </div>
+  {{/if}}
+</div>

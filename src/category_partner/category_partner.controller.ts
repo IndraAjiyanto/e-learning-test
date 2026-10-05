@@ -16,6 +16,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { CategoryPartnerService } from './category_partner.service';
 import { CreateCategoryPartnerDto } from './dto/create-category_partner.dto';
 import { UpdateCategoryPartnerDto } from './dto/update-category_partner.dto';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('category-partner')
@@ -53,14 +54,15 @@ export class CategoryPartnerController {
     try {
       await this.categoryPartnerService.create(createCategoryPartnerDto);
 
-      req.flash('success', 'Category partner successfully created');
+      flashToast(
+        req,
+        'Category Created',
+        'The category has been added successfully',
+      );
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash(
-        'error',
-        error.message || 'Category partner failed to create',
-      );
+      req.flash('error', error.message || 'Category partner failed to create');
 
       return res.redirect('/category-partner');
     }
@@ -69,7 +71,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -84,7 +86,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateCategoryPartnerDto: UpdateCategoryPartnerDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -92,14 +94,15 @@ export class CategoryPartnerController {
     try {
       await this.categoryPartnerService.update(id, updateCategoryPartnerDto);
 
-      req.flash('success', 'Category partner successfully updated');
+      flashToast(
+        req,
+        'Changes Saved',
+        'The partner category has been updated successfully.',
+      );
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash(
-        'error',
-        error.message || 'Category partner failed to update',
-      );
+      req.flash('error', error.message || 'Category partner failed to update');
 
       return res.redirect('/category-partner');
     }
@@ -108,7 +111,7 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Get(':id')
   async findOne(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -123,21 +126,24 @@ export class CategoryPartnerController {
   @Roles('super_admin')
   @Delete(':id')
   async remove(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.categoryPartnerService.remove(id);
-
-      req.flash('success', 'Category partner successfully removed');
+      flashToast(
+        req,
+        'Category Deleted',
+        'The partner category has been permanently removed.',
+      );
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash(
-        'error',
-        error.message || 'Category partner failed to remove',
-      );
+      const errorMessage =
+        error.message || 'Category partner failed to remove';
+      flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
+      req.flash('error', errorMessage);
 
       return res.redirect('/category-partner');
     }

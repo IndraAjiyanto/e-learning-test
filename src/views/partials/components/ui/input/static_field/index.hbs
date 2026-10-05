@@ -1,0 +1,23 @@
+{{!--
+  Komponen: Static Field Display (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/input/static_field/index.hbs
+
+  Menampilkan data read-only dengan label terstruktur dan nilai field.
+
+  Props:
+  - label      : string (wajib)
+  - value      : string (wajib)
+  - required   : boolean (opsional, tampilkan bintang merah)
+  - class      : string (opsional, class wrapper)
+  - labelClass : string (opsional)
+  - valueClass : string (opsional)
+--}}
+
+<div class="flex flex-col items-start gap-2 w-full {{class}}">
+  <label class="font-montserrat font-medium text-base sm:text-xl text-[#003060] {{labelClass}}">
+    {{label}}{{#if required}}<span class="text-red-500 ml-1">*</span>{{/if}}
+  </label>
+  <span class="font-montserrat font-normal text-base sm:text-xl text-[#718096] break-words {{valueClass}}">
+    {{value}}
+  </span>
+</div>

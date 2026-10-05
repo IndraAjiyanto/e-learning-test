@@ -3,10 +3,11 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quiz } from 'src/entities/quiz.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Score } from 'src/entities/score.entity';
 import { User } from 'src/entities/user.entity';
+import { Answer } from 'src/entities/answer.entity';
 import { Question } from 'src/entities/question.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
@@ -81,7 +82,7 @@ export class QuizService {
     }
   }
 
-  async findScore(quizId: number) {
+  async findScore(quizId: string) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
@@ -92,14 +93,14 @@ export class QuizService {
     });
   }
 
-  async findOne(quizId: number) {
+  async findOne(quizId: string) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
-      relations: ['weeks', 'weeks.course'],
+      relations: ['weeks', 'weeks.course', 'syllabus', 'syllabus.course'],
     });
   }
 
-  async checkStartQuestion(userId: number, quizId: number) {
+  async checkStartQuestion(userId: string, quizId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -109,21 +110,19 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
-    if(user.countdownQuiz !== null) {
+    if (user.countdownQuiz !== null) {
+      const startTime = user.countdownQuiz.getTime();
+      const duration = quiz.duration * 60000;
 
-    const startTime = user.countdownQuiz.getTime();
-    const duration = quiz.duration * 60000;
-
-    if(startTime + duration <= Date.now() && user.quizStart === true) {
-      return true;
-    }else{
-      return false;
+      if (startTime + duration <= Date.now() && user.quizStart === true) {
+        return true;
+      } else {
+        return false;
+      }
     }
-    }
-
   }
 
-  async findUserScore(userId: number, quziId: number) {
+  async findUserScore(userId: string, quziId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -133,7 +132,7 @@ export class QuizService {
     });
   }
 
-  async getRemainingTime(userId: number, quizId: number) {
+  async getRemainingTime(userId: string, quizId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -143,36 +142,32 @@ export class QuizService {
       throw new NotFoundException('quiz not found');
     }
 
-    if(user.quizStart){
-const now = Date.now();
-const durationMs = quiz.duration * 60000;
+    if (user.quizStart) {
+      const now = Date.now();
+      const durationMs = quiz.duration * 60000;
 
-let startTime = user.countdownQuiz?.getTime();
+      let startTime = user.countdownQuiz?.getTime();
 
-if (!startTime || now - startTime > durationMs) {
-  startTime = now;
-  user.countdownQuiz = new Date(startTime);
-  await this.userRepository.save(user);
-}
+      if (!startTime || now - startTime > durationMs) {
+        startTime = now;
+        user.countdownQuiz = new Date(startTime);
+        await this.userRepository.save(user);
+      }
 
-const remainingMs = durationMs - (now - startTime);
-const remainingSecond = Math.ceil(remainingMs / 1000);
-    return remainingSecond;
-    }else{
-
+      const remainingMs = durationMs - (now - startTime);
+      const remainingSecond = Math.ceil(remainingMs / 1000);
+      return remainingSecond;
+    } else {
       user.countdownQuiz = new Date();
       user.quizStart = true;
 
-      await this.userRepository.save(user)
+      await this.userRepository.save(user);
 
       return quiz.duration * 60;
-
     }
-
-
   }
 
-  async findQuestions(quizId: number) {
+  async findQuestions(quizId: string) {
     return await this.questionRepository.find({
       where: {
         quiz: { id: quizId },
@@ -190,7 +185,7 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
     });
   }
 
-  async update(quizId: number, updateQuizDto: UpdateQuizDto) {
+  async update(quizId: string, updateQuizDto: UpdateQuizDto) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
@@ -200,11 +195,31 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
     return await this.quizRepository.save(quiz);
   }
 
-  async remove(quizId: number) {
+  async remove(quizId: string) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
-    await this.quizRepository.remove(quiz);
+    // Hapus manual berurutan dalam transaksi: FK di DB tidak punya
+    // ON DELETE CASCADE (skema lama, synchronize:false), dan
+    // repository.remove() hanya cascade ke relasi yang ter-load.
+    // Tanpa ini, hapus quiz yang sudah ada questions/scores-nya -> 500.
+    await this.quizRepository.manager.transaction(async (em) => {
+      const questions = await em.find(Question, {
+        where: { quiz: { id: quizId } },
+        select: ['id'],
+      });
+      const questionIds = questions.map((q) => q.id);
+      if (questionIds.length > 0) {
+        await em.delete(UserAnswer, {
+          question: { id: In(questionIds) },
+        });
+        await em.delete(Answer, { question: { id: In(questionIds) } });
+        await em.delete(Question, { id: In(questionIds) });
+      }
+      await em.delete(Score, { quiz: { id: quizId } });
+      await em.delete(QuizProgress, { quiz: { id: quizId } });
+      await em.delete(Quiz, { id: quizId });
+    });
   }
 }

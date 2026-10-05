@@ -14,6 +14,7 @@ import { CreateCourseQuestionDto } from './dto/create-course_question.dto';
 import { UpdateCourseQuestionDto } from './dto/update-course_question.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast } from 'src/common/utils/toast.util';
 
 @Controller('question-program')
 export class CourseQuestionsController {
@@ -34,7 +35,7 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Get('formCreate/:courseId')
   async formCreate(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -49,7 +50,7 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Post(':courseId')
   async create(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() createCourseQuestionDto: CreateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -57,7 +58,11 @@ export class CourseQuestionsController {
     try {
       createCourseQuestionDto.courseId = courseId;
       await this.courseQuestionsService.create(createCourseQuestionDto);
-      req.flash('success', 'FAQ program created successfully');
+      flashToast(
+        req,
+        'FAQ Created',
+        'The program FAQ has been added successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ program  failed to create');
@@ -68,7 +73,7 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Get('formEdit/:id')
   async formEdit(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -84,15 +89,19 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Patch(':id/:courseId')
   async update(
-    @Param('id') id: number,
-    @Param('courseId') courseId: number,
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
     @Body() updateCourseQuestionDto: UpdateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.courseQuestionsService.update(+id, updateCourseQuestionDto);
-      req.flash('success', 'FAQ program updated successfully');
+      await this.courseQuestionsService.update(id, updateCourseQuestionDto);
+      flashToast(
+        req,
+        'FAQ Updated',
+        'The changes to this program FAQ have been saved.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ program failed to update');
@@ -103,14 +112,18 @@ export class CourseQuestionsController {
   @Roles('super_admin')
   @Delete(':id/:courseId')
   async remove(
-    @Param('id') id: number,
-    @Param('courseId') courseId: number,
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.courseQuestionsService.remove(+id);
-      req.flash('success', 'FAQ program deleted successfully');
+      await this.courseQuestionsService.remove(id);
+      flashToast(
+        req,
+        'FAQ Deleted',
+        'The program FAQ has been removed successfully.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'FAQ program failed to delete');

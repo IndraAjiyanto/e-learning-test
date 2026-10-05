@@ -12,8 +12,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity('course_questions')
 export class CourseQuestions {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { name: 'question', nullable: true })
   questions: string[];

@@ -1,0 +1,41 @@
+{{!--
+  Komponen: Material Tile (L1 Atomik)
+  Lokasi: src/views/partials/components/ui/learning/material_tile/index.hbs
+
+  Satu ubin jenis materi pada halaman detail sesi: PDF, presentasi, atau video.
+
+  Props:
+  - href   : string (wajib) — tujuan bila terbuka
+  - icon   : string (wajib) — kelas ikon Font Awesome, mis. 'fa-file-pdf'
+  - label  : string (wajib)
+  - count  : number (opsional) — jumlah berkas jenis ini
+  - locked : boolean (opsional) — bila true, ubin tidak bisa diklik dan
+             menampilkan gembok. Dipakai saat student belum absen.
+--}}
+{{#if locked}}
+  <span
+    class="flex cursor-not-allowed flex-col items-center gap-2 rounded-lg border border-dashed border-[#D4D4D4] bg-[#FAFAFA] px-4 py-5 text-center"
+    aria-disabled="true"
+  >
+    <span class="grid size-10 place-items-center rounded-lg bg-[#E5E5E5] text-[#a3a3a3]">
+      <i class="fa-solid fa-lock text-sm"></i>
+    </span>
+    <span class="font-inter text-sm font-semibold text-[#a3a3a3]">{{label}}</span>
+    {{#if count}}
+      <span class="font-inter text-xs text-[#a3a3a3]">{{count}}</span>
+    {{/if}}
+  </span>
+{{else}}
+  <a
+    href="{{href}}"
+    class="group flex flex-col items-center gap-2 rounded-lg border border-[#D4D4D4] bg-white px-4 py-5 text-center no-underline shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:border-[#003060] hover:bg-[#F5F5F5]"
+  >
+    <span class="grid size-10 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
+      <i class="fa-solid {{icon}} text-sm"></i>
+    </span>
+    <span class="font-inter text-sm font-semibold text-[#003060]">{{label}}</span>
+    {{#if count}}
+      <span class="font-inter text-xs text-[#737373]">{{count}}</span>
+    {{/if}}
+  </a>
+{{/if}}

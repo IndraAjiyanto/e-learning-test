@@ -8,16 +8,16 @@ import {
 
 @Entity('team')
 export class Team {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   profile: string;
 
-  @Column({ name: 'name', nullable:true })
+  @Column({ name: 'name', nullable: true })
   name: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   teamOrder: number;
 
   @Column('jsonb', { name: 'position', nullable: true })

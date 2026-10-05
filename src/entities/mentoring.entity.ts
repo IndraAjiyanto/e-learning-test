@@ -12,14 +12,16 @@ import { Exclude } from 'class-transformer';
 
 @Entity('mentoring')
 export class Mentorings {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, (user) => user.mentoring, { onDelete: 'CASCADE' })
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Course, (course) => course.mentorings, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.mentorings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;

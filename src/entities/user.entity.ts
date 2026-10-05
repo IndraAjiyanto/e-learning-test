@@ -27,14 +27,18 @@ import { MentorLogbook } from './mentor_logbook.entity';
 import { QuizProgress } from './quiz_progress.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
+import { UserActivity } from './user_activity.entity';
+import { ActivityLog } from './activity_log.entity';
+import { SyllabusProgress } from './syllabus_progress.entity';
+import { UserAssignment } from './user_assignment.entity';
 import { Exclude } from 'class-transformer';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
 @Entity('user')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   username: string;
@@ -136,6 +140,13 @@ export class User {
   @Exclude()
   userAnswers: UserAnswer[];
 
+  @OneToMany(() => UserAssignment, (userAssignment) => userAssignment.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  userAssignments: UserAssignment[];
+
   @OneToMany(() => AnswerTask, (answerTask) => answerTask.user, {
     cascade: true,
     onDelete: 'CASCADE',
@@ -165,10 +176,20 @@ export class User {
   weekProgress: WeekProgress[];
 
   @OneToMany(
-    () => SessionProgress,
-    (sessionProgress) => sessionProgress.user,
-    { cascade: true, onDelete: 'CASCADE' },
+    () => SyllabusProgress,
+    (syllabusProgress) => syllabusProgress.user,
+    {
+      cascade: true,
+      onDelete: 'CASCADE',
+    },
   )
+  @Exclude()
+  syllabusProgress: SyllabusProgress[];
+
+  @OneToMany(() => SessionProgress, (sessionProgress) => sessionProgress.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   sessionProgress: SessionProgress[];
 
@@ -213,4 +234,18 @@ export class User {
   })
   @Exclude()
   mentor_biodata: MentorBiodata;
+
+  @OneToMany(() => UserActivity, (userActivity) => userActivity.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  userActivities: UserActivity[];
+
+  @OneToMany(() => ActivityLog, (activityLog) => activityLog.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  activityLogs: ActivityLog[];
 }

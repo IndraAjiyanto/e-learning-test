@@ -1,0 +1,106 @@
+{{!--
+  Komponen: Paragraph Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/paragraphs/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `paragraphsForm()` untuk super_admin/paragraphs/{create,edit}.hbs.
+  Edit mengirim nilai awal `{ paragraphs: { id, en, ja } }`.
+
+  Menyediakan: formData, formErrors, validateField(), touch() (form/text_field);
+  loading (form/button); lang (tabs/language).
+
+  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const LANG_LABEL = { id: 'Indonesian', en: 'English', ja: 'Japanese' };
+    const MIN = 10;
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    // `path` berbentuk 'paragraphs.id' — bentuk yang dikirim form/text_field.
+    const langOf = (path) => path.split('.')[1];
+
+    const errorFor = (lang, value) => {
+      const val = (value ?? '').toString().trim();
+      const label = `Paragraph (${LANG_LABEL[lang]})`;
+
+      if (!val) return `${label} is required.`;
+      if (val.length < MIN) return `${label} must be at least ${MIN} characters.`;
+
+      return '';
+    };
+
+    window.paragraphsForm = function paragraphsForm({ paragraphs } = {}) {
+      return {
+        loading: false,
+        lang: 'id',
+
+        formData: { paragraphs: byLang((l) => (paragraphs && paragraphs[l]) || '') },
+        formErrors: { paragraphs: byLang(() => '') },
+        // Error baru muncul setelah field disentuh atau setelah submit ditekan.
+        touched: { paragraphs: byLang(() => false) },
+
+        validateField(path, value) {
+          const lang = langOf(path);
+          this.formData.paragraphs[lang] = value ?? '';
+          this.formErrors.paragraphs[lang] = this.touched.paragraphs[lang]
+            ? errorFor(lang, this.formData.paragraphs[lang])
+            : '';
+        },
+
+        touch(path) {
+          const lang = langOf(path);
+          this.touched.paragraphs[lang] = true;
+          this.validateField(path, this.formData.paragraphs[lang]);
+        },
+
+        validateAll() {
+          LANGS.forEach((lang) => this.touch(`paragraphs.${lang}`));
+        },
+
+        // Gating tombol simpan: form siap bila semua field wajib lolos errorFor,
+        // terlepas dari sudah disentuh atau belum. Sengaja bukan hasFormErrors(),
+        // yang hanya melihat error yang sudah diungkap `touched` sehingga form
+        // kosong yang belum disentuh justru terbaca "tanpa error".
+        canSubmit() {
+          return LANGS.every(
+            (lang) => errorFor(lang, this.formData.paragraphs[lang]) === '',
+          );
+        },
+
+        hasFormErrors() {
+          return LANGS.some((lang) => this.formErrors.paragraphs[lang] !== '');
+        },
+
+        // Id `paragraphs-${lang}` harus sama dengan yang dibentuk form/paragraphs/fields.
+        revealFirstInvalid() {
+          const lang = LANGS.find((l) => this.formErrors.paragraphs[l]);
+          if (!lang) return;
+
+          this.lang = lang;
+          this.$nextTick(() => {
+            const el = document.getElementById(`paragraphs-${lang}`);
+            if (!el) {
+              console.warn(`paragraphsForm: field "paragraphs-${lang}" tidak ditemukan — id di form/paragraphs/fields berubah?`);
+              return;
+            }
+            el.focus();
+          });
+        },
+
+        submitForm(event) {
+          this.validateAll();
+          if (this.hasFormErrors()) {
+            this.revealFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

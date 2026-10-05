@@ -1,0 +1,18 @@
+{{!--
+  Komponen: Wadah JSON isi Final Assignment untuk components/ui/final_assignment/renderer
+
+  Yang di sini HANYA elemen <script type="application/json">. Bukan skrip yang
+  harus dieksekusi; yang dibutuhkan renderer hanyalah `textContent`-nya.
+
+  Params:
+    contentId - id unik elemen <script> ini (wajib). Harus unik per halaman:
+                dua final assignment dalam satu halaman akan saling menimpa
+                isinya kalau id-nya sama.
+    content   - objek FinalAssignment.content, apa adanya
+
+  Isinya dicetak dengan `jsonSafe`, bukan `json`. `content` disusun admin, dan
+  blok kode di dalam EditorJS bisa memuat urutan `</script>` - browser memotong
+  blok script tepat di situ, sisanya jatuh jadi markup halaman. `jsonSafe`
+  menutupnya tanpa mengubah nilai hasil JSON.parse.
+--}}
+<script id="{{contentId}}" type="application/json">{{{jsonSafe content}}}</script>

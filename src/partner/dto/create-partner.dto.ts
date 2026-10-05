@@ -5,5 +5,5 @@ export class CreatePartnerDto {
   image: string;
 
   @IsNotEmpty()
-  categoryPartnerId: number;
+  categoryPartnerId: string;
 }

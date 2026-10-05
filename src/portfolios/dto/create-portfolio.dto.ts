@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreatePortfolioDto {
@@ -31,9 +32,9 @@ export class CreatePortfolioDto {
   @IsOptional()
   technologies: string[];
 
-  @IsNumber()
-  userId: number;
+  @IsUUID()
+  userId: string;
 
-  @IsNumber()
-  courseId: number;
+  @IsUUID()
+  courseId: string;
 }

@@ -1,0 +1,16 @@
+{{!-- 
+  Komponen: Calc Box (Private MPP)
+  Lokasi: src/views/partials/components/mpp/calc_box.hbs
+  Dipakai: mpp/hitung_komisi.hbs
+  
+  Props:
+  - value    : Angka / teks utama
+  - label    : Label bawah
+  - variant  : "default" | "primary" (primary = bg #003060 text white)
+  - icon     : Icon class opsional (fa-xmark, fa-equals, dll)
+--}}
+<div class="flex h-[192px] w-[154px] flex-col items-center justify-center rounded-xl {{#if (eq variant 'primary')}}bg-[#003060] text-white{{else}}bg-[#6EB6E5]/10 text-gray-900{{/if}} p-4 text-center">
+  {{#if icon}}<i class="{{icon}} mb-2"></i>{{/if}}
+  <span class="text-lg font-bold">{{{value}}}</span>
+  {{#if label}}<span class="mt-1 text-xs">{{{label}}}</span>{{/if}}
+</div>

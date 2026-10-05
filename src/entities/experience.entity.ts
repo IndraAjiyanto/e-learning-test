@@ -9,8 +9,8 @@ import {
 
 @Entity()
 export class Experience {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   content: string[];
@@ -18,7 +18,7 @@ export class Experience {
   @Column('jsonb', { nullable: true })
   details: string[];
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   experienceOrder: number;
 
   @CreateDateColumn()

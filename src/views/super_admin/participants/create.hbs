@@ -1,0 +1,61 @@
+{{!--
+  Halaman: Create Participant — Super Admin
+  Lokasi: src/views/super_admin/participants/create.hbs
+  Level: L4 Page
+
+  Route: GET /participants/formCreate/:courseId -> POST /participants/:courseId (urlencoded).
+  Field dikirim sebagai title[id|en|ja], icon, description[id|en|ja]; courseId
+  diambil controller dari path, bukan dari form.
+
+  Bentuk field-nya sama persis dengan value/commitment (icon + dua teks
+  multibahasa), jadi memakai komponen form/icon_item yang sama.
+
+  Toast sukses tidak dirender di sini: submit redirect ke detail program, jadi
+  notifikasinya muncul di halaman itu lewat flash.
+--}}
+<div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='flex flex-col gap-7'>
+
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        title='Create Participant'
+      }}
+
+      {{> components/ui/super_admin/description/index
+        text='Add a participant criteria shown on the public program page.'
+      }}
+    </div>
+
+    <form
+      action='/participants/{{courseId}}'
+      method='post'
+      novalidate
+      x-data='iconItemForm()'
+      @submit.prevent='submitForm($event)'
+    >
+      {{#> components/ui/super_admin/form/icon_item/fields
+        titleHint='Shown as the heading of the participant card on the public program page.'
+        descriptionHint='Shown under the heading on the participant card.'
+      }}
+        <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+          {{> components/ui/super_admin/form/button
+            as='link'
+            variant='secondary'
+            href=(concat '/program/detail/program/admin/' courseId)
+            label='Cancel'
+            loading=true
+          }}
+
+          {{> components/ui/super_admin/form/button
+            type='submit'
+            variant='primary'
+            label='Create Participant'
+            loading=true
+          }}
+        </div>
+      {{/components/ui/super_admin/form/icon_item/fields}}
+    </form>
+  </div>
+</div>
+
+{{> components/ui/super_admin/form/icon_item/form }}

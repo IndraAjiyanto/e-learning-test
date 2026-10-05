@@ -8,8 +8,8 @@ import {
 
 @Entity()
 export class Paragraph {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { nullable: true })
   paragraphs: string[];

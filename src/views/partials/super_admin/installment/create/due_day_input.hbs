@@ -1,0 +1,53 @@
+<!-- Tanggal Tenggat Per Bulan -->
+      <div class='space-y-2'>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Monthly Due Dates
+        </label>
+        <p class='text-xs text-gray-500'>
+          Tanggal jatuh tempo setiap cicilan, terpisah per bulan (aktual)
+        </p>
+        <div class='space-y-2'>
+          <template x-for='(dueDate, index) in parseInt(month)' :key='index'>
+            <div class='flex items-center gap-3'>
+              <span
+                class='text-sm text-gray-600 w-20'
+                x-text="'Month ' + (index + 1)"
+              ></span>
+              <input
+                type='date'
+                name='dueDates[]'
+                x-model='dueDateDisplays[index]'
+                @change='validateField("dueDates", $event.target.value, index)'
+                @input='validateField("dueDates", $event.target.value, index)'
+                required
+                :class="formErrors.dueDates[index] ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.dueDates[index] ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+                class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              />
+            </div>
+            <!-- Error Message -->
+            <template x-if='formErrors.dueDates[index]'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg ml-20'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.dueDates[index]'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.dueDates[index] && !formErrors.dueDates[index]'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg ml-20'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid due date</p>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>

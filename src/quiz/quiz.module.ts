@@ -10,6 +10,7 @@ import { Question } from 'src/entities/question.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { UserAnswer } from 'src/entities/user_answer.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UserAnswer } from 'src/entities/user_answer.entity';
       SessionProgress,
       UserAnswer,
     ]),
+    UsersModule,
   ],
   controllers: [QuizController],
   providers: [QuizService],

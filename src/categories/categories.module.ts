@@ -10,8 +10,6 @@ import { Course } from 'src/entities/course.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { CategoryFaq } from 'src/entities/faqs.entity';
-import { FlowCategory } from 'src/entities/flow_category.entity';
-import { Superiority } from 'src/entities/superiority.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
 
@@ -19,14 +17,12 @@ import { Portofolios } from 'src/entities/portofolios.entity';
   imports: [
     TypeOrmModule.forFeature([
       Category,
-      Superiority,
       CourseFlow,
       BenefitCategory,
       Course,
       CourseType,
       Alumni,
       CategoryFaq,
-      FlowCategory,
       Gallery,
       Portofolios,
     ]),

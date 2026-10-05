@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 
 export class CreateCourseQuestionDto {
   @IsArray()
@@ -9,7 +9,7 @@ export class CreateCourseQuestionDto {
   @IsNotEmpty()
   answer: string[];
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  courseId: number;
+  courseId: string;
 }

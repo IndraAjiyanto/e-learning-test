@@ -1,0 +1,41 @@
+{{!--
+  Section: Paid Benefit / "Why Choose" (L2) - khusus Paid Program
+  Lokasi: src/views/partials/components/ui/sections/paid_benefit/index.hbs
+  Mengambil data murni dari table benefit_category via props:
+  - benefit_category: row dari tabel benefit_category (icon, title, description)
+  - category: category object (.name)
+  - lang: bahasa aktif
+--}}
+<section id="benefit" class="w-full bg-[#F9FAFB] py-14 px-5 sm:py-20 sm:px-8 lg:py-[96px] lg:px-[80px] font-inter">
+  <div class="mx-auto flex w-full max-w-[1568px] flex-col items-center gap-10">
+
+    {{!-- section-header --}}
+    {{> components/ui/text/section_header/index
+        title=(concat (t 'test.categoryPaidProgram.benefit.title') ' ' (default category.name 'Japan Program') (t 'test.categoryPaidProgram.benefit.titleSuffix'))
+        titleClass="font-inter font-bold text-2xl sm:text-3xl lg:text-[40px] lg:leading-[49px] text-[#111827] text-center"
+        description=(t 'test.categoryPaidProgram.benefit.description')
+        descClass="font-inter font-normal text-base lg:text-[18px] lg:leading-[160%] text-[#6B7280] text-center max-w-[760px]"
+        wrapperClass="gap-3 max-w-[760px]"
+    }}
+
+    {{!-- feature-grid: data murni dari table benefit_category --}}
+    {{#if (or benefit_category.length category.benefit_category.length)}}
+      <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {{#each (default benefit_category category.benefit_category)}}
+          <div class="flex flex-col items-start p-6 gap-3 bg-white border border-[#E5E7EB] rounded-[20px] min-h-[245px] w-full transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+            <div class="flex items-center justify-center shrink-0 w-[44px] h-[44px] rounded-[14px] bg-[#6EB6E5]/[0.08]">
+              <i class="{{computeIcon this.icon}} text-[22px] text-[#0B1F3B]" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-inter font-bold text-[18px] leading-[22px] text-[#111827]">
+              {{default (getByLang this.title ../lang) this.title}}
+            </h3>
+            <p class="font-inter font-normal text-[14px] leading-[160%] text-[#6B7280]">
+              {{default (getByLang this.description ../lang) this.description}}
+            </p>
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
+
+  </div>
+</section>

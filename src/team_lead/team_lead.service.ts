@@ -20,10 +20,15 @@ export class TeamLeadService {
   }
 
   async findAll() {
-    return await this.teamLeadRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.teamLeadRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const teamLead = await this.teamLeadRepository.findOne({ where: { id } });
     if (!teamLead) {
       throw new NotFoundException('Team Lead not found');
@@ -31,7 +36,7 @@ export class TeamLeadService {
     return teamLead;
   }
 
-  async update(id: number, updateTeamLeadDto: UpdateTeamLeadDto) {
+  async update(id: string, updateTeamLeadDto: UpdateTeamLeadDto) {
     const teamLead = await this.findOne(id);
     if (!teamLead) {
       throw new NotFoundException('Team Lead not found');
@@ -40,7 +45,7 @@ export class TeamLeadService {
     return await this.teamLeadRepository.save(teamLead);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const teamLead = await this.findOne(id);
     if (!teamLead) {
       throw new NotFoundException('Team Lead not found');

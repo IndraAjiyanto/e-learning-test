@@ -1,0 +1,123 @@
+{{!-- 
+  Section: Alumni (L2 Section) - reusable untuk home & paid/free/special program
+  Lokasi: src/views/partials/components/ui/sections/alumni/index.hbs
+  Level: L2 Section
+
+  Struktur: blok MOBILE (block sm:hidden) + blok DESKTOP (hidden sm:block)
+  dalam 1 file, sesuai pedoman §7 & §9.6. Markup bersama diangkat jadi
+  inline partial (_alumni_header, _alumni_grid, _alumni_footer) yang dipanggil
+  dua kali dengan prop ukuran berbeda — jadi tidak ada duplikasi struktur.
+
+  Props (opsional, default = home agar backward-compatible):
+  - headerVariant      : 'home' | 'paid' (default: 'home')
+  - badgeKey, titleKey, descKey, footerTextKey, footerLinkTextKey : i18n keys
+  - showMobile         : boolean (default: true) — render blok mobile
+  - showDesktop        : boolean (default: true) — render blok desktop
+  - sectionClass       : override kelas section desktop
+  - mobileSectionClass : override kelas section mobile
+  - desktopBgStyle     : inline style background section desktop
+  - mobileBgStyle      : inline style background section mobile
+  - alumni, category, lang : data dari controller
+--}}
+
+{{!-- ============ HEADER (dipakai blok mobile & desktop) ============ --}}
+{{!--
+  Params: wrapperClass, titleClass, descClass, dividerClass
+--}}
+{{#*inline "_alumni_header"}}
+  <div class="relative z-10 flex w-full flex-col items-center gap-4 text-center {{wrapperClass}}">
+    {{#if (eq (default headerVariant 'home') 'paid')}}
+      {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.categoryPaidProgram.alumni.badge'))) dotColor=dotColor }}
+      <h2 class="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center {{titleClass}}">
+        {{#if titleText}}{{titleText}}{{else}}{{t (default titleKey 'test.categoryPaidProgram.alumni.title')}}{{/if}}
+      </h2>
+      <p class="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center {{descClass}}">
+        {{#if descText}}{{descText}}{{else}}{{t (default descKey 'test.categoryPaidProgram.alumni.description')}}{{/if}}
+      </p>
+    {{else}}
+      {{> components/ui/text/eyebrow/index text=(default badgeText (t (default badgeKey 'test.home.alumniSection.badge'))) dotColor=dotColor }}
+      <h2 class="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center {{titleClass}}">
+        {{default titleText (t (default titleKey 'test.home.alumniSection.title'))}}
+      </h2>
+      <p class="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center {{descClass}}">
+        {{default descText (t (default descKey 'test.home.alumniSection.description'))}}
+      </p>
+    {{/if}}
+    {{#unless hideDivider}}
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060] {{default dividerClass ''}}"></div>
+    {{/unless}}
+  </div>
+{{/inline}}
+
+{{!-- ============ GRID + PAGINATION ============ --}}
+{{!--
+  Params: gridClass (jumlah kolom), navBtnClass (ukuran tombol prev/next)
+  Catatan: jumlah kolom di sini HARUS sinkron dengan `syncPerPage()` di
+  src/common/public/js/testimonial-carousel.js (1 kol < 640px, 2 kol < 1024px, 3 kol >= 1024px).
+--}}
+{{#*inline "_alumni_grid"}}
+  <div class="relative z-10 flex w-full flex-col gap-8">
+    {{!-- viewport clips horizontally; clean padding for card shadows and hover state --}}
+    <div class="-mx-3 overflow-x-hidden px-3 py-4">
+      <div
+        class="flex transition-transform duration-500 ease-out"
+        :style="`transform: translateX(-${active * (100 / per)}%)`"
+      >
+        <template x-for="(item, i) in items" :key="item.id || i">
+          <div class="shrink-0 px-3" :style="`width: ${100 / per}%`">
+            <div class="h-full">
+              {{> components/ui/card/card_alumni/index variant="profile" isDesktop=true}}
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    {{> components/ui/nav/carousel_nav/index
+        count="dots"
+        index="active"
+        goTo="goTo"
+        goPrev="prev()"
+        goNext="next()"
+        btnClass="flex size-14 sm:size-16 lg:size-[78px] items-center justify-center rounded-[20px] border border-[#F3F4F6] bg-white text-[#6B7280] shadow-[0_4px_12px_rgba(0,0,0,0.03)] transition hover:border-gray-300 hover:text-[#111827] focus:outline-none"
+        iconClass="text-base text-[#6B7280]"
+        dotsClass="flex items-center gap-3"
+        activeDotClass="bg-[#111827]"
+        inactiveDotClass="bg-[#D1D5DB] hover:bg-gray-400"
+    }}
+  </div>
+{{/inline}}
+
+<!-- ================= ALUMNI SECTION (satu pohon, base + lg) ================= -->
+<section
+  class="{{default sectionClass 'w-full relative overflow-hidden bg-white py-14 lg:py-20'}}"
+  style="{{default desktopBgStyle ''}}"
+  x-data="alumniDeck(window.__alumniCarousel)"
+>
+  <div class="page-shell relative z-10">
+    {{> _alumni_header
+        wrapperClass="mb-10 lg:mb-12"
+        titleClass="text-[#0B1F3B] text-center"
+        descClass="max-w-[592px]"
+        dividerClass="h-1 w-[60px]"
+    }}
+
+    {{> _alumni_grid gridClass="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}}
+  </div>
+</section>
+
+<script>
+  window.__alumniCarousel = [
+    {{#each alumni}}
+    {
+      id: '{{this.id}}',
+      name: {{{json (getByLang this.name ../lang)}}},
+      position: {{{json (getByLang this.currentPosition ../lang)}}},
+      company: {{{json (default this.course.name '')}}},
+      photo: {{{json (default this.profile '')}}},
+      testimonial: {{{json (getByLang this.message ../lang)}}},
+      rating: {{{json (default this.rating '5')}}}
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ];
+</script>

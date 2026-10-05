@@ -1,0 +1,66 @@
+{{!--
+  Komponen: Schedule Detail Item (Level 1 - Atomic Card Component)
+  Lokasi: src/views/partials/components/ui/card/schedule_item/index.hbs
+
+  Spesifikasi Figma:
+  - Box: width 552px, min-height 132px, padding 20px, gap 16px
+  - Background: #FFFFFF, border: 1px solid #E2E8F0, rounded-2xl (16px)
+  - Shadow: 0px 4px 12px rgba(11, 31, 59, 0.0705882)
+  - Icon frame: 48x48px, rounded-full, bg rgba(0, 48, 96, 0.0705882)
+  - Text:
+    - Label: Inter 400 14px leading 17px #64748B
+    - Value: Inter 700 18px leading 22px #0B1F3B
+
+  Props:
+  - iconType : "calendar" | "clock" | "format" | "custom"
+  - label    : string (e.g. "Tanggal Mulai", "Tanggal Selesai", "Tanggal Akhir Registration", "Opsi Format")
+  - value    : string (e.g. "21 April 2026", "Hybrid (Online Zoom & Offline Meetup)")
+  - class    : string
+--}}
+
+<div class="box-border flex w-full lg:w-[552px] min-h-[110px] sm:min-h-[132px] items-center gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-[0px_4px_12px_rgba(11,31,59,0.07)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0px_8px_20px_rgba(11,31,59,0.1)] select-none {{class}}">
+  
+  {{!-- Icon Frame 48x48 rounded-full --}}
+  <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#003060]/[0.07] text-[#003060]">
+    {{#if (eq iconType "calendar")}}
+      {{!-- Calendar Icon --}}
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+    {{else if (eq iconType "clock")}}
+      {{!-- Clock Icon --}}
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    {{else if (eq iconType "format")}}
+      {{!-- Layout / Format Icon --}}
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M3 9h18"/>
+        <path d="M9 21V9"/>
+      </svg>
+    {{else}}
+      {{!-- Generic Info Icon --}}
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+    {{/if}}
+  </div>
+
+  {{!-- Text Container --}}
+  <div class="flex flex-1 flex-col items-start gap-1 min-w-0">
+    <span class="font-inter text-xs sm:text-sm font-normal leading-[17px] text-[#64748B] truncate w-full">
+      {{label}}
+    </span>
+    <h4 class="font-inter text-base sm:text-[18px] font-bold leading-snug sm:leading-[22px] text-[#0B1F3B] break-words w-full">
+      {{value}}
+    </h4>
+  </div>
+
+</div>

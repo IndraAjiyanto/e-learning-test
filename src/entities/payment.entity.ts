@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,15 +14,24 @@ import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Installment } from './installment.entity';
 import { Invoice } from './invoice.entity';
+import { InstallmentPayment } from './installment-payment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
+import { REFERAL_SOURCES } from './types/referal-source';
 
-export type currentStatus = 'University Student'| 'Fresh Graduate'| 'Job Seeker'| 'Employee'| 'Freelancer'| 'Entrepreneur'| 'Other';
+export type currentStatus =
+  | 'University Student'
+  | 'Fresh Graduate'
+  | 'Job Seeker'
+  | 'Employee'
+  | 'Freelancer'
+  | 'Entrepreneur'
+  | 'Other';
 
 @Entity('payments')
 export class Payment {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: true })
   file: string;
@@ -29,9 +39,12 @@ export class Payment {
   @Column({ nullable: true })
   no: string;
 
+  // Daftar nilainya diambil dari konstanta supaya kolom enum ini tidak pernah
+  // melenceng dari enum Postgres `payments_referalsource_enum`. Lihat
+  // src/entities/types/referal-source.ts.
   @Column({
     type: 'enum',
-    enum: ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'],
+    enum: REFERAL_SOURCES,
     nullable: true,
   })
   referalSource: string;
@@ -44,9 +57,17 @@ export class Payment {
   process: ProcessStatus;
 
   @Column({
-    type:'enum',
-    enum:['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'],
-    nullable:true,
+    type: 'enum',
+    enum: [
+      'University Student',
+      'Fresh Graduate',
+      'Job Seeker',
+      'Employee',
+      'Freelancer',
+      'Entrepreneur',
+      'Other',
+    ],
+    nullable: true,
   })
   current_status: currentStatus;
 
@@ -59,8 +80,14 @@ export class Payment {
   @Column({ nullable: true })
   user_no: string;
 
-  @Column({nullable:true,})
+  @Column({ nullable: true })
   attend_program: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  dpPaidAt: Date;
+
+  @Column({ type: 'jsonb', nullable: true, default: () => "'[]'" })
+  reminderSentMonths: number[];
 
   @OneToOne(() => Invoice, (invoice) => invoice.payment)
   invoice: Invoice;
@@ -80,8 +107,15 @@ export class Payment {
   @Exclude()
   course: Course;
 
-  @OneToOne(() => Installment, (installment) => installment.payment)
-  @JoinColumn()
+  @ManyToOne(() => Installment, (installment) => installment.payment, {
+    onDelete: 'SET NULL',
+  })
   @Exclude()
   installment: Installment;
+
+  @OneToMany(
+    () => InstallmentPayment,
+    (installmentPayment) => installmentPayment.payment,
+  )
+  installmentPayments: InstallmentPayment[];
 }

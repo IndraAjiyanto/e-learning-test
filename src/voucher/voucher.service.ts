@@ -20,10 +20,10 @@ function parseFloat(val: any): number | null {
   return isNaN(n) ? null : n;
 }
 
-function parseIds(val: any): number[] {
+function parseIds(val: any): string[] {
   if (val === undefined || val === null) return [];
   if (!Array.isArray(val)) val = [val];
-  return val.map(Number).filter((n: number) => !isNaN(n));
+  return val.map(String).filter((s: string) => s.length > 0);
 }
 
 @Injectable()
@@ -75,12 +75,12 @@ export class VoucherService {
   async findAllUsers(): Promise<User[]> {
     return this.userRepository.find({
       select: ['id', 'username', 'email'],
-      order: { username: 'ASC' }
+      order: { username: 'ASC' },
     });
   }
 
   // Ambil satu voucher + daftar program lengkap (untuk halaman edit)
-  async findOne(id: number): Promise<Voucher> {
+  async findOne(id: string): Promise<Voucher> {
     const voucher = await this.voucherRepository.findOne({
       where: { id },
       relations: ['courses'],
@@ -90,14 +90,15 @@ export class VoucherService {
   }
 
   // Update voucher + sinkronisasi daftar program
-  async update(id: number, dto: UpdateVoucherDto): Promise<Voucher> {
+  async update(id: string, dto: UpdateVoucherDto): Promise<Voucher> {
     const voucher = await this.findOne(id);
 
     // Update field scalar
     if (dto.code_voucher !== undefined) voucher.code_voucher = dto.code_voucher;
     if (dto.type !== undefined) voucher.type = dto.type;
     if (dto.active !== undefined) voucher.active = parseBool(dto.active);
-    if (dto.allowed_user_ids !== undefined) voucher.allowed_user_ids = parseIds(dto.allowed_user_ids);
+    if (dto.allowed_user_ids !== undefined)
+      voucher.allowed_user_ids = parseIds(dto.allowed_user_ids);
 
     // percent hanya disimpan jika type = 'discount'
     if (dto.type === 'discount') {
@@ -120,7 +121,7 @@ export class VoucherService {
   }
 
   // Hapus voucher (relasi di voucher_programs ikut terhapus via CASCADE)
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const voucher = await this.findOne(id);
     await this.voucherRepository.remove(voucher);
   }
@@ -134,7 +135,12 @@ export class VoucherService {
   }
 
   // Validasi voucher untuk frontend
-  async validateVoucher(code: string, courseId: number, subtotal: number, userId?: number): Promise<{ discountAmount: number, finalTotal: number, voucher: Voucher }> {
+  async validateVoucher(
+    code: string,
+    courseId: string,
+    subtotal: number,
+    userId?: string,
+  ): Promise<{ discountAmount: number; finalTotal: number; voucher: Voucher }> {
     const voucher = await this.voucherRepository.findOne({
       where: { code_voucher: ILike(code), active: true },
       relations: ['courses'],
@@ -146,7 +152,7 @@ export class VoucherService {
 
     // Jika courses ada isinya, pastikan courseId pembeli ada di daftar tersebut
     if (voucher.courses && voucher.courses.length > 0) {
-      const isCourseValid = voucher.courses.some(c => c.id == courseId);
+      const isCourseValid = voucher.courses.some((c) => c.id == courseId);
       if (!isCourseValid) {
         throw new Error('Voucher tidak berlaku untuk program ini.');
       }
@@ -156,7 +162,9 @@ export class VoucherService {
       // 1. Pengecekan Targeted Voucher (Hanya user tertentu yang boleh pakai)
       if (voucher.allowed_user_ids && voucher.allowed_user_ids.length > 0) {
         if (!voucher.allowed_user_ids.includes(userId)) {
-          throw new Error('Anda tidak memiliki hak akses untuk menggunakan kode voucher ini.');
+          throw new Error(
+            'Anda tidak memiliki hak akses untuk menggunakan kode voucher ini.',
+          );
         }
       }
 
@@ -170,10 +178,12 @@ export class VoucherService {
       discountAmount = subtotal;
     } else if (voucher.type === 'discount' && voucher.percent) {
       discountAmount = subtotal * (voucher.percent / 100);
-    } 
+    }
 
     if (discountAmount <= 0) {
-      throw new Error('Voucher ini tidak memberikan potongan harga. Silakan periksa konfigurasi persentase diskon di menu admin.');
+      throw new Error(
+        'Voucher ini tidak memberikan potongan harga. Silakan periksa konfigurasi persentase diskon di menu admin.',
+      );
     }
 
     // Ensure discount does not exceed subtotal
@@ -182,7 +192,7 @@ export class VoucherService {
     }
 
     const finalTotal = Math.max(0, subtotal - discountAmount);
-    
+
     return {
       discountAmount,
       finalTotal,

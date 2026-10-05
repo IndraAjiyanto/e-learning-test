@@ -16,16 +16,24 @@ export class DashboardController {
   async kelasFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('userId') userId?: number,
+    @Query('userId') userId?: string,
     @Query('category') category?: string,
     @Query('courseType') courseType?: string,
     @Query('method') method?: string,
     @Query('search') search?: string,
+    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     const currentPage = parseInt(page || '1', 10);
     const itemsPerPage = parseInt(limit || '6', 10);
+
+    // Daftar putih, bukan `status === 'true'`: query string selalu berupa teks,
+    // dan 'false' yang lolos ke where akan terbaca sebagai selesai. Nilai lain
+    // diabaikan supaya filter status tidak bisa mengunci listing publik, yang
+    // memang tidak punya baris user_courses untuk disaring.
+    const statusFilter =
+      status === 'done' || status === 'ongoing' ? status : undefined;
 
     const result = await this.dashboardService.findCoursesPaginated({
       userId: userId || undefined,
@@ -33,6 +41,7 @@ export class DashboardController {
       courseType: courseType || undefined,
       method: method || undefined,
       search: search || undefined,
+      status: statusFilter,
       page: currentPage,
       limit: itemsPerPage,
     });
@@ -51,18 +60,13 @@ export class DashboardController {
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        res.redirect('/users');
+        res.redirect('/information');
       } else if (req.user.role === 'admin') {
         res.redirect('/program');
       } else if (req.user.role === 'user') {
-        const our_experience = await this.dashboardService.findOurExperience();
         const special_program =
           await this.dashboardService.findSpecialProgram();
         const faq = await this.dashboardService.findFAQ();
-        const benefit_images_1 = await this.dashboardService.findImage1();
-        const benefit_images_2 = await this.dashboardService.findImage2();
-        const benefit_images_3 = await this.dashboardService.findImage3();
-        const benefit_images_4 = await this.dashboardService.findImage4();
         const courseType = await this.dashboardService.findCourseTypes();
         const category = await this.dashboardService.findCategories();
         const alumni = await this.dashboardService.findAllAlumni();
@@ -83,10 +87,6 @@ export class DashboardController {
           programs,
           // kelas,
           faq,
-          benefit_images_1,
-          benefit_images_2,
-          benefit_images_3,
-          benefit_images_4,
           courseType,
           category,
           alumni,
@@ -95,17 +95,11 @@ export class DashboardController {
           benefits,
           about,
           social,
-          our_experience,
         });
       }
     } else {
-      const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
-      const benefit_images_1 = await this.dashboardService.findImage1();
-      const benefit_images_2 = await this.dashboardService.findImage2();
-      const benefit_images_3 = await this.dashboardService.findImage3();
-      const benefit_images_4 = await this.dashboardService.findImage4();
       const courseType = await this.dashboardService.findCourseTypes();
       const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
@@ -126,10 +120,6 @@ export class DashboardController {
         programs,
         // kelas,
         faq,
-        benefit_images_1,
-        benefit_images_2,
-        benefit_images_3,
-        benefit_images_4,
         courseType,
         category,
         alumni,
@@ -138,7 +128,6 @@ export class DashboardController {
         benefits,
         about,
         social,
-        our_experience,
       });
     }
   }
@@ -147,9 +136,10 @@ export class DashboardController {
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('userId') userId?: number,
+    @Query('userId') userId?: string,
     @Query('categoryId') categoryId?: string,
     @Query('course_type_id') courseTypeId?: string,
+    @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -160,6 +150,7 @@ export class DashboardController {
       userId: userId || null,
       categoryId: categoryId || null,
       courseTypeId: courseTypeId || null,
+      search: search || null,
       page: currentPage,
       limit: itemsPerPage,
     });
@@ -178,7 +169,7 @@ export class DashboardController {
     const kategoriList = await this.dashboardService.findCategories();
     const courseTypeList = await this.dashboardService.findCourseTypes();
 
-    res.render('portofolios', {
+    res.render('portofolio', {
       user: req.user,
       // portfolio: portfolioList,
       category: kategoriList,
@@ -190,7 +181,7 @@ export class DashboardController {
   async detailPortfolio(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('portfolioId') portfolioId: number,
+    @Param('portfolioId') portfolioId: string,
   ) {
     const portfolio = await this.dashboardService.findOnePortfolio(portfolioId);
     res.render('detail_portfolio', { user: req.user, portfolio });
@@ -225,14 +216,43 @@ export class DashboardController {
     });
   }
 
+  /**
+   * Sampel alumni acak untuk pop-up alumni mengambang
+   * (partials/components/ui/floating_alumni_popup.hbs).
+   *
+   * Sengaja TIDAK memakai `alumni/filter` di atas: pop-up dippasang di shell
+   * publik, artinya endpoint ini harus bisa dipanggil tamu yang belum login -
+   * itu sebabnya ia diletakkan di DashboardController yang tanpa guard, bukan
+   * di AlumniController yang seluruhnya `@UseGuards(AuthenticatedGuard)`.
+   *
+   * `limit` diklem supaya string dari query string tidak bisa jadi angka yang
+   * tidak terduga (atau negatif) untuk `take()`.
+   */
+  @Get('alumni/popup')
+  async alumniPopup(@Query('limit') limit?: string) {
+    const parsed = Number.parseInt(limit || '', 10);
+    const itemsPerRequest = Number.isFinite(parsed)
+      ? Math.min(Math.max(parsed, 1), 20)
+      : 8;
+
+    const data = await this.dashboardService.findRandomAlumni(itemsPerRequest);
+
+    return { data };
+  }
+
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
     const kelasList = await this.dashboardService.findCourses();
+    const kategoriList = await this.dashboardService.findCategories();
 
     res.render('alumni', {
       user: req.user,
       course: kelasList,
-      // kategoriList: kategoriList
+      kategoriList: kategoriList,
+      // Pop-up alumni dimatikan di halaman yang menjadi tujuan kliknya: this
+      // page already lists every alumni card, so the pop-up could only link
+      // back to itself.
+      hideAlumniPopup: true,
     });
   }
 
@@ -265,23 +285,49 @@ export class DashboardController {
     });
   }
 
+  @Get('about/team/lead')
+  async aboutTeamLead(@Req() req: Request, @Res() res: Response) {
+    const [teamLead, background, experience, award] = await Promise.all([
+      this.dashboardService.findTeamLead(),
+      this.dashboardService.findBackground(),
+      this.dashboardService.findExperience(),
+      this.dashboardService.findAward(),
+    ]);
+    return res.render('about_team_lead', {
+      user: req.user,
+      teamLead,
+      background,
+      experience,
+      award,
+    });
+  }
+
+  @Get('about/team')
+  async aboutTeamAll(@Req() req: Request, @Res() res: Response) {
+    const team = await this.dashboardService.findTeam();
+    return res.render('about_team_all', { user: req.user, team });
+  }
+
   @Get('api/category')
   async getCategory(@Res() res: Response) {
     const category = await this.dashboardService.findCategories();
     res.json(category);
   }
 
-  // 1. Menampilkan halaman pertama (Lengkap)
-  @Get('gallery') 
-  async index(@Res() res: Response) {
+  @Get('gallery')
+  async index(@Req() req: Request, @Res() res: Response) {
     const gallery = await this.dashboardService.findAllGallery();
     const programs = await this.dashboardService.findCategories();
 
-    return res.render('public/gallery/index', { gallery, programs });
+    return res.render('public/gallery/index', {
+      user: req.user,
+      gallery,
+      programs,
+    });
   }
 
   // 2. Menampilkan halaman kedua (Fitur yang dikurangi)
-  @Get('galeri') 
+  @Get('galeri')
   async dashboard(@Res() res: Response) {
     const gallery = await this.dashboardService.findAllGallery();
     const programs = await this.dashboardService.findCategories();
@@ -292,5 +338,46 @@ export class DashboardController {
   @Get('mpp')
   mpp(@Res() res: Response) {
     return res.render('mpp');
+  }
+
+  @Get('corporate-training')
+  async corporateTraining(@Req() req: Request, @Res() res: Response) {
+    const [
+      benefits,
+      alumni,
+      gallery,
+      faq,
+      social,
+      category,
+      programs,
+      courseType,
+      categoryPartner,
+      partners,
+    ] = await Promise.all([
+      this.dashboardService.findAllBenefits(),
+      this.dashboardService.findAllAlumni(),
+      this.galleryService.findAll(),
+      this.dashboardService.findFAQ(),
+      this.dashboardService.findSocial(),
+      this.dashboardService.findCategories(),
+      this.dashboardService.findAllCategories(),
+      this.dashboardService.findCourseTypes(),
+      this.dashboardService.findCategoryPartners(),
+      this.dashboardService.findAllPartners(),
+    ]);
+
+    return res.render('corporate_training', {
+      user: req.user,
+      benefits,
+      alumni,
+      gallery,
+      faq,
+      social,
+      category,
+      programs,
+      courseType,
+      categoryPartner,
+      partners,
+    });
   }
 }

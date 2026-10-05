@@ -1,232 +1,438 @@
-<!-- HISTORY PAYMENT PARTIAL -->
-<div 
-  class="space-y-6 sm:space-y-8 md:space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 mb-28"
-  x-data="{ 
-    paymentType: 'full', 
-    statusFilter: 'all',
-    searchQuery: '',
-    sortBy: 'Newest',
-    sortOpen: false,
-    payments: [],
-    init() {
-      if (window.location.hash === '#pendaftaran') {
-        this.paymentType = 'registration';
-      }
-    }
-  }"
+{{!--
+  Halaman: Payment History (tab area student)
+  Lokasi: src/views/partials/user/sidebar_user_profile/history_payment/index.hbs
+  Level: L3 Tab
+
+  Mengikuti docs/design/user-area/payment-history.png: SATU daftar untuk semua
+  jenis transaksi, bukan tiga sub-tab. Sumbernya GET /payment/api/history, yang
+  sudah menggabungkan pembayaran lunas, pembayaran cicilan, dan pendaftaran
+  menjadi satu bentuk baris (lihat PaymentsService.findPaymentHistory).
+
+  Pencarian dan pagination memakai factory clientTable super admin; lapisan
+  filter di atasnya menyaring `source` sebelum diserahkan ke clientTable.
+
+  Status memakai tiga nilai yang memang ada di database: Paid, Processing,
+  Failed. Frame desain juga menggambarkan "Pending", tetapi tidak ada padanannya
+  di enum ProcessStatus sehingga tidak diada-adakan.
+--}}
+<div
+  class='px-4 py-4 sm:px-8 sm:py-6'
+  x-data='paymentHistory()'
+  x-init='load()'
 >
-  
-  {{! --- HEADER SECTION --- }}
-    <div>
-      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
-        History Payment
-      </h1>
-      <p class="font-sans font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
-        Track and manage all your payments and registrations.
+  <div class='flex flex-col gap-7'>
+
+    <!-- Page Header (Figma token) -->
+    <div class="flex flex-col gap-1 w-full">
+      <h2 class="font-montserrat font-bold text-[28px] sm:text-[34px] leading-[36px] sm:leading-[42px] text-[#003060]">
+        {{t "test.historyPayment.title"}}
+      </h2>
+      <p class="font-montserrat font-medium text-sm sm:text-[15px] leading-5 sm:leading-[21px] text-[#003060]">
+        {{t "test.historyPayment.description"}}
       </p>
     </div>
 
-  {{! --- STATS CARDS SECTION --- }}
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 lg:gap-4 xl:gap-12">
-    
-    <!-- Stats 1: Total Payment -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#E1EAFD] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-receipt text-[20px] xl:text-[24px] text-[#003060]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight" x-text="payments.length">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Total Payment</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">All Time</span>
-      </div>
-    </div>
-
-    <!-- Stats 2: Accepted -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#DEF5E9] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-circle-check text-[20px] xl:text-[24px] text-[#01B065]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Accepted</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">Successful Payments</span>
-      </div>
-    </div>
-
-    <!-- Stats 3: Processing -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#FEEFD6] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-clock text-[20px] xl:text-[24px] text-[#FDA40B]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Processing</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">In Progress</span>
-      </div>
-    </div>
-
-    <!-- Stats 4: Rejected -->
-    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
-      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#FEE7E7] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-circle-xmark text-[20px] xl:text-[24px] text-[#F13639]"></i>
-      </div>
-      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
-        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
-        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Rejected</span>
-        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">Failed Payments</span>
-      </div>
-    </div>
-
-  </div>
-
-  {{! --- FILTERS & SEARCH CONTROLS GROUP --- }}
-  <div class="space-y-4 sm:space-y-6">
-    
-    <!-- Filters Section (Payment Type & Status) -->
-    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-      
-      <!-- Payment Type Filter Pills -->
-      <div>
-        <h3 class="font-montserrat font-semibold text-base sm:text-lg md:text-2xl text-[#003060] mb-2">
-          Payment Type
-        </h3>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button 
-            type="button" 
-            @click="paymentType = 'full'"
-            :class="paymentType === 'full' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Full Payment
-          </button>
-          <button 
-            type="button" 
-            @click="paymentType = 'registration'"
-            :class="paymentType === 'registration' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Registration
-          </button>
-          <button 
-            type="button" 
-            @click="paymentType = 'installment'"
-            :class="paymentType === 'installment' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Installment
-          </button>
-        </div>
-      </div>
-
-      <!-- Status Filter Pills -->
-      <div>
-        <h3 class="font-montserrat font-semibold text-base sm:text-lg md:text-2xl text-[#003060] mb-2">
-          Status
-        </h3>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button 
-            type="button" 
-            @click="statusFilter = 'all'"
-            :class="statusFilter === 'all' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer min-w-[60px] text-center"
-          >
-            All
-          </button>
-          <button 
-            type="button" 
-            @click="statusFilter = 'accepted'"
-            :class="statusFilter === 'accepted' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Accepted
-          </button>
-          <button 
-            type="button" 
-            @click="statusFilter = 'processing'"
-            :class="statusFilter === 'processing' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Processing
-          </button>
-          <button 
-            type="button" 
-            @click="statusFilter = 'rejected'"
-            :class="statusFilter === 'rejected' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
-            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
-          >
-            Rejected
-          </button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Search & Sort Bar Section -->
-    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-      
-      <!-- Search Bar Input -->
-      <div class="flex-1 max-w-[839px] h-[42px] bg-[#E0F1F9] rounded-md flex items-center gap-3 px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
-        <i class="fa-solid fa-magnifying-glass text-[#003060] text-base sm:text-lg flex-shrink-0"></i>
-        <input 
-          type="text" 
-          x-model="searchQuery"
-          placeholder="Search Transaction" 
-          class="w-full bg-transparent font-montserrat font-medium text-base sm:text-lg xl:text-xl text-black placeholder:text-[#676767] focus:outline-none"
-        >
-      </div>
-
-      <!-- Sort Dropdown -->
-      <div class="relative w-full md:w-[220px]">
-        <button 
-          type="button" 
-          @click="sortOpen = !sortOpen"
-          @click.outside="sortOpen = false"
-          class="w-full h-[43px] bg-white/50 backdrop-blur-[6.6px] rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
-        >
-          <span class="font-montserrat font-medium text-sm sm:text-base text-[#666666] truncate pr-2" x-text="'Sort by: ' + sortBy">Sort by: Newest</span>
-          <i class="fa-solid fa-chevron-down text-[#003060] text-xs transition-transform duration-200 flex-shrink-0" :class="sortOpen ? 'rotate-180' : ''"></i>
-        </button>
-        <ul 
-          x-show="sortOpen" 
-          x-transition
-          class="absolute right-0 top-full mt-2 w-full bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat"
-          style="display: none;"
-        >
-          <template x-for="option in ['Newest', 'Oldest', 'Highest Amount', 'Lowest Amount']" :key="option">
-            <li 
-              @click="sortBy = option; sortOpen = false" 
-              class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-              :class="sortBy === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
+    <!-- Filter Panel Container (Figma Filter panel) -->
+    <div class="w-full bg-white border border-[#D8E6F6] rounded-xl p-[20px_16px_16px] sm:p-[24px_22px_18px_22px] shadow-[0px_3px_12px_rgba(23,59,104,0.0627)] flex flex-col gap-[18px]">
+      <!-- Filter controls row (Figma Filter controls) -->
+      <div class="flex flex-wrap items-end gap-4 xl:gap-[22px] w-full">
+        <!-- 1. Date range -->
+        <div class="flex flex-col gap-2 min-w-[200px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.dateRange"}}</label>
+          <div class="relative w-full" x-data="{ openDate: false }" @click.outside="openDate = false" @keydown.escape="openDate = false">
+            <button
+              type="button"
+              @click="openDate = !openDate"
+              class="w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm text-left flex items-center justify-between transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="(formData.from || formData.to) ? 'text-[#171717]' : 'text-[#718096]'"
             >
-              <span x-text="option"></span>
-              <i x-show="sortBy === option" class="fa-solid fa-check text-xs text-[#003060]"></i>
-            </li>
-          </template>
-        </ul>
+              <span class="truncate" x-text="dateRangeDisplay"></span>
+              <span class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+                <svg class="w-2.5 h-2.5 transition-transform" :class="openDate ? 'rotate-180' : ''" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+
+            <!-- Popover Date Range Picker -->
+            <div
+              x-show="openDate"
+              x-cloak
+              x-transition
+              class="absolute left-0 top-[calc(100%+6px)] z-30 w-72 p-3 bg-white border border-[#E5E5E5] rounded-xl shadow-[0px_4px_16px_rgba(0,0,0,0.1)] flex flex-col gap-2.5"
+            >
+              <div class="flex flex-col gap-1">
+                <span class="font-montserrat text-xs font-medium text-[#003060]">{{t "test.historyPayment.filter.fromDate"}}</span>
+                <input
+                  type="date"
+                  x-model="formData.from"
+                  class="h-9 px-2.5 border border-[#D9D9D9] rounded-lg font-montserrat text-xs text-[#171717] focus:border-[#003060] focus:outline-none"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="font-montserrat text-xs font-medium text-[#003060]">{{t "test.historyPayment.filter.toDate"}}</span>
+                <input
+                  type="date"
+                  x-model="formData.to"
+                  class="h-9 px-2.5 border border-[#D9D9D9] rounded-lg font-montserrat text-xs text-[#171717] focus:border-[#003060] focus:outline-none"
+                />
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t border-[#F0F0F0]">
+                <button
+                  type="button"
+                  @click="formData.from = ''; formData.to = ''"
+                  class="font-inter text-xs text-[#6280A5] hover:underline"
+                >
+                  {{t "test.historyPayment.filter.clear"}}
+                </button>
+                <button
+                  type="button"
+                  @click="openDate = false"
+                  class="px-3 py-1 bg-[#003060] text-white rounded font-montserrat text-xs font-medium hover:bg-[#00254a]"
+                >
+                  {{t "test.historyPayment.filter.done"}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Payment status -->
+        <div class="flex flex-col gap-2 min-w-[170px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.paymentStatus"}}</label>
+          <div class="relative w-full">
+            <select
+              x-model="formData.status"
+              class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="formData.status ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <template x-for="opt in statusOptions" :key="opt.value">
+                <option :value="opt.value" x-text="opt.label"></option>
+              </template>
+            </select>
+            <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Payment method -->
+        <div class="flex flex-col gap-2 min-w-[170px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.paymentMethod"}}</label>
+          <div class="relative w-full">
+            <select
+              x-model="formData.method"
+              class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="formData.method ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <template x-for="opt in methodOptions" :key="opt.value">
+                <option :value="opt.value" x-text="opt.label"></option>
+              </template>
+            </select>
+            <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Program course -->
+        <div class="flex flex-col gap-2 min-w-[180px] flex-1">
+          <label class="font-montserrat font-medium text-sm leading-5 text-[#003060]">{{t "test.historyPayment.filter.programCourse"}}</label>
+          <div class="relative w-full">
+            <select
+              x-model="formData.program"
+              class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+              :class="formData.program ? 'text-[#171717]' : 'text-[#718096]'"
+            >
+              <template x-for="opt in programOptions" :key="opt.value">
+                <option :value="opt.value" x-text="opt.label"></option>
+              </template>
+            </select>
+            <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Actions (Apply & Reset) -->
+        <div class="flex items-center gap-3.5 pb-0.5 shrink-0">
+          <button
+            type="button"
+            @click="applyFilters()"
+            class="h-[42px] px-6 bg-[#003060] hover:bg-[#00254a] active:bg-[#001f3f] text-white rounded-lg font-montserrat font-semibold text-sm leading-5 transition-colors shadow-sm flex items-center justify-center shrink-0"
+          >
+            {{t "test.historyPayment.filter.saveChanges"}}
+          </button>
+          <button
+            type="button"
+            @click="resetFilters()"
+            class="inline-flex items-center gap-2 text-[#6280A5] hover:text-[#003060] transition-colors shrink-0 group focus-visible:outline-none"
+          >
+            <svg class="w-3.5 h-3.5 text-[#6280A5] group-hover:rotate-180 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            <span class="font-inter font-normal text-[11px] leading-[13px] text-[#6280A5] group-hover:text-[#003060]">
+              {{t "test.historyPayment.filter.reset"}}
+            </span>
+          </button>
+        </div>
       </div>
 
+      <!-- Search bar row (Figma Search bar row) -->
+      <div class="relative w-full h-10">
+        <div class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-[#718096]">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+        </div>
+        <input
+          type="search"
+          x-model="searchInput"
+          @input.debounce.250ms="handleSearch()"
+          aria-label="Search transactions"
+          placeholder="{{t "test.historyPayment.searchPlaceholder"}}"
+          class="w-full h-10 bg-white border border-[#D9D9D9] rounded-lg pl-11 pr-4 font-montserrat font-normal text-sm leading-5 text-[#171717] placeholder-[#718096] transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
+        />
+      </div>
     </div>
+
+    <!-- Transaction list (Frame 2147229710) -->
+    <div class="flex flex-col gap-[9px] w-full">
+      <!-- Loading State -->
+      <template x-if="loading">
+        <div class="rounded-xl border border-[#D8E6F6] bg-white p-8 text-center font-montserrat text-sm text-[#718096]">
+          {{t "test.historyPayment.loading"}}
+        </div>
+      </template>
+
+      <!-- Empty State -->
+      <template x-if="!loading && filtered.length === 0">
+        <div class="flex flex-col items-center gap-3 rounded-xl border border-[#D8E6F6] bg-white p-12 text-center">
+          <span class="grid size-14 place-items-center rounded-full bg-[#f4f7fc] text-[#003060]">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+          </span>
+          <h3 class="font-montserrat text-xl font-bold text-[#003060]">{{t "test.historyPayment.noTransactions"}}</h3>
+          <p class="font-montserrat text-sm text-[#718096]">{{t "test.historyPayment.adjustFilters"}}</p>
+          <button
+            type="button"
+            @click="resetFilters()"
+            class="mt-1 inline-flex h-11 items-center rounded-lg bg-[#003060] px-4 font-montserrat text-sm font-semibold text-white transition-colors hover:bg-[#00254a]"
+          >
+            {{t "test.historyPayment.resetFilters"}}
+          </button>
+        </div>
+      </template>
+
+      <!-- Rows using transaction_card component -->
+      <template x-for="row in rows" :key="row.kind + row.id">
+        {{> components/ui/card/transaction_card/index }}
+      </template>
+    </div>
+
+    <!-- Pagination (Figma Pagination with Chevron & Ellipsis) -->
+    <template x-if="filtered.length > 0">
+      <div class="box-border flex flex-wrap items-center justify-between gap-4 w-full min-h-[56px] px-6 sm:px-8 py-3 bg-white border border-[#D9D9D9] rounded-2xl">
+        <span class="font-montserrat font-medium text-sm leading-[17px] text-[#003060]" x-text="rangeLabel"></span>
+        <div class="flex items-center gap-2">
+          <!-- Chevron Left -->
+          <button
+            type="button"
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1"
+            aria-label="{{t "test.historyPayment.prev"}}"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+
+          <!-- Page Numbers -->
+          <template x-for="(page, idx) in visiblePages" :key="idx">
+            <div class="flex items-center">
+              <template x-if="page === '...'">
+                <span class="flex items-center justify-center w-8 h-8 font-montserrat font-semibold text-sm text-[#718096]">...</span>
+              </template>
+              <template x-if="page !== '...'">
+                <button
+                  type="button"
+                  @click="changePage(page)"
+                  :class="page === currentPage
+                    ? 'bg-[#003060] text-white border-transparent shadow-sm'
+                    : 'bg-white text-[#003060] border border-[#D9D9D9] hover:bg-slate-50'"
+                  class="flex flex-col justify-center items-center w-8 h-8 rounded-full font-montserrat font-semibold text-sm leading-[17px] transition-colors focus-visible:outline-none"
+                  x-text="page"
+                ></button>
+              </template>
+            </div>
+          </template>
+
+          <!-- Chevron Right -->
+          <button
+            type="button"
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= totalPages"
+            aria-label="{{t "test.historyPayment.next"}}"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </template>
 
   </div>
 
-  {{! --- DYNAMIC CONTENT AREA / SUB-PARTIALS --- }}
-  <div>
-    
-    <!-- Full Payment Sub-Partial -->
-    <div x-show="paymentType === 'full'">
-      {{> user/sidebar_user_profile/history_payment/full_payment/index }}
-    </div>
-
-    <!-- Registration Sub-Partial -->
-    <div x-show="paymentType === 'registration'">
-      {{> user/sidebar_user_profile/history_payment/registration/index }}
-    </div>
-
-    <!-- Installment Sub-Partial -->
-    <div x-show="paymentType === 'installment'">
-      {{> user/sidebar_user_profile/history_payment/installment/index }}
-    </div>
-
-  </div>
-
+  {{!-- View Detail Modal (Figma & Stitch LMS Kesatria UI Viewer design with backdrop blur) --}}
+  {{> components/ui/modal/transaction_detail/index user=user }}
 </div>
+
+{{> components/ui/super_admin/table/client_table }}
+
+<script>
+  function paymentHistory() {
+    const base = clientTable({
+      url: '/payment/api/history',
+      dataKey: 'data',
+      size: 5,
+      searchKeys: ['courseName', 'no', 'method'],
+    });
+
+    // defineProperties di bawah MENIMPA base.load dengan load() milik extension,
+    // jadi referensi aslinya harus dipegang lebih dulu — kalau tidak, load()
+    // memanggil dirinya sendiri dan daftar berhenti di keadaan loading.
+    const baseLoad = base.load;
+
+    const emptyDraft = () => ({ from: '', to: '', status: '', method: '', program: '' });
+
+    const extension = {
+      // Semua baris apa adanya dari server. `items` milik clientTable adalah
+      // hasil filter yang sedang aktif, jadi sumbernya harus disimpan terpisah.
+      source: [],
+
+      // formData membaca draft filter saat ini
+      formData: emptyDraft(),
+      formErrors: {},
+      validateField() {},
+      touch() {},
+
+      // Nilai yang sudah ditekan Apply. Dipisah dari formData supaya memilih
+      // dropdown belum langsung mengubah daftar, sesuai tombol Apply di desain.
+      applied: emptyDraft(),
+
+      get draft() {
+        return this.formData;
+      },
+
+      statusOptions: [
+        { value: '', label: '{{t "test.historyPayment.allStatus"}}' },
+        { value: 'paid', label: '{{t "test.historyPayment.accepted"}}' },
+        { value: 'processing', label: '{{t "test.historyPayment.processing"}}' },
+        { value: 'failed', label: '{{t "test.historyPayment.rejected"}}' },
+      ],
+
+      get methodOptions() {
+        const rawMethods = this.source.map((r) => r.method).filter(Boolean);
+        const uniqueMethods = [...new Set(rawMethods)];
+        return [
+          { value: '', label: '{{t "test.historyPayment.allMethods"}}' },
+          ...uniqueMethods.map((m) => ({ value: m, label: m })),
+        ];
+      },
+
+      get programOptions() {
+        const programs = [...new Set(this.source.map((r) => r.courseName).filter(Boolean))];
+        return [{ value: '', label: '{{t "test.historyPayment.allPrograms"}}' }, ...programs.map((p) => ({ value: p, label: p }))];
+      },
+
+      get dateRangeDisplay() {
+        if (this.formData.from && this.formData.to) {
+          return this.formatDate(this.formData.from) + ' – ' + this.formatDate(this.formData.to);
+        } else if (this.formData.from) {
+          return '{{t "test.historyPayment.from"}} ' + this.formatDate(this.formData.from);
+        } else if (this.formData.to) {
+          return '{{t "test.historyPayment.until"}} ' + this.formatDate(this.formData.to);
+        }
+        return '{{t "test.historyPayment.selectDateRange"}}';
+      },
+
+      get rangeLabel() {
+        const total = this.filtered.length;
+        if (total === 0) return '{{t "test.historyPayment.noHistory"}}';
+        const start = (this.currentPage - 1) * this.size + 1;
+        const end = Math.min(start + this.size - 1, total);
+        const tpl = '{{t "test.historyPayment.rangeTemplate"}}';
+        return tpl.replace('{start}', start).replace('{end}', end).replace('{total}', total);
+      },
+
+      async load() {
+        await baseLoad.call(this);
+        this.source = this.items;
+        this.applyFilters();
+      },
+
+      applyFilters() {
+        this.applied = { ...this.formData };
+        const { from, to, status, method, program } = this.applied;
+
+        this.items = this.source.filter((row) => {
+          if (status && row.status !== status) return false;
+          if (method && row.method !== method) return false;
+          if (program && row.courseName !== program) return false;
+          if (from && new Date(row.date) < new Date(from)) return false;
+          // `to` mencakup seluruh hari itu, bukan berhenti di tengah malamnya.
+          if (to && new Date(row.date) > new Date(to + 'T23:59:59')) return false;
+          return true;
+        });
+
+        this.currentPage = 1;
+        this.applySearch(this.searchInput);
+      },
+
+      resetFilters() {
+        this.formData = emptyDraft();
+        this.searchInput = '';
+        this.applyFilters();
+      },
+
+      formatDate(value) {
+        if (!value) return '—';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '—';
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      },
+
+      formatAmount(value) {
+        const number = Number(value);
+        if (Number.isNaN(number)) return '—';
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+      },
+
+      kindLabel(kind) {
+        return kind === 'registration'
+          ? '{{t "test.historyPayment.kind.registration"}}'
+          : kind === 'installment'
+            ? '{{t "test.historyPayment.kind.installment"}}'
+            : '{{t "test.historyPayment.kind.full"}}';
+      },
+    };
+
+    // defineProperties, bukan spread: spread mengevaluasi getter menjadi nilai
+    // statis, sehingga `rows`, `totalPages`, `methodOptions`, dan `programOptions`
+    // tidak akan pernah ikut berubah.
+    return Object.defineProperties(base, Object.getOwnPropertyDescriptors(extension));
+  }
+</script>

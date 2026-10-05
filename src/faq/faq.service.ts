@@ -18,10 +18,15 @@ export class FaqService {
   }
 
   async findAll() {
-    return await this.faqRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.faqRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const faq = await this.faqRepository.findOne({ where: { id } });
     if (!faq) {
       throw new NotFoundException('FAQ not found');
@@ -29,13 +34,13 @@ export class FaqService {
     return faq;
   }
 
-  async update(id: number, updateFaqDto: UpdateFaqDto) {
+  async update(id: string, updateFaqDto: UpdateFaqDto) {
     const faq = await this.findOne(id);
     Object.assign(faq, updateFaqDto);
     return await this.faqRepository.save(faq);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const faq = await this.findOne(id);
     return await this.faqRepository.remove(faq);
   }

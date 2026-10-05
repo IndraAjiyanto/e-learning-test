@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAboutDto } from './dto/create-about.dto';
 import { UpdateAboutDto } from './dto/update-about.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,14 +26,22 @@ export class AboutService {
   }
 
   async findAll() {
-  try {
-    return await this.aboutRepository.find();
-  } catch (error) {
-    throw new InternalServerErrorException('Gagal mengambil data about', error.message);
+    try {
+      // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+      // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+      // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+      return await this.aboutRepository.find({
+        order: { createdAt: 'ASC' },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Gagal mengambil data about',
+        error.message,
+      );
+    }
   }
-}
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const about = await this.aboutRepository.findOne({ where: { id } });
     if (!about) {
       throw new NotFoundException('Header not found');
@@ -37,7 +49,7 @@ export class AboutService {
     return about;
   }
 
-  async update(id: number, updateTentangDto: UpdateAboutDto) {
+  async update(id: string, updateTentangDto: UpdateAboutDto) {
     const about = await this.findOne(id);
     if (!about) {
       throw new NotFoundException('Header not found');
@@ -46,7 +58,7 @@ export class AboutService {
     return await this.aboutRepository.save(about);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const about = await this.findOne(id);
     if (!about) {
       throw new NotFoundException('Header not found');

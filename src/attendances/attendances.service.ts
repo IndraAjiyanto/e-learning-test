@@ -42,13 +42,50 @@ export class AttendanceService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+    const duplicate = await this.attendanceRepository.findOne({
+      where: {
+        session: { id: CreateAttendanceDto.sessionId },
+        user: { id: CreateAttendanceDto.userId },
+      },
+    });
+    if (duplicate) {
+      throw new NotFoundException(
+        'User has already submitted attendance for this session',
+      );
+    }
     const attendance = await this.attendanceRepository.create({
       ...CreateAttendanceDto,
       session: session,
       user: user,
     });
 
-    return await this.attendanceRepository.save(attendance);
+    const saved = await this.attendanceRepository.save(attendance);
+
+    // Mirrors the upsert pattern used elsewhere (courses.service.ts,
+    // payments.service.ts, logbook.service.ts, session.service.ts) for
+    // writing to SessionProgress. Without this, a real attendance
+    // submission never flips sessionProgress.isAttended, so the
+    // frontend's isAttended() (which requires both this row AND that
+    // flag) can never become true through normal use.
+    const existingSessionProgress =
+      await this.sessionProgressRepository.findOne({
+        where: { user: { id: user.id }, session: { id: session.id } },
+      });
+    if (existingSessionProgress) {
+      await this.sessionProgressRepository.save({
+        id: existingSessionProgress.id,
+        isAttended: true,
+      });
+    } else {
+      await this.sessionProgressRepository.save({
+        user,
+        session,
+        isAttended: true,
+        logbook: false,
+      });
+    }
+
+    return saved;
   }
 
   async findAll() {
@@ -57,30 +94,43 @@ export class AttendanceService {
     });
   }
 
-  async findSession(sessionId: number) {
+  async findSession(sessionId: string) {
     return await this.sessionRepository.findOne({
       where: { id: sessionId },
       relations: ['weeks', 'weeks.course'],
     });
   }
 
-  async findUsers(sessionId: number) {
+  async findUsers(sessionId: string) {
     const course = await this.courseRepository.findOne({
       where: { weeks: { session: { id: sessionId } } },
     });
     if (!course) {
-      return '';
+      return [];
     }
-    return await this.userRepository.find({
+    const enrolled = await this.userRepository.find({
       where: { role: 'user', userCourses: { course: { id: course.id } } },
     });
+    if (!enrolled.length) {
+      return [];
+    }
+    // Exclude users who already have an attendance record for this session,
+    // so they don't show up again in the admin "Add Attendance" dropdown.
+    const existing = await this.attendanceRepository.find({
+      where: { session: { id: sessionId } },
+      relations: ['user'],
+    });
+    const attendedIds = new Set(
+      existing.map((a) => a.user?.id).filter(Boolean),
+    );
+    return enrolled.filter((u) => !attendedIds.has(u.id));
   }
 
   async findCourse() {
     return await this.courseRepository.find({ relations: ['session'] });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const attendance = await this.attendanceRepository.findOne({
       where: { id },
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
@@ -99,7 +149,7 @@ export class AttendanceService {
     return attendance;
   }
 
-  async update(id: number, updateAttendanceDto: UpdateAttendanceDto) {
+  async update(id: string, updateAttendanceDto: UpdateAttendanceDto) {
     const attendance = await this.findOne(id);
     if (!attendance) {
       throw new NotFoundException('Attendance not found');
@@ -108,7 +158,7 @@ export class AttendanceService {
     return await this.attendanceRepository.save(attendance);
   }
 
-  async remove(id: number, sessionId: number) {
+  async remove(id: string, sessionId: string) {
     const attendance = await this.findOne(id);
     if (!attendance) {
       throw new NotFoundException('Attendance not found');

@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { FileType } from 'src/entities/materials.entity';
 
@@ -21,6 +22,6 @@ export class CreateMaterialDto {
   @IsOptional()
   fileType: FileType;
 
-  @IsNumber()
-  sessionId: number;
+  @IsUUID()
+  sessionId: string;
 }

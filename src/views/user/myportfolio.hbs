@@ -69,7 +69,7 @@
         this.loading = true;
         try {
           const params = new URLSearchParams();
-          params.set('userId', {{user.id}});
+          params.set('userId', '{{user.id}}');
           if (this.selectedKategoriId) params.set('categoryId', this.selectedKategoriId);
           if (this.selectedJenisKelasId) params.set('course_type_id', this.selectedJenisKelasId);
           params.set('page', this.currentPage);

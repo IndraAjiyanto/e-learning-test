@@ -36,17 +36,17 @@ export class CourseQuestionsService {
   async findAll() {
     return await this.courseQuestionRepository.find({
       relations: ['course'],
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
   async findAllCourses() {
     return await this.courseRepository.find({
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const courseQuestion = await this.courseQuestionRepository.findOne({
       where: { id },
       relations: ['course'],
@@ -59,7 +59,7 @@ export class CourseQuestionsService {
     return courseQuestion;
   }
 
-  async update(id: number, updateCourseQuestionDto: UpdateCourseQuestionDto) {
+  async update(id: string, updateCourseQuestionDto: UpdateCourseQuestionDto) {
     const courseQuestion = await this.findOne(id);
 
     if (updateCourseQuestionDto.courseId) {
@@ -74,11 +74,18 @@ export class CourseQuestionsService {
       courseQuestion.course = course;
     }
 
-    Object.assign(courseQuestion, updateCourseQuestionDto);
+    if (updateCourseQuestionDto.questions !== undefined) {
+      courseQuestion.questions = updateCourseQuestionDto.questions;
+    }
+
+    if (updateCourseQuestionDto.answer !== undefined) {
+      courseQuestion.answers = updateCourseQuestionDto.answer;
+    }
+
     return await this.courseQuestionRepository.save(courseQuestion);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const courseQuestion = await this.findOne(id);
     return await this.courseQuestionRepository.remove(courseQuestion);
   }

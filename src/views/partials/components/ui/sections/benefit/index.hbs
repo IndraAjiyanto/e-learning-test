@@ -1,0 +1,41 @@
+{{!--
+  Section: Benefit / "Why Choose" (L2)
+  Lokasi: src/views/partials/components/ui/sections/benefit/index.hbs
+  Satu pohon markup, base + lg. Data: benefits[] (jsonb title/description + icon). sizeClass, .page-shell.
+--}}
+<section class="w-full bg-white py-14 font-inter lg:py-24">
+  <div class="page-shell flex flex-col gap-12 lg:gap-16">
+
+    {{!-- section header --}}
+    <div
+      x-data="{ shown: false }"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'"
+      class="flex flex-col items-center gap-4 text-center transition-all duration-700 ease-out"
+    >
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.imagine.whyChooseUs') }}
+
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#111827] [&_span]:text-[#6EB6E5]">
+        {{{t 'test.home.imagine.title'}}}
+      </h2>
+
+      <p class="{{sizeClass 'lead'}} max-w-[720px] font-inter text-[#4A5568]">
+        {{t 'test.home.imagine.description'}}
+      </p>
+
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+    </div>
+
+    {{!-- features grid --}}
+    <div
+      x-data="{ shown: false }"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+      class="flex flex-wrap justify-center gap-5 transition-all duration-700 ease-out [&>*]:w-full [&>*]:sm:w-[calc((100%-1.25rem)/2)] [&>*]:lg:w-[calc((100%-2.5rem)/3)]"
+    >
+      {{#each benefits}}
+        {{> components/ui/card/card_benefit/index icon=this.icon title=this.title description=this.description lang=../lang}}
+      {{/each}}
+    </div>
+  </div>
+</section>

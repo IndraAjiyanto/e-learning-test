@@ -1,0 +1,56 @@
+{{!--
+  Komponen: Input Email (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/input/email/index.hbs
+
+  Input email dengan label, validasi HTML5 & styling responsif.
+
+  Props:
+  - name           : Atribut name (default: "email")
+  - id             : Atribut id (default: name)
+  - label          : Teks label (wajib)
+  - placeholder    : Placeholder teks (default: "Email")
+  - value          : Nilai input (opsional)
+  - required       : Boolean required (default: true)
+  - disabled       : Boolean disabled/readonly (default: false)
+  - labelClass     : Kelas tambahan label
+  - inputClass     : Kelas tambahan input
+  - wrapperClass   : Kelas tambahan pembungkus (default: "")
+  - autocomplete   : Atribut autocomplete (default: "email")
+  - hint           : Teks bantuan di bawah input (opsional)
+--}}
+
+<div class="{{wrapperClass}}">
+  <label
+    for="{{default id (default name 'email')}}"
+    class="mb-2 block font-inter text-sm font-medium text-[#2D2D2D] {{default labelClass ''}}"
+  >{{label}}</label>
+
+  <div class="relative">
+    <div class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-[#003060]">
+      {{#if icon}}
+        <i class="{{icon}} text-base"></i>
+      {{else}}
+        <svg class="size-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="3" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+      {{/if}}
+    </div>
+
+    <input
+      type="email"
+      id="{{default id (default name 'email')}}"
+      name="{{default name 'email'}}"
+      {{#if value}}value="{{value}}"{{/if}}
+      placeholder="{{default placeholder 'Email'}}"
+      autocomplete="{{default autocomplete 'email'}}"
+      {{#if required}}required{{/if}}
+      {{#if disabled}}disabled readonly{{/if}}
+      class="h-12 w-full rounded-[8px] border border-[#D9D9D9] bg-white pl-11 pr-4 font-inter text-sm font-normal text-[#2D2D2D] placeholder:text-sm placeholder:text-[#2D2D2DCC] focus:outline-none focus:ring-2 focus:ring-[#003060] {{default inputClass ''}}"
+    />
+  </div>
+
+  {{#if hint}}
+    <p class="mt-1 font-inter text-xs text-gray-400">{{hint}}</p>
+  {{/if}}
+</div>

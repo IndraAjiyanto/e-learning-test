@@ -1,0 +1,29 @@
+{{!-- 
+  Komponen: Watch Overview Button (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/button/watch_overview/index.hbs
+  
+  Sesuai spesifikasi Figma CSS:
+  - Container: w-[197px], h-[52px], px-[22px] py-[14px], gap 10px, rounded-full (999px), bg-white, border #E5E7EB
+  - Icon: 24x24 container (order 0) dengan 16x16 vector circle-play (#0B1F3B)
+  - Text: 119x18 (order 1) Inter 15px Bold #0B1F3B
+  
+  Props:
+  - xClick : Alpine.js @click expression (default: "videoModalOpen = true")
+  - text   : Label teks tombol (default: "Watch overview")
+  - class  : Kelas tambahan opsional
+--}}
+<button
+  type="button"
+  @click="{{default xClick 'videoModalOpen = true'}}"
+  class="box-border flex flex-row items-center justify-center w-full sm:w-[197px] h-[52px] px-[22px] py-[14px] gap-[10px] bg-[#FFFFFF] border border-[#E5E7EB] rounded-[999px] shrink-0 order-1 shadow-xs hover:bg-[#F9FAFB] hover:border-[#D1D5DB] active:scale-95 transition-all cursor-pointer {{class}}"
+>
+  <div class="flex flex-col justify-center items-center p-0 w-6 h-6 shrink-0 order-0">
+    <svg class="w-4 h-4 shrink-0 order-0" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7" stroke="#0B1F3B" stroke-width="2"/>
+      <polygon points="6.5 5 11 8 6.5 11" fill="#0B1F3B"/>
+    </svg>
+  </div>
+  <span class="w-auto sm:w-[119px] h-[18px] font-inter font-bold text-[15px] leading-[18px] text-[#0B1F3B] shrink-0 order-1 whitespace-nowrap text-left sm:text-center">
+    {{default text "Watch overview"}}
+  </span>
+</button>

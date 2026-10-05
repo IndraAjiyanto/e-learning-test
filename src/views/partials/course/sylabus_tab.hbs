@@ -1,0 +1,123 @@
+<!-- ===================== TAB SYLABUS ===================== -->
+{{!--
+  Tab: Sylabus — Non Bootcamp
+  Path: partials/course/sylabus_tab.hbs
+  Dipakai: admin/course/detail_syllabus.hbs (x-show="tab === 'sylabus'")
+--}}
+
+<div class='flex flex-col gap-[10px] w-full'>
+  <template x-if="items && items.length > 0">
+    <div class='flex flex-col gap-[10px] w-full'>
+      <template x-for="(item, index) in items" :key="item.id">
+        <div class='box-border w-full shrink-0 min-h-[68px] h-[68px] flex flex-row items-center p-[8px_14px] gap-[6px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FAFAFA] transition-colors'>
+
+          <div class='flex flex-col gap-[2px] flex-1 min-w-0 justify-center items-start'>
+            <div class='w-full h-[20px] flex flex-row items-center gap-[8px]'>
+              <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#003060] truncate'
+                   x-text="item.title || item.topic || ('Pertemuan ' + String(item.orderNumber || (index + 1)).padStart(2, '0'))"
+                   :title="item.title || item.topic || ''"></span>
+              <template x-if="item.isFinal">
+                <span class='box-border h-[20px] bg-[#DCFCE7] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                  <span class='font-inter font-medium text-[11px] leading-[16px] text-[#15803D] whitespace-nowrap'>
+                    Final
+                  </span>
+                </span>
+              </template>
+            </div>
+            <div class='w-full h-[23px] font-inter font-medium text-[14px] leading-[23px] text-[#737373] flex items-center truncate'
+                 x-text="item.description || '-'" :title="item.description || ''"></div>
+          </div>
+
+          <template x-if="!item.isCompleted">
+            <form :action="item.deleteUrl" method='POST' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+              <button type='button'
+                onclick='openDeleteModal(this)'
+                class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+                title='Delete Sylabus' aria-label='Delete Sylabus'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <path d='M3 6h18'/>
+                  <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
+                  <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
+                  <line x1='10' x2='10' y1='11' y2='17'/>
+                  <line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+              </button>
+            </form>
+          </template>
+
+          <a :href="item.detailUrl"
+            class='box-border w-[81px] shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'
+            title='Sylabus Detail' aria-label='Sylabus Detail'>
+            <span class='w-[45px] h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#003060] flex items-center justify-center whitespace-nowrap'>Detail</span>
+          </a>
+
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <!-- Empty State -->
+  <template x-if="!items || items.length === 0">
+    <div class='w-full h-[72px] flex items-center justify-center'>
+      <span class='font-inter text-sm text-[#A3A3A3]'>No sylabus yet. Click Add Sylabus to create one.</span>
+    </div>
+  </template>
+
+  <template x-if="!hasFinalSyllabus">
+    <a :href="addUrl"
+      class='box-border w-full shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#3B82F6] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'>
+      <span class='h-[24px] font-inter font-semibold text-[16px] leading-[24px] text-[#3B82F6] flex items-center justify-center whitespace-nowrap'>Add Sylabus</span>
+    </a>
+  </template>
+</div>
+
+<script>
+function sylabusData() {
+  return {
+    rawSyllabus: [],
+
+    get hasFinalSyllabus() {
+      if (this.rawSyllabus && this.rawSyllabus.length > 0) {
+        return this.rawSyllabus.some(s => s.isFinal === true || s.isFinal === 'true' || s.isFinal === 1);
+      }
+      return false;
+    },
+
+    get items() {
+      if (this.rawSyllabus && this.rawSyllabus.length > 0) {
+        return this.rawSyllabus.map((s, index) => ({
+          id: s.id,
+          orderNumber: s.syllabusNumber || (index + 1),
+          title: s.title || '',
+          topic: s.title || '',
+          description: s.description || '',
+          isFinal: !!s.isFinal,
+          isCompleted: !!s.isCompleted,
+          detailUrl: '/syllabus/' + s.id,
+          deleteUrl: '/syllabus/' + s.id + '/{{course.id}}?_method=DELETE',
+        }));
+      }
+      return [];
+    },
+
+    get addUrl() {
+      return '/program/create-syllabus/{{course.id}}';
+    },
+
+    async fetchSylabus() {
+      try {
+        const res = await fetch('/syllabus/course/{{course.id}}');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            this.rawSyllabus = data;
+          }
+        }
+      } catch (e) {
+        console.error('Fetch syllabus error:', e);
+        this.rawSyllabus = [];
+      }
+    }
+  }
+}
+</script>

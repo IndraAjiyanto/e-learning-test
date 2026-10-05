@@ -13,6 +13,7 @@ import { WeekProgress } from 'src/entities/week_progress.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Session } from 'src/entities/session.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 
 @Injectable()
 export class WeeksService {
@@ -34,9 +35,12 @@ export class WeeksService {
 
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
+
+    @InjectRepository(Logbook)
+    private readonly logbookRepository: Repository<Logbook>,
   ) {}
 
-  async create(createWeekDto: CreateWeeksDto, courseId: number) {
+  async create(createWeekDto: CreateWeeksDto, courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
@@ -129,13 +133,13 @@ export class WeeksService {
     }
   }
 
-  async getSessionNumber(courseId: number) {
+  async getSessionNumber(courseId: string) {
     const lastWeek = await this.findCourseWeeks(courseId);
     const newWeek = lastWeek + 1;
     return newWeek;
   }
 
-  async findCourseWeeks(courseId: number) {
+  async findCourseWeeks(courseId: string) {
     const weeks = await this.weeksRepository.findOne({
       where: { course: { id: courseId } },
       order: { weekNumber: 'DESC' },
@@ -146,36 +150,76 @@ export class WeeksService {
     return weeks.weekNumber;
   }
 
-  async findOne(weeksId: number) {
+  async findOne(weeksId: string) {
     return await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
     });
   }
 
-  async findSession(weeksId: number) {
-    return await this.sessionRepository.find({
+  async findSession(weeksId: string) {
+    const sessions = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       order: { sessionOrder: 'ASC' },
     });
+
+    if (sessions.length === 0) {
+      return [];
+    }
+
+    const sessionIds = sessions.map((s) => s.id);
+    const approvedLogbooks = await this.logbookRepository
+      .createQueryBuilder('l')
+      .select('l.sessionId', 'sessionId')
+      .where('l.sessionId IN (:...sessionIds)', { sessionIds })
+      .andWhere("l.process = 'approved'")
+      .groupBy('l.sessionId')
+      .getRawMany();
+
+    const completedSessionIds = new Set(
+      approvedLogbooks.map((item) => item.sessionId),
+    );
+
+    return sessions.map((s) => ({
+      ...s,
+      hasCompletedUser: completedSessionIds.has(s.id),
+    }));
   }
 
-  async findQuiz(weeksId: number) {
+  async findQuiz(weeksId: string) {
     return await this.quizRepository.find({
       where: { weeks: { id: weeksId } },
     });
   }
 
-  async findLastSession(weeksId: number) {
-    return await this.sessionRepository.findOne({
-      where: { weeks: { id: weeksId }, isFinal: true },
-    });
+  async findLastSession(weeksId: string) {
+    // Query builder eksplisit dengan kolom FK langsung — menghindari ambiguitas
+    // filter relasi bersarang ({ weeks: { id } }) yang dipakai gate tab Quiz.
+    return await this.sessionRepository
+      .createQueryBuilder('session')
+      .where('session.weeksId = :weeksId', { weeksId })
+      .andWhere('session.isFinal = :isFinal', { isFinal: true })
+      .getOne();
   }
 
-  async update(id: number, updateWeekDto: UpdateWeeksDto) {
+  async hasCompletedUser(weeksId: string): Promise<boolean> {
+    const count = await this.weekProgressRepository.count({
+      where: { week: { id: weeksId }, quiz: true },
+    });
+    return count > 0;
+  }
+
+  async update(id: string, updateWeekDto: UpdateWeeksDto) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
+    }
+
+    const isCompleted = await this.hasCompletedUser(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Week cannot be edited because it has already been completed by user',
+      );
     }
 
     const finalWeek = await this.weeksRepository.findOne({
@@ -193,11 +237,19 @@ export class WeeksService {
     return await this.weeksRepository.save(weeks);
   }
 
-  async remove(id: number, courseId: number) {
+  async remove(id: string, courseId: string) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
     }
+
+    const isCompleted = await this.hasCompletedUser(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Week cannot be deleted because it has already been completed by user',
+      );
+    }
+
     await this.weeksRepository.remove(weeks);
     const allWeeks = await this.weeksRepository.find({
       where: { course: { id: courseId } },

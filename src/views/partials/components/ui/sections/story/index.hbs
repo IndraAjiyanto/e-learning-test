@@ -1,0 +1,107 @@
+{{!--
+  Section: Story (tab halaman About)
+  Lokasi: src/views/partials/components/ui/sections/story/index.hbs
+
+  Data (dari dashboard.about()):
+  - paragraphs : N baris, paragraphs.[].paragraphs = jsonb per-bahasa
+  - commitment : N baris urut commitmentOrder, icon + title + description (jsonb per-bahasa)
+  - social     : social.[0].videoYoutube untuk embed
+
+  Satu pohon markup yang mengalir. L1: text/section_header, card/about_feature.
+--}}
+
+{{!--
+  Story layout (see hand sketch):
+    right column (right of the sidebar, to the page edge) stacks HERO then VIDEO,
+    both filling that column's full width. COMMITMENT is a separate row below the
+    whole sidebar+content region, spanning the entire page width.
+
+  The tab repaints its area #F9FAFB (lg:-mx-10 cancels about.hbs' content-column
+  side padding, lg:-mb-24 runs it into the footer). The content column's own white
+  top padding (lg:pt-24) stays and reads as one surface with the white hero.
+    - hero  -> white, fills the right column, same top gap as the other tabs
+    - video -> on the F9FAFB, video element inset inside the column-width band
+    - Our Commitment -> full page-width white row, content re-aligned to the gutter
+--}}
+<div
+  x-data="{ videoUrl: '{{#if social.length}}{{social.[0].videoYoutube}}{{else}}https://youtu.be/Ft3UMrgTDpc{{/if}}' }"
+  class="font-inter lg:-mx-10 lg:-mb-24 lg:bg-[#F9FAFB] lg:px-10 lg:pb-24"
+>
+  {{!-- Hero - white, fills the right column (sidebar edge -> page edge), flush under
+       the navbar. lg:-mx-10 spans the column; lg:px-10 puts the text back on the
+       shared content gutter (same x as the other tabs). --}}
+  <div class="bg-white px-5 py-8 lg:-mx-10 lg:px-10 lg:pt-0 lg:pb-14">
+    {{> components/ui/text/section_header/index
+        align="text-left"
+        titleTag="h1"
+        titleSize="display"
+        title=(t 'test.about.ourStory.title')
+        titleClass="font-inter font-bold text-[#003060]"
+        descSize="h3"
+        description=(t 'test.about.ourStory.description')
+        descClass="font-inter font-medium text-[#4B5563] mt-3" }}
+
+    <div class="mt-8 space-y-4 lg:space-y-5">
+      {{#if paragraphs.length}}
+        {{#each paragraphs}}
+          <p class="{{sizeClass 'lead'}} font-inter font-normal text-[#6B7280]">{{getByLang this.paragraphs ../lang}}</p>
+        {{/each}}
+      {{else}}
+        <p class="{{sizeClass 'lead'}} font-inter font-normal text-[#6B7280]">Kesatria Academy is an educational services institution focused on developing superior digital talent in the information technology sector. Our programs are designed to address real and evolving industry needs, ensuring that every learner is prepared to contribute meaningfully to the ongoing digital transformation happening across various sectors.</p>
+        <p class="{{sizeClass 'lead'}} font-inter font-normal text-[#6B7280]">At Kesatria Academy, we believe that technology education is not solely about theoretical understanding. It is a transformative journey that builds practical capabilities, problem-solving skills, and a strong professional work ethic. Through hands-on learning, real-world projects, and personalized mentoring from industry experts, we prepare participants to become highly competitive and job-ready professionals.</p>
+        <p class="{{sizeClass 'lead'}} font-inter font-normal text-[#6B7280]">We emphasize measurable outcomes and the creation of a globally recognized portfolio as a key indicator of success. With a curriculum aligned to industry standards and a learning environment that encourages collaboration, innovation, and continuous improvement, Kesatria Academy strives to empower future digital talents to excel in both local and international levels.</p>
+      {{/if}}
+    </div>
+  </div>
+
+  {{!-- Video - band fills the right column (matches the hero edges); the video
+       element is inset inside it with the F9FAFB showing around it. --}}
+  <div class="mt-10 lg:mt-12 lg:-mx-10 lg:px-10">
+    <div class="mx-auto aspect-video w-full max-w-[1040px] overflow-hidden rounded-2xl border border-gray-200 bg-slate-900 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.08)]">
+      <iframe
+        width="100%" height="100%" loading="lazy"
+        x-bind:src="videoUrl.includes('youtube.com/watch?v=') ? videoUrl.replace('watch?v=','embed/') : videoUrl.includes('youtu.be/') ? videoUrl.replace('youtu.be/','youtube.com/embed/') : videoUrl"
+        title="Kesatria Academy" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen class="h-full w-full"></iframe>
+    </div>
+  </div>
+
+  {{!-- Our Commitment - independent full-bleed white band on the F9FAFB. -ml/-mr
+       break it out to both viewport edges (offsets match the Story root above:
+       sidebar 19rem + px-10 2.5rem = 21.5rem left, 2.5rem right); the inner max-w
+       wrapper re-aligns the heading + cards to the page gutter (navbar logo line). --}}
+  <div class="mt-12 lg:mt-16 lg:-ml-[21.5rem] lg:-mr-10 lg:bg-white lg:py-14">
+    <div class="lg:mx-auto lg:w-full lg:max-w-[1728px] lg:px-10">
+      {{> components/ui/text/section_header/index
+          align="text-left"
+          titleTag="h2"
+          titleSize="h1"
+          title=(t 'test.about.ourStory.commitment')
+          titleClass="font-inter font-bold text-[#111827]"
+          showDivider=true
+          dividerClass="w-20 h-1 bg-[#111827] rounded-[2px] mt-4" }}
+
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+        {{#if commitment.length}}
+        {{#each commitment}}
+          {{> components/ui/card/about_feature/index
+              variant="commitment"
+              iconBase="/public/image/about/story/"
+              iconName=this.icon
+              fallbackIcon="/public/image/about/story/inclusive.svg"
+              title=(getByLang title ../lang)
+              description=(getByLang description ../lang) }}
+        {{/each}}
+      {{else}}
+        {{> components/ui/card/about_feature/index variant="commitment" icon="/public/image/about/story/inclusive.svg" title="Inclusive & Accessible Education" description="Providing equal opportunities for all learners through flexible and accessible learning experiences." }}
+        {{> components/ui/card/about_feature/index variant="commitment" icon="/public/image/about/story/career.svg" title="Career Growth & Professional Mentoring" description="Supporting learners through mentoring, portfolio building, certifications, and career placement pathways." }}
+        {{> components/ui/card/about_feature/index variant="commitment" icon="/public/image/about/story/real-world.svg" title="Real-World Industry Experience" description="Offering hands-on projects, case studies, and collaboration with experts to bridge theory and practice." }}
+        {{> components/ui/card/about_feature/index variant="commitment" icon="/public/image/about/story/innovative.svg" title="Innovative Technology Adoption" description="Continuously evolving with cutting-edge tools and modern methodologies to stay ahead in the digital era." }}
+        {{> components/ui/card/about_feature/index variant="commitment" icon="/public/image/about/story/empowering.svg" title="Empowering Digital Community" description="Fostering collaborative learning networks and supportive ecosystems that grow together." }}
+        {{> components/ui/card/about_feature/index variant="commitment" icon="/public/image/about/story/excellence.svg" title="Excellence in Digital Learning" description="Empowering learners with high-quality, industry-driven education that shapes future-ready professionals." }}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

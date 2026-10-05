@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -145,7 +149,7 @@ export class SessionService {
     return await this.courseRepository.find();
   }
 
-  async findWeekSessions(weeksId: number) {
+  async findWeekSessions(weeksId: string) {
     const session = await this.sessionRepository.findOne({
       where: { weeks: { id: weeksId } },
       order: { createdAt: 'DESC' },
@@ -156,34 +160,35 @@ export class SessionService {
     return session.sessionOrder;
   }
 
-  async getNextOrder(weeksId: number) {
+  async getNextOrder(weeksId: string) {
     const lastSession = await this.findWeekSessions(weeksId);
     const newSession = lastSession + 1;
     return newSession;
   }
 
-  async findStudentsInCourse(courseId: number, sessionId: number) {
+  async findStudentsInCourse(courseId: string, sessionId: string) {
     return await this.userRepository.find({
       where: {
         userCourses: { course: { id: courseId } },
         absent: { session: { id: sessionId } },
       },
-      relations: ['absent'],
+      relations: ['absent', 'biodata'],
     });
   }
 
-  async findQuestions(sessionId: number) {
+  async findQuestions(sessionId: string) {
     return await this.questionRepository.find({
       where: { quiz: { id: sessionId } },
       relations: ['answers'],
     });
   }
 
-  async findLogBook(sessionId: number) {
+  async findLogBook(sessionId: string) {
     return await this.logBookRepository.find({
       where: { session: { id: sessionId } },
       relations: [
         'user',
+        'user.biodata',
         'session',
         'session.weeks',
         'session.weeks.course',
@@ -191,11 +196,12 @@ export class SessionService {
     });
   }
 
-  async findLogBookMentor(sessionId: number) {
+  async findLogBookMentor(sessionId: string) {
     return await this.mentorLogbookRepository.find({
       where: { session: { id: sessionId } },
       relations: [
         'user',
+        'user.biodata',
         'session',
         'session.weeks',
         'session.weeks.course',
@@ -203,13 +209,13 @@ export class SessionService {
     });
   }
 
-  async findTugas(sessionId: number) {
+  async findTugas(sessionId: string) {
     return await this.assignmentRepository.find({
       where: { session: { id: sessionId } },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const session = await this.sessionRepository.findOne({
       where: { id },
       relations: ['weeks', 'weeks.course'],
@@ -225,14 +231,40 @@ export class SessionService {
     return session;
   }
 
-  async update(id: number, updateSessionDto: UpdateSessionDto) {
+  async hasCompletedUser(sessionId: string): Promise<boolean> {
+    const count = await this.logBookRepository.count({
+      where: {
+        session: { id: sessionId },
+        process: 'approved',
+      },
+    });
+    return count > 0;
+  }
+
+  async update(id: string, updateSessionDto: UpdateSessionDto) {
     const session = await this.findOne(id);
     if (!session) {
       throw new NotFoundException('session tidak ditemukan');
     }
 
+    const isCompleted = await this.hasCompletedUser(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Session cannot be edited because it has already been completed by user',
+      );
+    }
+
     if (updateSessionDto.isFinalCheck === 'true') {
       updateSessionDto.isFinal = true;
+      // Hanya satu session per week yang boleh final — lepas flag dari session
+      // lain di week yang sama agar findLastSession tidak ambigu/salah baca.
+      await this.sessionRepository
+        .createQueryBuilder()
+        .update()
+        .set({ isFinal: false })
+        .where('weeksId = :weeksId', { weeksId: session.weeks.id })
+        .andWhere('id != :id', { id })
+        .execute();
     } else {
       updateSessionDto.isFinal = false;
     }
@@ -240,11 +272,19 @@ export class SessionService {
     return await this.sessionRepository.save(session);
   }
 
-  async remove(sessionId: number, weeksId: number) {
+  async remove(sessionId: string, weeksId: string) {
     const session = await this.findOne(sessionId);
     if (!session) {
       throw new NotFoundException('session tidak ditemukan');
     }
+
+    const isCompleted = await this.hasCompletedUser(sessionId);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Session cannot be deleted because it has already been completed by user',
+      );
+    }
+
     await this.sessionRepository.remove(session);
     const semuaPertemuan = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },

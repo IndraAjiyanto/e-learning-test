@@ -1,388 +1,534 @@
-{{! --- MY LEARNING CONTENT PARTIAL --- }}
-<div class="space-y-14 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 mb-28">
+{{!--
+  Tab: My Learning (frame "Halaman My Learning").
 
-  {{! --- HEADER SECTION --- }}
-  <div>
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
-      My Learning
+  Menggantikan versi backoffice lama yang jauh lebih tipis: satu kolom search,
+  dropdown "All Programs", dan kartu biru muda "Continue". Frame desainnya
+  memakai susunan yang sama persis dengan halaman My Learning di landing
+  (`user/mycourse.hbs` + `partials/user/myProgram/*`), jadi yang dipakai di sini
+  adalah state Alpine dan endpoint yang sudah terbukti di sana, bukan tiruan baru:
+
+    tab              -> query `category`
+    selectedCategory -> query `courseType`   (penamaan warisan dari landing)
+    selectedMethod   -> query `method`
+    searchQuery      -> query `search`
+    selectedStatus   -> query `status`       (done | ongoing)
+
+  Sumber data: GET /dashboard/course/filter?userId=... yang hanya mengembalikan
+  program yang benar-benar diikuti student dan sudah launch.
+
+  Bilah filternya sengaja TIDAK menyalin `myProgram/filter.hbs`: bentuk landing
+  itu satu blok tinggi dengan label bertumpuk, sedangkan frame backoffice
+  menggambarkan satu baris ringkas [Filter] [All Category] [All Type]
+  [All Method] [All Status] [Search]. Yang dibawa adalah perilakunya, bukan tata letaknya.
+
+  Props dari controller: user, category[], courseType[], lang
+--}}
+<div
+  class="font-inter"
+  x-data="{
+    tab: 'all',
+    selectedCategory: 'all',
+    selectedMethod: 'all',
+    selectedStatus: (() => {
+      const s = new URLSearchParams(window.location.search).get('status');
+      return (s === 'done' || s === 'ongoing') ? s : 'all';
+    })(),
+    searchQuery: new URLSearchParams(window.location.search).get('search') || '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    loading: true,
+    kelasItems: [],
+    lang: '{{lang}}',
+    categoryOpen: false,
+    typeOpen: false,
+    methodOpen: false,
+    statusOpen: false,
+
+    categories: [
+      { value: 'all', title: '{{t "test.mycourse.allCategories"}}' }{{#each category}},
+      { value: `{{this.name}}`, title: `{{this.name}}` }{{/each}}
+    ],
+    types: [
+      { value: 'all', title: '{{t "test.mycourse.allTypes"}}' }{{#each courseType}},
+      { value: `{{this.nameClassesType}}`, title: `{{this.nameClassesType}}` }{{/each}}
+    ],
+    methods: [
+      { value: 'all', title: '{{t "test.mycourse.allMethods"}}' },
+      { value: 'online', title: '{{t "test.home.programSection.online"}}' },
+      { value: 'offline', title: '{{t "test.home.programSection.offline"}}' }
+    ],
+    // Nilai 'done'/'ongoing' bukan true/false supaya tidak pernah ikut ke
+    // query string sebagai teks yang selalu dianggap benar di sisi server.
+    statuses: [
+      { value: 'all', title: '{{t "test.mycourse.allStatuses"}}' },
+      { value: 'ongoing', title: '{{t "test.mycourse.ongoing"}}' },
+      { value: 'done', title: '{{t "test.mycourse.completed"}}' }
+    ],
+
+    get categoryLabel() { return (this.categories.find(c => c.value === this.tab) || this.categories[0]).title; },
+    get typeLabel() { return (this.types.find(c => c.value === this.selectedCategory) || this.types[0]).title; },
+    get methodLabel() { return (this.methods.find(m => m.value === this.selectedMethod) || this.methods[0]).title; },
+    get statusLabel() { return (this.statuses.find(s => s.value === this.selectedStatus) || this.statuses[0]).title; },
+
+    getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    enrolled(course) { return course.enrolledCount ?? course.userCourses?.length ?? 0; },
+    quotaPercent(course) {
+      if (!course.quota) return 0;
+      return Math.min(100, Math.round((this.enrolled(course) / course.quota) * 100));
+    },
+
+    async init() {
+      this.$watch('tab', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedCategory', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.    $watch('selectedStatus', () => {
+      this.currentPage = 1;
+      this.fetchKelas();
+      const url = new URL(window.location);
+      if (this.selectedStatus !== 'all') url.searchParams.set('status', this.selectedStatus);
+      else url.searchParams.delete('status');
+      history.replaceState({}, '', url);
+    });
+      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
+      await this.fetchKelas();
+    },
+
+    async fetchKelas() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        params.set('userId', '{{user.id}}');
+        if (this.tab !== 'all') params.set('category', this.tab);
+        if (this.selectedCategory !== 'all') params.set('courseType', this.selectedCategory);
+        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
+        if (this.selectedStatus !== 'all') params.set('status', this.selectedStatus);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('page', this.currentPage);
+        params.set('limit', this.itemsPerPage);
+        const res = await fetch('/dashboard/course/filter?' + params.toString());
+        const json = await res.json();
+        this.kelasItems = json.data || [];
+        this.totalItems = json.totalItems || 0;
+        this.totalPages = json.totalPages || 1;
+        this.currentPage = json.currentPage || 1;
+      } catch (err) {
+        console.error('Fetch course error:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    get rangeLabel() {
+      const total = this.totalItems;
+      if (total === 0) return 'No programs';
+      const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+      const end = Math.min(start + this.itemsPerPage - 1, total);
+      return `Showing ${start}-${end} of ${total} programs`;
+    },
+
+    get visiblePages() {
+      const t = this.totalPages, c = this.currentPage;
+      if (t <= 5) return Array.from({ length: t }, (_, i) => i + 1);
+      if (c <= 3) return [1, 2, 3, '...', t];
+      if (c >= t - 2) return [1, '...', t - 2, t - 1, t];
+      return [1, '...', c - 1, c, c + 1, '...', t];
+    },
+
+    async changePage(page) {
+      if (page < 1 || page > this.totalPages || page === this.currentPage) return;
+      this.currentPage = page;
+      await this.fetchKelas();
+    },
+
+    resetFilters() {
+      this.tab = 'all';
+      this.selectedCategory = 'all';
+      this.selectedMethod = 'all';
+      this.selectedStatus = 'all';
+      this.searchQuery = '';
+    },
+  }"
+>
+
+  {{! --- HEADER --- }}
+  <div class="px-4 py-4 sm:px-8 sm:py-6">
+    <h1 class="font-inter text-2xl font-bold leading-tight text-[#003060] sm:text-3xl">
+      {{t "test.mycourse.title"}}
     </h1>
-    <p class="font-sans font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
-      Continue your learning journey and track your progress.
+    <p class="mt-2 max-w-4xl font-inter text-sm leading-relaxed text-[#525252] sm:text-base">
+      {{t "test.mycourse.description"}}
     </p>
   </div>
 
-  {{! --- SEARCH & FILTER BAR SECTION --- }}
-  <div class="flex flex-col md:flex-row items-stretch md:items-center gap-[25px]">
-    
-    <!-- Search Input -->
-    <div class="w-full md:w-[320px] h-[42px] bg-white rounded-md flex items-center gap-[15px] px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
-      <i class="fa-solid fa-magnifying-glass text-[#003060] text-base sm:text-lg flex-shrink-0"></i>
-      <input 
-        type="text" 
-        placeholder="Search learning" 
-        class="w-full bg-transparent font-montserrat font-medium text-base sm:text-lg md:text-xl text-black placeholder:text-[#676767] focus:outline-none"
-      >
-    </div>
+  {{! --- KARTU UTAMA: filter + penghitung + grid, persis seperti frame --- }}
+  <div class="px-4 pb-10 pt-6 sm:px-8">
+    <div class="rounded-xl border border-[#E5E7EB] bg-white p-4 shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] sm:p-6">
 
-    <!-- Dropdown All Programs -->
-    <div class="relative w-full md:w-[254px]" x-data="{ open: false, selected: 'All Programs', options: ['All Programs'{{#each category}}, '{{this.name}}'{{/each}}] }">
-      <input type="hidden" name="program_filter" :value="selected">
-      <button
-        type="button"
-        @click="open = !open"
-        @click.outside="open = false"
-        class="w-full h-[43px] bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
-        :aria-expanded="open"
-      >
-        <span class="font-montserrat font-medium text-base sm:text-lg md:text-xl text-[#666666] truncate pr-2" x-text="selected"></span>
-        <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
-      </button>
-      <ul
-        x-show="open"
-        x-transition
-        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat max-h-60 overflow-y-auto"
-        style="display: none;"
-      >
-        <template x-for="option in options" :key="option">
-          <li
-            @click="selected = option; open = false"
-            class="px-4 py-3 rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-            :class="selected === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
-          >
-            <span x-text="option"></span>
-            <i x-show="selected === option" class="fa-solid fa-check text-sm text-[#003060]"></i>
-          </li>
-        </template>
-      </ul>
-    </div>
-
-    <!-- Dropdown All Method -->
-    <div class="relative w-full md:w-[254px]" x-data="{ open: false, selected: 'All Method' }">
-      <input type="hidden" name="method_filter" :value="selected">
-      <button 
-        type="button" 
-        @click="open = !open"
-        @click.outside="open = false"
-        class="w-full h-[43px] bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
-        :aria-expanded="open"
-      >
-        <span class="font-montserrat font-medium text-base sm:text-lg md:text-xl text-[#666666] truncate pr-2" x-text="selected"></span>
-        <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
-      </button>
-      <ul 
-        x-show="open" 
-        x-transition
-        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat max-h-60 overflow-y-auto"
-        style="display: none;"
-      >
-        <template x-for="option in ['All Method', 'Offline', 'Online', 'Hybrid']" :key="option">
-          <li 
-            @click="selected = option; open = false" 
-            class="px-4 py-3 rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-            :class="selected === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
-          >
-            <span x-text="option"></span>
-            <i x-show="selected === option" class="fa-solid fa-check text-sm text-[#003060]"></i>
-          </li>
-        </template>
-      </ul>
-    </div>
-
-  </div>
-
-  {{! --- PROGRAM CARDS + RECENT ACTIVITY SECTION (sejajar: cards kiri, recent activity kanan) --- }}
-  <div class="flex flex-col xl:flex-row gap-8 xl:gap-[67px] items-start">
-    
-    <!-- Cards Section (kiri, w841 di Figma) -->
-    <div class="flex-1 w-full min-w-0">
-      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] mb-7">
-        Learning Path
-      </h2>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 xl:gap-[29px]">
-      
-        <!-- Card 1: UI/UX Designer -->
-        {{#each course}}
-        <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[386px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] rounded-xl p-[13px] flex flex-col justify-between gap-[12px] mx-auto sm:mx-0">      
-          <div class="flex flex-col gap-[12px]">
-            <!-- Badge -->
-            <div class="w-[65px] h-[23px] bg-[#0B1F3B1A]/10 rounded-md flex items-center justify-center">
-              <span class="font-montserrat font-medium text-[10px] text-[#003060]">{{this.category.name}}</span>
-            </div>
-            <!-- Image -->
-            <img
-              src="{{image}}"
-              alt="{{this.name}}"
-              class="w-full h-[138px] rounded-xl object-cover"
-            >
-            <!-- Course Title -->
-            <h3 class="font-montserrat font-semibold text-[15px] text-[#003060]">
-              {{this.name}}
-            </h3>
-            <!-- Tag Row -->
-            <div class="flex items-center gap-[6px] flex-wrap">
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
-                <i class="fa-solid fa-location-dot text-[10px]"></i>
-                {{this.method}}
-              </span>
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
-                <i class="fa-solid fa-graduation-cap text-[10px]"></i>
-                {{this.weeks.length}} Weeks
-              </span>
-              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
-                <i class="fa-solid fa-user text-[10px]"></i>
-                Beginner
-              </span>
-            </div>
-            <!-- Next Lesson -->
-            <div class="flex items-center gap-1 text-[#003060]">
-              <i class="fa-solid fa-circle-play text-[10px]"></i>
-              <span class="font-open-sans text-[10px]">Next: User Interface Design</span>
-            </div>
-          </div>
-          <!-- Button -->
-          <a
-            href="/program/myProgram/{{../user.id}}?courseId={{this.id}}"
-            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
-          >
-            <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
-            <i class="fa-solid fa-arrow-right text-sm"></i>
-          </a>
-        </div>
-        {{/each}}
-      </div>
-    </div>
-
-    <!-- Recent Activity Column (kanan, w245 di Figma) -->
-    <div class="w-full lg:w-[245px] flex-shrink-0">
-      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] mb-7">
-        Recent Activity
-      </h2>
-      <div class="relative pl-6 space-y-6">
-        <!-- Vertical Connecting Line (starts at top bullet, stops at last bullet) -->
-        <div class="absolute left-[1px] top-[12px] bottom-[75px] w-[1px] bg-[#D9D9D9]"></div>
-
-        <!-- Item 1 -->
-        <div class="relative flex items-start">
-          <div class="absolute -left-[30px] top-[5px] w-[15px] h-[15px] rounded-full bg-[#003060] z-10"></div>
-          <div class="flex flex-col space-y-2">
-            <h4 class="font-montserrat font-semibold text-sm sm:text-[15px] text-[#2D2D2D]">
-              Completed Quiz
-            </h4>
-            <p class="font-open-sans font-normal text-sm sm:text-[15px] text-[#2D2D2D]">
-              Quiz 5 - User Interface Design
-            </p>
-            <span class="font-open-sans font-normal text-xs text-[#666666]">
-              Yesterday
-            </span>
-          </div>
-        </div>
-
-        <!-- Item 2 -->
-        <div class="relative flex items-start">
-          <div class="absolute -left-[30px] top-[5px] w-[15px] h-[15px] rounded-full bg-[#003060] z-10"></div>
-          <div class="flex flex-col space-y-2">
-            <h4 class="font-montserrat font-semibold text-sm sm:text-[15px] text-[#2D2D2D]">
-              Finished Lesson
-            </h4>
-            <p class="font-open-sans font-normal text-sm sm:text-[15px] text-[#2D2D2D]">
-              User Interface Design
-            </p>
-            <span class="font-open-sans font-normal text-xs text-[#666666]">
-              1 Day Ago
-            </span>
-          </div>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="relative flex items-start">
-          <div class="absolute -left-[30px] top-[5px] w-[15px] h-[15px] rounded-full bg-[#003060] z-10"></div>
-          <div class="flex flex-col space-y-2">
-            <h4 class="font-montserrat font-semibold text-sm sm:text-[15px] text-[#2D2D2D]">
-              Started Learning
-            </h4>
-            <p class="font-open-sans font-normal text-sm sm:text-[15px] text-[#2D2D2D]">
-              UI/UX Designer
-            </p>
-            <span class="font-open-sans font-normal text-xs text-[#666666]">
-              7 Day Ago
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  {{! --- STATS CARDS SECTION --- }}
-  <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 xl:gap-[50px]">
-    
-    <!-- Stats 1: Learning Enrolled -->
-    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
-      <div class="w-[60px] h-[60px] rounded-full bg-[#E1EAFD] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-receipt text-[40px] text-[#003060]"></i>
-      </div>
-      <div class="flex flex-col justify-center">
-        <span class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#2D2D2D] leading-tight">2</span>
-        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">Learning Enrolled</span>
-        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">All Time</span>
-      </div>
-    </div>
-
-    <!-- Stats 2: Completed -->
-    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
-      <div class="w-[60px] h-[60px] rounded-full bg-[#DEF5E9] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-circle-check text-[40px] text-[#01B065]"></i>
-      </div>
-      <div class="flex flex-col justify-center">
-        <span class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#2D2D2D] leading-tight">1</span>
-        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">Completed</span>
-        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">40% of total</span>
-      </div>
-    </div>
-
-    <!-- Stats 3: In Progress -->
-    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
-      <div class="w-[60px] h-[60px] rounded-full bg-[#FEEFD6] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-clock text-[40px] text-[#FDA40B]"></i>
-      </div>
-      <div class="flex flex-col justify-center">
-        <span class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#2D2D2D] leading-tight">1</span>
-        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">In Progress</span>
-        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">60% of total</span>
-      </div>
-    </div>
-
-    <!-- Stats 4: Learning Time -->
-    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
-      <div class="w-[60px] h-[60px] rounded-full bg-[#FEE7E7] flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-xmark text-[40px] text-[#F13639]"></i>
-      </div>
-      <div class="flex flex-col justify-center">
-        <span class="font-montserrat font-semibold text-xl sm:text-xl md:text-[25px] text-[#2D2D2D] leading-tight">8 Hours</span>
-        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">Learning Time</span>
-        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">All Time</span>
-      </div>
-    </div>
-
-  </div>
-
-  {{! --- COMPLETED LEARNING & WEEKLY PROGRESS SECTION --- }}
-  <div class="flex flex-col lg:flex-row items-stretch gap-8 xl:gap-[40px]">
-    
-    <!-- Completed Learning -->
-    <div class="flex-1 min-w-0">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060]">
-          Completed Learning
-        </h3>
-        <a href="#" class="font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060] underline">
-          View All
-        </a>
-      </div>
-
-      <!-- Completed Item Card -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <!-- Image + Info -->
-        <div class="flex items-center gap-3">
-          <img 
-            src="https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp" 
-            alt="Fullstack Developer" 
-            class="w-[83px] h-[52px] rounded-md object-cover flex-shrink-0"
-          >
-          <div class="flex flex-col">
-            <h4 class="font-montserrat font-semibold text-[15px] text-black">
-              Fullstack Developer
-            </h4>
-            <span class="font-open-sans font-normal text-[10px] text-black">
-              Beginner
-            </span>
-          </div>
-        </div>
-
-        <!-- Date Info -->
-        <div class="flex flex-col">
-          <span class="font-montserrat font-semibold text-[15px] text-black">
-            Completed on
+      {{! --- BILAH FILTER --- }}
+      <div class="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-3 lg:flex-row lg:items-center lg:flex-wrap">
+        <div class="flex shrink-0 items-center gap-2.5">
+          <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#003060] text-white">
+            <i class="fa-solid fa-filter text-xs"></i>
           </span>
-          <span class="font-open-sans font-normal text-[15px] text-black">
-            12 Maret 2025
-          </span>
+          <span class="font-inter text-sm font-semibold text-[#1F2937]">Filter</span>
         </div>
 
-        <!-- Certificate Button -->
-        <button 
-          type="button" 
-          class="border border-[#003060] rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] bg-white/80 px-4 py-2 font-montserrat font-medium text-[15px] text-[#003060] hover:bg-[#003060] hover:text-white flex items-center gap-2 transition-all cursor-pointer self-start sm:self-center"
-        >
-          <i class="fa-solid fa-download text-sm"></i>
-          <span>Certificate</span>
-        </button>
+        {{! Dropdown kategori -> query `category` }}
+        <div class="relative lg:w-[190px]" @click.outside="categoryOpen = false">
+          <button
+            type="button"
+            @click="categoryOpen = !categoryOpen; typeOpen = false; methodOpen = false; statusOpen = false"
+            :aria-expanded="categoryOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-table-cells-large shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="categoryLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="categoryOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="categoryOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in categories" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="tab = option.value; categoryOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="tab === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="tab === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
+
+        {{! Dropdown tipe kelas -> query `courseType` }}
+        <div class="relative lg:w-[170px]" @click.outside="typeOpen = false">
+          <button
+            type="button"
+            @click="typeOpen = !typeOpen; categoryOpen = false; methodOpen = false; statusOpen = false"
+            :aria-expanded="typeOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-list shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="typeLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="typeOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="typeOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in types" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="selectedCategory = option.value; typeOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="selectedCategory === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="selectedCategory === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
+
+        {{! Dropdown metode -> query `method` }}
+        <div class="relative lg:w-[180px]" @click.outside="methodOpen = false">
+          <button
+            type="button"
+            @click="methodOpen = !methodOpen; categoryOpen = false; typeOpen = false; statusOpen = false"
+            :aria-expanded="methodOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-magnifying-glass-location shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="methodLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="methodOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="methodOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in methods" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="selectedMethod = option.value; methodOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="selectedMethod === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="selectedMethod === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
+
+        {{! Dropdown status penyelesaian -> query `status` (done | ongoing) }}
+        <div class="relative lg:w-[170px]" @click.outside="statusOpen = false">
+          <button
+            type="button"
+            @click="statusOpen = !statusOpen; categoryOpen = false; typeOpen = false; methodOpen = false"
+            :aria-expanded="statusOpen"
+            class="flex h-11 w-full items-center justify-between gap-2 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-left transition-colors hover:border-[#CBD5E1]"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <i class="fa-solid fa-flag-checkered shrink-0 text-xs text-[#718096]"></i>
+              <span class="truncate font-inter text-sm font-medium text-[#374151]" x-text="statusLabel"></span>
+            </span>
+            <i class="fa-solid fa-chevron-down shrink-0 text-xs text-[#718096] transition-transform" :class="statusOpen ? 'rotate-180' : ''"></i>
+          </button>
+          <ul x-show="statusOpen" x-transition style="display:none" class="absolute left-0 right-0 top-full z-50 mt-2 rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+            <template x-for="option in statuses" :key="option.value">
+              <li>
+                <button
+                  type="button"
+                  @click="selectedStatus = option.value; statusOpen = false"
+                  class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left font-inter text-sm transition-colors hover:bg-[#F4F7FC]"
+                  :class="selectedStatus === option.value ? 'bg-[#E4F1F7] font-semibold text-[#003060]' : 'text-[#374151]'"
+                >
+                  <span class="truncate" x-text="option.title"></span>
+                  <i x-show="selectedStatus === option.value" class="fa-solid fa-check text-xs text-[#003060]"></i>
+                </button>
+              </li>
+            </template>
+          </ul>
+        </div>
+
+        {{! Pencarian: di frame letaknya paling kanan }}
+        <div class="relative lg:ml-auto lg:w-[300px] xl:w-[340px]">
+          <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[#718096]"></i>
+          <input
+            type="text"
+            x-model.debounce.400ms="searchQuery"
+            placeholder="{{t 'test.mycourse.placeholderSearch'}}"
+            aria-label="{{t 'test.mycourse.placeholderSearch'}}"
+            class="h-11 w-full rounded-lg border border-[#E5E7EB] bg-white pl-9 pr-9 font-inter text-sm text-[#1F2937] placeholder:text-[#9CA3AF] focus:border-[#003060] focus:outline-none"
+          />
+          <button
+            type="button"
+            x-show="searchQuery !== ''"
+            @click="searchQuery = ''"
+            style="display:none"
+            aria-label="Clear search"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] transition-colors hover:text-[#003060]"
+          >
+            <i class="fa-solid fa-circle-xmark text-sm"></i>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- Vertical Divider Line (266px height, #D9D9D9 border) -->
-    <div class="hidden lg:block w-[1px] h-[266px] bg-[#D9D9D9] self-center flex-shrink-0"></div>
-
-    <!-- Learning This Week (Bar Chart) -->
-    <div class="flex-1 min-w-0">
-      <h3 class="font-montserrat font-semibold text-[25px] text-[#003060]">
-        Learning This Week
-      </h3>
-      <p class="font-open-sans font-normal text-xs text-[#666666] mb-6">
-        Keep it up! You're doing great this week.
+      {{! --- PENGHITUNG HASIL --- }}
+      <p class="mt-5 font-inter text-sm text-[#525252]">
+        {{t "test.home.programSection.showing"}}
+        <span class="font-semibold text-[#1F2937]" x-text="kelasItems.length"></span>
+        {{t "test.home.programSection.of"}}
+        <span class="font-semibold text-[#1F2937]" x-text="totalItems"></span>
+        {{t "test.mycourse.programsAvailable"}}
       </p>
 
-      <!-- Bar Chart Container -->
-      <div class="rounded-xl p-6">
-        <div class="flex items-end justify-between h-[160px] pt-4 px-2 border-b border-slate-100">
-          
-          <!-- Mon (45px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 45px;" title="45 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Mon</span>
+      {{! --- SKELETON SAAT MEMUAT --- }}
+      <div x-show="loading" class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <template x-for="i in 3" :key="i">
+          {{!-- Bentuknya meniru kartu sungguhan baris demi baris. Versi lama jauh
+               lebih pendek, sehingga saat kartunya datang seluruh halaman
+               bergeser turun - itu yang membuat My Learning punya CLS 0.65. --}}
+          <div class="animate-pulse overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+            <div class="h-[160px] w-full bg-[#EEF2F6]"></div>
+            <div class="flex flex-col gap-3 p-3">
+              <div class="flex gap-2">
+                <div class="h-6 w-20 rounded-full bg-[#EEF2F6]"></div>
+                <div class="h-6 w-28 rounded-full bg-[#EEF2F6]"></div>
+              </div>
+              <div class="flex gap-2">
+                <div class="h-6 w-16 rounded-full bg-[#EEF2F6]"></div>
+                <div class="h-6 w-24 rounded-full bg-[#EEF2F6]"></div>
+              </div>
+              <div class="h-5 w-3/4 rounded bg-[#EEF2F6]"></div>
+              <div class="h-3 w-full rounded bg-[#EEF2F6]"></div>
+              <div class="h-[52px] w-full rounded-lg bg-[#EEF2F6]"></div>
+              <div class="h-11 w-full rounded-lg bg-[#EEF2F6]"></div>
+            </div>
           </div>
+        </template>
+      </div>
 
-          <!-- Tue (98px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 98px;" title="98 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Tue</span>
+      {{! --- GRID KARTU PROGRAM --- }}
+      <div x-show="!loading" style="display:none" class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <template x-for="course in kelasItems" :key="course.id">
+          {{!--
+            Gambar dibuat menyatu dengan tepi kartu, sama seperti kartu program
+            di panel Start Learning: tinggi 160px, tanpa sudut membulat sendiri,
+            dan kartunya yang memotong sudutnya lewat overflow-hidden.
+            Sebelumnya gambar duduk di dalam padding kartu dengan sudut membulat
+            sendiri, sehingga dua kartu yang menampilkan program yang sama
+            terlihat berbeda antar halaman.
+          --}}
+          <div class="group flex h-full flex-col overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-[0px_2px_8px_-2px_rgba(11,31,59,0.06)] transition-shadow hover:shadow-[0px_6px_16px_-4px_rgba(11,31,59,0.12)]">
+            <div class="h-[160px] w-full shrink-0 overflow-hidden bg-[#EEF2F6]">
+              <img
+                :src="course.image"
+                :alt="course.name"
+                onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                class="h-full w-full object-cover transition-transform duration-300"
+              />
+            </div>
+
+            {{!-- Isi kartu memakai padding sendiri karena kartunya tidak lagi
+                 punya padding luar. --}}
+            <div class="flex flex-1 flex-col gap-3 p-3">
+
+            {{! Chip kategori, tipe kelas, dan status penyelesaian }}
+            <div class="flex flex-wrap items-center gap-2">
+              <template x-if="course.category?.name">
+                <span class="rounded-full bg-[#F1F5F9] px-3 py-1 font-inter text-xs font-semibold text-[#334155]" x-text="course.category.name"></span>
+              </template>
+              <template x-if="course.courseType?.nameClassesType">
+                <span class="rounded-full bg-[#003060] px-3 py-1 font-inter text-xs font-semibold text-white" x-text="course.courseType.nameClassesType"></span>
+              </template>
+              {{!-- Tanpa chip ini kartu program yang selesai dan yang sedang
+                   berjalan terlihat sama persis, sehingga filter "Selesai"
+                   hanya membuang kartu tanpa menjelaskan kenapa. --}}
+              <template x-if="course.isCompleted">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-[#E7F8F0] px-3 py-1 font-inter text-xs font-semibold text-[#0F7B57]">
+                  <i class="fa-solid fa-circle-check text-xs"></i>
+                  <span>{{t "test.mycourse.completed"}}</span>
+                </span>
+              </template>
+            </div>
+
+            {{! Chip metode dan lokasi }}
+            <div class="flex flex-wrap items-center gap-2">
+              <template x-if="course.method">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-[#F1F5F9] px-3 py-1 font-inter text-xs text-[#475569]">
+                  <i class="fa-solid fa-location-dot text-xs text-[#64748B]"></i>
+                  <span class="capitalize" x-text="course.method"></span>
+                </span>
+              </template>
+            </div>
+
+            <h3 class="font-inter text-base font-bold leading-snug text-[#0F172A]" x-text="course.name"></h3>
+
+            <p class="line-clamp-1 font-inter text-xs text-[#64748B]" x-text="getByLang(course.description, lang)"></p>
+
+            {{! Kuota + bar kemajuan }}
+            <div class="rounded-lg bg-[#F8FAFC] p-3">
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 font-inter text-xs text-[#64748B]">
+                  <i class="fa-solid fa-users text-xs"></i>
+                  {{t "test.home.programSection.kuota"}}
+                </span>
+                <span class="font-inter text-xs font-bold text-[#0F172A]">
+                  <span x-text="enrolled(course)"></span>
+                  /
+                  <span x-text="course.quota || 0"></span>
+                  {{t "test.home.programSection.student"}}
+                </span>
+              </div>
+              <div
+                class="h-1.5 w-full overflow-hidden rounded-full bg-[#E2E8F0]"
+                role="progressbar"
+                aria-label="{{t 'test.home.programSection.kuota'}}"
+                :aria-valuenow="quotaPercent(course)"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div class="h-full rounded-full bg-[#22C55E] transition-all duration-500" :style="'width: ' + quotaPercent(course) + '%'"></div>
+              </div>
+            </div>
+
+            {{!-- Tetap ke /program/:id. Untuk program yang sudah diikuti, rute itu
+                 mengalihkan student ke area belajar di dalam shell backoffice. --}}
+            <a
+              :href="'/program/' + course.id"
+              class="mt-auto flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#003060] font-inter text-sm font-semibold text-white transition-colors hover:bg-[#001f3f]"
+            >
+              <span>{{t "test.home.programSection.buttonViewProgram"}}</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            </div>
           </div>
+        </template>
+      </div>
 
-          <!-- Wed (122px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 122px;" title="122 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Wed</span>
-          </div>
+      {{! --- KOSONG --- }}
+      <div x-show="!loading && kelasItems.length === 0" style="display:none" class="mt-5 flex flex-col items-center gap-3 rounded-xl border border-dashed border-[#E5E7EB] bg-[#FAFAFA] py-14 text-center">
+        <span class="grid size-14 place-items-center rounded-full bg-[#E0F2F9] text-[#003060]">
+          <i class="fa-solid fa-book-open text-xl"></i>
+        </span>
+        <p class="max-w-sm font-inter text-sm text-[#6B7280]">{{t "test.home.programSection.spanNoProgram"}}</p>
+        <button
+          type="button"
+          @click="resetFilters()"
+          x-show="tab !== 'all' || selectedCategory !== 'all' || selectedMethod !== 'all' || selectedStatus !== 'all' || searchQuery !== ''"
+          style="display:none"
+          class="inline-flex h-10 items-center gap-2 rounded-lg border border-[#003060] px-4 font-inter text-sm font-semibold text-[#003060] transition-colors hover:bg-[#003060] hover:text-white"
+        >
+          <i class="fa-solid fa-rotate-right text-xs"></i>
+          {{t "test.home.programSection.clearFilters"}}
+        </button>
+      </div>
 
-          <!-- Thu (77px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 77px;" title="77 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Thu</span>
-          </div>
+      {{! --- PAGINASI (Style Payment History) --- }}
+      <div x-show="!loading && totalPages > 1" style="display:none" class="box-border flex flex-wrap items-center justify-between gap-4 w-full min-h-[56px] px-6 sm:px-8 py-3 bg-white border border-[#D9D9D9] rounded-2xl mt-8">
+        <span class="font-montserrat font-medium text-sm leading-[17px] text-[#003060]" x-text="rangeLabel"></span>
+        <div class="flex items-center gap-2">
+          <!-- Chevron Left -->
+          <button
+            type="button"
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1"
+            aria-label="Previous page"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
 
-          <!-- Fri (131px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 131px;" title="131 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Fri</span>
-          </div>
+          <!-- Page Numbers -->
+          <template x-for="(page, idx) in visiblePages" :key="idx">
+            <div class="flex items-center">
+              <template x-if="page === '...'">
+                <span class="flex items-center justify-center w-8 h-8 font-montserrat font-semibold text-sm text-[#718096]">...</span>
+              </template>
+              <template x-if="page !== '...'">
+                <button
+                  type="button"
+                  @click="changePage(page)"
+                  :class="page === currentPage
+                    ? 'bg-[#003060] text-white border-transparent shadow-sm'
+                    : 'bg-white text-[#003060] border border-[#D9D9D9] hover:bg-slate-50'"
+                  class="flex flex-col justify-center items-center w-8 h-8 rounded-full font-montserrat font-semibold text-sm leading-[17px] transition-colors focus-visible:outline-none"
+                  x-text="page"
+                ></button>
+              </template>
+            </div>
+          </template>
 
-          <!-- Sat (24px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 24px;" title="24 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Sat</span>
-          </div>
-
-          <!-- Sun (14px) -->
-          <div class="flex flex-col items-center gap-2 flex-1">
-            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 14px;" title="14 mins"></div>
-            <span class="font-open-sans font-normal text-[15px] text-black">Sun</span>
-          </div>
-
+          <!-- Chevron Right -->
+          <button
+            type="button"
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= totalPages"
+            aria-label="Next page"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D9D9] bg-white text-[#003060] hover:bg-slate-50 transition-colors focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
         </div>
       </div>
+
     </div>
-
   </div>
-
 </div>

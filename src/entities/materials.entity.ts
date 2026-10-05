@@ -13,8 +13,8 @@ export type FileType = 'video' | 'pdf' | 'ppt';
 
 @Entity()
 export class Material {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   title: string;
@@ -23,7 +23,7 @@ export class Material {
   file: string;
 
   @Column({ type: 'enum', enum: ['video', 'pdf', 'ppt'] })
- fileType: FileType;
+  fileType: FileType;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,136 +1,36 @@
-<style>
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-</style>
-
-<div 
-  class='relative min-h-screen bg-slate-50' 
+<div
+  class="min-h-screen overflow-x-hidden bg-[#F9FAFB] font-inter"
   x-data="{
     activeSection: localStorage.getItem('activeSection') || 'story',
-    get bgImage() {
-      switch(this.activeSection) {
-        case 'story': return '/public/image/about/bgStory.png';
-        case 'mission': return '/public/image/about/bgVisionMission.png';
-        case 'values': return '/public/image/about/bgValues.png';
-        case 'team': return '/public/image/about/bgTeam.png';
-        default: return '/public/image/about/bgStory.png';
-      }
+    shown: true,
+    toggleActiveSection(sectionName) {
+      if (sectionName === this.activeSection) return;
+      this.shown = false;
+      setTimeout(() => {
+        this.activeSection = sectionName;
+        localStorage.setItem('activeSection', sectionName);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.$nextTick(() => { this.shown = true; });
+      }, 200);
     },
-    async toggleActiveSection(sectionName) {
-      this.activeSection = sectionName;
-      localStorage.setItem('activeSection', sectionName);
-    }
   }"
 >
-  <!-- Fixed Dynamic Background Image per Tab (Contained to About Section) -->
-  <div 
-    class="absolute inset-0 w-full h-full pointer-events-none z-0 bg-fixed bg-cover bg-top bg-no-repeat transition-all duration-500 opacity-90"
-    :style="`background-image: url('${bgImage}');`"
-  ></div>
+  <div class="flex flex-col pt-8 pb-14 lg:min-h-screen lg:flex-row lg:pt-0 lg:pb-0">
 
-  <div class='relative z-10 max-w-full mx-8 mt-4 p-4 sm:p-8 py-8 md:py-20 lg:py-24'>
-
-    <div class='lg:hidden mb-6 -mx-4 sm:mx-0'>
-      <div class='overflow-x-auto scrollbar-hide px-4 sm:px-0'>
-        <nav class='flex space-x-3 min-w-max sm:min-w-0 pb-4'>
-          <button
-            @click="toggleActiveSection('story');"
-            :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
-          >
-            <i class='fas fa-book-open text-base'></i>
-            <span>{{t "test.about.tabAbout.story"}}</span>
-          </button>
-          <button
-            @click="toggleActiveSection('mission');"
-            :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
-          >
-            <i class='fas fa-bullseye text-base'></i>
-            <span>{{t "test.about.tabAbout.visionsMisi"}}</span>
-          </button>
-          <button
-            @click="toggleActiveSection('values');"
-            :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
-          >
-            <i class='fas fa-heart text-base'></i>
-            <span>{{t "test.about.tabAbout.value"}}</span>
-          </button>
-          <button
-            @click="toggleActiveSection('team');"
-            :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
-          >
-            <i class='fas fa-users text-base'></i>
-            <span>{{t "test.about.tabAbout.team"}}</span>
-          </button>
-        </nav>
-      </div>
+    {{!-- Sidebar column (left) --}}
+    <div class="w-full min-w-0 overflow-x-auto no-scrollbar px-4 sm:px-6 lg:w-[19rem] lg:shrink-0 lg:overflow-visible lg:self-start lg:px-0 lg:pl-10 lg:pt-12 lg:pr-6">
+      {{> components/ui/sections/about_sidebar/index}}
     </div>
 
-    <div class='grid grid-cols-1 lg:grid-cols-12 gap-8'>
-      <!-- Desktop Sidebar Navigation -->
-      <div class='hidden lg:block lg:col-span-4 w-full max-w-[488px] sticky top-24 self-start'>
-        <div class='space-y-4'>
-          <nav class='space-y-4'>
-            <button
-              @click="toggleActiveSection('story');"
-              :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
-            >
-              <i class='fas fa-book-open text-xl w-7 text-center'></i>
-              <span>{{t "test.about.tabAbout.story"}}</span>
-            </button>
-            <button
-              @click="toggleActiveSection('mission');"
-              :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
-            >
-              <i class='fas fa-bullseye text-xl w-7 text-center'></i>
-              <span>{{t "test.about.tabAbout.visionsMisi"}}</span>
-            </button>
-            <button
-              @click="toggleActiveSection('values');"
-              :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
-            >
-              <i class='fas fa-heart text-xl w-7 text-center'></i>
-              <span>{{t "test.about.tabAbout.value"}}</span>
-            </button>
-            <button
-              @click="toggleActiveSection('team');"
-              :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
-              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
-            >
-              <i class='fas fa-users text-xl w-7 text-center'></i>
-              <span>{{t "test.about.tabAbout.team"}}</span>
-            </button>
-          </nav>
-        </div>
-      </div>
-
-      <div class='lg:col-span-8'>
-        <div x-show="activeSection === 'story'">
-        {{> about/story_tab}}
-        </div>
-
-<div x-show="activeSection === 'mission'">
-        {{> about/mission_tab}}
-        </div>
-
-<div x-show="activeSection === 'team'">
-        {{> about/team_tab}}
-        </div>
-<div x-show="activeSection === 'values'">
-        {{> about/values_tab}}
-        </div>
-      </div>
+    {{!-- Content column (right) - bleeds to the viewport edge, full height --}}
+    <div
+      class="flex-1 min-w-0 mt-6 bg-white px-4 sm:px-6 lg:mt-0 lg:px-10 lg:pt-12 lg:pb-24 transition-opacity duration-200 ease-out"
+      :class="shown ? 'opacity-100' : 'opacity-0'"
+    >
+      <div x-cloak x-show="activeSection === 'story'">{{> components/ui/sections/story/index}}</div>
+      <div x-cloak x-show="activeSection === 'mission'">{{> components/ui/sections/mission/index}}</div>
+      <div x-cloak x-show="activeSection === 'values'">{{> components/ui/sections/values/index}}</div>
+      <div x-cloak x-show="activeSection === 'team'">{{> components/ui/sections/team/index}}</div>
     </div>
   </div>
-  </div>
+</div>

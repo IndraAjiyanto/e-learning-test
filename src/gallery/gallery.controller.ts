@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UseFilters,
   BadRequestException,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import { CategoriesService } from '../categories/categories.service';
@@ -20,6 +19,7 @@ import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast } from 'src/common/utils/toast.util';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { Response, Request } from 'express';
@@ -42,11 +42,15 @@ export class GalleryController {
   // }
 
   @Get()
-  async index(@Res() res: Response) {
+  async index(@Res() res: Response, @Req() req: Request) {
     const gallery = await this.galleryService.findAll();
     const programs = await this.kategorisService.findAll();
 
-    res.render('super_admin/gallery/index', { gallery, programs });
+    res.render('super_admin/gallery/index', {
+      user: req.user,
+      gallery,
+      programs,
+    });
   }
 
   @Roles('super_admin')
@@ -56,7 +60,7 @@ export class GalleryController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const category = await this.kategorisService.findOne(+categoryId);
+    const category = await this.kategorisService.findOne(categoryId);
     res.render('super_admin/gallery/create', { user: req.user, category });
   }
 
@@ -67,12 +71,12 @@ export class GalleryController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1900,
-    maxWidth: 1920,
-    minHeight: 1000,
-    maxHeight: 1080,
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
     folder: 'program',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
@@ -92,7 +96,11 @@ export class GalleryController {
 
       const gallery = await this.galleryService.create(createGalleryDto);
 
-      req.flash('success', 'Gallery successfully created');
+      flashToast(
+        req,
+        'Gallery Created',
+        'The new gallery item has been added to this category.',
+      );
 
       res.redirect(
         `/category/${gallery.category?.id ?? createGalleryDto.categoryId}`,
@@ -110,14 +118,14 @@ export class GalleryController {
     @Param('categoryId') categoryId: string,
     @Res() res: Response,
   ) {
-    const gallery = await this.galleryService.findByKategori(+categoryId);
+    const gallery = await this.galleryService.findByKategori(categoryId);
     res.json(gallery);
   }
 
   @Roles('super_admin')
   @Get('formEdit/:galleryId')
   async formEdit(
-    @Param('galleryId', ParseIntPipe) galleryId: number,
+    @Param('galleryId') galleryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -137,12 +145,12 @@ export class GalleryController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1900,
-    maxWidth: 1920,
-    minHeight: 1000,
-    maxHeight: 1080,
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
     folder: 'program',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async update(
@@ -160,15 +168,16 @@ export class GalleryController {
         data.filePath = req.body.uploadedImageUrls[0];
       }
 
-      const gallery = await this.galleryService.update(+id, data);
+      const gallery = await this.galleryService.update(id, data);
 
-      req.flash('success', 'Gallery successfully updated');
+      flashToast(req, 'Changes Saved', 'The gallery item has been updated.');
 
-      res.redirect(`/category/${gallery.category.id}`);
+      res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {
+      console.error('[Gallery Update Failed]', error.message || error);
       req.flash('error', error.message || 'Gallery failed to update');
 
-      res.redirect('/categoryId');
+      res.redirect(`/category/${updateGalleryDto.categoryId ?? ''}`);
     }
   }
 
@@ -180,17 +189,21 @@ export class GalleryController {
     @Req() req: Request,
   ) {
     try {
-      const gallery = await this.galleryService.findOne(+id);
+      const gallery = await this.galleryService.findOne(id);
 
-      await this.galleryService.remove(+id);
+      await this.galleryService.remove(id);
 
       if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
         return res.json({ success: true });
       }
 
-      req.flash('success', 'Gallery successfully deleted');
+      flashToast(
+        req,
+        'Gallery Deleted',
+        'The gallery item has been permanently removed.',
+      );
 
-      return res.redirect(`/category/${gallery.category.id}`);
+      return res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {
       if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
         return res.status(400).json({
@@ -208,7 +221,7 @@ export class GalleryController {
   @Roles('super_admin')
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
-    const gallery = await this.galleryService.findOne(+id);
+    const gallery = await this.galleryService.findOne(id);
     res.json(gallery);
   }
 }

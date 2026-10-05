@@ -33,7 +33,7 @@ export class PartnerService {
     });
   }
 
-  async findOne(kerja_samaId: number) {
+  async findOne(kerja_samaId: string) {
     const kerja_sama = await this.PartnerRepository.findOne({
       where: { id: kerja_samaId },
       relations: ['categoryPartner'],
@@ -44,7 +44,7 @@ export class PartnerService {
     return kerja_sama;
   }
 
-  async update(kerja_samaId: number, updatePartnerDto: UpdatePartnerDto) {
+  async update(kerja_samaId: string, updatePartnerDto: UpdatePartnerDto) {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {
       throw new NotFoundException('partnership not found');
@@ -58,7 +58,7 @@ export class PartnerService {
     return await this.PartnerRepository.save(kerja_sama);
   }
 
-  async remove(kerja_samaId: number) {
+  async remove(kerja_samaId: string) {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {
       throw new NotFoundException('partnership not found');

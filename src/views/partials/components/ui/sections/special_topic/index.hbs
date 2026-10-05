@@ -1,0 +1,29 @@
+{{!--
+  Section: Special Topic - course types (L2) - reskin ke standar internal.
+  Lokasi: src/views/partials/components/ui/sections/special_topic/index.hbs
+  Props: category (.courseTypes[] with icon, nameClassesType, description jsonb), lang.
+--}}
+{{#if category.courseTypes.length}}
+<section id="topics" class="w-full bg-white py-14 font-inter lg:py-20">
+  <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
+
+    <div class="flex max-w-[640px] flex-col items-center gap-4 text-center">
+      {{> components/ui/text/eyebrow/index text=(t 'test.special_program.topic.eyebrow') }}
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{t 'test.special_program.topic.title'}}</h2>
+      <p class="{{sizeClass 'lead'}} font-inter text-[#4A5568]">{{t 'test.special_program.topic.description'}}</p>
+    </div>
+
+    <div class="flex w-full flex-wrap justify-center gap-6 [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3rem)/3)]">
+      {{#each category.courseTypes}}
+        <div class="flex flex-col items-start gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)] lg:p-8">
+          <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-[#E0F2F9] text-[#003060]">
+            <i class="{{computeIcon icon}} text-lg" aria-hidden="true"></i>
+          </span>
+          <h3 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#0B1F3B]">{{this.nameClassesType}}</h3>
+          <p class="{{sizeClass 'body'}} font-inter text-[#4A5568]">{{getByLang this.description ../lang}}</p>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}

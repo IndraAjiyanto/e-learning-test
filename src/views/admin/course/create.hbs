@@ -1,145 +1,83 @@
-<div class='py-10'>
-  <div
-    class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data='{ 
-            coverValid: true,
-            coverHasFile: false,
-            categorySelected: null,
-            paidClass: false,
-            formData: { description: { id: "", en: "", ja: "" },
-                        location: { id: "", en: "", ja: "" },
-                        locationLink: "" },
-            formErrors: { locationLink: "" },
-            formValid: { locationLink: false },
-            updateCoverValidation(isValid, hasFile) {
-                this.coverValid = isValid;
-                this.coverHasFile = hasFile;
-            },
-            validateField(field, value) {
-                if (field === "locationLink") {
-                    if (!value.trim()) {
-                        this.formErrors.locationLink = "Link Location is required";
-                        this.formValid.locationLink = false;
-                    } else {
-                        try {
-                            new URL(value);
-                            this.formErrors.locationLink = "";
-                            this.formValid.locationLink = true;
-                        } catch {
-                            this.formErrors.locationLink = "Please enter a valid URL";
-                            this.formValid.locationLink = false;
-                        }
-                    }
-                    return;
-                }
-                const fieldName = `${field}_${value}`;
-                const errorElement = document.getElementById(`${fieldName}_error`);
-                if (errorElement) {
-                    const val = this.formData[field] && this.formData[field][value];
-                    if (!val || val.trim() === "") {
-                        errorElement.classList.remove("hidden");
-                    } else {
-                        errorElement.classList.add("hidden");
-                    }
-                }
-            }
-        }'
-  >
-    <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Create Program</h2>
+{{!--
+  Page: Admin - Create Program (course endpoint)
+  Path: admin/course/create.hbs
+  Route: GET /program/create (formCreate) -> POST /program (create)
+  Layout kartu + sidebar + script shared dengan admin/program/create.hbs.
+--}}
+{{> admin/program/program_form_script}}
 
+<div class='pt-10 pb-32 px-6'>
+  <div class='max-w-[1100px] mx-auto'
+    x-data='programData("create")'
+    x-init='paidClass = false; methodOnline = true; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);'
+  >
+
+    {{!-- Page Header --}}
+    <div class='flex flex-col gap-[4px] mb-[24px]'>
+      {{> components/ui/admin/text/title text="Create Program"}}
+      {{> components/ui/admin/text/subtitle text="Add a new program to the system"}}
+    </div>
+
+    {{!-- Main Layout: Content + Sidebar --}}
     <form
       method='POST'
       action='/program'
-      class='grid grid-cols-1 lg:grid-cols-2 gap-8'
       enctype='multipart/form-data'
-      x-data="{loading:false}"
-      @submit="loading = true"
+      novalidate
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
+      @input.capture="onInputCapture($event)"
+      @change="updateCompleteness()"
+      @click="scheduleUpdate(); activateSection($event.target)"
+      @focusin.capture="activateSection($event.target)"
+      @focusout.capture="onBlurCapture($event)"
     >
+      <div class='flex flex-col lg:flex-row gap-[16px] justify-start items-stretch lg:items-start'>
 
-      <!-- LEFT COLUMN -->
-      <div class='space-y-6'>
-{{> admin/program/create/left_column/cover_input}}
-
-{{> admin/program/create/left_column/name_program_input}}
-
-{{> admin/program/create/left_column/group_input}}
-
-{{> admin/program/create/left_column/description_input}}
-
-{{> admin/program/create/left_column/metode_input}}
-
-{{> admin/program/create/left_column/location_input}}
-
-{{> admin/program/create/left_column/link_location_input}}
-
-{{> admin/program/create/left_column/toggle_input}}
-      </div>
-
-      <!-- RIGHT COLUMN -->
-      <div class='space-y-6'>
-{{> admin/program/create/right_column/category_input}}
-
-{{> admin/program/create/right_column/type_input}}
-
-{{> admin/program/create/right_column/month_input}}
-
-{{> admin/program/create/right_column/day_input}}
-
-{{> admin/program/create/right_column/time_start_input}}
-
-{{> admin/program/create/right_column/time_end_input}}
-
-{{> admin/program/create/right_column/date_registration_input}}
-
-{{> admin/program/create/right_column/start_date_input}}
-
-{{> admin/program/create/right_column/end_date_input}}
-
-{{> admin/program/create/right_column/mentor_input}}
-
-{{> admin/program/create/right_column/technology_input}}
-
-{{> admin/program/create/right_column/lessons_input}}
-
-{{> admin/program/create/right_column/learning_input}}
-
-{{> admin/program/create/right_column/criteria_input}}
-      </div>
-      <!-- BUTTONS - Full Width -->
-      <div class='lg:col-span-2 space-y-4'>
-        <!-- Submit Warning -->
-        <template x-if='coverHasFile && !coverValid'>
-          <div
-            class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-triangle text-red-500'></i>
-            <p class='text-sm text-red-800'>
-              <span class='font-semibold'>Cannot submit:</span>
-              Please fix the cover image validation errors above.
-            </p>
+        {{!-- Left Column - Cards --}}
+        <div class='flex-1 min-w-0 flex flex-col gap-[16px]'>
+          {{> admin/program/create/card_01_basic_info}}
+          {{> admin/program/create/card_02_description}}
+          {{> admin/program/create/card_03_schedule}}
+          {{> admin/program/create/card_04_tools}}
+          {{!-- Section 05 + 06: one row, two columns --}}
+          {{!-- [DISABLED - ClickUp z8pbk8xwwx] Coment inputan Learning Target dan Participants
+          <div class='flex flex-col sm:flex-row gap-[16px] w-full justify-start items-stretch sm:items-start'>
+            <div class='flex-1 min-w-0'>
+              {{> admin/program/create/card_05_learning}}
+            </div>
+            <div class='flex-1 min-w-0'>
+              {{> admin/program/create/card_06_criteria}}
+            </div>
           </div>
-        </template>
+          --}}
+          {{> admin/program/create/action_bar}}
+        </div>
+
+        {{!-- Right Column - Sidebar --}}
+        {{> admin/program/create/sidebar}}
 
       </div>
-      <div class='flex space-x-4'>
-        <button
-          type='submit'
-          :disabled='coverHasFile && !coverValid || loading'
-          :class="coverHasFile && !coverValid || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
-        >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">Create</span>
-        </button>
-        <a
-          href='/program'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
-        >
-          Cancel
-        </a>
-      </div>
+
+      {{!-- Cover Warning --}}
+      <template x-if='coverHasFile && !coverValid'>
+        <div class='flex items-center gap-2 p-3 mt-[16px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix the cover image validation errors above.
+          </p>
+        </div>
+      </template>
+
+      {{!-- Submit Warning --}}
+      <template x-if='hasVisibleErrors()'>
+        <div class='flex items-center gap-2 p-3 mt-[8px] bg-red-50 [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <i class='fas fa-exclamation-triangle text-[#DC2626]'></i>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+
     </form>
   </div>
 </div>

@@ -10,7 +10,7 @@ export class VisionsService {
   constructor(
     @InjectRepository(Vision)
     private readonly visionRepository: Repository<Vision>,
-  ) { }
+  ) {}
 
   async create(createVisionDto: CreateVisionsDto) {
     const vision = await this.visionRepository.create(createVisionDto);
@@ -18,10 +18,15 @@ export class VisionsService {
   }
 
   async findAll() {
-    return await this.visionRepository.find();
+    // Urutan harus eksplisit: tanpa ini Postgres mengembalikan baris sesuai
+    // urutan fisiknya, dan sebuah UPDATE memindahkan baris yang diedit ke
+    // belakang — daftar teracak dan nomor barisnya ikut berubah (lihat TC-045).
+    return await this.visionRepository.find({
+      order: { createdAt: 'ASC' },
+    });
   }
 
-  async findOne(visionId: number) {
+  async findOne(visionId: string) {
     const vision = await this.visionRepository.findOne({
       where: { id: visionId },
     });
@@ -31,13 +36,13 @@ export class VisionsService {
     return vision;
   }
 
-  async update(visionId: number, updateVisionDto: UpdateVisionsDto) {
+  async update(visionId: string, updateVisionDto: UpdateVisionsDto) {
     const vision = await this.findOne(visionId);
     Object.assign(vision, updateVisionDto);
     return await this.visionRepository.save(vision);
   }
 
-  async remove(visionId: number) {
+  async remove(visionId: string) {
     const vision = await this.findOne(visionId);
     return await this.visionRepository.remove(vision);
   }

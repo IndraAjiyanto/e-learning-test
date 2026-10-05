@@ -1,6 +1,6 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateCategoryPartnerDto {
-    @IsString()
-    category : string
+  @IsString()
+  category: string;
 }

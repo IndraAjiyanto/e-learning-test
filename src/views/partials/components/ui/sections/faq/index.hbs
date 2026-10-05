@@ -1,0 +1,62 @@
+{{!--
+  Section: FAQ (L2)
+  Lokasi: src/views/partials/components/ui/sections/faq/index.hbs
+  Tiap baris: [nomor] | [pertanyaan] .... [chevron], garis rambut atas & bawah.
+  Data: faq[] (landing) atau faqs[] (kategori), fallback statis. sizeClass, .page-shell.
+--}}
+<section
+  id="faq"
+  class="{{default sectionClass 'w-full bg-white py-14 font-inter lg:py-20'}}"
+  {{#if sectionStyle}}style="{{sectionStyle}}"{{/if}}
+  x-data="{
+    activeIndex: null,
+    faqs: [
+      {{#if faqs.length}}
+        {{#each faqs}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
+      {{else if faq.length}}
+        {{#each faq}}{ question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}{{/each}}
+      {{else}}
+        { question: 'What will I learn in this program?', answer: 'You will learn hands-on industry skills, tools, and methodologies to build real-world projects and accelerate your career.' },
+        { question: 'Is the program online or offline?', answer: 'We offer flexible options: interactive live online classes and hybrid offline sessions depending on your program.' },
+        { question: 'Do I need prior programming experience?', answer: 'No prior experience required. We welcome beginners and guide you step by step from the basics.' },
+        { question: 'Will I receive a certificate after completing the program?', answer: 'Yes. On completing the coursework you receive an official certificate of completion.' },
+        { question: 'What if I miss a class?', answer: 'All live sessions are recorded and available on the learning platform so you can catch up anytime.' },
+        { question: 'How can I register?', answer: 'Register through our website by choosing your program and completing the enrollment form.' },
+        { question: 'Is there career support after graduation?', answer: 'Yes: resume reviews, portfolio building, mock interviews, and mentoring guidance.' }
+      {{/if}}
+    ],
+    toggle(i) { this.activeIndex = this.activeIndex === i ? null : i; }
+  }"
+>
+  <div class="page-shell flex flex-col items-center">
+
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{#unless (eq showEyebrow false)}}
+        {{> components/ui/text/eyebrow/index text=(default eyebrowText (t (default eyebrowKey 'test.home.faq.question'))) dotColor=dotColor }}
+      {{/unless}}
+      <h2 class="{{#if titleClass}}{{titleClass}}{{else}}{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]{{/if}}">{{{default titleText (t (default titleKey 'test.home.faq.title'))}}}</h2>
+      <p class="{{sizeClass 'body'}} max-w-[534px] font-inter text-[#4A5568]">{{default descText (t (default descKey 'test.home.faq.description'))}}</p>
+      {{#unless (eq showDivider false)}}
+        <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+      {{/unless}}
+    </div>
+
+    <div class="mt-10 w-full max-w-[1022px] lg:mt-14">
+      <template x-for="(item, i) in faqs" :key="i">
+        <div class="border-t border-[#D9D9D9] last:border-b">
+          <button type="button" @click="toggle(i)" class="flex w-full items-center gap-4 py-6 text-left lg:gap-6">
+            <span class="flex shrink-0 items-center gap-4 font-inter text-lg font-semibold text-[#94A3B8]">
+              <span x-text="String(i + 1).padStart(2, '0')"></span>
+              <span class="h-5 w-px bg-[#D9D9D9]"></span>
+            </span>
+            <span class="{{sizeClass 'h3'}} min-w-0 flex-1 font-inter font-semibold text-black" x-text="item.question"></span>
+            <i class="fas fa-chevron-down shrink-0 text-sm text-[#94A3B8] transition-transform" :class="activeIndex === i && 'rotate-180'"></i>
+          </button>
+          <div x-show="activeIndex === i" x-collapse>
+            <p class="{{sizeClass 'body'}} pb-6 pl-[3.25rem] font-inter text-[#4A5568] lg:pl-[4.5rem]" x-html="item.answer"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</section>

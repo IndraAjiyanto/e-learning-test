@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
-import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
@@ -24,7 +23,6 @@ import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
-import { OurExperience } from 'src/entities/our_experience.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
 import { GalleryModule } from 'src/gallery/gallery.module';
 import { Gallery } from 'src/entities/gallery.entity';
@@ -45,7 +43,6 @@ import { CategoriesModule } from 'src/categories/categories.module';
       Faq,
       Alumni,
       Portofolios,
-      ImageBenefit,
       Category,
       CourseType,
       Partner,
@@ -55,7 +52,6 @@ import { CategoriesModule } from 'src/categories/categories.module';
       Background,
       Paragraph,
       Faq,
-      OurExperience,
       CategoryPartner,
       Gallery,
     ]),

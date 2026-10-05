@@ -1,0 +1,250 @@
+{{!--
+  Komponen: Team Lead Form State (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/team_lead/form.hbs
+  Level: L0 Skrip pendamping (scoped super_admin)
+
+  Factory Alpine `teamLeadForm()` untuk super_admin/team_lead/{create,edit}.hbs.
+  Menyediakan: formData, formErrors, validateField(), touch(), canSubmit(), submitForm(), loading, photo upload handling.
+--}}
+<script>
+  (() => {
+    const LANGS = ['id', 'en', 'ja'];
+    const LANG_LABEL = { id: 'ID', en: 'EN', ja: 'JP' };
+
+    const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
+
+    const read = (obj, path) => {
+      const parts = path.split('.');
+      return parts.length === 2 ? obj[parts[0]][parts[1]] : obj[parts[0]];
+    };
+
+    const write = (obj, path, value) => {
+      const parts = path.split('.');
+      if (parts.length === 2) {
+        obj[parts[0]][parts[1]] = value;
+      } else {
+        obj[parts[0]] = value;
+      }
+    };
+
+    const errorFor = (path, value) => {
+      const val = (value ?? '').toString().trim();
+      const parts = path.split('.');
+
+      if (parts[0] === 'name') {
+        if (!val) return 'Full Name is required.';
+        if (val.length < 2) return 'Full Name must be at least 2 characters.';
+        return '';
+      }
+
+      if (parts[0] === 'linkedin') {
+        if (!val) return 'LinkedIn Profile URL is required.';
+        const pattern = /^https?:\/\/(www\.)?linkedin\.com\/.+/i;
+        if (!pattern.test(val)) return 'Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/...).';
+        return '';
+      }
+
+      if (parts[0] === 'instagram') {
+        if (!val) return ''; // optional
+        const pattern = /^https?:\/\/(www\.)?instagram\.com\/.+/i;
+        if (!pattern.test(val)) return 'Please enter a valid Instagram URL (e.g. https://instagram.com/...).';
+        return '';
+      }
+
+      if (parts[0] === 'position') {
+        const lang = parts[1];
+        if (!val) return `Position (${LANG_LABEL[lang]}) is required.`;
+        if (val.length < 2) return `Position (${LANG_LABEL[lang]}) must be at least 2 characters.`;
+        return '';
+      }
+
+      if (parts[0] === 'description') {
+        const lang = parts[1];
+        if (!val) return `Description (${LANG_LABEL[lang]}) is required.`;
+        if (val.length < 10) return `Description (${LANG_LABEL[lang]}) must be at least 10 characters.`;
+        return '';
+      }
+
+      return '';
+    };
+
+    window.teamLeadForm = function teamLeadForm({ teamLead } = {}) {
+      const originalPhoto = (teamLead && teamLead.profile) || '';
+      const isEdit = Boolean(teamLead && teamLead.id);
+
+      const initLangField = (src) => byLang((l) => (src && src[l]) || '');
+
+      return {
+        loading: false,
+        isEdit,
+
+        // Profile photo state
+        previewUrl: originalPhoto || null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        hasFile: false,
+
+        formData: {
+          name: (teamLead && teamLead.name) || '',
+          linkedin: (teamLead && teamLead.linkedin) || '',
+          instagram: (teamLead && teamLead.instagram) || '',
+          position: initLangField(teamLead && teamLead.position),
+          description: initLangField(teamLead && teamLead.description),
+        },
+
+        formErrors: {
+          name: '',
+          linkedin: '',
+          instagram: '',
+          position: byLang(() => ''),
+          description: byLang(() => ''),
+        },
+
+        touched: {
+          name: false,
+          linkedin: false,
+          instagram: false,
+          position: byLang(() => false),
+          description: byLang(() => false),
+        },
+
+        validateImage(file) {
+          this.errorMessage = '';
+
+          if (!file) {
+            this.hasFile = false;
+            this.previewUrl = originalPhoto || null;
+            this.isValid = isEdit;
+            return;
+          }
+
+          this.hasFile = true;
+          this.fileName = file.name;
+
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.setImageError('Only JPG, JPEG, and PNG formats are allowed.');
+            return;
+          }
+
+          const maxSize = 5 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.setImageError(`File size is too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB.`);
+            return;
+          }
+
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            this.previewUrl = objectUrl;
+            this.isValid = true;
+            this.errorMessage = '';
+          };
+
+          img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            this.setImageError('Failed to load image preview.');
+          };
+
+          img.src = objectUrl;
+        },
+
+        setImageError(msg) {
+          this.errorMessage = msg;
+          this.isValid = false;
+          this.previewUrl = originalPhoto || null;
+        },
+
+        clearFile() {
+          if (this.previewUrl && this.previewUrl !== originalPhoto) {
+            URL.revokeObjectURL(this.previewUrl);
+          }
+          this.previewUrl = originalPhoto || null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.hasFile = false;
+          if (this.$refs.fileInput) this.$refs.fileInput.value = null;
+        },
+
+        validateField(path, value) {
+          write(this.formData, path, value ?? '');
+          const isTouched = read(this.touched, path);
+          write(this.formErrors, path, isTouched ? errorFor(path, read(this.formData, path)) : '');
+        },
+
+        touch(path) {
+          write(this.touched, path, true);
+          this.validateField(path, read(this.formData, path));
+        },
+
+        allPaths() {
+          return [
+            'name',
+            'linkedin',
+            'instagram',
+            ...LANGS.map((l) => `position.${l}`),
+            ...LANGS.map((l) => `description.${l}`),
+          ];
+        },
+
+        validateAll() {
+          this.allPaths().forEach((p) => {
+            write(this.touched, p, true);
+            write(this.formErrors, p, errorFor(p, read(this.formData, p)));
+          });
+
+          if (!this.isEdit && !this.hasFile) {
+            this.setImageError('Leader photo is required.');
+          }
+        },
+
+        hasFormErrors() {
+          return this.allPaths().some((p) => read(this.formErrors, p) !== '');
+        },
+
+        canSubmit() {
+          const photoOk = this.isEdit ? (!this.hasFile || this.isValid) : (this.hasFile && this.isValid);
+          if (!photoOk || this.errorMessage) return false;
+
+          const allFilled =
+            this.formData.name.trim().length >= 2 &&
+            this.formData.linkedin.trim().length > 0 &&
+            LANGS.every((l) => this.formData.position[l].trim().length >= 2) &&
+            LANGS.every((l) => this.formData.description[l].trim().length >= 10);
+
+          return allFilled && !this.hasFormErrors();
+        },
+
+        focusFirstInvalid() {
+          if ((!this.isEdit && !this.hasFile) || this.errorMessage) {
+            this.$refs.fileInput?.parentElement?.querySelector('button')?.focus();
+            return;
+          }
+
+          const invalidPath = this.allPaths().find((p) => read(this.formErrors, p));
+          if (!invalidPath) return;
+
+          const id = invalidPath.replace('.', '-');
+          this.$nextTick(() => {
+            const el = document.getElementById(id);
+            if (el) el.focus();
+          });
+        },
+
+        submitForm(event) {
+          if (!this.canSubmit()) {
+            this.validateAll();
+            this.focusFirstInvalid();
+            return;
+          }
+
+          this.loading = true;
+          event.target.submit();
+        },
+      };
+    };
+  })();
+</script>

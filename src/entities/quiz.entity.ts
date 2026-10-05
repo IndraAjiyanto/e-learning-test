@@ -1,4 +1,5 @@
-import { JoinColumn,
+import {
+  JoinColumn,
   Column,
   CreateDateColumn,
   Entity,
@@ -11,12 +12,13 @@ import { Question } from './question.entity';
 import { Score } from './score.entity';
 import { Weeks } from './weeks.entity';
 import { QuizProgress } from './quiz_progress.entity';
+import { Syllabus } from './syllabus.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Quiz {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ name: 'quiz_name' })
   quizName: string;
@@ -54,7 +56,17 @@ export class Quiz {
   @Exclude()
   quizProgresses: QuizProgress[];
 
-  @ManyToOne(() => Weeks, (week) => week.quiz, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Weeks, (week) => week.quiz, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @Exclude()
   weeks: Weeks;
+
+  @ManyToOne(() => Syllabus, (syllabus) => syllabus.quiz, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @Exclude()
+  syllabus: Syllabus;
 }

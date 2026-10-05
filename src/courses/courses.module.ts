@@ -4,7 +4,7 @@ import { CoursesController } from './courses.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
-import { Session} from 'src/entities/session.entity';
+import { Session } from 'src/entities/session.entity';
 import { Attendance } from 'src/entities/attendance.entity';
 import { Category } from 'src/entities/category.entity';
 import { UserAnswersModule } from 'src/user_answers/user_answers.module';
@@ -29,15 +29,20 @@ import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { Installment } from 'src/entities/installment.entity';
 import { CourseQuestions } from 'src/entities/course_question.entity';
 import { ProgramBenefits } from 'src/entities/course_benefit.entity';
+import { Participants } from 'src/entities/participants.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
+import { PaymentSettingsModule } from 'src/payment-settings/payment-settings.module';
 import { QuestionsModule } from 'src/questions/questions.module';
+import { FinalAssignmentModule } from 'src/final_assignment/final_assignment.module';
 
 @Module({
   imports: [
     CommonModule,
     TypeOrmModule.forFeature([
+      Syllabus,
       Technology,
       Logbook,
       UserCourse,
@@ -63,6 +68,7 @@ import { QuestionsModule } from 'src/questions/questions.module';
       MentorLogbook,
       CourseQuestions,
       ProgramBenefits,
+      Participants,
       CourseFlow,
       Installment,
       Alumni,
@@ -71,6 +77,8 @@ import { QuestionsModule } from 'src/questions/questions.module';
     QuestionsModule,
     UserAnswersModule,
     UsersModule,
+    FinalAssignmentModule,
+    PaymentSettingsModule,
   ],
   controllers: [CoursesController],
   providers: [CoursesService],

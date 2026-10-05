@@ -11,26 +11,60 @@ import {
   UseInterceptors,
   UploadedFile,
   UseFilters,
-  ParseIntPipe,
   Query,
+  ValidationPipe,
+  NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import { UsersService } from 'src/users/users.service';
+import { capabilitiesForCourse } from './program-type';
+import { CourseStatus } from 'src/entities/types/course-status';
+import { REFERAL_SOURCES } from 'src/entities/types/referal-source';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
+import {
+  mapCreateProgram,
+  mapUpdateProgram,
+} from './mappers/create-course.mapper';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
+import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly usersService: UsersService,
+    private readonly finalAssignmentService: FinalAssignmentService,
+    private readonly paymentSettingsService: PaymentSettingsService,
+  ) {}
+
+  private readonly createValidationPipe = new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  });
+
+  private async buildCreateDto(body: any, user: any) {
+    const dto = mapCreateProgram(body, user);
+    // Validasi kontrak domain (field asing dibuang via whitelist).
+    await this.createValidationPipe.transform(dto, {
+      type: 'body',
+      metatype: CreateCoursesDto,
+      data: '',
+    });
+    return dto;
+  }
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -47,56 +81,103 @@ export class CoursesController {
     maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
-  async create(
-    @Body() createCourseDto: CreateCoursesDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
+  async create(@Body() body: any, @Res() res: Response, @Req() req: Request) {
     try {
-      createCourseDto.image = req.body.uploadedImageUrls?.[0];
-
-      if (createCourseDto.month) {
-        createCourseDto.day = 0;
-      }
-
-      if (createCourseDto.day) {
-        createCourseDto.month = 0;
-      }
-
-      if (createCourseDto.paid_check === 'true') {
-        createCourseDto.form = '';
-        createCourseDto.checkPaid = true;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      } else if (createCourseDto.paid_check === 'false') {
-        createCourseDto.checkPaid = false;
-        createCourseDto.price = 0;
-        createCourseDto.promo = 0;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      }
-      const course = await this.coursesService.create(createCourseDto);
-      if (req.user!.role === 'super_admin') {
-        await this.coursesService.createMentoring(
-          createCourseDto.mentoringsId,
-          course.id,
-        );
+      const dto = await this.buildCreateDto(body, req.user);
+      const course = await this.coursesService.create(dto);
+      if (req.user!.role === 'super_admin' && dto.mentoringsId) {
+        await this.coursesService.createMentoring(dto.mentoringsId, course.id);
       }
       if (req.user!.role === 'admin') {
         await this.coursesService.createMentoring(req.user!.id, course.id);
       }
-      req.flash('success', 'program successfully created');
+      flashToast(
+        req,
+        'Program Created',
+        'The new program has been added successfully.',
+      );
       res.redirect('/program');
     } catch (error: any) {
-      req.flash('error', error.message || 'program failed created');
+      const messages = error?.getResponse?.()?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages.join(', ')
+        : error.message || 'program failed created';
+      req.flash('error', errorMessage);
       res.redirect('/program');
     }
+  }
+
+  @Roles('admin', 'super_admin', 'user')
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('image', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    allowedTypes: [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ],
+    folder: 'course',
+    maxSize: 10 * 1024 * 1024,
+    skipTransformation: true,
+  })
+  async uploadImage(@Res() res: Response, @Req() req: Request) {
+    try {
+      const imageUrl = req.body.uploadedImageUrls?.[0];
+      if (!imageUrl) {
+        return res
+          .status(400)
+          .json({ success: 0, message: 'Image upload failed' });
+      }
+      return res.json({ success: 1, file: { url: imageUrl } });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: 0,
+        message: error.message || 'Image upload failed',
+      });
+    }
+  }
+
+  @Roles('admin', 'super_admin', 'user')
+  @Post('fetch-image')
+  async fetchImage(@Body() body: { url?: string }, @Res() res: Response) {
+    if (!body?.url) {
+      return res
+        .status(400)
+        .json({ success: 0, message: 'No image URL provided' });
+    }
+    return res.json({
+      success: 1,
+      file: {
+        url: body.url,
+      },
+    });
+  }
+
+  @Roles('admin', 'super_admin', 'user')
+  @Get('fetch-link')
+  async fetchLink(@Query('url') url: string, @Res() res: Response) {
+    const rawUrl = url || '';
+    let title = rawUrl;
+    try {
+      if (rawUrl) {
+        title = new URL(rawUrl).hostname;
+      }
+    } catch (_) {}
+
+    return res.json({
+      success: 1,
+      link: rawUrl,
+      meta: {
+        title,
+        description: '',
+        image: { url: '' },
+      },
+    });
   }
 
   @Roles('admin', 'super_admin')
@@ -115,55 +196,34 @@ export class CoursesController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async createKelas(
-    @Body() createCourseDto: CreateCoursesDto,
+    @Body() body: any,
     @Res() res: Response,
     @Req() req: Request,
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
   ) {
     try {
-      createCourseDto.image = req.body.uploadedImageUrls?.[0];
-
-      if (createCourseDto.month) {
-        createCourseDto.day = 0;
-      }
-
-      if (createCourseDto.day) {
-        createCourseDto.month = 0;
-      }
-
-      if (createCourseDto.paid_check === 'true') {
-        createCourseDto.form = '';
-        createCourseDto.checkPaid = true;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      } else if (createCourseDto.paid_check === 'false') {
-        createCourseDto.checkPaid = false;
-        createCourseDto.price = 0;
-        createCourseDto.promo = 0;
-        if (req.user!.role === 'super_admin') {
-          createCourseDto.process = 'approved';
-        } else if (req.user!.role === 'admin') {
-          createCourseDto.process = 'process';
-        }
-      }
-      createCourseDto.categoryId = categoryId;
-      const course = await this.coursesService.create(createCourseDto);
-      if (req.user!.role === 'super_admin') {
-        await this.coursesService.createMentoring(
-          createCourseDto.mentoringsId,
-          course.id,
-        );
+      body.categoryId = categoryId;
+      const dto = await this.buildCreateDto(body, req.user);
+      dto.categoryId = categoryId;
+      const course = await this.coursesService.create(dto);
+      if (req.user!.role === 'super_admin' && dto.mentoringsId) {
+        await this.coursesService.createMentoring(dto.mentoringsId, course.id);
       }
       if (req.user!.role === 'admin') {
         await this.coursesService.createMentoring(req.user!.id, course.id);
       }
-      req.flash('success', 'program successfully created');
+      flashToast(
+        req,
+        'Program Created',
+        'The new program has been added to this category.',
+      );
       res.redirect(`/category/${categoryId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'program failed created');
+      const messages = error?.getResponse?.()?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages.join(', ')
+        : error.message || 'program failed created';
+      req.flash('error', errorMessage);
       res.redirect(`/category/${categoryId}`);
     }
   }
@@ -171,17 +231,21 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Post('addStudent/:courseId')
   async addUserToCourse(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
-    @Body('userId') userId: number,
+    @Body('userId') userId: string,
   ) {
     try {
       await this.coursesService.addUserToCourse(userId, courseId);
-      req.flash('success', 'user successfuly add to program');
+      flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'user failed add to program');
+      flashToastError(
+        req,
+        'Failed to Add User',
+        error.message || 'User failed add to program',
+      );
       res.redirect(`/program/addUser/${courseId}`);
     }
   }
@@ -189,13 +253,12 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    if (req.user!.role === 'super_admin') {
-      // const course = await this.coursesService.findAllCourses();
-      res.render('admin/course/index', { user: req.user });
-    } else if (req.user!.role === 'admin') {
-      // const course = await this.coursesService.findCourseByMentoring(req.user!.id);
-      res.render('admin/course/index', { user: req.user });
-    }
+    const paymentSettings = await this.paymentSettingsService.effective();
+    res.render('admin/course/index', {
+      user: req.user,
+      paymentSettings,
+      isSuperAdmin: req.user!.role === 'super_admin',
+    });
   }
 
   @Roles('admin', 'super_admin')
@@ -248,9 +311,9 @@ export class CoursesController {
   async formCreateKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('categoryId') categoryId: number,
+    @Param('categoryId') categoryId: string,
   ) {
-    const category = await this.coursesService.findOneCategory(categoryId);
+    const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
@@ -265,11 +328,221 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/create-syllabus/:courseId')
+  async formCreateSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/create_syllabus', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-final-assignment/:courseId')
+  async formCreateFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+    const existing = await this.finalAssignmentService.findByCourse(courseId);
+    if (existing) {
+      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+    }
+    return res.render('admin/course/create_final_assignment', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/create-final-assignment/:courseId')
+  async createFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+    try {
+      await this.finalAssignmentService.createOrUpdate(courseId, {
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content,
+      });
+      flashToast(
+        req,
+        'Final Assignment Created',
+        'The new final assignment has been added to the program.',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to create final assignment');
+      return res.redirect(`/program/create-final-assignment/${courseId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-final-assignment/:courseId')
+  async formEditFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+    const finalAssignment =
+      await this.finalAssignmentService.findByCourse(courseId);
+    return res.render('admin/course/edit_final_assignment', {
+      user: req.user,
+      course,
+      courseId,
+      finalAssignment,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/edit-final-assignment/:courseId')
+  async updateFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+    try {
+      await this.finalAssignmentService.createOrUpdate(courseId, {
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content,
+      });
+      flashToast(
+        req,
+        'Final Assignment Updated',
+        'Final assignment has been updated successfully.',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update final assignment');
+      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/detail-final-assignment/:courseId')
+  async detailFinalAssignment(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService
+      .findOne(courseId)
+      .catch(() => null);
+    if (!capabilitiesForCourse(course).finalAssignment) {
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+    const finalAssignment = await this.finalAssignmentService.findByCourse(
+      courseId,
+      true,
+    );
+    const submissions = finalAssignment?.id
+      ? await this.finalAssignmentService.getSubmissions(finalAssignment.id)
+      : [];
+    return res.render('admin/course/detail_final_assignment', {
+      user: req.user,
+      course,
+      courseId: course?.id || courseId,
+      finalAssignment,
+      submissions,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-syllabus/:id')
+  async formEditSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/syllabus/formEdit/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/detail-syllabus/:courseId')
+  async detailSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    return res.render('admin/course/detail_syllabus_item', {
+      user: req.user,
+      course,
+      courseId,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-quiz-syllabus/:id')
+  async formCreateQuizSyllabus(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/syllabus/quiz/create/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/detail-quiz-syllabus/:id')
+  async detailQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
+    return res.redirect(`/syllabus/quiz/detail/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-quiz-syllabus/:id')
+  async formEditQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
+    return res.redirect(`/quiz/formEdit/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/create-question-syllabus/:id')
+  async formCreateQuestionSyllabus(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/question/formCreate/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/edit-question-syllabus/:id')
+  async formEditQuestionSyllabus(
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    return res.redirect(`/question/FormEdit/${id}`);
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/addUser/:courseId')
   async formAddUser(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
   ) {
     const users = await this.coursesService.findUser();
     const student = await this.coursesService.findStudent(courseId);
@@ -283,13 +556,33 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/edit/:courseId')
+  @Get('/edit/:courseId{/:categoryId}')
   async formEdit(
     @Res() res: Response,
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
+    @Param('categoryId') categoryId: string,
     @Req() req: Request,
   ) {
     const course = await this.coursesService.findOne(courseId);
+    if (!course) {
+      req.flash('error', 'Program not found');
+      return res.redirect('/program');
+    }
+
+    const participantCount = course.userCourses?.length || 0;
+    if (participantCount > 0) {
+      flashToastError(
+        req,
+        'Gagal Mengedit Program',
+        `Program "${course.name}" tidak dapat diedit karena sudah memiliki ${participantCount} peserta.`,
+      );
+      req.flash(
+        'error',
+        `Program "${course.name}" tidak dapat diedit karena sudah memiliki ${participantCount} peserta.`,
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
+    }
+
     const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
@@ -302,13 +595,14 @@ export class CoursesController {
       courseType,
       technologies,
       mentorings,
+      categoryId,
     });
   }
 
   @Roles('admin', 'super_admin')
   @Get('/logbookMentor/:courseId')
   async getMentorLogbook(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const logbookMentor = await this.coursesService.findMentorLogbook(courseId);
@@ -318,7 +612,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/logbookUser/:courseId')
   async getLogbookUser(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const logbookUser = await this.coursesService.findLogBookUser(courseId);
@@ -328,7 +622,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/mentorProgram/:courseId')
   async getMentorKelas(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const mentor = await this.coursesService.findCourseMentors(courseId);
@@ -337,10 +631,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
-  async getMinggu(
-    @Param('courseId', ParseIntPipe) courseId: number,
-    @Res() res: Response,
-  ) {
+  async getMinggu(@Param('courseId') courseId: string, @Res() res: Response) {
     const weeks = await this.coursesService.findCourseWeeks(courseId);
     res.json(weeks);
   }
@@ -348,7 +639,7 @@ export class CoursesController {
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:courseId')
   async getUserKelas(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const userCourses = await this.coursesService.findCourseUsers(courseId);
@@ -357,10 +648,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
-  async getCicilan(
-    @Param('courseId', ParseIntPipe) courseId: number,
-    @Res() res: Response,
-  ) {
+  async getCicilan(@Param('courseId') courseId: string, @Res() res: Response) {
     const availableMonths = await this.coursesService.findNo(courseId);
     const installments =
       await this.coursesService.findCourseInstallments(courseId);
@@ -370,7 +658,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/register/:courseId')
   async getRegistration(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const registration =
@@ -381,7 +669,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/paymentInstallment/:courseId')
   async getPaymentInstallment(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const paymentInstallment =
@@ -392,7 +680,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/benefit/:courseId')
   async getProgramBenefit(
-    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const course_benefits =
@@ -401,9 +689,20 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/participants/:courseId')
+  async getProgramParticipants(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+  ) {
+    const participants =
+      await this.coursesService.findCourseParticipants(courseId);
+    res.json(participants);
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/faq/:courseId')
   async getCourseQuestions(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const courseQuestions =
@@ -414,7 +713,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/flow/:courseId')
   async getCourseFlow(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const course_flows = await this.coursesService.findCourseFlows(courseId);
@@ -424,7 +723,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/payment/:courseId')
   async getPembayaran(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
   ) {
     const payment = await this.coursesService.findCoursePayments(courseId);
@@ -433,7 +732,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/alumni/:courseId')
-  async getAlumni(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getAlumni(@Param('courseId') courseId: string, @Res() res: Response) {
     const alumni = await this.coursesService.findCourseAlumni(courseId);
     res.json(alumni);
   }
@@ -441,24 +740,44 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/detail/program/admin/:courseId')
   async detailKelas(
-    @Param('courseId', ParseIntPipe) courseId: number,
-
+    @Param('courseId') courseId: string,
+    @Query('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     if (req.user!.role === 'admin') {
       const course = await this.coursesService.findOneAdminCourse(courseId);
+      if (!course) {
+        req.flash('error', 'Program not found');
+        return res.redirect('/program');
+      }
       const lastWeek = await this.coursesService.findLastWeek(courseId);
-      res.render('admin/course/detail', {
+      const caps = capabilitiesForCourse(course);
+      if (
+        course.programType === 'non_bootcamp' ||
+        caps.structure === 'syllabus'
+      ) {
+        return res.render('admin/course/detail_syllabus', {
+          user: req.user,
+          course,
+          lastWeek,
+          categoryId,
+          caps,
+        });
+      }
+      return res.render('admin/course/detail', {
         user: req.user,
         course,
         lastWeek,
+        categoryId,
+        caps,
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);
-      res.render('admin/course/detail', {
+      res.render('super_admin/course/detail', {
         user: req.user,
         course,
+        categoryId,
       });
     }
   }
@@ -466,7 +785,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Res() res: Response,
     @Req() req: Request,
     @Query('courseId') courseId?: string,
@@ -474,10 +793,52 @@ export class CoursesController {
     const course = await this.coursesService.findMyCourse(id);
     const category = await this.coursesService.findCategoryMyProgram(id);
     const courseType = await this.coursesService.findMyProgramCourseTypes(id);
+    const userWithCourses = { userCourses: course.map((c) => ({ course: c })) };
 
-    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
+    const logbooks = await this.usersService.findAllLogbooks(id);
+    const portfolio = await this.usersService.findPortfolio(id);
+
+    // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
+    // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
+    // myProgram menampilkan angka nol di semua kartu statistik.
+    const { dashboardStats, ongoingCourses, programComposition } =
+      await this.usersService.getDashboardData(req.user!.id);
+
+    // Kapabilitas tipe program. Template tidak pernah menyebut nama tipenya,
+    // ia membaca caps - lihat courses/program-type.ts.
+    const caps = capabilitiesForCourse(activeCourse);
+
+    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
+    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
+    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
+    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
+    let initialSection =
+      String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+    if (
+      initialSection === 'assignment' &&
+      !caps.finalAssignment &&
+      caps.structure !== 'weeks'
+    ) {
+      initialSection = 'uiux';
+    }
+    // Apakah program ini sudah tuntas.
+    //
+    // `userWithCourses` di atas bukan baris pendaftaran sungguhan - ia dirakit
+    // dari daftar course (`course.map((c) => ({ course: c }))`), jadi kolom
+    // `progress` memang tidak pernah ada di dalamnya. Itu sebabnya panel
+    // Certificate sempat menyatakan program yang sudah selesai sebagai belum
+    // selesai. Di sini dibaca dari baris user_courses yang sebenarnya.
+    // Hitungan untuk ringkasan tab My Logbook di dalam shell.
+    const stats = activeCourse
+      ? await this.coursesService.findLearningStats(activeCourse.id, id)
+      : null;
+    const enrolments = await this.usersService.findWithCourses(id);
+    const activeCourseCompleted = !!enrolments?.userCourses?.find(
+      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+    );
 
     res.render('user/user_profile/index', {
       course,
@@ -485,63 +846,361 @@ export class CoursesController {
       user: req.user,
       category,
       courseType,
+      userWithCourses,
+      logbooks,
+      portfolio,
       activeSection: courseId ? 'uiux' : 'learning',
+      initialSection,
+      stats,
+      activeCourseCompleted,
+      caps,
+      // Peta untuk sisi klien: berpindah program tidak memuat ulang halaman,
+      // jadi sakelar logbook harus ikut berpindah.
+      programCaps: Object.fromEntries(
+        course.map((c) => [c.id, capabilitiesForCourse(c)]),
+      ),
+      dashboardStats,
+      ongoingCourses,
+      programComposition,
+      bareShell: true,
     });
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment')
+  async myCourseFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    if (!activeCourse) {
+      return res.send('');
+    }
+
+    const isNonBootcamp =
+      activeCourse.programType === 'non_bootcamp' ||
+      (activeCourse as any).program_type === 'non_bootcamp';
+
+    if (isNonBootcamp) {
+      const syllabuses = await this.coursesService.findSyllabusForUser(
+        activeCourse.id,
+        id,
+      );
+
+      return res.render(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/non_bootcamp',
+        {
+          course: activeCourse,
+          syllabuses,
+          user: req.user,
+          caps: capabilitiesForCourse(activeCourse),
+          layout: false,
+        },
+      );
+    }
+
+    // Panel ini kini merender komposisi program_detail yang dipindahkan dari
+    // halaman landing, jadi datanya harus sama persis dengan yang dulu disiapkan
+    // untuk kelas/detail.hbs: status buka-kunci per minggu dari findWeeks(),
+    // baris user_courses, dan portfolio student pada course ini.
+    const [minggu, user_kelas, portfolio] = await Promise.all([
+      activeCourse
+        ? this.coursesService.findWeeks(activeCourse.id, id)
+        : Promise.resolve([]),
+      activeCourse
+        ? this.coursesService.findOneUserCourse(activeCourse.id)
+        : Promise.resolve(null),
+      activeCourse
+        ? this.coursesService.findOnePortfolio(id, activeCourse.id)
+        : Promise.resolve(null),
+    ]);
+
+    // Ringkasan kemajuan untuk kepala panel. Dihitung di sini, bukan di
+    // template: Handlebars tidak punya penjumlahan bersyarat, dan status
+    // minggu sudah ada di `minggu` sehingga tidak perlu query tambahan.
+    // Sumber kebenarannya sama dengan yang dipakai button_week.hbs:
+    //   terbuka  = weekProgresses[0].process
+    //   selesai  = weekProgresses[0].quiz
+    const weekState = (w: (typeof minggu)[number]) => {
+      const p = w.weekProgresses?.[0];
+      return { unlocked: p?.process === true, done: p?.quiz === true };
+    };
+    const totalWeeks = minggu.length;
+    const completedWeeks = minggu.filter((w) => weekState(w).done).length;
+    // Minggu berjalan = minggu terbuka pertama yang belum selesai. Kalau
+    // semuanya sudah selesai, tidak ada minggu berjalan.
+    const currentWeek =
+      minggu.find((w) => {
+        const st = weekState(w);
+        return st.unlocked && !st.done;
+      }) ?? null;
+    const progress = {
+      totalWeeks,
+      completedWeeks,
+      percent: totalWeeks ? Math.round((completedWeeks / totalWeeks) * 100) : 0,
+      currentWeekId: currentWeek?.id ?? null,
+      currentWeekNumber: currentWeek?.weekNumber ?? null,
+      allDone: totalWeeks > 0 && completedWeeks === totalWeeks,
+    };
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/index',
+      {
+        course: activeCourse,
+        minggu,
+        progress,
+        user_kelas,
+        portfolio,
+        user: req.user,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/assignment')
+  async myCourseAssignmentFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+    const caps = capabilitiesForCourse(activeCourse);
+
+    // Tab Tugas Akhir untuk program yang punya tugas akhir menampilkan SATU
+    // tugas milik program itu, bukan daftar tugas per minggu - dan bukan
+    // karena program ini tidak punya minggu, tapi karena tugas akhir adalah
+    // satuan penilaiannya sendiri. Lihat courses/program-type.ts.
+    //
+    // Program tanpa tugas akhir (LPK) tetap memakai akordeon per minggu, dan
+    // tugas mingguan di sana bisa dikumpulkan lewat sesi - jadi tidak ada
+    // jalur yang hilang saat tab ini diganti.
+    if (caps.finalAssignment) {
+      const finalAssignment = activeCourse?.id
+        ? await this.finalAssignmentService.findByCourse(activeCourse.id)
+        : null;
+      const finalAssignmentSubmission =
+        finalAssignment?.id && id
+          ? await this.finalAssignmentService.findSubmissionByUser(
+              finalAssignment.id,
+              id,
+            )
+          : null;
+      const isLocked = activeCourse?.id && id
+        ? await this.finalAssignmentService.isLocked(activeCourse.id, id)
+        : false;
+
+      return res.render('partials/user/sidebar_user_profile/assignment/index', {
+        course: activeCourse,
+        stats: null,
+        weekSummaries: null,
+        caps,
+        finalAssignment,
+        finalAssignmentSubmission,
+        isLocked,
+        layout: false,
+      });
+    }
+
+    if (caps.structure !== 'weeks') {
+      return res.render('partials/user/sidebar_user_profile/assignment/index', {
+        course: activeCourse,
+        stats: null,
+        weekSummaries: null,
+        caps,
+        finalAssignment: null,
+        finalAssignmentSubmission: null,
+        layout: false,
+      });
+    }
+
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
+    return res.render('partials/user/sidebar_user_profile/assignment/index', {
+      course: activeCourse,
+      stats,
+      weekSummaries,
+      caps,
+      finalAssignment: null,
+      finalAssignmentSubmission: null,
+      layout: false,
+    });
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/presentation')
+  async myCoursePresentationFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/attendance/index',
+      {
+        course: activeCourse,
+        user: req.user,
+        stats,
+        weekSummaries,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/quiz')
+  async myCourseQuizFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    // Hitungan untuk kepala tab (lihat CoursesService.findLearningStats).
+    const stats = await this.coursesService.findLearningStats(
+      activeCourse?.id,
+      id,
+    );
+
+    // Hitungan per minggu untuk kepala akordeon, supaya student tahu isi
+    // sebuah minggu tanpa harus membukanya dulu.
+    const weekSummaries = await this.coursesService.findWeekSummaries(
+      activeCourse?.id,
+      id,
+    );
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index',
+      {
+        course: activeCourse,
+        stats,
+        weekSummaries,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
   }
 
   @Roles('user')
   @Get('program/detail/:courseId')
   async viewDetail(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        courseId,
+      )
+    ) {
+      throw new NotFoundException('Course not found');
+    }
     const course = await this.coursesService.findOneCourse(courseId);
     const check_user = await this.coursesService.checkUserInCourse(
       course.id,
       req.user!.id,
     );
     const kelass = await this.coursesService.allClassExcept(course.id);
-    // const courseQuestions = await this.coursesService.findCourseQuestions(courseId);
-    // const course_flows = await this.coursesService.findCourseFlows(courseId);
-    // const mentor = await this.coursesService.findCourseMentors(courseId);
-    // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
+    const courseQuestions =
+      await this.coursesService.findCourseQuestions(courseId);
+    const faqs = courseQuestions.map((cq) => ({
+      question: cq.questions,
+      answer: cq.answers,
+    }));
+    const course_benefits =
+      await this.coursesService.findProgramBenefit(courseId);
+    course.programBenefits = course_benefits;
     const technologies =
       await this.coursesService.findCourseTechnologies(courseId);
     const installments =
       await this.coursesService.findCourseInstallments(courseId);
     const studentList = await this.coursesService.sumStudent(course.id);
 
-    const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
-    const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+    const statusOptions = [
+      'University Student',
+      'Fresh Graduate',
+      'Job Seeker',
+      'Employee',
+      'Freelancer',
+      'Entrepreneur',
+      'Other',
+    ];
+    const referalSourceOptions = REFERAL_SOURCES;
 
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
+      const course_flows = await this.coursesService.findCourseFlows(course.id);
       res.render('detail_program/free_program/index', {
         course,
+        course_flows,
         user: req.user,
         kelass,
         check_user,
         studentList,
-        // courseQuestions,
-        // course_flows,
-        // mentor,
-        // course_benefits,
+        faqs,
+        course_benefits,
         technologies,
         installments,
         currentStatusOptions: statusOptions,
-        referalSourceOptions: referalOptions,
+        referalSourceOptions,
       });
     } else {
-      res.render('course/Bdetail', {
+      const course_flows = await this.coursesService.findCourseFlows(course.id);
+      res.render('detail_program/paid_program/index', {
         course,
+        category: course.category,
         user: req.user,
         kelass,
         check_user,
-        // courseQuestions,
-        // course_flows,
-        // mentor,
-        // course_benefits,
+        studentList,
+        courseQuestions,
+        faqs,
+        course_flows,
+        course_benefits,
+        benefit_category: course.category?.benefit_category || [],
         technologies,
         installments,
       });
@@ -550,10 +1209,18 @@ export class CoursesController {
 
   @Get(':id')
   async detail(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        id,
+      )
+    ) {
+      throw new NotFoundException('Course not found');
+    }
+
     let isUserInKelas = false;
     if (!req.user) {
       const course = await this.coursesService.findOneUserCourse(id);
@@ -568,12 +1235,24 @@ export class CoursesController {
       const userCourses = await this.coursesService.findCourseUsers(id);
       const kelass = await this.coursesService.allClassExcept(course.id);
       const studentList = await this.coursesService.sumStudent(course.id);
-      const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
-      const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+      const statusOptions = [
+        'University Student',
+        'Fresh Graduate',
+        'Job Seeker',
+        'Employee',
+        'Freelancer',
+        'Entrepreneur',
+        'Other',
+      ];
+      const referalSourceOptions = REFERAL_SOURCES;
 
       if (course.checkPaid === false) {
+        course.programBenefits = course_benefits;
+        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/free_program/index', {
           course,
+          course_flows,
+          course_benefits,
           kelass,
           studentList,
           technologies,
@@ -581,21 +1260,23 @@ export class CoursesController {
           userCourses,
           faqs,
           currentStatusOptions: statusOptions,
-          referalSourceOptions: referalOptions,
+          referalSourceOptions,
         });
       } else {
+        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/paid_program/index', {
           course,
+          category: course.category,
           kelass,
           studentList,
-          // courseQuestions,
-          // course_flows,
-          // mentor,
+          courseQuestions,
+          faqs,
+          course_flows,
           course_benefits,
+          benefit_category: course.category?.benefit_category || [],
           technologies,
           installments,
           userCourses,
-          faqs,
         });
       }
     } else {
@@ -607,31 +1288,26 @@ export class CoursesController {
         }
       }
       if (isUserInKelas) {
-        const updatedWeek = await this.coursesService.findWeeks(
-          id,
-          req.user.id,
+        // Student yang SUDAH terdaftar dibawa ke Start Learning di backoffice.
+        // Sebelumnya di sini dirender kelas/detail.hbs, yang memakai navbar publik
+        // dan footer, sehingga student mendapat chrome landing di tengah alur
+        // belajarnya. Barisnya memang sudah pernah ditulis lalu dikomentari.
+        // Pengunjung yang belum terdaftar tetap melihat halaman pemasaran di
+        // cabang else.
+        return res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${course.id}`,
         );
-        const userCourses = await this.coursesService.getUserCourseRelation(
-          req.user.id,
-          course.id,
-        );
-        const portfolio = await this.coursesService.findOnePortfolio(
-          req.user.id,
-          course.id,
-        );
-        res.render('course/detail', {
-          userCourses,
-          portfolio,
-          user: req.user,
-          course,
-          weeks: updatedWeek,
-        });
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
-        // const courseQuestions = await this.coursesService.findCourseQuestions(id);
-        // const course_flows = await this.coursesService.findCourseFlows(id);
-        // const mentor = await this.coursesService.findCourseMentors(id);
-        // const course_benefits = await this.coursesService.findProgramBenefit(id);
+        const courseQuestions =
+          await this.coursesService.findCourseQuestions(id);
+        const faqs = courseQuestions.map((cq) => ({
+          question: cq.questions,
+          answer: cq.answers,
+        }));
+        const course_benefits =
+          await this.coursesService.findProgramBenefit(id);
+        course.programBenefits = course_benefits;
         const technologies =
           await this.coursesService.findCourseTechnologies(id);
         const installments =
@@ -639,31 +1315,46 @@ export class CoursesController {
         const userCourses = await this.coursesService.findCourseUsers(id);
         const kelass = await this.coursesService.allClassExcept(course.id);
         const studentList = await this.coursesService.sumStudent(course.id);
-        const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
-        const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+        const statusOptions = [
+          'University Student',
+          'Fresh Graduate',
+          'Job Seeker',
+          'Employee',
+          'Freelancer',
+          'Entrepreneur',
+          'Other',
+        ];
+        const referalSourceOptions = REFERAL_SOURCES;
 
         if (course.checkPaid === false) {
+          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
+            course_flows,
+            course_benefits,
             kelass,
             studentList,
             technologies,
             userCourses,
             installments,
+            faqs,
             currentStatusOptions: statusOptions,
-            referalSourceOptions: referalOptions,
+            referalSourceOptions,
           });
         } else {
+          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
+            category: course.category,
             kelass,
             studentList,
-            // courseQuestions,
-            // course_flows,
-            // mentor,
-            // course_benefits,
+            courseQuestions,
+            faqs,
+            course_flows,
+            course_benefits,
+            benefit_category: course.category?.benefit_category || [],
             technologies,
             userCourses,
             installments,
@@ -674,25 +1365,25 @@ export class CoursesController {
   }
 
   @Get('api/detail/:id/benefit')
-  async getBenefit(@Param('id') id: number, @Res() res: Response) {
+  async getBenefit(@Param('id') id: string, @Res() res: Response) {
     const course_benefits = await this.coursesService.findProgramBenefit(id);
     return res.json({ course_benefits });
   }
 
   @Get('api/detail/:id/faq')
-  async getFaq(@Param('id') id: number, @Res() res: Response) {
+  async getFaq(@Param('id') id: string, @Res() res: Response) {
     const courseQuestions = await this.coursesService.findCourseQuestions(id);
     return res.json({ courseQuestions });
   }
 
   @Get('api/detail/:id/flow')
-  async getFlow(@Param('id') id: number, @Res() res: Response) {
+  async getFlow(@Param('id') id: string, @Res() res: Response) {
     const course_flows = await this.coursesService.findCourseFlows(id);
     return res.json({ course_flows });
   }
 
   @Get('api/detail/:id/mentor')
-  async getMentor(@Param('id') id: number, @Res() res: Response) {
+  async getMentor(@Param('id') id: string, @Res() res: Response) {
     const mentor = await this.coursesService.findCourseMentors(id);
     return res.json({ mentor });
   }
@@ -714,21 +1405,26 @@ export class CoursesController {
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('courseId') courseId: number,
-    @Body() updateCourseDto: UpdateCoursesDto,
+    @Param('courseId') courseId: string,
+    @Body() body: any,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const course = await this.coursesService.findOne(courseId);
+      const dto = mapUpdateProgram(req.body ?? body, req.user);
+      await this.createValidationPipe.transform(dto, {
+        type: 'body',
+        metatype: UpdateCoursesDto,
+        data: '',
+      });
       if (gambar) {
         await this.coursesService.deleteFile(course.image);
-        updateCourseDto.image = req.body.uploadedImageUrls?.[0];
       }
 
-      if (updateCourseDto.mentoringsId) {
+      if (dto.mentoringsId) {
         const currentMentoringUserId = course.mentorings?.[0]?.user?.id;
-        const newMentoringUserId = Number(updateCourseDto.mentoringsId);
+        const newMentoringUserId = dto.mentoringsId;
 
         if (currentMentoringUserId !== newMentoringUserId) {
           await this.coursesService.updateMentoring(
@@ -738,44 +1434,40 @@ export class CoursesController {
         }
       }
 
-      if (updateCourseDto.paid_check === 'true') {
-        updateCourseDto.checkPaid = true;
-      } else if (updateCourseDto.paid_check === 'false') {
-        updateCourseDto.checkPaid = false;
-      }
-
-      if (req.user?.role === 'super_admin') {
-        updateCourseDto.process = 'approved';
-      }
-
-      if (
-        req.body.technologiesIds_sent !== undefined &&
-        updateCourseDto.technologiesIds === undefined
-      ) {
-        updateCourseDto.technologiesIds = [];
-      }
-
-      await this.coursesService.update(courseId, updateCourseDto);
-      req.flash('success', 'Successfully update program');
+      await this.coursesService.update(courseId, dto);
+      flashToast(
+        req,
+        'Changes Saved',
+        'The program information has been updated.',
+      );
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'failed update program');
+      const messages = error?.getResponse?.()?.message;
+      const errorMessage = Array.isArray(messages)
+        ? messages.join(', ')
+        : error.message || 'failed update program';
+      flashToastError(req, 'Gagal Mengedit Program', errorMessage);
+      req.flash('error', errorMessage);
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
-  @Roles('admin', 'super_admin')
+  @Roles('super_admin')
   @Patch(':courseId/toggle-launch')
   async updateLaunch(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.coursesService.updateLaunch(courseId, updateCourseDto);
-      req.flash('success', 'program successfuly switch launch');
+      flashToast(
+        req,
+        'Program Updated',
+        'The program launch status has been changed.',
+      );
       res.redirect('/program');
     } catch (error: any) {
       req.flash('error', error.message || 'program failed to launch');
@@ -783,17 +1475,67 @@ export class CoursesController {
     }
   }
 
-  @Roles('admin', 'super_admin')
+  @Roles('super_admin')
+  @Patch(':courseId/toggle-launch-json')
+  async updateLaunchJson(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.coursesService.toggleLaunch(courseId);
+      return res.json({
+        success: true,
+        launch: result.launch,
+        status: result.status,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to toggle launch',
+      });
+    }
+  }
+
+  @Roles('super_admin')
+  @Patch(':courseId/status-json')
+  async updateStatusJson(
+    @Param('courseId') courseId: string,
+    @Body('status') status: CourseStatus,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.coursesService.updateProgramStatus(
+        courseId,
+        status,
+      );
+      return res.json({
+        success: true,
+        status: result.status,
+        launch: result.launch,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to update program status',
+      });
+    }
+  }
+
+  @Roles('super_admin')
   @Patch(':courseId/toggle-status')
   async updateStatus(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.coursesService.updateLaunch(courseId, updateCourseDto);
-      req.flash('success', 'program successfuly switch status');
+      flashToast(
+        req,
+        'Program Updated',
+        'The program status has been changed.',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'program failed to switch status');
@@ -804,7 +1546,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Delete(':courseId')
   async remove(
-    @Param('courseId') courseId: number,
+    @Param('courseId') courseId: string,
     @Body('previous') previous: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -812,35 +1554,171 @@ export class CoursesController {
     try {
       const course = await this.coursesService.findOne(courseId);
       if (!course) {
-        req.flash('error', 'Program not found');
+        flashToastError(req, 'Program Not Found', 'Program not found');
         return res.redirect(previous || '/program');
       }
-      await this.coursesService.deleteFile(course.image);
       await this.coursesService.remove(courseId);
-      req.flash('success', 'Program successfully removed');
+      await this.coursesService.deleteFile(course.image);
+      flashToast(
+        req,
+        'Program Deleted',
+        'The program has been permanently removed.',
+      );
       return res.redirect(previous || '/program');
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to remove program');
-      return res.redirect(previous || '/program');
+      flashToastError(
+        req,
+        'Failed to Remove Program',
+        error.message || 'Failed to remove program',
+      );
+      return res.redirect(
+        previous || `/program/detail/program/admin/${courseId}`,
+      );
     }
   }
 
   @Roles('admin', 'super_admin')
   @Delete(':userId/program/:courseId')
   async removeCourseUser(
-    @Param('userId') userId: number,
-    @Param('courseId') courseId: number,
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       await this.coursesService.removeCourseUser(userId, courseId);
-      req.flash('success', 'User successfully removed from program');
+      flashToast(
+        req,
+        'User Removed',
+        'The user has been permanently removed from the program.',
+      );
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to remove user from program');
+      flashToastError(
+        req,
+        'Failed to Remove Student',
+        error.message || 'Failed to remove user from program',
+      );
       res.redirect(`/program/addUser/${courseId}`);
     }
+  }
+
+  // Halaman detail sesi.
+  //
+  // WAJIB dideklarasikan SEBELUM `session/:weeksId` di bawahnya: Nest mencocokkan
+  // rute sesuai urutan pendaftaran, jadi kalau terbalik, `session/:weeksId` akan
+  // menelan "detail" sebagai weeksId dan halaman ini tidak pernah tercapai.
+  @Roles('user')
+  @Get('session/detail/:sessionId')
+  async sessionDetail(
+    @Param('sessionId') sessionId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.coursesService.findSessionDetail(
+      sessionId,
+      req.user!.id,
+    );
+
+    // Sesi terkunci tidak dirender isinya; student dikembalikan ke area belajar
+    // dengan alasannya. Penguncian dihitung di service, bukan di template.
+    if (!detail.unlocked) {
+      req.flash(
+        'error',
+        'Complete the previous session before opening this one.',
+      );
+      return res.redirect(
+        `/program/myProgram/${req.user!.id}?courseId=${detail.course.id}`,
+      );
+    }
+
+    // Bentuk data dirapikan di sini, bukan di template: Handlebars tidak punya
+    // filter, jadi mengelompokkan materi per jenis di view berarti tiga kali
+    // perulangan penuh beserta {{#if}} di dalamnya.
+    // Dikelompokkan per jenis, tetapi daftar isinya ikut dibawa: halaman
+    // menyebut judul tiap materi, bukan hanya jumlahnya. Satu sesi bisa punya
+    // beberapa PDF, dan "PDF Material 3" tidak memberi tahu apa pun tentang
+    // ketiganya.
+    const byType = (t: string) =>
+      detail.session.materials.filter((m) => m.fileType === t);
+    const materialGroups = [
+      { type: 'pdf', icon: 'fa-file-pdf', items: byType('pdf') },
+      { type: 'ppt', icon: 'fa-file-powerpoint', items: byType('ppt') },
+      { type: 'video', icon: 'fa-circle-play', items: byType('video') },
+    ].filter((g) => g.items.length > 0);
+    // Status tugas dipisah dari sekadar "sudah mengirim atau belum".
+    // Sebelumnya `submitted` bernilai true begitu ada baris jawaban, dan
+    // tampilannya menulis "Assignment Completed" - termasuk untuk jawaban yang
+    // DITOLAK mentor. Student jadi mengira tugasnya beres padahal harus
+    // dikirim ulang.
+    const assignments = detail.session.assignments.map((a) => {
+      const answer = a.taskAnswers?.[0] ?? null;
+      const status: 'not_submitted' | 'in_review' | 'approved' | 'rejected' =
+        !answer
+          ? 'not_submitted'
+          : answer.process === 'approved'
+            ? 'approved'
+            : answer.process === 'rejected'
+              ? 'rejected'
+              : 'in_review';
+      return { ...a, answer, status, submitted: !!answer };
+    });
+    const logbook = detail.session.logbooks?.[0] ?? null;
+
+    // Empat langkah yang membentuk satu sesi. Dipakai untuk penanda kemajuan di
+    // kepala halaman, supaya student melihat sisa pekerjaannya sekali lihat.
+    // Kapabilitas program pemilik sesi ini. Halaman sesi berdiri sendiri,
+    // jadi ia menghitung caps-nya sendiri dari course sesi tersebut.
+    const sessionCaps = capabilitiesForCourse(
+      detail.session?.weeks?.course ?? null,
+    );
+
+    const steps = [
+      { key: 'attendance', done: detail.attended, available: true },
+      {
+        key: 'materials',
+        done: detail.session.materials.length > 0 && detail.attended,
+        available: detail.session.materials.length > 0,
+      },
+      {
+        key: 'assignment',
+        // Dihitung dari jawaban yang DISETUJUI, bukan sekadar terkirim - kalau
+        // tidak, tugas yang ditolak tetap menghitung sesi ini sebagai beres.
+        done:
+          assignments.length > 0 &&
+          assignments.every((a) => a.status === 'approved'),
+        available: assignments.length > 0,
+      },
+      // Logbook hanya jadi langkah kalau program ini memang memakainya.
+      // Tanpa `available`, sesi pada program SPL tidak akan pernah mencapai
+      // 100% karena ada satu langkah yang tidak punya jalan diselesaikan.
+      {
+        key: 'logbook',
+        done: detail.logbookDone,
+        available: sessionCaps.logbookEnabled,
+      },
+    ];
+    const stepsAvailable = steps.filter((x) => x.available);
+    const stepsDone = stepsAvailable.filter((x) => x.done).length;
+
+    return res.render('user/learning/session', {
+      user: req.user,
+      ...detail,
+      caps: sessionCaps,
+      materialGroups,
+      materialsCount: detail.session.materials.length,
+      // Materi baru terbuka setelah student absen pada sesi ini.
+      materialsLocked: !detail.attended,
+      assignments,
+      logbook,
+      steps,
+      stepsDone,
+      stepsTotal: stepsAvailable.length,
+      stepsPercent: stepsAvailable.length
+        ? Math.round((stepsDone / stepsAvailable.length) * 100)
+        : 0,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
@@ -848,7 +1726,7 @@ export class CoursesController {
   async getPertemuan(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
   ) {
     const user = req.user;
     if (!user) {
@@ -862,7 +1740,7 @@ export class CoursesController {
   @Get('quiz/:weeksId')
   async getQuiz(
     @Res() res: Response,
-    @Param('weeksId') weeksId: number,
+    @Param('weeksId') weeksId: string,
     @Req() req: Request,
   ) {
     const user = req.user;

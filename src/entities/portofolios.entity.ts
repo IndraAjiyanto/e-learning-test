@@ -13,8 +13,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Portofolios {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column('jsonb', { name: 'image' })
   image: string[];
@@ -50,7 +50,9 @@ export class Portofolios {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Course, (course) => course.portofolios, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.portofolios, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;

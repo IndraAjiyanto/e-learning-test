@@ -42,16 +42,22 @@ export class MentorLogbookService {
     return await this.mentorLogbookRepository.save(logbooks);
   }
 
-  async getCourseList(userId: number) {
+  async getCourseList(userId: string) {
     return await this.courseRepository.find({
       where: { mentorings: { user: { id: userId } } },
     });
   }
 
-  async findOne(mentor_logbookId: number) {
+  async findOne(mentor_logbookId: string) {
     const mentor_logbook = await this.mentorLogbookRepository.findOne({
       where: { id: mentor_logbookId },
-      relations: ['session', 'user'],
+      relations: [
+        'session',
+        'session.weeks',
+        'session.weeks.course',
+        'user',
+        'user.biodata',
+      ],
     });
     if (!mentor_logbook) {
       throw new NotFoundException('logbooks not found');
@@ -70,7 +76,7 @@ export class MentorLogbookService {
   }
 
   async update(
-    mentor_logbookId: number,
+    mentor_logbookId: string,
     updateMentorLogbookDto: UpdateMentorLogbookDto,
   ) {
     const logbooks = await this.findOne(mentor_logbookId);
@@ -81,7 +87,7 @@ export class MentorLogbookService {
     return await this.mentorLogbookRepository.save(logbooks);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const logbooks = await this.findOne(id);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');

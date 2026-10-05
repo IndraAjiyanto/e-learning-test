@@ -1,0 +1,30 @@
+{{!--
+  Komponen: Paragraph Form Fields (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/form/paragraphs/fields.hbs
+  Level: L2 Blok field (scoped super_admin)
+
+  Textarea paragraf untuk ketiga bahasa; tidak menerima props. Pemanggil
+  menyediakan state Alpine dari form/paragraphs/form.
+
+  Ketiga bahasa tetap di DOM (x-show, bukan x-if) supaya nilainya ikut terkirim
+  meski tab-nya tidak aktif. Id `paragraphs-{kodeBahasa}` dipakai
+  form/paragraphs/form untuk fokus ke field yang error — jangan diubah sepihak.
+--}}
+{{#*inline 'paragraphLangField'}}
+  <div x-show="lang === '{{code}}'" x-cloak>
+    {{> components/ui/super_admin/form/text_field
+      id=(concat 'paragraphs-' code)
+      name=(concat 'paragraphs[' code ']')
+      field=(concat 'paragraphs.' code)
+      label='Paragraph'
+      multiline=true
+      maxlength=2000
+      placeholder=placeholder
+      required=true
+    }}
+  </div>
+{{/inline}}
+
+{{> paragraphLangField code='id' placeholder='Konten paragraphs (ID)' }}
+{{> paragraphLangField code='en' placeholder='Paragraph content (EN)' }}
+{{> paragraphLangField code='ja' placeholder='段落コンテンツ (JA)' }}

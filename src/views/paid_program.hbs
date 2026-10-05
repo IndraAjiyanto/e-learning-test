@@ -1,13 +1,46 @@
-{{> paidProgramNew/hero_section}}
+{{!-- PAID PROGRAM PAGE --}}
+{{!-- Hero Section - khusus paid program --}}
+{{> components/ui/sections/paid_hero/index category=category lang=lang}}
 
-{{> paidProgramNew/program}}
+{{!-- Program Section - khusus paid (card/category/paid) --}}
+{{> components/ui/sections/paid_program/index category=category courses=courses lang=lang}}
 
-{{> paidProgramNew/advantage}}
+{{!-- Benefit Section - khusus paid program --}}
+{{> components/ui/sections/paid_benefit/index category=category benefit_category=benefit_category lang=lang}}
 
-{{> paidProgramNew/flow}}
+{{!-- Advantage Section - khusus paid --}}
+{{!-- {{> components/ui/sections/paid_advantage/index}} --}}
 
-{{> paidProgramNew/alumni}}
+{{!-- Flow Section - khusus paid (portfolio showcase) --}}
+{{!-- {{> components/ui/sections/paid_flow/index}} --}}
 
-{{> paidProgramNew/gallery}}
+{{!-- Alumni Section - reuse section alumni dengan headerVariant paid --}}
+{{> components/ui/sections/alumni/index
+    headerVariant="paid"
+    showMobile=false
+    showFooter=false
+    titleKey="test.categoryPaidProgram.alumni.title"
+    descKey="test.categoryPaidProgram.alumni.description"
+    alumni=alumni
+    category=category
+    lang=lang
+}}
 
-{{> paidProgramNew/cta}}
+{{!-- Gallery Section - reuse section gallery dengan konfigurasi paid --}}
+{{> components/ui/sections/gallery/index
+    badgeKey="test.categoryPaidProgram.gallery.badge"
+    titleKey="test.categoryPaidProgram.gallery.title"
+    descKey="test.categoryPaidProgram.gallery.description"
+    linkKey="test.categoryPaidProgram.gallery.allGaleries"
+}}
+
+{{!-- FAQ Section - khusus paid program --}}
+{{> components/ui/sections/paid_faq/index
+    category=category
+    faqs=(default faqs category.faqs)
+    faq=faq
+    lang=lang
+}}
+
+{{!-- CTA Section - khusus paid --}}
+{{> components/ui/sections/paid_cta/index}}

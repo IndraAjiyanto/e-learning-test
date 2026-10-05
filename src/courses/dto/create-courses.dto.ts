@@ -1,19 +1,33 @@
 import {
   IsArray,
   IsBoolean,
-  isDateString,
   IsDateString,
   IsEnum,
   IsInt,
+  IsObject,
   IsOptional,
   IsString,
+  IsUrl,
+  IsUUID,
 } from 'class-validator';
-import { Method } from 'src/entities/course.entity';
+import {
+  Method,
+  PROGRAM_TYPES,
+  ProgramType,
+} from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
+/**
+ * Kontrak domain untuk pembuatan Program (Course).
+ *
+ * Satu sumber kebenaran: nama field di sini = kolom entitas `Course`
+ * (lihat src/entities/course.entity.ts). Field yang bersifat relasi
+ * (categoryId, courseTypeId, technologiesIds, mentoringsId) dipakai untuk
+ * resolve entity, sisanya langsung disimpan ke kolom entitas.
+ */
 export class CreateCoursesDto {
   @IsString()
-  courseName: string;
+  name: string;
 
   @IsString()
   group: string;
@@ -21,91 +35,146 @@ export class CreateCoursesDto {
   @IsEnum(['online', 'offline'])
   method: Method;
 
-  @IsInt()
-  categoryId: number;
+  @IsUUID()
+  categoryId: string;
 
+  @IsOptional()
+  @IsUUID()
+  courseTypeId?: string;
+
+  /**
+   * Bentuk belajar program. Tidak wajib dikirim: program yang tidak
+   * menyebutkannya tetap bootcamp, sama seperti seluruh program yang sudah ada.
+   */
+  @IsOptional()
+  @IsEnum(PROGRAM_TYPES)
+  programType?: ProgramType;
+
+  /** Sakelar logbook. Hanya berarti pada program non_bootcamp. */
+  @IsOptional()
+  @IsBoolean()
+  logbookEnabled?: boolean;
+
+  @IsOptional()
+  @IsUUID()
+  mentoringsId?: string;
+
+  /** jsonb: { id, en, ja } */
+  @IsObject()
+  description: { id: string; en: string; ja: string };
+
+  /** jsonb: { id, en, ja } */
+  @IsObject()
+  locations: { id: string; en: string; ja: string };
+
+  @IsString()
+  locationLink: string;
+
+  @IsOptional()
   @IsArray()
-  locations: string[];
+  @IsString({ each: true })
+  materialsId?: string[];
 
-  @IsInt()
-  courseTypeId: number;
-
-  @IsInt()
-  mentoringsId: number;
-
-  @IsInt()
   @IsOptional()
-  month: number;
+  @IsArray()
+  @IsString({ each: true })
+  materialsEn?: string[];
 
-  @IsInt()
   @IsOptional()
-  day: number;
+  @IsArray()
+  @IsString({ each: true })
+  materialsJa?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  learningTargetsId?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  learningTargetsEn?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  learningTargetsJa?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  criteriaId?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  criteriaEn?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  criteriaJa?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID('all', { each: true })
+  technologiesIds?: string[];
+
+  @IsOptional()
+  @IsInt()
+  month?: number;
+
+  @IsOptional()
+  @IsInt()
+  day?: number;
 
   @IsDateString()
-  startDate: Date;
+  startDate: string;
 
   @IsDateString()
-  endDate: Date;
+  endDate: string;
 
-  @IsInt()
   @IsOptional()
-  price: number;
-
   @IsInt()
-  @IsOptional()
-  promo: number;
+  price?: number;
 
+  @IsOptional()
   @IsInt()
-  @IsOptional()
-  quota: number;
+  promo?: number;
 
+  @IsOptional()
+  @IsInt()
+  quota?: number;
+
+  @IsOptional()
   @IsString()
-  @IsOptional()
-  form: string;
+  form?: string;
 
+  @IsOptional()
   @IsBoolean()
-  @IsOptional()
-  launch: boolean;
+  launch?: boolean;
 
+  @IsOptional()
   @IsBoolean()
-  @IsOptional()
-  checkPaid: boolean;
-
-  @IsString()
-  paid_check: string;
+  checkPaid?: boolean;
 
   @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  technologiesIds?: number[];
-
-  @IsArray()
-  materials: string[];
-
-  @IsArray()
-  learningTarget: string[];
-
-  @IsString()
-  @IsOptional()
-  image: string;
-
   @IsEnum(['approved', 'process', 'rejected'])
-  @IsOptional()
-  process: ProcessStatus;
-
-  @IsArray()
-  description: string[];
-
-  @IsArray()
-  @IsOptional()
-  criteria: string[];
+  process?: ProcessStatus;
 
   @IsOptional()
-  date_registration: Date;
+  @IsString()
+  image?: string;
 
   @IsOptional()
+  @IsDateString()
+  date_registration?: string;
+
+  @IsOptional()
+  @IsString()
   time_start?: string;
 
   @IsOptional()
+  @IsString()
   time_end?: string;
 }

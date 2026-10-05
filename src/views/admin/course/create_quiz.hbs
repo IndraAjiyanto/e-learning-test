@@ -1,0 +1,128 @@
+{{!--
+  Page: Admin - Create Quiz (Course Syllabus Context)
+  Path: admin/course/create_quiz.hbs
+  Route: GET /syllabus/quiz/create/:syllabusId (or /program/create-quiz-syllabus/:id)
+--}}
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start'
+    x-data='{
+      ...adminFormGate(),
+      loading: false,
+      title: "",
+      minScore: "",
+      duration: "",
+      canSubmit() {
+        return this.title.trim() !== "" && String(this.minScore).trim() !== "" && String(this.duration).trim() !== "" && !isNaN(Number(this.minScore)) && !isNaN(Number(this.duration));
+      },
+      handleCancel() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = "{{#if syllabusId}}/syllabus/{{syllabusId}}{{else if courseId}}/program/detail/program/admin/{{courseId}}{{else}}/program{{/if}}";
+        }
+      }
+    }'
+    x-init="initGate()">
+
+    {{!-- Title: Heading + Sub heading --}}
+    {{> components/ui/admin/text/page-header
+      title="Create Quiz"
+      subtitle=(concat "Fill in the information below to create a quiz" (ternary syllabus.title (concat " for " syllabus.title) "."))
+    }}
+
+    {{!-- Create quiz form --}}
+    <form method='POST' action='/syllabus/quiz/{{syllabusId}}'
+      class='box-border w-full flex flex-col gap-[16px] items-start'
+      novalidate
+      @input="recomputeFormValid()"
+      @change="recomputeFormValid()"
+      @focusout="markField($event.target)"
+      @submit="submitGate($event, () => canSubmit())">
+
+      {{!-- Feature Card 1: Form Inputs Card --}}
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+
+        {{!-- Title* Input Container --}}
+        {{#> components/ui/admin/form/form-field label="Title*" for="quiz_title"}}
+          {{> components/ui/admin/form/text-input
+            id="quiz_title"
+            name="quizName"
+            xModel="title"
+            required=true
+            placeholder="Enter title..."
+          }}
+          <p x-show="title.trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Title is required and cannot be empty.</p>
+        {{/components/ui/admin/form/form-field}}
+
+        {{!-- Minimum Score* & Duration (minute)* Row --}}
+        <div class='box-border w-full flex flex-col sm:flex-row gap-[12px] items-start'>
+
+          {{!-- Minimum Score* Container --}}
+          <div class='box-border flex-1 w-full'>
+            {{#> components/ui/admin/form/form-field label="Minimum Score*" for="quiz_minScore"}}
+              {{> components/ui/admin/form/text-input
+                id="quiz_minScore"
+                name="minScore"
+                type="number"
+                xModel="minScore"
+                required=true
+                placeholder="Enter minimum score..."
+              }}
+              <p x-show="String(minScore).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Minimum score is required.</p>
+            {{/components/ui/admin/form/form-field}}
+          </div>
+
+          {{!-- Duration (minute)* Container --}}
+          <div class='box-border flex-1 w-full'>
+            {{#> components/ui/admin/form/form-field label="Duration (minute)*" for="quiz_duration"}}
+              {{> components/ui/admin/form/text-input
+                id="quiz_duration"
+                name="duration"
+                type="number"
+                xModel="duration"
+                required=true
+                placeholder="Enter duration in minutes..."
+              }}
+              <p x-show="String(duration).trim() === ''" x-cloak class="mt-1 text-xs text-[#dc2626] font-inter">Duration is required.</p>
+            {{/components/ui/admin/form/form-field}}
+          </div>
+
+        </div>
+
+      {{/components/ui/admin/form/form-card}}
+
+      {{!-- Feature Card 2: Actions Bar --}}
+      {{#> components/ui/admin/form/form-card noNumber=true class="h-[86px] flex flex-row justify-end items-center gap-[24px]"}}
+        <div class='flex flex-row items-center gap-[12px]'>
+          {{!-- Cancel button --}}
+          <button
+            type='button'
+            @click='handleCancel()'
+            class='box-border w-[90px] h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors'>
+            <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060]'>
+              Cancel
+            </span>
+          </button>
+
+          {{!-- Create Quiz submit button --}}
+          <button
+            type='submit'
+            :disabled='loading'
+            class='box-border min-w-[128px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
+            <span x-show='!loading' class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] whitespace-nowrap'>
+              Create Quiz
+            </span>
+            <span x-show='loading' style='display: none;' class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] flex items-center gap-2 whitespace-nowrap'>
+              <svg class='animate-spin h-4 w-4 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
+                <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8H4z'></path>
+              </svg>
+              Creating...
+            </span>
+          </button>
+        </div>
+      {{/components/ui/admin/form/form-card}}
+
+    </form>
+  </div>
+</div>

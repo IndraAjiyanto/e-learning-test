@@ -11,8 +11,8 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class CourseFlow {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   sequence: number;
@@ -29,7 +29,9 @@ export class CourseFlow {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Course, (course) => course.courseFlow, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.courseFlow, {
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   course: Course;
 }

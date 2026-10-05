@@ -1,0 +1,46 @@
+{{!--
+  Section: Partner / "Trusted by Leading Partners" (L2)
+  Lokasi: src/views/partials/components/ui/sections/partner/index.hbs
+  Satu pohon markup, base + lg. Data: categoryPartner[] (filter), partners[] ({ image, categoryPartner.category }).
+  Hanya dipakai dashboard.hbs.
+--}}
+<section class="relative w-full overflow-hidden bg-white py-16 font-inter lg:py-24">
+  <div class="page-shell flex flex-col items-center">
+
+    <div class="flex flex-col items-center gap-4 text-center">
+      {{> components/ui/text/eyebrow/index text=(t 'test.home.partnerSection.ourPartners') }}
+      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{t 'test.home.partnerSection.title'}}</h2>
+      <p class="{{sizeClass 'body'}} mx-auto max-w-[720px] font-inter text-[#000000]/80">{{t 'test.home.partnerSection.description'}}</p>
+      <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
+    </div>
+
+    <div class="mt-10 w-full lg:mt-14" x-data="{ activeTab: '{{default categoryPartner.[0].category 'Institutions'}}' }">
+      <div class="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
+        {{#each categoryPartner}}
+          {{> components/ui/button/tab_filter/index
+              text=this.category
+              targetValue=this.category
+              activeClass="bg-[#003060] text-white"
+              inactiveClass="bg-transparent text-[#003060] hover:bg-[#003060]/5"
+              buttonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-sm lg:text-base px-5 py-2.5 lg:px-7 lg:py-3" }}
+        {{/each}}
+      </div>
+
+      {{!-- flex-wrap + justify-center: a short tab (or last row) stays centered, no left-hugging gap --}}
+      <div class="mt-10 flex flex-wrap justify-center gap-4 lg:mt-14 lg:gap-6 [&>*]:w-[calc((100%-1rem)/2)] [&>*]:sm:w-[calc((100%-2rem)/3)] [&>*]:lg:w-[calc((100%-4.5rem)/4)]">
+        {{#each partners}}
+          <div
+            x-show="activeTab === '{{this.categoryPartner.category}}'"
+            class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
+          >
+            <img src="{{this.image}}" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
+          </div>
+        {{else}}
+          <div class="flex aspect-[3/2] items-center justify-center rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
+            <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</section>

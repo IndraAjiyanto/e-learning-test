@@ -15,10 +15,9 @@ export class FaqsService {
 
   async create(createFaqDto: CreateFaqsDto) {
     const { categoryId, ...data } = createFaqDto;
-    const category = await this.faqRepository.manager.findOne(
-      Category,
-      { where: { id: categoryId } },
-    );
+    const category = await this.faqRepository.manager.findOne(Category, {
+      where: { id: categoryId },
+    });
     if (!category) {
       throw new NotFoundException('Category not found');
     }
@@ -35,27 +34,23 @@ export class FaqsService {
     });
   }
 
-  async findOne(faqsId: number) {
+  async findOne(faqsId: string) {
     return await this.faqRepository.findOne({
       where: { id: faqsId },
       relations: ['category'],
     });
   }
 
-  async update(
-    faqsId: number,
-    updateFaqDto: UpdateFaqsDto,
-  ) {
+  async update(faqsId: string, updateFaqDto: UpdateFaqsDto) {
     const faqs = await this.findOne(faqsId);
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');
     }
     const { categoryId, ...data } = updateFaqDto;
     if (categoryId) {
-      const category = await this.faqRepository.manager.findOne(
-        Category,
-        { where: { id: categoryId } },
-      );
+      const category = await this.faqRepository.manager.findOne(Category, {
+        where: { id: categoryId },
+      });
       if (!category) {
         throw new NotFoundException('Category not found');
       }
@@ -65,7 +60,7 @@ export class FaqsService {
     return await this.faqRepository.save(faqs);
   }
 
-  async remove(faqsId: number) {
+  async remove(faqsId: string) {
     const faqs = await this.findOne(faqsId);
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');

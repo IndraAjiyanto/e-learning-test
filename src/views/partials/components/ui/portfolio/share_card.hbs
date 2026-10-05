@@ -1,0 +1,348 @@
+{{!--
+  Component: Share Card Portfolio
+  Path: components/ui/portfolio/share_card.hbs
+  Memenuhi ClickUp Task z8pbk8xwza:
+  - 4 platform: WhatsApp, LinkedIn, Twitter/X, Instagram
+  - Instagram Helper Modal (Preview, Download Image, Copy Caption, Open Instagram)
+  - Copy Link dengan umpan balik visual "Link Copied!" / "Copied!"
+  - Tautan mengarah langsung ke halaman publik portofolio (/dashboard/portfolio/:id)
+--}}
+<div 
+  class="bg-white border border-[#E5E5E5] rounded-[12px] p-6 shadow-sm space-y-4 font-inter {{class}}"
+  data-portfolio-id="{{portfolioId}}"
+  data-portfolio-title="{{portfolioTitle}}"
+  data-portfolio-image="{{portfolioImage}}"
+  data-author="{{author}}"
+  data-caption-by="{{default (t 'test.myPortfolio.detailPortfolio.captionBy') 'Karya oleh'}}"
+  data-caption-see-more="{{default (t 'test.myPortfolio.detailPortfolio.captionSeeMore') 'Lihat selengkapnya di Kesatria Academy:'}}"
+  x-data="{
+    copied: false,
+    showInstagramModal: false,
+    captionCopied: false,
+    imageDownloading: false,
+    shareUrl() {
+      const p = this.selectedPortfolio;
+      const staticId = this.$el.dataset.portfolioId;
+      const id = (p && p.id) || staticId;
+      if (id) {
+        return window.location.origin + '/dashboard/portfolio/' + id;
+      }
+      return window.location.href;
+    },
+    shareText() {
+      const p = this.selectedPortfolio;
+      const staticTitle = this.$el.dataset.portfolioTitle;
+      const staticAuthor = this.$el.dataset.author;
+      const title = (p && p.title) || staticTitle || 'Portofolio';
+      const author = (p && (p.author || (p.user && (p.user.username || p.user.name)))) || staticAuthor || '';
+      return author ? title + ' by ' + author : title;
+    },
+    shareImage() {
+      const p = this.selectedPortfolio;
+      const staticImg = this.$el.dataset.portfolioImage;
+      if (p && p.images && p.images.length > 0) return p.images[0];
+      if (p && p.image && Array.isArray(p.image) && p.image.length > 0) return p.image[0];
+      if (p && typeof p.image === 'string') return p.image;
+      return staticImg || '';
+    },
+    captionText() {
+      const p = this.selectedPortfolio;
+      const title = (p && p.title) || this.$el.dataset.portfolioTitle || 'Portofolio';
+      const author = (p && (p.author || (p.user && (p.user.username || p.user.name)))) || this.$el.dataset.author || '';
+      const url = this.shareUrl();
+      const byLabel = this.$el.dataset.captionBy || 'Karya oleh';
+      const seeMoreLabel = this.$el.dataset.captionSeeMore || 'Lihat selengkapnya di Kesatria Academy:';
+      const authorLine = author ? `${byLabel}: ${author}\n\n` : '';
+      return `✨ ${title}\n${authorLine}${seeMoreLabel}\n👉 ${url}\n\n#portfolio #project #tech #learning #kesatriaacademy`;
+    },
+    async copyTextToClipboard(str) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(str);
+          return true;
+        }
+      } catch (e) {}
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = str;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    },
+    async copyCaption() {
+      await this.copyTextToClipboard(this.captionText());
+      this.captionCopied = true;
+      setTimeout(() => { this.captionCopied = false; }, 2500);
+    },
+    async downloadImage() {
+      const imgUrl = this.shareImage();
+      if (!imgUrl) return;
+      this.imageDownloading = true;
+      try {
+        const res = await fetch(imgUrl);
+        const blob = await res.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        const ext = imgUrl.split('.').pop().split(/[#?]/)[0] || 'jpg';
+        a.download = `portfolio-${Date.now()}.${ext.length <= 4 ? ext : 'jpg'}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        const a = document.createElement('a');
+        a.href = imgUrl;
+        a.target = '_blank';
+        a.download = 'portfolio-image.jpg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } finally {
+        this.imageDownloading = false;
+      }
+    },
+    openInstagram() {
+      window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+    },
+    openShare(target) {
+      const u = encodeURIComponent(this.shareUrl());
+      const t = encodeURIComponent(this.shareText());
+      if (target === 'instagram') {
+        this.showInstagramModal = true;
+        return;
+      }
+      const urls = {
+        whatsapp: 'https://api.whatsapp.com/send?text=' + t + '%20' + u,
+        linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + u,
+        twitter: 'https://twitter.com/intent/tweet?url=' + u + '&text=' + t
+      };
+      if (urls[target]) {
+        window.open(urls[target], '_blank', 'noopener,noreferrer,width=600,height=600');
+      }
+    },
+    async copyLink() {
+      await this.copyTextToClipboard(this.shareUrl());
+      this.copied = true;
+      setTimeout(() => { this.copied = false; }, 2000);
+    }
+  }"
+>
+  <h3 class="font-inter font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+    {{default (t 'test.myPortfolio.detailPortfolio.shareTitle') 'Share This Portfolio'}}
+  </h3>
+  <p class="font-inter font-normal text-xs sm:text-sm text-[#666666] leading-relaxed">
+    {{default (t 'test.myPortfolio.detailPortfolio.shareDescription') 'Share this project to your social media so more people can see it.'}}
+  </p>
+
+  <!-- Social Media Buttons: WhatsApp, LinkedIn, Twitter/X, Instagram -->
+  <div class="flex flex-wrap items-center gap-3">
+    <button 
+      type="button" 
+      @click="openShare('whatsapp')"
+      aria-label="Share to WhatsApp"
+      title="WhatsApp"
+      class="w-11 h-11 rounded-full bg-[#25D366] hover:bg-[#1da851] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-whatsapp text-lg"></i>
+    </button>
+    <button 
+      type="button" 
+      @click="openShare('linkedin')"
+      aria-label="Share to LinkedIn"
+      title="LinkedIn"
+      class="w-11 h-11 rounded-full bg-[#0A66C2] hover:bg-[#084d94] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-linkedin-in text-lg"></i>
+    </button>
+    <button 
+      type="button" 
+      @click="openShare('twitter')"
+      aria-label="Share to X"
+      title="X (Twitter)"
+      class="w-11 h-11 rounded-full bg-black hover:bg-[#1f1f1f] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-x-twitter text-lg"></i>
+    </button>
+    <button 
+      type="button" 
+      @click="openShare('instagram')"
+      aria-label="Share to Instagram"
+      title="Instagram"
+      class="w-11 h-11 rounded-full bg-[#E1306C] hover:bg-[#c9245b] text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm cursor-pointer"
+    >
+      <i class="fa-brands fa-instagram text-lg"></i>
+    </button>
+  </div>
+
+  <!-- Copy Link -->
+  <div class="flex items-center gap-2 pt-1">
+    <input 
+      type="text" 
+      readonly
+      :value="shareUrl()"
+      class="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-[#E5E5E5] bg-[#FAFAFA] font-inter font-normal text-xs sm:text-sm text-[#666666] truncate focus:outline-none"
+    >
+    <button 
+      type="button" 
+      @click="copyLink()"
+      class="h-[42px] px-4 rounded-[8px] bg-[#CFE6F5] hover:bg-[#b9dcf0] text-[#003060] font-inter font-medium text-xs sm:text-sm flex items-center justify-center gap-2 flex-shrink-0 transition-all active:scale-95 cursor-pointer"
+    >
+      <i class="fa-solid text-sm" :class="copied ? 'fa-check text-green-600' : 'fa-link'"></i>
+      <span x-text="copied ? '{{default (t 'test.myPortfolio.detailPortfolio.copied') 'Copied!'}}' : '{{default (t 'test.myPortfolio.detailPortfolio.copy') 'Copy'}}'">{{default (t 'test.myPortfolio.detailPortfolio.copy') 'Copy'}}</span>
+    </button>
+  </div>
+
+  <!-- MODAL: PREPARE INSTAGRAM POST -->
+  <div 
+    x-show="showInstagramModal" 
+    x-cloak
+    class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm overflow-y-auto"
+    @keydown.escape.window="showInstagramModal = false"
+  >
+    <div 
+      x-show="showInstagramModal"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+      x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+      x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+      @click.outside="showInstagramModal = false"
+      class="bg-white rounded-2xl max-w-xl sm:max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-gray-100 relative my-6 font-inter text-[#1E293B]"
+    >
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-full bg-[#E1306C] text-white flex items-center justify-center shadow-sm shrink-0">
+            <i class="fa-brands fa-instagram text-2xl"></i>
+          </div>
+          <div>
+            <h4 class="font-semibold text-base sm:text-xl text-[#0F172A] leading-tight">
+              {{default (t 'test.myPortfolio.detailPortfolio.instagramModalTitle') 'Siapkan Postingan Instagram'}}
+            </h4>
+            <p class="text-xs sm:text-sm text-[#64748B] mt-0.5">
+              {{default (t 'test.myPortfolio.detailPortfolio.instagramModalSubtitle') 'Ikuti 3 langkah mudah berikut untuk membagikan portofolio Anda ke Instagram.'}}
+            </p>
+          </div>
+        </div>
+        <button 
+          type="button" 
+          @click="showInstagramModal = false"
+          class="size-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+          aria-label="Close modal"
+        >
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="py-5 space-y-5">
+        <!-- Preview Image Box -->
+        <div>
+          <label class="block text-xs font-semibold text-[#475569] uppercase tracking-wider mb-2">
+            {{default (t 'test.myPortfolio.detailPortfolio.stepPreviewTitle') '1. Pratinjau & Unduh Gambar'}}
+          </label>
+          <div class="flex items-center gap-4 p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+            <div class="w-24 h-24 rounded-lg overflow-hidden bg-slate-200 border border-slate-300 flex-shrink-0 flex items-center justify-center shadow-inner">
+              <template x-if="shareImage()">
+                <img :src="shareImage()" alt="Portfolio Preview" class="w-full h-full object-cover">
+              </template>
+              <template x-if="!shareImage()">
+                <div class="text-center p-2 text-slate-400">
+                  <i class="fa-regular fa-image text-2xl"></i>
+                  <span class="block text-[10px] mt-1">{{default (t 'test.myPortfolio.detailPortfolio.noImageAvailable') 'Tidak ada gambar'}}</span>
+                </div>
+              </template>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-[#0F172A] truncate" x-text="shareText()"></p>
+              <p class="text-xs text-[#64748B] mt-1">{{default (t 'test.myPortfolio.detailPortfolio.instagramImageFormat') 'Format siap diunggah ke Feed atau Story'}}</p>
+              <button 
+                type="button" 
+                @click="downloadImage()"
+                :disabled="!shareImage() || imageDownloading"
+                class="mt-2.5 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#003060] hover:bg-[#002244] disabled:bg-slate-300 text-white text-xs font-medium transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed shadow-sm"
+              >
+                <i class="fa-solid" :class="imageDownloading ? 'fa-spinner fa-spin' : 'fa-download'"></i>
+                <span x-text="imageDownloading ? '{{default (t 'test.myPortfolio.detailPortfolio.downloading') 'Mengunduh...'}}' : '{{default (t 'test.myPortfolio.detailPortfolio.downloadImage') 'Unduh Gambar'}}'">
+                  {{default (t 'test.myPortfolio.detailPortfolio.downloadImage') 'Unduh Gambar'}}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caption Box -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-semibold text-[#475569] uppercase tracking-wider">
+              {{default (t 'test.myPortfolio.detailPortfolio.stepCaptionTitle') '2. Caption Postingan'}}
+            </label>
+            <button 
+              type="button" 
+              @click="copyCaption()"
+              class="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors cursor-pointer"
+              :class="captionCopied ? 'text-emerald-600' : 'text-[#006699] hover:text-[#004d73]'"
+            >
+              <i class="fa-solid" :class="captionCopied ? 'fa-check' : 'fa-copy'"></i>
+              <span x-text="captionCopied ? '{{default (t 'test.myPortfolio.detailPortfolio.captionCopied') 'Caption Tersalin!'}}' : '{{default (t 'test.myPortfolio.detailPortfolio.copyCaption') 'Salin Caption'}}'">
+                {{default (t 'test.myPortfolio.detailPortfolio.copyCaption') 'Salin Caption'}}
+              </span>
+            </button>
+          </div>
+          <div class="relative">
+            <textarea 
+              readonly
+              rows="4"
+              :value="captionText()"
+              class="w-full text-xs sm:text-sm font-normal text-[#334155] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3.5 resize-none focus:outline-none focus:border-[#006699] leading-relaxed"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Steps Guide -->
+        <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-3.5 text-xs sm:text-sm text-[#1E3A8A] space-y-2">
+          <div class="flex items-start gap-2.5">
+            <span class="size-4 rounded-full bg-[#003060] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+            <span class="leading-snug">{{default (t 'test.myPortfolio.detailPortfolio.instagramStep1') 'Unduh gambar karya & salin caption yang sudah disiapkan.'}}</span>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="size-4 rounded-full bg-[#003060] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+            <span class="leading-snug">{{default (t 'test.myPortfolio.detailPortfolio.instagramStep2') 'Buka Instagram dan klik tombol (+) Buat Postingan.'}}</span>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="size-4 rounded-full bg-[#003060] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>
+            <span class="leading-snug">{{default (t 'test.myPortfolio.detailPortfolio.instagramStep3') 'Pilih gambar yang diunduh, lalu tempelkan (Paste) caption Anda.'}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer CTA -->
+      <div class="pt-4 border-t border-gray-100 flex items-center gap-3">
+        <button 
+          type="button" 
+          @click="showInstagramModal = false"
+          class="flex-1 py-3 px-4 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+        >
+          {{default (t 'test.myPortfolio.detailPortfolio.closeModal') 'Tutup'}}
+        </button>
+        <button 
+          type="button" 
+          @click="openInstagram()"
+          class="flex-1 py-3 px-4 rounded-xl bg-[#E1306C] hover:bg-[#c9245b] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 cursor-pointer"
+        >
+          <i class="fa-brands fa-instagram text-lg"></i>
+          <span>{{default (t 'test.myPortfolio.detailPortfolio.openInstagram') 'Buka Instagram'}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

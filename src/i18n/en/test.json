@@ -5,6 +5,12 @@
     "backTodashboard": "Back to Dashboard",
     "needHelpChat": "Need help? Chat with us!"
   },
+  "500": {
+    "500": "500",
+    "internalServerError": "Internal Server Error",
+    "backTodashboard": "Back to Dashboard",
+    "needHelpChat": "Need help? Chat with us!"
+  },
   "navbar": {
     "home": "Home",
     "program": "Program",
@@ -19,7 +25,21 @@
     "historyPayment": "History Payment",
     "logout": "Logout",
     "gallery": "Gallery",
-    "mpp":"Marketing Program Partner"
+    "mpp": "Marketing Program Partner",
+    "class": "Class",
+    "corporateTraining": "Corporate Training",
+    "information": "Information",
+    "classMenuIntro": "Join thousands of learners at Kesatria Academy. Choose your class, follow interactive learning, and earn recognized certifications - accessible anytime, anywhere.",
+    "infoMenuIntro": "Find complete information about Kesatria Academy - gallery, portfolio, blog, and the alumni community.",
+    "infoAboutDesc": "Learn about our vision, mission, and background at Kesatria Academy.",
+    "infoGalleryDesc": "View photos of campus activities, events, and moments.",
+    "infoPortfolioDesc": "See project examples and learner outcomes.",
+    "infoAlumniDesc": "Meet our graduates and their career journeys.",
+    "infoLoginCtaTitle": "Log in for full access to all features",
+    "infoLoginCtaDesc": "Log in now to unlock exclusive content and a more complete experience.",
+    "classCtaTitle": "Not sure which program is right for you?",
+    "classCtaDesc": "Schedule a free 1-on-1 consultation to map your technical background to our curriculum.",
+    "classCtaButton": "Free Consultation"
   },
   "footer": {
     "description": "Empowering Indonesia's digital generation through quality tech education",
@@ -32,21 +52,26 @@
     "program": "Program",
     "aboutUs": "About Us",
     "alumni": "Alumni",
-    "gallery": "Gallery"
+    "gallery": "Gallery",
+    "quickLinks": "Quick Links",
+    "ourProgram": "Our Program",
+    "followUs": "Follow Us"
   },
   "login": {
-    "title": "E-LEARNING KESATRIA",
-    "description": "Welcome Kesatria! Learn anytime, anywhere. Improve your skills, build your portfolio, and prepare for the competitive world of work.",
+    "title": "Learning Management System",
+    "description": "Learn anytime, anywhere. Improve your skills, build your portfolio, and prepare for the competitive world of work.",
     "email": "Email",
-    "placeholderEmail": "email@example.com",
+    "placeholderEmail": "Enter your email",
     "password": "Password",
     "forgotPassword": "Forgot Password?",
-    "loginButton": "Login",
+    "loginButton": "Log In to System",
     "noAccount": "Don't have an account?",
     "signUp": "Sign up now"
   },
   "forgotPassword": {
     "title": "Forgot Password",
+    "checkEmailTitle": "Check Your Email!",
+    "checkEmailDesc": "A verification link has been sent to your email address. Please click the link to verify and activate your account.",
     "description": "Enter your email address below and we'll send you a link to reset your password.",
     "email": "Email",
     "placeholderEmail": "Enter Your Email",
@@ -61,16 +86,26 @@
     "minute": "Minute",
     "second": "Second"
   },
+  "passwordChecklist": {
+    "length": "At least 8 characters",
+    "uppercase": "1 uppercase letter",
+    "lowercase": "1 lowercase letter",
+    "number": "1 number",
+    "special": "1 special character",
+    "match": "Passwords match",
+    "noMatch": "Passwords do not match"
+  },
   "resetPassword": {
     "resetPassword": "Reset Password",
     "description": "Create a new password to securely access your account again.",
     "newPassword": "New Password",
     "placeholderNewPassword": "Enter your new password",
+    "passwordRequirement": "Must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.",
     "confirmNewPassword": "Confirm New Password",
     "placeholderConfirmPassword": "Re-enter your new password",
     "resetButton": "Reset Password",
     "login": "Login",
-    "backTo":"Back to",
+    "backTo": "Back to",
     "alertError": "Passwords do not match",
     "alertSuccess": "Passwords match"
   },
@@ -83,6 +118,7 @@
     "placeholderEmail": "email@example.com",
     "password": "Password",
     "placeholderPassword": "Enter your password",
+    "passwordRequirement": "Must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.",
     "confirmPassword": "Confirm Password",
     "placeholderConfirmPassword": "Re-enter your password",
     "signUpButton": "Sign Up",
@@ -99,20 +135,23 @@
     "second": "Second",
     "sendButton": "Send Link Verification"
   },
-  "verifySuccess":{
+  "verifySuccess": {
     "title": "Email Verified Successfully!",
-    "description":"Your email has been successfully verified. You can now login and start exploring the platform.",
+    "description": "Your email has been successfully verified. You can now login and start exploring the platform.",
     "login": "Back to Login"
   },
   "home": {
     "heroSection": {
       "platform": "Digital Learning Platform",
       "buttonStartLearning": "Start Learning",
-      "buttonConsultation": "Consultation",
+      "buttonConsultation": "Book Consultation",
       "jobPlacment": "Job Placement",
       "support": "24/7 Support",
       "capstoneProject": "Capstone Project",
-      "buttonExplorePrograms": "Explore Programs"
+      "buttonExplorePrograms": "Explore Programs",
+      "badge": "Empowering Future Digital Tech Talents",
+      "title": "Shape your path in the digital frontier",
+      "description": "Kesatria Academy delivers interactive, industry-grade learning experiences to turn ambition into professional impact. Gain real project expertise from global tech mentors."
     },
     "experienceSection": {
       "title": "Our Experience",
@@ -120,15 +159,15 @@
     },
     "imagine": {
       "whyChooseUs": "Why Choose Us",
-      "title": "Why Choose <span class='text-[#003060] font-[700]'>Kesatria</span> Academy?",
+      "title": "Why Choose <span class='font-[700]'>Kesatria Academy?</span>",
       "description": "We are committed to helping you gain in-demand IT skills, build real-world experience, and achieve your dream career.",
       "mostWanted": "Most Wanted",
       "spanMostWanted": "This is the most desired benefit by most learners."
     },
     "programSection": {
-      "ourProgram": "Our Program",
-      "title": "<span class='font-[600] text-[#6EB6E5]''>Choose</span> Your Program",
-      "description": "Explore our learning programs designed to help you build in-demand skills, gain real experience, and accelerate your career.",
+      "ourProgram": "Our Directory",
+      "title": "Specialized Career Pathways",
+      "description": "Accelerate your professional transition with pathways curated for specific market demands.",
       "find": "Find Your Perfect Program",
       "category": "Category",
       "allCategory": "All Category",
@@ -155,7 +194,11 @@
       "buttonViewProgram": "View Program",
       "noProgram": "No programs found",
       "spanNoProgram": "Try adjusting your search or filter criteria.",
-      "clearFilters": "Clear All Filters"
+      "clearFilters": "Clear All Filters",
+      "learnMore": "Learn More",
+      "bannerTitle": "Not sure which track fits your career goals?",
+      "bannerDescription": "Schedule a 1-on-1 advisor call to map your technical background to our syllabus.",
+      "bannerCta": "Get Free Consultation"
     },
     "specialProgram": {
       "title": "Special Program",
@@ -163,18 +206,19 @@
       "buttonViewProgram": "View Program",
       "heroSection": {
         "buttonExploreLearningPath": "Explore Learning Path",
-      "enrollmentOpen": "ENROLLMENT OPEN"
+        "enrollmentOpen": "ENROLLMENT OPEN"
       },
-      "knowledge":{
+      "knowledge": {
         "title": "Core Knowledge First"
       }
     },
     "alumniSection": {
-      "badge": "Stories From Alumni",
-      "title": "<span class='text-[#6EB6E5]'>Real stories.</span> Real impact. Real people.",
-      "description": "Our alumni come from diverse background, but they share the same goal: growth, transformation, and success.",
+      "badge": "Alumni Success",
+      "title": "Real Stories, Real Placement",
+      "description": "Discover how our graduates transitioned into major engineering roles across the global industry.",
       "moreStories": "And many more inspiring stories from our alumni",
-      "seeAll": "See all alumni stories"
+      "seeAll": "See all alumni stories",
+      "bootcampLabel": "Bootcamp"
     },
     "partnerSection": {
       "ourPartners": "Our Partners",
@@ -182,7 +226,7 @@
       "description": "We collaborate with universities, institutions, and companies to deliver industry-relevant learning experiences and create meaningful career opportunities for our learners."
     },
     "faq": {
-      "title": "Frequently Asked",
+      "title": "Frequently Asked Questions",
       "title2": "Questions",
       "description": "Browse common questions and get the information you need quickly and easily.",
       "question": "Questions"
@@ -191,9 +235,9 @@
       "title": "Need help? Chat with us!"
     },
     "gallery": {
-      "title": "<span class='text-[#6EB6E5] font-bold'>Experience </span> Kesatria Academy in Action ",
-      "description": "Discover the energy of our programs through real moments from classes, mentoring sessions, networking events, and student project showcases.",
-      "gallery": "Our Gallery",
+      "title": "Life at Kesatria Academy",
+      "description": "Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons.",
+      "gallery": "Academy in Action",
       "chooseGallery": "See All Our Gallery"
     },
     "exploreProgram": {
@@ -201,16 +245,26 @@
       "title2": "to the Next Level",
       "description": "Develop practical skills, unlock new opportunities, and move closer to your career goals with",
       "exploreButton": "Explore Program"
+    },
+    "finalCta": {
+      "title": "Take Your Tech Skills to the Next Level",
+      "description": "Develop deep practical competencies, work alongside seasoned developers, and step directly into your dream engineering career.",
+      "button": "Get Started Today"
     }
   },
   "gallery": {
-    "title": "Capturing Every <span class='text-[#6EB6E5] font-bold'>Meaningful Moment</span>",
-    "description": "A visual journey through our programs, events, and milestones—capturing the people, moments, and impact that inspire our mission.",
+    "title": "Capturing Every Meaningful Moment",
+    "description": "A visual journey through our programs, events, and milestones, capturing the people, moments, and impact that inspire our mission.",
     "program": "Select Program",
-    "allPrograms": "All Program",
+    "allPrograms": "All Programs",
     "gallery": "Our Gallery",
     "searchPlaceholder": "Search Gallery",
-    "noResults": "No gallery found."
+    "noResults": "No gallery found.",
+    "filterByProgram": "Filter by Program Type",
+    "clearFilter": "Clear Filter",
+    "activitiesTitle": "Our Activities",
+    "activitiesSubtitle": "Learning activities, collaboration, and community at Kesatria Academy.",
+    "viewAllActivities": "View All Activities"
   },
   "about": {
     "tabAbout": {
@@ -238,17 +292,24 @@
       "visi": "Our Vision",
       "misi": "Our Mission",
       "visions": "Our Vision",
-      "missions": "Our Mission"
+      "missions": "Our Mission",
+      "vision": "Vision",
+      "mission": "Mission"
     },
     "team": {
-      "title": "Our Team",
+      "title": "Our Teams",
       "description": "Meet the experts dedicated to your learning success",
       "educationBackground": "Educational Background",
       "awardAchievement": "Awards & Achievements",
       "joinOurTeam": "Join Our Team",
       "portfolioExperience": "Portfolio & Experience",
       "joinDescription": "We're always looking for the best talents to join our mission of educating the nation through technology",
-      "buttonJob": "View Job Openings"
+      "buttonJob": "View Job Openings",
+      "meetTheTeam": "Meet the team",
+      "meetTheTeamSub": "People who make learning feel modern and accessible.",
+      "viewAll": "View all",
+      "defaultRole": "Mentor / Instructor",
+      "viewFullProfile": "View Full Profile"
     },
     "value": {
       "title": "Our Values",
@@ -322,14 +383,13 @@
     },
     "heroSection": {
       "buttonExploreLearningPath": "Explore Learning Path",
-      "enrollmentOpen":"ENROLLMENT OPEN"
+      "enrollmentOpen": "ENROLLMENT OPEN"
     },
-    "gallery":{
-      "title":"<span class='text-[#6EB6E5]'>Our</span> Gallery",
-      "description":"Take a look at the key moments and experiences that made this program meaningful."
-
+    "gallery": {
+      "title": "<span class='text-[#6EB6E5]'>Our</span> Gallery",
+      "description": "Take a look at the key moments and experiences that made this program meaningful."
     },
-    "exploreLearningPath":{
+    "exploreLearningPath": {
       "title": "5,000+ Graduates Successfully Working in Digital Technology",
       "description": "Now It's Your Turn",
       "button": "Explore Learning Path"
@@ -364,20 +424,38 @@
   "portfolio": {
     "title": "Portfolio",
     "description": "Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.",
+    "sidebarTitle": "Filter Projects",
     "filterTittle": "Active Filters",
     "resetFilters": "Reset",
     "noFilters": "No active filters",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search title, skill, or creator...",
+    "categoryLabel": "Field Category",
     "categoryTittle": "Category",
     "allCategory": "All Categories",
     "searchCategoryPlaceholder": "Search category...",
+    "classTypeLabel": "Class Type / Program",
     "classTypeTittle": "Class Type",
-    "allClassType": "All",
+    "allClassType": "All Class Types",
+    "allClassesShort": "All Classes",
     "searchClassTypePlaceholder": "Search class type...",
+    "totalAvailable": "Total Projects Available:",
+    "projectUnit": "Projects",
     "projectAvailable": "Projects Available",
+    "applyFilters": "Apply Filters",
+    "activeFilterPrefix": "Active Filters:",
+    "showingResults": "Showing",
+    "fromResults": "of",
+    "resultsUnit": "results",
+    "alumniRole": "Kesatria Academy Alumni",
     "detailButton": "View Detail",
     "projectNotFound": "Project Not Found",
     "tryAdjusting": "Try adjusting your filters to find more projects.",
-    "resetAllFilters": "Reset Filters"
+    "resetAllFilters": "Reset Filters",
+    "generalCategory": "General",
+    "defaultClassType": "Program",
+    "untitledProject": "Untitled Project",
+    "defaultAuthor": "Alumni"
   },
   "blog": {
     "title": "Blog",
@@ -426,7 +504,7 @@
     }
   },
   "alumni": {
-    "title": "Our <span class='text-[#6EB6E5] font-bold'>Alumni</span> Our <span class='text-[#6EB6E5] font-bold'>Pride</span>",
+    "title": "Our <span class='text-[#003060] font-bold'>Alumni</span> Our <span class='text-[#003060] font-bold'>Pride</span>",
     "description": "Meet our talented alumni who have successfully completed their programs and are making an impact in the industry.",
     "activeFilters": "Active Filters",
     "resetFilters": "Reset Filters",
@@ -446,7 +524,11 @@
     "statAlumni": "Alumni",
     "statCareerGrowth": "Career Growth",
     "statHiringPartners": "Hiring Partners",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "popup": {
+      "linkLabel": "See all alumni stories",
+      "close": "Close"
+    }
   },
   "detailProgram": {
     "accountNumber": "Account Number",
@@ -604,7 +686,129 @@
     "programCompleted": "Program Completed",
     "completionDate": "Completion Date",
     "projectDuration": "Project Duration",
-    "months": "Months"
+    "months": "Months",
+    "noDescription": "No description provided.",
+    "noOverview": "No detailed overview provided.",
+    "defaultWebTech": "Web Technologies",
+    "defaultProgram": "SEMINAR - PORTFOLIO SHOWCASE"
+  },
+  "payment": {
+    "shell": {
+      "back": "Back",
+      "defaultTitle": "Program Registration",
+      "description": "Please complete your payment to verify your registration and activate your participation."
+    },
+    "stepper": {
+      "step1": {
+        "title": "Your Information",
+        "subtitle": "Enter details"
+      },
+      "step2": {
+        "title": "Payment",
+        "subtitle": "Tuition fees"
+      },
+      "step3": {
+        "title": "Confirmation",
+        "subtitle": "Activate account"
+      }
+    },
+    "form": {
+      "batch": "Program Batch",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Input Your Full Name",
+      "email": "Email",
+      "emailPlaceholder": "Input Your Email",
+      "whatsapp": "WhatsApp Number",
+      "whatsappPlaceholder": "Input Your WhatsApp Number",
+      "sourceLabel": "How did you know About the Kesatria Academy Program?",
+      "sourcePlaceholder": "Select How Did You Know",
+      "agreementLabel": "I agree to participate in the program until its completion",
+      "agreementTerms": "By checking this box, you confirm your commitment to follow all learning sessions according to the scheduled curriculum.",
+      "saveChanges": "Save Changes",
+      "sourceOptions": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "Friends",
+        "university": "University",
+        "whatsappGroup": "WhatsApp Group",
+        "webinarEvent": "Webinar/Event",
+        "website": "Website",
+        "other": "Other"
+      }
+    },
+    "voucher": {
+      "title": "Voucher Discount",
+      "placeholder": "Input Voucher Code",
+      "cancel": "Cancel",
+      "checking": "Checking voucher code...",
+      "typing": "Typing...",
+      "applied": "Voucher code applied successfully!",
+      "invalid": "Voucher code is invalid or has expired.",
+      "apiNotFound": "The system is being updated, the API is unavailable.",
+      "checkFailed": "An error occurred while checking the voucher code."
+    },
+    "installment": {
+      "title": "Installment Payment",
+      "subtitle": "Select the most convenient payment method for you.",
+      "choosePeriod": "Choose Installment Period",
+      "months": "Months",
+      "schedule": "Payment Schedule",
+      "downPayment": "Down Payment (DP)",
+      "payNowToEnroll": "Pay now to enroll",
+      "monthlyAfterDp": "Monthly Installment (After DP)",
+      "monthLabel": "Month",
+      "summaryTitle": "Payment Summary",
+      "installmentPlan": "Installment Plan",
+      "perMonth": "/month",
+      "dpNote": "Pay the down payment (DP) now to confirm your registration. The remaining balance is paid in monthly installments.",
+      "planMeta": "(Installment Payment -",
+      "monthUnit": "month)"
+    },
+    "summary": {
+      "title": "Complete your payment",
+      "fullPayment": "Full Payment",
+      "promoPrice": "Promo Price",
+      "coursePrice": "Course Price",
+      "discountVoucher": "Discount Voucher",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "payNow": "Pay Now",
+      "defaultCourseTitle": "Program Course",
+      "subtitle": "Select the most convenient payment method for you."
+    },
+    "channel": {
+      "manualOnly": "Only manual payment (bank transfer) is available.",
+      "gatewayOnly": "Fast payment via Gateway (Xendit). Manual payment is currently disabled.",
+      "allClosed": "Payment for this program is temporarily closed.",
+      "gatewayTitle": "Gateway Payment (Xendit)",
+      "gatewayHint": "You will be redirected to the Xendit payment page after pressing the button below.",
+      "manualTitle": "Upload Payment Proof (Manual Transfer)",
+      "manualHint": "Transfer the amount shown in the summary, then send your transfer receipt for admin verification (up to 1x24 hours).",
+      "transferTo": "Transfer to the following account",
+      "copied": "Copied!",
+      "copyAccount": "Copy the account number",
+      "accountName": "Account name",
+      "bankLabel": "Bank",
+      "manualInstruction": "After transferring, upload your payment proof. An admin will verify it within 1x24 hours and your program account will be activated once approved.",
+      "uploadHint": "Upload transfer receipt (JPG/PNG, max 5MB)",
+      "chooseFile": "Click to choose a file",
+      "submit": "Submit Payment Proof",
+      "uniqueNote": "A unique submission number is created automatically. You can track the status in Payment History.",
+      "fileTooLarge": "File too large",
+      "fileTooLargeBody": "Maximum file size is 5MB."
+    },
+    "success": {
+      "title": "Thank you! Your Payment Is Success!",
+      "subtitle": "We will contact you shortly and your program is now active.",
+      "imageAlt": "Payment Success",
+      "buttonText": "Back to Home"
+    },
+    "toast": {
+      "paymentFailed": "Payment failed",
+      "processError": "An error occurred while processing your payment.",
+      "connectionError": "A connection error occurred while contacting the payment server."
+    }
   },
   "historyPayment": {
     "title": "Transaction History",
@@ -652,6 +856,8 @@
       "installment": "INSTALLMENT",
       "paymentDate": "Payment Date :",
       "installmentMenu": "Installment :",
+      "payslip": "Payslip",
+      "dueDate": "Installment Due Date :",
       "status": "Status :",
       "paymentUnderReview": "Payment Under Review",
       "spanPaymentUnderReview": "Your payment is being verified. If you have questions, contact us :",
@@ -682,7 +888,104 @@
       "viewProgram": "View Program",
       "noFreeProgram": "No Registration Program History",
       "spanNoFreeProgram": "You haven't registered for any free classes yet. Start learning today!"
+    },
+    "filter": {
+      "dateRange": "Date range",
+      "fromDate": "From Date",
+      "toDate": "To Date",
+      "paymentMethod": "Payment method",
+      "paymentStatus": "Payment status",
+      "programCourse": "Program course",
+      "clear": "Clear",
+      "done": "Done",
+      "saveChanges": "Save Changes",
+      "reset": "Reset"
+    },
+    "noTransactions": "No transactions found",
+    "adjustFilters": "Try adjusting your filters or search keyword.",
+    "resetFilters": "Reset Filters",
+    "searchPlaceholder": "Search...",
+    "loading": "Loading your payment history...",
+    "allMethods": "All Methods",
+    "allPrograms": "All Programs",
+    "selectDateRange": "Select date range",
+    "from": "From",
+    "until": "Until",
+    "noHistory": "No history",
+    "rangeTemplate": "Showing {start}-{end} of {total} history",
+    "prev": "Previous page",
+    "next": "Next page",
+    "kind": {
+      "registration": "Registration",
+      "installment": "Installment payment",
+      "full": "Full payment"
     }
+  },
+  "transactionCard": {
+    "paymentMethod": "Payment method",
+    "paymentStatus": "Payment status",
+    "schedule": "Schedule",
+    "viewDetail": "View Detail",
+    "installmentPlan": "Installment"
+  },
+  "transactionDetail": {
+    "paymentProof": "Payment Proof",
+    "invoiceImage": "Invoice Image",
+    "download": "Download",
+    "downloading": "Downloading...",
+    "accountHolder": "Account Holder",
+    "bank": "Bank",
+    "email": "Email",
+    "name": "Name",
+    "phone": "Phone",
+    "keyword": "Keyword",
+    "paymentInfo": "Payment info",
+    "price": "Price",
+    "promoPrice": "Promo Price",
+    "normalPrice": "Normal Price",
+    "discount": "Discount",
+    "promoCode": "Promo Code",
+    "total": "Total",
+    "programCategory": "Program Category",
+    "programName": "Program Name",
+    "xenditLink": "Xendit Link",
+    "transferInstruction": "Transfer to the following account",
+    "uploadInstruction": "Upload transfer proof (JPG/PNG, max 5MB)",
+    "attachedProof": "Attached Transfer Proof",
+    "viewOriginalFile": "View original file",
+    "uploadPaymentProof": "Upload Payment Proof",
+    "reupload": "Reupload",
+    "pay": "Pay",
+    "sendProof": "Submit Proof",
+    "sendMonthProof": "Submit Month Proof",
+    "monthlyInstallments": "Monthly Installments",
+    "dueDate": "Due Date",
+    "installmentPlan": "Installment Plan",
+    "monthStatus": {
+      "paid": "Paid",
+      "process": "Processing",
+      "rejected": "Rejected",
+      "due": "Due",
+      "upcoming": "Upcoming"
+    },
+    "paidProgress": "Paid {paid} of {total} ({percent}%)",
+    "uploadSizeAlert": "Maximum file size is 5MB.",
+    "invoice": "INVOICE",
+    "billedTo": "BILLED TO",
+    "paymentStatus": "PAYMENT STATUS",
+    "invoiceDate": "Invoice Date",
+    "paymentDate": "Payment Date",
+    "purchaseDetails": "Purchase Details",
+    "description": "DESCRIPTION",
+    "totalPaid": "TOTAL PAID",
+    "approvedBy": "Approved by,",
+    "digitalStamp": "DIGITAL STAMP & SIGNATURE",
+    "defaultSigner": "Adipura Arya Kangsadewa, S.Bns.",
+    "thankYou": "Thank you for choosing Kesatria.",
+    "electronicDoc": "Document issued electronically.",
+    "statusPaid": "PAID",
+    "statusPending": "PENDING",
+    "statusRejected": "REJECTED"
   },
   "profile": {
     "title": "My Profile",
@@ -714,6 +1017,48 @@
     "seniorHighSchool": "Senior High School",
     "diploma": "Diploma (D3/D4)",
     "bachelorDegree": "Bachelor Degree (S1)",
+    "welcome": "Welcome",
+    "belowProfileInfo": "Below is your profile information.",
+    "profilePhoto": "Profile Photo",
+    "changePhoto": "Change Photo",
+    "updatePhoto": "Update profile photo",
+    "jpgPngHint": "JPG or PNG, up to 5 MB.",
+    "account": "Account",
+    "accountDesc": "The username and email you sign in with.",
+    "placeholderUsername": "Input Your Username",
+    "placeholderEmail": "Input Your Email",
+    "placeholderGender": "Select Your Gender",
+    "yourBiodata": "Your Biodata",
+    "address": "Address",
+    "certificateNotice": "Your certificate is printed with the full name you save here.",
+    "completeness": "Profile completeness",
+    "detailsFilledIn": "details filled in",
+    "of": "of",
+    "saveNameFirstNotice": "Save your full name first - a certificate cannot be issued without it.",
+    "security": "Security",
+    "securityDesc": "Update the password you use to sign in to Kesatria Academy.",
+    "cropPhotoModal": {
+      "title": "Crop Profile Photo",
+      "description": "Adjust crop area for your profile photo",
+      "apply": "Apply Crop"
+    },
+    "validation": {
+      "usernameRequired": "Username is required.",
+      "usernameMin": "Username must be at least 3 characters.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "fullNameRequired": "Full name is required.",
+      "fullNameMin": "Full name must be at least 3 characters.",
+      "phoneDigits": "Use digits only, with an optional leading + and spaces.",
+      "phoneLength": "Phone number should be 8 to 15 digits.",
+      "fileTypeNotAllowed": "File type not allowed! Please upload JPG, JPEG, or PNG image only.",
+      "fileSizeTooLarge": "File size too large! Maximum 5MB allowed.",
+      "readyToUpload": "Ready to upload",
+      "accountNotSaved": "Account not saved",
+      "biodataNotSaved": "Biodata not saved",
+      "tryAgainLater": "Please try again in a moment.",
+      "failedToSave": "Failed to save. Please try again."
+    },
     "editInfoProfile": {
       "title": "Edit Profile Information",
       "username": "Username",
@@ -723,11 +1068,13 @@
     },
     "editPassword": {
       "title": "Change Password",
+      "subtitle": "Choose a new password for your Kesatria Academy account.",
       "currentPassword": "Current Password",
       "placeholderCurrentPassword": "Enter your current password",
       "newPassword": "New Password",
       "placeholderNewPassword": "Enter your new password",
       "confirmNewPassword": "Confirm New Password",
+      "placeholderConfirmNewPassword": "Confirm your new password",
       "cancel": "Cancel",
       "saveChanges": "Save Changes"
     },
@@ -787,6 +1134,20 @@
     "spanNoCompletedProgram": "You haven't completed any programs yet. Keep going and achieve your learning goals!"
   },
   "myPortfolio": {
+    "gallery": {
+      "editMine": "Edit my portfolio",
+      "mineNotice": "You already have a portfolio for this program. Everyone else's work is shown below.",
+      "projectCount": "projects",
+      "scopeAll": "All students",
+      "scopeLabel": "Show",
+      "scopeMine": "My portfolio",
+      "sortLabel": "Sort",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first",
+      "sortTitle": "Title A-Z",
+      "unknownType": "Class",
+      "yoursBadge": "Yours"
+    },
     "title": "My Portfolio",
     "description": "Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.",
     "filterTittle": "Active Filters",
@@ -803,6 +1164,20 @@
     "projectNotFound": "Project Not Found",
     "tryAdjusting": "Try adjusting your filters to find more projects.",
     "resetAllFilters": "Reset Filters",
+    "searchPortfolioPlaceholder": "Search portfolio by title or description...",
+    "noImage": "No image uploaded",
+    "selectProgram": "Select Program",
+    "noProgramsEnrolled": "No programs enrolled",
+    "programLockedNote": "A portfolio stays with the program it was created for.",
+    "chooseFile": "Choose File",
+    "noFileChosen": "No file chosen",
+    "allowedImageFormat": "JPG, JPEG, PNG, or GIF · max 5MB · 1900-1920 × 1000-1080 px",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "deleteConfirmTitle": "Delete this portfolio?",
+    "deleteConfirmDesc": "and the images uploaded with it will be removed permanently. This cannot be undone.",
     "createPortfolio": {
       "createYourPortfolio": "Create Your Portfolio",
       "overview": "Project Overview",
@@ -840,21 +1215,109 @@
     },
     "detailPortfolio": {
       "backProgram": "Back to Program",
+      "backToList": "Back to Portfolio List",
       "description": "Portfolio showcase and project details",
       "projectDescription": "Project Description",
       "overview": "Project Overview",
+      "noOverview": "No project overview provided yet.",
       "projectLink": "Project Link",
       "visitProject": "Visit Project",
       "technologiesUsed": "Technologies Used",
       "imageThumbnails": "Image Thumbnails",
+      "studentProfile": "Student Profile",
+      "program": "Program",
+      "submitted": "Submitted",
+      "notRecorded": "Not recorded",
+      "shareTitle": "Share This Portfolio",
+      "shareDescription": "Share this project to your social media so more people can see it.",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "instagramModalTitle": "Prepare Instagram Post",
+      "instagramModalSubtitle": "Follow these 3 easy steps to share your portfolio to Instagram.",
+      "stepPreviewTitle": "1. Preview & Download Image",
+      "instagramImageFormat": "Format ready to upload to Feed or Story",
+      "downloadImage": "Download Image",
+      "downloading": "Downloading...",
+      "stepCaptionTitle": "2. Post Caption",
+      "captionBy": "Created by",
+      "captionSeeMore": "See more at Kesatria Academy:",
+      "copyCaption": "Copy Caption",
+      "captionCopied": "Caption Copied!",
+      "openInstagram": "Open Instagram",
+      "closeModal": "Close",
+      "instagramStep1": "Download the project image & copy the prepared caption.",
+      "instagramStep2": "Open Instagram and click the (+) Create Post button.",
+      "instagramStep3": "Upload the downloaded image and paste (Ctrl+V) your caption.",
+      "noImageAvailable": "No preview image available",
       "editPortfolio": "Edit Portfolio",
       "deletePortfolio": "Delete Portfolio"
+    },
+    "header": {
+      "title": "My Portfolio",
+      "description": "Your project collection. Each portfolio shows the technical skills and solutions you built during the program."
+    },
+    "search": {
+      "ariaLabel": "Search portfolio",
+      "placeholder": "Search portfolio by title or description..."
+    },
+    "createButton": "Create Portfolio",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "viewDetailButton": "View Detail",
+    "noImageUploaded": "No image uploaded",
+    "untitledPortfolio": "Untitled Portfolio",
+    "emptyStateCourse": {
+      "noProgramDescription": "Open one of your programs to see its portfolio.",
+      "noProgramTitle": "No program opened",
+      "title": "No Portfolios Yet",
+      "description": "No portfolios for this program yet. Create your first portfolio now.",
+      "lockedNotice": "Complete all learning materials first before you can create a portfolio.",
+      "lockedNoticeBootcamp": "Complete all learning materials and get your final assignment approved first before you can create a portfolio."
+    },
+    "modal": {
+      "editTitle": "Edit Your Portfolio",
+      "programLockedHint": "A portfolio stays with the program it was created for.",
+      "selectProgram": "Select Program",
+      "noProgramsEnrolled": "No programs enrolled",
+      "chooseFile": "Choose File",
+      "noFileChosen": "No file chosen",
+      "removeImage": "Remove image",
+      "removeThisImage": "Remove this image",
+      "formatSubtitle": "JPG, JPEG, PNG, or GIF · max 5MB · 1900-1920 × 1000-1080 px",
+      "save": "Save",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "deleteConfirm": {
+      "title": "Delete this portfolio?",
+      "warningSuffix": "and the images uploaded with it will be removed permanently. This cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "messages": {
+      "saveErrorTitle": "Portfolio not saved",
+      "titleRequired": "Give your portfolio a title first.",
+      "imageRequiredCreate": "Upload at least one image first.",
+      "imageRequiredEdit": "Keep at least one image, or upload a new one.",
+      "programRequired": "Choose which program this portfolio belongs to.",
+      "createdTitle": "Portfolio created",
+      "createdDesc": "Your project is now in your portfolio list.",
+      "updatedTitle": "Portfolio updated",
+      "updatedDesc": "Your changes have been saved.",
+      "tryAgain": "Please try again in a moment.",
+      "networkError": "The request did not go through. Check your connection and try again.",
+      "invalidType": "use a JPG, PNG, or GIF file",
+      "fileTooLarge": "file is larger than 5MB",
+      "unreadableImage": "this file could not be read as an image",
+      "dimensionError": "px - needs 1900-1920 x 1000-1080"
     }
   },
   "startLearning": {
     "joinGroup": "Join Group",
     "myLogbook": "My Logbook",
     "detailProgram": "Detail Program",
+    "portfolio": "Portfolio",
     "startLearning": "Start Learning",
     "spanStartLearning": "Complete each week to unlock the next",
     "week": "Week",
@@ -869,6 +1332,8 @@
     "presentation": "Presentation",
     "assignmentCompleted": "Assignment Completed ✓",
     "startAssignment": "Start Assignment",
+    "assignmentUnderReview": "Assignment Under Review",
+    "reviseAssignment": "Revise Assignment",
     "viewApprovedLogBook": "View Approved Logbook",
     "updateRejectedLogBook": "Update Rejected Logbook",
     "logBookUnderReview": "Logbook Under Review",
@@ -887,7 +1352,102 @@
     "viewPortfolio": "View Portfolio",
     "uploadPortfolio": "Upload Portfolio",
     "completePreviousRequirements": "Complete previous requirements to unlock",
-    "previousWeekQuizRequirement": "The previous week's quiz must meet the minimum score to unlock this content."
+    "previousWeekQuizRequirement": "The previous week's quiz must meet the minimum score to unlock this content.",
+    "allWeeksDone": "You have finished every week in this program.",
+    "inProgress": "In progress",
+    "continue": "Continue",
+    "of": "of",
+    "weeks": "weeks",
+    "completedLower": "completed",
+    "programProgress": "Program progress",
+    "sessions": "sessions",
+    "quiz": "Quiz",
+    "yourRecord": "Your record",
+    "assignment": "Assignment",
+    "certificate": "Certificate",
+    "locked": "Locked",
+    "sessionLower": "session",
+    "stepsDone": "steps done",
+    "sessionProgress": "Session progress",
+    "attendance": "Attendance",
+    "materialsLockedHint": "Mark your attendance first to open the materials for this session.",
+    "noMaterials": "No materials have been added to this session yet.",
+    "notSubmitted": "Not submitted",
+    "viewSubmission": "View submission",
+    "noAssignments": "No assignments in this session.",
+    "logbookHint": "Write what you did in this session so your mentor can review it.",
+    "viewLogbook": "View logbook",
+    "sessionNav": "Session navigation",
+    "previousSession": "Previous session",
+    "nextSession": "Next session",
+    "openSession": "Open session",
+    "assignmentRejected": "Needs revision",
+    "assignmentInReview": "Under review",
+    "resubmitAssignment": "Resubmit",
+    "programTabs": "Program sections",
+    "tabSessions": "Sessions",
+    "tabAttendance": "Attendance",
+    "assignmentIntro": "Your submitted and outstanding tasks for this program, grouped by week.",
+    "certificateNoCourse": "Open a program first to see its certificate.",
+    "certificateReadyTitle": "Your certificate is ready",
+    "certificateReadyBody": "You have completed %s. Download your certificate below.",
+    "certificateLockedTitle": "Certificate not available yet",
+    "certificateLockedBody": "Finish every week in this program to unlock your certificate.",
+    "downloadCertificate": "Download Certificate",
+    "totalWeeks": "Total weeks",
+    "remaining": "Remaining",
+    "completedCount": "Completed",
+    "attendanceHint": "Mark attendance to open each session’s materials.",
+    "submitted": "Submitted",
+    "notSubmittedCount": "Not submitted",
+    "passed": "Passed",
+    "inReviewCount": "In review",
+    "rejectedCount": "Needs revision",
+    "totalCount": "Total",
+    "attended": "Attended",
+    "sessionsAttendedSuffix": "sessions attended",
+    "assignmentsApprovedSuffix": "assignments approved",
+    "quizzesPassedSuffix": "quizzes passed",
+    "logbookApprovedSuffix": "logbook entries approved",
+    "attendedLower": "attended",
+    "tasksLower": "tasks",
+    "submittedLower": "submitted",
+    "quizLower": "quiz",
+    "noSessionsInWeek": "No sessions in this week.",
+    "notRecorded": "Not recorded",
+    "reviewQuiz": "Review Quiz",
+    "editAttendanceUnavailable": "Your attendance is already recorded. Ask your mentor if it needs changing.",
+    "quizLocked": "Finish this week’s sessions to unlock the quiz.",
+    "markAttendanceShort": "Mark attendance",
+    "openTask": "Open task",
+    "weekLockedHint": "Pass the previous week’s quiz to unlock this week.",
+    "quizAvailable": "Available",
+    "quizIntro": "One quiz per week. Pass it to unlock the next week.",
+    "quizNotUnlocked": "Not unlocked yet",
+    "approved": "Approved",
+    "taskLower": "task",
+    "assignmentFile": "Assignment file",
+    "openFile": "Open",
+    "yourSubmission": "Your submission",
+    "editSubmission": "Edit submission",
+    "yourAnswer": "Your answer",
+    "answerHint": "A GitHub, Google Drive, or any file-sharing link.",
+    "submitAnswerBtn": "Submit answer",
+    "submittingBtn": "Submitting...",
+    "cancelBtn": "Cancel",
+    "submittedOn": "Submitted",
+    "noAssignmentFile": "No file was attached to this task.",
+    "finalAssignment": "Final Assignment",
+    "finalAssignmentIntro": "One task for this program. Open it to read the brief and send your work.",
+    "finalAssignmentNotSet": "No final assignment yet",
+    "finalAssignmentBrief": "Brief",
+    "finalAssignmentReviseHint": "Read your mentor's note, then send your work again.",
+    "mentorNote": "Mentor's note",
+    "backToAssignmentList": "Back to assignment list",
+    "submissionFailed": "Your work could not be sent. Please try again.",
+    "finalAssignmentNoContent": "There is no content for this final assignment yet.",
+    "finalAssignmentLocked": "Final Assignment is Locked",
+    "finalAssignmentLockedHint": "Complete all learning weeks first to unlock this final assignment."
   },
   "attendance": {
     "title": "Attendance Form",
@@ -898,36 +1458,54 @@
     "absent": "Absent",
     "noInformation": "No Information",
     "notes": "Notes",
+    "selectStatus": "Select attendance status",
+    "placeholderNotes": "Enter attendance notes...",
     "saveAttendance": "Save Attendance",
     "cancel": "Cancel"
   },
   "material": {
+    "completeWeekHint": "Complete each week to unlock the next",
     "pdf": {
       "backToProgram": "Back to Program",
       "noPDFSelected": "No PDF Selected",
       "selectPDFInstruction": "Select a PDF from the list to start reading",
-      "materiProgram": "Program Materials",
+      "materiProgram": "PDF Materials",
       "downloadPDF": "Download PDF",
-      "noMateriAvailable": "No Materials Available",
+      "noMateriAvailable": "No PDF material available for this session",
       "spanNoMateriAvailable": "Material will be added soon"
     },
     "video": {
       "backToProgram": "Back to Program",
       "noVideoSelected": "No Video Selected",
       "selectVideoInstruction": "Select a video from the list to start watching",
-      "materiProgram": "Program Materials",
-      "noMateriAvailable": "No Materials Available",
+      "materiProgram": "Video Materials",
+      "noMateriAvailable": "No Video material available for this session",
       "spanNoMateriAvailable": "Material will be added soon"
     },
     "ppt": {
       "backToProgram": "Back to Program",
       "noPresentationSelected": "No Presentation Selected",
       "selectPPTInstruction": "Select a presentation from the list to start viewing",
-      "materiProgram": "Program Materials",
+      "materiProgram": "PPT Materials",
       "downloadPPT": "Download PPT",
-      "noMateriAvailable": "No Materials Available",
+      "noMateriAvailable": "No PPT material available for this session",
       "spanNoMateriAvailable": "Material will be added soon"
-    }
+    },
+    "unavailableTitle": "This file is unavailable",
+    "unavailableBody": "The file is no longer stored on the server. Please ask your mentor to upload it again."
+  },
+  "nonBootcamp": {
+    "title": "Syllabus",
+    "scorePrefix": "Score:",
+    "requirement": "Requirement: Minimum score of",
+    "requirementPrev": "on the previous module",
+    "empty": "No syllabus available for this program yet."
+  },
+  "joinGroup": {
+    "title": "Join Group Class",
+    "description": "Join your class group to receive important announcements, learning materials, schedules, and communicate with mentors and fellow participants.",
+    "joinNow": "Join Now",
+    "linkNotShared": "The group link has not been shared by your mentor yet."
   },
   "logbook": {
     "createLogBook": {
@@ -960,6 +1538,7 @@
     },
     "detailLogBook": {
       "logbookDetail": "Log Book Detail",
+      "logbookDetailHint": "Document your daily learning activities, progress, and encountered challenges below.",
       "activity": "Activity",
       "activityDetails": "Activity Details",
       "obstacles": "Obstacles",
@@ -989,7 +1568,17 @@
       "action": "Action",
       "noLogbookFound": "No Logbook Found",
       "noLogBookDataMatch": "No logbook data matches your selected filters.",
-      "resetFilters": "Reset Filters"
+      "resetFilters": "Reset Filters",
+      "description": "View and monitor your submitted logbook entries throughout the program.",
+      "empty": "No logbook entries found for this program.",
+      "view": "View",
+      "session": "Session",
+      "showing": "Showing",
+      "of": "of",
+      "entries": "entries",
+      "previous": "Previous",
+      "next": "Next",
+      "logbookEntry": "Logbook Entry"
     }
   },
   "quiz": {
@@ -1014,13 +1603,29 @@
       "next": "Next",
       "timeIsOver": "Time is over",
       "submitAnswers": "Submit Answers"
-    }
+    },
+    "duration": "Duration",
+    "minutes": "minutes",
+    "noTimeLimit": "No time limit",
+    "multipleChoice": "Multiple choice",
+    "questionsCount": "questions",
+    "attempts": "Attempts",
+    "bestScore": "Best score",
+    "attempt": "Attempt",
+    "takenOn": "Taken on",
+    "retakeQuiz": "Retake quiz",
+    "backToProgram": "Back to program",
+    "overviewHint": "Check your understanding of this week’s material.",
+    "alreadyPassed": "You have already passed this quiz. Taking it again will add another attempt.",
+    "notPassedYet": "You have not reached the minimum score yet.",
+    "minute": "minute"
   },
   "assigment": {
     "backProgram": "Back to Program",
     "assigment": "Assignment",
     "submitYourAnswer": "Submit Your Answer",
     "spanSubmitYourAnswer": "Enter a GitHub link, Google Drive, or any online file sharing link.",
+    "submitFileLink": "Submit File Link",
     "submitAnswer": "Submit Answer",
     "update": "Update Answer",
     "cancel": "Cancel",
@@ -1042,20 +1647,23 @@
     "allTypesOfLearning": "All types of learning",
     "allMethods": "All Methods",
     "showAllMethods": "Show all learning methods",
+    "allStatuses": "All Statuses",
+    "ongoing": "In Progress",
+    "completed": "Completed",
     "learnFromAnywhere": "Learn from anywhere with online classes",
     "inPersonClasses": "In-person classes at physical locations"
   },
-  "paidProgram":{
-    "header":{
-      "startLearning":"Start Learning",
+  "paidProgram": {
+    "header": {
+      "startLearning": "Start Learning",
       "learningDate": "Learning Date",
       "location": "Location",
-      "capacity":"Capacity",
+      "capacity": "Capacity",
       "students": "Students",
       "registrationTime": "Registration is Open Until",
       "registrationNow": "Registration Now"
     },
-    "navbarMenu":{
+    "navbarMenu": {
       "participants": "Participants",
       "whatYouLearn": "What You'll Learn",
       "benefits": "Benefits",
@@ -1063,165 +1671,741 @@
       "schedule&Fees": "Schedule & Fees",
       "gallery": "Gallery",
       "FAQ": "FAQ"
-
     },
-    "title":{
+    "title": {
       "participants": "Participants",
-      "whatYouLearn":"What You'll Learn",
+      "whatYouLearn": "What You'll Learn",
       "benefits": "Benefits",
       "learningFlow": "Learning Flow",
-      "schedule&Fees":"Schedule & Fees",
-      "gallery":"Gallery",
+      "schedule&Fees": "Schedule & Fees",
+      "gallery": "Gallery",
       "frequentlyAskedQuestions": "Frequently Asked Questions"
     },
-    "schedule&Fees":{
+    "schedule&Fees": {
       "badge": "Schedule & Fees",
       "title": "Kickstart Your Career Today ",
       "fullPayment": "Full Payment",
       "installment": "Installment",
       "save": "Save",
       "flexible": "Flexible payment plans up to",
-      "months":"Months",
+      "months": "Months",
       "offerEnd": "Offer Ends In",
       "until": "Until",
-      "freeConsultation":"Free Consultation",
-      "installmentInfo":"Installment Information",
-      "installmentPoint":{
+      "freeConsultation": "Free Consultation",
+      "installmentInfo": "Installment Information",
+      "installmentPoint": {
         "sentence1": "Down Payment (DP) is required as the first payment for enrollment",
         "sentence2": "No additional fees or interest",
         "sentence3": "Pay monthly as per schedule below",
         "sentence4": "Full access after DP payment"
       },
       "registration": "Registration",
-      "startLearning":"Start Learning",
-      "registrationNow":"Registration Now"
+      "startLearning": "Start Learning",
+      "registrationNow": "Registration Now"
     },
-    "gallery":{
-      "description":"Take a look at the key moments and experiences that made this program meaningful.",
+    "gallery": {
+      "description": "Take a look at the key moments and experiences that made this program meaningful.",
       "seeAllOurGallery": "See All Our Gallery"
+    },
+    "hero": {
+      "paidProgramBadge": "Paid Program",
+      "freeProgramBadge": "Free Program",
+      "bootcampBadge": "BOOTCAMP",
+      "defaultDescription": "Comprehensive intensive learning program designed specifically to guide you to master real skills with top industry mentors.",
+      "btnRegister": "Register Now",
+      "btnConsultation": "Free Consultation",
+      "quickStats": {
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "month": "Months",
+        "learningSystem": "Learning System",
+        "onlineOffline": "Online & Offline",
+        "classCapacity": "Class Capacity",
+        "maxStudent": "Max. {{count}} Students"
+      }
+    },
+    "advantage": {
+      "eyebrow": "KEY ADVANTAGES",
+      "title": "Why Study at Kesatria Academy?",
+      "mentoringTitle": "1-on-1 Mentoring",
+      "mentoringDesc": "Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio.",
+      "portfolioTitle": "Real-World Portfolio",
+      "portfolioDesc": "Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes.",
+      "careerTitle": "Career Support",
+      "careerDesc": "CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network.",
+      "certificateTitle": "Competency Certificate",
+      "certificateDesc": "Earn an official graduation certificate to prove your practical skills to recruiters."
+    },
+    "curriculum": {
+      "badge": "BOOTCAMP SYLLABUS",
+      "title": "Structured & Industry-Proven Curriculum",
+      "description": "Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.",
+      "modulePrefix": "Module ",
+      "defaultModuleDesc": "Learn comprehensive material in this module with intensive guidance from industry practitioner mentors."
+    },
+    "tools": {
+      "eyebrow": "SOFTWARE & TOOLS",
+      "title": "Tools You Will Master"
+    },
+    "schedule": {
+      "eyebrow": "SCHEDULE INFORMATION",
+      "title": "Class Format & Session Schedule",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "registrationDeadline": "Registration Deadline",
+      "everyday": "Every Day",
+      "tueThu": "Tuesday & Thursday",
+      "formatOption": "Format Option",
+      "hybridMeetup": "(Online Zoom & Offline Meetup)"
+    },
+    "pricing": {
+      "eyebrow": "INVESTMENT INFORMATION",
+      "title": "Package Options to Fit Your Needs",
+      "description": "We provide optimal mentoring programs with friendly and transparent payment schemes.",
+      "cardTitle": "Kickstart Your Career Today",
+      "fullPayment": "Full Payment",
+      "installment": "Installment",
+      "save": "Save",
+      "offerEndsIn": "Offer Ends In",
+      "days": "Days",
+      "installmentInfo": "Installment Information",
+      "point1": "Down Payment (DP) is required as the first payment for enrollment",
+      "point2": "No additional fees or interest",
+      "point3": "Pay monthly as per schedule below",
+      "point4": "Full access after DP payment",
+      "registration": "Registration",
+      "startLearning": "Start Learning",
+      "btnRegister": "Register Now",
+      "btnConsultation": "Free Consultation"
+    },
+    "finalCta": {
+      "eyebrow": "REGISTRATION PROCESS",
+      "titlePrefix": "Start Your Career in",
+      "titleSuffix": "Now",
+      "description": "Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality."
     }
   },
   "special_program": {
-    "heroSection":{
+    "heroSection": {
       "alumni": "Alumni",
-      "hiringPartners":"Hirinng Partners",
-      "placement":"Placement Rate"
+      "hiringPartners": "Hiring Partners",
+      "placement": "Placement Rate",
+      "eyebrow": "Program",
+      "description": "Master industry-ready skills through hands-on, mentor-led training built around real project work.",
+      "tagText": "PREMIUM STUDY ABROAD",
+      "defaultHeadlineJapan": "Transform your future in Japan — from language to career.",
+      "defaultHeadlineGeneral": "Transform your future with us — from learning to career.",
+      "defaultSubheadingJapan": "A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.",
+      "defaultSubheadingGeneral": "A structured journey designed for ambitious learners: practical industry training, workplace readiness, and guided support for long-term success.",
+      "buttonRegister": "Register Now",
+      "buttonViewProgram": "View Program",
+      "curriculumChipJapan": "N5 readiness curriculum",
+      "curriculumChipGeneral": "Industry-standard curriculum",
+      "supportChip": "Career & study support",
+      "snapshot1Title": "Comprehensive curriculum",
+      "snapshot1DescJapan": "Language + culture + career prep",
+      "snapshot1DescGeneral": "Practical + industry readiness",
+      "snapshot2Title": "Mentor-led learning",
+      "snapshot2Desc": "Experienced instructors & support",
+      "snapshot3TitleJapan": "Career & study pathways",
+      "snapshot3TitleGeneral": "Career development pathways",
+      "snapshot3DescJapan": "Guidance for next steps in Japan",
+      "snapshot3DescGeneral": "Guidance for professional growth"
     },
-    "program":{
-      "title":"<span class='text-[#6EB6E5]'>Choose</span> Your Program",
-      "description":"Select the program that aligns with your goals and passion.",
-      "month":"Months",
-      "student":"Students"
+    "program": {
+      "title": "Programs in",
+      "choosePrefix": "Choose",
+      "chooseMiddle": "Your",
+      "japanProgram": "Japan Program",
+      "description": "Select the program that aligns with your goals and passion.",
+      "defaultCardDesc": "A structured journey from fundamentals to workplace readiness and long-term career opportunities.",
+      "language": "Language",
+      "practical": "Practical",
+      "day": "Day",
+      "month": "Month",
+      "student": "Students",
+      "quota": "Quota",
+      "culture": "Culture",
+      "career": "Career",
+      "speaking": "Speaking",
+      "listening": "Listening",
+      "reading": "Reading",
+      "writing": "Writing",
+      "applications": "Applications",
+      "interviews": "Interviews",
+      "planning": "Planning",
+      "card1Title": "Japan Program",
+      "card1Desc": "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.",
+      "card2Title": "Japanese Language Training",
+      "card2Desc": "Build strong communication skills through structured lessons and interactive practice.",
+      "card3Title": "Career & Study Support",
+      "card3Desc": "Receive support for applications, interviews, and planning your path in Japan.",
+      "eyebrow": "Our Programs",
+      "comingSoonTitle": "Coming Soon",
+      "comingSoonText": "We're preparing something great for this category. Check back soon or reach out for details."
     },
-    "whyChooseUs":{
+    "whyChooseUs": {
       "title": "Why Choose Our",
-      "description": "Designed to equip students with industry-relevant skills through practical, hands-on learning led by experienced professionals."
+      "titlePrefix": "Why Choose",
+      "titleSuffixJapan": "Our Japan Program",
+      "titleSuffixGeneral": "Our Program",
+      "description": "Designed to equip students with industry-relevant skills through practical, hands-on learning led by experienced professionals.",
+      "descJapan": "Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.",
+      "descGeneral": "Gain the skills, practical experience, and industry readiness needed with comprehensive guidance from experienced mentors.",
+      "eyebrow": "Why Us",
+      "card1TitleJapan": "Comprehensive Japanese Language Training",
+      "card1TitleGeneral": "Comprehensive Industry Curriculum",
+      "card1DescJapan": "Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.",
+      "card1DescGeneral": "Master in-demand skills through a structured, project-driven curriculum designed with industry partners.",
+      "card2Title": "Experienced Mentors & Practitioners",
+      "card2Desc": "Learn directly from seasoned industry practitioners who provide 1-on-1 feedback, practical insights, and guidance throughout your learning journey.",
+      "card3TitleJapan": "JLPT Preparation & Certification",
+      "card3TitleGeneral": "Industry Certification & Portfolio",
+      "card3DescJapan": "Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.",
+      "card3DescGeneral": "Build verified, production-grade portfolios and gain recognized certificates to accelerate your career growth.",
+      "card4Title": "Career & Placement Support",
+      "card4Desc": "Receive comprehensive career support, CV review, mock interviews, and exclusive hiring partner access to kickstart your professional journey.",
+      "card5Title": "Hands-On & Real-World Practice",
+      "card5Desc": "Learn through real-world case studies, hands-on client projects, and collaborative workflows that simulate actual workplace conditions.",
+      "card6Title": "Workplace Readiness & Soft Skills",
+      "card6Desc": "Cultivate professional work ethics, team collaboration, and communication skills to excel in any fast-paced engineering team."
     },
-    "topic":{
-      "title":"<span class='text-[#6EB6E5]'>Training</span> <span class='text-[#003060]'>Topics</span>",
-      "description": "Popular topics available in this program"
+    "topic": {
+      "title": "Training Topics",
+      "description": "Popular topics available in this program",
+      "eyebrow": "Topics"
     },
-    "alumni":{
+    "alumni": {
       "title": "Stories From",
-      "title2":"Alumni In",
+      "title2": "Alumni In",
+      "storiesTitle": "Real Stories, Real Placement",
+      "storiesDescJapan": "Hear directly from graduates who built successful careers in Japan.",
+      "storiesDescGeneral": "Hear directly from graduates who built successful careers through our programs.",
       "description": "Hear how our in-house training programs have helped students gain practical skills, industry insights, and greater confidence for their future careers.",
       "footer": "And many more inspiring stories from our alumni",
-      "allStories":"See all alumni stories"
+      "allStories": "See all alumni stories",
+      "badge": "Alumni Success"
     },
-    "gallery":{
-      "title":"<span class='text-black'>Our</span> <span class='text-[#6EB6E5]'>Gallery</span>",
+    "gallery": {
+      "badge": "Campus Life",
+      "campusTitle": "Life at Kesatria Academy",
+      "campusDesc": "A glimpse of our training environment, study sessions, and community events.",
+      "title": "<span class='text-black'>Our</span> <span class='text-[#6EB6E5]'>Gallery</span>",
       "description": "Take a look at the key moments and experiences that made this program meaningful.",
-      "allGaleries":"See All Our Gallery"
+      "allGaleries": "See All Our Gallery"
     },
-    "contact":{
-      "title": "<span class='text-white font-semibold'>Transform</span> <span class='text-black font-semibold'>Your Team Today</span> ",
-      "description":"Get a customized training proposal for your organization",
+    "contact": {
+      "title": "Transform your team today",
+      "description": "Empower your workforce with tailored training programs designed to meet your specific industry needs. Contact us today to learn more.",
+      "btnRegister": "Register Now",
       "contact": "Contact Us"
     },
-    "faq":{
-      "title":"<span class='text-black'>Frequently Asked</span> <span class='text-[#6EB6E5]'>Questions</span>",
-      "description":"Everything you need to know about our program"
+    "faq": {
+      "eyebrow": "FREQUENTLY ASKED QUESTIONS",
+      "title": "<span class='text-black'>Frequently Asked</span> <span class='text-[#6EB6E5]'>Questions</span>",
+      "description": "Everything you need to know about our program"
     }
   },
-  "freeProgram":{
-    "hero":{
-      "learn":"Learn More",
-      "saveDate":"Save The Date",
+  "freeProgram": {
+    "hero": {
+      "learn": "Learn More",
+      "saveDate": "Save The Date",
       "location": "Location",
-      "time":"Time",
-      "capacity":"Capacity",
-      "students":"Students",
-      "regisUntil":"Registration is Open Until",
-      "regisNow":"Registration Now"
+      "time": "Time",
+      "capacity": "Capacity",
+      "students": "Students",
+      "regisUntil": "Registration is Open Until",
+      "regisNow": "Register Now",
+      "consultation": "Free Consultation",
+      "freeProgramBadge": "FREE PROGRAM",
+      "defaultDescription": "Learn the fundamentals of data analysis from scratch to better understand data insights in a structured way.",
+      "quickStats": {
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "learningSystem": "Learning System",
+        "classCapacity": "Class Capacity",
+        "maxPrefix": "Maximum",
+        "students": "Students",
+        "onlineOffline": "Online & Offline"
+      }
     },
-    "navMenu":{
-      "participants":"Participants",
-      "benefit":"What You'll Get",
-      "schedule":"Schedule & Fees",
-      "gallery":"Gallery",
-      "faq":"FAQ"
+    "navMenu": {
+      "participants": "Participants",
+      "benefit": "What You'll Get",
+      "schedule": "Schedule & Fees",
+      "gallery": "Gallery",
+      "faq": "FAQ"
     },
-    "badge":{
-      "participants":"Participants",
-      "benefit":"What You'll Get",
-      "schedule":"Schedule & Fees",
-      "gallery":"Gallery",
-      "faq":"Frequently Asked Questions"
+    "badge": {
+      "participants": "Participants",
+      "benefit": "What You'll Get",
+      "schedule": "Schedule & Fees",
+      "gallery": "Gallery",
+      "faq": "Frequently Asked Questions"
     },
-    "schedule":{
-      "title":"No Payment Required",
-      "description":"You only need to register to join this program.",
-      "registration":"Registration",
-      "start":"Start",
-      "regisNow":"Registration Now"
+    "whatYouGet": {
+      "eyebrow": "KEY ADVANTAGES",
+      "title": "Why Study at Kesatria Academy?",
+      "card1Title": "1-on-1 Mentoring",
+      "card1Desc": "Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio.",
+      "card2Title": "Real-World Portfolio",
+      "card2Desc": "Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes.",
+      "card3Title": "Career Support",
+      "card3Desc": "CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network.",
+      "card4Title": "Competency Certificate",
+      "card4Desc": "Earn an official graduation certificate to prove your practical skills to recruiters."
     },
-    "gallery":{
-      "description":"Take a look at the key moments and experiences that made this program meaningful.",
-      "allGaleries":"See All Our Gallery"
+    "sylabus": {
+      "badgeTitle": "BOOTCAMP SYLLABUS",
+      "title": "Structured & Industry-Proven Curriculum",
+      "description": "Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards."
     },
-    "faq":{
-      "title":"<span style='color: #0B1F3B;'>Frequently Asked</span> <span style='color: #6EB6E5;'>Questions</span>",
-      "description":"Browse common questions and get the information you need quickly and easily."
+    "tools": {
+      "eyebrow": "SOFTWARE & TOOLS",
+      "title": "Tools You Will Master"
+    },
+    "formatClass": {
+      "eyebrow": "SCHEDULE INFORMATION",
+      "title": "Class Format & Session Schedule",
+      "startDate": "Start Date",
+      "registrationEnd": "Registration Deadline",
+      "sessionTime": "Session Time",
+      "formatOption": "Format Option",
+      "methodOnline": "Online (Zoom Meeting)",
+      "methodOffline": "Offline (Meetup)",
+      "methodHybrid": "Hybrid (Online Zoom & Offline Meetup)"
+    },
+    "schedule": {
+      "scheduleHeader": "Schedule",
+      "title": "No Payment Required",
+      "description": "You only need to register to join this program.",
+      "cardTitle": "Kickstart Your Career Today",
+      "registration": "Registration",
+      "start": "Start Learning",
+      "regisNow": "Register Now"
+    },
+    "gallery": {
+      "description": "Take a look at the key moments and experiences that made this program meaningful.",
+      "allGaleries": "See All Our Gallery"
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "<span style='color: #0B1F3B;'>Frequently Asked</span> <span style='color: #6EB6E5;'>Questions</span>",
+      "description": "Browse common questions and get the information you need quickly and easily."
+    },
+    "cta": {
+      "eyebrow": "REGISTRATION PROCESS",
+      "titlePrefix": "Start Your Career in",
+      "titleSuffix": "Now",
+      "description": "Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality."
+    },
+    "registrationModal": {
+      "badge": "SHORT CLASS REGISTRATION",
+      "title": "Short Class Registration",
+      "subtitle": "Please complete the form below to confirm your registration",
+      "yourProgram": "Your Program",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Input Your Full Name",
+      "email": "Email",
+      "emailPlaceholder": "Input Your Email",
+      "whatsapp": "WhatsApp Number",
+      "whatsappPlaceholder": "Input Your WhatsApp Number",
+      "currentStatus": "Current Status",
+      "selectStatus": "Select your current status",
+      "statuses": {
+        "universityStudent": "University Student",
+        "freshGraduate": "Fresh Graduate",
+        "jobSeeker": "Job Seeker",
+        "employee": "Employee",
+        "freelancer": "Freelancer",
+        "entrepreneur": "Entrepreneur",
+        "other": "Other"
+      },
+      "referalSource": "How did you know about the program?",
+      "selectOption": "Select Option",
+      "referals": {
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn",
+        "friends": "Friends",
+        "university": "University",
+        "whatsappGroup": "WhatsApp Group",
+        "webinar": "Webinar / Event",
+        "website": "Website",
+        "other": "Other"
+      },
+      "willAttend": "Will you attend this program?",
+      "yesAttend": "Yes, I will attend",
+      "noAttend": "No, I can't attend",
+      "consentText": "I agree to receive seminar updates via email or WhatsApp.",
+      "yesAgree": "Yes, I agree",
+      "btnCancel": "Cancel",
+      "btnRegister": "Register Now",
+      "errorTitle": "Registration Failed",
+      "errorDefault": "An error occurred during registration. Please try again.",
+      "successTitle": "You're all set.",
+      "successDesc": "Your program registration is confirmed. We'll send updates, reminders, and everything you need before the scheduled date.",
+      "btnContinueDashboard": "Continue to dashboard",
+      "validation": {
+        "selectStatus": "Please select your current status.",
+        "selectSource": "Please select how you knew about the program.",
+        "alreadyRegistered": "Registration failed or you have already registered for this program.",
+        "networkError": "Failed to contact server. Please check your internet connection and try again.",
+        "invalidFileType": "File must be an image (JPG, JPEG, or PNG)",
+        "fileTooLarge": "Maximum file size is 5MB"
+      }
     }
   },
-  "categoryFreeProgram":{
-    "hero":{
-      "title":"Free",
-      "title1":"to",
-      "title2":"Boost Your Career",
-      "title3":"With Kesatria Academy",
-      "button":"View Program"
+  "categoryFreeProgram": {
+    "hero": {
+      "title": "Free",
+      "title1": "to",
+      "title2": "Boost Your Career",
+      "title3": "With Kesatria Academy",
+      "button": "View Program",
+      "eyebrow": "Free Program",
+      "defaultEyebrow": "PREMIUM STUDY ABROAD",
+      "defaultCategoryName": "Short Classes",
+      "defaultDescription": "A structured journey designed for ambitious learners: immersive Japanese training, workplace readiness, and guided support for long-term success.",
+      "description": "Pick the track that fits your goals and start building real, practical skills today.",
+      "chips": {
+        "n5Readiness": "N5 readiness curriculum",
+        "careerSupport": "Career & study support"
+      },
+      "snapshot": {
+        "item1Title": "Comprehensive curriculum",
+        "item1Desc": "Language + culture + career prep",
+        "item2Title": "Mentor-led learning",
+        "item2Desc": "Experienced instructors & support",
+        "item3Title": "Career & study pathways",
+        "item3Desc": "Guidance for next steps in Japan"
+      }
     },
-    "program":{
-      "title":"for You",
-      "description1":"Choose the",
-      "description2":"that matches your interest and start learning practical skills.",
-      "free":"Free",
-      "day":"Day",
-      "students":"Students",
-      "detailProgram":"Detail Program"
+    "program": {
+      "title": "for You",
+      "description": "Choose the short class that matches your interests and start building practical skills.",
+      "description1": "Choose the",
+      "description2": "that matches your interest and start learning practical skills.",
+      "free": "Free",
+      "day": "Day",
+      "students": "Students",
+      "quota": "Quota",
+      "detailProgram": "Detail Program",
+      "eyebrow": "Program List",
+      "tags": {
+        "language": "Language",
+        "culture": "Culture",
+        "career": "Career",
+        "speaking": "Speaking",
+        "listening": "Listening",
+        "reading": "Reading",
+        "writing": "Writing",
+        "applications": "Applications",
+        "interviews": "Interviews",
+        "planning": "Planning"
+      },
+      "fallbackCards": {
+        "card1": {
+          "name": "Japan Program",
+          "desc": "A structured journey from language fundamentals to workplace readiness and long-term career opportunities."
+        },
+        "card2": {
+          "name": "Japan Program",
+          "desc": "Build strong communication skills through structured lessons and interactive practice."
+        },
+        "card3": {
+          "name": "Career & Study Support",
+          "desc": "Receive support for applications, interviews, and planning your path in Japan."
+        }
+      }
     },
-    "benefit":{
-      "title":"Benefit of Joining a",
-      "description1":"Get the most out of our free",
-      "description2":"with valuable learning benefits"
+    "benefit": {
+      "title": "Benefit of Joining a",
+      "sectionTitlePrefix": "Why Choose",
+      "defaultProgramName": "Our Program",
+      "sectionDesc": "Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.",
+      "description1": "Get the most out of our free",
+      "description2": "with valuable learning benefits",
+      "eyebrow": "Benefits",
+      "items": {
+        "item1Title": "Comprehensive Japanese Language Training",
+        "item1Desc": "Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.",
+        "item2Title": "Experienced Instructors",
+        "item2Desc": "Learn from experienced mentors who provide practical insights, personalized guidance, and effective teaching methods throughout your learning journey.",
+        "item3Title": "JLPT Preparation",
+        "item3Desc": "Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.",
+        "item4Title": "Career & Study Support",
+        "item4Desc": "Receive guidance for pursuing study, internship, or career opportunities in Japan, including interview preparation and application assistance.",
+        "item5Title": "Hands-On & Interactive Learning",
+        "item5Desc": "Learn through interactive activities, real-life conversations, role-playing, and practical exercises that build confidence and real-world communication skills.",
+        "item6Title": "Japanese Culture & Workplace Readiness",
+        "item6Desc": "Understand Japanese culture, workplace etiquette, and professional communication to confidently adapt to life and work in Japan."
+      }
     },
-    "alumni":{
-      "title":"Stories From Alumni",
-      "description":"See what our participants have to say about their learning experience and the impact of our",
-      "footer":"And many more inspiring stories from our alumni",
-      "allStories":"See all alumni stories"
+    "alumni": {
+      "title": "Stories From Alumni",
+      "description": "See what our participants have to say about their learning experience and the impact of our",
+      "footer": "And many more inspiring stories from our alumni",
+      "allStories": "See all alumni stories",
+      "badge": "Alumni Success"
     },
-    "gallery":{
-      "title":"<span class='text-black'>Our</span> <span class='text-[#6EB6E5]'>Gallery</span>",
-      "description":"Take a look at the key moments and experiences that made this program meaningful.",
-      "allGaleries":"See All Our Gallery"
+    "gallery": {
+      "title": "<span class='text-black'>Our</span> <span class='text-[#6EB6E5]'>Gallery</span>",
+      "description": "Take a look at the key moments and experiences that made this program meaningful.",
+      "allGaleries": "See All Our Gallery"
     },
-    "cta":{
-      "title":" <span class='text-white font-semibold'>This Free</span> <span class='text-black font-semibold'>Learning Oppurtunity</span>",
-      "description":"Join thousands of learners who are developing practical skills and preparing for their future careers through our",
-      "description2":" ",
-      "button":"Join Now"
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "<span class='text-black'>Frequently Asked</span> <span class='text-[#6EB6E5]'>Questions</span>",
+      "description": "Have questions? Here are immediate answers to common details about our tracks and placement."
+    },
+    "cta": {
+      "title": "Transform your team today",
+      "description": "Get a customized training proposal for your organization.",
+      "button": "Contact Us"
     }
+  },
+  "categoryPaidProgram": {
+    "hero": {
+      "badge": "Enrollment Open",
+      "consultation": "Watch overview",
+      "description": "Build job-ready skills from the ground up with a structured, mentor-guided bootcamp.",
+      "explore": "View Program",
+      "eyebrow": "Bootcamp",
+      "nowOpen": "Now Open!",
+      "registration": "Registration",
+      "startLearning": "Start Learning",
+      "fallbackChip1": "N5 readiness curriculum",
+      "fallbackChip2": "Career & study support",
+      "feature1Title": "Comprehensive curriculum",
+      "feature1Desc": "Language + culture + career prep",
+      "feature2Title": "Mentor-led learning",
+      "feature2Desc": "Experienced instructors & support",
+      "feature3Title": "Career & study pathways",
+      "feature3Desc": "Guidance for next steps in Japan"
+    },
+    "program": {
+      "title": "Short Classes <span class=\"text-[#111827]\">for You</span>",
+      "description": "Choose the short class that matches your interests and start building practical skills.",
+      "button": "Detail Program",
+      "explore": "Explore program",
+      "exploreProgram": "Explore program",
+      "eyebrow": "Learning Paths",
+      "online": "Online",
+      "day": "Day",
+      "month": "Month",
+      "quota": "Quota",
+      "fallbackCard1Title": "Japan Program",
+      "fallbackCard1Desc": "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.",
+      "fallbackCard2Title": "Japanese Language Training",
+      "fallbackCard2Desc": "Build strong communication skills through structured lessons and interactive practice.",
+      "fallbackCard3Title": "Career & Study Support",
+      "fallbackCard3Desc": "Receive support for applications, interviews, and planning your path in Japan."
+    },
+    "benefit": {
+      "title": "Why Choose Our",
+      "titleSuffix": "?",
+      "description": "Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.",
+      "items": {
+        "item1Title": "Comprehensive Japanese Language Training",
+        "item1Desc": "Build strong Japanese communication skills through structured lessons covering speaking, listening, reading, and writing for everyday and professional use.",
+        "item2Title": "Experienced Instructors",
+        "item2Desc": "Learn from experienced mentors who provide practical insights, personalized guidance, and effective teaching methods throughout your learning journey.",
+        "item3Title": "JLPT Preparation",
+        "item3Desc": "Prepare for the JLPT with comprehensive study materials, practice tests, and proven strategies to help you achieve your target level.",
+        "item4Title": "Career & Study Support",
+        "item4Desc": "Receive guidance for pursuing study, internship, or career opportunities in Japan, including interview preparation and application assistance.",
+        "item5Title": "Hands-On & Interactive Learning",
+        "item5Desc": "Learn through interactive activities, real-life conversations, role-playing, and practical exercises that build confidence and real-world communication skills.",
+        "item6Title": "Japanese Culture & Workplace Readiness",
+        "item6Desc": "Understand Japanese culture, workplace etiquette, and professional communication to confidently adapt to life and work in Japan."
+      }
+    },
+    "advantage": {
+      "title": "Core Knowledge First",
+      "description": "Learn from the ground up with a structured, mentor-guided approach. Progress from fundamental concepts to advanced skills through interactive learning experiences, expert reviews, and hands-on projects that prepare you for real industry demands.",
+      "point1": "More affordable investment compared to similar training programs.",
+      "point2": "Guided by experienced industry professionals and expert mentors.",
+      "point3": "Training is built around real-world, industry-based capstone projects.",
+      "point4": "Graduate with a portfolio that meets current industry expectations."
+    },
+    "flow": {
+      "title": "Final Capstone Project",
+      "description": "Kesatria Academy Portfolio Showcase",
+      "eyebrow": "Portfolio"
+    },
+    "alumni": {
+      "title": "Real Stories, Real Placement",
+      "title2": "Alumni",
+      "description": "Discover how our graduates transitioned into major engineering roles across the global industry.",
+      "footer": "And many more inspiring stories from our alumni",
+      "allStories": "See all alumni stories",
+      "badge": "Alumni Success"
+    },
+    "gallery": {
+      "badge": "Academy in Action",
+      "title": "Life at Kesatria Academy",
+      "description": "Explore real moments from our interactive classrooms, physical bootcamps, and developer hackathons.",
+      "allGaleries": "See All Our Gallery"
+    },
+    "cta": {
+      "title": "Transform your team today",
+      "description": "Get a customized training proposal for your organization.",
+      "button": "Contact Us"
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Frequently Asked Questions",
+      "description": "Have questions? Here are immediate answers to common details about our tracks and placement.",
+      "q1": "What will I learn in this program?",
+      "a1": "You will learn practical skills, industry workflows, and complete hands-on projects designed to prepare you for career opportunities.",
+      "q2": "Is the program online or offline?",
+      "a2": "We offer flexible options: interactive live online classes and hybrid sessions depending on your program.",
+      "q3": "Do I need prior experience to enroll?",
+      "a3": "No prior experience is required. We welcome beginners and guide you step by step from the fundamentals to advanced techniques.",
+      "q4": "Will I receive a certificate after completing the program?",
+      "a4": "Yes. Upon completing the coursework and capstone project you will receive an official certificate of completion.",
+      "q5": "What if I miss a class?",
+      "a5": "All live sessions are recorded and available on the learning platform so you can catch up anytime.",
+      "q6": "How can I register?",
+      "a6": "Register through our website by choosing your program and completing the enrollment form.",
+      "q7": "Is there career support after graduation?",
+      "a7": "Yes: resume reviews, portfolio building, mock interviews, and hiring-partner connections."
+    }
+  },
+  "bdetail": {
+    "tab": {
+      "participants": "Participants",
+      "whatYouLearn": "What You'll Learn",
+      "benefits": "Benefits",
+      "learningFlow": "Learning Flow",
+      "scheduleFees": "Schedule & Fees",
+      "gallery": "Gallery",
+      "faq": "FAQ"
+    },
+    "participants": {
+      "comingSoon": "Participants Data Available Soon",
+      "description": "We are currently preparing the API endpoint for this section."
+    }
+  },
+  "corporateTraining": {
+    "hero": {
+      "badge": "In House Training",
+      "title": "Empower Your Team with <span class='text-[#6EB6E5]'>Expert Training</span>",
+      "description": "Enhance your team's competencies through our corporate training programs designed to boost productivity, leadership, and professional skills.",
+      "cardBadge": "Corporate Training",
+      "cardTitle": "In-House Training designed for modern teams.",
+      "cardDescription": "Standardize competencies and boost productivity with tailored corporate training aligned to your business objectives.",
+      "cardCtaPrimary": "View Program",
+      "cardCtaSecondary": "Download brochure",
+      "stat1Value": "500+",
+      "stat1Label": "Alumni",
+      "stat2Value": "200+",
+      "stat2Label": "Hiring Partners",
+      "stat3Value": "98%",
+      "stat3Label": "Placement Rate"
+    },
+    "program": {
+      "title": "<span class='text-[#6EB6E5]'>Choose</span> Your Program In House Training",
+      "description": "Select the program that aligns with your goals and passion.",
+      "comingSoonTitle": "Program Coming Soon",
+      "comingSoonText": "We're preparing this program to deliver the best learning experience. Stay tuned for updates."
+    },
+    "whyChoose": {
+      "title": "Why Choose Our In House Training?",
+      "description": "Designed to equip students with industry-relevant skills through practical, hands-on learning led by experienced professionals.",
+      "card1Title": "Aligned with Industry Needs",
+      "card1Text": "Training content is designed to match current industry trends and employer expectations.",
+      "card2Title": "Delivered by Industry Experts",
+      "card2Text": "Learn directly from experienced professionals with practical, real-world expertise.",
+      "card3Title": "Hands-On Project Experience",
+      "card3Text": "Build practical skills through interactive projects, case studies, and real-world challenges.",
+      "card4Title": "Conducted Directly on Campus",
+      "card4Text": "Enjoy a convenient learning experience delivered at your university or institution.",
+      "card5Title": "Collaborative & Interactive Learning",
+      "card5Text": "Engage in discussions, teamwork, and problem-solving activities that enhance learning outcomes.",
+      "card6Title": "Enhancing Students' Career Readiness",
+      "card6Text": "Equip students with the skills, confidence, and experience needed to succeed in their future careers."
+    },
+    "cta": {
+      "title": "Transform your team today",
+      "description": "Get a customized training proposal for your organization.",
+      "button": "Contact Us"
+    }
+  },
+  "common": {
+    "back": "Back",
+    "breadcrumb": "Breadcrumb",
+    "home": "Home"
+  },
+  "userSidebar": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "myLearning": "My Learning",
+    "myPortfolio": "My Portfolio",
+    "paymentHistory": "Payment History"
+  },
+  "quizStart": {
+    "answered": "Answered",
+    "questionGrid": "Questions",
+    "legendActive": "Current",
+    "legendAnswered": "Answered",
+    "legendUnanswered": "Not answered",
+    "instructions": "How this works",
+    "rule1": "Pick the most appropriate answer for every question.",
+    "rule2": "Answer all questions before you submit.",
+    "rule3": "Answers cannot be changed once the quiz is submitted.",
+    "rule4": "Your answers are saved as you go.",
+    "answerAllFirst": "Answer every question to submit.",
+    "timeLeft": "Time left"
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "viewAll": "View all notifications",
+    "empty": "No new notifications",
+    "categories": {
+      "session": "Session",
+      "week": "Week",
+      "syllabus": "Syllabus",
+      "quiz": "Quiz",
+      "sessionUser": "Session User"
+    },
+    "mock": {
+      "sessionTitle": "New Learning Session",
+      "sessionDesc": "A new learning session is now available in your class. Please check the materials.",
+      "sessionTime": "10 mins ago",
+      "weekTitle": "New Learning Week Opened",
+      "weekDesc": "A new week has been unlocked! Access this week's modules now.",
+      "weekTime": "1 hour ago",
+      "syllabusTitle": "Syllabus Update",
+      "syllabusDesc": "A new syllabus has been added to your curriculum.",
+      "syllabusTime": "3 hours ago",
+      "quizTitle": "New Quiz Ready",
+      "quizDesc": "Test your knowledge on the new quiz before the deadline.",
+      "quizTime": "1 day ago",
+      "sessionUserTitle": "New Login Activity",
+      "sessionUserDesc": "A new login session was detected on your account.",
+      "sessionUserTime": "2 days ago"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcomeBack": "Welcome back,",
+    "welcomeSubtitle": "Keep learning, keep growing. Your next achievement is just one step away!",
+    "ongoingCourses": "Ongoing Courses",
+    "completedCourses": "Completed Courses",
+    "portfolioPublished": "Portfolio Published",
+    "continueLearning": "Continue Learning",
+    "viewAllPrograms": "View All Programs",
+    "continueButton": "Continue",
+    "showing": "Showing",
+    "of": "of",
+    "course": "course",
+    "coursesPlural": "courses",
+    "noCoursesInProgress": "No courses in progress right now. Nice work keeping up, or time to start a new one from \"My Learning\".",
+    "noPrograms": "You haven't joined a program yet",
+    "noProgramsDescription": "Browse our programs and pick one that fits your goals - your dashboard fills up as soon as you enroll.",
+    "browsePrograms": "Browse Programs"
   }
 }

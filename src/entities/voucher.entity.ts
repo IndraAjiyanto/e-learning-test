@@ -15,8 +15,8 @@ export type VoucherType = 'free' | 'discount';
 
 @Entity()
 export class Voucher {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   code_voucher: string;
@@ -35,7 +35,7 @@ export class Voucher {
   url_code: string;
 
   @Column({ type: 'json', nullable: true })
-  allowed_user_ids: number[];
+  allowed_user_ids: string[];
 
   @CreateDateColumn()
   createdAt: Date;

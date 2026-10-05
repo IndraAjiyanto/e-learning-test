@@ -1,410 +1,388 @@
-<form id="step-2-form" class="w-full pb-8">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[250px]">
-    
-    <!-- Left Column (Inputs) -->
-    <div class="space-y-8">
-      
-      <!-- Choose Payment Methods -->
-      <div>
-        <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
-          Choose Payment Methods<span class="text-red-500">*</span>
-        </label>
-        <div class="relative">
-          <select id="payment-method-select" onchange="togglePaymentMethod()" required class="w-full h-[50px] rounded-[6px] border border-slate-300 px-[16px] appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-[#003060] text-slate-700">
-            <option value="Full Payment">Full Payment</option>
-            <option value="Installment">Installment Payment</option>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-            <i class="fa-solid fa-chevron-down w-4 h-4 flex items-center justify-center"></i>
-          </div>
-        </div>
-      </div>
+{{!--
+  Partial: Payment Method (Step 2)
+  Lokasi: src/views/partials/payments/paymentMethod.hbs
 
-      <!-- Installment UI (Hidden by default) -->
-      <div id="installment-ui" class="hidden space-y-8">
-        <!-- Choose Installment Periode -->
-        <div>
-          <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
-            Choose Installment Periode<span class="text-red-500">*</span>
-          </label>
-          <div class="border border-slate-300 rounded-[10px] p-[6px] w-[300px] bg-white flex">
-            <button type="button" class="w-[130px] h-[48px] bg-[#003060] text-white font-medium rounded-[6px] shadow-sm">
-              3 Months
-            </button>
-          </div>
-        </div>
+  Menampilkan SATU metode pembayaran, sesuai pilihan yang sudah dibuat user di
+  kartu harga halaman program (tab Full Payment / Installment). Pilihan itu
+  dibawa ke sini lewat query string `?method=full|installment` dan ditetapkan
+  server di PaymentsController.registrationPage() menjadi `paymentMethod`;
+  controller juga sudah menurunkan ke `Full Payment` bila program tidak punya
+  rencana cicilan.
 
-        <!-- Payment Schedule -->
-        <div class="border-[2px] border-white/10 rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] bg-[#FAFAFA]">
-          <h4 class="font-bold text-[#003060] mb-4 text-lg">Payment Schedule</h4>
-          
-          <!-- DP Box -->
-          <div class="bg-[#FFFBCB]/60 rounded-[12px] shadow-[0_0_6px_rgba(0,0,0,0.5)] p-4 flex justify-between items-center mb-6">
-            <div>
-              <div class="font-bold text-black text-[15px]">Down Payment (DP)</div>
-              <div class="text-[13px] text-slate-600 pt-0.5">Pay now to enroll</div>
-            </div>
-            <div class="font-bold text-black text-lg" id="ui-dp-price">Rp {{#if course.installments.[0]}}{{course.installments.[0].downPayment}}{{else}}0{{/if}}</div>
-          </div>
+  Karena metodenya sudah pasti, TIDAK ADA lagi toggle Full/Installment di step
+  2: user tidak bisa berganti metode di sini, dan view yang tidak dipilih
+  tidak dirender sama sekali (bukan disembunyikan dengan x-show). Menyembunyikan
+  dengan x-show pernah membuat kedua view tetap terbaca sebagai "ada" saat
+  pengujian, jadi ini juga menutup celah verifikasi.
 
-          <div class="text-black font-medium mb-3 text-[15px]">Monthly Installment (After DP)</div>
-          <div class="space-y-3 text-sm text-black" id="ui-monthly-prices">
-             <!-- JS will render this dynamically to allow proper number formatting -->
-          </div>
-        </div>
-      </div>
+  Props:
+  - paymentMethod : 'Full Payment' | 'Installment' (wajib, dari controller)
+  - paymentSettings: hasil PaymentSettingsService.effective(). Nilai kanal
+    diteruskan apa adanya ke card di bawah - JANGAN dibungkus helper `default`,
+    karena `default` memakai `value || fallback` sehingga `false` akan
+    berubah jadi nilai cadangan dan kanal yang sengaja dimatikan ikut nyala.
+--}}
 
-      <!-- Voucher Discount -->
-      <div>
-        <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
-          Voucher Discount
-        </label>
-        <div class="flex gap-2 items-center relative">
-          <input type="text" id="promo-input" oninput="handlePromoInput()" placeholder="Input Voucher Code" class="uppercase flex-1 h-[50px] rounded-[6px] border border-slate-300 px-[16px] bg-white focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 transition-colors">
-          <button type="button" id="remove-promo-btn" onclick="removePromo()" class="px-6 h-[50px] bg-red-100 text-red-600 font-medium rounded-[6px] hover:bg-red-200 transition-colors hidden">Cancel</button>
-        </div>
-        <p id="promo-message" class="text-sm mt-2 font-medium hidden"></p>
-      </div>
-      
+<div id="step-2-form" class="w-full">
+{{#if (eq paymentMethod 'Installment')}}
+  <div id="view-installment" class="flex flex-col xl:flex-row items-start gap-[30px] w-full">
+    <!-- Left Column: Installment Method Card (Group 6727, width 976px) -->
+    <div class="w-full xl:w-[976px] xl:max-w-[976px]">
+      {{> components/ui/card/installment_method_card/index
+        course=course
+      }}
     </div>
 
-    <!-- Right Column (Payment Details) -->
-    <div class="bg-transparent">
-      <h2 class="text-2xl md:text-[30px] font-semibold text-[#003060] mb-6">
-        Complete your payment<span class="text-red-500">*</span>
-      </h2>
-      <h3 class="text-[#003060] font-medium text-lg md:text-xl mb-6">Payment Details:</h3>
-      
-      <div class="space-y-6">
-        <!-- Item 1 -->
-        <div class="flex justify-between items-start gap-4">
-          <div class="text-black font-normal text-[15px] md:text-base leading-relaxed flex-1">
-            {{course.name}}<br>
-            <span id="detail-payment-type">(Full Payment)</span>
-          </div>
-          <div id="detail-price" class="text-[#003060] text-[15px] md:text-base font-medium whitespace-nowrap pt-0.5">Rp {{course.promo}}</div>
-        </div>
-        
-        <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
-        
-        <!-- Item 2 -->
-        <div id="discount-row" class="flex justify-between items-center gap-4 hidden">
-          <div class="text-green-600 text-[15px] md:text-base">Discount Voucher (<span id="display-promo-code"></span>)</div>
-          <div id="detail-voucher" class="text-green-600 text-[15px] md:text-base font-medium">- Rp 0</div>
-        </div>
-        
-        <div id="discount-divider" class="h-[0.5px] w-full bg-[#D9D9D9] hidden"></div>
-        
-        <!-- Item 3 -->
-        <div class="flex justify-between items-center gap-4">
-          <div class="text-black text-[15px] md:text-base">SubTotal</div>
-          <div id="detail-subtotal" class="text-[#003060] text-[15px] md:text-base font-medium">Rp {{course.price}}</div>
-        </div>
-        
-        <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
-        
-        <!-- Total -->
-        <div class="flex justify-between items-center pt-2">
-          <div class="text-black font-bold text-lg md:text-xl">Total</div>
-          <div id="detail-total" class="text-[#003060] font-bold text-lg md:text-xl">Rp {{course.price}}</div>
-        </div>
-        
-        <!-- Pay Now Button -->
-        <div class="pt-6">
-          <button type="button" onclick="proceedToPayment()" id="btn-pay-now" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-[12px] font-semibold text-lg transition-colors shadow-sm relative">
-            <span id="btn-pay-now-text">Pay Now</span>
-            <span id="btn-pay-now-spinner" class="hidden absolute inset-0 flex items-center justify-center">
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </span>
-          </button>
-        </div>
-      </div>
+    <!-- Right Column: Installment Summary Card (Group 6727, width 480px) -->
+    <div class="w-full xl:w-[480px] xl:max-w-[480px] shrink-0">
+      {{> components/ui/card/installment_summary_card/index
+        courseTitle=(default course.name (t 'test.payment.summary.defaultCourseTitle'))
+        basePrice=course.price
+        promoPrice=course.promo
+        downPayment=course.installments.[0].downPayment
+        month=(default course.installments.[0].month 3)
+        pricePerMonth=course.installments.[0].price.[0]
+        uid="installment"
+        manualActionUrl=(concat '/payment/' user.id '/' course.id '/' course.installments.[0].id)
+        gatewayEnabled=paymentSettings.gateway_enabled
+        gatewayHidden=paymentSettings.gateway_hidden_because_key_missing
+        manualEnabled=paymentSettings.manual_enabled
+      }}
     </div>
-
   </div>
-</form>
+{{else}}
+  <div id="view-full-payment" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start w-full">
+    <!-- Left Column: Full Payment Info & Voucher Input -->
+    <div class="lg:col-span-5 flex flex-col gap-6 w-full">
+      <div class="flex flex-col gap-1.5">
+        <h3 class="font-montserrat font-bold text-lg sm:text-xl text-[#1B2559]">
+          {{t 'test.payment.summary.fullPayment'}}
+        </h3>
+        <p class="font-montserrat font-normal text-xs sm:text-sm text-[#718096]">
+          {{t 'test.payment.summary.subtitle'}}
+        </p>
+      </div>
+
+      <!-- Voucher Input Component (Full Payment) -->
+      {{> components/ui/input/voucher_input/index
+        id="promo-input"
+        removeBtnId="remove-promo-btn"
+        messageId="promo-message"
+        placeholder=(t 'test.payment.voucher.placeholder')
+      }}
+    </div>
+
+    <!-- Right Column: Full Payment Summary Card -->
+    <div class="lg:col-span-7 flex justify-end w-full">
+      {{> components/ui/card/payment_summary_card/index
+        courseTitle=(default course.name (t 'test.payment.summary.defaultCourseTitle'))
+        basePrice=course.price
+        promoPrice=course.promo
+        uid="full"
+        manualActionUrl=(concat '/payment/' user.id '/' course.id '/manual')
+        gatewayEnabled=paymentSettings.gateway_enabled
+        gatewayHidden=paymentSettings.gateway_hidden_because_key_missing
+        manualEnabled=paymentSettings.manual_enabled
+      }}
+    </div>
+  </div>
+{{/if}}
+</div>
 
 <script>
-// Load dynamic values from Backend Handlebars
-const coursePromo = Number('{{course.promo}}') || 0;
-const courseBasePrice = Number('{{course.price}}') || 0;
-const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
+  // Teks yang dipakai di dalam JavaScript dikumpulkan di sini lebih dulu.
+  // Alasannya quoting: nilai terjemahan dirender dengan tiga kurung supaya
+  // tidak di-escape, sehingga tanda kutip di dalam teks akan langsung
+  // menutup literal JS. Menumpuknya di satu tempat membuat ini hanya satu
+  // titik yang perlu diawasi, dan teks aslinya tinggal dipakai sebagai
+  // I18N.<nama>.
+  const I18N = {
+    checking: '{{{t 'test.payment.voucher.checking'}}}',
+    applied: '{{{t 'test.payment.voucher.applied'}}}',
+    invalid: '{{{t 'test.payment.voucher.invalid'}}}',
+    apiNotFound: '{{{t 'test.payment.voucher.apiNotFound'}}}',
+    checkFailed: '{{{t 'test.payment.voucher.checkFailed'}}}',
+    typing: '{{{t 'test.payment.voucher.typing'}}}',
+    paymentFailed: '{{{t 'test.payment.toast.paymentFailed'}}}',
+    processError: '{{{t 'test.payment.toast.processError'}}}',
+    connectionError: '{{{t 'test.payment.toast.connectionError'}}}',
+  };
 
-const courseInstallmentDP = Number('{{#if course.installments.[0]}}{{course.installments.[0].downPayment}}{{else}}0{{/if}}') || 0;
-const installmentPrices = [{{#if course.installments.[0]}}{{#each course.installments.[0].price}}{{this}}{{#unless @last}},{{/unless}}{{/each}}{{/if}}];
+  // Metode sudah ditetapkan server (lihat header partial). Nilai ini yang
+  // dikirim ke /api/payment/create; tidak ada lagi yang bisa menggantinya dari
+  // sisi klien karena toggle metodenya sudah dihapus.
+  const PAYMENT_METHOD = '{{paymentMethod}}';
+  const IS_INSTALLMENT = PAYMENT_METHOD === 'Installment';
 
-let currentSubtotal = courseFullPrice;
-let activePromo = null;
-let currentDiscountAmount = 0;
+  // Hanya satu view yang dirender, jadi hanya ada satu pasang elemen voucher,
+  // satu pasang elemen nominal, dan satu pasang elemen diskon. Id-nya diambil
+  // dari metode supaya tidak perlu menyinkronkan dua form sekaligus.
+  const VOUCHER = IS_INSTALLMENT
+    ? {
+        input: 'promo-input-installment',
+        message: 'promo-message-installment',
+        removeBtn: 'remove-promo-btn-installment',
+        subtotal: 'installment-detail-subtotal',
+        voucher: 'installment-detail-voucher',
+        total: 'installment-detail-total',
+        discountRow: 'installment-discount-row',
+        discountCode: 'installment-display-promo',
+      }
+    : {
+        input: 'promo-input',
+        message: 'promo-message',
+        removeBtn: 'remove-promo-btn',
+        subtotal: 'detail-subtotal',
+        voucher: 'detail-voucher',
+        total: 'detail-total',
+        discountRow: 'discount-row',
+        discountCode: 'display-promo-code',
+      };
 
-// Debounce Utility
-function debounce(func, wait) {
+  // Dynamic pricing values from Backend Handlebars
+  const coursePromo = Number('{{course.promo}}') || 0;
+  const courseBasePrice = Number('{{course.price}}') || 0;
+  const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
+  const courseInstallmentDP = Number('{{course.installments.[0].downPayment}}') || 0;
+
+  // Nominal yang divalidasi voucher adalah nominal metode yang sedang
+  // dibayar, bukan harga program penuh - sama seperti sebelumnya, hanya kini
+  // tidak pernah berubah karena user tidak bisa ganti metode di step 2.
+  const currentSubtotal = IS_INSTALLMENT ? courseInstallmentDP : courseFullPrice;
+
+  let activePromo = null;
+
+  // Debounce Utility
+  function debounce(func, wait) {
     let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
     };
-}
+  }
 
-function showPromoMessage(text, type) {
-    const el = document.getElementById("promo-message");
-    el.textContent = text;
-    el.classList.remove("hidden");
+  function getVoucherInput() {
+    return document.getElementById(VOUCHER.input);
+  }
+
+  function showPromoMessage(text, type) {
+    const msg = document.getElementById(VOUCHER.message);
+    if (!msg) return;
+    msg.textContent = text;
+    msg.classList.remove("hidden");
     if (type === 'success') {
-        el.className = "text-sm mt-2 font-medium block text-green-600";
+      msg.className = "font-montserrat text-xs mt-1 font-medium block text-green-600";
     } else if (type === 'error') {
-        el.className = "text-sm mt-2 font-medium block text-red-500";
+      msg.className = "font-montserrat text-xs mt-1 font-medium block text-red-500";
     } else {
-        el.className = "text-sm mt-2 font-medium block text-slate-500";
+      msg.className = "font-montserrat text-xs mt-1 font-medium block text-slate-500";
     }
-}
+  }
 
-const checkPromo = debounce(async () => {
-    console.log("Debounce timer finished. Running checkPromo...");
-    const code = document.getElementById("promo-input").value.trim().toUpperCase();
-    
+  const checkPromo = debounce(async () => {
+    const promoInput = getVoucherInput();
+    if (!promoInput) return;
+    const code = promoInput.value.trim().toUpperCase();
+
     if (!code) {
-        console.log("Code is empty after trim, removing promo.");
-        removePromo();
-        return;
+      removePromo();
+      return;
     }
 
-    showPromoMessage("Mengecek kode voucher...", "neutral");
-
-    // Double check if input is still the same or not empty after delay
-    const currentCode = document.getElementById("promo-input").value.trim().toUpperCase();
-    if(currentCode !== code) return;
+    showPromoMessage(I18N.checking, "neutral");
 
     try {
-        const courseId = {{#if course.id}}{{course.id}}{{else}}1{{/if}};
+      const courseId = '{{course.id}}';
 
-        const response = await fetch('/api/voucher/validate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify({
-                code: code,
-                courseId: courseId,
-                subtotal: currentSubtotal // Backend calculates against the selected subtotal
-            })
-        });
+      const response = await fetch('/api/voucher/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          code: code,
+          courseId: courseId,
+          subtotal: currentSubtotal
+        })
+      });
 
-        console.log("Response status:", response.status);
-        
-        if (!response.ok && response.status === 404) {
-            throw new Error("Endpoint API tidak ditemukan (404).");
+      if (!response.ok && response.status === 404) {
+        throw new Error("Endpoint API tidak ditemukan (404).");
+      }
+
+      const result = await response.json();
+
+      if (response.ok && result.status === "success") {
+        const { discount_amount, final_total, promo_code } = result.data;
+
+        activePromo = promo_code;
+        window.activePromo = promo_code;
+        const input = getVoucherInput();
+        if (input) {
+          input.disabled = true;
+          input.classList.add("bg-green-50", "border-green-300");
         }
-        
-        const result = await response.json();
-        console.log("API Result:", result);
+        const removeBtn = document.getElementById(VOUCHER.removeBtn);
+        if (removeBtn) removeBtn.classList.remove("hidden");
 
-        if (response.ok && result.status === "success") {
-            const { discount_amount, final_total, promo_code } = result.data;
-            
-            activePromo = promo_code;
-            currentDiscountAmount = discount_amount;
-            updatePricingUI(currentSubtotal, discount_amount, final_total);
-            
-            document.getElementById("promo-input").disabled = true;
-            document.getElementById("promo-input").classList.add("bg-green-50", "border-green-300");
-            document.getElementById("remove-promo-btn").classList.remove("hidden");
-            
-            showPromoMessage(result.message || "Kode promo berhasil diterapkan!", "success");
-        } else {
-            activePromo = null;
-            currentDiscountAmount = 0;
-            updatePricingUI(currentSubtotal, 0, currentSubtotal);
-            showPromoMessage(result.message || "Kode promo tidak valid atau kadaluarsa.", "error");
-        }
-    } catch (error) {
-        console.error("Promo check error:", error);
+        updatePricingUI(discount_amount, final_total);
+        showPromoMessage(result.message || I18N.applied, "success");
+      } else {
         activePromo = null;
-        currentDiscountAmount = 0;
-        updatePricingUI(currentSubtotal, 0, currentSubtotal);
-        showPromoMessage(error.message === "Endpoint API tidak ditemukan (404)." ? "Sistem sedang diperbarui, API tidak ditemukan." : "Terjadi kesalahan saat mengecek kode promo.", "error");
+        window.activePromo = null;
+        updatePricingUI(0, currentSubtotal);
+        showPromoMessage(result.message || I18N.invalid, "error");
+      }
+    } catch (error) {
+      console.error("Promo check error:", error);
+      activePromo = null;
+      window.activePromo = null;
+      updatePricingUI(0, currentSubtotal);
+      showPromoMessage(
+          error.message === "Endpoint API tidak ditemukan (404)." ? I18N.apiNotFound : I18N.checkFailed,
+          "error"
+        );
     }
-}, 800);
+  }, 800);
 
-function handlePromoInput() {
-    const input = document.getElementById("promo-input");
+  function handlePromoInput() {
+    const input = getVoucherInput();
+    if (!input) return;
     input.classList.remove("bg-green-50", "border-green-300");
-    
-    if(input.value.trim() === "") {
-        removePromo();
+
+    if (input.value.trim() === "") {
+      removePromo();
     } else {
-        showPromoMessage("Mengetik...", "neutral");
-        checkPromo();
+      showPromoMessage(I18N.typing, "neutral");
+      checkPromo();
     }
-}
+  }
 
-function removePromo() {
+  function removePromo() {
     activePromo = null;
-    currentDiscountAmount = 0;
-    const input = document.getElementById("promo-input");
-    input.value = "";
-    input.disabled = false;
-    input.classList.remove("bg-green-50", "border-green-300");
-    
-    document.getElementById("remove-promo-btn").classList.add("hidden");
-    
-    updatePricingUI(currentSubtotal, 0, currentSubtotal);
-    document.getElementById("promo-message").classList.add("hidden");
-}
+    window.activePromo = null;
 
-function updatePricingUI(sub, disc, total) {
-    document.getElementById("detail-price").textContent = `Rp${sub.toLocaleString('id-ID')}`;
-    document.getElementById("detail-subtotal").textContent = `Rp${sub.toLocaleString('id-ID')}`;
-    document.getElementById("detail-voucher").textContent = `- Rp${disc.toLocaleString('id-ID')}`;
-    document.getElementById("detail-total").textContent = `Rp${total.toLocaleString('id-ID')}`;
-    
-    const discRow = document.getElementById("discount-row");
+    const input = getVoucherInput();
+    if (input) {
+      input.value = "";
+      input.disabled = false;
+      input.classList.remove("bg-green-50", "border-green-300");
+    }
+
+    const removeBtn = document.getElementById(VOUCHER.removeBtn);
+    if (removeBtn) removeBtn.classList.add("hidden");
+
+    const msg = document.getElementById(VOUCHER.message);
+    if (msg) msg.classList.add("hidden");
+
+    updatePricingUI(0, currentSubtotal);
+  }
+
+  function updatePricingUI(disc, total) {
+    const elSub = document.getElementById(VOUCHER.subtotal);
+    const elVoucher = document.getElementById(VOUCHER.voucher);
+    const elTotal = document.getElementById(VOUCHER.total);
+    const discRow = document.getElementById(VOUCHER.discountRow);
     const discDivider = document.getElementById("discount-divider");
-    
+    const displayPromo = document.getElementById(VOUCHER.discountCode);
+
+    if (elSub) elSub.textContent = `Rp${currentSubtotal.toLocaleString('id-ID')}`;
+    if (elVoucher) elVoucher.textContent = `- Rp${disc.toLocaleString('id-ID')}`;
+    if (elTotal) elTotal.textContent = `Rp${total.toLocaleString('id-ID')}`;
+
     if (disc > 0) {
-        document.getElementById("display-promo-code").textContent = activePromo;
+      if (displayPromo) displayPromo.textContent = activePromo;
+      if (discRow) {
         discRow.classList.remove("hidden");
         discRow.classList.add("flex");
-        discDivider.classList.remove("hidden");
+      }
+      if (discDivider) discDivider.classList.remove("hidden");
     } else {
+      if (discRow) {
         discRow.classList.add("hidden");
         discRow.classList.remove("flex");
-        discDivider.classList.add("hidden");
-    }
-}
-</script>
-
-<script>
-  function togglePaymentMethod() {
-    const method = document.getElementById('payment-method-select').value;
-    const installmentUi = document.getElementById('installment-ui');
-    const detailType = document.getElementById('detail-payment-type');
-
-    if (method === 'Installment') {
-      installmentUi.classList.remove('hidden');
-      detailType.innerText = '(Installment Payment - 3 month)';
-      currentSubtotal = courseInstallmentDP;
-    } else {
-      installmentUi.classList.add('hidden');
-      detailType.innerText = '(Full Payment)';
-      currentSubtotal = courseFullPrice;
-    }
-
-    // Jika ada promo yang aktif, validasi ulang terhadap subtotal baru (DP/Full)
-    // Jika tidak ada promo, langsung update harga
-    if (activePromo) {
-        checkPromo(); // Backend will recalculate the discount against the new currentSubtotal
-    } else {
-        updatePricingUI(currentSubtotal, 0, currentSubtotal);
+      }
+      if (discDivider) discDivider.classList.add("hidden");
     }
   }
 
   async function proceedToPayment() {
-    const btn = document.getElementById("btn-pay-now");
-    const text = document.getElementById("btn-pay-now-text");
-    const spinner = document.getElementById("btn-pay-now-spinner");
+    const btn = document.getElementById(IS_INSTALLMENT ? "btn-pay-now-installment" : "btn-pay-now");
+    const text = document.getElementById(IS_INSTALLMENT ? "btn-pay-now-installment-text" : "btn-pay-now-text");
+    const spinner = document.getElementById(IS_INSTALLMENT ? "btn-pay-now-installment-spinner" : "btn-pay-now-spinner");
 
-    const method = document.getElementById("payment-method-select").value;
+    const resetButton = () => {
+      if (btn) btn.disabled = false;
+      if (text) text.classList.remove("hidden");
+      if (spinner) spinner.classList.add("hidden");
+    };
 
-    btn.disabled = true;
-    text.classList.add("hidden");
-    spinner.classList.remove("hidden");
+    if (btn) btn.disabled = true;
+    if (text) text.classList.add("hidden");
+    if (spinner) spinner.classList.remove("hidden");
 
     try {
-        const storageKey =
-          typeof window.getPaymentProgressStorageKey === 'function'
-            ? window.getPaymentProgressStorageKey()
-            : `payment-${userId}-${courseId}-form`;
-        
-        let formData = null;
-        if (storageKey) {
-            const raw = localStorage.getItem(storageKey);
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    formData = parsed.forms && parsed.forms.form1 ? parsed.forms.form1 : null;
-                } catch(e) {}
-            }
-        }
+      const courseId = '{{course.id}}';
+      const storageKey =
+        typeof window.getPaymentProgressStorageKey === 'function'
+          ? window.getPaymentProgressStorageKey()
+          : null;
 
-        const response = await fetch('/api/payment/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'same-origin',
-          body: JSON.stringify({
-            courseId: '{{course.id}}',
-            paymentMethod: method,
-            promoCode: activePromo ? activePromo : null,
-            formData: formData
-          }),
-        });
+      let formData = null;
+      if (storageKey) {
+        const raw = localStorage.getItem(storageKey);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            formData = parsed.forms && parsed.forms.form1 ? parsed.forms.form1 : null;
+          } catch (e) {}
+        }
+      }
+
+      const response = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          courseId: courseId,
+          paymentMethod: PAYMENT_METHOD,
+          promoCode: activePromo ? activePromo : null,
+          formData: formData
+        }),
+      });
 
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
         window.location.href = data.redirect_url;
       } else {
-        alert('Gagal memproses pembayaran: ' + (data.message || 'Unknown error'));
-        btn.disabled = false;
-        text.classList.remove("hidden");
-        spinner.classList.add("hidden");
+        // Toast global dari layouts/main.hbs, bukan alert() bawaan browser:
+        // alert memblokir seluruh halaman dan terlihat berbeda dari semua
+        // notifikasi lain di sistem ini.
+        showErrorToast(I18N.paymentFailed, data.message || I18N.processError);
+        resetButton();
       }
     } catch (error) {
       console.error('Payment Error:', error);
-      alert('Terjadi kesalahan koneksi saat menghubungi server pembayaran.');
-      btn.disabled = false;
-      text.classList.remove("hidden");
-      spinner.classList.add("hidden");
+      showErrorToast(I18N.paymentFailed, I18N.connectionError);
+      resetButton();
     }
   }
-
-  // Initialize UI on page load to set correct Handlebars values
-  document.addEventListener("DOMContentLoaded", () => {
-     // Format the DP display box
-     const dpBox = document.getElementById("ui-dp-price");
-     if(dpBox) {
-         dpBox.innerText = `Rp ${courseInstallmentDP.toLocaleString('id-ID')}`;
-     }
-
-     // Render the monthly prices dynamically
-     const monthlyContainer = document.getElementById("ui-monthly-prices");
-     if(monthlyContainer && installmentPrices.length > 0) {
-         let htmlContent = "";
-         installmentPrices.forEach((price, index) => {
-             htmlContent += `
-             <div class="flex justify-between items-center">
-               <span class="text-slate-600">Month ${index + 1}</span>
-               <span class="font-bold">Rp ${price.toLocaleString('id-ID')}</span>
-             </div>
-             `;
-         });
-         monthlyContainer.innerHTML = htmlContent;
-     }
-
-     togglePaymentMethod();
-  });
 </script>
 
 <script>
   (function initPaymentMethodDraftStorage() {
-    const userId = Number('{{user.id}}') || 0;
-    const courseId = Number('{{course.id}}') || 0;
+    const userId = '{{user.id}}';
+    const courseId = '{{course.id}}';
     if (!userId || !courseId) return;
 
     const storageKey =
       typeof window.getPaymentProgressStorageKey === 'function'
         ? window.getPaymentProgressStorageKey()
         : `payment-${userId}-${courseId}-form`;
-
-    const paymentMethodSelect = document.getElementById('payment-method-select');
-    const promoInput = document.getElementById('promo-input');
-    if (!paymentMethodSelect || !promoInput) return;
 
     const readDraft = () => {
       const raw = localStorage.getItem(storageKey);
@@ -419,9 +397,12 @@ function updatePricingUI(sub, disc, total) {
 
     let lastSavedPayload = null;
 
+    // Draft hanya menyimpan voucher. paymentMethod sengaja ikut ditulis
+    // sebagai catatan, tapi tidak pernah dibaca kembali untuk mengganti
+    // metode, karena metodenya milik query string dan sudah ditetapkan server.
     const collectForm2 = () => ({
-      paymentMethod: paymentMethodSelect.value || 'Full Payment',
-      voucherDiscount: (promoInput.value || '').trim().toUpperCase(),
+      paymentMethod: PAYMENT_METHOD,
+      voucherDiscount: (getVoucherInput()?.value || '').trim().toUpperCase(),
     });
 
     const saveForm2IfChanged = () => {
@@ -450,31 +431,29 @@ function updatePricingUI(sub, disc, total) {
       lastSavedPayload = payloadString;
     };
 
-    const applyForm2 = (form2) => {
-      if (!form2) return;
-
-      if (form2.paymentMethod) {
-        paymentMethodSelect.value = form2.paymentMethod;
-        togglePaymentMethod();
-      }
-
-      if (form2.voucherDiscount) {
-        promoInput.value = form2.voucherDiscount;
+    const bootstrap = () => {
+      // Pulihkan voucher dari draft. Metode tidak dipulihkan: sudah ditetapkan
+      // server dan tidak bisa diganti di step 2.
+      const existingDraft = readDraft();
+      const savedVoucher = existingDraft?.forms?.form2?.voucherDiscount;
+      const input = getVoucherInput();
+      if (savedVoucher && input) {
+        input.value = savedVoucher;
         handlePromoInput();
       }
-    };
 
-    const bootstrap = () => {
-      const existingDraft = readDraft();
-      if (existingDraft?.forms?.form2) {
-        applyForm2(existingDraft.forms.form2);
-        lastSavedPayload = JSON.stringify(existingDraft);
+      if (input) {
+        input.addEventListener('input', saveForm2IfChanged);
+        input.addEventListener('change', saveForm2IfChanged);
       }
 
-      paymentMethodSelect.addEventListener('change', saveForm2IfChanged);
-      promoInput.addEventListener('input', saveForm2IfChanged);
-      promoInput.addEventListener('change', saveForm2IfChanged);
-      document.addEventListener('payment:step-changed', saveForm2IfChanged);
+      document.addEventListener('payment:step-changed', (e) => {
+        if (e.detail?.step === 2) saveForm2IfChanged();
+      });
+
+      // Nominal awal mengikuti metode terpilih, supaya tidak sempat tampil
+      // memakai harga program penuh saat metode yang dipilih adalah cicilan.
+      updatePricingUI(0, currentSubtotal);
 
       saveForm2IfChanged();
     };

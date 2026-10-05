@@ -8,6 +8,7 @@ import { EmailService } from 'src/common/email/email.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CoursesService } from 'src/courses/courses.service';
+import { assertStrongPassword } from 'src/common/utils/password.util';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,8 @@ export class AuthService {
   }
 
   async createAcount(createUserDto: CreateUserDto) {
+    assertStrongPassword(createUserDto.password);
+
     if (createUserDto.password !== createUserDto.confirm_password) {
       throw new BadRequestException('Password does not match');
     }
@@ -77,7 +80,7 @@ export class AuthService {
     return await this.coursesService.findAllLaunch();
   }
 
-  async findCourse(id: number) {
+  async findCourse(id: string) {
     return await this.coursesService.findOne(id);
   }
 }

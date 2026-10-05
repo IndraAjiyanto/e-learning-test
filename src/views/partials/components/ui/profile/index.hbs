@@ -1,0 +1,784 @@
+{{!--
+  Komponen: Unified Profile
+  Lokasi: src/views/partials/components/ui/profile/index.hbs
+  Level: L2 Section
+
+  Dipakai dua tempat lewat shell user_profile/index.hbs:
+  - role `user`   : isi tab Profile
+  - role admin / super_admin : seluruh halaman /users/profile
+
+  Susunannya mengikuti docs/design/user-area/profile.png: judul sapaan, kartu
+  akun dengan avatar di kiri dan Username/Email menumpuk di kanannya, lalu kartu
+  "Your Biodata" yang diawali chip ikon. Tokennya memakai komponen super admin
+  (page_header, description, form/text_field, form/select_field, form/button)
+  sesuai aturan di CONTRIBUTING.md bagian "User area".
+
+  Kartu biodata hanya untuk role `user`; admin tidak punya biodata.
+
+  CATATAN: frame desain tidak memperlihatkan kartu Change Password, tapi
+  gambarnya terpotong di bawah dan kartu itu satu-satunya jalan menuju tab
+  ganti password (shell: activeSection === 'password'). Dihapus berarti student
+  dan admin tidak bisa mengganti password sama sekali, jadi kartunya
+  dipertahankan sampai pemilik memutuskan. Lihat pertanyaan terbuka 8 di
+  docs/user-area-design-alignment-plan.md.
+
+  Props:
+  - user : object (wajib) — user yang sedang login, beserta relasi biodata
+--}}
+<div
+  class='px-4 py-4 sm:px-8 sm:py-6'
+  x-data='profileScope({
+    id: "{{user.id}}",
+    role: "{{user.role}}",
+    username: "{{user.username}}",
+    email: "{{user.email}}",
+    biodataId: {{#if user.biodata}}"{{user.biodata.id}}"{{else}}null{{/if}},
+    fullName: "{{user.biodata.fullName}}",
+    city: "{{user.biodata.city}}",
+    education: "{{user.biodata.education}}",
+    studyProgram: "{{user.biodata.studyProgram}}",
+    gender: "{{user.biodata.gender}}",
+    no: "{{user.biodata.no}}",
+    hasPhoto: {{#if user.profile}}true{{else}}false{{/if}}
+  })'
+  x-init='flagStoredErrors()'
+>
+  <div class='flex flex-col gap-7'>
+
+    <div class='flex flex-col gap-1'>
+      {{> components/ui/super_admin/page_header/index
+        titleTag='h2'
+        title=(concat (t 'test.profile.welcome') ', ' user.username)
+      }}
+      {{> components/ui/super_admin/description/index
+        text=(t 'test.profile.belowProfileInfo')
+      }}
+    </div>
+
+    {{!--
+      Tata letak dua kolom.
+
+      Idenya dari halaman profil bisa.ai yang dikirim pemilik: foto punya kartu
+      sendiri di rel kiri bersama kartu keamanan, sementara kolom kanan yang
+      lebih lebar dipakai isian. Sebelumnya avatar menempel di dalam kartu akun
+      dan menyisakan lajur kosong setinggi kartu di bawahnya, sedangkan kartu
+      ganti password terdampar sendirian di dasar halaman.
+
+      Yang TIDAK ikut diambil dari sana: field Tanggal lahir, URL LinkedIn, dan
+      URL Instagram. Tabel biodata kita tidak punya kolomnya, jadi menambahkannya
+      berarti entitas + migrasi + DTO baru - keputusan pemilik, bukan penataan
+      ulang tampilan. Begitu juga email yang di sana dikunci; di sini masih bisa
+      diubah, dan menguncinya mengubah perilaku, bukan tampilan.
+
+      Urutan DOM sengaja foto -> isian -> keamanan supaya di layar sempit
+      isiannya tidak terdorong ke bawah kartu keamanan; penempatan kolom/baris
+      baru berlaku mulai lg.
+    --}}
+    <div class='grid grid-cols-1 gap-7 lg:grid-cols-[320px_minmax(0,1fr)] lg:grid-rows-[auto_1fr]'>
+
+      {{!-- Kolom kiri, baris 1 — Foto profil --}}
+      <div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8 lg:col-start-1 lg:row-start-1'>
+        <div class='flex items-start gap-4'>
+          <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/></svg>
+          </span>
+          <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.profilePhoto'}}</h3>
+        </div>
+
+        <div class='flex flex-col items-center gap-5'>
+          <div class='relative'>
+            {{!-- Inisial sebagai lapisan dasar, foto menimpa di atasnya. Bila foto
+                 gagal dimuat (URL /asset/* sering tidak ikut terbawa ke lokal),
+                 elemennya dibuang dan inisialnya muncul kembali. --}}
+            <span class='relative grid size-36 place-items-center overflow-hidden rounded-full bg-[#003060] font-inter text-4xl font-semibold uppercase text-white'>
+              <span x-text='initials'></span>
+              {{#if user.profile}}
+                <img src='{{user.profile}}' alt='' class='absolute inset-0 size-full object-cover' onerror='this.remove()' />
+              {{/if}}
+            </span>
+            <button
+              type='button'
+              @click='$refs.fileInput.click()'
+              aria-label="{{t 'test.profile.updatePhoto'}}"
+              class='absolute bottom-1 right-1 grid size-9 place-items-center rounded-full border border-[#d9d9d9] bg-white text-[#003060] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#f4f7fc]'
+            >
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'><path d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7'/><path d='M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z'/></svg>
+            </button>
+          </div>
+
+          {{!-- Tombol yang kelihatan, bukan hanya lencana kecil di sudut avatar.
+               Syarat berkasnya disalin dari yang benar-benar diperiksa:
+               @ValidateImage pada PATCH /users/update/profile/:userId dan
+               pemeriksaan di modal crop - JPG/JPEG/PNG, maksimal 5 MB. --}}
+          {{> components/ui/super_admin/form/button
+            label=(t 'test.profile.changePhoto')
+            variant='secondary'
+            atClick='$refs.fileInput.click()'
+          }}
+          <p class='text-center font-inter text-xs leading-relaxed text-[#737373]'>{{t 'test.profile.jpgPngHint'}}</p>
+
+          {{!-- Modal crop menaruh hasilnya ke $refs.fileInput lalu memanggil
+               $refs.profileForm.submit(); nama ref dan name="profile" harus persis. --}}
+          <form
+            x-ref='profileForm'
+            action='/users/update/profile/{{user.id}}?_method=PATCH'
+            method='post'
+            enctype='multipart/form-data'
+            class='hidden'
+          >
+            <input type='file' name='profile' x-ref='fileInput' accept='image/png, image/jpeg, image/jpg' @change='handleFileUpload($event)' />
+          </form>
+        </div>
+      </div>
+
+      {{!-- Kolom kanan — kartu akun, lalu biodata. Membentang dua baris supaya
+           kartu keamanan di kiri bisa duduk tepat di bawah kartu foto. --}}
+      <div class='flex flex-col gap-7 lg:col-start-2 lg:row-start-1 lg:row-span-2'>
+
+        {{!-- Kartu — Akun. Dulu kartu ini satu-satunya yang tidak punya kepala,
+             padahal dua kartu lain punya; sekarang seragam. --}}
+        <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'>
+          <div class='flex items-start gap-4'>
+            <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><circle cx='12' cy='12' r='4'/><path d='M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8'/></svg>
+            </span>
+            <div class='flex flex-col gap-1'>
+              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.account'}}</h3>
+              {{> components/ui/super_admin/description/index
+                text=(t 'test.profile.accountDesc')
+              }}
+            </div>
+          </div>
+
+          <div class='flex flex-col gap-5'>
+            {{> components/ui/super_admin/form/text_field
+              id='profile-username'
+              name='username'
+              field='username'
+              label=(t 'test.profile.username')
+              iconLeft='user'
+              placeholder=(t 'test.profile.placeholderUsername')
+            }}
+            {{> components/ui/super_admin/form/text_field
+              id='profile-email'
+              name='email'
+              field='email'
+              label=(t 'test.profile.email')
+              type='email'
+              iconLeft='mail'
+              placeholder=(t 'test.profile.placeholderEmail')
+            }}
+            <div>
+              {{> components/ui/super_admin/form/button
+                label=(t 'test.profile.saveChanges')
+                atClick='saveAccount()'
+                loading=true
+                disabled='!canSubmitAccount() || loading'
+              }}
+            </div>
+          </div>
+        </div>
+
+        {{!-- Kartu — Biodata, hanya role user --}}
+        {{#if (eq user.role 'user')}}
+        <div class='flex flex-col gap-6 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8'>
+
+          <div class='flex items-start gap-4'>
+            <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
+            </span>
+            <div class='flex flex-col gap-1'>
+              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.yourBiodata'}}</h3>
+              {{!-- Keterangan lama di sini sama persis dengan subjudul halaman di
+                   atasnya, jadi dibacanya dua kali tanpa menambah apa pun. Yang
+                   ditulis sekarang satu akibat yang benar-benar ada: PDF sertifikat
+                   mencetak biodata.fullName (certificates.service), dan unduhannya
+                   ditolak selama baris biodata belum ada sama sekali
+                   (certificates.controller). --}}
+              {{> components/ui/super_admin/description/index
+                text=(t 'test.profile.certificateNotice')
+              }}
+            </div>
+          </div>
+
+          {{!--
+            Ringkasan kelengkapan.
+
+            Tanpa ini tidak ada satu pun tempat yang memberi tahu student bahwa
+            biodatanya belum lengkap - baru ketahuan saat tombol unduh sertifikat
+            memantulkannya kembali ke halaman ini. Bentuknya mengikuti blok ringkasan
+            yang sudah dipakai halaman Start Learning: panel #FAFAFA, cincin
+            persentase SVG, lalu rinciannya di kanan.
+
+            Hitungannya hidup di sisi klien (formData, bukan nilai dari server), jadi
+            cincinnya ikut bergerak begitu student mengetik - bukan setelah simpan.
+          --}}
+          <div class='flex flex-col gap-5 rounded-lg bg-[#FAFAFA] p-5 sm:flex-row sm:items-center sm:gap-6'>
+            <div
+              class='relative grid size-24 shrink-0 place-items-center self-center sm:self-auto'
+              role='progressbar'
+              aria-label="{{t 'test.profile.completeness'}}"
+              :aria-valuenow='completionPercent'
+              aria-valuemin='0'
+              aria-valuemax='100'
+            >
+              <svg viewBox='0 0 36 36' class='size-24 -rotate-90' aria-hidden='true'>
+                <circle cx='18' cy='18' r='15.915' fill='none' stroke='#E5E5E5' stroke-width='3'></circle>
+                <circle
+                  cx='18' cy='18' r='15.915' fill='none' stroke-width='3' stroke-linecap='round'
+                  :stroke='completionPercent === 100 ? "#22C55E" : "#003060"'
+                  :stroke-dasharray="completionPercent + ' 100'"
+                ></circle>
+              </svg>
+              <span class='absolute font-inter text-lg font-bold text-[#003060]' x-text="completionPercent + '%'"></span>
+            </div>
+
+            <div class='min-w-0 flex-1'>
+              <p class='font-inter text-base font-bold text-[#171717]'>
+                <span x-text='completionDone'></span> {{t 'test.profile.of'}} <span x-text='completionItems.length'></span> {{t 'test.profile.detailsFilledIn'}}
+              </p>
+
+              <ul class='mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2'>
+                <template x-for='item in completionItems' :key='item.label'>
+                  <li class='flex items-center gap-2.5'>
+                    <span
+                      aria-hidden='true'
+                      class='grid size-6 shrink-0 place-items-center rounded-full'
+                      :class="item.done ? 'bg-[#f0fdf4] text-[#15803d]' : 'bg-[#F0F0F0] text-[#a3a3a3]'"
+                    >
+                      <svg x-show='item.done' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' class='h-3 w-3'><path d='M20 6 9 17l-5-5'/></svg>
+                      <svg x-show='!item.done' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' class='h-3 w-3'><path d='M5 12h14'/></svg>
+                    </span>
+                    <span class='font-inter text-sm' :class="item.done ? 'text-[#171717]' : 'text-[#737373]'" x-text='item.label'></span>
+                  </li>
+                </template>
+              </ul>
+
+              {{!-- Catatan ini hanya muncul selama nama lengkap masih kosong, dan
+                   menyebut akibat yang bisa diperiksa di certificates.service:
+                   nama itulah yang digambar ke PDF. --}}
+              <p
+                x-show='certificateBlocked'
+                x-cloak
+                class='mt-4 flex items-start gap-2 rounded-lg bg-[#FEFCE8] p-3 font-inter text-sm text-[#854D0E]'
+              >
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 h-4 w-4 shrink-0'><path d='M12 9v4'/><path d='M12 17h.01'/><circle cx='12' cy='12' r='10'/></svg>
+                <span>{{t 'test.profile.saveNameFirstNotice'}}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class='flex flex-col gap-5'>
+            {{> components/ui/super_admin/form/text_field
+              id='biodata-fullname'
+              name='fullName'
+              field='fullName'
+              label=(t 'test.profile.fullName')
+              iconLeft='user'
+              placeholder=(t 'test.profile.createBiodata.placeholderFullName')
+              required=true
+            }}
+
+            {{> components/ui/super_admin/form/text_field
+              id='biodata-city'
+              name='city'
+              field='city'
+              label=(t 'test.profile.address')
+              iconLeft='map-pin'
+              placeholder=(t 'test.profile.createBiodata.placeholderCity')
+              multiline=true
+              heightClass='h-24'
+              rows=3
+            }}
+
+            <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+              {{> components/ui/super_admin/form/select_field
+                id='biodata-education'
+                name='education'
+                field='education'
+                label=(t 'test.profile.education')
+                options='educationOptions'
+                iconLeft='graduation-cap'
+                placeholder=(t 'test.profile.createBiodata.placeholderEducation')
+              }}
+              {{> components/ui/super_admin/form/text_field
+                id='biodata-studyprogram'
+                name='studyProgram'
+                field='studyProgram'
+                label=(t 'test.profile.studyProgram')
+                iconLeft='book'
+                placeholder=(t 'test.profile.createBiodata.placeholderStudyProgram')
+              }}
+            </div>
+
+            <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+              {{> components/ui/super_admin/form/select_field
+                id='biodata-gender'
+                name='gender'
+                field='gender'
+                label=(t 'test.profile.gender')
+                options='genderOptions'
+                iconLeft='user'
+                placeholder=(t 'test.profile.placeholderGender')
+              }}
+              {{> components/ui/super_admin/form/text_field
+                id='biodata-no'
+                name='no'
+                field='no'
+                label=(t 'test.profile.createBiodata.whatsAppNumber')
+                type='tel'
+                iconLeft='phone'
+                placeholder=(t 'test.profile.createBiodata.placeholderWhatsAppNumber')
+              }}
+            </div>
+          </div>
+
+          <div>
+            {{> components/ui/super_admin/form/button
+              label=(t 'test.profile.saveChanges')
+              atClick='saveBiodata()'
+              loading=true
+              disabled='!canSubmitBiodata() || loading'
+            }}
+          </div>
+        </div>
+        {{/if}}
+      </div>
+
+      {{!-- Kolom kiri, baris 2 — Keamanan. Kartunya tetap yang lama, hanya
+           pindah tempat: di dasar halaman ia terlihat seperti sisa, padahal
+           inilah satu-satunya jalan menuju ganti password. --}}
+      <div class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white p-5 sm:p-8 lg:col-start-1 lg:row-start-2 lg:self-start'>
+        <div class='flex items-start gap-4'>
+          <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><path d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/></svg>
+          </span>
+          <div class='flex flex-col gap-1'>
+            <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.security'}}</h3>
+            {{> components/ui/super_admin/description/index
+              text=(t 'test.profile.securityDesc')
+            }}
+          </div>
+        </div>
+        <div>
+          {{#if (eq user.role 'user')}}
+            {{> components/ui/super_admin/form/button
+              label=(t 'test.profile.changePassword')
+              atClick="toggleActiveSection('password')"
+            }}
+          {{else}}
+            {{> components/ui/super_admin/form/button
+              label=(t 'test.profile.changePassword')
+              as='link'
+              href='/users/profile/password'
+            }}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {{> components/ui/modal/crop_photo/index
+    cropImageId='cropImageUnified'
+    title=(t 'test.profile.cropPhotoModal.title')
+    description=(t 'test.profile.cropPhotoModal.description')
+    cancelLabel=(t 'test.profile.cancel')
+    applyLabel=(t 'test.profile.cropPhotoModal.apply')
+  }}
+  {{> components/ui/modal/preview_photo/index
+    title=(t 'test.profile.profilePicturePreview')
+    invalidTitle=(t 'test.profile.invalidImage')
+    cancelLabel=(t 'test.profile.cancel')
+    saveLabel=(t 'test.profile.saveChanges')
+  }}
+</div>
+
+<script>
+  // Spread objek menyalin NILAI getter, bukan getter-nya, jadi `initials` akan
+  // membeku pada hasil pertama. Descriptor kedua factory disalin apa adanya.
+  function profileScope(seed) {
+    return Object.defineProperties(
+      profilePictureCrop(),
+      Object.getOwnPropertyDescriptors(profileFormState(seed)),
+    );
+  }
+
+  function profileFormState(seed) {
+    const trim = (v) => String(v ?? '').trim();
+    const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Pilihan pendidikan, dipakai dua kali: sebagai daftar option dan sebagai
+    // acuan untuk merapikan nilai lama.
+    const EDUCATION_OPTIONS = [
+      { value: 'SMP/Sederajat', label: "{{t 'test.profile.juniorHighSchool'}} / Sederajat" },
+      { value: 'SMA/SMK/Sederajat', label: "{{t 'test.profile.seniorHighSchool'}} / SMK / Sederajat" },
+      { value: 'Diploma(D3/D4)', label: "{{t 'test.profile.diploma'}}" },
+      { value: 'Sarjana(S1)', label: "{{t 'test.profile.bachelorDegree'}}" },
+    ];
+
+    // Nilai education yang tersimpan tidak selalu berasal dari daftar itu.
+    // Form biodata lama (src/views/user/biodata/{create,edit}.hbs - tidak lagi
+    // tertaut dari mana pun, tapi rutenya masih hidup) menulis label Inggris,
+    // dan baris lama bisa mengeja "Diploma (D3/D4)" pakai spasi sementara
+    // daftarnya menulis "Diploma(D3/D4)". Nilai begitu tidak cocok dengan satu
+    // pun option, jadi select-nya jatuh ke placeholder: student melihat
+    // pendidikannya seolah belum diisi padahal tersimpan di database.
+    //
+    // Dirapikan saat memuat, bukan lewat migrasi: baris lamanya ikut benar
+    // sendiri begitu student menyimpan biodatanya lagi.
+    const EDUCATION_ALIASES = {
+      'junior high school': 'SMP/Sederajat',
+      'senior high school': 'SMA/SMK/Sederajat',
+      'diploma (d3/d4)': 'Diploma(D3/D4)',
+      'bachelor degree (s1)': 'Sarjana(S1)',
+    };
+    const canonicalEducation = (value) => {
+      const val = trim(value);
+      if (!val) return '';
+      const key = val.toLowerCase();
+      if (EDUCATION_ALIASES[key]) return EDUCATION_ALIASES[key];
+      const squashed = key.replace(/\s+/g, '');
+      const match = EDUCATION_OPTIONS.find(
+        (option) => option.value.toLowerCase().replace(/\s+/g, '') === squashed,
+      );
+      return match ? match.value : val;
+    };
+
+    const original = {
+      username: seed.username || '',
+      email: seed.email || '',
+      fullName: seed.fullName || '',
+      city: seed.city || '',
+      education: canonicalEducation(seed.education),
+      studyProgram: seed.studyProgram || '',
+      gender: seed.gender || '',
+      no: seed.no || '',
+    };
+
+    // Pesan error per field, dihitung ulang dari nilai terkini — bukan dari error
+    // yang kebetulan sudah tampil. Sama seperti konvensi form super admin, lihat
+    // docs/form-submit-gating.md.
+    const errorFor = (field, value) => {
+      const val = trim(value);
+      switch (field) {
+        case 'username':
+          if (!val) return "{{t 'test.profile.validation.usernameRequired'}}";
+          if (val.length < 3) return "{{t 'test.profile.validation.usernameMin'}}";
+          return '';
+        case 'email':
+          if (!val) return "{{t 'test.profile.validation.emailRequired'}}";
+          if (!EMAIL.test(val)) return "{{t 'test.profile.validation.emailInvalid'}}";
+          return '';
+        case 'fullName':
+          if (!val) return "{{t 'test.profile.validation.fullNameRequired'}}";
+          if (val.length < 3) return "{{t 'test.profile.validation.fullNameMin'}}";
+          return '';
+        case 'no': {
+          // Nomor WhatsApp boleh dikosongkan - biodata memang tidak mewajibkannya.
+          // Tapi kalau diisi, bentuknya diperiksa: sebelumnya field ini menerima
+          // apa pun, termasuk huruf.
+          if (!val) return '';
+          if (!/^\+?[0-9 ()-]+$/.test(val)) {
+            return "{{t 'test.profile.validation.phoneDigits'}}";
+          }
+          const digits = val.replace(/\D/g, '');
+          if (digits.length < 8 || digits.length > 15) {
+            return "{{t 'test.profile.validation.phoneLength'}}";
+          }
+          return '';
+        }
+        default:
+          return '';
+      }
+    };
+
+    return {
+      userId: seed.id,
+      biodataId: seed.biodataId,
+      loading: false,
+      formData: { ...original },
+      formErrors: {},
+      touched: {},
+
+      educationOptions: EDUCATION_OPTIONS,
+      genderOptions: [
+        { value: 'Laki laki', label: "{{t 'test.profile.male'}}" },
+        { value: 'Perempuan', label: "{{t 'test.profile.female'}}" },
+      ],
+
+      get initials() {
+        return trim(this.formData.username).slice(0, 2) || '?';
+      },
+
+      // Kelengkapan profil.
+      //
+      // Username dan email sengaja TIDAK dihitung: keduanya selalu terisi untuk
+      // user yang bisa login, jadi memasukkannya hanya menaikkan persentase
+      // tanpa menyatakan apa pun. Yang dihitung hanya yang memang boleh kosong.
+      hasPhoto: !!seed.hasPhoto,
+
+      get completionItems() {
+        const f = this.formData;
+        return [
+          { label: "{{t 'test.profile.profilePhoto'}}", done: this.hasPhoto },
+          { label: "{{t 'test.profile.fullName'}}", done: !!trim(f.fullName) },
+          { label: "{{t 'test.profile.address'}}", done: !!trim(f.city) },
+          { label: "{{t 'test.profile.education'}}", done: !!trim(f.education) },
+          { label: "{{t 'test.profile.studyProgram'}}", done: !!trim(f.studyProgram) },
+          { label: "{{t 'test.profile.gender'}}", done: !!trim(f.gender) },
+          { label: "{{t 'test.profile.createBiodata.whatsAppNumber'}}", done: !!trim(f.no) },
+        ];
+      },
+
+      get completionDone() {
+        return this.completionItems.filter((item) => item.done).length;
+      },
+
+      get completionPercent() {
+        return Math.round((this.completionDone / this.completionItems.length) * 100);
+      },
+
+      // Sertifikat digambar dengan nama ini (certificates.service), jadi selama
+      // kosong tombol unduhnya tidak akan menghasilkan apa pun.
+      get certificateBlocked() {
+        return !trim(this.formData.fullName);
+      },
+
+      validateField(field, value) {
+        const message = errorFor(field, value);
+        if (message && this.touched[field]) this.formErrors[field] = message;
+        else delete this.formErrors[field];
+      },
+
+      touch(field) {
+        this.touched[field] = true;
+        this.validateField(field, this.formData[field]);
+      },
+
+      // Nilai yang datang dari database bisa saja melanggar aturan yang baru
+      // dipasang belakangan - nomor WhatsApp tujuh digit pada baris lama,
+      // misalnya. Tanpa ini errornya tidak pernah kelihatan (pesan hanya muncul
+      // untuk field yang sudah disentuh) sementara tombol Save-nya mati: yang
+      // dilihat student cuma tombol mati tanpa satu pun keterangan, dan itulah
+      // yang dilaporkan sebagai "tidak bisa menyimpan".
+      //
+      // Yang ditandai HANYA field yang ada isinya tapi tidak sah. Field kosong
+      // tetap diam sampai disentuh, supaya profil yang memang belum diisi tidak
+      // langsung dipenuhi pesan merah begitu dibuka.
+      flagStoredErrors() {
+        Object.keys(original).forEach((field) => {
+          const message = errorFor(field, original[field]);
+          if (trim(original[field]) && message) {
+            this.touched[field] = true;
+            this.formErrors[field] = message;
+          }
+        });
+      },
+
+      dirty(fields) {
+        return fields.some((f) => trim(this.formData[f]) !== trim(original[f]));
+      },
+
+      valid(fields) {
+        return fields.every((f) => !errorFor(f, this.formData[f]));
+      },
+
+      canSubmitAccount() {
+        const fields = ['username', 'email'];
+        return this.dirty(fields) && this.valid(fields);
+      },
+
+      canSubmitBiodata() {
+        const fields = ['fullName', 'city', 'education', 'studyProgram', 'gender', 'no'];
+        return this.dirty(fields) && this.valid(['fullName', 'no']);
+      },
+
+      async send(url, method, body) {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          redirect: 'manual',
+        });
+        if (res.type === 'opaqueredirect' || res.ok) return null;
+        const data = await res.json().catch(() => null);
+        return data?.message || "{{t 'test.profile.validation.failedToSave'}}";
+      },
+
+      async saveAccount() {
+        if (!this.canSubmitAccount() || this.loading) return;
+        this.loading = true;
+        try {
+          const error = await this.send('/users/' + this.userId, 'PATCH', {
+            username: trim(this.formData.username),
+            email: trim(this.formData.email),
+          });
+          if (error) throw new Error(error);
+          window.location.href = '/users/profile';
+        } catch (err) {
+          showErrorToast("{{t 'test.profile.validation.accountNotSaved'}}", err.message || "{{t 'test.profile.validation.tryAgainLater'}}");
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      async saveBiodata() {
+        if (!this.canSubmitBiodata() || this.loading) return;
+        this.loading = true;
+        try {
+          const isUpdate = this.biodataId !== null;
+          const error = await this.send(
+            isUpdate ? '/biodata/' + this.biodataId : '/biodata',
+            isUpdate ? 'PATCH' : 'POST',
+            {
+              fullName: trim(this.formData.fullName),
+              city: trim(this.formData.city),
+              education: this.formData.education || '',
+              studyProgram: trim(this.formData.studyProgram),
+              gender: this.formData.gender || '',
+              no: trim(this.formData.no),
+            },
+          );
+          if (error) throw new Error(error);
+          window.location.href = '/users/profile';
+        } catch (err) {
+          showErrorToast("{{t 'test.profile.validation.biodataNotSaved'}}", err.message || "{{t 'test.profile.validation.tryAgainLater'}}");
+        } finally {
+          this.loading = false;
+        }
+      },
+    };
+  }
+
+  function profilePictureCrop() {
+    return {
+      previewUrl: '',
+      open: false,
+      validationError: '',
+      imageInfo: '',
+      cropper: null,
+      showCropModal: false,
+      tempImageUrl: null,
+      croppedBlob: null,
+      fileName: '',
+
+      handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.previewUrl = '';
+        this.validationError = '';
+        this.imageInfo = '';
+        this.croppedBlob = null;
+        this.fileName = file.name;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.validationError = "{{t 'test.profile.validation.fileTypeNotAllowed'}}";
+          this.open = true;
+          return;
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        if (file.size > maxSize) {
+          this.validationError = `{{t 'test.profile.validation.fileSizeTooLarge'}} (${fileSizeMB}MB)`;
+          this.open = true;
+          return;
+        }
+
+        this.tempImageUrl = URL.createObjectURL(file);
+        this.showCropModal = true;
+        this.$nextTick(() => this.initCropper());
+      },
+
+      initCropper() {
+        const image = document.getElementById('cropImageUnified');
+        if (this.cropper) this.cropper.destroy();
+
+        this.cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 0.8,
+          restore: false,
+          guides: false,
+          center: true,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+          ready() {
+            const cropBox = this.cropper.cropBox;
+            cropBox.querySelector('.cropper-view-box').style.borderRadius = '50%';
+            cropBox.querySelector('.cropper-face').style.borderRadius = '50%';
+          },
+        });
+      },
+
+      applyCrop() {
+        if (!this.cropper) return;
+
+        this.cropper
+          .getCroppedCanvas({ width: 400, height: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' })
+          .toBlob((blob) => {
+            this.croppedBlob = blob;
+
+            const fileSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+            const img = new Image();
+            const objectUrl = URL.createObjectURL(blob);
+
+            img.onload = () => {
+              this.previewUrl = objectUrl;
+              this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • {{t 'test.profile.validation.readyToUpload'}}`;
+              this.validationError = '';
+              this.open = true;
+            };
+
+            img.src = objectUrl;
+            this.closeCropModal();
+          }, 'image/jpeg', 0.9);
+      },
+
+      closeCropModal() {
+        this.showCropModal = false;
+        if (this.cropper) {
+          this.cropper.destroy();
+          this.cropper = null;
+        }
+        if (this.tempImageUrl) {
+          URL.revokeObjectURL(this.tempImageUrl);
+          this.tempImageUrl = null;
+        }
+        if (this.$refs.fileInput) this.$refs.fileInput.value = null;
+      },
+
+      closeModal() {
+        this.open = false;
+        if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+        this.previewUrl = '';
+        this.validationError = '';
+        this.imageInfo = '';
+        this.croppedBlob = null;
+        if (this.$refs.fileInput) this.$refs.fileInput.value = null;
+      },
+    };
+  }
+</script>
+
+<style>
+  [x-cloak] { display: none !important; }
+  .cropper-view-box,
+  .cropper-face {
+    border-radius: 50% !important;
+    border: 3px solid #10b981 !important;
+  }
+  .cropper-point {
+    width: 10px !important;
+    height: 10px !important;
+    background-color: #10b981 !important;
+    border-radius: 50% !important;
+    opacity: 1 !important;
+  }
+</style>

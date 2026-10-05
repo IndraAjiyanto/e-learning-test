@@ -1,0 +1,197 @@
+{{!--
+  Komponen: Program Detail FAQ Section (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/program_detail_faq/index.hbs
+
+  Props:
+  - faqs            : array (opsional, list faq { question, answer })
+  - courseQuestions : array (opsional, list { questions, answers })
+  - badgeTitle      : string (opsional, default: "QUESTIONS" / i18n test.categoryPaidProgram.faq.eyebrow)
+  - title           : string (opsional, default: "Frequently Asked Questions" / i18n test.categoryPaidProgram.faq.title)
+  - description     : string (opsional, default: "Have questions? Here are immediate answers..." / i18n test.categoryPaidProgram.faq.description)
+  - showBadge       : boolean (opsional, default: true)
+  - showDivider     : boolean (opsional, default: true)
+  - dotColor        : string (opsional, default: "bg-[#6EB6E5]")
+  - sectionClass    : string (opsional override kelas section)
+  - wrapperClass    : string (opsional override kelas wrapper)
+  - listWrapperClass: string (opsional override kelas list)
+  - lang            : string (opsional)
+--}}
+
+<!-- FAQ SECTION -->
+<section
+  id="faq"
+  class="{{default sectionClass 'w-full bg-white py-14 lg:py-20 px-4 sm:px-8 lg:px-[80px] font-inter flex flex-col items-center'}}"
+>
+  <div class="{{default wrapperClass 'w-full max-w-[1568px] mx-auto flex flex-col items-center gap-10 lg:gap-[60px]'}}">
+
+    <!-- SECTION HEADER -->
+    <div class="w-full flex flex-col items-center gap-5 text-center">
+      {{#unless (eq showBadge false)}}
+        <!-- Animated Tag (Eyebrow) -->
+        <div class="box-border inline-flex items-center gap-2 rounded-[100px] border border-[#E5E7EB] bg-[#F8F9FA] px-4 py-1.5 shadow-2xs">
+          <span class="size-2 shrink-0 rounded-full {{default dotColor 'bg-[#6EB6E5]'}}" style="{{#if dotColor}}background-color: {{dotColor}};{{/if}}"></span>
+          <span class="font-['Montserrat',sans-serif] md:font-inter text-[12px] font-bold leading-[15px] tracking-wider uppercase text-[#0B1F3B]">
+            {{#if badgeTitle}}{{badgeTitle}}{{else if badgeText}}{{badgeText}}{{else if (t 'test.categoryPaidProgram.faq.eyebrow')}}{{t 'test.categoryPaidProgram.faq.eyebrow'}}{{else}}QUESTIONS{{/if}}
+          </span>
+        </div>
+      {{/unless}}
+
+      <!-- Title: Frequently Asked Questions -->
+      <h2 class="w-full font-['Montserrat',sans-serif] md:font-inter font-bold text-2xl sm:text-3xl lg:text-[36px] leading-tight lg:leading-[44px] text-center text-[#0B1F3B] m-0">
+        {{#if titleText}}{{{titleText}}}{{else if title}}{{{title}}}{{else if (t 'test.categoryPaidProgram.faq.title')}}{{{t 'test.categoryPaidProgram.faq.title'}}}{{else}}Frequently Asked Questions{{/if}}
+      </h2>
+
+      <!-- Description: Have questions? Here are immediate answers to common details about our tracks and placement. -->
+      <p class="max-w-[534px] font-['Open_Sans',sans-serif] md:font-inter font-normal text-base leading-relaxed lg:leading-[160%] text-center text-[#4A5568] m-0">
+        {{#if descText}}{{descText}}{{else if description}}{{description}}{{else if (t 'test.categoryPaidProgram.faq.description')}}{{t 'test.categoryPaidProgram.faq.description'}}{{else}}Have questions? Here are immediate answers to common details about our tracks and placement.{{/if}}
+      </p>
+
+      <!-- Accent Line -->
+      {{#unless (eq showDivider false)}}
+        <div class="w-[60px] h-1 rounded-[2px] bg-[#003060]"></div>
+      {{/unless}}
+    </div>
+
+    <!-- FAQ LIST (Component 31) -->
+    <div
+      class="{{default listWrapperClass 'w-full max-w-[1004px]'}}"
+      x-data="programDetailFaq()"
+    >
+      <div class="w-full flex flex-col">
+        <template x-for="(item, index) in faqs" :key="index">
+          <div class="w-full border-t border-[#D9D9D9] last:border-b">
+
+            <!-- Question Row Button -->
+            <button
+              type="button"
+              @click="toggle(index)"
+              class="w-full text-left py-6 focus:outline-none flex items-center justify-between gap-4 group cursor-pointer"
+            >
+              <!-- Left side: Bullet Point, Divider Line, and Question -->
+              <div class="flex items-center gap-4 md:gap-5 min-w-0 flex-1 pr-2 md:pr-4">
+                <!-- Bullet Point & Vertical Divider -->
+                <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+                  <span
+                    class="size-2 sm:size-2.5 rounded-full shrink-0 transition-colors duration-300"
+                    :class="activeIndex === index ? 'bg-[#6EB6E5]' : 'bg-[#003060] group-hover:bg-[#6EB6E5]'"
+                  ></span>
+                  <span class="w-px h-[18px] sm:h-5 bg-[#D9D9D9] shrink-0"></span>
+                </div>
+
+                <!-- Question Title -->
+                <h3
+                  class="font-['Montserrat',sans-serif] md:font-inter font-semibold text-[17px] sm:text-[20px] lg:text-[26px] leading-[26px] sm:leading-[30px] lg:leading-[32px] text-black transition-colors duration-200 group-hover:text-[#003060] min-w-0 flex-1"
+                  x-text="item.question"
+                ></h3>
+              </div>
+
+              <!-- Right side: Chevron Icon (Tabler Chevron Up / Down) -->
+              <svg
+                class="w-[25px] h-[25px] shrink-0 text-[#0B1F3B] transition-transform duration-300"
+                :class="activeIndex === index ? 'rotate-180 text-[#003060]' : 'text-[#0B1F3B]'"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+
+            <!-- Answer Dropdown Content -->
+            <div
+              x-show="activeIndex === index"
+              x-collapse
+            >
+              <div class="pb-6 pl-9 sm:pl-10 lg:pl-11 pr-4 font-['Open_Sans',sans-serif] md:font-inter font-normal text-[15px] md:text-[16px] leading-[160%] text-[#4A5568]">
+                <p x-html="item.answer"></p>
+              </div>
+            </div>
+
+          </div>
+        </template>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  window.programDetailFaq = function() {
+    return {
+      activeIndex: null,
+      faqs: [
+        {{#if faqs.length}}
+          {{#each faqs}}
+            {
+              question: {{{json (default (getByLang question (default ../lang (default @root.lang 'id'))) (default question.[0] (default question.id (default question.en question))))}}},
+              answer: {{{json (default (getByLang answer (default ../lang (default @root.lang 'id'))) (default answer.[0] (default answer.id (default answer.en answer))))}}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{else if courseQuestions.length}}
+          {{#each courseQuestions}}
+            {
+              question: {{{json (default (getByLang questions (default ../lang (default @root.lang 'id'))) (default questions.[0] (default questions.id (default questions.en questions))))}}},
+              answer: {{{json (default (getByLang answers (default ../lang (default @root.lang 'id'))) (default answers.[0] (default answers.id (default answers.en answers))))}}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{else if course.courseQuestions.length}}
+          {{#each course.courseQuestions}}
+            {
+              question: {{{json (default (getByLang questions (default ../lang (default @root.lang 'id'))) (default questions.[0] (default questions.id (default questions.en questions))))}}},
+              answer: {{{json (default (getByLang answers (default ../lang (default @root.lang 'id'))) (default answers.[0] (default answers.id (default answers.en answers))))}}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{else if category.faqs.length}}
+          {{#each category.faqs}}
+            {
+              question: {{{json (default (getByLang question (default ../lang (default @root.lang 'id'))) (default question.[0] (default question.id (default question.en question))))}}},
+              answer: {{{json (default (getByLang answer (default ../lang (default @root.lang 'id'))) (default answer.[0] (default answer.id (default answer.en answer))))}}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{else if course.category.faqs.length}}
+          {{#each course.category.faqs}}
+            {
+              question: {{{json (default (getByLang question (default ../lang (default @root.lang 'id'))) (default question.[0] (default question.id (default question.en question))))}}},
+              answer: {{{json (default (getByLang answer (default ../lang (default @root.lang 'id'))) (default answer.[0] (default answer.id (default answer.en answer))))}}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{else}}
+          {
+            question: 'What will I learn in this bootcamp?',
+            answer: 'You will master industry-standard skills, practical workflows, and complete hands-on projects designed to prepare you for career opportunities.'
+          },
+          {
+            question: 'Is the bootcamp online or offline?',
+            answer: 'We offer flexible learning options with interactive live online sessions and comprehensive learning materials accessible anytime.'
+          },
+          {
+            question: 'Do I need prior programming experience',
+            answer: 'No prior programming experience is required. We welcome beginners and guide you step-by-step from core fundamentals to advanced techniques.'
+          },
+          {
+            question: 'Will I receive a certificate after completing the bootcamp?',
+            answer: 'Yes, upon completing all coursework and the capstone project, you will receive an official verifiable certificate of completion.'
+          },
+          {
+            question: 'What if I miss a class?',
+            answer: 'All live sessions are recorded and uploaded to the student platform, so you can catch up on missed material at your own pace.'
+          },
+          {
+            question: 'How can I register?',
+            answer: 'You can register directly through our website by clicking the register button and completing the enrollment form.'
+          },
+          {
+            question: 'Is there career support after graduation?',
+            answer: 'Yes, we provide career support including resume reviews, portfolio building, mock interviews, and access to hiring partners.'
+          }
+        {{/if}}
+      ],
+      toggle(index) {
+        this.activeIndex = this.activeIndex === index ? null : index;
+      }
+    };
+  };
+</script>
