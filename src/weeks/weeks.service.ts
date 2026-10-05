@@ -13,6 +13,7 @@ import { WeekProgress } from 'src/entities/week_progress.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Session } from 'src/entities/session.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 
 @Injectable()
 export class WeeksService {
@@ -34,6 +35,9 @@ export class WeeksService {
 
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
+
+    @InjectRepository(Logbook)
+    private readonly logbookRepository: Repository<Logbook>,
   ) {}
 
   async create(createWeekDto: CreateWeeksDto, courseId: string) {
@@ -154,10 +158,32 @@ export class WeeksService {
   }
 
   async findSession(weeksId: string) {
-    return await this.sessionRepository.find({
+    const sessions = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       order: { sessionOrder: 'ASC' },
     });
+
+    if (sessions.length === 0) {
+      return [];
+    }
+
+    const sessionIds = sessions.map((s) => s.id);
+    const approvedLogbooks = await this.logbookRepository
+      .createQueryBuilder('l')
+      .select('l.sessionId', 'sessionId')
+      .where('l.sessionId IN (:...sessionIds)', { sessionIds })
+      .andWhere("l.process = 'approved'")
+      .groupBy('l.sessionId')
+      .getRawMany();
+
+    const completedSessionIds = new Set(
+      approvedLogbooks.map((item) => item.sessionId),
+    );
+
+    return sessions.map((s) => ({
+      ...s,
+      hasCompletedUser: completedSessionIds.has(s.id),
+    }));
   }
 
   async findQuiz(weeksId: string) {
