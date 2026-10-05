@@ -29,13 +29,14 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REPO_DIR: ${{ secrets.REPO_DIR }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           command_timeout: 20m
-          envs: TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID
+          envs: TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID,REPO_DIR
           script: |
             set -e
 
@@ -57,7 +58,12 @@ jobs:
             STAGE="initialization"
             trap 'notify "❌ *Deploy FAILED* at stage: ${STAGE}"' ERR
 
-            REPO_DIR="/home/administrator/DATA/project/elearning-kesatria/elearning-kesatria"
+            if [ -z "$REPO_DIR" ]; then
+              trap - ERR
+              notify "❌ *Deploy FAILED* — secret REPO_DIR is not set"
+              echo "REPO_DIR is not set"
+              exit 1
+            fi
             PM2_APP="elearning-kesatria"
 
             STAGE="check repo"
