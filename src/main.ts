@@ -34,7 +34,10 @@ async function bootstrap() {
 
   // Static assets (Shared CORS header for canvas & PDF generation)
   const staticDirs = [
-    { path: join(process.cwd(), 'src', 'common', 'public'), prefix: '/public/' },
+    {
+      path: join(process.cwd(), 'src', 'common', 'public'),
+      prefix: '/public/',
+    },
     { path: join(process.cwd(), 'uploads'), prefix: '/uploads/' },
     { path: join(process.cwd(), 'public', 'asset'), prefix: '/asset/' },
   ];
@@ -42,7 +45,8 @@ async function bootstrap() {
   staticDirs.forEach(({ path, prefix }) => {
     app.useStaticAssets(path, {
       prefix,
-      setHeaders: (res: Response) => res.set('Access-Control-Allow-Origin', '*'),
+      setHeaders: (res: Response) =>
+        res.set('Access-Control-Allow-Origin', '*'),
     });
   });
 

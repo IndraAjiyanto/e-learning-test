@@ -127,4 +127,3 @@ export function readFlashToastInfo(req: Request): ToastPayload | null {
     return null;
   }
 }
-

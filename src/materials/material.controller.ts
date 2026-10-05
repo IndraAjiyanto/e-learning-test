@@ -201,7 +201,9 @@ export class MaterialController {
       if (!file || /^https?:\/\//i.test(file)) return false;
       for (const [prefix, root] of Object.entries(STATIC_ROOTS)) {
         if (file.startsWith(prefix)) {
-          const rel = decodeURIComponent(file.slice(prefix.length).split('?')[0]);
+          const rel = decodeURIComponent(
+            file.slice(prefix.length).split('?')[0],
+          );
           return !existsSync(join(root, rel));
         }
       }
@@ -221,7 +223,10 @@ export class MaterialController {
     const decorate = <T extends { id: string; file: string }>(list: T[]) =>
       list.map((m) => ({ ...m, missing: isMissing(m.file) }));
 
-    const render = <T extends { id: string; file: string }>(view: string, list: T[]) => {
+    const render = <T extends { id: string; file: string }>(
+      view: string,
+      list: T[],
+    ) => {
       const items = decorate(list);
       const selected = pick(items);
       return res.render(view, {
@@ -235,11 +240,20 @@ export class MaterialController {
     };
 
     if (fileType === 'video') {
-      return render('materi/video', await this.materialService.findMaterialVideo(sessionId));
+      return render(
+        'materi/video',
+        await this.materialService.findMaterialVideo(sessionId),
+      );
     } else if (fileType === 'pdf') {
-      return render('materi/pdf', await this.materialService.findMaterialPdf(sessionId));
+      return render(
+        'materi/pdf',
+        await this.materialService.findMaterialPdf(sessionId),
+      );
     } else if (fileType === 'ppt') {
-      return render('materi/ppt', await this.materialService.findMaterialPpt(sessionId));
+      return render(
+        'materi/ppt',
+        await this.materialService.findMaterialPpt(sessionId),
+      );
     }
   }
 

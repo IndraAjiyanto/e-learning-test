@@ -10,11 +10,7 @@ import {
   IsUrl,
   IsUUID,
 } from 'class-validator';
-import {
-  Method,
-  PROGRAM_TYPES,
-  ProgramType,
-} from 'src/entities/course.entity';
+import { Method, PROGRAM_TYPES, ProgramType } from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
 /**

@@ -60,8 +60,7 @@ export class InvoiceService {
       );
     }
 
-    const invoiceStatus: InvoiceStatus =
-      finalTotal <= 0 ? 'paid' : 'pending';
+    const invoiceStatus: InvoiceStatus = finalTotal <= 0 ? 'paid' : 'pending';
 
     const coursePrice = course?.price ? Number(course.price) : null;
     const coursePromo = course?.promo ? Number(course.promo) : null;
@@ -147,16 +146,16 @@ export class InvoiceService {
     const promo = course?.promo ? Number(course.promo) : null;
     const basePrice = isInstallment
       ? Number(installment.downPayment)
-      : (promo && promo > 0 ? promo : (price ?? 0));
+      : promo && promo > 0
+        ? promo
+        : (price ?? 0);
     const finalTotal =
       finalTotalParam !== undefined
         ? finalTotalParam
         : Math.max(0, basePrice - (discountAmount || 0));
 
     const courseDiscount =
-      !isInstallment && price && promo && price > promo
-        ? price - promo
-        : 0;
+      !isInstallment && price && promo && price > promo ? price - promo : 0;
 
     const invoice = this.invoiceRepository.create({
       payment: payment,

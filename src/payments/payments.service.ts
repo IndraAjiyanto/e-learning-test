@@ -143,7 +143,10 @@ export class PaymentsService {
             finalTotal,
           )
           .catch((err) => {
-            console.error('[PaymentsService] Failed to create manual invoice:', err);
+            console.error(
+              '[PaymentsService] Failed to create manual invoice:',
+              err,
+            );
           });
         return saved;
       }
@@ -196,7 +199,10 @@ export class PaymentsService {
           finalTotal,
         )
         .catch((err) => {
-          console.error('[PaymentsService] Failed to create manual invoice:', err);
+          console.error(
+            '[PaymentsService] Failed to create manual invoice:',
+            err,
+          );
         });
       return saved;
     }
@@ -399,7 +405,14 @@ export class PaymentsService {
     const [payments, registrations] = await Promise.all([
       this.paymentRepository.find({
         where: { user: { id: userId } },
-        relations: ['user', 'user.biodata', 'course', 'course.category', 'installment', 'invoice'],
+        relations: [
+          'user',
+          'user.biodata',
+          'course',
+          'course.category',
+          'installment',
+          'invoice',
+        ],
       }),
       this.registrationRepository.find({
         where: { user: { id: userId } },
@@ -426,7 +439,7 @@ export class PaymentsService {
       ...payments.map((payment) => {
         const isInstallment = !!payment.installment;
         const installmentDetail = isInstallment
-          ? installmentDetailMap.get(payment.id) ?? null
+          ? (installmentDetailMap.get(payment.id) ?? null)
           : null;
 
         const hasPromo =
@@ -434,24 +447,30 @@ export class PaymentsService {
           payment.course?.promo !== undefined &&
           Number(payment.course.promo) > 0;
         const promoPrice = hasPromo ? Number(payment.course.promo) : null;
-        const normalPrice = payment.course?.price ? Number(payment.course.price) : null;
+        const normalPrice = payment.course?.price
+          ? Number(payment.course.price)
+          : null;
         const fallbackPrice = promoPrice ?? normalPrice;
 
         const price =
-          payment.invoice?.price !== null && payment.invoice?.price !== undefined
+          payment.invoice?.price !== null &&
+          payment.invoice?.price !== undefined
             ? Number(payment.invoice.price)
             : normalPrice;
         const promo =
-          payment.invoice?.promo !== null && payment.invoice?.promo !== undefined
+          payment.invoice?.promo !== null &&
+          payment.invoice?.promo !== undefined
             ? Number(payment.invoice.promo)
             : promoPrice;
         // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
         const total =
-          payment.invoice?.subtotal !== null && payment.invoice?.subtotal !== undefined
+          payment.invoice?.subtotal !== null &&
+          payment.invoice?.subtotal !== undefined
             ? Number(payment.invoice.subtotal)
-            : (payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
-                ? Number(payment.invoice.final_total)
-                : (fallbackPrice ?? 0));
+            : payment.invoice?.final_total !== null &&
+                payment.invoice?.final_total !== undefined
+              ? Number(payment.invoice.final_total)
+              : (fallbackPrice ?? 0);
 
         // Potongan voucher promo code: prioritas kolom promo_code, fallback ke selisih (promo - total) jika promo_code kosong
         const promoCode =
@@ -459,19 +478,23 @@ export class PaymentsService {
           payment.invoice?.promo_code !== undefined &&
           Number(payment.invoice.promo_code) > 0
             ? Number(payment.invoice.promo_code)
-            : (promo && total && promo > total ? promo - total : 0);
+            : promo && total && promo > total
+              ? promo - total
+              : 0;
 
         // Diskon kursus: potongan dari harga normal ke promo kursus (misal normal 5jt, promo 4.5jt -> diskon 500rb)
         // Fallback berurutan: selisih (price - promo) -> discount_amount DB -> selisih (price - total - promoCode)
         const discountAmount =
           price && promo && price > promo
             ? price - promo
-            : (payment.invoice?.discount_amount !== null &&
-               payment.invoice?.discount_amount !== undefined &&
-               Number(payment.invoice.discount_amount) > 0 &&
-               Number(payment.invoice.discount_amount) !== promoCode
-                ? Number(payment.invoice.discount_amount)
-                : (price && total && price > total ? Math.max(0, price - total - promoCode) : 0));
+            : payment.invoice?.discount_amount !== null &&
+                payment.invoice?.discount_amount !== undefined &&
+                Number(payment.invoice.discount_amount) > 0 &&
+                Number(payment.invoice.discount_amount) !== promoCode
+              ? Number(payment.invoice.discount_amount)
+              : price && total && price > total
+                ? Math.max(0, price - total - promoCode)
+                : 0;
 
         return {
           id: payment.id,
@@ -484,7 +507,9 @@ export class PaymentsService {
           paidAt:
             payment.invoice?.paid_at ??
             (payment.process === 'approved'
-              ? (payment.invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
+              ? (payment.invoice?.updatedAt ??
+                payment.updatedAt ??
+                payment.createdAt)
               : null),
           method:
             payment.invoice?.payment_method ||
@@ -502,10 +527,25 @@ export class PaymentsService {
           proof: payment.file ?? null,
           no: payment.invoice?.invoice_number || payment.no || null,
           paymentLink: payment.invoice?.xendit_invoice_url ?? null,
-          keyword: payment.referalSource || (isInstallment ? 'Installment Plan' : 'Online Course'),
-          userName: payment.invoice?.user_fullname || payment.user_fullname || payment.user?.biodata?.fullName || payment.user?.username || null,
-          userEmail: payment.invoice?.user_email || payment.user_email || payment.user?.email || null,
-          userPhone: payment.invoice?.user_phone || payment.user_no || payment.user?.biodata?.no || null,
+          keyword:
+            payment.referalSource ||
+            (isInstallment ? 'Installment Plan' : 'Online Course'),
+          userName:
+            payment.invoice?.user_fullname ||
+            payment.user_fullname ||
+            payment.user?.biodata?.fullName ||
+            payment.user?.username ||
+            null,
+          userEmail:
+            payment.invoice?.user_email ||
+            payment.user_email ||
+            payment.user?.email ||
+            null,
+          userPhone:
+            payment.invoice?.user_phone ||
+            payment.user_no ||
+            payment.user?.biodata?.no ||
+            null,
           installmentDetail,
           ...statusOf(payment.process),
         };
@@ -516,7 +556,9 @@ export class PaymentsService {
           registration.course?.promo !== undefined &&
           Number(registration.course.promo) > 0;
         const promoPrice = hasPromo ? Number(registration.course.promo) : null;
-        const normalPrice = registration.course?.price ? Number(registration.course.price) : null;
+        const normalPrice = registration.course?.price
+          ? Number(registration.course.price)
+          : null;
         const subtotal = promoPrice ?? normalPrice;
         const regDiscount =
           normalPrice && promoPrice && normalPrice > promoPrice
@@ -544,9 +586,15 @@ export class PaymentsService {
           no: null,
           paymentLink: null,
           keyword: registration.referal_source || 'Registration',
-          userName: registration.user_fullname || registration.user?.biodata?.fullName || registration.user?.username || null,
-          userEmail: registration.user_email || registration.user?.email || null,
-          userPhone: registration.user_no || registration.user?.biodata?.no || null,
+          userName:
+            registration.user_fullname ||
+            registration.user?.biodata?.fullName ||
+            registration.user?.username ||
+            null,
+          userEmail:
+            registration.user_email || registration.user?.email || null,
+          userPhone:
+            registration.user_no || registration.user?.biodata?.no || null,
           installmentDetail: null,
           ...statusOf(registration.process),
         };
@@ -998,7 +1046,9 @@ export class PaymentsService {
       // untuk tiga keputusan: sudah lunas (tandai lunas), masih aktif (jangan
       // buat invoice kedua), atau sudah mati (biarkan di-regenerate di bawah).
       const xenditStatus = row.xendit_invoice_id
-        ? await this.invoiceService.getXenditInvoiceStatus(row.xendit_invoice_id)
+        ? await this.invoiceService.getXenditInvoiceStatus(
+            row.xendit_invoice_id,
+          )
         : null;
 
       // Cegah double-charge: jika invoice lama ternyata sudah dibayar di Xendit

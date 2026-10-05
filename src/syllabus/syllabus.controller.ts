@@ -276,9 +276,8 @@ export class SyllabusController {
       req.flash('error', 'Syllabus not found');
       return res.redirect('/program');
     }
-    const isCompleted = await this.syllabusService.isSyllabusCompleted(
-      syllabusId,
-    );
+    const isCompleted =
+      await this.syllabusService.isSyllabusCompleted(syllabusId);
     res.render('admin/course/detail_syllabus_item', {
       user: req.user,
       syllabus,

@@ -299,7 +299,7 @@ export class PortfoliosService {
     const isNonBootcamp = course?.programType === 'non_bootcamp';
 
     // Cek record enrollment user_courses
-    let userCourse = await this.userCourseRepository.findOne({
+    const userCourse = await this.userCourseRepository.findOne({
       where: {
         user: { id: userId },
         course: { id: courseId },
@@ -312,13 +312,13 @@ export class PortfoliosService {
 
     // Untuk program berbasis silabus, verifikasi secara dinamis jika progress belum true
     if (isNonBootcamp && !userCourse.progress) {
-      const syllabuses = await this.courseRepository.manager
+      const syllabuses = (await this.courseRepository.manager
         .getRepository('Syllabus')
         .find({
           where: { course: { id: courseId } },
           order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
           relations: ['quiz'],
-        }) as any[];
+        })) as any[];
 
       if (syllabuses.length > 0) {
         const quizIds = syllabuses
@@ -343,9 +343,13 @@ export class PortfoliosService {
           const quiz = s.quiz?.[0] || null;
           if (!quiz) return true; // Tidak ada kuis dianggap selesai
           const minScore = quiz.minScore ?? 80;
-          const matchingScores = userScores.filter((sc) => sc.quiz?.id === quiz.id);
+          const matchingScores = userScores.filter(
+            (sc) => sc.quiz?.id === quiz.id,
+          );
           if (matchingScores.length === 0) return false;
-          const bestScore = Math.max(...matchingScores.map((sc) => Number(sc.score)));
+          const bestScore = Math.max(
+            ...matchingScores.map((sc) => Number(sc.score)),
+          );
           return bestScore >= minScore;
         });
 
@@ -515,7 +519,10 @@ export class PortfoliosService {
   // Mengembalikan isi EditorJS dalam bentuk yang selalu bisa diproses di
   // bawah ini: objek dengan array `blocks`. Teks polos (atau apa pun yang
   // bukan JSON) diperlakukan sebagai satu blok paragraph.
-  private parseEditorJsContent(isi: string): { blocks: any[]; [key: string]: any } {
+  private parseEditorJsContent(isi: string): {
+    blocks: any[];
+    [key: string]: any;
+  } {
     const text = typeof isi === 'string' ? isi : '';
 
     try {

@@ -40,7 +40,7 @@ export class PaymentSettingsService {
           gateway_enabled: false,
           createdAt: new Date(),
           updatedAt: new Date(),
-        } as PaymentSettings;
+        };
       }
       throw err;
     }

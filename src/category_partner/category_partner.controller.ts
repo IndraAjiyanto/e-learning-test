@@ -140,8 +140,7 @@ export class CategoryPartnerController {
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      const errorMessage =
-        error.message || 'Category partner failed to remove';
+      const errorMessage = error.message || 'Category partner failed to remove';
       flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
       req.flash('error', errorMessage);
 
