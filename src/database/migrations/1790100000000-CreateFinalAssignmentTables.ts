@@ -7,9 +7,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - `user_assignment`: berelasi 1:N dengan final_assignment dan N:1 dengan user.
  * - Kolom updatedAt dan createdAt disertakan di kedua tabel.
  */
-export class CreateFinalAssignmentTables1790100000000
-  implements MigrationInterface
-{
+export class CreateFinalAssignmentTables1790100000000 implements MigrationInterface {
   name = 'CreateFinalAssignmentTables1790100000000';
 
   public async up(q: QueryRunner): Promise<void> {
@@ -109,4 +107,3 @@ export class CreateFinalAssignmentTables1790100000000
     }
   }
 }
-

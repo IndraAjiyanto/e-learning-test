@@ -109,10 +109,12 @@ export function capabilitiesFor(
  * `{{#if (eq caps.structure 'syllabus')}}` dan tidak pernah menyebut nama tipe
  * programnya.
  */
-export function capabilitiesForCourse(course?: {
-  programType?: ProgramType | null;
-  logbookEnabled?: boolean | null;
-} | null): ProgramCapabilities & { logbookEnabled: boolean } {
+export function capabilitiesForCourse(
+  course?: {
+    programType?: ProgramType | null;
+    logbookEnabled?: boolean | null;
+  } | null,
+): ProgramCapabilities & { logbookEnabled: boolean } {
   const caps = capabilitiesFor(course?.programType);
   return {
     ...caps,

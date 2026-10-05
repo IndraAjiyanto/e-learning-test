@@ -9,7 +9,8 @@ export const logicHelpers = {
     args.pop();
     return args.some((arg) => {
       if (Array.isArray(arg)) return arg.length > 0;
-      if (arg && typeof arg === 'object' && Object.keys(arg).length === 0) return false;
+      if (arg && typeof arg === 'object' && Object.keys(arg).length === 0)
+        return false;
       return Boolean(arg);
     });
   },
@@ -18,7 +19,8 @@ export const logicHelpers = {
     args.pop();
     for (const a of args) {
       if (Array.isArray(a) && a.length > 0) return a[0];
-      if (a !== undefined && a !== null && a !== '' && !Array.isArray(a)) return a;
+      if (a !== undefined && a !== null && a !== '' && !Array.isArray(a))
+        return a;
     }
     return '';
   },
@@ -28,14 +30,17 @@ export const logicHelpers = {
       return course.checkPaid === true || course.checkPaid === 'true';
     }
     return Boolean(
-      course.price !== null && course.price !== undefined && Number(course.price) > 0,
+      course.price !== null &&
+      course.price !== undefined &&
+      Number(course.price) > 0,
     );
   },
   and: (...args: any[]) => {
     args.pop();
     return args.every((arg) => {
       if (Array.isArray(arg)) return arg.length > 0;
-      if (arg && typeof arg === 'object' && Object.keys(arg).length === 0) return false;
+      if (arg && typeof arg === 'object' && Object.keys(arg).length === 0)
+        return false;
       return Boolean(arg);
     });
   },

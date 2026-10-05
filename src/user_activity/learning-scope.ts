@@ -377,7 +377,10 @@ export function isNavigationRequest(req: Request): boolean {
   const mode = req.headers['sec-fetch-mode'];
   if (typeof mode === 'string') return mode === 'navigate';
   const accept = req.headers.accept ?? '';
-  return (req.method ?? 'GET').toUpperCase() === 'GET' && accept.includes('text/html');
+  return (
+    (req.method ?? 'GET').toUpperCase() === 'GET' &&
+    accept.includes('text/html')
+  );
 }
 
 /** Mengembalikan rule scope yang cocok dengan method + path, atau null jika di luar scope. */

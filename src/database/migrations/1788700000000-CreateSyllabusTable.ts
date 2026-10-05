@@ -89,9 +89,7 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
          WHERE table_name = 'quiz' AND column_name = 'syllabusId'`,
       );
       if (!syllabusCol) {
-        await q.query(
-          `ALTER TABLE "quiz" ADD "syllabusId" uuid`,
-        );
+        await q.query(`ALTER TABLE "quiz" ADD "syllabusId" uuid`);
         await q.query(`
           ALTER TABLE "quiz"
             ADD CONSTRAINT "FK_quiz_syllabus"
@@ -148,4 +146,3 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
     }
   }
 }
-

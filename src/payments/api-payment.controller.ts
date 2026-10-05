@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Req, Res, UseGuards, Patch, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Res,
+  UseGuards,
+  Patch,
+  Get,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -43,7 +52,10 @@ export class ApiPaymentController {
     const manualEnabled = body?.manualEnabled;
     const gatewayEnabled = body?.gatewayEnabled;
 
-    if (typeof manualEnabled !== 'boolean' && typeof gatewayEnabled !== 'boolean') {
+    if (
+      typeof manualEnabled !== 'boolean' &&
+      typeof gatewayEnabled !== 'boolean'
+    ) {
       return res.status(400).json({
         status: 'error',
         message: 'Tidak ada perubahan untuk disimpan.',
@@ -55,7 +67,8 @@ export class ApiPaymentController {
     if (gatewayEnabled === true && !process.env.XENDIT_SECRET_KEY) {
       return res.status(400).json({
         status: 'error',
-        message: 'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.',
+        message:
+          'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.',
       });
     }
 

@@ -21,9 +21,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Semua langkah idempoten supaya aman dijalankan berkali-kali dan di
  * environment yang kolomnya terlanjur ada dari synchronize di masa lalu.
  */
-export class AddProgramTypeAndLogbookFlag1788600000000
-  implements MigrationInterface
-{
+export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInterface {
   name = 'AddProgramTypeAndLogbookFlag1788600000000';
 
   public async up(q: QueryRunner): Promise<void> {

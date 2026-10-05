@@ -75,10 +75,13 @@ export class UsersService {
         'Failed to send verification email. Please try again.',
       );
     }
-    
+
     return user;
   }
-  async sendAdminVerificationEmailToUser(user: User, rawPassword?: string): Promise<User> {
+  async sendAdminVerificationEmailToUser(
+    user: User,
+    rawPassword?: string,
+  ): Promise<User> {
     const rawToken = await this.generateVerificationToken(user);
 
     try {
@@ -100,7 +103,7 @@ export class UsersService {
         'Failed to send verification email. Please try again.',
       );
     }
-    
+
     return user;
   }
 
@@ -119,7 +122,10 @@ export class UsersService {
     });
     const savedUser = await this.userRepository.save(user);
 
-    await this.sendAdminVerificationEmailToUser(savedUser, createUserDto.password);
+    await this.sendAdminVerificationEmailToUser(
+      savedUser,
+      createUserDto.password,
+    );
 
     return savedUser;
   }
@@ -386,9 +392,7 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException(
-        'Your email is not registered',
-      );
+      throw new NotFoundException('Your email is not registered');
     }
 
     if (

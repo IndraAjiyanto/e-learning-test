@@ -26,7 +26,12 @@ import { ActivityLog } from 'src/entities/activity_log.entity';
 import { DailyStatistics } from 'src/entities/daily_statistics.entity';
 import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { format, startOfDay, subDays } from 'date-fns';
-import { isAssetPath, isNavigationRequest, matchLearningScope, ScopeContext } from './learning-scope';
+import {
+  isAssetPath,
+  isNavigationRequest,
+  matchLearningScope,
+  ScopeContext,
+} from './learning-scope';
 
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -223,8 +228,8 @@ export class UserActivityService {
     const matched = matchLearningScope(method, path);
 
     if (matched) {
-      let courseId: string | null = null;
-      let label: string | null = null;
+      const courseId: string | null = null;
+      const label: string | null = null;
 
       try {
         const resolution = await matched.rule.resolve(
@@ -746,10 +751,7 @@ export class UserActivityService {
       };
     });
 
-    const max = Math.max(
-      ...stats.map((s) => Math.max(s.login, s.learning)),
-      1,
-    );
+    const max = Math.max(...stats.map((s) => Math.max(s.login, s.learning)), 1);
     return stats.map((s) => ({
       ...s,
       max,
@@ -868,7 +870,7 @@ export class UserActivityService {
     const key = format(day, 'yyyy-MM-dd');
     const isToday = format(new Date(), 'yyyy-MM-dd') === key;
 
-    let row = await this.dailyStatsRepository.findOne({
+    const row = await this.dailyStatsRepository.findOne({
       where: { statDate: key },
     });
 

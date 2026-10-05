@@ -129,11 +129,7 @@ export class MentorLogbookController {
         mentor_logbookId,
         updateMentorLogbookDto,
       );
-      flashToast(
-        req,
-        'Changes Saved',
-        'The mentor logbook has been updated.',
-      );
+      flashToast(req, 'Changes Saved', 'The mentor logbook has been updated.');
       res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
       const logbooks =
