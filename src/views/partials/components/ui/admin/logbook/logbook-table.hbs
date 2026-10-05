@@ -118,18 +118,25 @@
 
         {{!-- Confirm: Approve / Reject --}}
         <div class='box-border w-[140px] shrink-0 h-full flex flex-row gap-[10px] p-[16px_24px] justify-center items-center'>
-          <form :action="`/logbooks/${log.id}/approved?_method=PATCH`" method='post' class='inline'>
-            <button type='button' onclick="openConfirmModal({ title: 'Confirmation', description: 'Are you sure approve this logbook?', confirmLabel: 'Yes, continue', onConfirm: () => this.closest('form').submit() })"
-              class='box-border w-[40px] h-[40px] flex justify-center items-center bg-[#BBF7D0] rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#A7F3D0] transition-colors' title='Approve'>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
-            </button>
-          </form>
-          <form :action="`/logbooks/${log.id}/rejected?_method=PATCH`" method='post' class='inline'>
-            <button type='button' onclick="openConfirmModal({ title: 'Confirmation', description: 'Are you sure reject this logbook?', confirmLabel: 'Yes, continue', onConfirm: () => this.closest('form').submit() })"
-              class='box-border w-[40px] h-[40px] flex justify-center items-center bg-[#FECACA] rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FCA5A5] transition-colors' title='Reject'>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
-            </button>
-          </form>
+          <template x-if="log.process !== 'approved' && log.process !== 'rejected'">
+            <div class='flex flex-row gap-[10px] justify-center items-center'>
+              <form :action="`/logbooks/${log.id}/approved?_method=PATCH`" method='post' class='inline'>
+                <button type='button' onclick="openConfirmModal({ title: 'Confirmation', description: 'Are you sure approve this logbook?', confirmLabel: 'Yes, continue', onConfirm: () => this.closest('form').submit() })"
+                  class='box-border w-[40px] h-[40px] flex justify-center items-center bg-[#BBF7D0] rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#A7F3D0] transition-colors' title='Approve'>
+                  <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
+                </button>
+              </form>
+              <form :action="`/logbooks/${log.id}/rejected?_method=PATCH`" method='post' class='inline'>
+                <button type='button' onclick="openConfirmModal({ title: 'Confirmation', description: 'Are you sure reject this logbook?', confirmLabel: 'Yes, continue', onConfirm: () => this.closest('form').submit() })"
+                  class='box-border w-[40px] h-[40px] flex justify-center items-center bg-[#FECACA] rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#FCA5A5] transition-colors' title='Reject'>
+                  <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>
+                </button>
+              </form>
+            </div>
+          </template>
+          <template x-if="log.process === 'approved' || log.process === 'rejected'">
+            <div class='text-[14px]/[normal] text-[#525252] font-inter font-normal text-center'>-</div>
+          </template>
         </div>
 
         {{!-- Action: Edit / Delete / View --}}
