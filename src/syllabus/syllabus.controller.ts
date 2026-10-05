@@ -224,6 +224,7 @@ export class SyllabusController {
 
     const questions = await this.quizService.findQuestions(quiz.id);
     const scores = await this.quizService.findScore(quiz.id);
+    const isAttempted = (scores || []).length > 0;
 
     return res.render('admin/course/detail_quiz', {
       user: req.user,
@@ -233,6 +234,7 @@ export class SyllabusController {
       courseId: course?.id,
       questions,
       scores,
+      isAttempted,
     });
   }
 

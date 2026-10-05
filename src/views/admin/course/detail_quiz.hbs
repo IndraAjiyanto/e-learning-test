@@ -43,6 +43,7 @@
           </h1>
 
           {{!-- Frame 2147229614: Buttons (Delete + Edit) --}}
+          {{#unless isAttempted}}
           <div class='shrink-0 flex flex-row items-center gap-[12px]'>
             {{!-- Delete button --}}
             <form action='/syllabus/quiz/{{quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
@@ -65,6 +66,7 @@
               </span>
             </a>
           </div>
+          {{/unless}}
 
         </div>
 
@@ -133,7 +135,19 @@
 
           </div>
 
+        {{#if isAttempted}}
+        {{!-- Info Notice: Quiz has been submitted by users --}}
+        <div class='box-border w-full bg-[#EFF6FF] border border-[#BFDBFE] rounded-[8px] p-[12px_16px] flex flex-row items-center gap-[12px]'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#2563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+            <circle cx='12' cy='12' r='10'></circle>
+            <line x1='12' y1='16' x2='12' y2='12'></line>
+            <line x1='12' y1='8' x2='12.01' y2='8'></line>
+          </svg>
+          <span class='font-inter font-normal text-[14px] leading-[20px] text-[#1E40AF]'>
+            Quiz ini sudah dikerjakan oleh user. Perubahan, penambahan, dan penghapusan quiz maupun pertanyaan dinonaktifkan untuk menjaga integritas data.
+          </span>
         </div>
+        {{/if}}
 
       </div>
 
@@ -147,6 +161,7 @@
         <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
           Questions ({{#if questions}}{{questions.length}}{{else}}0{{/if}}) :
         </span>
+        {{#unless isAttempted}}
         <a
           href='/question/formCreate/{{quiz.id}}'
           class='inline-flex items-center gap-[6px] text-[#003060] hover:text-[#002244] font-inter font-semibold text-[14px] leading-[20px] transition-colors'>
@@ -156,6 +171,7 @@
           </svg>
           Add Question
         </a>
+        {{/unless}}
       </div>
 
       {{!-- Frame 2147229624: List Questions --}}
@@ -223,6 +239,7 @@
                 </div>
 
                 {{!-- Question Actions (Delete + Edit) --}}
+                {{#unless ../isAttempted}}
                 <div class='flex flex-row items-center gap-[12px]'>
                   {{!-- Delete question button --}}
                   <form action='/question/{{this.id}}/{{../quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
@@ -245,6 +262,7 @@
                     </span>
                   </a>
                 </div>
+                {{/unless}}
 
               </div>
             </div>
@@ -262,11 +280,13 @@
             <p class='font-inter font-medium text-[16px] text-[#737373]'>
               Belum ada pertanyaan pada quiz ini.
             </p>
+            {{#unless isAttempted}}
             <a
               href='/question/formCreate/{{quiz.id}}'
               class='inline-flex items-center gap-[6px] px-4 py-2 bg-[#003060] text-white rounded-[8px] font-inter font-semibold text-[14px] hover:bg-[#002244] transition-colors'>
               Tambah Pertanyaan Pertama
             </a>
+            {{/unless}}
           </div>
         {{/if}}
 
