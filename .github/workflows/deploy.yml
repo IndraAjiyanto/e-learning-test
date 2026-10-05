@@ -22,7 +22,10 @@ jobs:
             Repo: `${{ github.repository }}`
             Branch: `${{ github.ref_name }}`
             By: ${{ github.actor }}
-            Commit: ${{ github.event.head_commit.message }}
+            Commit:
+            ```
+            ${{ github.event.head_commit.message }}
+            ```
 
       - name: Build & Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -128,5 +131,8 @@ jobs:
           message: |
             ❌ *Deploy FAILED*
             Repo: `${{ github.repository }}`
-            Commit: ${{ github.event.head_commit.message }}
+            Commit:
+            ```
+            ${{ github.event.head_commit.message }}
+            ```
             Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
