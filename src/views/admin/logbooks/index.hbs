@@ -78,6 +78,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{process}}</td>
 <td class="px-6 py-4 text-sm text-gray-800">
   <div class="flex items-center justify-center gap-2">
+    {{#if (and (ne process "approved") (ne process "rejected"))}}
     <!-- ACC Button -->
     <form action="/logbooks/{{id}}/approved?_method=PATCH" method="post" class="inline">
       <button type="submit" 
@@ -101,6 +102,9 @@
         </svg>
       </button>
     </form>
+    {{else}}
+    <span class="text-gray-500">-</span>
+    {{/if}}
   </div>
 </td>
 

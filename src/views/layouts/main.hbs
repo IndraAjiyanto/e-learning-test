@@ -40,6 +40,7 @@
       <link rel="stylesheet" href="/public/css/simplyCountdown.css">
       <link rel="stylesheet" href="/public/css/quil.css">
 <script src="/public/js/cropper.min.js"></script>
+  <script defer src="/public/assets/invoice-pdf.bundle.js?v=7"></script>
 
   {{!--
     Keadaan sidebar student ditulis SEBELUM gambar pertama.
@@ -159,6 +160,7 @@
        memasangnya menampilkan dua toast sekaligus. --}}
   {{> components/ui/super_admin/toast/error/index toast=toastError }}
   {{> components/ui/super_admin/toast/warning/index toast=toastWarning }}
+  {{> components/ui/super_admin/toast/info/index toast=toastInfo }}
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {

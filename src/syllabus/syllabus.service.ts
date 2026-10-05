@@ -135,10 +135,23 @@ export class SyllabusService {
   }
 
   async findByCourse(courseId: string) {
-    return await this.syllabusRepository.find({
+    const list = await this.syllabusRepository.find({
       where: { course: { id: courseId } },
       order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
-      relations: ['quiz', 'quiz.questions'],
+      relations: ['quiz', 'quiz.questions', 'quiz.scores'],
+    });
+
+    return list.map((syllabus) => {
+      const isCompleted = (syllabus.quiz || []).some((quiz) => {
+        const minScore = quiz.minScore ?? 0;
+        return (quiz.scores || []).some(
+          (score) => Number(score.score) >= minScore,
+        );
+      });
+      return {
+        ...syllabus,
+        isCompleted,
+      };
     });
   }
 
@@ -245,11 +258,36 @@ export class SyllabusService {
 
     return newQuiz;
   }
+  async isSyllabusCompleted(syllabusId: string): Promise<boolean> {
+    const quizzes = await this.quizRepository.find({
+      where: { syllabus: { id: syllabusId } },
+      relations: ['scores'],
+    });
+
+    for (const quiz of quizzes) {
+      const minScore = quiz.minScore ?? 0;
+      const hasPassingScore = quiz.scores?.some(
+        (score) => Number(score.score) >= minScore,
+      );
+      if (hasPassingScore) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   async update(id: string, updateSyllabusDto: UpdateSyllabusDto) {
     const syllabus = await this.findOne(id);
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
+    }
+
+    const isCompleted = await this.isSyllabusCompleted(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Syllabus cannot be edited because it has already been completed by a user',
+      );
     }
 
     let parsedContent = updateSyllabusDto.content;
@@ -280,6 +318,15 @@ export class SyllabusService {
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
     }
+
+    const isCompleted = await this.isSyllabusCompleted(id);
+    if (isCompleted) {
+      throw new BadRequestException(
+        'Syllabus cannot be deleted because it has already been completed by a user',
+      );
+    }
+
     return await this.syllabusRepository.remove(syllabus);
   }
 }
+
