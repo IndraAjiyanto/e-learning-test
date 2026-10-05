@@ -30,6 +30,7 @@
     <div class='flex flex-col gap-[10px] justify-start items-start min-w-0'>
       <div class='text-[34px]/[1.12] w-full text-[#003060] font-inter font-bold tracking-[-0.85px]'>{{session.topic}}</div>
     </div>
+    {{#unless hasCompletedUser}}
     <div class='flex flex-col sm:flex-row gap-[12px] justify-start sm:justify-end items-stretch sm:items-center w-full sm:w-auto shrink-0'>
       <form action='/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE' method='post' class='w-full sm:w-auto'>
         <button type='button'
@@ -41,6 +42,7 @@
       </form>
       {{> components/ui/admin/button/primary-button text='Edit Session' href=(concat '/session/formEdit/' session.id) width='132'}}
     </div>
+    {{/unless}}
   </div>
 
   {{!-- Info grid --}}

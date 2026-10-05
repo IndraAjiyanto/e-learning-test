@@ -77,6 +77,21 @@ export class SyllabusController {
       req.flash('error', 'Syllabus not found');
       return res.redirect('/program');
     }
+    const isCompleted = await this.syllabusService.isSyllabusCompleted(
+      syllabus.id,
+    );
+    if (isCompleted) {
+      flashToast(
+        req,
+        'Cannot Edit Syllabus',
+        'Syllabus cannot be edited because it has already been completed by a user.',
+      );
+      return res.redirect(
+        syllabus.course?.id
+          ? `/program/detail/program/admin/${syllabus.course.id}`
+          : '/program',
+      );
+    }
     const maxSyllabus = await this.syllabusService.findCourseSyllabus(
       syllabus.course?.id,
     );
@@ -209,6 +224,7 @@ export class SyllabusController {
 
     const questions = await this.quizService.findQuestions(quiz.id);
     const scores = await this.quizService.findScore(quiz.id);
+    const isAttempted = (scores || []).length > 0;
 
     return res.render('admin/course/detail_quiz', {
       user: req.user,
@@ -218,6 +234,7 @@ export class SyllabusController {
       courseId: course?.id,
       questions,
       scores,
+      isAttempted,
     });
   }
 
@@ -259,11 +276,15 @@ export class SyllabusController {
       req.flash('error', 'Syllabus not found');
       return res.redirect('/program');
     }
+    const isCompleted = await this.syllabusService.isSyllabusCompleted(
+      syllabusId,
+    );
     res.render('admin/course/detail_syllabus_item', {
       user: req.user,
       syllabus,
       course: syllabus.course,
       courseId: syllabus.course?.id,
+      isCompleted,
     });
   }
 
