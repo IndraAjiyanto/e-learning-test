@@ -996,9 +996,10 @@ export class CoursesController {
               id,
             )
           : null;
-      const isLocked = activeCourse?.id && id
-        ? await this.finalAssignmentService.isLocked(activeCourse.id, id)
-        : false;
+      const isLocked =
+        activeCourse?.id && id
+          ? await this.finalAssignmentService.isLocked(activeCourse.id, id)
+          : false;
 
       return res.render('partials/user/sidebar_user_profile/assignment/index', {
         course: activeCourse,

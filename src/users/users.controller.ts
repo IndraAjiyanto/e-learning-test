@@ -238,10 +238,7 @@ export class UsersController {
 
   @Post('resend-verification')
   @UseGuards(AuthenticatedGuard)
-  async resendVerificationByUser(
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  async resendVerificationByUser(@Req() req: Request, @Res() res: Response) {
     try {
       const currentUser = (req as any).user;
       if (!currentUser?.id) {
@@ -746,10 +743,7 @@ export class UsersController {
 
   @Roles('super_admin')
   @Post('resend-verification/:id')
-  async resendVerification(
-    @Param('id') id: string,
-    @Res() res: Response,
-  ) {
+  async resendVerification(@Param('id') id: string, @Res() res: Response) {
     try {
       await this.usersService.resendVerificationByAdmin(id);
       return res.status(HttpStatus.OK).json({

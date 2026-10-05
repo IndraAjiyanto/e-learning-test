@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddInvoiceSnapshotAndStatusColumns1790200000000
-  implements MigrationInterface
-{
+export class AddInvoiceSnapshotAndStatusColumns1790200000000 implements MigrationInterface {
   name = 'AddInvoiceSnapshotAndStatusColumns1790200000000';
 
   public async up(q: QueryRunner): Promise<void> {
@@ -36,7 +34,10 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
     };
 
     await addColumnIfNotExists('invoice_number', 'character varying');
-    await addColumnIfNotExists('status', `"invoice_status_enum" DEFAULT 'pending'`);
+    await addColumnIfNotExists(
+      'status',
+      `"invoice_status_enum" DEFAULT 'pending'`,
+    );
     await addColumnIfNotExists('xendit_payment_channel', 'character varying');
     await addColumnIfNotExists('user_fullname', 'character varying');
     await addColumnIfNotExists('user_email', 'character varying');
@@ -100,8 +101,12 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
     );
     if (!table?.has_table) return;
 
-    await q.query(`ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_course"`);
-    await q.query(`ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_user"`);
+    await q.query(
+      `ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_course"`,
+    );
+    await q.query(
+      `ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_user"`,
+    );
     await q.query(`DROP INDEX IF EXISTS "UQ_invoice_invoice_number"`);
 
     const dropColumnIfExists = async (columnName: string) => {

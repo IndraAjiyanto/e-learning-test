@@ -62,56 +62,57 @@
   @keydown.escape.window='close()'
   @mouseenter='pause()'
   @mouseleave='resume()'
-  class='fixed bottom-5 left-5 z-50 w-[calc(100vw-2.5rem)] max-w-[272px] md:bottom-6 md:left-6'
+  class='fixed bottom-5 left-5 z-50 md:bottom-6 md:left-6'
   {{!-- role 'complementary': info tambahan yang boleh dilewati, bukan
        pengumuman yang memaksa pembaca layar --}}
   role='complementary'
 >
-  <a
-    :href='href'
-    :aria-label='linkLabel'
-    class='block focus-visible:rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
+  {{!-- Wrapper ini yang dianimasikan saat rotasi dan saat close, sekaligus
+       anchor posisi tombol tutup. Ukuran kartu dikunci di sini, bukan di
+       dalam kartu, supaya kutipan yang panjang tidak membuat kotak ikut
+       meninggi (dan supaya tombol tutup bisa berada di luar <a>). --}}
+  <div
+    class='relative transition-all duration-300 motion-reduce:transition-none'
+    :class='fading ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"'
   >
-    {{!-- Wrapper ini yang dianimasikan saat rotasi, bukan kartunya sendiri:
-         kartu yang sama sekali tidak pernah di-unmount, jadi animasi
-         masuk/keluar harus datang dari perubahan kelas di sini. --}}
-    <div
-      class='transition-all duration-300 motion-reduce:transition-none'
-      :class='fading ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"'
+    <a
+      :href='href'
+      :aria-label='linkLabel'
+      class='block h-[155px] w-[190px] overflow-hidden md:h-[160px] md:w-[210px] lg:h-[165px] lg:w-[230px] focus-visible:rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
     >
       <template x-if='current'>
-        <div>
+        <div class='h-full w-full'>
           {{> components/ui/card/card_alumni/index
             variant='profile'
             isDesktop=true
             compact=true
-            quoteClass='line-clamp-2' }}
+            quoteClass='line-clamp-4' }}
         </div>
       </template>
-    </div>
-  </a>
+    </a>
 
-  {{!-- Tombol tutup di luar <a>, bukan di dalamnya: elemen interaktif di
-       dalam link tidak bisa difokus dan diaktifkan sendiri. --}}
-  <button
-    type='button'
-    @click='close()'
-    :aria-label='closeLabel'
-    class='absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#64748B] shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.18)] transition-colors duration-200 hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
-  >
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      viewBox='0 0 14 14'
-      fill='none'
-      stroke='currentColor'
-      stroke-width='2'
-      stroke-linecap='round'
-      aria-hidden='true'
-      class='size-3.5'
+    {{!-- Tombol tutup di luar <a>, bukan di dalamnya: elemen interaktif di
+         dalam link tidak bisa difokus dan diaktifkan sendiri. --}}
+    <button
+      type='button'
+      @click='close()'
+      :aria-label='closeLabel'
+      class='absolute -right-2 -top-2 z-[60] flex size-7 items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#64748B] shadow-[0px_4px_12px_-2px_rgba(11,31,59,0.18)] transition-colors duration-200 hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
     >
-      <path d='M1 1 13 13M13 1 1 13' />
-    </svg>
-  </button>
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        viewBox='0 0 14 14'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='2'
+        stroke-linecap='round'
+        aria-hidden='true'
+        class='size-3.5'
+      >
+        <path d='M1 1 13 13M13 1 1 13' />
+      </svg>
+    </button>
+  </div>
 </div>
 
 <script>
@@ -148,6 +149,24 @@
         return this.current;
       },
 
+      isAllowedPath() {
+        try {
+          const path = window.location.pathname || '';
+          // 1. '/' atau '/dashboard' (Home/Landing publik)
+          if (path === '/' || path === '/dashboard') return true;
+          // 2. /category/program/{nama_program}
+          if (path.startsWith('/category/program/')) return true;
+          // 3. /program/{uuid_program} tapi bukan /program/myProgram/*
+          if (path.startsWith('/program/')) {
+            if (path.startsWith('/program/myProgram/')) return false;
+            return true;
+          }
+          return false;
+        } catch (e) {
+          return false;
+        }
+      },
+
       async init() {
         try {
           const res = await fetch(
@@ -168,6 +187,7 @@
         }
 
         if (this.items.length === 0) return;
+        if (!this.isAllowedPath()) return;
 
         this.open = true;
         this.$nextTick(() => this.resume());
@@ -248,7 +268,12 @@
       // muncul lagi begitu halaman di-refresh.
       close() {
         this.pause();
-        this.open = false;
+        this.fading = true;
+        clearTimeout(this.swapTimer);
+        this.swapTimer = setTimeout(() => {
+          this.open = false;
+          this.fading = false;
+        }, 260);
       },
 
       destroy() {

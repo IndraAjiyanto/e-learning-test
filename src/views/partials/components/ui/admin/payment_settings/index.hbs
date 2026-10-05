@@ -18,6 +18,12 @@
   Kartu Gateway tetap bisa diklik saat kunci Xendit kosong supaya user
   mendapat penjelasan lewat toast, bukan sekadar tombol mati.
 
+  Berpindah kanal SELALU lewat modal konfirmasi yang sama dengan aksi admin
+  lain (components/ui/admin/modal/confirm_action) karena dampaknya global:
+  panel ini tidak pernah PATCH tanpa persetujuan user. Kartu hanya ditandai
+  kanal baru setelah konfirmasi, sehingga Cancel tidak meninggalkan tampilan
+  berbeda dari state tersimpan.
+
   Props:
   - manualEnabled : boolean — kanal manual yang aktif
   - gatewayEnabled: boolean — kanal gateway yang aktif
@@ -146,8 +152,10 @@
         return 'bg-white border-[#D9D9D9] hover:border-[#003060] hover:bg-[#F8FAFC]';
       },
 
-      // Satu kanal saja yang boleh aktif: memilih kanal yang sama tidak
-      // melakukan apa-apa, jadi tidak ada request sia-sia.
+      // Ganti kanal berarti mengubah pembayaran untuk SETIUP program, jadi
+      // selalu lewat modal konfirmasi dulu — panel ini tidak pernah langsung
+      // menyimpan. Satu kanal saja yang boleh aktif: memilih kanal yang sama
+      // tetap no-op supaya tidak ada request sia-sia.
       select(next) {
         if (this.saving) return;
         if (next === 'gateway' && this.gatewayHidden) {
@@ -155,6 +163,37 @@
           return;
         }
         if (next === this.channel) return;
+
+        const configs = {
+          gateway: {
+            title: 'Switch to Payment Gateway?',
+            description:
+              'The active payment channel will switch to Payment Gateway (Xendit) for ALL programs. Users will pay online through Xendit and bank transfer will no longer be accepted.',
+            confirmLabel: 'Switch to Gateway',
+          },
+          manual: {
+            title: 'Switch to Manual Payment?',
+            description:
+              'The active payment channel will switch to Manual Payment (Bank Transfer) for ALL programs. Users will upload transfer proof and online payment will be disabled.',
+            confirmLabel: 'Switch to Manual',
+          },
+        };
+        const config = configs[next] || configs.manual;
+
+        openConfirmModal({
+          title: config.title,
+          description: config.description,
+          confirmLabel: config.confirmLabel,
+          cancelLabel: 'Cancel',
+          onConfirm: () => this.applyChannel(next),
+        });
+      },
+
+      // Dipanggil hanya setelah user menekan tombol konfirmasi. `channel`
+      // ditulis di sini, bukan di select(), supaya Cancel benar-benar tidak
+      // mengubah apa pun: kartu tetap menandai kanal lama sampai server
+      // membalas (atau refresh() menarik kembali state tersimpan).
+      applyChannel(next) {
         this.channel = next;
         this.save();
       },

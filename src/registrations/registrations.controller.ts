@@ -97,7 +97,8 @@ export class RegistrationsController {
         if (isJson) {
           return res.status(200).json({
             success: true,
-            message: 'Registration successful! You are now enrolled in the program.',
+            message:
+              'Registration successful! You are now enrolled in the program.',
             redirectUrl: '/users/profile?tab=dashboard',
           });
         }

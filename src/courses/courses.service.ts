@@ -13,7 +13,10 @@ import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { capabilitiesFor } from './program-type';
-import { CourseStatus, COURSE_STATUSES } from 'src/entities/types/course-status';
+import {
+  CourseStatus,
+  COURSE_STATUSES,
+} from 'src/entities/types/course-status';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -1833,7 +1836,9 @@ export class CoursesService {
         : null;
 
       const isUnlocked = idx === 0 || previousPassed;
-      const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+      const isPassed = quiz
+        ? bestScore !== null && bestScore >= minScore
+        : true;
       const prevMinScore =
         idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
       previousPassed = isPassed;

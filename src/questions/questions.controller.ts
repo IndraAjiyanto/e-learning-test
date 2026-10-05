@@ -119,9 +119,10 @@ export class QuestionsController {
       user: req.user,
       questions,
       session,
-      courseId, bareShell: true });
+      courseId,
+      bareShell: true,
+    });
   }
-
 
   @Roles('admin')
   @Patch(':questionId/:quizId')

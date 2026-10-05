@@ -19,8 +19,10 @@
   - badgeLabel      : string (opsional) — prefix badge, default (t 'test.home.alumniSection.bootcampLabel')
   - quoteClass      : kelas tambahan pada elemen kutipan (opsional, default kosong).
                       Pemanggil dengan kotak kecil — mis. pop-up alumni —
-                      bisa mengoper 'line-clamp-3' supaya kartu tidak meninggi
-                      mengikuti panjang kutipan.
+                      bisa mengoper 'line-clamp-4' supaya kartu tidak meninggi
+                      mengikuti panjang kutipan. Clamp hanya berlaku kalau
+                      kutipan punya pembungkus block (lihat catatan di bawah
+                      bagian kutipan variant 'profile').
   - lang            : Bahasa yang aktif
   - compact         : boolean (opsional, default false) - variant 'profile' saja.
                       Versi satu tingkat lebih kecil: padding, avatar, ukuran
@@ -47,25 +49,25 @@
   yang tidak bisa memakai ukuran kartu grid.
 --}}
 {{#*inline "_profile_card"}}
-  {{#if compact}}p-4{{else}}p-6 sm:p-8{{/if}}
+  {{#if compact}}p-2.5{{else}}p-6 sm:p-8{{/if}}
 {{/inline}}
 {{#*inline "_profile_avatar"}}
-  {{#if compact}}h-[54px] w-[54px]{{else}}h-[72px] w-[72px]{{/if}}
+  {{#if compact}}h-[46px] w-[46px]{{else}}h-[72px] w-[72px]{{/if}}
 {{/inline}}
 {{#*inline "_profile_name"}}
-  {{#if compact}}text-[15px] leading-[20px]{{else}}text-[18px] leading-[22px]{{/if}}
+  {{#if compact}}text-[13px] leading-[16px]{{else}}text-[18px] leading-[22px]{{/if}}
 {{/inline}}
 {{#*inline "_profile_position"}}
-  {{#if compact}}text-[12px] leading-[15px]{{else}}text-[14px] leading-[17px]{{/if}}
+  {{#if compact}}text-[10px] leading-[13px]{{else}}text-[14px] leading-[17px]{{/if}}
 {{/inline}}
 {{#*inline "_profile_quote"}}
-  {{#if compact}}text-[13px] leading-[1.5]{{else}}text-[15px] leading-[160%]{{/if}}
+  {{#if compact}}text-[11px] leading-[1.4]{{else}}text-[15px] leading-[160%]{{/if}}
 {{/inline}}
 {{#*inline "_profile_badge"}}
-  {{#if compact}}px-[10px] py-[4px] text-[11px] leading-[14px]{{else}}px-[14px] py-[6px] text-[12px] leading-[15px]{{/if}}
+  {{#if compact}}px-[8px] py-[2px] text-[9px] leading-[11px]{{else}}px-[14px] py-[6px] text-[12px] leading-[15px]{{/if}}
 {{/inline}}
 {{#*inline "_profile_decor"}}
-  {{#if compact}}right-4 top-2 h-10 w-10{{else}}right-6 top-4 h-14 w-14{{/if}}
+  {{#if compact}}right-3 top-1.5 h-8 w-8{{else}}right-6 top-4 h-14 w-14{{/if}}
 {{/inline}}
 {{!--
   Rating untuk variant 'profile'. Harus lewat inline partial: Handlebars tidak
@@ -90,54 +92,68 @@
   {{/if}}
 {{/inline}}
 
-<div class="group relative flex h-full w-full flex-col items-start {{#if compact}}gap-3{{else}}gap-5{{/if}} overflow-hidden rounded-[20px] border border-[#E2E8F0] bg-gradient-to-r from-white to-[#F1F5F9] {{> _profile_card}} shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.0313726)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#003060]/30 hover:shadow-[0px_16px_40px_-4px_rgba(11,31,59,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 isolate">
+<div class="group relative flex h-full w-full flex-col items-start   {{#if compact}}gap-1{{else}}gap-5{{/if}} overflow-hidden rounded-[20px] border border-[#E2E8F0] bg-gradient-to-r from-white to-[#F1F5F9] {{> _profile_card}} shadow-[0px_12px_32px_-4px_rgba(11,31,59,0.0313726)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#003060]/30 hover:shadow-[0px_16px_40px_-4px_rgba(11,31,59,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 isolate">
   <svg class="pointer-events-none absolute {{> _profile_decor}} select-none text-[#0B1F3B]/[0.06] transition-colors duration-300 group-hover:text-[#0B1F3B]/10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
   </svg>
 
   <div class="relative z-[1] flex w-full items-center {{#if compact}}gap-3{{else}}gap-4{{/if}}">
-    <div class="flex {{> _profile_avatar}} shrink-0 items-center justify-center rounded-full border-2 border-[#003060] p-[3px]">
-      <img {{#if isDesktop}}:src="item.photo || '/public/image/orang.png'" :alt="item.name"{{else}}src="{{default profile '/public/image/orang.png'}}" alt="{{getByLang name lang}}"{{/if}}
-           class="h-full w-full rounded-full object-cover"
-           onerror="this.onerror=null; this.src='/public/image/orang.png';" />
-    </div>
-    <div class="flex min-w-0 flex-1 flex-col {{#if compact}}gap-0.5{{else}}gap-1{{/if}} text-left">
-      <h4 class="font-inter font-bold text-[#0F172A] {{> _profile_name}}"
-          {{#if isDesktop}}x-text="item.name"{{/if}}>
-        {{#unless isDesktop}}{{getByLang name lang}}{{/unless}}
-      </h4>
-      <p class="truncate font-inter font-medium text-[#475569] {{> _profile_position}}"
-         {{#if isDesktop}}x-text="item.position"{{/if}}>
-        {{#unless isDesktop}}{{getByLang currentPosition lang}}{{/unless}}
-      </p>
-      {{!-- Rating hanya di variant 'profile', dan hanya bintangnya — angka
-           sengaja tidak ditampilkan. --}}
-      {{> _profile_rating}}
-    </div>
+        <div class="flex {{> _profile_avatar}} shrink-0 items-center justify-center rounded-full border-2 border-[#003060] p-[2px]">
+          <img {{#if isDesktop}}:src="item.photo || '/public/image/orang.png'" :alt="item.name"{{else}}src="{{default profile '/public/image/orang.png'}}" alt="{{getByLang name lang}}"{{/if}}
+               class="h-full w-full rounded-full object-cover"
+               onerror="this.onerror=null; this.src='/public/image/orang.png';" />
+        </div>
+        <div class="flex min-w-0 flex-1 flex-col {{#if compact}}gap-0{{else}}gap-1{{/if}} text-left">
+        <h4 class="font-inter font-bold text-[#0F172A] {{> _profile_name}} truncate"
+            {{#if isDesktop}}x-text="item.name"{{/if}}>
+          {{#unless isDesktop}}{{getByLang name lang}}{{/unless}}
+        </h4>
+        <p class="truncate font-inter font-medium text-[#475569] {{> _profile_position}}"
+           {{#if isDesktop}}x-text="item.position"{{/if}}>
+          {{#unless isDesktop}}{{getByLang currentPosition lang}}{{/unless}}
+        </p>
+          {{!-- Rating hanya di variant 'profile', dan hanya bintangnya — angka
+               sengaja tidak ditampilkan. --}}
+          {{> _profile_rating}}
+        </div>
   </div>
 
-  <p class="relative z-[2] flex-1 text-left font-inter font-normal text-[#0F172A] {{> _profile_quote}} {{default quoteClass ''}}"
-     {{#if isDesktop}}x-text="'“' + item.testimonial + '”'"{{/if}}>
-    {{#unless isDesktop}}&ldquo;{{getByLang message lang}}&rdquo;{{/unless}}
-  </p>
+  {{!--
+    Kutipan dibungkus <div> BLOK BIASA - bukan flex, bukan grid, dan bukan
+    anak langsung kolom flex di atas. Anak flex/grid itu display-nya di
+    blockify, sehingga `line-clamp-*` milik pemanggil (mis. `line-clamp-4`
+    di pop-up alumni mengambang) kehilangan `display: -webkit-box` dan MATI:
+    teksnya cuma terpotong di tengah baris tanpa ellipsis sama sekali.
+    Pembungkus blok menjaga `<p>` tetap non-item supaya clamp benar-benar
+    bekerja dan ellipsis "…" muncul di baris terakhir.
+
+    Pembungkus tetap `flex-1` supaya ruang sisa kartu diserap di sini dan
+    badge tetap menempel di baris paling bawah kartu.
+  --}}
+  <div class="relative z-[2] min-h-0 flex-1 overflow-hidden">
+    <p class="text-left font-inter font-normal text-[#0F172A] {{> _profile_quote}} {{default quoteClass ''}} break-words"
+       {{#if isDesktop}}x-text="'“' + item.testimonial + '”'"{{/if}}>
+      {{#unless isDesktop}}&ldquo;{{getByLang message lang}}&rdquo;{{/unless}}
+    </p>
+  </div>
 
   {{#if isDesktop}}
     <template x-if="item.badge || item.company">
       <div class="relative z-[3] flex w-full items-start">
-        <span class="rounded-full bg-[#E0F2FE] font-inter font-semibold text-[#0369A1] {{> _profile_badge}}">
-          {{!-- `item.badge` (mis. "Bootcamp · Frontend Engineering") menang kalau
-               ada; pemanggil yang butuh label statis seperti carousel di home
-               tidak mengisinya, jadi tetap memakai `badgeLabel: company`. --}}
-          <template x-if="item.badge">
-            <span x-text="item.badge"></span>
-          </template>
-          <template x-if="!item.badge">
-            <span>
-              {{default badgeLabel (t 'test.home.alumniSection.bootcampLabel')}}:
-              <span x-text="item.company"></span>
-            </span>
-          </template>
+    <span class="rounded-full bg-[#E0F2FE] font-inter font-semibold text-[#0369A1] {{> _profile_badge}} inline-block max-w-[200px] md:max-w-[210px] lg:max-w-[220px] truncate">
+      {{!-- `item.badge` (mis. "Bootcamp · Frontend Engineering") menang kalau
+           ada; pemanggil yang butuh label statis seperti carousel di home
+           tidak mengisinya, jadi tetap memakai `badgeLabel: company`. --}}
+      <template x-if="item.badge">
+        <span x-text="item.badge" class="truncate block"></span>
+      </template>
+      <template x-if="!item.badge">
+        <span class="truncate block">
+          {{default badgeLabel (t 'test.home.alumniSection.bootcampLabel')}}:
+          <span x-text="item.company"></span>
         </span>
+      </template>
+    </span>
       </div>
     </template>
   {{else if courseName}}
