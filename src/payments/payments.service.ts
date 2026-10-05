@@ -445,10 +445,6 @@ export class PaymentsService {
           payment.invoice?.promo !== null && payment.invoice?.promo !== undefined
             ? Number(payment.invoice.promo)
             : promoPrice;
-        const promoCode =
-          payment.invoice?.promo_code !== null && payment.invoice?.promo_code !== undefined
-            ? Number(payment.invoice.promo_code)
-            : (payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0);
         // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
         const total =
           payment.invoice?.subtotal !== null && payment.invoice?.subtotal !== undefined
@@ -457,6 +453,26 @@ export class PaymentsService {
                 ? Number(payment.invoice.final_total)
                 : (fallbackPrice ?? 0));
 
+        // Potongan voucher promo code: prioritas kolom promo_code, fallback ke selisih (promo - total) jika promo_code kosong
+        const promoCode =
+          payment.invoice?.promo_code !== null &&
+          payment.invoice?.promo_code !== undefined &&
+          Number(payment.invoice.promo_code) > 0
+            ? Number(payment.invoice.promo_code)
+            : (promo && total && promo > total ? promo - total : 0);
+
+        // Diskon kursus: potongan dari harga normal ke promo kursus (misal normal 5jt, promo 4.5jt -> diskon 500rb)
+        // Fallback berurutan: selisih (price - promo) -> discount_amount DB -> selisih (price - total - promoCode)
+        const discountAmount =
+          price && promo && price > promo
+            ? price - promo
+            : (payment.invoice?.discount_amount !== null &&
+               payment.invoice?.discount_amount !== undefined &&
+               Number(payment.invoice.discount_amount) > 0 &&
+               Number(payment.invoice.discount_amount) !== promoCode
+                ? Number(payment.invoice.discount_amount)
+                : (price && total && price > total ? Math.max(0, price - total - promoCode) : 0));
+
         return {
           id: payment.id,
           kind: isInstallment ? 'installment' : 'full',
@@ -464,6 +480,12 @@ export class PaymentsService {
           courseName: payment.course?.name ?? 'Program',
           categoryName: payment.course?.category?.name ?? null,
           date: payment.invoice?.paid_at ?? payment.createdAt,
+          invoiceDate: payment.invoice?.createdAt ?? payment.createdAt,
+          paidAt:
+            payment.invoice?.paid_at ??
+            (payment.process === 'approved'
+              ? (payment.invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
+              : null),
           method:
             payment.invoice?.payment_method ||
             (isInstallment ? 'Installment' : 'Full Payment'),
@@ -471,7 +493,7 @@ export class PaymentsService {
           subtotal: total,
           total: total,
           finalTotal: total,
-          discount: promoCode,
+          discount: discountAmount,
           originalPrice: price,
           price,
           promo,
@@ -496,6 +518,10 @@ export class PaymentsService {
         const promoPrice = hasPromo ? Number(registration.course.promo) : null;
         const normalPrice = registration.course?.price ? Number(registration.course.price) : null;
         const subtotal = promoPrice ?? normalPrice;
+        const regDiscount =
+          normalPrice && promoPrice && normalPrice > promoPrice
+            ? normalPrice - promoPrice
+            : 0;
         return {
           id: registration.id,
           kind: 'registration',
@@ -503,10 +529,12 @@ export class PaymentsService {
           courseName: registration.course?.name ?? 'Program',
           categoryName: registration.course?.category?.name ?? null,
           date: registration.createdAt,
+          invoiceDate: registration.createdAt,
+          paidAt: registration.createdAt,
           method: 'Registration',
           amount: subtotal,
           subtotal,
-          discount: 0,
+          discount: regDiscount,
           originalPrice: normalPrice,
           price: normalPrice,
           promo: promoPrice,

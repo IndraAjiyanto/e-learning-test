@@ -241,7 +241,11 @@ export class CoursesController {
       flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'user failed add to program');
+      flashToastError(
+        req,
+        'Failed to Add User',
+        error.message || 'User failed add to program',
+      );
       res.redirect(`/program/addUser/${courseId}`);
     }
   }
@@ -1530,7 +1534,7 @@ export class CoursesController {
     try {
       const course = await this.coursesService.findOne(courseId);
       if (!course) {
-        req.flash('error', 'Program not found');
+        flashToastError(req, 'Program Not Found', 'Program not found');
         return res.redirect(previous || '/program');
       }
       await this.coursesService.remove(courseId);
@@ -1544,10 +1548,9 @@ export class CoursesController {
     } catch (error: any) {
       flashToastError(
         req,
-        'Gagal Menghapus Program',
+        'Failed to Remove Program',
         error.message || 'Failed to remove program',
       );
-      req.flash('error', error.message || 'Failed to remove program');
       return res.redirect(
         previous || `/program/detail/program/admin/${courseId}`,
       );
@@ -1571,7 +1574,11 @@ export class CoursesController {
       );
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to remove user from program');
+      flashToastError(
+        req,
+        'Failed to Remove Student',
+        error.message || 'Failed to remove user from program',
+      );
       res.redirect(`/program/addUser/${courseId}`);
     }
   }

@@ -66,6 +66,8 @@
   - helpDescription       : Deskripsi help section
 --}}
 
+{{> components/ui/super_admin/toast/success/index toast=(or toast @root.toast) }}
+
 <div class="block lg:flex min-h-[calc(100vh-64px)] lg:min-h-[calc(100vh-76px)] items-center justify-center px-5 py-10 font-inter lg:px-6 lg:py-12">
   {{#if showCountdown}}
     {{!-- CARD KHUSUS HITUNG MUNDUR (FIGMA 822px x 569px, warna disamakan dengan auth card #FFFFFF87, border #ffffff) --}}
@@ -130,7 +132,8 @@
 
     </div>
 
-  {{else if (eq variant 'reset-password')}}
+  {{else}}
+    {{#if (eq variant 'reset-password')}}
     {{!-- CARD KHUSUS RESET PASSWORD (FIGMA Group 121 / Frame 235: 822px x 739px, border #ffffff) --}}
     <div class="w-full max-w-sm sm:max-w-md mx-auto p-6 sm:p-8 bg-white border border-[#ffffff] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:w-[822px] lg:max-w-[822px] lg:min-h-[739px] lg:p-0 flex flex-col justify-start items-center lg:bg-[#FFFFFF87] lg:border-[#ffffff] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
 
@@ -151,12 +154,18 @@
           {{default description (t 'test.resetPassword.description')}}
         </p>
 
-        {{!-- Alert Success & Error --}}
-        {{#if success}}
-          {{> components/ui/alert/index type="success" message=success dismissible=true class="w-full mb-4 lg:mb-6" }}
+        {{!-- Alert Success, Error, Info & Warning --}}
+        {{#if (or success @root.toast toast)}}
+          {{> components/ui/alert/index type="success" title=(coalesce @root.toast.title toast.title) message=(coalesce @root.toast.description toast.description success) dismissible=true class="w-full mb-4 lg:mb-6" }}
         {{/if}}
-        {{#if error}}
-          {{> components/ui/alert/index type="error" message=error dismissible=true class="w-full mb-4 lg:mb-6" }}
+        {{#if (or error @root.toastError toastError)}}
+          {{> components/ui/alert/index type="error" title=(coalesce @root.toastError.title toastError.title) message=(coalesce @root.toastError.description toastError.description error) dismissible=true class="w-full mb-4 lg:mb-6" }}
+        {{/if}}
+        {{#if (or info @root.toastInfo toastInfo)}}
+          {{> components/ui/alert/index type="info" title=(coalesce @root.toastInfo.title toastInfo.title) message=(coalesce @root.toastInfo.description toastInfo.description info) dismissible=true class="w-full mb-4 lg:mb-6" }}
+        {{/if}}
+        {{#if (or warning @root.toastWarning toastWarning)}}
+          {{> components/ui/alert/index type="warning" title=(coalesce @root.toastWarning.title toastWarning.title) message=(coalesce @root.toastWarning.description toastWarning.description warning) dismissible=true class="w-full mb-4 lg:mb-6" }}
         {{/if}}
 
         {{!-- Form (Frame 2147229441: width 720px, gap 24px) --}}
@@ -287,7 +296,8 @@
       </div>
     </div>
 
-  {{else if (or (eq variant 'send-verify-email') (eq variant 'verify-email'))}}
+  {{else}}
+    {{#if (or (eq variant 'send-verify-email') (eq variant 'verify-email'))}}
     {{!-- CARD KHUSUS SEND VERIFY EMAIL (FIGMA Group 120 / Frame 235: 822px x 551px, border #ffffff, rounded-24px) --}}
     <div class="w-full max-w-sm sm:max-w-md mx-auto p-6 sm:p-8 bg-white border border-[#ffffff] rounded-[20px] shadow-[0px_4px_12px_0px_#00000010] lg:w-[822px] lg:max-w-[822px] lg:h-[551px] lg:min-h-[551px] lg:p-0 flex flex-col justify-start items-center lg:bg-[#FFFFFF87] lg:border-[#ffffff] lg:rounded-[24px] lg:shadow-[0px_0px_4px_0px_#00000026] lg:backdrop-blur-[10.2px]">
 
@@ -319,12 +329,18 @@
           </p>
         </div>
 
-        {{!-- Alert Success & Error --}}
-        {{#if success}}
-          {{> components/ui/alert/index type="success" message=success dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
+        {{!-- Alert Success, Error, Info & Warning --}}
+        {{#if (or success @root.toast toast)}}
+          {{> components/ui/alert/index type="success" title=(coalesce @root.toast.title toast.title) message=(coalesce @root.toast.description toast.description success) dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
         {{/if}}
-        {{#if error}}
-          {{> components/ui/alert/index type="error" message=error dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
+        {{#if (or error @root.toastError toastError)}}
+          {{> components/ui/alert/index type="error" title=(coalesce @root.toastError.title toastError.title) message=(coalesce @root.toastError.description toastError.description error) dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
+        {{/if}}
+        {{#if (or info @root.toastInfo toastInfo)}}
+          {{> components/ui/alert/index type="info" title=(coalesce @root.toastInfo.title toastInfo.title) message=(coalesce @root.toastInfo.description toastInfo.description info) dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
+        {{/if}}
+        {{#if (or warning @root.toastWarning toastWarning)}}
+          {{> components/ui/alert/index type="warning" title=(coalesce @root.toastWarning.title toastWarning.title) message=(coalesce @root.toastWarning.description toastWarning.description warning) dismissible=true class="w-full max-w-[720px] mt-4 mb-0" }}
         {{/if}}
 
         {{!-- 3. FRAME 252 (Button Resend: width 720px, height 59px, bg #003060, rounded 6px, shadow 0px 0px 4px rgba(0,0,0,0.25)) --}}
@@ -386,23 +402,23 @@
       {{/if}}
 
       {{!-- ALERT SUCCESS --}}
-      {{#if success}}
-        {{> components/ui/alert/index type="success" message=success dismissible=true class="mb-4 lg:mb-6" }}
+      {{#if (or success @root.toast toast)}}
+        {{> components/ui/alert/index type="success" title=(coalesce @root.toast.title toast.title) message=(coalesce @root.toast.description toast.description success) dismissible=true class="mb-4 lg:mb-6" }}
       {{/if}}
 
       {{!-- ALERT ERROR --}}
-      {{#if error}}
-        {{> components/ui/alert/index type="error" message=error dismissible=true class="mb-4 lg:mb-6" }}
+      {{#if (or error @root.toastError toastError)}}
+        {{> components/ui/alert/index type="error" title=(coalesce @root.toastError.title toastError.title) message=(coalesce @root.toastError.description toastError.description error) dismissible=true class="mb-4 lg:mb-6" }}
       {{/if}}
 
       {{!-- ALERT INFO --}}
-      {{#if info}}
-        {{> components/ui/alert/index type="info" message=info dismissible=true class="mb-4 lg:mb-6" }}
+      {{#if (or info @root.toastInfo toastInfo)}}
+        {{> components/ui/alert/index type="info" title=(coalesce @root.toastInfo.title toastInfo.title) message=(coalesce @root.toastInfo.description toastInfo.description info) dismissible=true class="mb-4 lg:mb-6" }}
       {{/if}}
 
       {{!-- ALERT WARNING --}}
-      {{#if warning}}
-        {{> components/ui/alert/index type="warning" message=warning dismissible=true class="mb-4 lg:mb-6" }}
+      {{#if (or warning @root.toastWarning toastWarning)}}
+        {{> components/ui/alert/index type="warning" title=(coalesce @root.toastWarning.title toastWarning.title) message=(coalesce @root.toastWarning.description toastWarning.description warning) dismissible=true class="mb-4 lg:mb-6" }}
       {{/if}}
 
       {{!-- FORM --}}
@@ -557,5 +573,7 @@
     {{/if}}
 
     </div>
+      {{/if}}
+    {{/if}}
   {{/if}}
 </div>
