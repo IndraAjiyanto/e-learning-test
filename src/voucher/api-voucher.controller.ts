@@ -14,7 +14,7 @@ export class ApiVoucherController {
   async validate(
     @Body() body: { code: string; courseId: string; subtotal: number },
     @Res() res: Response,
-    @Req() req: Request & { user?: any },
+    @Req() req: Request,
   ) {
     try {
       const { code, courseId, subtotal } = body;
@@ -49,10 +49,11 @@ export class ApiVoucherController {
         },
         message: 'Kode promo berhasil diterapkan!',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       return res.status(400).json({
         status: 'error',
-        message: error.message || 'Voucher tidak valid.',
+        message: err.message || 'Voucher tidak valid.',
       });
     }
   }

@@ -36,8 +36,9 @@ export class CommentsController {
       );
       req.flash('success', 'comment successfuly send');
       res.redirect(`/answer-assigment/${assignmentId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'comment unsuccess send');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'comment unsuccess send');
       res.redirect(`/answer-assigment/${assignmentId}`);
     }
   }

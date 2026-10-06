@@ -1,11 +1,4 @@
-import {
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsUUID,
-  IsUrl,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID, IsUrl } from 'class-validator';
 import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateLogbookDto {

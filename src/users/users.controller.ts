@@ -1,4 +1,5 @@
 import {
+  HttpException,
   Controller,
   Get,
   Post,
@@ -100,10 +101,11 @@ export class UsersController {
         'Password reset link has been sent to your email. Please check your inbox.',
       );
       return res.redirect('/users/forgot-password?token=' + token);
-    } catch (error: any) {
+    } catch (error: unknown) {
       req.flash(
         'error',
-        error.message || 'Your email is not registered',
+        (error instanceof Error ? error.message : null) ||
+          'Your email is not registered',
       );
 
       try {
@@ -138,7 +140,7 @@ export class UsersController {
     try {
       await this.usersService.validateResetToken(token);
       return res.render('reset-password', { token });
-    } catch (error: any) {
+    } catch {
       const token = await this.usersService.findUserByEmail(email);
       req.flash('error', 'Invalid or missing reset token');
       return res.redirect(
@@ -160,8 +162,12 @@ export class UsersController {
         'Password has been reset successfully! You can now login with your new password.',
       );
       res.redirect('/login');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to reset password');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to reset password',
+      );
       res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
     }
   }
@@ -177,7 +183,7 @@ export class UsersController {
     @Query('token') token: string,
   ) {
     try {
-      const currentUser = (req as any).user;
+      const currentUser = req.user;
       if (currentUser?.id) {
         await this.usersService.resendVerificationByUser(currentUser.id);
         req.flash(
@@ -193,22 +199,26 @@ export class UsersController {
         return res.redirect('/users/send-verify-email');
       }
 
-      req.flash('error', 'Silakan login untuk mengirim ulang email verifikasi.');
+      req.flash(
+        'error',
+        'Silakan login untuk mengirim ulang email verifikasi.',
+      );
       return res.redirect('/login');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to send verification email');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to send verification email',
+      );
       return res.redirect('/users/send-verify-email');
     }
   }
 
   @Post('resend-verification')
   @UseGuards(AuthenticatedGuard)
-  async resendVerificationByUser(
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
+  async resendVerificationByUser(@Req() req: Request, @Res() res: Response) {
     try {
-      const currentUser = (req as any).user;
+      const currentUser = req.user;
       if (!currentUser?.id) {
         return res.redirect('/login');
       }
@@ -219,10 +229,11 @@ export class UsersController {
         'Verification email has been sent. Please check your inbox.',
       );
       return res.redirect('/users/send-verify-email');
-    } catch (error: any) {
+    } catch (error: unknown) {
       req.flash(
         'error',
-        error.message || 'Failed to send verification email',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to send verification email',
       );
       return res.redirect('/users/send-verify-email');
     }
@@ -244,7 +255,7 @@ export class UsersController {
         });
       }
 
-      const currentUser = (req as any).user;
+      const currentUser = req.user;
       if (currentUser?.id) {
         const user = await this.usersService.findOne(currentUser.id);
         if (!user) {
@@ -276,8 +287,12 @@ export class UsersController {
         'Silakan login terlebih dahulu untuk mengakses halaman verifikasi.',
       );
       return res.redirect('/login');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to send verification email');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to send verification email',
+      );
       return res.render('verify-email');
     }
   }
@@ -293,14 +308,18 @@ export class UsersController {
       await this.usersService.verifyEmail(token);
       req.flash('success', 'Email verified successfully! You can now login.');
       return res.redirect('/users/verify-email-success');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Email verification failed');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Email verification failed',
+      );
       return res.redirect('/login');
     }
   }
 
   @Get('verify-email-success')
-  async verifyEmailSuccess(@Res() res: Response) {
+  verifyEmailSuccess(@Res() res: Response) {
     return res.render('verify-email-success');
   }
 
@@ -333,7 +352,11 @@ export class UsersController {
     try {
       createUserDto.confirm_password =
         createUserDto.confirm_password || createUserDto.password;
-      createUserDto.profile = req.body.uploadedImageUrls?.[0];
+      const uploadedProfile = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
+      if (uploadedProfile) {
+        createUserDto.profile = uploadedProfile;
+      }
       await this.usersService.create(createUserDto);
       flashToast(
         req,
@@ -341,8 +364,12 @@ export class UsersController {
         'The new user account has been created and verification email sent.',
       );
       res.redirect('/users');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create user');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to create user',
+      );
       res.redirect('/users');
     }
   }
@@ -379,7 +406,7 @@ export class UsersController {
     ];
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
-    const requestedCourseId = String(req.query.courseId || '');
+    const requestedCourseId = (req.query.courseId as string) || '';
     const activeCourse =
       course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
     const stats = null;
@@ -394,7 +421,7 @@ export class UsersController {
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    let initialSection = String(req.query.tab || '') || 'dashboard';
+    let initialSection = (req.query.tab as string) || '' || 'dashboard';
     if (initialSection === 'portfolio' && requestedCourseId) {
       initialSection = 'course-portfolio';
     }
@@ -434,7 +461,7 @@ export class UsersController {
 
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/password')
-  async editPassword(@Res() res: Response, @Req() req: Request) {
+  editPassword(@Res() res: Response, @Req() req: Request) {
     // bareShell mematikan navbar dan footer publik di layouts/main.hbs. Tanpa ini
     // student yang membuka halaman ini langsung mendapat chrome landing di tengah
     // area login, sementara admin tetap memakai sidebar CMS-nya sendiri.
@@ -446,13 +473,13 @@ export class UsersController {
 
   @Roles('user', 'admin', 'super_admin')
   @Get('profile/info_account')
-  async editInfoAkun(@Res() res: Response) {
+  editInfoAkun(@Res() res: Response) {
     return res.redirect('/users/profile');
   }
 
   @Roles('super_admin')
   @Get()
-  async findAll(@Res() res: Response, @Req() req: Request) {
+  findAll(@Res() res: Response, @Req() req: Request) {
     // const users = await this.usersService.findAll();
     res.render('super_admin/user/index', { user: req.user });
   }
@@ -495,7 +522,7 @@ export class UsersController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/user/create', { user: req.user });
   }
 
@@ -522,8 +549,12 @@ export class UsersController {
       } else {
         req.flash('error', 'Failed to update user');
       }
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update user');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to update user',
+      );
       res.redirect('/users/profile');
     }
   }
@@ -557,7 +588,9 @@ export class UsersController {
         if (user.profile) {
           await this.usersService.deleteFile(user.profile);
         }
-        updateUserDto.profile = req.body.uploadedImageUrls?.[0];
+        updateUserDto.profile = (
+          req.body as { uploadedImageUrls?: string[] }
+        )?.uploadedImageUrls?.[0];
       }
       // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
       // Belum ada global ValidationPipe, jadi coerce manual sebelum disimpan
@@ -572,8 +605,12 @@ export class UsersController {
         'The changes to this user account have been saved.',
       );
       res.redirect('/users');
-    } catch (error: any) {
-      req.flash('error', error.message || 'User failed to update');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'User failed to update',
+      );
       res.redirect('/users');
     }
   }
@@ -603,13 +640,14 @@ export class UsersController {
         );
         res.redirect('/users/profile');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Pesan dari assertStrongPassword dan dari pemeriksaan password lama
       // sudah menjelaskan dirinya sendiri, jadi diteruskan apa adanya.
       flashToastError(
         req,
         'Password not changed',
-        error.message || 'Please try again in a moment.',
+        (error instanceof Error ? error.message : null) ||
+          'Please try again in a moment.',
       );
       res.redirect('/users/profile');
     }
@@ -640,7 +678,11 @@ export class UsersController {
         if (user.profile) {
           await this.usersService.deleteFile(user.profile);
         }
-        updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
+        const uploadedUrls = (req.body as { uploadedImageUrls?: string[] })
+          .uploadedImageUrls;
+        if (uploadedUrls && uploadedUrls[0]) {
+          updateProfileDto.profile = uploadedUrls[0];
+        }
       }
 
       const userIdNum = String(userId);
@@ -657,8 +699,12 @@ export class UsersController {
         req.flash('error', 'update profile failed');
         res.redirect('/users/profile');
       }
-    } catch (error: any) {
-      req.flash('error', error.message || 'update profile failed');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'update profile failed',
+      );
       res.redirect('/users/profile');
     }
   }
@@ -688,35 +734,38 @@ export class UsersController {
         'The user account has been permanently removed',
       );
       res.redirect('/users');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete user');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Failed to delete user',
+      );
       res.redirect('/users');
     }
   }
 
   @Roles('super_admin')
   @Post('resend-verification/:id')
-  async resendVerification(
-    @Param('id') id: string,
-    @Res() res: Response,
-  ) {
+  async resendVerification(@Param('id') id: string, @Res() res: Response) {
     try {
       await this.usersService.resendVerificationByAdmin(id);
       return res.status(HttpStatus.OK).json({
         success: true,
         message: 'Verification email resent successfully.',
       });
-    } catch (error: any) {
-      return res
-        .status(
-          typeof error.getStatus === 'function'
-            ? error.getStatus()
-            : HttpStatus.INTERNAL_SERVER_ERROR,
-        )
-        .json({
-          success: false,
-          message: error.message || 'Failed to resend verification email.',
-        });
+    } catch (error: unknown) {
+      const status =
+        error instanceof HttpException
+          ? error.getStatus()
+          : HttpStatus.INTERNAL_SERVER_ERROR;
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to resend verification email.';
+      return res.status(status).json({
+        success: false,
+        message: msg,
+      });
     }
   }
 }

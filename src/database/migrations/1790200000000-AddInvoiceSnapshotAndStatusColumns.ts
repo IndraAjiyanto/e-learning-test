@@ -1,20 +1,18 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddInvoiceSnapshotAndStatusColumns1790200000000
-  implements MigrationInterface
-{
+export class AddInvoiceSnapshotAndStatusColumns1790200000000 implements MigrationInterface {
   name = 'AddInvoiceSnapshotAndStatusColumns1790200000000';
 
   public async up(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
+    const [table] = (await q.query(
       `SELECT to_regclass('public.invoice') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
     // 1. Enum type status invoice
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'invoice_status_enum'`,
-    );
+    )) as unknown[];
     if (!enumType) {
       await q.query(
         `CREATE TYPE "invoice_status_enum" AS ENUM('pending', 'paid', 'expired', 'refunded')`,
@@ -26,17 +24,20 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
       columnName: string,
       typeDef: string,
     ) => {
-      const [col] = await q.query(
+      const [col] = (await q.query(
         `SELECT 1 FROM information_schema.columns
          WHERE table_name = 'invoice' AND column_name = '${columnName}'`,
-      );
+      )) as unknown[];
       if (!col) {
         await q.query(`ALTER TABLE "invoice" ADD "${columnName}" ${typeDef}`);
       }
     };
 
     await addColumnIfNotExists('invoice_number', 'character varying');
-    await addColumnIfNotExists('status', `"invoice_status_enum" DEFAULT 'pending'`);
+    await addColumnIfNotExists(
+      'status',
+      `"invoice_status_enum" DEFAULT 'pending'`,
+    );
     await addColumnIfNotExists('xendit_payment_channel', 'character varying');
     await addColumnIfNotExists('user_fullname', 'character varying');
     await addColumnIfNotExists('user_email', 'character varying');
@@ -51,9 +52,9 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
     await addColumnIfNotExists('courseId', 'uuid');
 
     // 3. Unique index untuk invoice_number
-    const [indexCheck] = await q.query(
+    const [indexCheck] = (await q.query(
       `SELECT 1 FROM pg_indexes WHERE tablename = 'invoice' AND indexname = 'UQ_invoice_invoice_number'`,
-    );
+    )) as unknown[];
     if (!indexCheck) {
       await q.query(
         `CREATE UNIQUE INDEX "UQ_invoice_invoice_number" ON "invoice" ("invoice_number") WHERE "invoice_number" IS NOT NULL`,
@@ -61,14 +62,14 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
     }
 
     // 4. FK relations to user and course
-    const [userTable] = await q.query(
+    const [userTable] = (await q.query(
       `SELECT to_regclass('public.user') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (userTable?.has_table) {
-      const [userFk] = await q.query(
+      const [userFk] = (await q.query(
         `SELECT 1 FROM information_schema.table_constraints
          WHERE table_name = 'invoice' AND constraint_name = 'FK_invoice_user'`,
-      );
+      )) as unknown[];
       if (!userFk) {
         await q.query(
           `ALTER TABLE "invoice" ADD CONSTRAINT "FK_invoice_user"
@@ -77,14 +78,14 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
       }
     }
 
-    const [courseTable] = await q.query(
+    const [courseTable] = (await q.query(
       `SELECT to_regclass('public.course') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (courseTable?.has_table) {
-      const [courseFk] = await q.query(
+      const [courseFk] = (await q.query(
         `SELECT 1 FROM information_schema.table_constraints
          WHERE table_name = 'invoice' AND constraint_name = 'FK_invoice_course'`,
-      );
+      )) as unknown[];
       if (!courseFk) {
         await q.query(
           `ALTER TABLE "invoice" ADD CONSTRAINT "FK_invoice_course"
@@ -95,20 +96,24 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
+    const [table] = (await q.query(
       `SELECT to_regclass('public.invoice') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    await q.query(`ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_course"`);
-    await q.query(`ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_user"`);
+    await q.query(
+      `ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_course"`,
+    );
+    await q.query(
+      `ALTER TABLE "invoice" DROP CONSTRAINT IF EXISTS "FK_invoice_user"`,
+    );
     await q.query(`DROP INDEX IF EXISTS "UQ_invoice_invoice_number"`);
 
     const dropColumnIfExists = async (columnName: string) => {
-      const [col] = await q.query(
+      const [col] = (await q.query(
         `SELECT 1 FROM information_schema.columns
          WHERE table_name = 'invoice' AND column_name = '${columnName}'`,
-      );
+      )) as unknown[];
       if (col) {
         await q.query(`ALTER TABLE "invoice" DROP COLUMN "${columnName}"`);
       }
@@ -129,9 +134,9 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000
     await dropColumnIfExists('status');
     await dropColumnIfExists('invoice_number');
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'invoice_status_enum'`,
-    );
+    )) as unknown[];
     if (enumType) {
       await q.query(`DROP TYPE "invoice_status_enum"`);
     }

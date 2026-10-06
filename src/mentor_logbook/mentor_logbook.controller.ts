@@ -47,7 +47,9 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     try {
-      createMentorLogbookDto.documentation = req.body.uploadedImageUrls?.[0];
+      createMentorLogbookDto.documentation =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       createMentorLogbookDto.userId = req.user!.id;
       createMentorLogbookDto.sessionId = sessionId;
       await this.mentorLogbookService.create(createMentorLogbookDto);
@@ -57,15 +59,16 @@ export class MentorLogbookController {
         'The new mentor logbook entry has been added to this session.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Log book failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Log book failed to create');
       res.redirect(`/session/${sessionId}`);
     }
   }
 
   @Roles('admin')
   @Get('formCreate/:sessionId')
-  async formCreate(
+  formCreate(
     @Param('sessionId') sessionId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -123,22 +126,21 @@ export class MentorLogbookController {
         await this.mentorLogbookService.findOne(mentor_logbookId);
       if (documentation) {
         await this.mentorLogbookService.deleteFile(logbooks.documentation);
-        updateMentorLogbookDto.documentation = req.body.uploadedImageUrls?.[0];
+        updateMentorLogbookDto.documentation =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
       }
       await this.mentorLogbookService.update(
         mentor_logbookId,
         updateMentorLogbookDto,
       );
-      flashToast(
-        req,
-        'Changes Saved',
-        'The mentor logbook has been updated.',
-      );
+      flashToast(req, 'Changes Saved', 'The mentor logbook has been updated.');
       res.redirect(`/session/${logbooks.session.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       const logbooks =
         await this.mentorLogbookService.findOne(mentor_logbookId);
-      req.flash('error', error.message || 'logbooks failed to updated');
+      req.flash('error', err.message || 'logbooks failed to updated');
       res.redirect(`/session/${logbooks.session.id}`);
     }
   }
@@ -162,8 +164,9 @@ export class MentorLogbookController {
         'The mentor logbook has been permanently removed.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'logbooks failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'logbooks failed to delete');
       res.redirect(`/session/${sessionId}`);
     }
   }

@@ -29,7 +29,12 @@ export class InstallmentPaymentService {
   async findOneById(id: string) {
     return this.installmentPaymentRepository.findOne({
       where: { id },
-      relations: ['payment', 'payment.course', 'payment.user', 'payment.installment'],
+      relations: [
+        'payment',
+        'payment.course',
+        'payment.user',
+        'payment.installment',
+      ],
     });
   }
 

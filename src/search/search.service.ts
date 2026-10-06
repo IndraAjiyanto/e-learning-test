@@ -51,31 +51,81 @@ export class SearchService {
       title: 'Dashboard',
       subtitle: 'Menu • Accessed from sidebar',
       url: '/users/profile?tab=dashboard',
-      keywords: ['dashboard', 'home', 'beranda', 'main', 'overview', 'ringkasan'],
+      keywords: [
+        'dashboard',
+        'home',
+        'beranda',
+        'main',
+        'overview',
+        'ringkasan',
+      ],
     },
     {
       title: 'Profile',
       subtitle: 'Menu • Accessed from sidebar',
       url: '/users/profile?tab=profile',
-      keywords: ['profile', 'profil', 'akun', 'account', 'password', 'biodata', 'settings', 'pengaturan', 'email'],
+      keywords: [
+        'profile',
+        'profil',
+        'akun',
+        'account',
+        'password',
+        'biodata',
+        'settings',
+        'pengaturan',
+        'email',
+      ],
     },
     {
       title: 'My Learning',
       subtitle: 'Menu • Accessed from sidebar',
       url: '/users/profile?tab=learning',
-      keywords: ['learning', 'my learning', 'materi', 'kursus', 'kelas', 'study', 'course', 'program', 'bootcamp', 'belajar', 'modul'],
+      keywords: [
+        'learning',
+        'my learning',
+        'materi',
+        'kursus',
+        'kelas',
+        'study',
+        'course',
+        'program',
+        'bootcamp',
+        'belajar',
+        'modul',
+      ],
     },
     {
       title: 'My Portfolio',
       subtitle: 'Menu • Accessed from sidebar',
       url: '/users/profile?tab=portfolio',
-      keywords: ['portfolio', 'portofolio', 'project', 'karya', 'tugas', 'proyek', 'showcase'],
+      keywords: [
+        'portfolio',
+        'portofolio',
+        'project',
+        'karya',
+        'tugas',
+        'proyek',
+        'showcase',
+      ],
     },
     {
       title: 'Payment History',
       subtitle: 'Menu • Accessed from sidebar',
       url: '/users/profile?tab=history-payment',
-      keywords: ['payment', 'history', 'pembayaran', 'riwayat', 'transaksi', 'tagihan', 'installment', 'cicilan', 'invoice', 'bayar', 'lunas', 'paid'],
+      keywords: [
+        'payment',
+        'history',
+        'pembayaran',
+        'riwayat',
+        'transaksi',
+        'tagihan',
+        'installment',
+        'cicilan',
+        'invoice',
+        'bayar',
+        'lunas',
+        'paid',
+      ],
     },
   ];
 
@@ -121,8 +171,8 @@ export class SearchService {
       const durationText = course.month ? `${course.month} months` : 'Flexible';
       const isUrl = course.group && /^https?:\/\//i.test(course.group);
       const level = isUrl
-        ? (course.courseType?.nameClassesType || 'Bootcamp')
-        : (course.group || 'Beginner');
+        ? course.courseType?.nameClassesType || 'Bootcamp'
+        : course.group || 'Beginner';
 
       const targetUrl = `/program/${course.id}`;
       const image = course.image || '/public/image/user_profile/uiux_image.png';
@@ -167,7 +217,8 @@ export class SearchService {
         .leftJoinAndSelect('course.category', 'category');
 
       if (!isLearningKeyword) {
-        userCoursesQb.where('LOWER(course.name) LIKE :q', { q: `%${lowerQ}%` })
+        userCoursesQb
+          .where('LOWER(course.name) LIKE :q', { q: `%${lowerQ}%` })
           .orWhere('LOWER(course.group) LIKE :q', { q: `%${lowerQ}%` });
       }
 
@@ -182,12 +233,13 @@ export class SearchService {
             id: uc.course.id,
             title: uc.course.name,
             subtitle: `My Learning • ${uc.progress ? 'Completed' : 'In Progress'}`,
-            image: uc.course.image || '/public/image/user_profile/uiux_image.png',
+            image:
+              uc.course.image || '/public/image/user_profile/uiux_image.png',
             url: `/users/profile?tab=learning&search=${encodeURIComponent(uc.course.name)}`,
           });
         }
       });
-    } catch (e) {
+    } catch {
       // Ignore if error
     }
 
@@ -227,7 +279,7 @@ export class SearchService {
           });
         }
       });
-    } catch (e) {
+    } catch {
       // Ignore
     }
 
@@ -272,7 +324,7 @@ export class SearchService {
           url: `/users/profile?tab=portfolio`,
         });
       });
-    } catch (e) {
+    } catch {
       // Ignore
     }
 
@@ -292,9 +344,13 @@ export class SearchService {
         'bayar',
       ].some((k) => lowerQ.includes(k));
 
-      const isPaidQuery = ['paid', 'lunas', 'approved', 'sukses', 'success'].some((k) =>
-        lowerQ.includes(k),
-      );
+      const isPaidQuery = [
+        'paid',
+        'lunas',
+        'approved',
+        'sukses',
+        'success',
+      ].some((k) => lowerQ.includes(k));
 
       // 4a. Payments
       const paymentQb = this.paymentRepository
@@ -396,7 +452,9 @@ export class SearchService {
     }
 
     // 5. Search Menus / Pages
-    const isGenericMenuQuery = ['menu', 'page', 'halaman', 'tab'].includes(lowerQ);
+    const isGenericMenuQuery = ['menu', 'page', 'halaman', 'tab'].includes(
+      lowerQ,
+    );
 
     const matchedMenus: SearchItem[] = this.userMenus
       .filter((menu) => {

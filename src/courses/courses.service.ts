@@ -13,7 +13,10 @@ import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { capabilitiesFor } from './program-type';
-import { CourseStatus, COURSE_STATUSES } from 'src/entities/types/course-status';
+import {
+  CourseStatus,
+  COURSE_STATUSES,
+} from 'src/entities/types/course-status';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -146,7 +149,7 @@ export class CoursesService {
     }
 
     const { endDate, ...restDto } = createCourseDto;
-    const course = await this.courseRepository.create({
+    const course = this.courseRepository.create({
       ...restDto,
       time_start:
         createCourseDto.time_start && createCourseDto.time_start.trim() !== ''
@@ -215,7 +218,7 @@ export class CoursesService {
       throw new NotFoundException('Program not Found');
     }
 
-    const mentorings = await this.mentoringRepository.create({
+    const mentorings = this.mentoringRepository.create({
       course: course,
       user: user,
     });
@@ -294,7 +297,7 @@ export class CoursesService {
         throw new BadRequestException('The program is currently full');
       }
 
-      const userCourses = await this.userCourseRepository.create({
+      const userCourses = this.userCourseRepository.create({
         progress: false,
         user: user,
         course: course,
@@ -391,7 +394,7 @@ export class CoursesService {
         throw new BadRequestException('The program is currently full');
       }
 
-      const userCourses = await this.userCourseRepository.create({
+      const userCourses = this.userCourseRepository.create({
         progress: false,
         user: user,
         course: course,
@@ -531,7 +534,7 @@ export class CoursesService {
     return await this.userRepository.find({ where: { role: 'admin' } });
   }
 
-  async findMentor(courseId) {
+  async findMentor(courseId: string) {
     return await this.mentorRepository.find({
       where: { course: { id: courseId } },
       relations: ['technologies'],
@@ -689,15 +692,22 @@ export class CoursesService {
     // jumlah seluruh baris pada program itu. Terlihat langsung begitu
     // ringkasannya ditampilkan - 6 disetujui DAN 6 ditolak dari total 6.
     // Karena itu kondisi program dipasang sebagai `.where()` PERTAMA.
-    const forCourse = (qb: any, alias: string) =>
-      qb.where(`${alias}.courseId = :courseId`, { courseId });
+    const forCourse = <T extends import('typeorm').ObjectLiteral>(
+      qb: import('typeorm').SelectQueryBuilder<T>,
+      alias: string,
+    ) => qb.where(`${alias}.courseId = :courseId`, { courseId });
 
     // Hitungan "sudah beres" memakai DISTINCT pada induknya: satu sesi bisa
     // punya lebih dari satu baris absensi, dan satu tugas lebih dari satu
     // jawaban. Tanpa DISTINCT, angkanya bisa melebihi totalnya - kuis sempat
     // tampil "2 dari 1 lulus".
-    const countDistinct = async (qb: any, expr: string) => {
-      const row = await qb.select(`COUNT(DISTINCT ${expr})`, 'c').getRawOne();
+    const countDistinct = async <T extends import('typeorm').ObjectLiteral>(
+      qb: import('typeorm').SelectQueryBuilder<T>,
+      expr: string,
+    ) => {
+      const row = await qb
+        .select(`COUNT(DISTINCT ${expr})`, 'c')
+        .getRawOne<{ c?: string | number }>();
       return Number(row?.c ?? 0);
     };
 
@@ -712,7 +722,7 @@ export class CoursesService {
       logbooksTotal,
       logbooksApproved,
       logbooksRejected,
-    ] = await Promise.all([
+    ]: number[] = await Promise.all([
       forCourse(
         em.createQueryBuilder(Session, 's').innerJoin('s.weeks', 'w'),
         'w',
@@ -876,18 +886,25 @@ export class CoursesService {
     if (!courseId || !userId) return summaries;
 
     const em = this.sessionRepository.manager;
-    const forCourse = (qb: any) =>
-      qb.where('w.courseId = :courseId', { courseId });
+    const forCourse = <T extends import('typeorm').ObjectLiteral>(
+      qb: import('typeorm').SelectQueryBuilder<T>,
+    ) => qb.where('w.courseId = :courseId', { courseId });
 
     // Satu baris per minggu: { weekId, c }. Minggu tanpa baris sama sekali
     // tidak muncul di hasil, jadi pembacanya harus tahan nilai kosong -
     // itulah gunanya `blank()`.
-    const perWeek = async (qb: any, expr: string) =>
+    const perWeek = async <T extends import('typeorm').ObjectLiteral>(
+      qb: import('typeorm').SelectQueryBuilder<T>,
+      expr: string,
+    ) =>
       (await qb
         .select('w.id', 'weekId')
         .addSelect(`COUNT(DISTINCT ${expr})`, 'c')
         .groupBy('w.id')
-        .getRawMany()) as Array<{ weekId: string; c: string }>;
+        .getRawMany<{ weekId: string; c: string }>()) as Array<{
+        weekId: string;
+        c: string;
+      }>;
 
     const [
       sessions,
@@ -1255,7 +1272,7 @@ export class CoursesService {
     }
 
     const usedIds = [courseId];
-    const results: any[] = [];
+    const results: Course[] = [];
 
     // 1. category & courseType sama (1 data)
     const sameAll = await this.courseRepository.find({
@@ -1465,7 +1482,7 @@ export class CoursesService {
       })
       .andWhere('wp.quiz = :quiz', { quiz: true })
       .groupBy('wp.weekId')
-      .getRawMany();
+      .getRawMany<{ weekId: string }>();
 
     const completedWeekIds = new Set(
       completedWeekProgresses.map((item) => item.weekId),
@@ -1770,7 +1787,9 @@ export class CoursesService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async findCompletedCoursesByUser(userId: string) {
@@ -1833,7 +1852,9 @@ export class CoursesService {
         : null;
 
       const isUnlocked = idx === 0 || previousPassed;
-      const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+      const isPassed = quiz
+        ? bestScore !== null && bestScore >= minScore
+        : true;
       const prevMinScore =
         idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
       previousPassed = isPassed;

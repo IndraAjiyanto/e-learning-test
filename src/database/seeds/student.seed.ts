@@ -82,7 +82,9 @@ async function bootstrap() {
     return;
   }
   if (student.role !== 'user') {
-    log(`peringatan: "${STUDENT_EMAIL}" ber-role "${student.role}", bukan "user".`);
+    log(
+      `peringatan: "${STUDENT_EMAIL}" ber-role "${student.role}", bukan "user".`,
+    );
   }
 
   // Course target: yang sudah diikuti student, kalau tidak ada ambil course
@@ -115,25 +117,40 @@ async function bootstrap() {
   // menunjukkan angka yang berbeda-beda.
   const categoryRepo = ds.getRepository(Category);
   const extraPlans = [
-    { name: 'UI/UX Design Fundamentals', description: 'Dasar riset, wireframe, dan prototipe.', progress: true },
-    { name: 'Digital Marketing Essentials', description: 'Strategi konten, SEO dasar, dan analitik.', progress: false },
+    {
+      name: 'UI/UX Design Fundamentals',
+      description: 'Dasar riset, wireframe, dan prototipe.',
+      progress: true,
+    },
+    {
+      name: 'Digital Marketing Essentials',
+      description: 'Strategi konten, SEO dasar, dan analitik.',
+      progress: false,
+    },
   ];
 
   let addedCourses = 0;
   for (const plan of extraPlans) {
     let extra = await courseRepo.findOne({ where: { name: plan.name } });
     if (!extra) {
-      const category = await categoryRepo.findOne({ where: {}, order: { name: 'ASC' } });
+      const category = await categoryRepo.findOne({
+        where: {},
+        order: { name: 'ASC' },
+      });
       extra = await courseRepo.save(
         courseRepo.create({
           name: plan.name,
-          description: { id: plan.description, en: plan.description, ja: plan.description } as any,
+          description: {
+            id: plan.description,
+            en: plan.description,
+            ja: plan.description,
+          },
           image: 'logo.png',
           quota: 20,
           price: 1500000,
           promo: 0,
           group: 'https://chat.whatsapp.com/example',
-          locations: { id: 'Online', en: 'Online', ja: 'Online' } as any,
+          locations: { id: 'Online', en: 'Online', ja: 'Online' },
           locationLink: 'https://meet.google.com/example',
           method: 'online',
           process: 'approved',
@@ -153,13 +170,20 @@ async function bootstrap() {
     });
     if (!enrolled) {
       await userCourseRepo.save(
-        userCourseRepo.create({ user: student, course: extra, progress: plan.progress }),
+        userCourseRepo.create({
+          user: student,
+          course: extra,
+          progress: plan.progress,
+        }),
       );
     }
   }
-  const enrolledCount = await userCourseRepo.count({ where: { user: { id: student.id } } });
-  log(`program: ${addedCourses} dibuat, student terdaftar di ${enrolledCount} program`);
-
+  const enrolledCount = await userCourseRepo.count({
+    where: { user: { id: student.id } },
+  });
+  log(
+    `program: ${addedCourses} dibuat, student terdaftar di ${enrolledCount} program`,
+  );
 
   // --- Struktur belajar: 2 minggu, 3 sesi, 3 materi ---------------------------
   const weekRepo = ds.getRepository(Weeks);
@@ -230,7 +254,8 @@ async function bootstrap() {
     where: sessions.map((s) => ({ session: { id: s.id } })),
   });
   if (materialCount === 0) {
-    const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    const PDF =
+      'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
     const rows: Material[] = [];
     sessions.slice(0, Math.min(6, sessions.length)).forEach((session, i) => {
       // Sengaja lebih dari satu berkas sejenis: halaman sesi menyebut materi
@@ -290,7 +315,13 @@ async function bootstrap() {
   if (attendanceCount === 0) {
     const past = sessions.filter((x) => new Date(x.date) < new Date());
     const statuses: Array<'present' | 'permission' | 'sick' | 'absent'> = [
-      'present', 'present', 'permission', 'present', 'sick', 'present', 'absent',
+      'present',
+      'present',
+      'permission',
+      'present',
+      'sick',
+      'present',
+      'absent',
     ];
     await attendanceRepo.save(
       past.map((session, i) =>
@@ -318,7 +349,12 @@ async function bootstrap() {
   });
   if (logbookCount === 0) {
     const past = sessions.filter((x) => new Date(x.date) < new Date());
-    const flow: ProcessStatus[] = ['approved', 'approved', 'process', 'rejected'];
+    const flow: ProcessStatus[] = [
+      'approved',
+      'approved',
+      'process',
+      'rejected',
+    ];
     await logbookRepo.save(
       past.map((session, i) =>
         logbookRepo.create({
@@ -351,7 +387,8 @@ async function bootstrap() {
     where: sessions.map((s) => ({ session: { id: s.id } })),
   });
   if (assignments.length === 0) {
-    const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    const PDF =
+      'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
     assignments = await assignmentRepo.save(
       sessions.slice(0, Math.min(8, sessions.length)).map((session, i) =>
         assignmentRepo.create({
@@ -370,8 +407,14 @@ async function bootstrap() {
     where: { user: { id: student.id } },
   });
   if (answerTaskCount === 0) {
-    const PDF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-    const flow: ProcessStatus[] = ['approved', 'process', 'approved', 'rejected'];
+    const PDF =
+      'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    const flow: ProcessStatus[] = [
+      'approved',
+      'process',
+      'approved',
+      'rejected',
+    ];
     const submitted = assignments.slice(0, Math.max(1, assignments.length - 2));
     await answerTaskRepo.save(
       submitted.map((task, i) =>
@@ -383,7 +426,9 @@ async function bootstrap() {
         }),
       ),
     );
-    log(`membuat ${submitted.length} pengumpulan tugas, sisanya sengaja belum dikumpulkan`);
+    log(
+      `membuat ${submitted.length} pengumpulan tugas, sisanya sengaja belum dikumpulkan`,
+    );
   } else {
     log(`pengumpulan tugas sudah ada (${answerTaskCount}), dilewati`);
   }
@@ -399,12 +444,37 @@ async function bootstrap() {
   });
   if (!quiz) {
     const bank: Array<[string, string[], number]> = [
-      ['Tag mana yang dipakai untuk judul terpenting sebuah halaman?', ['<h1>', '<head>', '<title>', '<header>'], 0],
-      ['Properti CSS mana yang mengatur jarak DI DALAM sebuah elemen?', ['margin', 'padding', 'border', 'gap'], 1],
-      ['Apa fungsi utama version control seperti Git?', ['Mempercepat website', 'Mengompres gambar', 'Melacak perubahan kode', 'Menyusun basis data'], 2],
+      [
+        'Tag mana yang dipakai untuk judul terpenting sebuah halaman?',
+        ['<h1>', '<head>', '<title>', '<header>'],
+        0,
+      ],
+      [
+        'Properti CSS mana yang mengatur jarak DI DALAM sebuah elemen?',
+        ['margin', 'padding', 'border', 'gap'],
+        1,
+      ],
+      [
+        'Apa fungsi utama version control seperti Git?',
+        [
+          'Mempercepat website',
+          'Mengompres gambar',
+          'Melacak perubahan kode',
+          'Menyusun basis data',
+        ],
+        2,
+      ],
       ['Manakah yang BUKAN metode HTTP?', ['GET', 'POST', 'SEND', 'DELETE'], 2],
-      ['Apa keluaran dari typeof [] di JavaScript?', ['array', 'object', 'list', 'undefined'], 1],
-      ['Status HTTP mana yang berarti "tidak ditemukan"?', ['200', '301', '404', '500'], 2],
+      [
+        'Apa keluaran dari typeof [] di JavaScript?',
+        ['array', 'object', 'list', 'undefined'],
+        1,
+      ],
+      [
+        'Status HTTP mana yang berarti "tidak ditemukan"?',
+        ['200', '301', '404', '500'],
+        2,
+      ],
     ];
 
     const created: Quiz[] = [];
@@ -419,11 +489,18 @@ async function bootstrap() {
       );
       created.push(q);
       for (let n = 0; n < 3; n += 1) {
-        const [questionText, options, correctIndex] = bank[(i * 3 + n) % bank.length];
-        const question = await questionRepo.save(questionRepo.create({ questionText, quiz: q }));
+        const [questionText, options, correctIndex] =
+          bank[(i * 3 + n) % bank.length];
+        const question = await questionRepo.save(
+          questionRepo.create({ questionText, quiz: q }),
+        );
         await answerRepo.save(
           options.map((answer, oi) =>
-            answerRepo.create({ answer, isCorrect: oi === correctIndex, question }),
+            answerRepo.create({
+              answer,
+              isCorrect: oi === correctIndex,
+              question,
+            }),
           ),
         );
       }
@@ -438,13 +515,19 @@ async function bootstrap() {
     where: { user: { id: student.id }, quiz: { id: quiz.id } },
   });
   if (scoreCount === 0) {
-    const quizzes = await quizRepo.find({ where: weeks.map((w) => ({ weeks: { id: w.id } })) });
+    const quizzes = await quizRepo.find({
+      where: weeks.map((w) => ({ weeks: { id: w.id } })),
+    });
     const marks = [80, 92, 68];
     const scored = quizzes.slice(0, Math.min(marks.length, quizzes.length));
     await scoreRepo.save(
-      scored.map((q, i) => scoreRepo.create({ score: marks[i], user: student, quiz: q })),
+      scored.map((q, i) =>
+        scoreRepo.create({ score: marks[i], user: student, quiz: q }),
+      ),
     );
-    log(`membuat ${scored.length} nilai kuis (${marks.slice(0, scored.length).join(', ')})`);
+    log(
+      `membuat ${scored.length} nilai kuis (${marks.slice(0, scored.length).join(', ')})`,
+    );
   } else {
     log(`nilai kuis sudah ada (${scoreCount}), dilewati`);
   }
@@ -472,16 +555,27 @@ async function bootstrap() {
     const past = sessions.filter((x) => new Date(x.date) < new Date());
     await sessionProgressRepo.save(
       past.map((session) =>
-        sessionProgressRepo.create({ user: student, session, logbook: true, isAttended: true }),
+        sessionProgressRepo.create({
+          user: student,
+          session,
+          logbook: true,
+          isAttended: true,
+        }),
       ),
     );
-    const quizzes = await quizRepo.find({ where: weeks.map((w) => ({ weeks: { id: w.id } })) });
+    const quizzes = await quizRepo.find({
+      where: weeks.map((w) => ({ weeks: { id: w.id } })),
+    });
     await quizProgressRepo.save(
-      quizzes.slice(0, doneWeeks).map((q) =>
-        quizProgressRepo.create({ user: student, quiz: q, process: true }),
-      ),
+      quizzes
+        .slice(0, doneWeeks)
+        .map((q) =>
+          quizProgressRepo.create({ user: student, quiz: q, process: true }),
+        ),
     );
-    log(`membuat progres: ${doneWeeks} dari ${weeks.length} minggu selesai, ${past.length} sesi terhadiri`);
+    log(
+      `membuat progres: ${doneWeeks} dari ${weeks.length} minggu selesai, ${past.length} sesi terhadiri`,
+    );
   } else {
     log(`progres sudah ada (${weekProgressCount}), dilewati`);
   }
@@ -493,12 +587,21 @@ async function bootstrap() {
   });
   if (portfolioCount === 0) {
     const items = [
-      ['Halaman profil responsif', 'Halaman profil satu kolom, responsif sampai lebar ponsel.',
-       'Dibuat dengan HTML semantik dan CSS flexbox, tanpa framework.'],
-      ['Dasbor cuaca sederhana', 'Menampilkan prakiraan tujuh hari dari sebuah API publik.',
-       'Konsumsi API dengan fetch, state ditangani tanpa pustaka tambahan.'],
-      ['Aplikasi catatan offline', 'Catatan tersimpan di perangkat dan tetap terbaca tanpa internet.',
-       'Menyimpan data di IndexedDB dan memakai service worker untuk mode luring.'],
+      [
+        'Halaman profil responsif',
+        'Halaman profil satu kolom, responsif sampai lebar ponsel.',
+        'Dibuat dengan HTML semantik dan CSS flexbox, tanpa framework.',
+      ],
+      [
+        'Dasbor cuaca sederhana',
+        'Menampilkan prakiraan tujuh hari dari sebuah API publik.',
+        'Konsumsi API dengan fetch, state ditangani tanpa pustaka tambahan.',
+      ],
+      [
+        'Aplikasi catatan offline',
+        'Catatan tersimpan di perangkat dan tetap terbaca tanpa internet.',
+        'Menyimpan data di IndexedDB dan memakai service worker untuk mode luring.',
+      ],
     ];
     await portfolioRepo.save(
       items.map(([title, description, content]) =>
@@ -528,7 +631,8 @@ async function bootstrap() {
   const invoiceRepo = ds.getRepository(Invoice);
   const courseRepo2 = ds.getRepository(Course);
 
-  const PROOF = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+  const PROOF =
+    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
   const identity = {
     user_fullname: student.username,
     user_email: student.email,
@@ -608,7 +712,7 @@ async function bootstrap() {
             discount_amount: 0,
             final_total: amount,
             payment_method: method,
-            paid_at: process === 'approved' ? daysAgo(plan.length - i) : (null as unknown as Date),
+            paid_at: process === 'approved' ? daysAgo(plan.length - i) : null,
           }),
         );
       }
@@ -623,14 +727,19 @@ async function bootstrap() {
     });
     for (const [i, row] of seeded.entries()) {
       const when = daysAgo(14 * (seeded.length - i));
-      await paymentRepo.query('UPDATE payments SET "createdAt" = $1 WHERE id = $2', [when, row.id]);
+      await paymentRepo.query(
+        'UPDATE payments SET "createdAt" = $1 WHERE id = $2',
+        [when, row.id],
+      );
       await invoiceRepo.query(
         'UPDATE invoice SET paid_at = $1 WHERE "paymentId" = $2 AND paid_at IS NOT NULL',
         [when, row.id],
       );
     }
 
-    log(`membuat ${plan.length} pembayaran lunas dengan metode, status, dan tanggal beragam`);
+    log(
+      `membuat ${plan.length} pembayaran lunas dengan metode, status, dan tanggal beragam`,
+    );
 
     // Satu rencana cicilan beserta pembayaran DP-nya.
     let installment = await installmentRepo.findOne({
@@ -642,7 +751,11 @@ async function bootstrap() {
           downPayment: 500000,
           price: [1000000, 1000000, 1000000],
           month: 3,
-          dueDates: [isoDate(daysAhead(7)), isoDate(daysAhead(37)), isoDate(daysAhead(67))],
+          dueDates: [
+            isoDate(daysAhead(7)),
+            isoDate(daysAhead(37)),
+            isoDate(daysAhead(67)),
+          ],
           course,
         }),
       );
@@ -669,7 +782,9 @@ async function bootstrap() {
       );
       log('membuat 1 pembayaran cicilan + 1 rencana cicilan 3 termin');
     } else {
-      log('rencana cicilan sudah dipakai pembayaran lain, baris cicilan dilewati');
+      log(
+        'rencana cicilan sudah dipakai pembayaran lain, baris cicilan dilewati',
+      );
     }
   } else {
     log(`pembayaran sudah ada (${paymentCount}), dilewati`);
@@ -679,7 +794,8 @@ async function bootstrap() {
   await app.close();
 }
 
-bootstrap().catch((err) => {
-  console.error('student.seed gagal:', err?.message ?? err);
+bootstrap().catch((err: unknown) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error('student.seed gagal:', msg);
   process.exit(1);
 });

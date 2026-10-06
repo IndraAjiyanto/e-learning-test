@@ -49,7 +49,11 @@ export class TechnologiesController {
     @Req() req: Request,
   ) {
     try {
-      createTechnologiesDto.imgUrl = req.body.uploadedImageUrls?.[0] || null;
+      createTechnologiesDto.imgUrl =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] ||
+        '' ||
+        null;
 
       const isSvgEmpty = createTechnologiesDto.svg === '';
       if (isSvgEmpty) {
@@ -63,14 +67,11 @@ export class TechnologiesController {
       }
 
       await this.technologiesService.create(createTechnologiesDto);
-      flashToast(
-        req,
-        'Tool Created',
-        'The tool has been added successfully.',
-      );
+      flashToast(req, 'Tool Created', 'The tool has been added successfully.');
       res.redirect('/technology');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Tool failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Tool failed to create');
       res.redirect('/technology');
     }
   }
@@ -114,7 +115,7 @@ export class TechnologiesController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/technologies/create', { user: req.user });
   }
 
@@ -150,9 +151,18 @@ export class TechnologiesController {
     @Req() req: Request,
   ) {
     try {
-      if (req.body.uploadedImageUrls?.[0]) {
-        updateTechnologiesDto.imgUrl = req.body.uploadedImageUrls[0];
-      } else if (req.body.remove_image === 'true') {
+      if (
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] ||
+        ''
+      ) {
+        updateTechnologiesDto.imgUrl =
+          (req.body as { uploadedImageUrls?: string[]; remove_image?: string })
+            ?.uploadedImageUrls?.[0] || '';
+      } else if (
+        (req.body as { uploadedImageUrls?: string[]; remove_image?: string })
+          ?.remove_image === 'true'
+      ) {
         updateTechnologiesDto.imgUrl = null;
       }
 
@@ -189,8 +199,9 @@ export class TechnologiesController {
         'The changes to this tool have been saved.',
       );
       res.redirect('/technology');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Tool failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Tool failed to update');
       res.redirect(`/technology/formEdit/${id}`);
     }
   }
@@ -215,8 +226,9 @@ export class TechnologiesController {
         'The tool has been removed successfully.',
       );
       res.redirect('/technology');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete tool');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete tool');
       res.redirect('/technology');
     }
   }

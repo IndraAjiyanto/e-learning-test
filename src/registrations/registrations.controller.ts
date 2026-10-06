@@ -45,24 +45,34 @@ export class RegistrationsController {
     @Req() req: Request,
   ) {
     try {
+      interface RegistrationReqBody {
+        uploadedImageUrls?: string[];
+        user_fullname?: string;
+        user_email?: string;
+        user_no?: string;
+        current_status?: string;
+        referal_source?: string;
+        attend_program?: string;
+      }
+      const b = req.body as RegistrationReqBody;
       console.log('🔵 [Registration] Attempt:', {
         userId,
         courseId,
         file: req.file,
-        body: req.body,
-        uploadedImageUrls: req.body.uploadedImageUrls,
+        body: b,
+        uploadedImageUrls: b?.uploadedImageUrls,
       });
-      createRegistrationDto.file = req.body.uploadedImageUrls?.[0];
+      createRegistrationDto.file = b?.uploadedImageUrls?.[0] || '';
       console.log('🔵 [Registration] File URL:', createRegistrationDto.file);
       createRegistrationDto.courseId = courseId;
       createRegistrationDto.userId = userId;
       createRegistrationDto.process = 'approved';
-      createRegistrationDto.user_fullname = req.body.user_fullname;
-      createRegistrationDto.user_email = req.body.user_email;
-      createRegistrationDto.user_no = req.body.user_no;
-      createRegistrationDto.current_status = req.body.current_status;
-      createRegistrationDto.referal_source = req.body.referal_source;
-      createRegistrationDto.attend_program = req.body.attend_program === 'true';
+      createRegistrationDto.user_fullname = b?.user_fullname || '';
+      createRegistrationDto.user_email = b?.user_email || '';
+      createRegistrationDto.user_no = b?.user_no || '';
+      createRegistrationDto.current_status = b?.current_status || '';
+      createRegistrationDto.referal_source = b?.referal_source || '';
+      createRegistrationDto.attend_program = b?.attend_program === 'true';
       const registration = await this.registrationsService.create(
         createRegistrationDto,
       );
@@ -93,11 +103,14 @@ export class RegistrationsController {
       } else {
         try {
           await this.registrationsService.addUserToCourse(userId, courseId);
-        } catch (error: any) {}
+        } catch {
+          // ignore
+        }
         if (isJson) {
           return res.status(200).json({
             success: true,
-            message: 'Registration successful! You are now enrolled in the program.',
+            message:
+              'Registration successful! You are now enrolled in the program.',
             redirectUrl: '/users/profile?tab=dashboard',
           });
         }
@@ -107,7 +120,8 @@ export class RegistrationsController {
         );
         return res.redirect(`/users/profile?tab=dashboard`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error('🔴 [Registration] Error:', error);
       const isJson =
         Boolean(req.xhr) ||
@@ -116,10 +130,10 @@ export class RegistrationsController {
       if (isJson) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Registration failed',
+          message: err.message || 'Registration failed',
         });
       }
-      req.flash('error', error.message || 'Registration failed');
+      req.flash('error', err.message || 'Registration failed');
       return res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
     }
   }
@@ -159,7 +173,9 @@ export class RegistrationsController {
             registration['user']['id'],
             registration['course']['id'],
           );
-        } catch (error: any) {}
+        } catch {
+          // ignore
+        }
 
         req.flash('success', 'Process successfully changed to approved');
         res.redirect(
@@ -179,16 +195,19 @@ export class RegistrationsController {
             registration['user']['id'],
             registration['course']['id'],
           );
-        } catch (error: any) {}
+        } catch {
+          // ignore
+        }
         req.flash('success', 'Process successfully changed to rejected');
         res.redirect(
           `/program/detail/program/admin/${registration['course']['id']}`,
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       const registration =
         await this.registrationsService.findOne(registrationId);
-      req.flash('error', error.message || 'Failed to update process');
+      req.flash('error', err.message || 'Failed to update process');
       res.redirect(
         `/program/detail/program/admin/${registration['course']['id']}`,
       );

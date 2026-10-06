@@ -48,12 +48,14 @@ export class AssignmentsController {
     @Req() req: Request,
   ) {
     try {
-      if (!req.body.uploadedFileUrls || !req.body.uploadedFileUrls[0]) {
+      const uploaded = (req.body as { uploadedFileUrls?: string[] })
+        ?.uploadedFileUrls;
+      if (!uploaded || !uploaded[0]) {
         throw new Error('File upload failed. Please try again.');
       }
 
       createAssignmentDto.sessionId = sessionId;
-      createAssignmentDto.file = req.body.uploadedFileUrls[0];
+      createAssignmentDto.file = uploaded[0];
       await this.assignmentsService.create(createAssignmentDto);
       flashToast(
         req,
@@ -61,8 +63,9 @@ export class AssignmentsController {
         'The new assignment has been added to this session.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to create assignment';
+    } catch (error: unknown) {
+      const err = error as Error;
+      const errorMessage = err.message || 'Failed to create assignment';
       req.flash('error', errorMessage);
       res.redirect(`/session/${sessionId}`);
     }
@@ -70,7 +73,7 @@ export class AssignmentsController {
 
   @Roles('admin')
   @Get('formCreate/:sessionId')
-  async formCreate(
+  formCreate(
     @Res() res: Response,
     @Req() req: Request,
     @Param('sessionId') sessionId: string,
@@ -96,8 +99,9 @@ export class AssignmentsController {
         'The assignment has been permanently removed.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'unsuccess delete assignment');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'unsuccess delete assignment');
       res.redirect(`/session/${sessionId}`);
     }
   }

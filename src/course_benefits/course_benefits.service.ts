@@ -22,7 +22,7 @@ export class ProgramBenefitService {
     if (!course) {
       throw new NotFoundException('Program not found');
     }
-    const course_benefits = await this.programBenefitRepository.create({
+    const course_benefits = this.programBenefitRepository.create({
       ...createProgramBenefitDto,
       course: course,
     });

@@ -59,7 +59,9 @@ export class PartnerController {
     @Req() req: Request,
   ) {
     try {
-      createPartnerDto.image = req.body.uploadedImageUrls?.[0];
+      createPartnerDto.image =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       await this.PartnerService.create(createPartnerDto);
       flashToast(
         req,
@@ -67,8 +69,12 @@ export class PartnerController {
         'The partnership has been added successfully',
       );
       res.redirect('/partnership');
-    } catch (error: any) {
-      req.flash('error', error.message || 'partner failed to create');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'partner failed to create',
+      );
       res.redirect('/partnership');
     }
   }
@@ -143,7 +149,9 @@ export class PartnerController {
       const partner = await this.PartnerService.findOne(partnerId);
       if (gambar) {
         await this.PartnerService.deleteFile(partner.image);
-        updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
+        updatePartnerDto.image = (
+          req.body as { uploadedImageUrls?: string[] }
+        )?.uploadedImageUrls?.[0];
       }
       await this.PartnerService.update(partnerId, updatePartnerDto);
       flashToast(
@@ -152,8 +160,12 @@ export class PartnerController {
         'The partnership has been updated successfully.',
       );
       res.redirect('/partnership');
-    } catch (error: any) {
-      req.flash('error', error.message || 'partner failed to update');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'partner failed to update',
+      );
       res.redirect('/partnership');
     }
   }
@@ -180,8 +192,12 @@ export class PartnerController {
         'The partner has been permanently removed.',
       );
       res.redirect('/partnership');
-    } catch (error: any) {
-      req.flash('error', error.message || 'partner failed to remove');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'partner failed to remove',
+      );
       res.redirect('/partnership');
     }
   }

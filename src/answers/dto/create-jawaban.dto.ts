@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsString, IsUUID } from 'class-validator';
 
 export class CreateJawabanDto {
   @IsString()

@@ -112,7 +112,7 @@ export class BackgroundController {
         'The educational background has been removed successfully.',
       );
       res.redirect('/background');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'background failed to delete');
       res.redirect('/background');
     }
@@ -120,7 +120,7 @@ export class BackgroundController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/background/create', { user: req.user });
   }
 }

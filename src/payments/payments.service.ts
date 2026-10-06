@@ -20,7 +20,6 @@ import { WeekProgress } from 'src/entities/week_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { VoucherService } from 'src/voucher/voucher.service';
-import { Voucher } from 'src/entities/voucher.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { InvoiceService } from 'src/invoice/invoice.service';
@@ -32,6 +31,16 @@ import { dateHelpers } from 'src/common/helpers';
 // Hasil `createXenditInvoice`. Kalau payment-nya sudah pernah dibuat, service
 // mengembalikan objek ringkas yang menyertakan invoice lama; kalau baru, objek
 // `Payment` yang sama dengan `createInvoiceForPayment`.
+export interface PaymentFormData {
+  user_fullname?: string;
+  user_email?: string;
+  user_no?: string;
+  no?: string;
+  current_status?: string;
+  referal_source?: string | null;
+  attend_program?: boolean | string;
+}
+
 export type XenditOrderResult =
   | { process: 'approved' | 'process'; payment: Payment; invoice: Invoice }
   | Payment;
@@ -118,15 +127,15 @@ export class PaymentsService {
             );
             discountAmount = validationResult.discountAmount;
             finalTotal = validationResult.finalTotal;
-          } catch (err: any) {
+          } catch (err: unknown) {
             console.warn(
               '[PaymentsService] Invalid voucher on manual installment:',
-              err?.message,
+              err instanceof Error ? err.message : String(err),
             );
           }
         }
 
-        const payment = await this.paymentRepository.create({
+        const payment: Payment = this.paymentRepository.create({
           ...createPaymentDto,
           user: user,
           course: course,
@@ -143,7 +152,10 @@ export class PaymentsService {
             finalTotal,
           )
           .catch((err) => {
-            console.error('[PaymentsService] Failed to create manual invoice:', err);
+            console.error(
+              '[PaymentsService] Failed to create manual invoice:',
+              err,
+            );
           });
         return saved;
       }
@@ -172,15 +184,15 @@ export class PaymentsService {
           );
           discountAmount = validationResult.discountAmount;
           finalTotal = validationResult.finalTotal;
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.warn(
             '[PaymentsService] Invalid voucher on manual payment:',
-            err?.message,
+            err instanceof Error ? err.message : String(err),
           );
         }
       }
 
-      const payment = await this.paymentRepository.create({
+      const payment = this.paymentRepository.create({
         ...createPaymentDto,
         user: user,
         course: course,
@@ -196,7 +208,10 @@ export class PaymentsService {
           finalTotal,
         )
         .catch((err) => {
-          console.error('[PaymentsService] Failed to create manual invoice:', err);
+          console.error(
+            '[PaymentsService] Failed to create manual invoice:',
+            err,
+          );
         });
       return saved;
     }
@@ -227,7 +242,7 @@ export class PaymentsService {
       throw new BadRequestException('User already joined the program');
     }
 
-    const userCourses = await this.userCourseRepository.create({
+    const userCourses = this.userCourseRepository.create({
       progress: false,
       user: user,
       course: course,
@@ -399,7 +414,14 @@ export class PaymentsService {
     const [payments, registrations] = await Promise.all([
       this.paymentRepository.find({
         where: { user: { id: userId } },
-        relations: ['user', 'user.biodata', 'course', 'course.category', 'installment', 'invoice'],
+        relations: [
+          'user',
+          'user.biodata',
+          'course',
+          'course.category',
+          'installment',
+          'invoice',
+        ],
       }),
       this.registrationRepository.find({
         where: { user: { id: userId } },
@@ -426,7 +448,7 @@ export class PaymentsService {
       ...payments.map((payment) => {
         const isInstallment = !!payment.installment;
         const installmentDetail = isInstallment
-          ? installmentDetailMap.get(payment.id) ?? null
+          ? (installmentDetailMap.get(payment.id) ?? null)
           : null;
 
         const hasPromo =
@@ -434,28 +456,37 @@ export class PaymentsService {
           payment.course?.promo !== undefined &&
           Number(payment.course.promo) > 0;
         const promoPrice = hasPromo ? Number(payment.course.promo) : null;
-        const normalPrice = payment.course?.price ? Number(payment.course.price) : null;
+        const normalPrice = payment.course?.price
+          ? Number(payment.course.price)
+          : null;
         const fallbackPrice = promoPrice ?? normalPrice;
 
         const price =
-          payment.invoice?.price !== null && payment.invoice?.price !== undefined
+          payment.invoice?.price !== null &&
+          payment.invoice?.price !== undefined
             ? Number(payment.invoice.price)
             : normalPrice;
         const promo =
-          payment.invoice?.promo !== null && payment.invoice?.promo !== undefined
+          payment.invoice?.promo !== null &&
+          payment.invoice?.promo !== undefined
             ? Number(payment.invoice.promo)
             : promoPrice;
         const promoCode =
-          payment.invoice?.promo_code !== null && payment.invoice?.promo_code !== undefined
+          payment.invoice?.promo_code !== null &&
+          payment.invoice?.promo_code !== undefined
             ? Number(payment.invoice.promo_code)
-            : (payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0);
+            : payment.invoice?.discount_amount
+              ? Number(payment.invoice.discount_amount)
+              : 0;
         // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
         const total =
-          payment.invoice?.subtotal !== null && payment.invoice?.subtotal !== undefined
+          payment.invoice?.subtotal !== null &&
+          payment.invoice?.subtotal !== undefined
             ? Number(payment.invoice.subtotal)
-            : (payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
-                ? Number(payment.invoice.final_total)
-                : (fallbackPrice ?? 0));
+            : payment.invoice?.final_total !== null &&
+                payment.invoice?.final_total !== undefined
+              ? Number(payment.invoice.final_total)
+              : (fallbackPrice ?? 0);
 
         return {
           id: payment.id,
@@ -480,10 +511,25 @@ export class PaymentsService {
           proof: payment.file ?? null,
           no: payment.invoice?.invoice_number || payment.no || null,
           paymentLink: payment.invoice?.xendit_invoice_url ?? null,
-          keyword: payment.referalSource || (isInstallment ? 'Installment Plan' : 'Online Course'),
-          userName: payment.invoice?.user_fullname || payment.user_fullname || payment.user?.biodata?.fullName || payment.user?.username || null,
-          userEmail: payment.invoice?.user_email || payment.user_email || payment.user?.email || null,
-          userPhone: payment.invoice?.user_phone || payment.user_no || payment.user?.biodata?.no || null,
+          keyword:
+            payment.referalSource ||
+            (isInstallment ? 'Installment Plan' : 'Online Course'),
+          userName:
+            payment.invoice?.user_fullname ||
+            payment.user_fullname ||
+            payment.user?.biodata?.fullName ||
+            payment.user?.username ||
+            null,
+          userEmail:
+            payment.invoice?.user_email ||
+            payment.user_email ||
+            payment.user?.email ||
+            null,
+          userPhone:
+            payment.invoice?.user_phone ||
+            payment.user_no ||
+            payment.user?.biodata?.no ||
+            null,
           installmentDetail,
           ...statusOf(payment.process),
         };
@@ -494,7 +540,9 @@ export class PaymentsService {
           registration.course?.promo !== undefined &&
           Number(registration.course.promo) > 0;
         const promoPrice = hasPromo ? Number(registration.course.promo) : null;
-        const normalPrice = registration.course?.price ? Number(registration.course.price) : null;
+        const normalPrice = registration.course?.price
+          ? Number(registration.course.price)
+          : null;
         const subtotal = promoPrice ?? normalPrice;
         return {
           id: registration.id,
@@ -516,9 +564,15 @@ export class PaymentsService {
           no: null,
           paymentLink: null,
           keyword: registration.referal_source || 'Registration',
-          userName: registration.user_fullname || registration.user?.biodata?.fullName || registration.user?.username || null,
-          userEmail: registration.user_email || registration.user?.email || null,
-          userPhone: registration.user_no || registration.user?.biodata?.no || null,
+          userName:
+            registration.user_fullname ||
+            registration.user?.biodata?.fullName ||
+            registration.user?.username ||
+            null,
+          userEmail:
+            registration.user_email || registration.user?.email || null,
+          userPhone:
+            registration.user_no || registration.user?.biodata?.no || null,
           installmentDetail: null,
           ...statusOf(registration.process),
         };
@@ -778,7 +832,9 @@ export class PaymentsService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async createXenditInvoice(
@@ -786,7 +842,7 @@ export class PaymentsService {
     courseId: string,
     paymentMethod: string,
     promoCode?: string,
-    formData?: any,
+    formData?: PaymentFormData,
   ): Promise<XenditOrderResult> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
@@ -842,7 +898,6 @@ export class PaymentsService {
 
     let discountAmount = 0;
     let finalTotal = basePrice;
-    let appliedVoucherCode: string | undefined = undefined;
 
     if (promoCode) {
       const validationResult = await this.voucherService.validateVoucher(
@@ -853,7 +908,6 @@ export class PaymentsService {
       );
       discountAmount = validationResult.discountAmount;
       finalTotal = validationResult.finalTotal;
-      appliedVoucherCode = promoCode;
     }
 
     const payment = this.paymentRepository.create({
@@ -863,11 +917,13 @@ export class PaymentsService {
       process: finalTotal <= 0 ? 'approved' : 'process',
       no: `INV-${Date.now()}`,
       // Simpan data dari form
-      user_fullname: formData?.user_fullname || null,
-      user_email: formData?.user_email || null,
-      user_no: formData?.user_no || formData?.no || null,
-      current_status: formData?.current_status || null,
-      referalSource: formData?.referal_source || null,
+      user_fullname: formData?.user_fullname || undefined,
+      user_email: formData?.user_email || undefined,
+      user_no: formData?.user_no || formData?.no || undefined,
+      current_status:
+        (formData?.current_status as import('../entities/payment.entity').currentStatus) ||
+        undefined,
+      referalSource: formData?.referal_source || undefined,
       attend_program: formData?.attend_program ? true : false,
     });
 
@@ -970,7 +1026,9 @@ export class PaymentsService {
       // untuk tiga keputusan: sudah lunas (tandai lunas), masih aktif (jangan
       // buat invoice kedua), atau sudah mati (biarkan di-regenerate di bawah).
       const xenditStatus = row.xendit_invoice_id
-        ? await this.invoiceService.getXenditInvoiceStatus(row.xendit_invoice_id)
+        ? await this.invoiceService.getXenditInvoiceStatus(
+            row.xendit_invoice_id,
+          )
         : null;
 
       // Cegah double-charge: jika invoice lama ternyata sudah dibayar di Xendit

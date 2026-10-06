@@ -7,16 +7,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - `user_assignment`: berelasi 1:N dengan final_assignment dan N:1 dengan user.
  * - Kolom updatedAt dan createdAt disertakan di kedua tabel.
  */
-export class CreateFinalAssignmentTables1790100000000
-  implements MigrationInterface
-{
+export class CreateFinalAssignmentTables1790100000000 implements MigrationInterface {
   name = 'CreateFinalAssignmentTables1790100000000';
 
   public async up(q: QueryRunner): Promise<void> {
     // ── 1. Enum user_assignment_status_enum ─────────────────────────────
-    const [statusType] = await q.query(
+    const [statusType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'user_assignment_status_enum'`,
-    );
+    )) as unknown[];
     if (!statusType) {
       await q.query(`
         CREATE TYPE "user_assignment_status_enum" AS ENUM ('approved', 'process', 'rejected')
@@ -24,9 +22,9 @@ export class CreateFinalAssignmentTables1790100000000
     }
 
     // ── 2. Tabel final_assignment ───────────────────────────────────────
-    const [finalAssignmentTable] = await q.query(
+    const [finalAssignmentTable] = (await q.query(
       `SELECT to_regclass('public.final_assignment') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!finalAssignmentTable?.has_table) {
       await q.query(`
         CREATE TABLE "final_assignment" (
@@ -51,9 +49,9 @@ export class CreateFinalAssignmentTables1790100000000
     }
 
     // ── 3. Tabel user_assignment ────────────────────────────────────────
-    const [userAssignmentTable] = await q.query(
+    const [userAssignmentTable] = (await q.query(
       `SELECT to_regclass('public.user_assignment') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!userAssignmentTable?.has_table) {
       await q.query(`
         CREATE TABLE "user_assignment" (
@@ -87,26 +85,25 @@ export class CreateFinalAssignmentTables1790100000000
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [userAssignmentTable] = await q.query(
+    const [userAssignmentTable] = (await q.query(
       `SELECT to_regclass('public.user_assignment') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (userAssignmentTable?.has_table) {
       await q.query(`DROP TABLE "user_assignment"`);
     }
 
-    const [finalAssignmentTable] = await q.query(
+    const [finalAssignmentTable] = (await q.query(
       `SELECT to_regclass('public.final_assignment') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (finalAssignmentTable?.has_table) {
       await q.query(`DROP TABLE "final_assignment"`);
     }
 
-    const [statusType] = await q.query(
+    const [statusType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'user_assignment_status_enum'`,
-    );
+    )) as unknown[];
     if (statusType) {
       await q.query(`DROP TYPE "user_assignment_status_enum"`);
     }
   }
 }
-

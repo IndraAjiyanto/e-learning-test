@@ -31,8 +31,9 @@ export class FaqController {
       await this.faqService.create(createFaqDto);
       flashToast(req, 'FAQ Created', 'The FAQ has been added successfully');
       res.redirect('/faq');
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ failed to created');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'FAQ failed to created');
       res.redirect('/faq');
     }
   }
@@ -49,7 +50,7 @@ export class FaqController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Req() req: Request, @Res() res: Response) {
+  formCreate(@Req() req: Request, @Res() res: Response) {
     res.render('super_admin/faq/create', {
       user: req.user,
     });
@@ -85,8 +86,9 @@ export class FaqController {
         'The FAQ has been updated successfully.',
       );
       res.redirect('/faq');
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'FAQ failed to update');
       res.redirect('/faq');
     }
   }
@@ -102,8 +104,9 @@ export class FaqController {
       await this.faqService.remove(faqId);
       flashToast(req, 'FAQ Deleted', 'The FAQ has been removed successfully.');
       res.redirect('/faq');
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'FAQ failed to delete');
       res.redirect('/faq');
     }
   }

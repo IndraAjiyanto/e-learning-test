@@ -31,16 +31,16 @@ export class PaymentSettingsService {
         );
       }
       return settings;
-    } catch (err: any) {
+    } catch (err: unknown) {
       // ponytail: in-memory fallback saat tabel belum ada (code 42P01) agar endpoint publik tidak crash 500
-      if (err?.code === '42P01') {
+      if ((err as { code?: string })?.code === '42P01') {
         return {
           id: 'fallback-default',
           manual_enabled: true,
           gateway_enabled: false,
           createdAt: new Date(),
           updatedAt: new Date(),
-        } as PaymentSettings;
+        };
       }
       throw err;
     }

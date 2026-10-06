@@ -60,7 +60,9 @@ export class LogbookController {
         return res.redirect('/users/profile');
       }
 
-      createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
+      createLogbookDto.documentation =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
         createLogbookDto.userId = req.user.id;
         createLogbookDto.process = 'process';
@@ -88,14 +90,12 @@ export class LogbookController {
         // );
         res.redirect(`/program/${session.weeks.course.id}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const session = await this.logbookService.findSession(sessionId);
-      const errorMessage = error.message || 'Failed to add log book';
-      flashToastError(
-        req,
-        'Logbook not saved',
-        errorMessage,
-      );
+      const errorMessage =
+        (error instanceof Error ? error.message : null) ||
+        'Failed to add log book';
+      flashToastError(req, 'Logbook not saved', errorMessage);
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
@@ -223,7 +223,8 @@ export class LogbookController {
           await this.logbookService.deleteFile(logbooks.documentation);
         }
         updateLogbookDto.documentation =
-          req.body.uploadedImageUrls?.[0] || documentation.path;
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || documentation.path;
       }
       updateLogbookDto.process = 'process';
       await this.logbookService.update(logbookId, updateLogbookDto);
@@ -235,15 +236,20 @@ export class LogbookController {
           `/program/myProgram/${req.user.id}?courseId=${logbooks.session.weeks.course.id}`,
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log('====== ERROR UPDATE LOGBOOK ======');
-      console.error(error.response || error.message || error);
+      console.error(
+        (error as { response?: unknown })?.response ||
+          (error instanceof Error ? error.message : null) ||
+          error,
+      );
 
       const logbooks = await this.logbookService.findOne(logbookId);
       flashToastError(
         req,
         'Logbook not saved',
-        error.message || 'Please try again in a moment.',
+        (error instanceof Error ? error.message : null) ||
+          'Please try again in a moment.',
       );
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
@@ -270,9 +276,13 @@ export class LogbookController {
       await this.logbookService.update(logbookId, updateLogbookDto);
       flashToast(req, 'Status Updated', 'The logbook status has been updated.');
       res.redirect(`/session/${logbooks.session.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const logbooks = await this.logbookService.findOne(logbookId);
-      req.flash('error', error.message || 'logbooks failed to update proses');
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'logbooks failed to update proses',
+      );
       res.redirect(`/session/${logbooks.session.id}`);
     }
   }
@@ -297,8 +307,12 @@ export class LogbookController {
         'The logbook has been permanently removed.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'logbooks failed to delete');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'logbooks failed to delete',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }

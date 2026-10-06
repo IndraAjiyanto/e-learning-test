@@ -116,10 +116,7 @@ export const createMemoryConfig = (
       if (isValidMimeType && isValidExtension) {
         callback(null, true);
       } else {
-        callback(
-          new Error(errorMessage || 'Invalid file format') as any,
-          false,
-        );
+        callback(new Error(errorMessage || 'Invalid file format'));
       }
     },
     limits: {
@@ -208,10 +205,7 @@ export const createLocalConfig = (
       if (isValidMimeType && isValidExtension) {
         callback(null, true);
       } else {
-        callback(
-          new Error(errorMessage || 'Invalid file format') as any,
-          false,
-        );
+        callback(new Error(errorMessage || 'Invalid file format'));
       }
     },
     limits: {
@@ -225,7 +219,7 @@ interface CreateCloudinaryConfigOptions {
   fileTypes: (keyof typeof FILE_TYPES)[];
   maxSize?: number;
   resourceType?: 'image' | 'video' | 'raw' | 'auto';
-  transformation?: any[];
+  transformation?: Record<string, unknown>[];
   customErrorMessage?: string;
 }
 
@@ -238,7 +232,6 @@ export const createCloudinaryConfig = (
     maxSize = 5,
     resourceType = 'auto',
     transformation = [],
-    customErrorMessage,
   } = options;
 
   const allowedFormats: string[] = [];
@@ -257,9 +250,9 @@ export const createCloudinaryConfig = (
         resource_type: resourceType,
         allowed_formats: allowedFormats,
         transformation,
-        public_id: (req, file) =>
+        public_id: (_req: unknown, file: { fieldname: string }) =>
           `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
-      } as any,
+      } as unknown as Record<string, unknown>,
     }),
     limits: {
       fileSize: maxSize * 1024 * 1024,

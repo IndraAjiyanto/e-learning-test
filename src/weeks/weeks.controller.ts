@@ -43,19 +43,16 @@ export class WeeksController {
         'The new week has been added to the program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
   @Roles('admin')
   @Get('formAdd/:id')
-  async formAdd(
-    @Res() res: Response,
-    @Req() req: Request,
-    @Param('id') id: string,
-  ) {
+  formAdd(@Res() res: Response, @Req() req: Request, @Param('id') id: string) {
     res.render('admin/weeks/create', { user: req.user, id });
   }
 
@@ -150,8 +147,9 @@ export class WeeksController {
         'The week information has been updated.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'week failed updated');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'week failed updated');
       res.redirect(`/week/${weeksId}`);
     }
   }
@@ -168,8 +166,9 @@ export class WeeksController {
       await this.weeksService.remove(id, courseId);
       flashToast(req, 'Week Deleted', 'The week has been permanently removed.');
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'week failed deleted');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'week failed deleted');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

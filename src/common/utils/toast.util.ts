@@ -99,4 +99,3 @@ export function readFlashToastWarning(req: Request): ToastPayload | null {
     return null;
   }
 }
-

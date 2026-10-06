@@ -18,33 +18,33 @@ export const stringHelpers = {
     const escaped = Handlebars.escapeExpression(text);
     return new Handlebars.SafeString(escaped.replace(/\n/g, '<br>'));
   },
-  isArray: (value: any) => Array.isArray(value),
-  array: function (...args: any[]) {
+  isArray: (value: unknown) => Array.isArray(value),
+  array: function (...args: unknown[]) {
     return args.slice(0, -1);
   },
-  lookup: (str: any[], index: number) => (str ? str[index] : ''),
-  json: (context: any) => JSON.stringify(context),
+  lookup: (str: unknown[], index: number) => (str ? str[index] : ''),
+  json: (context: unknown) => JSON.stringify(context),
   // Untuk data island: <script type="application/json">{{{jsonSafe x}}}</script>.
   //
   // `json` polosnya bisa berisi urutan `</script>`, dan browser memotong blok
   // script di situ -sisanya jadi markup halaman, bukan JSON. Menyelipkan
   // garis miring di depan '/' menutup lubang itu tanpa mengubah nilai
   // JSON.parse-nya (JSON memperlakukan `\/` sama dengan `/`).
-  jsonSafe: (context: any) =>
+  jsonSafe: (context: unknown) =>
     String(JSON.stringify(context) ?? 'null').replace(/<\//g, '<\\/'),
   isJSON: (str: string) => {
     if (!str || typeof str !== 'string') return false;
     try {
       JSON.parse(str);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   },
   jsonToText: (jsonStr: string) => {
     if (!jsonStr || typeof jsonStr !== 'string') return '';
     try {
-      const data = JSON.parse(jsonStr);
+      const data = JSON.parse(jsonStr) as { html?: string; text?: string };
       if (data.html) {
         return data.html
           .replace(/<[^>]*>/g, '')
@@ -57,16 +57,16 @@ export const stringHelpers = {
         return data.text;
       }
       return '';
-    } catch (e) {
+    } catch {
       return jsonStr;
     }
   },
-  default: (value: any, defaultValue: any) => value || defaultValue,
-  getByLang: (obj: any, lang: string) => {
+  default: (value: unknown, defaultValue: unknown) => value || defaultValue,
+  getByLang: (obj: unknown, lang: string) => {
     if (!obj) return '';
     if (typeof obj === 'string') {
       try {
-        const parsed = JSON.parse(obj);
+        const parsed = JSON.parse(obj) as Record<string, string>;
         if (parsed && typeof parsed === 'object') {
           return parsed[lang] || parsed['id'] || parsed['en'] || '';
         }
@@ -75,8 +75,9 @@ export const stringHelpers = {
       }
       return obj;
     }
-    if (typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || obj['en'] || '';
+    if (typeof obj !== 'object' || obj === null) return '';
+    const rec = obj as Record<string, string>;
+    return rec[lang] || rec['id'] || rec['en'] || '';
   },
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
@@ -97,7 +98,7 @@ export const stringHelpers = {
     text: string,
     count: number,
     color: string,
-    cjkCount?: any,
+    cjkCount?: unknown,
   ): Handlebars.SafeString => {
     const raw = (text || '').toString().trim();
     if (!raw) return new Handlebars.SafeString('');
@@ -131,7 +132,7 @@ export const stringHelpers = {
         : wrap(tail.join(' ')),
     );
   },
-  concat: function (...args: any[]) {
+  concat: function (...args: unknown[]) {
     // Remove the Handlebars options object from the end
     const strings = args.slice(0, -1);
     return strings.join('');
@@ -144,11 +145,9 @@ export const stringHelpers = {
     typeof str === 'string' &&
     typeof sub === 'string' &&
     str.toLowerCase().includes(sub.toLowerCase()),
-  lower: (str: unknown) =>
-    typeof str === 'string' ? str.toLowerCase() : '',
+  lower: (str: unknown) => (typeof str === 'string' ? str.toLowerCase() : ''),
   capitalize: (str: unknown) => {
     if (typeof str !== 'string' || !str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 };
-

@@ -42,7 +42,7 @@ export class QuizService {
     if (!weeks) {
       throw new Error('Weeks not found');
     }
-    const quiz = await this.quizRepository.create({
+    const quiz = this.quizRepository.create({
       ...createQuizDto,
       weeks: weeks,
     });

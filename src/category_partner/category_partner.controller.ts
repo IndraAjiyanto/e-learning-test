@@ -38,7 +38,7 @@ export class CategoryPartnerController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Req() req: Request, @Res() res: Response) {
+  formCreate(@Req() req: Request, @Res() res: Response) {
     res.render('super_admin/category_partner/create', {
       user: req.user,
     });
@@ -61,8 +61,9 @@ export class CategoryPartnerController {
       );
 
       return res.redirect('/category-partner');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Category partner failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Category partner failed to create');
 
       return res.redirect('/category-partner');
     }
@@ -101,8 +102,9 @@ export class CategoryPartnerController {
       );
 
       return res.redirect('/category-partner');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Category partner failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Category partner failed to update');
 
       return res.redirect('/category-partner');
     }
@@ -139,9 +141,9 @@ export class CategoryPartnerController {
       );
 
       return res.redirect('/category-partner');
-    } catch (error: any) {
-      const errorMessage =
-        error.message || 'Category partner failed to remove';
+    } catch (error: unknown) {
+      const err = error as Error;
+      const errorMessage = err.message || 'Category partner failed to remove';
       flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
       req.flash('error', errorMessage);
 

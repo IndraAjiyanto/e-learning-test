@@ -31,7 +31,9 @@ export class UserAnswersController {
   async choseAnswer(@Body() userAnswerDto: UserAnswerDto) {
     try {
       await this.userAnswersService.createAnswer(userAnswerDto);
-    } catch (error: any) {}
+    } catch {
+      // ignore
+    }
   }
 
   @Roles('user')
@@ -40,8 +42,9 @@ export class UserAnswersController {
     @Param('quizId') quizId: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() createUserAnswerDto: CreateUserAnswerDto,
+    @Body() _createUserAnswerDto: CreateUserAnswerDto,
   ) {
+    void _createUserAnswerDto;
     try {
       const userAnswer = await this.userAnswersService.searchAnswerUser(
         quizId,
@@ -58,15 +61,18 @@ export class UserAnswersController {
         'Your answers have been submitted successfully.',
       );
       res.redirect(`/quiz/form/${quizId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       // Pastikan quizStart direset agar sesi berikutnya tidak langsung time's up
       try {
         await this.userAnswersService.resetQuizState(req.user!.id);
-      } catch (_) {}
+      } catch {
+        // ignore
+      }
       flashToastError(
         req,
         'Quiz not submitted',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       res.redirect(`/quiz/form/${quizId}`);
     }

@@ -34,7 +34,7 @@ export class MentorLogbookService {
     if (!session) {
       throw new Error('Session not found');
     }
-    const logbooks = await this.mentorLogbookRepository.create({
+    const logbooks = this.mentorLogbookRepository.create({
       ...createMentorLogbookDto,
       user: user,
       session: session,
@@ -72,7 +72,9 @@ export class MentorLogbookService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async update(

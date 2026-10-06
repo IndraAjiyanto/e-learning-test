@@ -16,9 +16,9 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
 
   public async up(q: QueryRunner): Promise<void> {
     // ── 1. Tabel syllabus ──────────────────────────────────────────────
-    const [syllabusTable] = await q.query(
+    const [syllabusTable] = (await q.query(
       `SELECT to_regclass('public.syllabus') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!syllabusTable?.has_table) {
       await q.query(`
         CREATE TABLE "syllabus" (
@@ -45,9 +45,9 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
     }
 
     // ── 2. Tabel syllabus_progresses ───────────────────────────────────
-    const [progressTable] = await q.query(
+    const [progressTable] = (await q.query(
       `SELECT to_regclass('public.syllabus_progresses') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!progressTable?.has_table) {
       await q.query(`
         CREATE TABLE "syllabus_progresses" (
@@ -80,18 +80,16 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
     }
 
     // ── 3. Kolom syllabusId di quiz ────────────────────────────────────
-    const [quizTable] = await q.query(
+    const [quizTable] = (await q.query(
       `SELECT to_regclass('public.quiz') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (quizTable?.has_table) {
-      const [syllabusCol] = await q.query(
+      const [syllabusCol] = (await q.query(
         `SELECT 1 FROM information_schema.columns
          WHERE table_name = 'quiz' AND column_name = 'syllabusId'`,
-      );
+      )) as unknown[];
       if (!syllabusCol) {
-        await q.query(
-          `ALTER TABLE "quiz" ADD "syllabusId" uuid`,
-        );
+        await q.query(`ALTER TABLE "quiz" ADD "syllabusId" uuid`);
         await q.query(`
           ALTER TABLE "quiz"
             ADD CONSTRAINT "FK_quiz_syllabus"
@@ -104,17 +102,17 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
 
   public async down(q: QueryRunner): Promise<void> {
     // ── 3. Hapus kolom syllabusId dari quiz ─────────────────────────────
-    const [quizTable] = await q.query(
+    const [quizTable] = (await q.query(
       `SELECT to_regclass('public.quiz') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (quizTable?.has_table) {
-      const [syllabusCol] = await q.query(
+      const [syllabusCol] = (await q.query(
         `SELECT 1 FROM information_schema.columns
          WHERE table_name = 'quiz' AND column_name = 'syllabusId'`,
-      );
+      )) as unknown[];
       if (syllabusCol) {
         // Cari FK berdasarkan kolom, bukan nama constraint
-        const rows = await q.query(
+        const rows = (await q.query(
           `SELECT con.conname
              FROM pg_constraint con
              JOIN pg_class cl ON cl.oid = con.conrelid
@@ -123,7 +121,7 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
             WHERE cl.relname = 'quiz'
               AND con.contype = 'f'
               AND a.attname = 'syllabusId'`,
-        );
+        )) as { conname: string }[];
         for (const row of rows) {
           await q.query(`ALTER TABLE "quiz" DROP CONSTRAINT "${row.conname}"`);
         }
@@ -132,20 +130,19 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
     }
 
     // ── 2. Drop syllabus_progresses ─────────────────────────────────────
-    const [progressTable] = await q.query(
+    const [progressTable] = (await q.query(
       `SELECT to_regclass('public.syllabus_progresses') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (progressTable?.has_table) {
       await q.query(`DROP TABLE "syllabus_progresses"`);
     }
 
     // ── 1. Drop syllabus ────────────────────────────────────────────────
-    const [syllabusTable] = await q.query(
+    const [syllabusTable] = (await q.query(
       `SELECT to_regclass('public.syllabus') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (syllabusTable?.has_table) {
       await q.query(`DROP TABLE "syllabus"`);
     }
   }
 }
-

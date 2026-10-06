@@ -89,7 +89,7 @@ export class PortfoliosService {
       );
     }
 
-    const portfolio = await this.portfolioRepository.create({
+    const portfolio = this.portfolioRepository.create({
       ...createPortfolioDto,
       user: user,
       course: course,
@@ -299,7 +299,7 @@ export class PortfoliosService {
     const isNonBootcamp = course?.programType === 'non_bootcamp';
 
     // Cek record enrollment user_courses
-    let userCourse = await this.userCourseRepository.findOne({
+    const userCourse = await this.userCourseRepository.findOne({
       where: {
         user: { id: userId },
         course: { id: courseId },
@@ -312,30 +312,41 @@ export class PortfoliosService {
 
     // Untuk program berbasis silabus, verifikasi secara dinamis jika progress belum true
     if (isNonBootcamp && !userCourse.progress) {
-      const syllabuses = await this.courseRepository.manager
+      interface QuizRef {
+        id: string;
+        minScore?: number;
+      }
+      interface SyllabusRef {
+        quiz?: QuizRef[];
+      }
+      interface ScoreRef {
+        score: number | string;
+        quiz?: { id: string };
+      }
+      const syllabuses = (await this.courseRepository.manager
         .getRepository('Syllabus')
         .find({
           where: { course: { id: courseId } },
           order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
           relations: ['quiz'],
-        }) as any[];
+        })) as unknown as SyllabusRef[];
 
       if (syllabuses.length > 0) {
-        const quizIds = syllabuses
+        const quizIds: string[] = syllabuses
           .flatMap((s) => s.quiz || [])
           .map((q) => q.id)
           .filter(Boolean);
 
-        let userScores: any[] = [];
+        let userScores: ScoreRef[] = [];
         if (quizIds.length > 0) {
-          userScores = await this.courseRepository.manager
+          userScores = (await this.courseRepository.manager
             .getRepository('Score')
             .createQueryBuilder('score')
             .innerJoinAndSelect('score.quiz', 'quiz')
             .innerJoin('score.user', 'user')
             .where('quiz.id IN (:...quizIds)', { quizIds })
             .andWhere('user.id = :userId', { userId })
-            .getMany();
+            .getMany()) as unknown as ScoreRef[];
         }
 
         // Cek apakah setiap silabus sudah lulus kuisnya (jika ada kuis)
@@ -343,9 +354,13 @@ export class PortfoliosService {
           const quiz = s.quiz?.[0] || null;
           if (!quiz) return true; // Tidak ada kuis dianggap selesai
           const minScore = quiz.minScore ?? 80;
-          const matchingScores = userScores.filter((sc) => sc.quiz?.id === quiz.id);
+          const matchingScores = userScores.filter(
+            (sc) => sc.quiz?.id === quiz.id,
+          );
           if (matchingScores.length === 0) return false;
-          const bestScore = Math.max(...matchingScores.map((sc) => Number(sc.score)));
+          const bestScore = Math.max(
+            ...matchingScores.map((sc) => Number(sc.score)),
+          );
           return bestScore >= minScore;
         });
 
@@ -509,13 +524,18 @@ export class PortfoliosService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await ps.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   // Mengembalikan isi EditorJS dalam bentuk yang selalu bisa diproses di
   // bawah ini: objek dengan array `blocks`. Teks polos (atau apa pun yang
   // bukan JSON) diperlakukan sebagai satu blok paragraph.
-  private parseEditorJsContent(isi: string): { blocks: any[]; [key: string]: any } {
+  private parseEditorJsContent(isi: string): {
+    blocks: any[];
+    [key: string]: any;
+  } {
     const text = typeof isi === 'string' ? isi : '';
 
     try {
@@ -538,12 +558,12 @@ export class PortfoliosService {
     };
   }
 
-  async ChangeImageEditorJS(
+  ChangeImageEditorJS(
     isi: string,
     oldFolder: string,
     newFolder: string,
     deleteFileInFolder?: string,
-  ): Promise<string> {
+  ): string {
     // EditorJS memang mengirim JSON, tapi ada dua jalan yang bisa mengirim
     // teks polos: textarea cadangan yang muncul saat EditorJS gagal dimuat,
     // dan baris lama yang isinya bukan JSON EditorJS. `JSON.parse` tanpa
@@ -561,11 +581,19 @@ export class PortfoliosService {
     // hanya file sumber, bukan folder tujuan.
     fs.mkdirSync(finalDir, { recursive: true });
 
-    editorjsData.blocks.forEach((block: any) => {
+    interface EditorJsImageBlock {
+      type: string;
+      data?: {
+        file?: {
+          url?: string;
+        };
+      };
+    }
+    (editorjsData.blocks as EditorJsImageBlock[]).forEach((block) => {
       if (block.type === 'image' && block.data?.file?.url) {
         const oldUrl = block.data.file.url;
 
-        const fileName = oldUrl.split('/').pop();
+        const fileName = oldUrl.split('/').pop() || '';
 
         const oldPath = path.join(tempDir, fileName);
         const newPath = path.join(finalDir, fileName);
@@ -576,8 +604,8 @@ export class PortfoliosService {
           // sama dan tidak menggagalkan penyimpanan portfolio.
           try {
             fs.renameSync(oldPath, newPath);
-          } catch (err: any) {
-            if (err.code !== 'EXDEV') throw err;
+          } catch (err: unknown) {
+            if ((err as { code?: string })?.code !== 'EXDEV') throw err;
             fs.copyFileSync(oldPath, newPath);
             fs.unlinkSync(oldPath);
           }
@@ -622,7 +650,9 @@ export class PortfoliosService {
         try {
           const fullPath = path.join(publicDir, dbPath);
           await ps.unlink(fullPath);
-        } catch (err) {}
+        } catch {
+          // ignore
+        }
       }),
     );
 

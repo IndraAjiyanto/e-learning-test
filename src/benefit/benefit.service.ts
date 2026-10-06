@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +27,7 @@ export class BenefitService {
         'Maksimal 5 benefit telah tercapai. Hapus atau edit benefit yang ada terlebih dahulu.',
       );
     }
-    const benefit = await this.benefitRepository.create(createBenefitDto);
+    const benefit = this.benefitRepository.create(createBenefitDto);
     return await this.benefitRepository.save(benefit);
   }
 

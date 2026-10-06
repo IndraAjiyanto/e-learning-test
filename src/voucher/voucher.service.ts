@@ -8,22 +8,23 @@ import { User } from 'src/entities/user.entity';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 
-function parseBool(val: any): boolean {
-  if (Array.isArray(val)) val = val[val.length - 1];
-  if (typeof val === 'string') return val === 'true';
-  return !!val;
+function parseBool(val: unknown): boolean {
+  let v = val;
+  if (Array.isArray(v)) v = v[v.length - 1];
+  if (typeof v === 'string') return v === 'true';
+  return !!v;
 }
 
-function parseFloat(val: any): number | null {
+function parseFloat(val: unknown): number | null {
   if (val === null || val === undefined || val === '') return null;
   const n = Number(val);
   return isNaN(n) ? null : n;
 }
 
-function parseIds(val: any): string[] {
+function parseIds(val: unknown): string[] {
   if (val === undefined || val === null) return [];
-  if (!Array.isArray(val)) val = [val];
-  return val.map(String).filter((s: string) => s.length > 0);
+  const arr = Array.isArray(val) ? val : [val];
+  return arr.map((item) => String(item)).filter((s: string) => s.length > 0);
 }
 
 @Injectable()

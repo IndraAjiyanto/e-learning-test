@@ -31,13 +31,17 @@ export const i18nHelpers = {
         if (typeof value === 'string' && value === key) {
           if (!missingKeys.has(key)) {
             missingKeys.add(key);
-            console.warn(`[i18n] terjemahan tidak ditemukan untuk kunci: ${key}`);
+            console.warn(
+              `[i18n] terjemahan tidak ditemukan untuk kunci: ${key}`,
+            );
           }
           return '';
         }
         return value;
       }
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
     return '';
   },
 };

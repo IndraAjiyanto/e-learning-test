@@ -1,10 +1,19 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class CreateQuizDto {
   @IsString()
   @IsNotEmpty({ message: 'Quiz name is required' })
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   quizName: string;
 
   @Type(() => Number)

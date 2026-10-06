@@ -49,7 +49,7 @@ export class PaymentsController {
   async paymentSuccess(
     @Param('orderId') orderId: string,
     @Res() res: Response,
-    @Req() req: Request & { user?: any },
+    @Req() req: Request,
   ) {
     try {
       // Pembayaran cicilan bulanan (table installment_payments)
@@ -112,7 +112,7 @@ export class PaymentsController {
         // (dipakai kolom enum), hanya `labelKey` yang ikut ke template.
         referalSourceI18nOptions: getReferalSourceI18nOptions(),
       });
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'Terjadi kesalahan.');
       res.redirect('/');
     }
@@ -123,7 +123,7 @@ export class PaymentsController {
   async paymentFailed(
     @Param('orderId') orderId: string,
     @Res() res: Response,
-    @Req() req: Request & { user?: any },
+    @Req() req: Request,
   ) {
     try {
       const order = await this.paymentsService.getPaymentByNo(orderId);
@@ -135,7 +135,7 @@ export class PaymentsController {
         success: req.flash('success'),
         error: req.flash('error'),
       });
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'Terjadi kesalahan.');
       res.redirect('/');
     }
@@ -148,12 +148,15 @@ export class PaymentsController {
   async create(
     @Param('userId') userId: string,
     @Param('courseId') courseId: string,
-    @Body() body: any,
+    @Body() body: Record<string, any>,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const paymentMethod = body.paymentMethod || 'XENDIT_UI';
+      const paymentMethod =
+        typeof body.paymentMethod === 'string'
+          ? body.paymentMethod
+          : 'XENDIT_UI';
       const orderData = await this.paymentsService.createXenditInvoice(
         userId,
         String(courseId),
@@ -185,8 +188,10 @@ export class PaymentsController {
       }
 
       return res.redirect(invoiceUrl);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Payment initiation failed');
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : 'Payment initiation failed';
+      req.flash('error', msg);
       return res.redirect(`/payment/detail/${courseId}`);
     }
   }
@@ -214,7 +219,7 @@ export class PaymentsController {
   async createManualFullPayment(
     @Param('userId') userId: string,
     @Param('courseId') courseId: string,
-    @Body() body: any,
+    @Body() body: Record<string, any>,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -234,7 +239,9 @@ export class PaymentsController {
       }
 
       const dto = new CreatePaymentDto();
-      dto.file = req.body.uploadedImageUrls?.[0];
+      const uploadedUrls = (req.body as { uploadedImageUrls?: string[] })
+        .uploadedImageUrls;
+      dto.file = uploadedUrls?.[0] ?? '';
       uploadedFile = dto.file;
       dto.courseId = courseId;
       dto.userId = userId;
@@ -244,13 +251,22 @@ export class PaymentsController {
       // dikenal disimpan sebagai 'Other' - kolom nullable, tapi di form
       // pembayaran field ini wajib diisi, jadi null akan membingungkan saat
       // ditinjau admin.
-      dto.referalSource = isReferalSource(body.source) ? body.source : 'Other';
-      (dto as any).user_fullname = body.fullName;
-      (dto as any).user_email = body.email;
-      (dto as any).user_no = body.whatsappNumber;
+      const bodyRecord = body as Record<string, unknown>;
+      const formSource =
+        typeof bodyRecord.source === 'string' ? bodyRecord.source : '';
+      dto.referalSource = isReferalSource(formSource) ? formSource : 'Other';
+      (dto as unknown as Record<string, unknown>).user_fullname =
+        typeof bodyRecord.fullName === 'string' ? bodyRecord.fullName : '';
+      (dto as unknown as Record<string, unknown>).user_email =
+        typeof bodyRecord.email === 'string' ? bodyRecord.email : '';
+      (dto as unknown as Record<string, unknown>).user_no =
+        typeof bodyRecord.whatsappNumber === 'string'
+          ? bodyRecord.whatsappNumber
+          : '';
       dto.promoCode =
-        typeof body.promoCode === 'string' && body.promoCode.trim() !== ''
-          ? body.promoCode.trim()
+        typeof bodyRecord.promoCode === 'string' &&
+        bodyRecord.promoCode.trim() !== ''
+          ? bodyRecord.promoCode.trim()
           : undefined;
 
       const result = await this.paymentsService.create(dto);
@@ -275,15 +291,15 @@ export class PaymentsController {
         'Your payment proof is being reviewed by the admin.',
       );
       return res.redirect('/users/profile?tab=history-payment');
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (uploadedFile) {
         await this.paymentsService.deleteFile(uploadedFile);
       }
-      flashToastError(
-        req,
-        'Proof not submitted',
-        error.message || 'Please try again in a moment.',
-      );
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Please try again in a moment.';
+      flashToastError(req, 'Proof not submitted', msg);
       return res.redirect('/users/profile?tab=history-payment');
     }
   }
@@ -321,7 +337,9 @@ export class PaymentsController {
         return res.redirect('/users/profile?tab=history-payment');
       }
 
-      const file = req.body.uploadedImageUrls?.[0];
+      const file =
+        (req.body as { uploadedImageUrls?: string[] }).uploadedImageUrls?.[0] ??
+        '';
       uploadedFile = file;
 
       await this.paymentsService.reuploadManualProof(
@@ -336,15 +354,15 @@ export class PaymentsController {
         'Your payment proof is being reviewed by the admin.',
       );
       return res.redirect('/users/profile?tab=history-payment');
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (uploadedFile) {
         await this.paymentsService.deleteFile(uploadedFile);
       }
-      flashToastError(
-        req,
-        'Proof not submitted',
-        error.message || 'Please try again in a moment.',
-      );
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Please try again in a moment.';
+      flashToastError(req, 'Proof not submitted', msg);
       return res.redirect('/users/profile?tab=history-payment');
     }
   }
@@ -383,7 +401,9 @@ export class PaymentsController {
       }
 
       createPaymentDto.installmentId = installmentsId;
-      createPaymentDto.file = req.body.uploadedImageUrls?.[0];
+      const uploadedInstUrls = (req.body as { uploadedImageUrls?: string[] })
+        .uploadedImageUrls;
+      createPaymentDto.file = uploadedInstUrls?.[0] ?? '';
       uploadedFile = createPaymentDto.file;
       createPaymentDto.courseId = courseId;
       createPaymentDto.userId = userId;
@@ -391,10 +411,10 @@ export class PaymentsController {
       if (!createPaymentDto.no) {
         createPaymentDto.no = 'MAND-' + Date.now();
       }
+      const promoBody = (req.body as { promoCode?: unknown })?.promoCode;
       createPaymentDto.promoCode =
-        typeof (req.body as any)?.promoCode === 'string' &&
-        (req.body as any).promoCode.trim() !== ''
-          ? (req.body as any).promoCode.trim()
+        typeof promoBody === 'string' && promoBody.trim() !== ''
+          ? promoBody.trim()
           : undefined;
 
       const result = await this.paymentsService.create(createPaymentDto);
@@ -417,15 +437,15 @@ export class PaymentsController {
         'Your payment proof is being reviewed by the admin.',
       );
       return res.redirect('/users/profile?tab=history-payment');
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (uploadedFile) {
         await this.paymentsService.deleteFile(uploadedFile);
       }
-      flashToastError(
-        req,
-        'Proof not submitted',
-        error.message || 'Please try again in a moment.',
-      );
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Please try again in a moment.';
+      flashToastError(req, 'Proof not submitted', msg);
       return res.redirect('/users/profile?tab=history-payment');
     }
   }
@@ -462,7 +482,9 @@ export class PaymentsController {
         return res.redirect('/users/profile?tab=history-payment');
       }
 
-      const file = req.body.uploadedImageUrls?.[0];
+      const file =
+        (req.body as { uploadedImageUrls?: string[] }).uploadedImageUrls?.[0] ??
+        '';
       uploadedFile = file;
       await this.paymentsService.createManualInstallmentPayment(
         req.user!.id,
@@ -477,15 +499,15 @@ export class PaymentsController {
         'Your installment payment proof is being reviewed by the admin.',
       );
       return res.redirect('/users/profile?tab=history-payment');
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (uploadedFile) {
         await this.paymentsService.deleteFile(uploadedFile);
       }
-      flashToastError(
-        req,
-        'Proof not submitted',
-        error.message || 'Please try again in a moment.',
-      );
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Please try again in a moment.';
+      flashToastError(req, 'Proof not submitted', msg);
       return res.redirect('/users/profile?tab=history-payment');
     }
   }
@@ -536,12 +558,12 @@ export class PaymentsController {
         return res.redirect(`/program/detail/program/admin/${courseId}`);
       }
       return res.redirect('/program');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Gagal Memperbarui Status Cicilan',
-        error.message || 'Gagal memperbarui status cicilan.',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Gagal memperbarui status cicilan.';
+      flashToastError(req, 'Gagal Memperbarui Status Cicilan', msg);
       return res.redirect('/program');
     }
   }
@@ -598,7 +620,7 @@ export class PaymentsController {
 
   @Roles('user')
   @Get('history/:userId')
-  async riwayat(
+  riwayat(
     @Param('userId') userId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -648,9 +670,7 @@ export class PaymentsController {
       String(method ?? '').toLowerCase() === 'installment';
 
     const paymentMethod =
-      wantsInstallment && hasInstallmentPlan
-        ? 'Installment'
-        : 'Full Payment';
+      wantsInstallment && hasInstallmentPlan ? 'Installment' : 'Full Payment';
 
     const paymentSettings = await this.paymentSettingsService.effective();
     res.render('payments/index', {
@@ -711,7 +731,7 @@ export class PaymentsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const dto = (updatePaymentDto || {}) as UpdatePaymentDto;
+    const dto = updatePaymentDto || {};
 
     // Kembalikan super admin ke halaman tempat tombol ditekan (hanya satu origin),
     // supaya aksi dari daftar /payment atau halaman detail tidak melempar ke
@@ -724,7 +744,9 @@ export class PaymentsController {
           if (url.host === req.headers.host) {
             return `${url.pathname}${url.search}`;
           }
-        } catch (error) {}
+        } catch {
+          // ignore
+        }
       }
       return courseId
         ? `/program/detail/program/admin/${courseId}`
@@ -770,11 +792,11 @@ export class PaymentsController {
       if (proses === 'approved') {
         try {
           await this.paymentsService.addUserToCourse(userId, courseId);
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Sudah ikut program / data bermasalah: status payment tetap approved.
           console.warn(
             'Payment approved tapi user belum masuk program:',
-            error?.message ?? error,
+            error instanceof Error ? error.message : String(error),
           );
         }
         flashToast(
@@ -785,11 +807,11 @@ export class PaymentsController {
       } else {
         try {
           await this.paymentsService.removeCourseUser(userId, courseId);
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Belum pernah ikut program: status payment tetap rejected.
           console.warn(
             'Payment rejected tapi user tidak terdaftar di program:',
-            error?.message ?? error,
+            error instanceof Error ? error.message : String(error),
           );
         }
         flashToast(
@@ -799,14 +821,14 @@ export class PaymentsController {
         );
       }
       return res.redirect(backTo(courseId));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Gagal memperbarui status payment:', error);
       const payment = await this.paymentsService.findOne(paymentId);
-      flashToastError(
-        req,
-        'Gagal Memperbarui Status Pembayaran',
-        error?.message || 'Gagal memperbarui status pembayaran.',
-      );
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Gagal memperbarui status pembayaran.';
+      flashToastError(req, 'Gagal Memperbarui Status Pembayaran', msg);
       return res.redirect(backTo(payment?.course?.id));
     }
   }

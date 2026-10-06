@@ -56,7 +56,9 @@ export class AlumniController {
     @Req() req: Request,
   ) {
     try {
-      createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
+      createAlumnusDto.profile =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       createAlumnusDto.courseId = courseId;
       await this.alumniService.create(createAlumnusDto);
       flashToast(
@@ -65,8 +67,9 @@ export class AlumniController {
         'The new alumni has been added to this program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Alumni failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Alumni failed to create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -93,7 +96,9 @@ export class AlumniController {
     @Req() req: Request,
   ) {
     try {
-      createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
+      createAlumnusDto.profile =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       await this.alumniService.create(createAlumnusDto);
       flashToast(
         req,
@@ -101,15 +106,16 @@ export class AlumniController {
         'The new alumni has been added to this category.',
       );
       res.redirect(`/category/${categoryId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Alumni failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Alumni failed to create');
       res.redirect(`/category/${categoryId}`);
     }
   }
 
   @Roles('super_admin')
   @Get('formCreate/:courseId')
-  async formCreate(
+  formCreate(
     @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -188,7 +194,9 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
         await this.alumniService.deleteFile(alumni.profile);
-        updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
+        updateAlumnusDto.profile =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       flashToast(
@@ -197,8 +205,9 @@ export class AlumniController {
         'The alumni information has been updated.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Alumni failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Alumni failed to update');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -230,7 +239,9 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
         await this.alumniService.deleteFile(alumni.profile);
-        updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
+        updateAlumnusDto.profile =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       flashToast(
@@ -239,8 +250,9 @@ export class AlumniController {
         'The alumni information has been updated.',
       );
       res.redirect(`/category/${categoryId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Alumni failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Alumni failed to update');
       res.redirect(`/category/${categoryId}`);
     }
   }
@@ -248,13 +260,16 @@ export class AlumniController {
   @Get('filter')
   async filterAlumni(@Req() req: Request, @Res() res: Response) {
     try {
-      const kategoriId = req.query.category_id
-        ? String(req.query.category_id)
-        : undefined;
-      const courseId = req.query.course_id
-        ? String(req.query.course_id)
-        : undefined;
-      const search = req.query.search ? String(req.query.search) : undefined;
+      const kategoriId =
+        typeof req.query.category_id === 'string'
+          ? req.query.category_id
+          : undefined;
+      const courseId =
+        typeof req.query.course_id === 'string'
+          ? req.query.course_id
+          : undefined;
+      const search =
+        typeof req.query.search === 'string' ? req.query.search : undefined;
       const page = req.query.page ? Number(req.query.page) : 1;
       const limit = req.query.limit ? Number(req.query.limit) : 6;
 
@@ -272,8 +287,9 @@ export class AlumniController {
         totalPages: result.totalPages,
         currentPage: result.page,
       });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message || 'Filter failed' });
+    } catch (error: unknown) {
+      const err = error as Error;
+      res.status(500).json({ error: err.message || 'Filter failed' });
     }
   }
 
@@ -299,8 +315,9 @@ export class AlumniController {
         'The alumni has been removed from this program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Alumni failed to remove');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Alumni failed to remove');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -327,8 +344,9 @@ export class AlumniController {
         'The alumni has been permanently removed.',
       );
       res.redirect(`/category/${categoryId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Alumni failed to remove');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Alumni failed to remove');
       res.redirect(`/category/${categoryId}`);
     }
   }

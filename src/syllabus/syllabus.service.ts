@@ -84,18 +84,29 @@ export class SyllabusService {
       }
     }
 
-    let parsedContent = createSyllabusDto.content;
-    if (typeof parsedContent === 'string' && parsedContent.trim()) {
+    let parsedContent: Record<string, unknown> | null = null;
+    if (
+      typeof createSyllabusDto.content === 'string' &&
+      createSyllabusDto.content.trim()
+    ) {
       try {
-        parsedContent = JSON.parse(parsedContent);
-      } catch (e) {
+        parsedContent = JSON.parse(createSyllabusDto.content) as Record<
+          string,
+          unknown
+        >;
+      } catch {
         parsedContent = null;
       }
+    } else if (
+      createSyllabusDto.content &&
+      typeof createSyllabusDto.content === 'object'
+    ) {
+      parsedContent = createSyllabusDto.content as Record<string, unknown>;
     }
 
     const isFinal =
       createSyllabusDto.isFinal === true ||
-      createSyllabusDto.isFinal === ('true' as any);
+      String(createSyllabusDto.isFinal) === 'true';
 
     const data = this.syllabusRepository.create({
       title: createSyllabusDto.title,
@@ -220,7 +231,15 @@ export class SyllabusService {
     };
   }
 
-  async createQuiz(syllabusId: string, createQuizDto: any) {
+  async createQuiz(
+    syllabusId: string,
+    createQuizDto: {
+      quizName?: string;
+      title?: string;
+      minScore?: number | string;
+      duration?: number | string;
+    },
+  ) {
     const syllabus = await this.findOne(syllabusId);
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
@@ -290,24 +309,35 @@ export class SyllabusService {
       );
     }
 
-    let parsedContent = updateSyllabusDto.content;
-    if (typeof parsedContent === 'string' && parsedContent.trim()) {
+    let parsedContent: Record<string, unknown> | null = null;
+    if (
+      typeof updateSyllabusDto.content === 'string' &&
+      updateSyllabusDto.content.trim()
+    ) {
       try {
-        parsedContent = JSON.parse(parsedContent);
-      } catch (e) {
+        parsedContent = JSON.parse(updateSyllabusDto.content) as Record<
+          string,
+          unknown
+        >;
+      } catch {
         parsedContent = null;
       }
+    } else if (
+      updateSyllabusDto.content &&
+      typeof updateSyllabusDto.content === 'object'
+    ) {
+      parsedContent = updateSyllabusDto.content as Record<string, unknown>;
     }
 
     const isFinal =
       updateSyllabusDto.isFinal !== undefined
         ? updateSyllabusDto.isFinal === true ||
-          updateSyllabusDto.isFinal === ('true' as any)
+          String(updateSyllabusDto.isFinal) === 'true'
         : syllabus.isFinal;
 
     Object.assign(syllabus, {
       ...updateSyllabusDto,
-      ...(parsedContent !== undefined ? { content: parsedContent } : {}),
+      ...(parsedContent !== null ? { content: parsedContent } : {}),
       isFinal,
     });
     return await this.syllabusRepository.save(syllabus);
@@ -329,4 +359,3 @@ export class SyllabusService {
     return await this.syllabusRepository.remove(syllabus);
   }
 }
-

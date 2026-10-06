@@ -7,7 +7,7 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { MaterialsModule } from './materials/material.module';
 import { CoursesModule } from './courses/courses.module';
 import { SessionsModule } from './sessions/session.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './data-source';
 import { AuthModule } from './auth/auth.module';
@@ -59,7 +59,6 @@ import { UserActivityMiddleware } from './user_activity/user-activity.middleware
 import {
   AcceptLanguageResolver,
   CookieResolver,
-  I18nMiddleware,
   I18nModule,
 } from 'nestjs-i18n';
 import { GalleryModule } from './gallery/gallery.module';

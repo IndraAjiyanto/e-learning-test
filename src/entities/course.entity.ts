@@ -225,10 +225,14 @@ export class Course {
   @Exclude()
   syllabus: Syllabus[];
 
-  @OneToOne(() => FinalAssignment, (finalAssignment) => finalAssignment.course, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(
+    () => FinalAssignment,
+    (finalAssignment) => finalAssignment.course,
+    {
+      cascade: true,
+      onDelete: 'CASCADE',
+    },
+  )
   @Exclude()
   finalAssignment: FinalAssignment;
 

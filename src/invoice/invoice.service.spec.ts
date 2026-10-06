@@ -56,7 +56,9 @@ describe('InvoiceService', () => {
     }).compile();
 
     service = module.get<InvoiceService>(InvoiceService);
-    (service as any).xenditInvoiceClient = mockClient;
+    (
+      service as unknown as { xenditInvoiceClient: unknown }
+    ).xenditInvoiceClient = mockClient;
   });
 
   it('should be defined', () => {
@@ -65,7 +67,9 @@ describe('InvoiceService', () => {
 
   describe('getXenditInvoiceStatus', () => {
     it('returns null when no client configured', async () => {
-      (service as any).xenditInvoiceClient = null;
+      (
+        service as unknown as { xenditInvoiceClient: unknown }
+      ).xenditInvoiceClient = null;
       const result = await service.getXenditInvoiceStatus('x1');
       expect(result).toBeNull();
     });
@@ -239,7 +243,13 @@ describe('InvoiceService', () => {
 
     it('updates invoice status, channel, and paid_at when full payment PAID', async () => {
       installmentService.findByNo.mockResolvedValue(null);
-      const invoiceObj = { id: 'inv1', status: 'pending', paid_at: null, payment_method: null, xendit_payment_channel: null };
+      const invoiceObj = {
+        id: 'inv1',
+        status: 'pending',
+        paid_at: null,
+        payment_method: null,
+        xendit_payment_channel: null,
+      };
       const paymentObj = {
         id: 'p1',
         no: 'INV-12345',
@@ -304,10 +314,10 @@ describe('InvoiceService', () => {
   describe('expireAndClearInvoice', () => {
     it('menutup invoice di Xendit lalu mengosongkan field', async () => {
       mockClient.expireInvoice.mockResolvedValue({});
-      const invoice: any = {
+      const invoice = {
         xendit_invoice_id: 'inv-1',
         xendit_invoice_url: 'https://app.xendit.co/inv-1',
-      };
+      } as Invoice;
 
       await service.expireAndClearInvoice(invoice);
 
@@ -321,10 +331,10 @@ describe('InvoiceService', () => {
 
     it('tetap mengosongkan field walau expire Xendit gagal', async () => {
       mockClient.expireInvoice.mockRejectedValue(new Error('xendit down'));
-      const invoice: any = {
+      const invoice = {
         xendit_invoice_id: 'inv-1',
         xendit_invoice_url: 'https://app.xendit.co/inv-1',
-      };
+      } as Invoice;
 
       await expect(
         service.expireAndClearInvoice(invoice),
@@ -337,10 +347,10 @@ describe('InvoiceService', () => {
     });
 
     it('tidak memanggil Xendit kalau tidak ada invoice id', async () => {
-      const invoice: any = {
+      const invoice = {
         xendit_invoice_id: null,
         xendit_invoice_url: '',
-      };
+      } as unknown as Invoice;
 
       await service.expireAndClearInvoice(invoice);
 
@@ -349,7 +359,7 @@ describe('InvoiceService', () => {
     });
 
     it('tidak melakukan apa-apa untuk invoice kosong', async () => {
-      await service.expireAndClearInvoice(null as any);
+      await service.expireAndClearInvoice(null as unknown as Invoice);
 
       expect(mockClient.expireInvoice).not.toHaveBeenCalled();
       expect(invoiceRepo.save).not.toHaveBeenCalled();

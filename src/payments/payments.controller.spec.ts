@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { InvoiceService } from '../invoice/invoice.service';
@@ -10,6 +11,14 @@ describe('PaymentsController', () => {
   let controller: PaymentsController;
   let paymentsService: Record<string, jest.Mock>;
   let invoiceService: Record<string, jest.Mock>;
+  type MockReq = Partial<Request> & {
+    user?: { id: string; role?: string };
+    flash: jest.Mock;
+  };
+  type MockRes = Partial<Response> & {
+    redirect: jest.Mock;
+    render?: jest.Mock;
+  };
 
   beforeEach(async () => {
     paymentsService = {
@@ -76,8 +85,8 @@ describe('PaymentsController', () => {
   });
 
   describe('create', () => {
-    const mockReq = { user: { id: 'u1' }, flash: jest.fn() } as any;
-    const mockRes = { redirect: jest.fn() } as any;
+    const mockReq: MockReq = { user: { id: 'u1' }, flash: jest.fn() };
+    const mockRes: MockRes = { redirect: jest.fn() };
 
     beforeEach(() => {
       mockReq.flash.mockClear();
@@ -91,7 +100,13 @@ describe('PaymentsController', () => {
         invoice: { xendit_invoice_url: null },
       });
 
-      await controller.create('u1', 'c1', {}, mockRes, mockReq);
+      await controller.create(
+        'u1',
+        'c1',
+        {},
+        mockRes as unknown as Response,
+        mockReq as unknown as Request,
+      );
 
       expect(mockRes.redirect).toHaveBeenCalledWith('/payment/detail/c1');
       expect(mockRes.redirect).not.toHaveBeenCalledWith(null);
@@ -110,7 +125,13 @@ describe('PaymentsController', () => {
         invoice: { xendit_invoice_url: 'https://checkout.xendit.co/x' },
       });
 
-      await controller.create('u1', 'c1', {}, mockRes, mockReq);
+      await controller.create(
+        'u1',
+        'c1',
+        {},
+        mockRes as unknown as Response,
+        mockReq as unknown as Request,
+      );
 
       expect(mockRes.redirect).toHaveBeenCalledWith(
         'https://checkout.xendit.co/x',
@@ -123,8 +144,8 @@ describe('PaymentsController', () => {
   });
 
   describe('paymentSuccess', () => {
-    const mockReq = { user: { id: 'u1' }, flash: jest.fn() } as any;
-    const mockRes = { redirect: jest.fn(), render: jest.fn() } as any;
+    const mockReq: MockReq = { user: { id: 'u1' }, flash: jest.fn() };
+    const mockRes: MockRes = { redirect: jest.fn(), render: jest.fn() };
 
     it('calls settleStuckPayment when order is not approved', async () => {
       const order = {
@@ -140,7 +161,11 @@ describe('PaymentsController', () => {
         .mockResolvedValueOnce({ ...order, process: 'approved' });
       invoiceService.settleStuckPayment.mockResolvedValue(order);
 
-      await controller.paymentSuccess('INV-123', mockRes, mockReq);
+      await controller.paymentSuccess(
+        'INV-123',
+        mockRes as unknown as Response,
+        mockReq as unknown as Request,
+      );
 
       expect(invoiceService.settleStuckPayment).toHaveBeenCalledWith('p1');
     });
@@ -156,7 +181,11 @@ describe('PaymentsController', () => {
       paymentsService.getInstallmentPaymentByNo.mockResolvedValue(null);
       paymentsService.getPaymentByNo.mockResolvedValue(order);
 
-      await controller.paymentSuccess('INV-123', mockRes, mockReq);
+      await controller.paymentSuccess(
+        'INV-123',
+        mockRes as unknown as Response,
+        mockReq as unknown as Request,
+      );
 
       expect(invoiceService.settleStuckPayment).not.toHaveBeenCalled();
     });
@@ -173,7 +202,11 @@ describe('PaymentsController', () => {
         paidAt: new Date(),
       });
 
-      await controller.paymentSuccess('INV-M1-123', mockRes, mockReq);
+      await controller.paymentSuccess(
+        'INV-M1-123',
+        mockRes as unknown as Response,
+        mockReq as unknown as Request,
+      );
 
       expect(invoiceService.getXenditInvoiceStatus).toHaveBeenCalledWith('xi1');
       expect(installment.status).toBe('approved');
@@ -193,7 +226,11 @@ describe('PaymentsController', () => {
         status: 'PENDING',
       });
 
-      await controller.paymentSuccess('INV-M1-123', mockRes, mockReq);
+      await controller.paymentSuccess(
+        'INV-M1-123',
+        mockRes as unknown as Response,
+        mockReq as unknown as Request,
+      );
 
       expect(installment.status).toBe('process');
       expect(paymentsService.updateInstallmentPayment).not.toHaveBeenCalled();

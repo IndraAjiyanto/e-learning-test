@@ -45,8 +45,9 @@ export class SessionController {
         'The new session has been added to this week.',
       );
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces create');
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
     }
   }
@@ -70,15 +71,16 @@ export class SessionController {
         'The new session has been added to this week.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces create');
       res.redirect(`/week/${weeksId}`);
     }
   }
 
   @Roles('admin')
   @Get('formCreate/:weeksId')
-  async formCreate(
+  formCreate(
     @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -88,11 +90,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('formAdd/:id')
-  async formAdd(
-    @Res() res: Response,
-    @Req() req: Request,
-    @Param('id') id: string,
-  ) {
+  formAdd(@Res() res: Response, @Req() req: Request, @Param('id') id: string) {
     res.render('admin/course/createPertemuan', { user: req.user, id });
   }
 
@@ -231,8 +229,9 @@ export class SessionController {
       );
       const session = await this.sessionService.findOne(sessionId);
       res.redirect(`/week/${session.weeks.id}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Session unsuccess update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Session unsuccess update');
       const session = await this.sessionService.findOne(sessionId);
       res.redirect(`/week/${session.weeks.id}`);
     }
@@ -254,8 +253,9 @@ export class SessionController {
         'The session has been permanently removed.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces delete');
       res.redirect(`/week/${weeksId}`);
     }
   }

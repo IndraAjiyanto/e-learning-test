@@ -1,4 +1,10 @@
-import { Repository, SelectQueryBuilder, ObjectLiteral } from 'typeorm';
+import {
+  Repository,
+  SelectQueryBuilder,
+  ObjectLiteral,
+  FindOptionsWhere,
+  FindOptionsOrder,
+} from 'typeorm';
 import { PaginationResult } from '../decorators/pagination.decorator';
 
 export async function paginateQuery<T extends ObjectLiteral>(
@@ -29,8 +35,8 @@ export async function paginateRepository<T extends ObjectLiteral>(
   options: {
     page?: number;
     limit?: number;
-    where?: any;
-    order?: any;
+    where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+    order?: FindOptionsOrder<T>;
     relations?: string[];
   } = {},
 ): Promise<PaginationResult<T>> {

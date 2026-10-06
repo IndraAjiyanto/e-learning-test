@@ -26,7 +26,10 @@ export class ContactService {
   }) {
     const mailOptions = {
       from: `"${contactData.name}" <${contactData.email}>`,
-      to: this.configService.get('CONTACT_EMAIL', 'info@kesatriaacademy.com'),
+      to: this.configService.get<string>(
+        'CONTACT_EMAIL',
+        'info@kesatriaacademy.com',
+      ),
       subject: `Contact Form: ${contactData.subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -50,7 +53,7 @@ export class ContactService {
     try {
       await this.transporter.sendMail(mailOptions);
       return { success: true, message: 'Email sent successfully' };
-    } catch (error) {
+    } catch {
       throw new Error('Failed to send email');
     }
   }
