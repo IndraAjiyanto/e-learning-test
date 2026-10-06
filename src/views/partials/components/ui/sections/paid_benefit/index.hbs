@@ -11,7 +11,7 @@
 
     {{!-- section-header --}}
     {{> components/ui/text/section_header/index
-        title=(concat (t 'test.categoryPaidProgram.benefit.title') ' ' (default category.name 'Japan Program') (t 'test.categoryPaidProgram.benefit.titleSuffix'))
+        title=(concat (t 'test.categoryPaidProgram.benefit.title') ' ' (default (nameByLang category lang) 'Japan Program') (t 'test.categoryPaidProgram.benefit.titleSuffix'))
         titleClass="font-inter font-bold text-2xl sm:text-3xl lg:text-[40px] lg:leading-[49px] text-[#111827] text-center"
         description=(t 'test.categoryPaidProgram.benefit.description')
         descClass="font-inter font-normal text-base lg:text-[18px] lg:leading-[160%] text-[#6B7280] text-center max-w-[760px]"

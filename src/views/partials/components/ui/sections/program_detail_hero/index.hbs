@@ -30,7 +30,7 @@
               <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-[#D9D9D9] rounded-[100px] h-[27px]">
                 <span class="size-2 rounded-full bg-[#6EB6E5] shrink-0"></span>
                 <span class="font-montserrat font-bold text-[12px] leading-[15px] uppercase text-[#003060]">
-                  {{#if course.category.name}}{{course.category.name}}{{else}}{{default (t 'test.freeProgram.hero.freeProgramBadge') 'FREE PROGRAM'}}{{/if}}
+                  {{#if course.category.name}}{{nameByLang course.category lang}}{{else}}{{default (t 'test.freeProgram.hero.freeProgramBadge') 'FREE PROGRAM'}}{{/if}}
                 </span>
               </div>
 

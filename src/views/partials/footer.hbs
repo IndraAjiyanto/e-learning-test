@@ -46,7 +46,9 @@
         <ul class="flex flex-col gap-3 {{sizeClass 'body-sm'}} font-inter text-white/90">
           {{#if footerCategories.length}}
             {{#each footerCategories}}
-              <li><a href="{{#if (eq this.name 'In House Training')}}/dashboard/corporate-training{{else}}/category/program/{{this.name}}{{/if}}" class="transition hover:text-white">{{this.name}}</a></li>
+              {{!-- href tetap `name` (slug URL /category/program/:name), label mengikuti
+                   bahasa; kolom name_en/name_ja nullable jadi jatuh ke `name`. --}}
+              <li><a href="{{#if (eq this.name 'In House Training')}}/dashboard/corporate-training{{else}}/category/program/{{this.name}}{{/if}}" class="transition hover:text-white">{{nameByLang this ../lang}}</a></li>
             {{/each}}
           {{else}}
             <li><a href="/category/program/Bootcamp" class="transition hover:text-white">Bootcamp</a></li>

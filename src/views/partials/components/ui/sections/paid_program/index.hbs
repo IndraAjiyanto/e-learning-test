@@ -51,7 +51,7 @@
       <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
         {{> components/ui/card/program_showcase/index
             id="#"
-            title=(default category.name (default (t 'test.categoryPaidProgram.program.fallbackCard1Title') "Japan Program"))
+            title=(default (nameByLang category lang) (default (t 'test.categoryPaidProgram.program.fallbackCard1Title') "Japan Program"))
             icon="fa-solid fa-graduation-cap"
             image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
             tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
