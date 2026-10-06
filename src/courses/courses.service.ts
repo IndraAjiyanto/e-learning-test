@@ -1204,6 +1204,7 @@ export class CoursesService {
   async findPaginatedCourses(params: {
     search?: string;
     alphabet?: string;
+    status?: string;
     page: number;
     limit: number;
     userId?: string; // kalau ada = admin, kalau tidak = super_admin
@@ -1234,6 +1235,10 @@ export class CoursesService {
       query.andWhere('course.name ILIKE :alphabet', {
         alphabet: `${params.alphabet}%`,
       });
+    }
+
+    if (params.status) {
+      query.andWhere('course.status = :status', { status: params.status });
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);

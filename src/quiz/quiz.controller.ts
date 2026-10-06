@@ -82,11 +82,13 @@ export class QuizController {
     }
     const scores = await this.quizService.findScore(quizId);
     const questions = await this.quizService.findQuestions(quizId);
+    const isAttempted = (scores || []).length > 0;
     res.render('admin/quiz/detail', {
       user: req.user,
       quiz,
       scores,
       questions,
+      isAttempted,
     });
   }
 
