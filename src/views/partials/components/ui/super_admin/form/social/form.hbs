@@ -28,7 +28,6 @@
       'number',
       'address',
       'linkAddress',
-      'linkForm',
     ];
 
     // Label domain standar + TLD 2-10 huruf, sehingga "gmail.comasdasd..." tertolak.
@@ -161,11 +160,6 @@
           if (!isMapsUrl(val)) {
             return 'Please enter a valid Google Maps link';
           }
-          return '';
-
-        case 'linkForm':
-          if (!val) return 'Link form is required';
-          if (!isUrl(val)) return 'Please enter a valid URL';
           return '';
 
         default:

@@ -364,6 +364,135 @@ html[data-user-sidebar='collapsed'] .js-user-sidebar-logout-link:hover {
   background-color: #fef2f2;
 }
 
+/* ---------------------------------------------------------------------------
+   Sidebar area Admin & Super Admin: geometrinya ditentukan CSS, bukan Alpine.
+   State dibawa oleh atribut `data-admin-sidebar` pada <html> yang ditulis
+   oleh blocking script di <head> (layouts/main.hbs).
+   --------------------------------------------------------------------------- */
+
+.js-admin-sidebar,
+.js-admin-main-content,
+.js-admin-sidebar-header,
+.js-admin-sidebar-nav,
+.js-admin-sidebar-item,
+.js-admin-sidebar-footer,
+.js-admin-user-pill-btn {
+  transition-property: width, height, padding, gap, margin;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.js-admin-sidebar-item {
+  transition-property: width, height, padding, gap, margin, background-color, color;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-admin-sidebar,
+  .js-admin-main-content,
+  .js-admin-sidebar-header,
+  .js-admin-sidebar-nav,
+  .js-admin-sidebar-item,
+  .js-admin-sidebar-footer,
+  .js-admin-user-pill-btn {
+    transition-duration: 0ms;
+  }
+}
+
+/* Lebar default (expanded) */
+.js-admin-sidebar {
+  width: 319px;
+}
+@media (min-width: 1024px) {
+  .js-admin-main-content {
+    margin-left: 319px;
+  }
+}
+
+.js-admin-sidebar-logo-link {
+  display: flex;
+}
+
+/* Keadaan Collapsed (Menciut) */
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar {
+  width: 88px;
+}
+
+@media (min-width: 1024px) {
+  html[data-admin-sidebar='collapsed'] .js-admin-main-content {
+    margin-left: 88px;
+  }
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-header {
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-logo-link {
+  display: none;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-toggle-btn {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-nav {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-item {
+  width: 48px;
+  height: 44px;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-sidebar-footer {
+  padding: 16px 8px;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-user-pill-btn {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html[data-admin-sidebar='collapsed'] .js-admin-user-info,
+html[data-admin-sidebar='collapsed'] .js-admin-user-chevron {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 
 /* Offset atas untuk dua kanal notifikasi (komponen toast super_admin dan toast
    SweetAlert), supaya keduanya sejajar dan sadar-shell.

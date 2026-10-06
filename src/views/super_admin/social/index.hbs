@@ -34,7 +34,7 @@
         }}
       {{/unless}}
 
-      {{#> components/ui/super_admin/table/card tableClass='min-w-[1822px]'}}
+      {{#> components/ui/super_admin/table/card tableClass='min-w-[1642px]'}}
         <colgroup>
           <col class='w-[66px]' />
           <col class='w-[180px]' />
@@ -44,7 +44,6 @@
           <col class='w-[200px]' />
           <col class='w-[160px]' />
           <col class='w-[200px]' />
-          <col class='w-[180px]' />
           <col class='w-[180px]' />
           <col class='w-[116px]' />
         </colgroup>
@@ -59,7 +58,6 @@
             {{> components/ui/super_admin/table/header_cell label='Phone' }}
             {{> components/ui/super_admin/table/header_cell label='Address' }}
             {{> components/ui/super_admin/table/header_cell label='Google Maps' }}
-            {{> components/ui/super_admin/table/header_cell label='Link Form Job' }}
             {{> components/ui/super_admin/table/header_cell label='Action' }}
           </tr>
         </thead>
@@ -113,10 +111,6 @@
                 {{> components/ui/super_admin/table/link href='row.linkAddress' }}
               {{/components/ui/super_admin/table/cell}}
 
-              {{#> components/ui/super_admin/table/cell}}
-                {{> components/ui/super_admin/table/link href='row.linkForm' }}
-              {{/components/ui/super_admin/table/cell}}
-
               {{#> components/ui/super_admin/table/cell variant='action'}}
                 {{> components/ui/super_admin/table/row_actions
                   entity='social media'
@@ -127,7 +121,7 @@
             </tr>
           </template>
 
-          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='11'}}
+          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='10'}}
             No social media found.
           {{/components/ui/super_admin/table/message_row}}
         </tbody>
