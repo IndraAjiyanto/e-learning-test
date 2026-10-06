@@ -98,13 +98,14 @@
 
         <div class='flex flex-col gap-5'>
           <div class='grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-x-3'>
-            {{> components/ui/super_admin/detail/field/index label='Category Name' value=category.name }}
-
-            {{!-- Kolom nullable; baris yang belum diisi tampil '-' supaya jelas
-                 belum ada terjemahan (tampilan publik memakai `name`). --}}
-            {{> components/ui/super_admin/detail/field/index label='Category Name (English)' value=category.name_en }}
-
-            {{> components/ui/super_admin/detail/field/index label='Category Name (Japanese)' value=category.name_ja }}
+            {{!-- Satu label saja; nilainya ikut tab bahasa di atas, persis seperti
+                 Description. Kolom EN/JA nullable, jadi nilai kosong berarti publik
+                 memakai `name` — fallback nameByLang (sama seperti selisih di index). --}}
+            {{#> components/ui/super_admin/detail/field/index label='Category Name'}}
+              <p x-show="lang === 'id'" class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{default category.name '-'}}</p>
+              <p x-show="lang === 'en'" x-cloak class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{default (nameByLang category 'en') '-'}}</p>
+              <p x-show="lang === 'ja'" x-cloak class='break-words font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{default (nameByLang category 'ja') '-'}}</p>
+            {{/components/ui/super_admin/detail/field/index}}
 
             {{> components/ui/super_admin/detail/field/index label='Contact' value=category.contact }}
 

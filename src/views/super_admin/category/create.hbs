@@ -10,25 +10,53 @@
   Nama field sama persis dengan form lama supaya DTO & controller tidak berubah.
   Toast sukses muncul di index.hbs karena submit redirect ke /category.
 
-  NAMA PER BAHASA ada di dalam tab (categoryLangFields), bukan di Basic
-  Information — mengikuti pola Caption/Description. `name` (Indonesia) wajib;
-  `name_en`/`name_ja` opsional, kosong = tampilan publik memakai `name`
+  NAMA PER BAHASA tetap di posisi atas (grid Basic Information), tapi mengikuti
+  tab bahasa di atas kartu — konsep yang sama dengan Caption/Description:
+  hanya tab aktif yang tampil, ketiganya ikut terkirim. `name` (Indonesia)
+  wajib; `name_en`/`name_ja` opsional, kosong = tampilan publik memakai `name`
   (lihat helper nameByLang).
 --}}
-{{#*inline 'categoryLangFields'}}
-  {{!-- x-show, bukan x-if: bahasa di tab yang tidak aktif tetap ikut terkirim.
-       `required` hanya untuk Indonesia; hint kosong = tidak dirender. --}}
-  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+{{!-- Tiga input nama berbagi satu selisih tab di atas kartu; x-show, bukan x-if,
+     supaya bahasa yang tidak aktif tetap ikut terkirim. `required` hanya untuk
+     Indonesia; hint kosong = tidak dirender. --}}
+{{#*inline 'categoryNameFields'}}
+  <div x-show="lang === 'id'" x-cloak>
     {{> components/ui/super_admin/form/text_field
-      id=nameField
-      name=nameField
-      field=nameField
+      id='name'
+      name='name'
+      field='name'
       label='Category Name'
       placeholder='Enter a category name'
-      required=(eq code 'id')
-      hint=(ternary (eq code 'id') '' 'Leave empty to use the Indonesian name.')
+      required=true
     }}
+  </div>
 
+  <div x-show="lang === 'en'" x-cloak>
+    {{> components/ui/super_admin/form/text_field
+      id='name_en'
+      name='name_en'
+      field='name_en'
+      label='Category Name'
+      placeholder='Enter a category name'
+      hint='Leave empty to use the Indonesian name.'
+    }}
+  </div>
+
+  <div x-show="lang === 'ja'" x-cloak>
+    {{> components/ui/super_admin/form/text_field
+      id='name_ja'
+      name='name_ja'
+      field='name_ja'
+      label='Category Name'
+      placeholder='Enter a category name'
+      hint='Leave empty to use the Indonesian name.'
+    }}
+  </div>
+{{/inline}}
+
+{{#*inline 'categoryLangFields'}}
+  {{!-- x-show, bukan x-if: bahasa di tab yang tidak aktif tetap ikut terkirim. --}}
+  <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
     {{> components/ui/super_admin/form/text_field
       id=(concat 'text-' code)
       name=(concat 'text[' code ']')
@@ -116,6 +144,8 @@
 
         <div class='flex flex-col gap-5'>
           <div class='grid gap-x-3 gap-y-3.5 lg:grid-cols-2'>
+            {{> categoryNameFields }}
+
             {{> components/ui/super_admin/form/text_field
               id='contact'
               name='contact'
@@ -144,11 +174,11 @@
             }}
           </div>
 
-          {{> categoryLangFields code='id' nameField='name' }}
+          {{> categoryLangFields code='id' }}
 
-          {{> categoryLangFields code='en' nameField='name_en' }}
+          {{> categoryLangFields code='en' }}
 
-          {{> categoryLangFields code='ja' nameField='name_ja' }}
+          {{> categoryLangFields code='ja' }}
 
           <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
             {{> components/ui/super_admin/form/button
@@ -197,7 +227,8 @@
       ...LANGS.map((l) => `description.${l}`),
     ];
 
-    // Field nama tidak memakai path bertitik tapi berada di tab bahasa.
+    // Field nama tidak pakai path bertitik tapi mengikuti tab bahasa; tanpa
+    // pemetaan ini, error di input nama tidak ikut pindah tab sehingga tak terlihat.
     const TAB_OF_FIELD = { name: 'id', name_en: 'en', name_ja: 'ja' };
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
