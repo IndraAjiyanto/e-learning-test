@@ -172,26 +172,28 @@
                   </div>
                 </div>
 
-                {{!-- 4. Action Buttons (Approve / Reject) --}}
-                <div class='w-full flex flex-row items-center gap-[12px]'>
-                  <button
-                    type='button'
-                    @click='approveSubmission(sub)'
-                    class='box-border flex-1 h-[44px] bg-[#16A34A] border border-[#4ADE80] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#15803D] transition-colors'>
-                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF]'>
-                      Approve
-                    </span>
-                  </button> 
+                {{!-- 4. Action Buttons (Approve / Reject) - Only shown when status is process (Under Review) --}}
+                <template x-if="sub.status === 'process'">
+                  <div class='w-full flex flex-row items-center gap-[12px]'>
+                    <button
+                      type='button'
+                      @click='approveSubmission(sub)'
+                      class='box-border flex-1 h-[44px] bg-[#16A34A] border border-[#4ADE80] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#15803D] transition-colors'>
+                      <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF]'>
+                        Approve
+                      </span>
+                    </button> 
 
-                  <button
-                    type='button'
-                    @click='rejectSubmission(sub)'
-                    class='box-border flex-1 h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
-                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#B91C1C]'>
-                      Reject
-                    </span>
-                  </button>
-                </div>
+                    <button
+                      type='button'
+                      @click='rejectSubmission(sub)'
+                      class='box-border flex-1 h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                      <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#B91C1C]'>
+                        Reject
+                      </span>
+                    </button>
+                  </div>
+                </template>
 
                 {{!-- 5. Comment History --}}
                 <div class='w-full flex flex-col gap-[8px] items-start'>
@@ -313,7 +315,14 @@ function detailFinalAssignmentData() {
           sub.comments.unshift(comment + ' (Baru saja)');
           sub.newComment = '';
         }
-        alert(`Submission status updated to ${newStatus === 'approved' ? 'Approved' : 'Rejected'}.`);
+        window.dispatchEvent(
+          new CustomEvent('toast:success', {
+            detail: {
+              title: 'Success',
+              description: `Submission status successfully updated to ${newStatus === 'approved' ? 'Approved' : 'Rejected'}.`,
+            },
+          })
+        );
       } catch (err) {
         alert('Network error while updating submission');
       }
@@ -348,3 +357,6 @@ function detailFinalAssignmentData() {
 
 {{!-- Modal konfirmasi Approve/Reject Submission --}}
 {{> components/ui/admin/modal/confirm_action/index}}
+
+{{!-- Toast Notifikasi --}}
+{{> components/ui/admin/toast/success/index toast=toast}}
