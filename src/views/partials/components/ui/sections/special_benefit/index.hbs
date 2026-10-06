@@ -14,7 +14,7 @@
         wrapperClass="gap-3 max-w-[760px]"
     }}
       {{#*inline "titleBlock"}}
-        {{default (t 'test.special_program.whyChooseUs.titlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if (includes category.name 'japan')}}{{default (t 'test.special_program.whyChooseUs.titleSuffixJapan') 'Our Japan Program'}}{{else}}{{default (t 'test.special_program.whyChooseUs.titleSuffixGeneral') (concat 'Our ' (default category.name "Program"))}}{{/if}}</span>?
+        {{default (t 'test.special_program.whyChooseUs.titlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if (includes category.name 'japan')}}{{default (t 'test.special_program.whyChooseUs.titleSuffixJapan') 'Our Japan Program'}}{{else}}{{default (t 'test.special_program.whyChooseUs.titleSuffixGeneral') (concat 'Our ' (default (nameByLang category lang) "Program"))}}{{/if}}</span>?
       {{/inline}}
     {{/components/ui/text/section_header/index}}
 

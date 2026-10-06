@@ -32,7 +32,7 @@
               {{else if course.checkPaid}}
                 {{default (t 'test.paidProgram.hero.paidProgramBadge') 'Paid Program'}}
               {{else if category.name}}
-                {{category.name}}
+                {{nameByLang category lang}}
               {{else if course.group}}
                 {{course.group}}
               {{else if course.name}}
@@ -48,7 +48,7 @@
             {{#if course.name}}
               {{course.name}}
             {{else if category.name}}
-              {{category.name}}
+              {{nameByLang category lang}}
             {{else}}
               UI/UX Design Mastery
             {{/if}}

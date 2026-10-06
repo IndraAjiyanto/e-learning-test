@@ -9,6 +9,8 @@
 
   `description` adalah kolom jsonb { id, en, ja } (entity masih menyebutnya
   string[], form yang benar), jadi tabelnya memakai tab bahasa seperti Value.
+  Nama kategori punya kolom terpisah per bahasa (`name`, `name_en`, `name_ja`)
+  — tab bahasa hanya mengubah tampilan, pencariannya menyentuh ketiganya.
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
@@ -25,7 +27,7 @@
 
     <div
       class='flex flex-col gap-3.5'
-      x-data='clientTable({ items: {{json category}}, searchKeys: ["name", "description.id", "description.en", "description.ja"] })'
+      x-data='clientTable({ items: {{json category}}, searchKeys: ["name", "name_en", "name_ja", "description.id", "description.en", "description.ja"] })'
     >
       {{> components/ui/super_admin/table/toolbar
         placeholder='Search category..'
@@ -66,7 +68,11 @@
                     {{> components/ui/super_admin/table/avatar src='row.icon' name='row.name' }}
                   {{/components/ui/super_admin/table/cell}}
 
-                  {{> components/ui/super_admin/table/cell text='row.name' }}
+                  {{!-- Nama mengikuti tab bahasa; kolom nullable jadi kosong
+                       jatuh ke `name` (Indonesia), sama seperti helper nameByLang. --}}
+                  {{> components/ui/super_admin/table/cell
+                    text='(row["name_" + lang] || row.name || "")'
+                  }}
 
                   {{#> components/ui/super_admin/table/cell}}
                     <span

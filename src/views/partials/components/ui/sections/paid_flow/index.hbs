@@ -27,7 +27,7 @@
               <h3 class="{{sizeClass 'h3'}} font-inter font-semibold text-[#0B1F3B]">{{title}}</h3>
               {{#if course}}
                 <span class="inline-flex rounded-lg bg-[#E0F2F9] px-3 py-1.5 {{sizeClass 'body-sm'}} font-inter font-medium text-[#003060]">
-                  {{course.category.name}}: {{course.name}}
+                  {{nameByLang course.category ../lang}}: {{course.name}}
                 </span>
               {{/if}}
             </div>

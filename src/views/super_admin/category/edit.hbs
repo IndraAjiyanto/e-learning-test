@@ -4,8 +4,8 @@
   Level: L4 Page
 
   Route: GET /category/formEdit/:id -> PATCH /category/:id
-  (multipart: name, icon, hero_section_image, description[lang], text[lang],
-  contact, courseType[], type). Data: { category, courseTypes }.
+  (multipart: name, name_en, name_ja, icon, hero_section_image, description[lang],
+  text[lang], contact, courseType[], type). Data: { category, courseTypes }.
   Delete -> DELETE /category/:id
 
   Backend hanya mengganti gambar yang dikirim. "Remove" melepas gambar lama di
@@ -13,10 +13,26 @@
   Delete dirender komponen danger_zone di bawah form PATCH — kartu yang sama
   dengan halaman edit super admin lain — yang membawa form DELETE-nya sendiri
   karena form tidak boleh bersarang.
+
+  NAMA PER BAHASA ada di dalam tab (categoryLangFields), bukan di Basic
+  Information — mengikuti pola Caption/Description. `name` (Indonesia) wajib;
+  `name_en`/`name_ja` opsional, kosong = tampilan publik memakai `name`
+  (lihat helper nameByLang).
 --}}
 {{#*inline 'categoryLangFields'}}
-  {{!-- x-show, bukan x-if: bahasa di tab yang tidak aktif tetap ikut terkirim. --}}
+  {{!-- x-show, bukan x-if: bahasa di tab yang tidak aktif tetap ikut terkirim.
+       `required` hanya untuk Indonesia; hint kosong = tidak dirender. --}}
   <div x-show="lang === '{{code}}'" x-cloak class='flex flex-col gap-5'>
+    {{> components/ui/super_admin/form/text_field
+      id=nameField
+      name=nameField
+      field=nameField
+      label='Category Name'
+      placeholder='Enter a category name'
+      required=(eq code 'id')
+      hint=(ternary (eq code 'id') '' 'Leave empty to use the Indonesian name.')
+    }}
+
     {{> components/ui/super_admin/form/text_field
       id=(concat 'text-' code)
       name=(concat 'text[' code ']')
@@ -109,15 +125,6 @@
         <div class='flex flex-col gap-5'>
           <div class='grid gap-x-3 gap-y-3.5 lg:grid-cols-2'>
             {{> components/ui/super_admin/form/text_field
-              id='name'
-              name='name'
-              field='name'
-              label='Category Name'
-              placeholder='Enter a category name'
-              required=true
-            }}
-
-            {{> components/ui/super_admin/form/text_field
               id='contact'
               name='contact'
               field='contact'
@@ -147,11 +154,11 @@
           </div>
 
           <div class='flex flex-col gap-5'>
-            {{> categoryLangFields code='id' }}
+            {{> categoryLangFields code='id' nameField='name' }}
 
-            {{> categoryLangFields code='en' }}
+            {{> categoryLangFields code='en' nameField='name_en' }}
 
-            {{> categoryLangFields code='ja' }}
+            {{> categoryLangFields code='ja' nameField='name_ja' }}
           </div>
 
           <div class='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
@@ -206,11 +213,16 @@
     // Urutan = urutan tampil, dipakai untuk memfokuskan error pertama.
     const FIELD_PATHS = [
       'name',
+      'name_en',
+      'name_ja',
       'contact',
       'type',
       ...LANGS.map((l) => `text.${l}`),
       ...LANGS.map((l) => `description.${l}`),
     ];
+
+    // Field nama tidak memakai path bertitik tapi berada di tab bahasa.
+    const TAB_OF_FIELD = { name: 'id', name_en: 'en', name_ja: 'ja' };
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
     const readPath = (obj, path) => path.split('.').reduce((acc, key) => acc[key], obj);
@@ -264,14 +276,32 @@
 
         formData: {
           name: category.name ?? '',
+          name_en: category.name_en ?? '',
+          name_ja: category.name_ja ?? '',
           type: category.type ?? '',
           contact: category.contact ?? '',
           description: byLang((l) => category.description?.[l] ?? ''),
           text: byLang((l) => category.text?.[l] ?? ''),
         },
-        formErrors: { name: '', type: '', contact: '', description: byLang(() => ''), text: byLang(() => '') },
+        formErrors: {
+          name: '',
+          name_en: '',
+          name_ja: '',
+          type: '',
+          contact: '',
+          description: byLang(() => ''),
+          text: byLang(() => ''),
+        },
         // Error baru muncul setelah field disentuh atau setelah submit ditekan.
-        touched: { name: false, type: false, contact: false, description: byLang(() => false), text: byLang(() => false) },
+        touched: {
+          name: false,
+          name_en: false,
+          name_ja: false,
+          type: false,
+          contact: false,
+          description: byLang(() => false),
+          text: byLang(() => false),
+        },
 
         courseTypeOptions: (courseTypes || []).map((c) => ({ value: c.id, label: c.nameClassesType })),
         selectedCourseTypes: (category.courseTypes || []).map((c) => ({ value: c.id, label: c.nameClassesType })),
@@ -408,6 +438,7 @@
           if (path) {
             const [field, lang] = path.split('.');
             if (lang) this.lang = lang;
+            else if (TAB_OF_FIELD[field]) this.lang = TAB_OF_FIELD[field];
             const id = field === 'type' ? 'type-trigger' : path.replace('.', '-');
             this.$nextTick(() => document.getElementById(id)?.focus());
             return;
