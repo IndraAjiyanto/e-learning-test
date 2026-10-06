@@ -17,6 +17,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { CoursesService } from 'src/courses/courses.service';
 import { flashToast } from 'src/common/utils/toast.util';
+import { getErrorMessage } from 'src/common/utils/get-error-message';
 
 @Controller('week')
 export class WeeksController {
@@ -44,18 +45,14 @@ export class WeeksController {
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces create');
+      req.flash('error', getErrorMessage(error, 'session unsucces create'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
   @Roles('admin')
   @Get('formAdd/:id')
-  async formAdd(
-    @Res() res: Response,
-    @Req() req: Request,
-    @Param('id') id: string,
-  ) {
+  formAdd(@Res() res: Response, @Req() req: Request, @Param('id') id: string) {
     res.render('admin/weeks/create', { user: req.user, id });
   }
 
@@ -151,7 +148,7 @@ export class WeeksController {
       );
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'week failed updated');
+      req.flash('error', getErrorMessage(error, 'week failed updated'));
       res.redirect(`/week/${weeksId}`);
     }
   }
@@ -169,7 +166,7 @@ export class WeeksController {
       flashToast(req, 'Week Deleted', 'The week has been permanently removed.');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'week failed deleted');
+      req.flash('error', getErrorMessage(error, 'week failed deleted'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
