@@ -94,11 +94,8 @@
         </div>
       </div>
 
-      {{!-- Delete + Edit (hanya tampil jika program belum memiliki peserta)
-           [NONAKTIF SEMENTARA] Guard disembunyikan sementara agar tombol selalu
-           tampil untuk keperluan bersih-bersih data. Kembalikan komentar di bawah
-           untuk mengaktifkan lagi konsep semula. --}}
-      {{!-- [NONAKTIF SEMENTARA] {{#unless course.userCourses.length}} --}}
+      {{!-- Delete + Edit (hanya tampil jika program belum memiliki peserta) --}}
+      {{#unless course.userCourses.length}}
       <div class='flex flex-wrap items-center gap-3'>
         <form
           action='/program/{{course.id}}?_method=DELETE'
@@ -128,7 +125,7 @@
           }}
         {{/if}}
       </div>
-      {{!-- [NONAKTIF SEMENTARA] {{/unless}} --}}
+      {{/unless}}
     </div>
   </div>
 </section>

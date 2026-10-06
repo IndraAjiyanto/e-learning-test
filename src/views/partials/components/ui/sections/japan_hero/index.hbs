@@ -41,7 +41,8 @@
             {{#if headline}}
               {{headline}}
             {{else if category.name}}
-              {{category.name}}
+              {{!-- Tampilan mengikuti bahasa; guard tetap `category.name` (slug URL). --}}
+              {{nameByLang category lang}}
             {{else if (getByLang category.text lang)}}
               {{getByLang category.text lang}}
             {{else}}
@@ -120,7 +121,7 @@
         <div class="relative w-full max-w-[420px] lg:max-w-[520px] aspect-square rounded-[24px] overflow-hidden shadow-[0px_18px_40px_-12px_rgba(11,31,59,0.08)] border border-[#E5E7EB]/60 bg-white">
           <img
             src="{{#if course.image}}{{course.image}}{{else if category.hero_section_image}}{{category.hero_section_image}}{{else if (or isJapan (includes category.name 'japan'))}}/public/image/specialProgram/bgJapan.png{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-            alt="{{#if course.name}}{{course.name}}{{else if (or isJapan (includes category.name 'japan'))}}Japan Study Program - Mount Fuji &amp; Chureito Pagoda{{else}}{{category.name}}{{/if}}"
+            alt="{{#if course.name}}{{course.name}}{{else if (or isJapan (includes category.name 'japan'))}}Japan Study Program - Mount Fuji &amp; Chureito Pagoda{{else}}{{nameByLang category lang}}{{/if}}"
             onerror="this.src='{{#if (or isJapan (includes category.name 'japan'))}}/public/image/specialProgram/bgJapan.png{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}'"
             class="size-full object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
           />
