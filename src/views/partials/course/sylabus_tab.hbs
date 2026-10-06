@@ -28,20 +28,22 @@
                  x-text="item.description || '-'" :title="item.description || ''"></div>
           </div>
 
-          <form :action="item.deleteUrl" method='POST' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
-            <button type='button'
-              onclick='openDeleteModal(this)'
-              class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
-              title='Delete Sylabus' aria-label='Delete Sylabus'>
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
-                <path d='M3 6h18'/>
-                <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
-                <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
-                <line x1='10' x2='10' y1='11' y2='17'/>
-                <line x1='14' x2='14' y1='11' y2='17'/>
-              </svg>
-            </button>
-          </form>
+          <template x-if="!item.isCompleted">
+            <form :action="item.deleteUrl" method='POST' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+              <button type='button'
+                onclick='openDeleteModal(this)'
+                class='box-border w-[44px] h-[44px] flex flex-row justify-center items-center bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] hover:bg-[#FEF2F2] transition-colors'
+                title='Delete Sylabus' aria-label='Delete Sylabus'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <path d='M3 6h18'/>
+                  <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
+                  <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
+                  <line x1='10' x2='10' y1='11' y2='17'/>
+                  <line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+              </button>
+            </form>
+          </template>
 
           <a :href="item.detailUrl"
             class='box-border w-[81px] shrink-0 h-[44px] flex flex-row justify-center items-center p-[10px_18px] gap-[8px] bg-[#FFFFFF] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F0F7FF] transition-colors'
@@ -90,6 +92,7 @@ function sylabusData() {
           topic: s.title || '',
           description: s.description || '',
           isFinal: !!s.isFinal,
+          isCompleted: !!s.isCompleted,
           detailUrl: '/syllabus/' + s.id,
           deleteUrl: '/syllabus/' + s.id + '/{{course.id}}?_method=DELETE',
         }));

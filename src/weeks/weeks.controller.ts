@@ -86,6 +86,15 @@ export class WeeksController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isCompleted = await this.weeksService.hasCompletedUser(weeksId);
+    if (isCompleted) {
+      req.flash(
+        'error',
+        'Week cannot be edited because it has already been completed by user',
+      );
+      return res.redirect(`/week/${weeksId}`);
+    }
+
     const weeks = await this.weeksService.findOne(weeksId);
     let lastWeek = false;
     let maxWeek = 0;
@@ -113,11 +122,15 @@ export class WeeksController {
       req.flash('error', 'Week not found');
       return res.redirect('/program');
     }
-    const lastSession = await this.weeksService.findLastSession(weeksId);
+    const [lastSession, hasCompletedUser] = await Promise.all([
+      this.weeksService.findLastSession(weeksId),
+      this.weeksService.hasCompletedUser(weeksId),
+    ]);
     res.render('admin/weeks/detail', {
       user: req.user,
       weeks,
       lastSession,
+      hasCompletedUser,
     });
   }
 

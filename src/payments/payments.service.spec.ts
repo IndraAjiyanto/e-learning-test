@@ -327,12 +327,7 @@ describe('PaymentsService', () => {
       };
       installmentService.findOneByPaymentAndMonth.mockResolvedValue(row);
 
-      await service.createManualInstallmentPayment(
-        'u1',
-        'p1',
-        1,
-        'new.png',
-      );
+      await service.createManualInstallmentPayment('u1', 'p1', 1, 'new.png');
 
       expect(invoiceService.expireXenditInvoice).toHaveBeenCalledWith('inv-1');
       expect(row.xendit_invoice_id).toBe('');
@@ -353,12 +348,7 @@ describe('PaymentsService', () => {
         xendit_invoice_url: null,
       });
 
-      await service.createManualInstallmentPayment(
-        'u1',
-        'p1',
-        1,
-        'new.png',
-      );
+      await service.createManualInstallmentPayment('u1', 'p1', 1, 'new.png');
 
       expect(invoiceService.expireXenditInvoice).not.toHaveBeenCalled();
     });

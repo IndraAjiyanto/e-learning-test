@@ -13,7 +13,10 @@ import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { capabilitiesFor } from './program-type';
-import { CourseStatus, COURSE_STATUSES } from 'src/entities/types/course-status';
+import {
+  CourseStatus,
+  COURSE_STATUSES,
+} from 'src/entities/types/course-status';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -1447,11 +1450,34 @@ export class CoursesService {
   }
 
   async findCourseWeeks(courseId: string) {
-    return await this.weeksRepository.find({
+    const weeks = await this.weeksRepository.find({
       where: { course: { id: courseId } },
       order: { weekNumber: 'ASC' },
       relations: ['session'],
     });
+
+    if (weeks.length === 0) {
+      return [];
+    }
+
+    const completedWeekProgresses = await this.weekProgressRepository
+      .createQueryBuilder('wp')
+      .select('wp.weekId', 'weekId')
+      .where('wp.weekId IN (:...weekIds)', {
+        weekIds: weeks.map((w) => w.id),
+      })
+      .andWhere('wp.quiz = :quiz', { quiz: true })
+      .groupBy('wp.weekId')
+      .getRawMany();
+
+    const completedWeekIds = new Set(
+      completedWeekProgresses.map((item) => item.weekId),
+    );
+
+    return weeks.map((w) => ({
+      ...w,
+      hasCompletedUser: completedWeekIds.has(w.id),
+    }));
   }
 
   async findCourseMentors(courseId: string) {
@@ -1810,7 +1836,9 @@ export class CoursesService {
         : null;
 
       const isUnlocked = idx === 0 || previousPassed;
-      const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+      const isPassed = quiz
+        ? bestScore !== null && bestScore >= minScore
+        : true;
       const prevMinScore =
         idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
       previousPassed = isPassed;

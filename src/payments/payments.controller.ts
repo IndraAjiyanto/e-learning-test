@@ -392,9 +392,9 @@ export class PaymentsController {
         createPaymentDto.no = 'MAND-' + Date.now();
       }
       createPaymentDto.promoCode =
-        typeof (req.body as any)?.promoCode === 'string' &&
-        (req.body as any).promoCode.trim() !== ''
-          ? (req.body as any).promoCode.trim()
+        typeof req.body?.promoCode === 'string' &&
+        req.body.promoCode.trim() !== ''
+          ? req.body.promoCode.trim()
           : undefined;
 
       const result = await this.paymentsService.create(createPaymentDto);
@@ -507,6 +507,18 @@ export class PaymentsController {
           'Cicilan Tidak Ditemukan',
           'Data cicilan tidak ditemukan.',
         );
+        return res.redirect('/program');
+      }
+      if (row.status === 'approved' || row.status === 'rejected') {
+        flashToastError(
+          req,
+          'Status Terkunci',
+          'Status cicilan tidak dapat diubah setelah disetujui atau ditolak.',
+        );
+        const courseId = row.payment?.course?.id;
+        if (courseId) {
+          return res.redirect(`/program/detail/program/admin/${courseId}`);
+        }
         return res.redirect('/program');
       }
       const approved = proses === 'approved';
@@ -648,9 +660,7 @@ export class PaymentsController {
       String(method ?? '').toLowerCase() === 'installment';
 
     const paymentMethod =
-      wantsInstallment && hasInstallmentPlan
-        ? 'Installment'
-        : 'Full Payment';
+      wantsInstallment && hasInstallmentPlan ? 'Installment' : 'Full Payment';
 
     const paymentSettings = await this.paymentSettingsService.effective();
     res.render('payments/index', {
@@ -711,7 +721,7 @@ export class PaymentsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const dto = (updatePaymentDto || {}) as UpdatePaymentDto;
+    const dto = updatePaymentDto || {};
 
     // Kembalikan super admin ke halaman tempat tombol ditekan (hanya satu origin),
     // supaya aksi dari daftar /payment atau halaman detail tidak melempar ke
@@ -749,6 +759,14 @@ export class PaymentsController {
           req,
           'Data Pembayaran Tidak Lengkap',
           'Pembayaran tidak terhubung ke user atau program.',
+        );
+        return res.redirect(backTo(courseId));
+      }
+      if (payment.process === 'approved' || payment.process === 'rejected') {
+        flashToastError(
+          req,
+          'Status Terkunci',
+          'Status pembayaran tidak dapat diubah setelah disetujui atau ditolak.',
         );
         return res.redirect(backTo(courseId));
       }

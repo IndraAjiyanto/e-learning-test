@@ -91,11 +91,7 @@ export class LogbookController {
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);
       const errorMessage = error.message || 'Failed to add log book';
-      flashToastError(
-        req,
-        'Logbook not saved',
-        errorMessage,
-      );
+      flashToastError(req, 'Logbook not saved', errorMessage);
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
@@ -266,6 +262,14 @@ export class LogbookController {
   ) {
     try {
       const logbooks = await this.logbookService.findOne(logbookId);
+      if (logbooks.process === 'approved' || logbooks.process === 'rejected') {
+        flashToastError(
+          req,
+          'Status Locked',
+          'Logbook status cannot be changed once approved or rejected.',
+        );
+        return res.redirect(`/session/${logbooks.session.id}`);
+      }
       updateLogbookDto.process = proses;
       await this.logbookService.update(logbookId, updateLogbookDto);
       flashToast(req, 'Status Updated', 'The logbook status has been updated.');

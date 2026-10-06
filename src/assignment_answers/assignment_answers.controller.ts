@@ -15,6 +15,7 @@ import { UpdateAssignmentAnswersDto } from './dto/update-assignment_answers.dto'
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('answer-assigment')
@@ -52,14 +53,18 @@ export class AnswerTasksController {
           },
         });
       }
-      req.flash('success', 'submission successfuly send');
+      flashToast(
+        req,
+        'Answer Sent',
+        'Your answer has been sent and is waiting for review.',
+      );
       res.redirect(`/answer-assigment/${sessionId}/${assignmentId}`);
     } catch (error: any) {
       const message = error.message || 'submission unsuccess send';
       if (wantsJson) {
         return res.status(400).json({ success: false, message });
       }
-      req.flash('error', message);
+      flashToastError(req, 'Failed to Send Answer', message);
       res.redirect(`/answer-assigment/${sessionId}/${assignmentId}`);
     }
   }
@@ -87,7 +92,9 @@ export class AnswerTasksController {
         user: req.user,
         assignment: assignments,
         assignment_answer: taskAnswers,
-        answerExists, bareShell: true });
+        answerExists,
+        bareShell: true,
+      });
     }
   }
 
@@ -148,10 +155,14 @@ export class AnswerTasksController {
         });
       }
       if (req.user?.role.includes('admin')) {
-        req.flash('success', 'Update answer successfuly');
+        flashToast(
+          req,
+          'Review Saved',
+          'The assignment review has been saved.',
+        );
         res.redirect(`/answer-assigment/${assignmentId}`);
       } else if (req.user?.role.includes('user')) {
-        req.flash('success', 'Update answer successfuly');
+        flashToast(req, 'Changes Saved', 'Your answer has been updated.');
         res.redirect(
           `/answer-assigment/${assignments.session.id}/${assignments.id}`,
         );
@@ -163,11 +174,10 @@ export class AnswerTasksController {
       }
       const assignments =
         await this.answerTasksService.findAssignment(assignmentId);
+      flashToastError(req, 'Failed to Update Answer', message);
       if (req.user?.role.includes('admin')) {
-        req.flash('error', message);
         res.redirect(`/answer-assigment/${assignmentId}`);
       } else if (req.user?.role.includes('user')) {
-        req.flash('error', message);
         res.redirect(
           `/answer-assigment/${assignments.session.id}/${assignments.id}`,
         );

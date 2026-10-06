@@ -28,10 +28,7 @@ export class FinalAssignmentController {
 
   @Roles('admin', 'super_admin', 'user')
   @Get('course/:courseId')
-  async getByCourse(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-  ) {
+  async getByCourse(@Param('courseId') courseId: string, @Res() res: Response) {
     const finalAssignment = await this.finalAssignmentService.findByCourse(
       courseId,
       false,
@@ -212,4 +209,3 @@ export class FinalAssignmentController {
     };
   }
 }
-

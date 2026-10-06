@@ -239,7 +239,13 @@ describe('InvoiceService', () => {
 
     it('updates invoice status, channel, and paid_at when full payment PAID', async () => {
       installmentService.findByNo.mockResolvedValue(null);
-      const invoiceObj = { id: 'inv1', status: 'pending', paid_at: null, payment_method: null, xendit_payment_channel: null };
+      const invoiceObj = {
+        id: 'inv1',
+        status: 'pending',
+        paid_at: null,
+        payment_method: null,
+        xendit_payment_channel: null,
+      };
       const paymentObj = {
         id: 'p1',
         no: 'INV-12345',

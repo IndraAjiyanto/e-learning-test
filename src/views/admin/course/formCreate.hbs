@@ -10,7 +10,7 @@
   Field yang bergantung Paid Program dirender dengan x-if sehingga yang tidak
   tampil juga tidak ikut terkirim:
   - Paid (Yes) : quota, price, promo, month
-  - Free (No)  : quota, form, day, time_start, time_end
+  - Free (No)  : quota, day, time_start, time_end
   Opsi dropdown dibangun per-field (bukan {{json mentorings}}) agar data lain
   milik user mentor tidak ikut tertanam di halaman.
 --}}
@@ -182,21 +182,6 @@
                   numeric=true
                   highlight=true
                 }}
-              </template>
-
-              <template x-if="formData.paid === 'false'">
-                <div class='md:col-span-2'>
-                  {{> components/ui/super_admin/form/text_field
-                    id='form'
-                    name='form'
-                    field='form'
-                    type='url'
-                    label='Registration Form Link'
-                    placeholder='https://forms.google.com/...'
-                    icon='link'
-                    highlight=true
-                  }}
-                </div>
               </template>
             </div>
 
@@ -445,7 +430,7 @@
     const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
 
     const sectionPaths = (paid) => ({
-      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : ['form']), 'mentoringsId'],
+      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentoringsId'],
       'section-description': LANGS.map((l) => `description.${l}`),
       'section-schedule': [
         ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
@@ -466,7 +451,7 @@
 
     const emptyErrors = () => ({
       name: '', group: '', categoryId: '', jenis_kelasId: '', mentoringsId: '', paid: '', method: '',
-      quota: '', price: '', promo: '', form: '', month: '', day: '', time_start: '', time_end: '',
+      quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
       date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
       description: byLang(() => ''), locations: byLang(() => ''),
       materials: byLang(() => ''), learningTargets: byLang(() => ''), criteria: byLang(() => ''),
@@ -510,7 +495,7 @@
           name: '', group: '',
           categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
           jenis_kelasId: '', programType: 'bootcamp', mentoringsId: '', paid: 'true', method: 'online',
-          quota: '', price: '', promo: '', form: '', month: '', day: '', time_start: '', time_end: '',
+          quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
           date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
           description: byLang(() => ''), locations: byLang(() => ''),
         },
@@ -558,8 +543,6 @@
               return +digits(val) > 0 ? '' : 'Price is required.';
             case 'promo':
               return val && +digits(val) > +digits(d.price) ? 'Promo must not exceed the price.' : '';
-            case 'form':
-              return val && !isHttpUrl(val) ? 'Registration form link must be a valid URL.' : '';
             case 'month':
               return inRange(val, 1, 12) ? '' : 'Month must be between 1 and 12.';
             case 'day':

@@ -47,7 +47,7 @@ jobs:
             # doesn't source ~/.bashrc, so without this it falls back to the system Node (v18).
             export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm use 24 >/dev/null 2>&1 || nvm install 24
+            nvm use 24 >/dev/null 2>&1 || nvm use default >/dev/null 2>&1 || true
 
             # Helper: send a message to Telegram (won't fail the deploy if curl errors)
             notify() {
@@ -136,3 +136,4 @@ jobs:
             ${{ github.event.head_commit.message }}
             ```
             Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+

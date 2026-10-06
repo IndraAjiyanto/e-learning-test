@@ -39,4 +39,3 @@ export class SyllabusProgress {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-
