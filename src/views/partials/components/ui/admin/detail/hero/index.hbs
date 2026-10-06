@@ -87,8 +87,11 @@
         </div>
       </div>
 
-      {{!-- Delete + Edit (hanya tampil jika program belum memiliki peserta) --}}
-      {{#unless course.userCourses.length}}
+      {{!-- Delete + Edit (hanya tampil jika program belum memiliki peserta)
+           [NONAKTIF SEMENTARA] Guard disembunyikan sementara agar tombol selalu
+           tampil untuk keperluan bersih-bersih data. Kembalikan komentar di bawah
+           untuk mengaktifkan lagi konsep semula. --}}
+      {{!-- [NONAKTIF SEMENTARA] {{#unless course.userCourses.length}} --}}
       <div class='flex flex-row gap-[12px] justify-start items-center'>
         {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
      default — hapus dilakukan dari halaman list/edit. Kirim showDelete=true
@@ -107,7 +110,7 @@
           <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Program</span>
         </a>
       </div>
-      {{/unless}}
+      {{!-- [NONAKTIF SEMENTARA] {{/unless}} --}}
 
     </div>
   </div>

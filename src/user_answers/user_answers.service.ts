@@ -189,7 +189,11 @@ export class UserAnswersService {
       // Tanpa ini student yang menyelesaikan program non_bootcamp tidak pernah
       // mendapat `progress = true`, sehingga tombol Create Portfolio tidak
       // pernah muncul walaupun seluruh silabus sudah dikerjakan.
-      if (scores >= quiz.minScore && quiz.syllabus?.isFinal && quiz.syllabus.course) {
+      if (
+        scores >= quiz.minScore &&
+        quiz.syllabus?.isFinal &&
+        quiz.syllabus.course
+      ) {
         const existingUserCourse = await this.userCourseRepository.findOne({
           where: {
             course: { id: quiz.syllabus.course.id },

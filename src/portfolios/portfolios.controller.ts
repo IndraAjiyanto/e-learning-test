@@ -177,7 +177,11 @@ export class PortfoliosController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    res.render('user/portofolios/create', { user: req.user, courseId, bareShell: true });
+    res.render('user/portofolios/create', {
+      user: req.user,
+      courseId,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
@@ -240,7 +244,9 @@ export class PortfoliosController {
     res.render('user/portofolios/detail', {
       user: req.user,
       portfolio,
-      courseId, bareShell: true });
+      courseId,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
@@ -261,7 +267,9 @@ export class PortfoliosController {
     res.render('user/portofolios/edit', {
       user: req.user,
       portfolio,
-      courseId, bareShell: true });
+      courseId,
+      bareShell: true,
+    });
   }
 
   @Roles('user')
@@ -354,11 +362,7 @@ export class PortfoliosController {
         });
       }
 
-      flashToast(
-        req,
-        'Portfolio updated',
-        'Your changes have been saved.',
-      );
+      flashToast(req, 'Portfolio updated', 'Your changes have been saved.');
       return res.redirect(this.portfolioRedirectUrl(courseId));
     } catch (error: any) {
       if (isAjax) {

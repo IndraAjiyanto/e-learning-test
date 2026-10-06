@@ -405,24 +405,6 @@ function programData(mode) {
       results.push(this.validateDateField('startDate', 'Start Date'));
       results.push(this.validateDateField('endDate', 'End Date', 'startDate', 'Start Date'));
 
-      if (document.getElementById('form')) {
-        if (this.paidClass) {
-          this.clearField('form');
-        } else {
-          const formVal = this.val('form');
-          let formMsg = '';
-          if (formVal) {
-            try { new URL(formVal); } catch (e) {
-              formMsg = 'Registration Form Link must be a valid URL';
-            }
-          }
-          this.setFieldError('form', formMsg);
-          // Opsional: kosong = netral, terisi valid = hijau, terisi salah = merah.
-          if (formVal) { this.setFieldStatus('form', !formMsg); } else { this.fieldStatus['form'] = ''; }
-          if (formMsg) results.push(false);
-        }
-      }
-
       results.push(this.validateLocationLink());
 
       /* [DISABLED - ClickUp z8pbk8xwwx] Coment inputan Lessons, Learning Target dan Participants

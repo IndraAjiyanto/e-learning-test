@@ -10,4 +10,3 @@ export class ReviewUserAssignmentDto {
   @IsString()
   comment?: string;
 }
-

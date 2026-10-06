@@ -91,11 +91,7 @@ export class LogbookController {
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);
       const errorMessage = error.message || 'Failed to add log book';
-      flashToastError(
-        req,
-        'Logbook not saved',
-        errorMessage,
-      );
+      flashToastError(req, 'Logbook not saved', errorMessage);
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {

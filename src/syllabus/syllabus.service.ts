@@ -329,4 +329,3 @@ export class SyllabusService {
     return await this.syllabusRepository.remove(syllabus);
   }
 }
-

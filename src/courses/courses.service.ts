@@ -13,7 +13,10 @@ import { Session } from 'src/entities/session.entity';
 import { Category } from 'src/entities/category.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { capabilitiesFor } from './program-type';
-import { CourseStatus, COURSE_STATUSES } from 'src/entities/types/course-status';
+import {
+  CourseStatus,
+  COURSE_STATUSES,
+} from 'src/entities/types/course-status';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -1724,12 +1727,16 @@ export class CoursesService {
       throw new NotFoundException('Program not found');
     }
 
-    const participantCount = course.userCourses?.length || 0;
-    if (participantCount > 0) {
-      throw new BadRequestException(
-        `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
-      );
-    }
+    // [NONAKTIF SEMENTARA] Guard peserta di-nonaktifkan sementara agar program
+    // bisa dihapus untuk keperluan bersih-bersih data. Kembalikan blok di bawah
+    // untuk mengaktifkan lagi konsep semula (program ber-apeserta tidak boleh dihapus).
+    // Relasi user_courses memakai ON DELETE CASCADE, jadi enrollment ikut terhapus.
+    // const participantCount = course.userCourses?.length || 0;
+    // if (participantCount > 0) {
+    //   throw new BadRequestException(
+    //     `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
+    //   );
+    // }
 
     return await this.courseRepository.remove(course);
   }
@@ -1833,7 +1840,9 @@ export class CoursesService {
         : null;
 
       const isUnlocked = idx === 0 || previousPassed;
-      const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+      const isPassed = quiz
+        ? bestScore !== null && bestScore >= minScore
+        : true;
       const prevMinScore =
         idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
       previousPassed = isPassed;

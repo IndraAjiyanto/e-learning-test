@@ -1,10 +1,6 @@
 import { CreateCoursesDto } from '../dto/create-courses.dto';
 import { UpdateCoursesDto } from '../dto/update-courses.dto';
-import {
-  Method,
-  PROGRAM_TYPES,
-  ProgramType,
-} from 'src/entities/course.entity';
+import { Method, PROGRAM_TYPES, ProgramType } from 'src/entities/course.entity';
 
 /**
  * Anti-Corruption Layer untuk payload form "Create Program".
@@ -150,7 +146,7 @@ export function mapCreateProgram(
     // menyala apa pun isi medannya.
     logbookEnabled:
       toProgramType(body.program_type ?? body.programType) === 'non_bootcamp'
-        ? toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true
+        ? (toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true)
         : true,
   };
 
@@ -348,7 +344,7 @@ export function mapUpdateProgram(
     dto.programType = programType;
     dto.logbookEnabled =
       programType === 'non_bootcamp'
-        ? toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true
+        ? (toBool(body.logbook_enabled ?? body.logbookEnabled) ?? true)
         : true;
   }
 

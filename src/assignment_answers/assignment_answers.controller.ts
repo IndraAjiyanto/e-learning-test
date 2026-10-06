@@ -92,7 +92,9 @@ export class AnswerTasksController {
         user: req.user,
         assignment: assignments,
         assignment_answer: taskAnswers,
-        answerExists, bareShell: true });
+        answerExists,
+        bareShell: true,
+      });
     }
   }
 
@@ -160,11 +162,7 @@ export class AnswerTasksController {
         );
         res.redirect(`/answer-assigment/${assignmentId}`);
       } else if (req.user?.role.includes('user')) {
-        flashToast(
-          req,
-          'Changes Saved',
-          'Your answer has been updated.',
-        );
+        flashToast(req, 'Changes Saved', 'Your answer has been updated.');
         res.redirect(
           `/answer-assigment/${assignments.session.id}/${assignments.id}`,
         );

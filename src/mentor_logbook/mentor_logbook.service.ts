@@ -72,7 +72,9 @@ export class MentorLogbookService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
 
   async update(

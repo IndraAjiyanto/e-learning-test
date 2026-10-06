@@ -54,7 +54,8 @@ export class CertificatesController {
       console.error('Gagal membuat sertifikat:', error?.message ?? error);
       req.flash(
         'error',
-        error?.message || 'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
+        error?.message ||
+          'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
       );
       return res.redirect('/users/profile?tab=certificate');
     }

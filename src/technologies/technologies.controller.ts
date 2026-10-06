@@ -63,11 +63,7 @@ export class TechnologiesController {
       }
 
       await this.technologiesService.create(createTechnologiesDto);
-      flashToast(
-        req,
-        'Tool Created',
-        'The tool has been added successfully.',
-      );
+      flashToast(req, 'Tool Created', 'The tool has been added successfully.');
       res.redirect('/technology');
     } catch (error: any) {
       req.flash('error', error.message || 'Tool failed to create');
