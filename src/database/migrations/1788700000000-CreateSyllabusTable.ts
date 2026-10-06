@@ -146,3 +146,4 @@ export class CreateSyllabusTable1788700000000 implements MigrationInterface {
     }
   }
 }
+

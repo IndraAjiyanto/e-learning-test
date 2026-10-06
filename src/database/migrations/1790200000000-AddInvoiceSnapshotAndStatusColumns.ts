@@ -142,3 +142,4 @@ export class AddInvoiceSnapshotAndStatusColumns1790200000000 implements Migratio
     }
   }
 }
+

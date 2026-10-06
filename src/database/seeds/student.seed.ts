@@ -799,3 +799,4 @@ bootstrap().catch((err: unknown) => {
   console.error('student.seed gagal:', msg);
   process.exit(1);
 });
+

@@ -37,3 +37,4 @@ export class DailyStatistics {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+

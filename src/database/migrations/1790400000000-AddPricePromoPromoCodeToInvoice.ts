@@ -48,3 +48,4 @@ export class AddPricePromoPromoCodeToInvoice1790400000000 implements MigrationIn
     await dropColumnIfExists('price');
   }
 }
+

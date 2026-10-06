@@ -32,3 +32,4 @@ export class CreatePaymentSettings1790200000000 implements MigrationInterface {
     await q.query(`DROP TABLE IF EXISTS "payment_settings"`);
   }
 }
+

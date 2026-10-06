@@ -107,3 +107,4 @@ export class CreateFinalAssignmentTables1790100000000 implements MigrationInterf
     }
   }
 }
+

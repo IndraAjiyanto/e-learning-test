@@ -173,3 +173,4 @@ export class CreateCoursesDto {
   @IsString()
   time_end?: string;
 }
+

@@ -323,7 +323,7 @@ export class PortfoliosService {
         score: number | string;
         quiz?: { id: string };
       }
-      const syllabuses = (await this.courseRepository.manager
+      const syllabuses = ((await this.courseRepository.manager
         .getRepository('Syllabus')
         .find({
           where: { course: { id: courseId } },

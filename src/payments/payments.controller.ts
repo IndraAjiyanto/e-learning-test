@@ -413,8 +413,9 @@ export class PaymentsController {
       }
       const promoBody = (req.body as { promoCode?: unknown })?.promoCode;
       createPaymentDto.promoCode =
-        typeof promoBody === 'string' && promoBody.trim() !== ''
-          ? promoBody.trim()
+        typeof req.body?.promoCode === 'string' &&
+        req.body.promoCode.trim() !== ''
+          ? req.body.promoCode.trim()
           : undefined;
 
       const result = await this.paymentsService.create(createPaymentDto);
@@ -529,6 +530,18 @@ export class PaymentsController {
           'Cicilan Tidak Ditemukan',
           'Data cicilan tidak ditemukan.',
         );
+        return res.redirect('/program');
+      }
+      if (row.status === 'approved' || row.status === 'rejected') {
+        flashToastError(
+          req,
+          'Status Terkunci',
+          'Status cicilan tidak dapat diubah setelah disetujui atau ditolak.',
+        );
+        const courseId = row.payment?.course?.id;
+        if (courseId) {
+          return res.redirect(`/program/detail/program/admin/${courseId}`);
+        }
         return res.redirect('/program');
       }
       const approved = proses === 'approved';
@@ -771,6 +784,14 @@ export class PaymentsController {
           req,
           'Data Pembayaran Tidak Lengkap',
           'Pembayaran tidak terhubung ke user atau program.',
+        );
+        return res.redirect(backTo(courseId));
+      }
+      if (payment.process === 'approved' || payment.process === 'rejected') {
+        flashToastError(
+          req,
+          'Status Terkunci',
+          'Status pembayaran tidak dapat diubah setelah disetujui atau ditolak.',
         );
         return res.redirect(backTo(courseId));
       }

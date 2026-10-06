@@ -99,3 +99,31 @@ export function readFlashToastWarning(req: Request): ToastPayload | null {
     return null;
   }
 }
+
+const TOAST_INFO_FLASH_KEY = 'toastInfo';
+
+/**
+ * Kirim toast info untuk komponen ui/super_admin/toast/info.
+ */
+export function flashToastInfo(
+  req: Request,
+  title: string,
+  description: string,
+): void {
+  req.flash(TOAST_INFO_FLASH_KEY, JSON.stringify({ title, description }));
+}
+
+/** Baca flash toast info (sekali pakai); null bila kosong atau bukan JSON valid. */
+export function readFlashToastInfo(req: Request): ToastPayload | null {
+  const [raw] = req.flash(TOAST_INFO_FLASH_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<ToastPayload>;
+    if (!parsed?.title) return null;
+
+    return { title: parsed.title, description: parsed.description ?? '' };
+  } catch {
+    return null;
+  }
+}

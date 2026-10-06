@@ -53,3 +53,4 @@ export class FinalAssignment {
   @Exclude()
   userAssignments: UserAssignment[];
 }
+

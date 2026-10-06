@@ -12,3 +12,4 @@ export class CreateFinalAssignmentDto {
   @IsOptional()
   content?: string | object | null;
 }
+

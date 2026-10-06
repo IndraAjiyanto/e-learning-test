@@ -7,7 +7,12 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserActivityService } from 'src/user_activity/user-activity.service';
-import { flashToastWarning } from 'src/common/utils/toast.util';
+import {
+  flashToast,
+  flashToastError,
+  flashToastInfo,
+  flashToastWarning,
+} from 'src/common/utils/toast.util';
 
 @Controller()
 export class AuthController {
@@ -58,11 +63,19 @@ export class AuthController {
   ) {
     try {
       const user = await this.authService.createAcount(createUserDto);
-      req.flash('success', 'Registration successful! Please login');
+      flashToast(
+        req,
+        'Registration Successful',
+        'Verification email has been sent. Please check your inbox.',
+      );
       res.redirect('/users/send-verify-email?token=' + user.verificationToken);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'Registration failed');
+      flashToastError(
+        req,
+        'Registration Failed',
+        err.message || 'Registration failed',
+      );
       // res.redirect('/login');
       res.redirect('/register');
     }
@@ -83,7 +96,7 @@ export class AuthController {
       if (user!.isVerified === false) {
         passportReq.login(user, (err: unknown) => {
           if (err) {
-            req.flash('error', 'Email not verified');
+            flashToastError(req, 'Login Failed', 'Email not verified');
             return res.redirect('/login');
           }
           return res.redirect('/users/send-verify-email');
@@ -91,7 +104,7 @@ export class AuthController {
       } else {
         passportReq.login(user, (err: unknown) => {
           if (err) {
-            req.flash('error', 'Login failed');
+            flashToastError(req, 'Login Failed', 'Login failed');
             return res.redirect('/login');
           }
           this.userActivityService
@@ -121,7 +134,11 @@ export class AuthController {
       }
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'Email or password is incorrect');
+      flashToastError(
+        req,
+        'Login Failed',
+        err.message || 'Email or password is incorrect',
+      );
       return res.redirect('/login');
     }
   }
@@ -155,3 +172,4 @@ export class AuthController {
     res.redirect('/login');
   }
 }
+

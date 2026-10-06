@@ -64,3 +64,4 @@ export class Syllabus {
   @JoinColumn({ name: 'courseId' })
   course: Course;
 }
+
