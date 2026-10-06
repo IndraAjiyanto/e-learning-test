@@ -48,7 +48,7 @@ export class WeeksService {
       throw new NotFoundException('course Not Found');
     }
     if (createWeekDto.weekNumber === 1) {
-      const data = await this.weeksRepository.create({
+      const data = this.weeksRepository.create({
         ...createWeekDto,
         course: course,
       });
@@ -101,7 +101,7 @@ export class WeeksService {
         if (createWeekDto.isFinalCheck === 'true') {
           createWeekDto.isFinal = true;
         }
-        const data = await this.weeksRepository.create({
+        const data = this.weeksRepository.create({
           ...createWeekDto,
           course: course,
         });
@@ -174,7 +174,7 @@ export class WeeksService {
       .where('l.sessionId IN (:...sessionIds)', { sessionIds })
       .andWhere("l.process = 'approved'")
       .groupBy('l.sessionId')
-      .getRawMany();
+      .getRawMany<{ sessionId: string }>();
 
     const completedSessionIds = new Set(
       approvedLogbooks.map((item) => item.sessionId),
