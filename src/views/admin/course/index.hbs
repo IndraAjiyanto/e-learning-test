@@ -27,7 +27,69 @@
 
       {{!-- Toolbar --}}
       <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
-        {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
+        <div class='flex flex-col sm:flex-row gap-[12px] items-stretch sm:items-center flex-1'>
+          {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
+
+          {{!-- Status Filter Dropdown (Figma: node-id=521-1697) --}}
+          <div class='relative w-full sm:w-[220px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
+            <button
+              type='button'
+              @click='openStatus = !openStatus'
+              class='box-border flex flex-row justify-between items-center px-[16px] py-[10px] w-full h-[42px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] focus:outline-none transition-colors cursor-pointer text-left'
+            >
+              <span
+                class='flex-1 truncate font-["Montserrat",sans-serif] text-[14px] leading-[20px] font-normal'
+                :class="selectedStatus ? 'text-[#1A202C]' : 'text-[#718096]'"
+                x-text="statusOptions.find(o => o.value === selectedStatus)?.label || 'All Status'"
+              ></span>
+              <svg
+                class='w-[10px] h-[5px] shrink-0 ml-2 transition-transform duration-200'
+                :class="openStatus ? 'rotate-180' : ''"
+                viewBox='0 0 10 5'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path d='M1 1L5 4L9 1' stroke='#718096' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/>
+              </svg>
+            </button>
+
+            {{!-- Dropdown Menu Options --}}
+            <div
+              x-show='openStatus'
+              x-transition:enter='transition ease-out duration-100'
+              x-transition:enter-start='transform opacity-0 scale-95'
+              x-transition:enter-end='transform opacity-100 scale-100'
+              x-transition:leave='transition ease-in duration-75'
+              x-transition:leave-start='transform opacity-100 scale-100'
+              x-transition:leave-end='transform opacity-0 scale-95'
+              class='absolute left-0 mt-1 w-full bg-white rounded-[8px] border border-[#D9D9D9] shadow-lg py-1 z-50 overflow-hidden'
+              style='display: none;'
+            >
+              <button
+                type='button'
+                @click="filterStatus(''); openStatus = false"
+                class='w-full px-[16px] py-[10px] text-left font-["Montserrat",sans-serif] text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
+                :class="!selectedStatus ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+              >
+                <span>All Status</span>
+                <i x-show='!selectedStatus' class='fas fa-check text-xs text-[#2B6CB0]'></i>
+              </button>
+
+              <template x-for='option in statusOptions' :key='option.value'>
+                <button
+                  type='button'
+                  @click="filterStatus(option.value); openStatus = false"
+                  class='w-full px-[16px] py-[10px] text-left font-["Montserrat",sans-serif] text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
+                  :class="selectedStatus === option.value ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+                >
+                  <span x-text='option.label'></span>
+                  <i x-show='selectedStatus === option.value' class='fas fa-check text-xs text-[#2B6CB0]'></i>
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+
         <div class='w-[158px] shrink-0 self-end sm:self-auto'>
           {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
         </div>
@@ -68,6 +130,13 @@ function kelasTable() {
   return {
     kelasList: [],
     searchInput: '',
+    selectedStatus: '',
+    statusOptions: [
+      { value: 'unlaunch', label: 'Unpublished' },
+      { value: 'launch', label: 'Published' },
+      { value: 'learning', label: 'Learning in progress' },
+      { value: 'done', label: 'Completed' },
+    ],
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
@@ -80,6 +149,7 @@ function kelasTable() {
       try {
         const params = new URLSearchParams();
         if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
+        if (this.selectedStatus) params.set('status', this.selectedStatus);
         params.set('page', this.currentPage);
         params.set('limit', this.size);
 
@@ -105,6 +175,12 @@ function kelasTable() {
       }, 300);
     },
 
+    filterStatus(status) {
+      this.selectedStatus = status || '';
+      this.currentPage = 1;
+      this.fetchKelas();
+    },
+
     async changePage(page) {
       if (page < 1 || page > this.totalPages) return;
       this.currentPage = page;
@@ -119,10 +195,10 @@ function kelasTable() {
     getStatusLabel(status) {
       const s = status || 'unlaunch';
       switch (s) {
-        case 'launch': return 'Launch';
-        case 'learning': return 'Learning';
-        case 'done': return 'Done';
-        default: return 'Unlaunch';
+        case 'launch': return 'Published';
+        case 'learning': return 'Learning in progress';
+        case 'done': return 'Completed';
+        default: return 'Unpublished';
       }
     },
 

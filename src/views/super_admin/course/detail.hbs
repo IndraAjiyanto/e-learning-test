@@ -169,6 +169,7 @@
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_mentor' label='Log Book Mentor' }}
         {{> components/ui/super_admin/tabs/panel/index name='mentor' label='Mentor' }}
+        {{> components/ui/super_admin/tabs/panel/index name='portfolio' label='Portfolio' }}
       </nav>
 
       <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
@@ -186,6 +187,7 @@
       <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'mentor'">{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'portfolio'">{{> components/ui/super_admin/program/portfolio_tab/index courseId=course.id }}</div>
     </div>
 
   </div>

@@ -38,7 +38,9 @@ export class FooterService {
     if (cached) return cached;
 
     const data = await this.categoryRepository.find({
-      select: ['id', 'name'],
+      // name_en/name_ja dibutuhkan view footer (nameByLang). Kolom nullable,
+      // jadi baris lama yang belum diisi tampil sebagai `name` (Indonesia).
+      select: ['id', 'name', 'name_en', 'name_ja'],
       order: { createdAt: 'ASC' },
     });
     await this.cacheManager.set(cacheKey, data, 60 * 1000);

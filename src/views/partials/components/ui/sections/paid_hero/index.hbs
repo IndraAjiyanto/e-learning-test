@@ -53,7 +53,7 @@
       {{!-- Frame: headline + headline + subheading --}}
       <div class="flex flex-col items-start gap-4">
         <h1 class="max-w-[809px] font-inter text-3xl font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B] lg:text-[52px]">
-          {{#if category.name}}{{category.name}}{{else}}{{t 'test.categoryPaidProgram.hero.eyebrow'}}{{/if}}
+          {{#if category.name}}{{nameByLang category lang}}{{else}}{{t 'test.categoryPaidProgram.hero.eyebrow'}}{{/if}}
         </h1>
 
         <p class="max-w-full font-inter text-base leading-[165%] text-[#4B5563]">
@@ -112,7 +112,7 @@
       <div class="aspect-[16/9] w-full overflow-hidden rounded-xl lg:rounded-2xl">
         <img
           src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
-          alt="{{category.name}}"
+          alt="{{nameByLang category lang}}"
           onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
           class="size-full object-cover object-center"
         />

@@ -20,7 +20,7 @@
     {{!-- section-header (Figma Node 2591:836) --}}
     <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
       <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[110%] tracking-tight text-[#0B1F3B]">
-        <span class="text-[#6EB6E5]">{{#if category.name}}{{category.name}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span> {{default (t 'test.categoryFreeProgram.program.title') 'for You'}}
+        <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span> {{default (t 'test.categoryFreeProgram.program.title') 'for You'}}
       </h2>
       <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
         {{default (t 'test.categoryFreeProgram.program.description') 'Choose the short class that matches your interests and start building practical skills.'}}

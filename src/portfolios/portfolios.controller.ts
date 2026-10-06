@@ -381,7 +381,7 @@ export class PortfoliosController {
     }
   }
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Delete(':portfolioId/:courseId')
   async remove(
     @Param('portfolioId') portfolioId: string,
@@ -393,11 +393,16 @@ export class PortfoliosController {
       req.xhr ||
       (req.headers.accept && req.headers.accept.includes('application/json'));
 
+    const isPrivileged =
+      req.user?.role === 'admin' || req.user?.role === 'super_admin';
+
     try {
-      const portfolio = await this.portfoliosService.findOwnedOne(
-        portfolioId,
-        req.user?.id,
-      );
+      const portfolio = isPrivileged
+        ? await this.portfoliosService.findOne(portfolioId)
+        : await this.portfoliosService.findOwnedOne(
+            portfolioId,
+            req.user?.id,
+          );
       for (const imageUrl of portfolio.image ?? []) {
         await this.portfoliosService.deleteFile(imageUrl);
       }
@@ -411,6 +416,9 @@ export class PortfoliosController {
       }
 
       flashToast(req, 'Portfolio deleted', 'The portfolio has been removed.');
+      if (isPrivileged) {
+        return res.redirect(`/program/detail/program/admin/${courseId}`);
+      }
       res.redirect(this.portfolioRedirectUrl(courseId));
     } catch (error: any) {
       if (isAjax) {
@@ -425,6 +433,9 @@ export class PortfoliosController {
         'Portfolio not deleted',
         error.message || 'Please try again in a moment.',
       );
+      if (isPrivileged) {
+        return res.redirect(`/program/detail/program/admin/${courseId}`);
+      }
       res.redirect(this.portfolioRedirectUrl(courseId));
     }
   }
