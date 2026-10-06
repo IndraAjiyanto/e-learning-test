@@ -1,0 +1,274 @@
+{{!--
+  Komponen: Program Portfolio Tab (Super Admin)
+  Lokasi: src/views/partials/components/ui/super_admin/program/portfolio_tab/index.hbs
+  Level: L2 Section (scoped super_admin)
+
+  Panel tab "Portfolio" di halaman detail program Super Admin:
+  search + tabel portofolio + pagination + modal detail + aksi delete.
+  Datanya diambil sendiri via GET /program/portfolio/:courseId.
+
+  Halaman pemanggil WAJIB memuat sekali:
+  - components/ui/super_admin/table/client_table  (factory clientTable)
+  - components/ui/super_admin/table/formatters    (formatDate)
+  - components/ui/super_admin/modal/delete_confirm/index (openDeleteModal)
+
+  Props:
+  - courseId : string (wajib) — dipakai untuk endpoint dan aksi delete
+--}}
+<div
+  class='flex flex-col gap-3.5'
+  x-data='clientTable({ url: "/program/portfolio/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["title", "description", "user.username"] })'
+  x-init='load()'
+>
+  {{> components/ui/super_admin/table/toolbar
+    placeholder='Search portfolio..'
+    searchLabel='Search program portfolio'
+    hideCreate=true
+    fullWidth=true
+  }}
+
+  <div class='flex flex-col gap-5' x-data='{ parentId: {{json courseId}} }'>
+    {{#> components/ui/super_admin/table/card tableClass='min-w-[960px]'}}
+      <colgroup>
+        <col class='w-[66px]' />
+        <col class='w-[240px]' />
+        <col class='w-[380px]' />
+        <col class='w-[170px]' />
+        <col class='w-[104px]' />
+      </colgroup>
+      <thead>
+        <tr>
+          {{> components/ui/super_admin/table/header_cell label='No' }}
+          {{> components/ui/super_admin/table/header_cell label='Title' }}
+          {{> components/ui/super_admin/table/header_cell label='Description' }}
+          {{> components/ui/super_admin/table/header_cell label='Username' }}
+          {{> components/ui/super_admin/table/header_cell label='Action' }}
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for='(row, index) in rows' :key='row.id'>
+          <tr class='transition-colors hover:bg-[#fafafa]'>
+            {{> components/ui/super_admin/table/cell
+              text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
+            }}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block font-inter text-sm font-medium leading-5 text-[#171717]'
+                x-text='row.title || "—"'
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <span
+                class='block line-clamp-2 font-inter text-sm leading-5 text-[#525252]'
+                :title='row.description || ""'
+                x-text='row.description || "—"'
+              ></span>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell}}
+              <div class='flex items-center gap-2'>
+                {{> components/ui/super_admin/table/avatar
+                  src='row.user?.profile'
+                  name='row.user?.username || ""'
+                  avatarClass='h-7 w-7'
+                }}
+                <span
+                  class='truncate font-inter text-sm leading-5 text-[#525252]'
+                  x-text='row.user?.username || "—"'
+                ></span>
+              </div>
+            {{/components/ui/super_admin/table/cell}}
+
+            {{#> components/ui/super_admin/table/cell variant='action'}}
+              <div class='flex items-center gap-1'>
+                {{!-- Button Detail: memicu modal detail portofolio --}}
+                <button
+                  type='button'
+                  @click="openDetailModal('portfolio-detail', row)"
+                  title='View portfolio detail'
+                  aria-label='View portfolio detail'
+                  class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+                >
+                  {{!-- lucide: eye --}}
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                    <path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z' />
+                    <circle cx='12' cy='12' r='3' />
+                  </svg>
+                </button>
+
+                {{!-- Button Delete: memicu modal konfirmasi delete --}}
+                <form :action="'/portfolio/' + row.id + '/' + parentId + '?_method=DELETE'" method='post'>
+                  <button
+                    type='button'
+                    onclick='openDeleteModal(this)'
+                    title='Delete portfolio'
+                    aria-label='Delete portfolio'
+                    class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
+                  >
+                    {{!-- lucide: trash-2 --}}
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                      <path d='M3 6h18' />
+                      <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+                      <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+                      <line x1='10' x2='10' y1='11' y2='17' />
+                      <line x1='14' x2='14' y1='11' y2='17' />
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            {{/components/ui/super_admin/table/cell}}
+          </tr>
+        </template>
+
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
+          Loading portfolios…
+        {{/components/ui/super_admin/table/message_row}}
+
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='5'}}
+          No portfolios found.
+        {{/components/ui/super_admin/table/message_row}}
+      </tbody>
+    {{/components/ui/super_admin/table/card}}
+
+    <div x-show='totalPages > 1'>
+      {{> components/ui/super_admin/table/pagination }}
+    </div>
+  </div>
+</div>
+
+{{!-- Modal Detail Portfolio --}}
+{{#> components/ui/super_admin/modal/detail/index
+  name='portfolio-detail'
+  title='Portfolio Detail'
+  maxWidth='max-w-[800px]'
+}}
+  <div class='flex flex-col gap-6' x-data='{ activeImgIndex: 0 }'>
+    {{!-- Showcase Image Gallery --}}
+    <template x-if='row.image && row.image.length > 0'>
+      <div class='flex flex-col gap-2.5'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Portfolio Image</span>
+        <div class='relative flex max-h-[360px] w-full items-center justify-center overflow-hidden rounded-xl border border-[#e5e5e5] bg-[#0b1528]'>
+          <img
+            :src='row.image[activeImgIndex] || row.image[0]'
+            :alt='row.title'
+            class='max-h-[360px] w-full object-contain'
+          />
+
+          <template x-if='row.image.length > 1'>
+            <div class='pointer-events-none absolute inset-0 flex items-center justify-between p-3'>
+              <button
+                type='button'
+                @click.stop='activeImgIndex = (activeImgIndex - 1 + row.image.length) % row.image.length'
+                class='pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80'
+                aria-label='Previous image'
+              >
+                <svg class='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7' />
+                </svg>
+              </button>
+              <button
+                type='button'
+                @click.stop='activeImgIndex = (activeImgIndex + 1) % row.image.length'
+                class='pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80'
+                aria-label='Next image'
+              >
+                <svg class='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7' />
+                </svg>
+              </button>
+            </div>
+          </template>
+
+          <template x-if='row.image.length > 1'>
+            <span class='absolute right-3 top-3 rounded-full bg-black/60 px-2.5 py-0.5 font-inter text-xs font-medium text-white'>
+              <span x-text='activeImgIndex + 1'></span> / <span x-text='row.image.length'></span>
+            </span>
+          </template>
+        </div>
+
+        <template x-if='row.image.length > 1'>
+          <div class='flex items-center gap-2 overflow-x-auto pb-1'>
+            <template x-for='(img, idx) in row.image' :key='idx'>
+              <button
+                type='button'
+                @click='activeImgIndex = idx'
+                class='h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition'
+                :class='activeImgIndex === idx ? "border-[#003060] ring-2 ring-[#003060]/30" : "border-transparent opacity-60 hover:opacity-100"'
+              >
+                <img :src='img' alt='' class='h-full w-full object-cover' />
+              </button>
+            </template>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    {{!-- Metadata Grid --}}
+    <div class='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Title</span>
+        <h3 class='font-inter text-base font-semibold text-[#171717]' x-text='row.title || "—"'></h3>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Username</span>
+        <p class='font-inter text-sm font-medium text-[#171717]' x-text='row.user?.username || "—"'></p>
+        <p class='font-inter text-xs text-[#737373]' x-text='row.user?.email || ""'></p>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Date Upload</span>
+        <p class='font-inter text-sm text-[#525252]' x-text='formatDate(row.createdAt)'></p>
+      </div>
+
+      <div class='flex flex-col gap-1'>
+        <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Portfolio Link</span>
+        <template x-if='row.link'>
+          <div>
+            <a
+              :href='row.link'
+              target='_blank'
+              rel='noopener noreferrer'
+              class='inline-flex items-center gap-1.5 rounded-lg bg-[#003060] px-3.5 py-1.5 font-inter text-sm font-medium text-white shadow-sm transition hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/50'
+            >
+              <span>View Portfolio</span>
+              <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14' />
+              </svg>
+            </a>
+          </div>
+        </template>
+        <template x-if='!row.link'>
+          <p class='font-inter text-sm text-[#737373]'>—</p>
+        </template>
+      </div>
+    </div>
+
+    {{!-- Project Description --}}
+    <div class='flex flex-col gap-1.5'>
+      <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Project Description</span>
+      <div
+        class='whitespace-pre-line rounded-lg bg-[#f5f5f5] p-3.5 font-inter text-sm leading-6 text-[#404040]'
+        x-text='row.description || "No description provided."'
+      ></div>
+    </div>
+
+    {{!-- Project Review (contentHTML) --}}
+    <div class='flex flex-col gap-1.5'>
+      <span class='font-inter text-xs font-semibold uppercase tracking-wider text-[#737373]'>Project Review</span>
+      <template x-if='row.contentHtml'>
+        <div
+          class='prose prose-sm max-w-none rounded-lg border border-[#e5e5e5] bg-white p-4 font-inter text-[#404040]'
+          x-html='row.contentHtml'
+        ></div>
+      </template>
+      <template x-if='!row.contentHtml'>
+        <div class='rounded-lg bg-[#f5f5f5] p-3.5 font-inter text-sm italic text-[#737373]'>
+          No review content available.
+        </div>
+      </template>
+    </div>
+  </div>
+{{/components/ui/super_admin/modal/detail/index}}

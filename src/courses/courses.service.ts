@@ -1190,6 +1190,7 @@ export class CoursesService {
   async findPaginatedCourses(params: {
     search?: string;
     alphabet?: string;
+    status?: string;
     page: number;
     limit: number;
     userId?: string; // kalau ada = admin, kalau tidak = super_admin
@@ -1220,6 +1221,10 @@ export class CoursesService {
       query.andWhere('course.name ILIKE :alphabet', {
         alphabet: `${params.alphabet}%`,
       });
+    }
+
+    if (params.status) {
+      query.andWhere('course.status = :status', { status: params.status });
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);
@@ -1542,6 +1547,30 @@ export class CoursesService {
     });
   }
 
+  async findCoursePortfolios(courseId: string) {
+    return await this.portfolioRepository
+      .createQueryBuilder('portfolio')
+      .leftJoin('portfolio.course', 'course')
+      .leftJoinAndSelect('portfolio.user', 'user')
+      .select([
+        'portfolio.id',
+        'portfolio.title',
+        'portfolio.description',
+        'portfolio.link',
+        'portfolio.content',
+        'portfolio.contentHtml',
+        'portfolio.image',
+        'portfolio.createdAt',
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.profile',
+      ])
+      .where('course.id = :courseId', { courseId })
+      .orderBy('portfolio.createdAt', 'DESC')
+      .getMany();
+  }
+
   async findCourseMentoring(courseId: string) {
     return await this.userRepository.findOne({
       where: { mentoring: { course: { id: courseId } } },
@@ -1727,16 +1756,12 @@ export class CoursesService {
       throw new NotFoundException('Program not found');
     }
 
-    // [NONAKTIF SEMENTARA] Guard peserta di-nonaktifkan sementara agar program
-    // bisa dihapus untuk keperluan bersih-bersih data. Kembalikan blok di bawah
-    // untuk mengaktifkan lagi konsep semula (program ber-apeserta tidak boleh dihapus).
-    // Relasi user_courses memakai ON DELETE CASCADE, jadi enrollment ikut terhapus.
-    // const participantCount = course.userCourses?.length || 0;
-    // if (participantCount > 0) {
-    //   throw new BadRequestException(
-    //     `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
-    //   );
-    // }
+    const participantCount = course.userCourses?.length || 0;
+    if (participantCount > 0) {
+      throw new BadRequestException(
+        `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
+      );
+    }
 
     return await this.courseRepository.remove(course);
   }
