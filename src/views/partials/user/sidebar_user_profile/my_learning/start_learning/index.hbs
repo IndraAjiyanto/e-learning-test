@@ -380,7 +380,7 @@
                         <template x-if="hasAttended(session) && getAssignments(session).length > 0">
                           <div class="w-full flex flex-col gap-2.5 pt-2 border-t border-[#E6ECF7]">
                             <span class="font-inter font-semibold text-sm text-[#17345E]">{{t 'test.startLearning.assignment'}}</span>
-                            <template x-for="task in getAssignments(session)" :key="task.id">
+                            <template x-for="(task, taskIndex) in getAssignments(session)" :key="task.id">
                               <div class="w-full">
                                 <template x-if="!task.taskAnswers?.length && !task.jawaban_tugas?.length">
                                   <a
@@ -390,7 +390,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
-                                    <span>{{t 'test.startLearning.startAssignment'}}</span>
+                                    <span><span x-text="taskIndex + 1"></span> - {{t 'test.startLearning.startAssignment'}}</span>
                                   </a>
                                 </template>
 
@@ -402,7 +402,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <span>{{t 'test.startLearning.assignmentCompleted'}}</span>
+                                    <span><span x-text="taskIndex + 1"></span> - {{t 'test.startLearning.assignmentCompleted'}}</span>
                                   </a>
                                 </template>
 
@@ -414,7 +414,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <span>{{t 'test.startLearning.assignmentUnderReview'}}</span>
+                                    <span><span x-text="taskIndex + 1"></span> - {{t 'test.startLearning.assignmentUnderReview'}}</span>
                                   </a>
                                 </template>
 
@@ -426,7 +426,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                     </svg>
-                                    <span>{{t 'test.startLearning.reviseAssignment'}}</span>
+                                    <span><span x-text="taskIndex + 1"></span> - {{t 'test.startLearning.reviseAssignment'}}</span>
                                   </a>
                                 </template>
                               </div>

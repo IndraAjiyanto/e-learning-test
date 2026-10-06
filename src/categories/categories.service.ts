@@ -90,11 +90,26 @@ export class CategoriesService {
     return category;
   }
 
+  /**
+   * Program untuk section "program" di halaman detail category.
+   *
+   * Hanya program yang statusnya Published/launch yang dikirim ke view
+   * (launch = true ATAU status = 'launch'; keduanya biasanya sinkron, tapi
+   * jalur updateLaunch lama hanya mengubah kolom launch). Jika hasilnya
+   * kosong, section program dirender sebagai Coming Soon.
+   */
   async findCourseByCategory(categoryId: string) {
-    return await this.courseRepository.find({
-      where: { category: { id: categoryId }, launch: true },
-      relations: ['courseType', 'category', 'userCourses'],
-    });
+    return await this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.userCourses', 'userCourses')
+      .where('category.id = :categoryId', { categoryId })
+      .andWhere('(course.launch = :launch OR course.status = :status)', {
+        launch: true,
+        status: 'launch',
+      })
+      .getMany();
   }
 
   async findCourseByCategoryAll(categoryId: string) {
