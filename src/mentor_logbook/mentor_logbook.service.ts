@@ -72,8 +72,9 @@ export class MentorLogbookService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error: any) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(message);
     }
   }
 
@@ -97,4 +98,3 @@ export class MentorLogbookService {
     await this.mentorLogbookRepository.remove(logbooks);
   }
 }
-

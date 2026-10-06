@@ -43,7 +43,7 @@ export class CategoriesService {
   async create(createCategoriesDto: CreateCategoriesDto) {
     const { courseType: courseTypeIds, ...categoryData } = createCategoriesDto;
     this.normalizeLangNames(categoryData);
-    const category = await this.categoryRepository.create(categoryData);
+    const category = this.categoryRepository.create(categoryData);
 
     if (courseTypeIds && courseTypeIds.length > 0) {
       const courseTypes =
@@ -292,4 +292,3 @@ export class CategoriesService {
     return { message: 'category successfully deleted' };
   }
 }
-

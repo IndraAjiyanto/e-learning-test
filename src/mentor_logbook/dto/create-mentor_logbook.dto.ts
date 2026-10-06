@@ -19,4 +19,3 @@ export class CreateMentorLogbookDto {
   @IsUUID()
   sessionId: string;
 }
-

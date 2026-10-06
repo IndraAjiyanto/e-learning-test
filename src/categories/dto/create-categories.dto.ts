@@ -40,4 +40,3 @@ export class CreateCategoriesDto {
   @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';
 }
-

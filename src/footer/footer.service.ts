@@ -51,4 +51,3 @@ export class FooterService {
     await this.cacheManager.del('footer_data');
   }
 }
-

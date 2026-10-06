@@ -45,8 +45,7 @@ export class WeeksController {
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: unknown) {
-      const err = error as Error;
-      req.flash('error', getErrMessage(error, 'session unsucces create'));
+      req.flash('error', getErrorMessage(error, 'session unsucces create'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -149,8 +148,7 @@ export class WeeksController {
       );
       res.redirect(`/week/${weeksId}`);
     } catch (error: unknown) {
-      const err = error as Error;
-      req.flash('error', getErrMessage(error, 'week failed updated'));
+      req.flash('error', getErrorMessage(error, 'week failed updated'));
       res.redirect(`/week/${weeksId}`);
     }
   }
@@ -168,8 +166,7 @@ export class WeeksController {
       flashToast(req, 'Week Deleted', 'The week has been permanently removed.');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: unknown) {
-      const err = error as Error;
-      req.flash('error', getErrMessage(error, 'week failed deleted'));
+      req.flash('error', getErrorMessage(error, 'week failed deleted'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

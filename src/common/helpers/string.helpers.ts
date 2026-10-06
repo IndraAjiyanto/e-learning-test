@@ -81,7 +81,7 @@ export const stringHelpers = {
       try {
         const parsed = JSON.parse(obj) as Record<string, string>;
         if (parsed && typeof parsed === 'object') {
-          return pickLang(parsed as Record<string, unknown>, lang);
+          return pickLang(parsed, lang);
         }
       } catch {
         return obj;
@@ -175,4 +175,3 @@ export const stringHelpers = {
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 };
-

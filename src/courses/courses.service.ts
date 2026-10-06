@@ -1904,4 +1904,3 @@ export class CoursesService {
     });
   }
 }
-
