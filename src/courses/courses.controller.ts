@@ -498,6 +498,7 @@ export class CoursesController {
     } catch (error: unknown) {
       flashToastError(
         req,
+        'Update Failed',
         error instanceof Error
           ? error.message
           : 'Failed to update final assignment',
