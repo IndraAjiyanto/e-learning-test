@@ -43,6 +43,7 @@
         </div>
 
         {{!-- Actions --}}
+        {{#unless isAttempted}}
         <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
           <form action='/quiz/{{quiz.id}}/{{quiz.weeks.id}}?_method=DELETE' method='POST'>
             <button type='button'
@@ -58,6 +59,7 @@
             <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Quiz</span>
           </a>
         </div>
+        {{/unless}}
       </div>
 
     </div>
