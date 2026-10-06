@@ -23,4 +23,3 @@ export class PaymentSettings {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

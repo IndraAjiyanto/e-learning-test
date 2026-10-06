@@ -19,6 +19,18 @@ import * as ps from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
 
+interface QuizRef {
+  id: string;
+  minScore?: number;
+}
+interface SyllabusRef {
+  quiz?: QuizRef[];
+}
+interface ScoreRef {
+  score: number | string;
+  quiz?: { id: string };
+}
+
 @Injectable()
 export class PortfoliosService {
   constructor(
@@ -312,18 +324,7 @@ export class PortfoliosService {
 
     // Untuk program berbasis silabus, verifikasi secara dinamis jika progress belum true
     if (isNonBootcamp && !userCourse.progress) {
-      interface QuizRef {
-        id: string;
-        minScore?: number;
-      }
-      interface SyllabusRef {
-        quiz?: QuizRef[];
-      }
-      interface ScoreRef {
-        score: number | string;
-        quiz?: { id: string };
-      }
-      const syllabuses = ((await this.courseRepository.manager
+      const syllabuses = (await this.courseRepository.manager
         .getRepository('Syllabus')
         .find({
           where: { course: { id: courseId } },

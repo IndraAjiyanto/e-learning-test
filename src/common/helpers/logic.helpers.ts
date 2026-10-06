@@ -5,7 +5,7 @@ export const logicHelpers = {
   gt: (a: unknown, b: unknown) => Number(a) > Number(b),
   lte: (a: unknown, b: unknown) => Number(a) <= Number(b),
   lt: (a: unknown, b: unknown) => Number(a) < Number(b),
-  or: (...args: any[]) => {
+  or: (...args: unknown[]) => {
     args.pop();
     return args.some((arg) => {
       if (Array.isArray(arg)) return arg.length > 0;
@@ -15,7 +15,7 @@ export const logicHelpers = {
     });
   },
   not: (value: unknown) => !value,
-  coalesce: (...args: any[]) => {
+  coalesce: (...args: unknown[]): unknown => {
     args.pop();
     for (const a of args) {
       if (Array.isArray(a) && a.length > 0) return a[0];
@@ -40,7 +40,7 @@ export const logicHelpers = {
       Number(course.price) > 0,
     );
   },
-  and: (...args: any[]) => {
+  and: (...args: unknown[]) => {
     args.pop();
     return args.every((arg) => {
       if (Array.isArray(arg)) return arg.length > 0;
@@ -114,4 +114,3 @@ export const logicHelpers = {
     return options.inverse(this);
   },
 };
-

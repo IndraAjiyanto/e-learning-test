@@ -113,12 +113,10 @@ export class UsersController {
         'Password reset link has been sent to your email. Please check your inbox.',
       );
       return res.redirect('/users/forgot-password?token=' + token);
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Failed to Send Reset Link',
-        error.message || 'Your email is not registered',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : 'Your email is not registered';
+      flashToastError(req, 'Failed to Send Reset Link', msg);
 
       try {
         const user = await this.usersService.findUserByEmail(
@@ -179,12 +177,10 @@ export class UsersController {
         'Your password has been reset successfully! You can now login with your new password.',
       );
       res.redirect('/login');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Failed to Reset Password',
-        error.message || 'Failed to reset password',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : 'Failed to reset password';
+      flashToastError(req, 'Failed to Reset Password', msg);
       res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
     }
   }
@@ -227,12 +223,12 @@ export class UsersController {
         'Please login to resend verification email.',
       );
       return res.redirect('/login');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Failed to Send Verification Email',
-        error.message || 'Failed to send verification email',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to send verification email';
+      flashToastError(req, 'Failed to Send Verification Email', msg);
       return res.redirect('/users/send-verify-email');
     }
   }
@@ -253,12 +249,12 @@ export class UsersController {
         'Verification email has been sent. Please check your inbox.',
       );
       return res.redirect('/users/send-verify-email');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Failed to Send Verification Email',
-        error.message || 'Failed to send verification email',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to send verification email';
+      flashToastError(req, 'Failed to Send Verification Email', msg);
       return res.redirect('/users/send-verify-email');
     }
   }
@@ -312,12 +308,12 @@ export class UsersController {
         'Please login first to access the verification page.',
       );
       return res.redirect('/login');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Verification Error',
-        error.message || 'Failed to load verification page.',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load verification page.';
+      flashToastError(req, 'Verification Error', msg);
       return res.render('verify-email');
     }
   }
@@ -337,12 +333,12 @@ export class UsersController {
         'Email verified successfully! You can now login.',
       );
       return res.redirect('/users/verify-email-success');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Verification Failed',
-        error.message || 'Email verification failed or token has expired.',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Email verification failed or token has expired.';
+      flashToastError(req, 'Verification Failed', msg);
       return res.redirect('/login');
     }
   }

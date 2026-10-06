@@ -21,4 +21,3 @@ export class AddProofToInstallmentPayment1790300000000 implements MigrationInter
     );
   }
 }
-

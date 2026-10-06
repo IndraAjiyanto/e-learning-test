@@ -329,4 +329,3 @@ export class Course {
   @Column({ name: 'time_end', nullable: true, type: 'time' })
   time_end: string | null;
 }
-

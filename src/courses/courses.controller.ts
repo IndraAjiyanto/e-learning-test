@@ -1634,10 +1634,7 @@ export class CoursesController {
     } catch (error: unknown) {
       const msg =
         error instanceof Error ? error.message : 'Failed to remove program';
-      flashToastError(
-        req,
-        'Failed to Remove Program' msg
-      );
+      flashToastError(req, 'Failed to Remove Program', msg);
       return res.redirect(
         previous || `/program/detail/program/admin/${courseId}`,
       );

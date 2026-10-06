@@ -513,4 +513,3 @@ export class SearchService {
     };
   }
 }
-

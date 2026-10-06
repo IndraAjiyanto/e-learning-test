@@ -26,4 +26,3 @@ export class CreateSyllabusDto {
   @IsNumber()
   syllabusNumber?: number;
 }
-

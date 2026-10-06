@@ -413,9 +413,8 @@ export class PaymentsController {
       }
       const promoBody = (req.body as { promoCode?: unknown })?.promoCode;
       createPaymentDto.promoCode =
-        typeof req.body?.promoCode === 'string' &&
-        req.body.promoCode.trim() !== ''
-          ? req.body.promoCode.trim()
+        typeof promoBody === 'string' && promoBody.trim() !== ''
+          ? promoBody.trim()
           : undefined;
 
       const result = await this.paymentsService.create(createPaymentDto);

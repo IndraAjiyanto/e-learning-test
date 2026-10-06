@@ -45,4 +45,3 @@ export const i18nHelpers = {
     return '';
   },
 };
-

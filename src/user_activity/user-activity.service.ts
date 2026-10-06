@@ -26,12 +26,7 @@ import { ActivityLog } from 'src/entities/activity_log.entity';
 import { DailyStatistics } from 'src/entities/daily_statistics.entity';
 import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { format, startOfDay, subDays } from 'date-fns';
-import {
-  isAssetPath,
-  isNavigationRequest,
-  matchLearningScope,
-  ScopeContext,
-} from './learning-scope';
+import { matchLearningScope, ScopeContext } from './learning-scope';
 
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 

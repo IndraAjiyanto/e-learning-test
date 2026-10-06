@@ -34,4 +34,3 @@ export class CreateQuizDto {
   @Min(1, { message: 'Duration must be at least 1 minute' })
   duration: number;
 }
-

@@ -132,4 +132,3 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
     }
   }
 }
-

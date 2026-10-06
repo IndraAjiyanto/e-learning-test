@@ -59,4 +59,3 @@ export class AddProgramStatusLifecycle1790200000000 implements MigrationInterfac
     }
   }
 }
-

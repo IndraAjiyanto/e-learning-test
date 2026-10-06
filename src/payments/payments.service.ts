@@ -471,13 +471,6 @@ export class PaymentsService {
           payment.invoice?.promo !== undefined
             ? Number(payment.invoice.promo)
             : promoPrice;
-        const promoCode =
-          payment.invoice?.promo_code !== null &&
-          payment.invoice?.promo_code !== undefined
-            ? Number(payment.invoice.promo_code)
-            : payment.invoice?.discount_amount
-              ? Number(payment.invoice.discount_amount)
-              : 0;
         // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
         const total =
           payment.invoice?.subtotal !== null &&
@@ -1264,4 +1257,3 @@ export class PaymentsService {
     return this.courseRepository.findOneBy({ id: courseId });
   }
 }
-

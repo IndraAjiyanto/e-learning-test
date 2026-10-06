@@ -357,4 +357,3 @@ export function mapUpdateProgram(
 
   return dto;
 }
-

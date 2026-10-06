@@ -10,7 +10,6 @@ import { UserActivityService } from 'src/user_activity/user-activity.service';
 import {
   flashToast,
   flashToastError,
-  flashToastInfo,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
 
@@ -172,4 +171,3 @@ export class AuthController {
     res.redirect('/login');
   }
 }
-

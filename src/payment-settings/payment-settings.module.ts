@@ -9,4 +9,3 @@ import { PaymentSettingsService } from './payment-settings.service';
   exports: [PaymentSettingsService],
 })
 export class PaymentSettingsModule {}
-
