@@ -4,6 +4,16 @@ export class CreateCategoriesDto {
   @IsString()
   name: string;
 
+  // Nama kategori per bahasa; `name` di atas tetap Indonesia. Nullable di DB
+  // karena data lama sudah ada sebelum kolom ditambahkan.
+  @IsOptional()
+  @IsString()
+  name_en?: string | null;
+
+  @IsOptional()
+  @IsString()
+  name_ja?: string | null;
+
   @IsString()
   icon: string;
 
@@ -30,3 +40,4 @@ export class CreateCategoriesDto {
   @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';
 }
+

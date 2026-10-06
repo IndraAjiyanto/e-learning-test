@@ -12,13 +12,15 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_NAME,
   entities: ['dist/entities/*.entity.js'],
   migrations: ['dist/database/migrations/*.js'],
-  // Migration adalah satu-satunya jalur perubahan skema di project ini, sama
-  // seperti DataSource runtime di database.providers.ts. Sebelumnya nilai ini
-  // dibaca dari env SYNCHRONIZE, yang menyesatkan: perbandingannya === 'true'
-  // sehingga SYNCHRONIZE=TRUE di .env justru menghasilkan false, dan kalaupun
-  // cocok, CLI TypeORM akan mengubah skema diam-diam di luar migration.
-  synchronize: false,
+  // Dibaca dari env supaya bisa dinyalakan/dimatikan tanpa mengubah kode
+  // (SQL_MIGRATIONS tetap memakai default false — lihat .env.example).
+  // Bandingannya case-insensitive supaya SYNCHRONIZE=TRUE di .env ikut terbaca,
+  // bug lama yang membuat env ini kelihatan menyala padahal nilainya false.
+  // Peringatan: menyala = TypeORM menyejajarkan seluruh skema dengan entity
+  // (menambah sekaligus menghapus kolom/tabel yang tidak ada di entity).
+  synchronize: process.env.SYNCHRONIZE?.toLowerCase() === 'true',
 };
 
 const dataSource = new DataSource(dataSourceOptions);
 export default dataSource;
+

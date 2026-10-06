@@ -42,7 +42,8 @@ export class CategoriesService {
 
   async create(createCategoriesDto: CreateCategoriesDto) {
     const { courseType: courseTypeIds, ...categoryData } = createCategoriesDto;
-    const category = this.categoryRepository.create(categoryData);
+    this.normalizeLangNames(categoryData);
+    const category = await this.categoryRepository.create(categoryData);
 
     if (courseTypeIds && courseTypeIds.length > 0) {
       const courseTypes =
@@ -162,6 +163,7 @@ export class CategoriesService {
     }
 
     const { courseType: courseTypeIds, ...updateData } = updateCategoriesDto;
+    this.normalizeLangNames(updateData);
     Object.assign(category, updateData);
 
     if (courseTypeIds !== undefined) {
@@ -175,6 +177,17 @@ export class CategoriesService {
     }
 
     return await this.categoryRepository.save(category);
+  }
+
+  // Form selalu mengirim name_en/name_ja (bisa berupa string kosong). Jadikan
+  // null supaya kolom nullable tetap bersih dan helper view yang membaca
+  // nameByLang tidak pernah bertemu '' — fallback ke `name` memakai falsy.
+  private normalizeLangNames(data: {
+    name_en?: string | null;
+    name_ja?: string | null;
+  }) {
+    data.name_en = data.name_en?.trim() || null;
+    data.name_ja = data.name_ja?.trim() || null;
   }
 
   async deleteFile(url: string) {
@@ -279,3 +292,4 @@ export class CategoriesService {
     return { message: 'category successfully deleted' };
   }
 }
+

@@ -72,8 +72,8 @@ export class MentorLogbookService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch {
-      // ignore
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 
@@ -97,3 +97,4 @@ export class MentorLogbookService {
     await this.mentorLogbookRepository.remove(logbooks);
   }
 }
+

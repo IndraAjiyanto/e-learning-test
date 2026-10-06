@@ -1,5 +1,18 @@
 import Handlebars from 'handlebars';
 
+// Satu sumber fallback untuk semua helper multibahasa: bahasa diminta → Indonesia
+// ('id') → Inggris ('en'). `asText` membatasi nilai menjadi string, jadi kolom
+// nullable seperti Category.name_en (null) atau tipe aneh lain lolos ke tahap
+// berikutnya alih-alih menampilkan 'null'.
+const asText = (value: unknown): string =>
+  typeof value === 'string' ? value : '';
+
+const pickLang = (
+  obj: Record<string, unknown> | null | undefined,
+  lang: string,
+): string =>
+  asText(obj?.[lang]) || asText(obj?.['id']) || asText(obj?.['en']) || '';
+
 export const stringHelpers = {
   substring: (str: string, start: number, end: number) => {
     if (str && typeof str === 'string') {
@@ -68,17 +81,28 @@ export const stringHelpers = {
       try {
         const parsed = JSON.parse(obj) as Record<string, string>;
         if (parsed && typeof parsed === 'object') {
-          return parsed[lang] || parsed['id'] || parsed['en'] || '';
+          return pickLang(parsed as Record<string, unknown>, lang);
         }
       } catch {
         return obj;
       }
       return obj;
     }
-    if (typeof obj !== 'object' || obj === null) return '';
-    const rec = obj as Record<string, string>;
-    return rec[lang] || rec['id'] || rec['en'] || '';
+    if (typeof obj !== 'object') return '';
+    return pickLang(obj as Record<string, unknown>, lang);
   },
+  // Nama kategori multibahasa: kolom `name` (Indonesia) + `name_en` + `name_ja`.
+  // Dipakai view supaya tulisannya ikut bahasa; logika (URL /category/program/:name,
+  // cek 'japan') tetap memakai `category.name`. Kolom baru nullable dan baris lama
+  // masih NULL, jadi fallback ke `name` wajib di sini.
+  nameByLang: (
+    category: Record<string, unknown> | null | undefined,
+    lang: string,
+  ) =>
+    pickLang(
+      { id: category?.name, en: category?.name_en, ja: category?.name_ja },
+      lang,
+    ),
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
@@ -151,3 +175,4 @@ export const stringHelpers = {
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 };
+

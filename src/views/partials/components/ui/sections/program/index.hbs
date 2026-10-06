@@ -29,7 +29,7 @@
     >
       {{!-- "In House Training" has a dedicated redesigned page; the rest route to the generic category page --}}
       {{#each category}}
-        <div class="flex">{{> components/ui/card/card_program/index image=this.icon name=this.name text=this.text learnMore=(t 'test.home.programSection.learnMore') lang=../lang href=(ternary (eq this.name 'In House Training') '/dashboard/corporate-training' (concat '/category/program/' this.name))}}</div>
+        <div class="flex">{{> components/ui/card/card_program/index image=this.hero_section_image name=this.name text=this.text learnMore=(t 'test.home.programSection.learnMore') lang=../lang href=(ternary (eq this.name 'In House Training') '/dashboard/corporate-training' (concat '/category/program/' this.name))}}</div>
       {{else}}
         <div class="flex">{{> components/ui/card/card_program/index image="/public/image/Bootcamp.png" name="Bootcamp" text="Intensive career-switch track with mentor-led projects and job-ready portfolio." learnMore=(t 'test.home.programSection.learnMore')}}</div>
         <div class="flex">{{> components/ui/card/card_program/index image="/public/image/Course.png" name="Course" text="Self-paced modules to sharpen a specific technical skill at your own rhythm." learnMore=(t 'test.home.programSection.learnMore')}}</div>

@@ -25,6 +25,18 @@ export class Category {
   @Column({ nullable: true })
   name: string;
 
+  // Nama kategori per bahasa: `name` tetap Indonesia. Dua kolom ini nullable
+  // karena baris di server sudah ada sebelum kolomnya ditambahkan (tanpa
+  // migration) — semua pembacaan harus tahan NULL dan jatuh ke `name`.
+  // `type` eksplisit wajib: tipe TS `string | null` direfleksikan TypeORM jadi
+  // `Object` lewat emitDecoratorMetadata, sehingga tanpa ini metadata invalid
+  // (DataTypeNotSupportedError: Data type "Object" in "Category.name_en").
+  @Column({ type: 'varchar', nullable: true })
+  name_en: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  name_ja: string | null;
+
   @Column('jsonb', { nullable: true })
   text: string[];
 
@@ -77,3 +89,4 @@ export class Category {
   @Exclude()
   gallery: Gallery[];
 }
+

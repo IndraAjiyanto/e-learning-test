@@ -779,6 +779,16 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/portfolio/:courseId')
+  async getPortfolio(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+  ) {
+    const portfolios = await this.coursesService.findCoursePortfolios(courseId);
+    res.json(portfolios);
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/detail/program/admin/:courseId')
   async detailKelas(
     @Param('courseId') courseId: string,

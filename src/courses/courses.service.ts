@@ -1556,6 +1556,30 @@ export class CoursesService {
     });
   }
 
+  async findCoursePortfolios(courseId: string) {
+    return await this.portfolioRepository
+      .createQueryBuilder('portfolio')
+      .leftJoin('portfolio.course', 'course')
+      .leftJoinAndSelect('portfolio.user', 'user')
+      .select([
+        'portfolio.id',
+        'portfolio.title',
+        'portfolio.description',
+        'portfolio.link',
+        'portfolio.content',
+        'portfolio.contentHtml',
+        'portfolio.image',
+        'portfolio.createdAt',
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.profile',
+      ])
+      .where('course.id = :courseId', { courseId })
+      .orderBy('portfolio.createdAt', 'DESC')
+      .getMany();
+  }
+
   async findCourseMentoring(courseId: string) {
     return await this.userRepository.findOne({
       where: { mentoring: { course: { id: courseId } } },
@@ -1875,3 +1899,4 @@ export class CoursesService {
     });
   }
 }
+

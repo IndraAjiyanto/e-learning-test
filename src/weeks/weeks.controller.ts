@@ -17,6 +17,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { CoursesService } from 'src/courses/courses.service';
 import { flashToast } from 'src/common/utils/toast.util';
+import { getErrorMessage } from 'src/common/utils/get-error-message';
 
 @Controller('week')
 export class WeeksController {
@@ -45,7 +46,7 @@ export class WeeksController {
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'session unsucces create');
+      req.flash('error', getErrMessage(error, 'session unsucces create'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -149,7 +150,7 @@ export class WeeksController {
       res.redirect(`/week/${weeksId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'week failed updated');
+      req.flash('error', getErrMessage(error, 'week failed updated'));
       res.redirect(`/week/${weeksId}`);
     }
   }
@@ -168,7 +169,7 @@ export class WeeksController {
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'week failed deleted');
+      req.flash('error', getErrMessage(error, 'week failed deleted'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
