@@ -268,6 +268,7 @@ export class CoursesController {
     @Req() req: Request,
     @Query('search') search?: string,
     @Query('alphabet') alphabet?: string,
+    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -277,6 +278,7 @@ export class CoursesController {
     const result = await this.coursesService.findPaginatedCourses({
       search: search || undefined,
       alphabet: alphabet || undefined,
+      status: status || undefined,
       page: currentPage,
       limit: itemsPerPage,
       userId: req.user!.role === 'admin' ? req.user!.id : undefined,
