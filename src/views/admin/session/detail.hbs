@@ -46,11 +46,6 @@
         {{> session/logbook_mentor_tab}}
       </div>
 
-      {{#if session.isFinal}}
-      <div x-show="tab === 'quiz'" x-cloak x-data='quizData()' x-init='fetchQuizzes()'>
-        {{> weeks/quiz_tab weeks=session.weeks}}
-      </div>
-      {{/if}}
 
     </div>
   </div>
@@ -78,9 +73,6 @@ function tabData() {
       { name: 'assignment', label: 'Assignment', url: '/session/task/{{session.id}}' },
       { name: 'logbook', label: 'Logbook User', url: '/session/logbooks/{{session.id}}' },
       { name: 'logbook_mentor', label: 'Logbook Mentor', url: '/session/logbooks-mentor/{{session.id}}' },
-      {{#if session.isFinal}}
-      { name: 'quiz', label: 'Quiz', url: '/week/quiz/{{session.weeks.id}}' },
-      {{/if}}
     ],
 
     async init() {
