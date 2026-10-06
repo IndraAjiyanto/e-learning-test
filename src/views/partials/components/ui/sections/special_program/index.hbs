@@ -9,7 +9,7 @@
     {{!-- section-header sesuai Figma Layer 3 (Choose Your Program, tanpa eyebrow/dots) --}}
     <div class="flex flex-col items-center gap-3 text-center w-full max-w-[1568px]">
       <h2 class="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#0B1F3B] text-center max-w-[653px]">
-        <span class="text-[#6EB6E5]">{{default (t 'test.special_program.program.choosePrefix') 'Choose'}}</span> {{default (t 'test.special_program.program.chooseMiddle') 'Your'}} {{#if (includes category.name 'japan')}}{{default (t 'test.special_program.program.japanProgram') 'Japan Program'}}{{else}}{{default category.name "Special Program"}}{{/if}}
+        <span class="text-[#6EB6E5]">{{default (t 'test.special_program.program.choosePrefix') 'Choose'}}</span> {{default (t 'test.special_program.program.chooseMiddle') 'Your'}} {{#if (includes category.name 'japan')}}{{default (t 'test.special_program.program.japanProgram') 'Japan Program'}}{{else}}{{default (nameByLang category lang) "Special Program"}}{{/if}}
       </h2>
       <p class="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280]/85 text-center max-w-[760px]">
         {{default (t 'test.special_program.program.description') "Select the program that aligns with your goals and passion."}}
