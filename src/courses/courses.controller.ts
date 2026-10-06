@@ -406,6 +406,20 @@ export class CoursesController {
     }
     const finalAssignment =
       await this.finalAssignmentService.findByCourse(courseId);
+    if (finalAssignment?.id) {
+      const hasApproved =
+        await this.finalAssignmentService.hasApprovedSubmission(
+          finalAssignment.id,
+        );
+      if (hasApproved) {
+        flashToastError(
+          req,
+          'Cannot Edit Final Assignment',
+          'Final assignment cannot be edited because a user has already completed it.',
+        );
+        return res.redirect(`/program/detail/program/admin/${courseId}`);
+      }
+    }
     return res.render('admin/course/edit_final_assignment', {
       user: req.user,
       course,
@@ -438,8 +452,12 @@ export class CoursesController {
       );
       return res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update final assignment');
-      return res.redirect(`/program/edit-final-assignment/${courseId}`);
+      flashToastError(
+        req,
+        'Update Failed',
+        error.message || 'Failed to update final assignment',
+      );
+      return res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
