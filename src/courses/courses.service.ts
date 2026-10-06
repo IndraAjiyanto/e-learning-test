@@ -1751,12 +1751,16 @@ export class CoursesService {
       throw new NotFoundException('Program not found');
     }
 
-    const participantCount = course.userCourses?.length || 0;
-    if (participantCount > 0) {
-      throw new BadRequestException(
-        `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
-      );
-    }
+    // [NONAKTIF SEMENTARA] Guard peserta di-nonaktifkan sementara agar program
+    // bisa dihapus untuk keperluan bersih-bersih data. Kembalikan blok di bawah
+    // untuk mengaktifkan lagi konsep semula (program ber-apeserta tidak boleh dihapus).
+    // Relasi user_courses memakai ON DELETE CASCADE, jadi enrollment ikut terhapus.
+    // const participantCount = course.userCourses?.length || 0;
+    // if (participantCount > 0) {
+    //   throw new BadRequestException(
+    //     `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
+    //   );
+    // }
 
     return await this.courseRepository.remove(course);
   }
