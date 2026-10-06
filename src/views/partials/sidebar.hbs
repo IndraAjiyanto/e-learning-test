@@ -29,6 +29,13 @@
     activeDropdown: localStorage.getItem('activeDropdown') || null,
     activeSubDropdown: localStorage.getItem('activeSubDropdown') || null,
 
+    toggleSidebarCollapse() {
+      const el = document.documentElement;
+      const next = el.dataset.adminSidebar === 'expanded' ? 'collapsed' : 'expanded';
+      el.dataset.adminSidebar = next;
+      try { localStorage.setItem('admin-sidebar-open', next === 'expanded'); } catch (e) {}
+    },
+
     setActive(path) {
       if (path === '/users' || path === '/information') {
         this.activeDropdown = null;
@@ -117,23 +124,34 @@
     x-transition:leave="transition ease-in duration-300 transform"
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="-translate-x-full"
-    class="fixed left-0 top-0 z-40 h-screen w-[319px] max-w-[85vw] flex flex-col justify-between
+    class="js-admin-sidebar fixed left-0 top-0 z-40 h-screen w-[319px] max-w-[85vw] flex flex-col justify-between
       bg-[#FAFAFA] border-r border-[#D9D9D9]"
   >
     {{!-- Header logo --}}
     <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <div class="flex items-center h-[88px] px-[28px] border-b border-[#D9D9D9] shrink-0">
-        {{> components/ui/icon/logo_kesatria/index
-            src='/public/image/sidebar/logo_kesatria_blue.png'
-            alt='Kesatria Academy'
-            class='h-[60px] w-[189px]'
-            wrapperClass='!justify-start'
-        }}
+      <div class="flex items-center justify-between h-[88px] px-[20px] border-b border-[#D9D9D9] shrink-0 js-admin-sidebar-header">
+        <a href="{{#if (eq user.role 'super_admin')}}/information{{else}}/program{{/if}}" class="flex items-center min-w-0 overflow-hidden js-admin-sidebar-logo-link">
+          <img
+            src="/public/image/sidebar/logo_kesatria_blue.png"
+            alt="Kesatria Academy"
+            class="h-[52px] w-auto object-contain js-admin-sidebar-logo"
+          />
+        </a>
+
+        <button
+          type="button"
+          @click="toggleSidebarCollapse()"
+          class="hidden lg:grid size-10 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#E4F1F7] transition-colors cursor-pointer js-admin-sidebar-toggle-btn"
+          aria-label="Toggle sidebar"
+          title="Toggle sidebar"
+        >
+          <i class="fas fa-bars text-base"></i>
+        </button>
       </div>
 
       {{!-- Navigasi --}}
       <nav
-        class="sidebar-scroll flex-1 min-h-0 overflow-y-auto bg-[#FAFAFA] px-[12px] pt-[16px] space-y-[4px]"
+        class="js-admin-sidebar-nav sidebar-scroll flex-1 min-h-0 overflow-y-auto bg-[#FAFAFA] px-[12px] pt-[16px] space-y-[4px]"
         aria-label="Sidebar navigation"
       >
         {{#if (eq user.role 'admin')}}
@@ -185,7 +203,7 @@
     </div>
 
     {{!-- Kartu profil user --}}
-    <div class="shrink-0 bg-white border-t border-[#D9D9D9] px-[20px] pt-[21px] pb-[20px]">
+    <div class="shrink-0 bg-white border-t border-[#D9D9D9] px-[20px] pt-[21px] pb-[20px] js-admin-sidebar-footer">
       {{> components/ui/sidebar/user_pill/index
           username=user.username
           role=user.role
