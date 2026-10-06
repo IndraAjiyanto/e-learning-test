@@ -16,7 +16,8 @@
                       variant 'profile'. Pada isDesktop=true nilai diambil dari
                       `item.rating` (state carousel), bukan dari prop ini.
   - courseName      : Nama kursus/program yang diikuti (opsional, tampil sebagai badge di variant 'profile')
-  - badgeLabel      : string (opsional) — prefix badge, default (t 'test.home.alumniSection.bootcampLabel')
+  - badgeLabel      : string (opsional) — prefix badge, default nama kategori course
+  - category        : objek kategori / string nama kategori (opsional)
   - quoteClass      : kelas tambahan pada elemen kutipan (opsional, default kosong).
                       Pemanggil dengan kotak kecil — mis. pop-up alumni —
                       bisa mengoper 'line-clamp-4' supaya kartu tidak meninggi
@@ -142,14 +143,14 @@
       <div class="relative z-[3] flex w-full items-start">
     <span class="rounded-full bg-[#E0F2FE] font-inter font-semibold text-[#0369A1] {{> _profile_badge}} inline-block max-w-[200px] md:max-w-[210px] lg:max-w-[220px] truncate">
       {{!-- `item.badge` (mis. "Bootcamp · Frontend Engineering") menang kalau
-           ada; pemanggil yang butuh label statis seperti carousel di home
-           tidak mengisinya, jadi tetap memakai `badgeLabel: company`. --}}
+           ada; bila tidak, gunakan nama kategori course (`item.category`)
+           sebagai label prefix, diikuti nama course (`item.company`). --}}
       <template x-if="item.badge">
         <span x-text="item.badge" class="truncate block"></span>
       </template>
       <template x-if="!item.badge">
         <span class="truncate block">
-          {{default badgeLabel (t 'test.home.alumniSection.bootcampLabel')}}:
+          <span x-text="item.category || '{{default badgeLabel (default (nameByLang category lang) (default category.name (t 'test.home.alumniSection.bootcampLabel')))}}'"></span>:
           <span x-text="item.company"></span>
         </span>
       </template>
@@ -159,7 +160,7 @@
   {{else if courseName}}
     <div class="relative z-[3] flex w-full items-start">
       <span class="rounded-full bg-[#E0F2FE] font-inter font-semibold text-[#0369A1] {{> _profile_badge}}">
-        {{default badgeLabel (t 'test.home.alumniSection.bootcampLabel')}}: {{courseName}}
+        {{default badgeLabel (default (nameByLang category lang) (default category.name (t 'test.home.alumniSection.bootcampLabel')))}}: {{courseName}}
       </span>
     </div>
   {{/if}}

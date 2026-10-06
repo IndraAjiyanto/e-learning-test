@@ -108,7 +108,7 @@ export class CategoriesService {
   async findAlumniByCategory(categoryId: string) {
     return await this.alumniRepository.find({
       where: { course: { category: { id: categoryId } } },
-      relations: ['course'],
+      relations: ['course', 'course.category'],
       order: { createdAt: 'DESC' },
       take: 6,
     });
