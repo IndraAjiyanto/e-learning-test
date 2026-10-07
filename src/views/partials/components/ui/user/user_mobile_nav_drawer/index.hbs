@@ -1,0 +1,145 @@
+{{!--
+  Komponen: User Mobile Nav Drawer (Level 2)
+  Lokasi: src/views/partials/components/ui/user/user_mobile_nav_drawer/index.hbs
+  Spesifikasi: Drawer panel putih (288px), logo proporsional, scrollable menu, safe-area footer.
+--}}
+<div
+  x-show="open"
+  x-transition.opacity
+  class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+  style="display:none"
+  @click="toggleMenu()"
+></div>
+
+<nav
+  x-cloak
+  x-show="open"
+  x-transition:enter="transition ease-out duration-300 transform"
+  x-transition:enter-start="translate-x-full"
+  x-transition:enter-end="translate-x-0"
+  x-transition:leave="transition ease-in duration-200 transform"
+  x-transition:leave-start="translate-x-0"
+  x-transition:leave-end="translate-x-full"
+  class="fixed right-0 top-0 z-50 flex h-full h-[100dvh] w-72 max-w-[calc(100vw-24px)] flex-col bg-white text-[#1F2937] shadow-2xl lg:hidden"
+  style="display:none"
+>
+  {{!-- Drawer Header --}}
+  <div class="flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] px-4">
+    <a href="/dashboard" @click="setActive('/dashboard')" class="flex items-center">
+      <img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-7 max-h-[28px] w-auto object-contain" />
+    </a>
+    <button
+      @click="toggleMenu()"
+      class="grid size-11 shrink-0 place-items-center rounded-lg text-[#1F2937] transition hover:bg-gray-100"
+      aria-label="Tutup menu"
+    >
+      <i class="fas fa-xmark text-lg"></i>
+    </button>
+  </div>
+
+  {{!-- Scrollable Menu Content --}}
+  <div class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-4 font-inter text-sm font-medium">
+    {{!-- Beranda --}}
+    <a
+      href="/dashboard"
+      @click="setActive('/dashboard')"
+      :class="isActive('/dashboard') ? 'bg-[#E4F1F7] font-bold text-[#003060]' : 'text-[#1F2937] hover:bg-gray-50'"
+      class="flex min-h-[44px] items-center rounded-lg px-3.5 py-2.5 transition-colors"
+    >
+      {{t 'test.navbar.home'}}
+    </a>
+
+    {{!-- Kelas (Accordion) --}}
+    <button
+      @click="classOpen = !classOpen"
+      :class="isClassActive() || classOpen ? 'font-bold text-[#003060]' : 'text-[#1F2937]'"
+      class="flex min-h-[44px] w-full items-center justify-between rounded-lg px-3.5 py-2.5 transition-colors hover:bg-gray-50"
+    >
+      <span>{{t 'test.navbar.class'}}</span>
+      <i class="fas fa-chevron-down text-xs transition-transform" :class="classOpen && 'rotate-180'"></i>
+    </button>
+    <div x-show="classOpen" x-collapse class="flex flex-col gap-2 py-1 pl-2" style="display:none">
+      <template x-for="kat in category" :key="kat.id">
+        {{> components/ui/card/category/dynamic/index userMobile=true }}
+      </template>
+
+      {{!-- CTA Konsultasi Kelas --}}
+      <div class="mt-1 flex flex-col gap-3 rounded-xl bg-[#003060] p-4 text-white">
+        <div class="flex items-center gap-2.5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5 shrink-0"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          <p class="font-inter text-sm font-bold leading-snug">{{t 'test.navbar.classCtaTitle'}}</p>
+        </div>
+        <p class="font-inter text-[11px] leading-relaxed text-white/70">{{t 'test.navbar.classCtaDesc'}}</p>
+        <a
+          href="{{#if social.length}}{{waLink social.[0].number}}{{else}}#{{/if}}"
+          target="_blank"
+          rel="noopener"
+          class="rounded-md bg-white py-2 text-center font-inter text-xs font-bold text-[#003060] transition hover:bg-white/90"
+        >
+          {{t 'test.navbar.classCtaButton'}}
+        </a>
+      </div>
+    </div>
+
+    {{!-- Corporate Training --}}
+    <a
+      href="/dashboard/corporate-training"
+      @click="setActive('/dashboard/corporate-training')"
+      :class="isActive('/dashboard/corporate-training') ? 'bg-[#E4F1F7] font-bold text-[#003060]' : 'text-[#1F2937] hover:bg-gray-50'"
+      class="flex min-h-[44px] items-center rounded-lg px-3.5 py-2.5 transition-colors"
+    >
+      {{t 'test.navbar.corporateTraining'}}
+    </a>
+
+    {{!-- Informasi (Accordion) --}}
+    <button
+      @click="infoOpen = !infoOpen"
+      :class="isInfoActive() || infoOpen ? 'font-bold text-[#003060]' : 'text-[#1F2937]'"
+      class="flex min-h-[44px] w-full items-center justify-between rounded-lg px-3.5 py-2.5 transition-colors hover:bg-gray-50"
+    >
+      <span>{{t 'test.navbar.information'}}</span>
+      <i class="fas fa-chevron-down text-xs transition-transform" :class="infoOpen && 'rotate-180'"></i>
+    </button>
+    <div x-show="infoOpen" x-collapse class="flex flex-col gap-1.5 py-1 pl-2" style="display:none">
+      {{> components/ui/nav/dropdown_row/index userMobile=true href="/dashboard/about" icon="info" title=(t 'test.navbar.about') desc=(t 'test.navbar.infoAboutDesc') }}
+      {{> components/ui/nav/dropdown_row/index userMobile=true href="/dashboard/gallery" icon="image" title=(t 'test.navbar.gallery') desc=(t 'test.navbar.infoGalleryDesc') }}
+      {{> components/ui/nav/dropdown_row/index userMobile=true href="/dashboard/portofolios" icon="briefcase" title=(t 'test.navbar.portfolio') desc=(t 'test.navbar.infoPortfolioDesc') }}
+      {{> components/ui/nav/dropdown_row/index userMobile=true href="/dashboard/alumni" icon="cap" title=(t 'test.navbar.alumni') desc=(t 'test.navbar.infoAlumniDesc') last=true }}
+    </div>
+  </div>
+
+  {{!-- Safe-Area Footer --}}
+  <div class="flex shrink-0 flex-col gap-3 border-t border-[#E5E7EB] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    {{!-- Language Switcher Segmented --}}
+    {{> components/ui/nav/lang_switcher/index userMobile=true }}
+
+    {{!-- Account Action (Profile / Login) --}}
+    {{#if (and isAuthenticated user.isVerified)}}
+      <a
+        href="/users/profile"
+        {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}}
+        @click="open = false; document.body.style.overflow = ''"
+        class="flex min-h-[44px] items-center gap-3 rounded-lg border border-[#E5E7EB] p-2.5 transition-colors hover:bg-gray-50"
+      >
+        <span class="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border border-gray-300 bg-gray-600 text-white">
+          {{#if user.profile}}
+            <img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />
+          {{else}}
+            <span class="text-xs font-bold">{{substring user.username 0 1}}</span>
+          {{/if}}
+        </span>
+        <span class="truncate font-inter text-sm font-semibold text-[#1F2937]">{{user.username}}</span>
+      </a>
+    {{else}}
+      {{#unless isAuthPage}}
+        <a
+          href="/login"
+          @click="setActive('/login')"
+          class="flex min-h-[44px] items-center justify-center rounded-lg bg-[#003060] px-4 py-2.5 text-center font-inter text-sm font-semibold text-white transition hover:bg-[#00244a]"
+        >
+          {{t 'test.navbar.login'}}
+        </a>
+      {{/unless}}
+    {{/if}}
+  </div>
+</nav>
