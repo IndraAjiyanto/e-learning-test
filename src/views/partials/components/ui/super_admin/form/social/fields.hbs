@@ -3,7 +3,7 @@
   Lokasi: src/views/partials/components/ui/super_admin/form/social/fields.hbs
   Level: L2 Blok field (scoped super_admin)
 
-  Enam tautan pendek dalam grid dua kolom, lalu Address / Google Maps / Link Form
+  Enam tautan pendek dalam grid dua kolom, lalu Address / Google Maps
   yang butuh lebar penuh. Tidak menerima props; pemanggil menyediakan state Alpine
   dari form/social/form.
 
@@ -96,17 +96,6 @@
     label='Google Maps Link'
     placeholder='https://maps.app.goo.gl/...'
     hint='Paste the share link, not the embed code — the list renders it as a clickable link.'
-    required=true
-  }}
-
-  {{> components/ui/super_admin/form/text_field
-    id='linkForm'
-    name='linkForm'
-    field='linkForm'
-    type='url'
-    icon='link'
-    label='Job Form Link'
-    placeholder='https://forms.gle/...'
     required=true
   }}
 </div>

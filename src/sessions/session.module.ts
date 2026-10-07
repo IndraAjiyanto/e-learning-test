@@ -13,6 +13,7 @@ import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { Assignment } from 'src/entities/assignment.entity';
+import { AnswerTask } from 'src/entities/answer_task.entity';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Assignment } from 'src/entities/assignment.entity';
       SessionProgress,
       WeekProgress,
       Assignment,
+      AnswerTask,
     ]),
     MaterialsModule,
   ],

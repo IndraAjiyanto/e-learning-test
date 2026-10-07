@@ -79,12 +79,14 @@
     </div>
 
     {{!-- Container Leave a Comment (Cz9fL) + Approve/Reject (KOxfP) --}}
+    
     <form action='/answer-assigment/{{assignmentId}}/{{this.id}}?_method=PATCH' method='POST' class='flex flex-col gap-[12px] w-full'>
       <input type='hidden' name='process' class='process-value'>
       <div class='text-[14px]/[normal] w-full text-[#404040] font-inter font-medium'>Leave a Comment</div>
       {{> components/ui/admin/form/textarea-input id=(concat 'comment-' this.id) name="comment" rows="3" placeholder="Leave a feedback for this answer..."}}
       
       {{!-- Action Buttons --}}
+      {{#unless (or (eq this.process 'approved') (eq this.process 'rejected'))}}
       <div class='flex flex-row gap-[12px] w-full items-center h-[44px] pt-1'>
         <button type='button' onclick="submitReviewAnswer(this, 'approved')"
           class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#002040] transition-colors cursor-pointer'>
@@ -96,6 +98,7 @@
         </button>
       </div>
     </form>
+    {{/unless}}
 
     {{!-- Container Comment History --}}
     {{#if this.comment}}

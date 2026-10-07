@@ -78,7 +78,7 @@
     :aria-expanded="userMenuOpen"
     aria-haspopup="menu"
     :class="userMenuOpen ? 'bg-[#E7F3FB]' : 'hover:bg-[#E7F3FB]/60 active:bg-[#E7F3FB]'"
-    class="flex items-center justify-between w-full p-[8px] rounded-[8px] transition-colors duration-150
+    class="js-admin-user-pill-btn flex items-center justify-between w-full p-[8px] rounded-[8px] transition-colors duration-150
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40"
   >
     <span class="flex items-center gap-[14px] min-w-0">
@@ -94,12 +94,12 @@
           <span class="font-inter font-medium text-[16px] leading-[24px] text-[#7F56D9] uppercase">{{initial}}</span>
         {{/if}}
       </span>
-      <span class="flex flex-col items-start min-w-0 text-left">
+      <span class="js-admin-user-info flex flex-col items-start min-w-0 text-left">
         <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#003060] truncate max-w-[150px]">{{username}}</span>
         <span class="font-inter font-medium text-[12px] leading-[16px] text-[#718096] truncate max-w-[150px]">{{role}}</span>
       </span>
     </span>
-    <span class="flex shrink-0 text-[#718096]">
+    <span class="js-admin-user-chevron flex shrink-0 text-[#718096]">
       {{> components/ui/sidebar/nav_icon/index name='icon_chevron_updown' size='16px'}}
     </span>
   </button>

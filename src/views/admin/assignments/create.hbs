@@ -1,13 +1,14 @@
 {{!--
-  Page: Admin — Create Assignment
+  Page: Admin — Create & Edit Assignment
   Path: admin/assignments/create.hbs
   Route: GET /task/formCreate/:sessionId -> POST /task/:sessionId (create)
-  Data: { user, sessionId }
-  Komponen (reuse semua, tanpa komponen baru — form assignment hanya dipakai
-  1x, tidak ada edit view): text/page-header, form/form-card, form/form-field,
+         GET /task/formEdit/:assignmentId -> PATCH /task/:assignmentId (edit)
+  Data: { user, sessionId, assignment?, editMode? }
+  Komponen (reuse semua): text/page-header, form/form-card, form/form-field,
           form/text-input, material/material-file-upload (label override),
           button/primary-button, button/secondary-button.
   BE: POST /task/:sessionId multipart { title, file } → CreateAssignmentsDto;
+      PATCH /task/:assignmentId multipart { title, file? } → UpdateAssignmentsDto;
       FileInterceptor('file') + ValidateFile (PDF only, 10MB, folder
       assignments). Cancel → /session/:sessionId.
   Logika validasi Alpine dipertahankan verbatim dari implementasi lama.
@@ -16,10 +17,13 @@
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'>
 
     {{> components/ui/admin/text/page-header
-      title="Create Assignment"
-      subtitle="Fill in the information below to create a assignment."}}
+      title=(ternary editMode 'Edit Assignment' 'Create Assignment')
+      subtitle=(ternary editMode 'Update the assignment details for this session.' 'Fill in the information below to create a assignment.')}}
 
-    <form action='/task/{{sessionId}}' method='POST' enctype='multipart/form-data'
+    <form
+      {{#if editMode}}action='/task/{{assignment.id}}?_method=PATCH'{{else}}action='/task/{{sessionId}}'{{/if}}
+      method='POST'
+      enctype='multipart/form-data'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
         ...adminFormGate(),
@@ -29,11 +33,14 @@
         fileName: '',
         fileSize: 0,
         hasFile: false,
+        editMode: {{#if editMode}}true{{else}}false{{/if}},
         maxSize: 10 * 1024 * 1024,
         allowedExtensions: ['.pdf'],
         validateFile(file) {
           if (!file) {
             this.hasFile = false;
+            this.isValid = true;
+            this.errorMessage = '';
             return;
           }
 
@@ -71,7 +78,7 @@
           if (this.hasFile) {
             return this.isValid;
           }
-          return false;
+          return this.editMode;
         }
       }"
       x-init="recomputeFormValid()"
@@ -84,20 +91,22 @@
         {{#> components/ui/admin/form/form-field label="Assignment Title*" for="title"}}
           {{> components/ui/admin/form/text-input
             id="title" name="title" required=true
-            placeholder="Enter material title"
+            placeholder="Enter assignment title"
+            value=assignment.title
           }}
         {{/components/ui/admin/form/form-field}}
 
         {{> components/ui/admin/material/material-file-upload
           label="Upload Assignment File*"
-          required=true
+          required=(ternary editMode false true)
+          currentFile=assignment.file
         }}
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
-          {{> components/ui/admin/button/primary-button text='Create Assignment' type='submit' loading='loading' width='185'}}
+          {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Assignment' 'Create Assignment') type='submit' loading='loading' width='185'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
@@ -113,3 +122,4 @@
     </form>
   </div>
 </div>
+

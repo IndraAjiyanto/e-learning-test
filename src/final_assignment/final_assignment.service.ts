@@ -48,6 +48,27 @@ export class FinalAssignmentService {
     });
   }
 
+  async hasApprovedSubmission(
+    courseIdOrFinalAssignmentId: string,
+  ): Promise<boolean> {
+    const fa = await this.finalAssignmentRepo.findOne({
+      where: [
+        { id: courseIdOrFinalAssignmentId },
+        { courseId: courseIdOrFinalAssignmentId },
+      ],
+    });
+    if (!fa) {
+      return false;
+    }
+    const count = await this.userAssignmentRepo.count({
+      where: {
+        finalAssignmentId: fa.id,
+        status: 'approved',
+      },
+    });
+    return count > 0;
+  }
+
   async findOne(id: string): Promise<FinalAssignment> {
     const fa = await this.finalAssignmentRepo.findOne({
       where: { id },
@@ -81,6 +102,12 @@ export class FinalAssignmentService {
 
     let fa = await this.finalAssignmentRepo.findOne({ where: { courseId } });
     if (fa) {
+      const hasApproved = await this.hasApprovedSubmission(fa.id);
+      if (hasApproved) {
+        throw new ForbiddenException(
+          'Final assignment cannot be edited because it has already been completed by user',
+        );
+      }
       fa.title = dto.title;
       fa.description = dto.description;
       if (parsedContent !== undefined) {
@@ -104,6 +131,12 @@ export class FinalAssignmentService {
     });
     if (!fa) {
       return false;
+    }
+    const hasApproved = await this.hasApprovedSubmission(fa.id);
+    if (hasApproved) {
+      throw new ForbiddenException(
+        'Final assignment cannot be deleted because it has already been completed by user',
+      );
     }
     await this.finalAssignmentRepo.remove(fa);
     return true;

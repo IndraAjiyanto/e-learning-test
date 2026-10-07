@@ -33,9 +33,20 @@ export class FinalAssignmentController {
       courseId,
       false,
     );
+    const hasApprovedSubmission = finalAssignment
+      ? await this.finalAssignmentService.hasApprovedSubmission(
+          finalAssignment.id,
+        )
+      : false;
+
     return res.json({
       success: true,
-      data: finalAssignment,
+      data: finalAssignment
+        ? {
+            ...finalAssignment,
+            hasApprovedSubmission,
+          }
+        : null,
     });
   }
 
@@ -46,12 +57,20 @@ export class FinalAssignmentController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    await this.finalAssignmentService.remove(courseId);
-    flashToast(
-      req,
-      'Final Assignment Deleted',
-      'The final assignment has been removed successfully.',
-    );
+    try {
+      await this.finalAssignmentService.remove(courseId);
+      flashToast(
+        req,
+        'Final Assignment Deleted',
+        'The final assignment has been removed successfully.',
+      );
+    } catch (error: any) {
+      flashToastError(
+        req,
+        'Cannot Delete Final Assignment',
+        error.message || 'Failed to delete final assignment.',
+      );
+    }
     return res.redirect(`/program/detail/program/admin/${courseId}`);
   }
 

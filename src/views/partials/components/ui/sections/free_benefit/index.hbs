@@ -23,7 +23,7 @@
     {{!-- section-header (Figma Node 1158:4244) --}}
     <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
       <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[40px] font-bold leading-[1.2] tracking-tight text-[#0B1F3B]">
-        {{default (t 'test.categoryFreeProgram.benefit.sectionTitlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if category.name}}{{category.name}}{{else}}{{default (t 'test.categoryFreeProgram.benefit.defaultProgramName') 'Our Program'}}{{/if}}</span>?
+        {{default (t 'test.categoryFreeProgram.benefit.sectionTitlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.benefit.defaultProgramName') 'Our Program'}}{{/if}}</span>?
       </h2>
       <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
         {{default (t 'test.categoryFreeProgram.benefit.sectionDesc') 'Gain the skills, language proficiency, and cultural understanding needed to confidently pursue education or employment opportunities in Japan with comprehensive guidance from experienced mentors.'}}

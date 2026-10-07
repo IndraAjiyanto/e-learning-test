@@ -206,85 +206,12 @@
 >
   {{!-- Application bar. Markup ada di partial supaya halaman student
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
-  {{> user/app_bar/index user=user sidebarToggle=true }}
+  {{!-- Navigasi mobile kini berupa drawer hamburger di dalam app bar
+       (lihat partial user/app_bar/index, prop `mobileNav='tabs'`); strip pil
+       horizontal scroll sebelumnya sudah dihapus. --}}
+  {{> user/app_bar/index user=user sidebarToggle=true mobileNav='tabs' }}
 
   <div class="relative max-w-full flex-1 min-h-0 flex flex-col mb-0">
-
-    {{#unless (or (eq user.role 'admin') (eq user.role 'super_admin'))}}
-    <!-- Mobile Horizontal Scroll Navigation -->
-    <div class="lg:hidden shrink-0 mb-6 -mx-4 sm:mx-0 px-4 sm:px-0">
-      <div class="overflow-x-auto no-scrollbar">
-        <nav class="flex space-x-3 min-w-max sm:min-w-0 pb-4">
-
-          <!-- Dashboard Button -->
-          <button
-            @click="toggleActiveSection('dashboard');"
-            :class="activeSection === 'dashboard' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
-          >
-            <i class="fas fa-table-cells-large w-5 text-center"></i>
-            <span>Dashboard</span>
-          </button>
-
-          <!-- Profile Button -->
-          <button
-            @click="toggleActiveSection('profile');"
-            :class="(activeSection === 'profile' || activeSection === 'password') ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
-          >
-            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain brightness-0">
-            <span>{{t 'test.userSidebar.profile'}}</span>
-          </button>
-
-          <!-- My Learning Button -->
-          <button
-            @click="toggleActiveSection('learning');"
-            :class="activeSection === 'learning' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
-          >
-            <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain brightness-0">
-            <span>My Learning</span>
-          </button>
-
-          <!-- My Portfolio Button -->
-          <button
-            @click="toggleActiveSection('portfolio');"
-            :class="activeSection === 'portfolio' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
-          >
-            <img src="/public/image/user_profile/myPortofolio.svg" alt="Portfolio" class="w-5 h-5 object-contain brightness-0">
-            <span>{{t 'test.startLearning.portfolio'}}</span>
-          </button>
-
-          <!-- History Payment Button -->
-          <button
-            @click="toggleActiveSection('history-payment');"
-            :class="activeSection === 'history-payment' ? 'bg-[#E4F1F7] text-[#003060]' : 'text-[#718096] bg-transparent'"
-            class="h-12 px-4 py-2.5 gap-2.5 rounded-lg transition-all duration-200 flex items-center whitespace-nowrap text-sm font-medium font-inter leading-none"
-          >
-            <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain brightness-0">
-            <span>Payment History</span>
-          </button>
-
-          <!-- Logout Button -->
-          <button
-            type="button"
-            onclick="openLogoutModal()"
-            class="shrink-0 rounded-lg border border-[#C0392B] px-5 py-2 text-sm font-semibold text-[#C0392B] transition hover:bg-[#fef2f2] cursor-pointer flex items-center gap-2.5 bg-white whitespace-nowrap font-montserrat"
-          >
-            <i class="fa-solid fa-arrow-right-from-bracket text-[18px] w-[18px] text-center"></i>
-            <span>Log Out</span>
-          </button>
-
-        </nav>
-      </div>
-
-      {{!-- Pohon course dihapus: frame desain hanya menampilkan lima item datar
-           di sidebar. Titik masuk per-course kini ada di kartu program pada
-           kolom kanan Start Learning. Lihat docs/user-area-submenu-removal-plan.md. --}}
-
-    </div>
-    {{/unless}}
 
     <!-- Flex Main Layout (Flex-1 Full Height to Footer) -->
     <div class="flex flex-col lg:flex-row items-stretch w-full flex-1 min-h-0">
@@ -344,7 +271,10 @@
               </div>
             </button>
 
-            {{!-- Pohon course dihapus, lihat catatan pada navigasi mobile di atas. --}}
+            {{!-- Pohon course dihapus: frame desain hanya menampilkan lima item
+                 datar di sidebar. Titik masuk per-course kini ada di kartu
+                 program pada kolom kanan Start Learning.
+                 Lihat docs/user-area-submenu-removal-plan.md. --}}
 
           </div>
 

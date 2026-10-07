@@ -399,10 +399,7 @@ export class PortfoliosController {
     try {
       const portfolio = isPrivileged
         ? await this.portfoliosService.findOne(portfolioId)
-        : await this.portfoliosService.findOwnedOne(
-            portfolioId,
-            req.user?.id,
-          );
+        : await this.portfoliosService.findOwnedOne(portfolioId, req.user?.id);
       for (const imageUrl of portfolio.image ?? []) {
         await this.portfoliosService.deleteFile(imageUrl);
       }

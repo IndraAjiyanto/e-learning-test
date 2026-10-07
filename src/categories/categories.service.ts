@@ -42,6 +42,7 @@ export class CategoriesService {
 
   async create(createCategoriesDto: CreateCategoriesDto) {
     const { courseType: courseTypeIds, ...categoryData } = createCategoriesDto;
+    this.normalizeLangNames(categoryData);
     const category = await this.categoryRepository.create(categoryData);
 
     if (courseTypeIds && courseTypeIds.length > 0) {
@@ -89,11 +90,26 @@ export class CategoriesService {
     return category;
   }
 
+  /**
+   * Program untuk section "program" di halaman detail category.
+   *
+   * Hanya program yang statusnya Published/launch yang dikirim ke view
+   * (launch = true ATAU status = 'launch'; keduanya biasanya sinkron, tapi
+   * jalur updateLaunch lama hanya mengubah kolom launch). Jika hasilnya
+   * kosong, section program dirender sebagai Coming Soon.
+   */
   async findCourseByCategory(categoryId: string) {
-    return await this.courseRepository.find({
-      where: { category: { id: categoryId }, launch: true },
-      relations: ['courseType', 'category', 'userCourses'],
-    });
+    return await this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.userCourses', 'userCourses')
+      .where('category.id = :categoryId', { categoryId })
+      .andWhere('(course.launch = :launch OR course.status = :status)', {
+        launch: true,
+        status: 'launch',
+      })
+      .getMany();
   }
 
   async findCourseByCategoryAll(categoryId: string) {
@@ -107,7 +123,7 @@ export class CategoriesService {
   async findAlumniByCategory(categoryId: string) {
     return await this.alumniRepository.find({
       where: { course: { category: { id: categoryId } } },
-      relations: ['course'],
+      relations: ['course', 'course.category'],
       order: { createdAt: 'DESC' },
       take: 6,
     });
@@ -154,6 +170,7 @@ export class CategoriesService {
     }
 
     const { courseType: courseTypeIds, ...updateData } = updateCategoriesDto;
+    this.normalizeLangNames(updateData);
     Object.assign(category, updateData);
 
     if (courseTypeIds !== undefined) {
@@ -167,6 +184,17 @@ export class CategoriesService {
     }
 
     return await this.categoryRepository.save(category);
+  }
+
+  // Form selalu mengirim name_en/name_ja (bisa berupa string kosong). Jadikan
+  // null supaya kolom nullable tetap bersih dan helper view yang membaca
+  // nameByLang tidak pernah bertemu '' — fallback ke `name` memakai falsy.
+  private normalizeLangNames(data: {
+    name_en?: string | null;
+    name_ja?: string | null;
+  }) {
+    data.name_en = data.name_en?.trim() || null;
+    data.name_ja = data.name_ja?.trim() || null;
   }
 
   async deleteFile(url: string) {

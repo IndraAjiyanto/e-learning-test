@@ -17,6 +17,7 @@ import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { Assignment } from 'src/entities/assignment.entity';
+import { AnswerTask } from 'src/entities/answer_task.entity';
 
 @Injectable()
 export class SessionService {
@@ -50,6 +51,9 @@ export class SessionService {
 
     @InjectRepository(Assignment)
     private readonly assignmentRepository: Repository<Assignment>,
+
+    @InjectRepository(AnswerTask)
+    private readonly answerTaskRepository: Repository<AnswerTask>,
   ) {}
 
   async create(createSessionDto: CreateSessionDto) {
@@ -210,9 +214,31 @@ export class SessionService {
   }
 
   async findTugas(sessionId: string) {
-    return await this.assignmentRepository.find({
+    const assignments = await this.assignmentRepository.find({
       where: { session: { id: sessionId } },
     });
+
+    if (assignments.length === 0) {
+      return [];
+    }
+
+    const assignmentIds = assignments.map((a) => a.id);
+    const approvedAnswers = await this.answerTaskRepository
+      .createQueryBuilder('at')
+      .select('at.taskId', 'taskId')
+      .where('at.taskId IN (:...assignmentIds)', { assignmentIds })
+      .andWhere("at.process = 'approved'")
+      .groupBy('at.taskId')
+      .getRawMany<{ taskId: string }>();
+
+    const approvedAssignmentIds = new Set(
+      approvedAnswers.map((item) => item.taskId),
+    );
+
+    return assignments.map((a) => ({
+      ...a,
+      hasApprovedSubmission: approvedAssignmentIds.has(a.id),
+    }));
   }
 
   async findOne(id: string) {

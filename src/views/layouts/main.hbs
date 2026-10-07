@@ -62,6 +62,13 @@
       } catch (e) {
         document.documentElement.dataset.userSidebar = 'collapsed';
       }
+      try {
+        var av = localStorage.getItem('admin-sidebar-open');
+        document.documentElement.dataset.adminSidebar =
+          av === 'false' ? 'collapsed' : 'expanded';
+      } catch (e) {
+        document.documentElement.dataset.adminSidebar = 'expanded';
+      }
     })();
   </script>
 </head>
@@ -116,7 +123,7 @@
       </main>
       {{else}}
     {{> sidebar}}
-    <div class="lg:ml-[319px] min-h-screen">
+    <div class="js-admin-main-content lg:ml-[319px] min-h-screen">
       <main class="min-h-screen">
         {{{ body }}}  
       </main>

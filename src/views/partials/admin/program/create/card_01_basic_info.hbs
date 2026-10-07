@@ -140,7 +140,7 @@
       {{/components/ui/admin/form/form-field}}
 
       {{#> components/ui/admin/form/form-field label="Group Link" for="group" errorId="group_error"}}
-        <input type='url' id='group' name='group' placeholder='https://chat.whatsapp.com/...' required
+        <input type='url' id='group' name='group' placeholder='https://chat.whatsapp.com/... or any other group link' required
           {{#if course}}value='{{course.group}}'{{/if}}
           :class="borderClass('group')"
           class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px] text-[16px]/[normal] text-[#404040] font-inter font-normal outline-none focus:[outline-color:#003060]' />
@@ -193,7 +193,7 @@
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none'>
             <option value='bootcamp'>Bootcamp — weeks, sessions, weekly quiz</option>
             <option value='non_bootcamp'>Non Bootcamp — flat syllabus (Starter / Faster Class)</option>
-            <option value='lpk'>Japan Pathway — same as bootcamp, sensei-led</option>
+            {{!-- <option value='lpk'>Japan Pathway — same as bootcamp, sensei-led</option> --}}
           </select>
         </div>
       {{/components/ui/admin/form/form-field}}
