@@ -10,6 +10,7 @@ import { numberHelpers } from './number.helpers';
 import { logicHelpers } from './logic.helpers';
 import { i18nHelpers } from './i18n.helpers';
 import { uiHelpers } from './ui.helpers';
+import { assetHelpers } from './asset.helpers';
 
 export const hbsHelpers = {
   ...waHelpers,
@@ -19,6 +20,7 @@ export const hbsHelpers = {
   ...logicHelpers,
   ...i18nHelpers,
   ...uiHelpers,
+  ...assetHelpers,
 };
 
 export * from './wa.helper';
@@ -28,5 +30,6 @@ export * from './number.helpers';
 export * from './logic.helpers';
 export * from './i18n.helpers';
 export * from './ui.helpers';
+export * from './asset.helpers';
 
 export default hbsHelpers;
