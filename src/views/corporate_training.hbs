@@ -79,15 +79,10 @@
         <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#111827]">{{{t 'test.corporateTraining.program.title'}}}</h2>
         <p class="{{sizeClass 'body'}} font-inter text-[#6B7280]">{{t 'test.corporateTraining.program.description'}}</p>
       </div>
-      <div class="flex w-full max-w-[722px] flex-col items-center gap-5 rounded-[20px] border border-[#E5E7EB] bg-white p-10 shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-16">
-        <span class="grid size-16 place-items-center rounded-full bg-[#0B1F3B] text-white">
-          <i class="fas fa-clock text-xl"></i>
-        </span>
-        <div class="flex flex-col items-center gap-2.5">
-          <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{t 'test.corporateTraining.program.comingSoonTitle'}}</h3>
-          <p class="{{sizeClass 'body'}} max-w-[440px] font-inter leading-relaxed text-[#6B7280]">{{t 'test.corporateTraining.program.comingSoonText'}}</p>
-        </div>
-      </div>
+      {{> components/ui/sections/program_coming_soon/index
+          title=(t 'test.corporateTraining.program.comingSoonTitle')
+          text=(t 'test.corporateTraining.program.comingSoonText')
+      }}
     </div>
   </section>
 

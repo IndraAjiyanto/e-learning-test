@@ -34,7 +34,9 @@ export class FinalAssignmentController {
       false,
     );
     const hasApprovedSubmission = finalAssignment
-      ? await this.finalAssignmentService.hasApprovedSubmission(finalAssignment.id)
+      ? await this.finalAssignmentService.hasApprovedSubmission(
+          finalAssignment.id,
+        )
       : false;
 
     return res.json({
