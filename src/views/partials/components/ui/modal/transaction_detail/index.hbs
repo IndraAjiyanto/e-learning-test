@@ -25,6 +25,8 @@
       open: false,
       row: null,
 
+      _originalTitle: null,
+
       show(row) {
         if (!row) return;
         this.row = row;
@@ -33,6 +35,17 @@
         this.reuploadFile = null;
         this.downloadingInvoice = false;
         this.activeManualMonth = null;
+        if (!this._originalTitle) {
+          this._originalTitle = document.title;
+        }
+        const cleanNo = String(this.invoiceNumber || '')
+          .trim()
+          .replace(/[^a-zA-Z0-9._-]/g, '_')
+          .replace(/_+/g, '_')
+          .replace(/^_+|_+$/g, '');
+        if (cleanNo && cleanNo !== '—') {
+          document.title = cleanNo;
+        }
         document.body.classList.add('overflow-hidden');
         this.init();
       },
@@ -41,6 +54,10 @@
         if (!this.open) return;
         this.open = false;
         this.row = null;
+        if (this._originalTitle) {
+          document.title = this._originalTitle;
+          this._originalTitle = null;
+        }
         document.body.classList.remove('overflow-hidden');
       },
 
@@ -111,12 +128,7 @@
       },
 
       get invoiceNumber() {
-        if (this.row?.no) return this.row.no;
-        if (!this.row) return '—';
-        const d = this.row.invoiceDate ? new Date(this.row.invoiceDate) : (this.row.date ? new Date(this.row.date) : new Date());
-        const year = d.getFullYear();
-        const suffix = (this.row.id || '001').replace(/-/g, '').slice(0, 3).toUpperCase();
-        return 'INV-' + year + '-' + suffix;
+        return this.row?.no || '—';
       },
 
       get invoiceDateFormatted() {
@@ -229,7 +241,7 @@
         if (window.downloadInvoicePdf) return window.downloadInvoicePdf;
         return new Promise((resolve, reject) => {
           const script = document.createElement('script');
-          script.src = '/public/assets/invoice-pdf.bundle.js?v=7';
+          script.src = '/public/assets/invoice-pdf.bundle.js?v=10';
           script.onload = () => resolve(window.downloadInvoicePdf);
           script.onerror = () => reject(new Error('Failed to load invoice-pdf bundle'));
           document.head.appendChild(script);
@@ -237,7 +249,24 @@
       },
 
       printInvoice() {
+        const originalTitle = this._originalTitle || document.title;
+        const cleanNo = String(this.invoiceNumber || '')
+          .trim()
+          .replace(/[^a-zA-Z0-9._-]/g, '_')
+          .replace(/_+/g, '_')
+          .replace(/^_+|_+$/g, '');
+        if (cleanNo && cleanNo !== '—') {
+          document.title = cleanNo;
+        }
+        const restore = () => {
+          if (!this.open) {
+            document.title = originalTitle;
+          }
+          window.removeEventListener('afterprint', restore);
+        };
+        window.addEventListener('afterprint', restore);
         window.print();
+        setTimeout(restore, 2000);
       },
 
       async downloadInvoice() {
@@ -736,19 +765,19 @@
                 <img
                   src="/public/image/tanda_tangan.png"
                   alt="Tanda Tangan"
-                  class="h-14 w-auto object-contain relative z-10"
+                  class="h-26 w-auto object-contain relative z-10"
                 />
                 <!-- Cap Stempel Kesatria -->
                 <img
                   src="/public/image/cap_kesatria.png"
                   alt="Cap Kesatria"
-                  class="h-20 w-auto object-contain absolute left-10 -top-1 opacity-90 pointer-events-none z-20"
+                  class="h-28 w-auto object-contain absolute left-10 opacity-90 pointer-events-none z-20"
                 />
               </div>
             </div>
 
             <span class="font-inter font-bold text-sm text-[#173B68]" x-text="row?.approvedBy || 'Adipura Arya Kangsadewa, S.Bns.'"></span>
-            <span class="font-inter text-xs text-[#718096]">Operational Lead</span>
+            <span class="font-inter text-xs text-[#718096]">Manager Edukasi dan Budaya</span>
           </div>
         </template>
 

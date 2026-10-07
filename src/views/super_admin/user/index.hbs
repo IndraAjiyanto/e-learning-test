@@ -11,7 +11,6 @@
 <div
   class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'
   x-data='userTable()'
-  x-init='fetchUsers()'
 >
   <div class='flex flex-col gap-7'>
     
@@ -26,7 +25,17 @@
     </div>
 
     <div class='flex flex-col gap-3.5'>
-      {{> components/ui/super_admin/table/toolbar }}
+      {{#> components/ui/super_admin/table/toolbar }}
+        {{> components/ui/input/editable_select/index
+          label=''
+          model='selectedRole'
+          options='roleOptions'
+          placeholderOption='All Roles'
+          wrapperClass='w-full sm:w-[180px]'
+          labelClass='hidden'
+          selectClass='w-full h-11 px-3.5 py-2.5 font-inter font-normal text-base leading-6 text-[#404040] bg-white border border-[#d4d4d4] rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-2 focus:ring-[#003060]/20'
+        }}
+      {{/components/ui/super_admin/table/toolbar}}
       {{#> components/ui/super_admin/table/card tableClass='min-w-[1052px]'}}
         <colgroup>
           <col class='w-[88px]' />
@@ -133,6 +142,13 @@
     return {
       users: [],
       searchInput: '',
+      selectedRole: '',
+      roleOptions: [
+        { value: '', label: 'All Roles' },
+        { value: 'super_admin', label: 'Admin' },
+        { value: 'admin', label: 'Mentor' },
+        { value: 'user', label: 'User' },
+      ],
       currentPage: 1,
       totalPages: 1,
       totalItems: 0,
@@ -140,11 +156,20 @@
       loading: false,
       searchTimeout: null,
 
+      init() {
+        this.$watch('selectedRole', () => {
+          this.currentPage = 1;
+          this.fetchUsers();
+        });
+        this.fetchUsers();
+      },
+
       async fetchUsers() {
         this.loading = true;
         try {
           const params = new URLSearchParams();
           if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
+          if (this.selectedRole) params.set('role', this.selectedRole);
           params.set('page', this.currentPage);
           params.set('limit', this.size);
 
