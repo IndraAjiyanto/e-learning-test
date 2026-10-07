@@ -17,18 +17,18 @@
 <section id="programs" class="w-full bg-[#FAFAFA] py-16 font-inter lg:py-24" data-node-id="2591:835">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-14">
 
-    {{!-- section-header (Figma Node 2591:836) --}}
-    <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
-      <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[110%] tracking-tight text-[#0B1F3B]">
-        <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span> {{default (t 'test.categoryFreeProgram.program.title') 'for You'}}
-      </h2>
-      <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
-        {{default (t 'test.categoryFreeProgram.program.description') 'Choose the short class that matches your interests and start building practical skills.'}}
-      </p>
-    </div>
-
-    {{!-- program-cards Grid (Figma Node 2591:839) --}}
     {{#if courses.length}}
+      {{!-- section-header (Figma Node 2591:836) --}}
+      <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
+        <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[110%] tracking-tight text-[#0B1F3B]">
+          <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span> {{default (t 'test.categoryFreeProgram.program.title') 'for You'}}
+        </h2>
+        <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
+          {{default (t 'test.categoryFreeProgram.program.description') 'Choose the short class that matches your interests and start building practical skills.'}}
+        </p>
+      </div>
+
+      {{!-- program-cards Grid (Figma Node 2591:839) --}}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center">
         {{#each courses}}
           {{> components/ui/card/category/free/index
@@ -47,41 +47,21 @@
         {{/each}}
       </div>
     {{else}}
-      {{!-- High Fidelity Fallback Cards matching Figma (Node 2591:840, 2591:864, 2591:892) --}}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center">
-        {{!-- Card 1 --}}
-        {{> components/ui/card/category/free/index
-            isFallback=true
-            image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop"
-            name=(default (t 'test.categoryFreeProgram.program.fallbackCards.card1.name') 'Japan Program')
-            icon="fa-solid fa-graduation-cap"
-            tags=(array (default (t 'test.categoryFreeProgram.program.tags.language') 'Language') (default (t 'test.categoryFreeProgram.program.tags.culture') 'Culture') (default (t 'test.categoryFreeProgram.program.tags.career') 'Career'))
-            description=(default (t 'test.categoryFreeProgram.program.fallbackCards.card1.desc') 'A structured journey from language fundamentals to workplace readiness and long-term career opportunities.')
-            lang=lang
-        }}
-
-        {{!-- Card 2 --}}
-        {{> components/ui/card/category/free/index
-            isFallback=true
-            image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&fit=crop"
-            name=(default (t 'test.categoryFreeProgram.program.fallbackCards.card2.name') 'Japan Program')
-            icon="fa-solid fa-eye"
-            tags=(array (default (t 'test.categoryFreeProgram.program.tags.speaking') 'Speaking') (default (t 'test.categoryFreeProgram.program.tags.listening') 'Listening') (default (t 'test.categoryFreeProgram.program.tags.reading') 'Reading') (default (t 'test.categoryFreeProgram.program.tags.writing') 'Writing'))
-            description=(default (t 'test.categoryFreeProgram.program.fallbackCards.card2.desc') 'Build strong communication skills through structured lessons and interactive practice.')
-            lang=lang
-        }}
-
-        {{!-- Card 3 --}}
-        {{> components/ui/card/category/free/index
-            isFallback=true
-            image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&fit=crop"
-            name=(default (t 'test.categoryFreeProgram.program.fallbackCards.card3.name') 'Career & Study Support')
-            icon="fa-solid fa-users"
-            tags=(array (default (t 'test.categoryFreeProgram.program.tags.applications') 'Applications') (default (t 'test.categoryFreeProgram.program.tags.interviews') 'Interviews') (default (t 'test.categoryFreeProgram.program.tags.planning') 'Planning'))
-            description=(default (t 'test.categoryFreeProgram.program.fallbackCards.card3.desc') 'Receive support for applications, interviews, and planning your path in Japan.')
-            lang=lang
-        }}
+      {{!-- Coming Soon: judul section = nama category dari backend, deskripsi = teks coming soon --}}
+      <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
+        <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[110%] tracking-tight text-[#0B1F3B]">
+          <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span>
+        </h2>
+        <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
+          {{default (t 'test.categoryFreeProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates."}}
+        </p>
       </div>
+
+      {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
+      {{> components/ui/sections/program_coming_soon/index
+          title=(default (t 'test.categoryFreeProgram.program.comingSoonTitle') "Program Coming Soon")
+          text=(default (t 'test.categoryFreeProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates.")
+      }}
     {{/if}}
 
   </div>

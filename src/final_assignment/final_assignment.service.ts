@@ -48,7 +48,9 @@ export class FinalAssignmentService {
     });
   }
 
-  async hasApprovedSubmission(courseIdOrFinalAssignmentId: string): Promise<boolean> {
+  async hasApprovedSubmission(
+    courseIdOrFinalAssignmentId: string,
+  ): Promise<boolean> {
     const fa = await this.finalAssignmentRepo.findOne({
       where: [
         { id: courseIdOrFinalAssignmentId },
