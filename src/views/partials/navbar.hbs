@@ -85,7 +85,7 @@
     </a>
 
     {{!-- Desktop nav links --}}
-    <nav class="hidden items-center gap-8 lg:flex xl:gap-14">
+    <nav class="hidden items-center gap-8 lg:flex xl:gap-14" @click.away="menu = null">
       <a
         href="/dashboard"
         @click="setActive('/dashboard')"
@@ -93,9 +93,9 @@
         class="text-sm transition-colors"
       >{{t 'test.navbar.home'}}</a>
 
-      {{!-- Class + Corporate Training + Information share one click-away scope so
-           switching between the two dropdowns never triggers a close/open race. --}}
-      <div class="contents" @click.away="menu = null">
+      {{!-- Class + Corporate Training + Information share the nav's click-away scope
+           so switching between the two dropdowns never triggers a close/open race. --}}
+      <div class="contents">
 
       {{!-- Class dropdown --}}
       <div class="relative">
