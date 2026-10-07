@@ -3,5 +3,8 @@ import { CreateTranslationDto } from './dto/create-translation.dto';
 
 @Injectable()
 export class TranslationService {
-  async translate(createTranslationDto: CreateTranslationDto) {}
+  translate(_createTranslationDto: CreateTranslationDto) {
+    void _createTranslationDto;
+    // stub
+  }
 }

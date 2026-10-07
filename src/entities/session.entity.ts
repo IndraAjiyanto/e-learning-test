@@ -1,5 +1,4 @@
 import {
-  JoinColumn,
   Column,
   Entity,
   PrimaryGeneratedColumn,

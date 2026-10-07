@@ -13,7 +13,7 @@ export class AwardService {
   ) {}
 
   async create(createAwardDto: CreateAwardDto): Promise<Award> {
-    const award = await this.awardRepository.create(createAwardDto);
+    const award = this.awardRepository.create(createAwardDto);
     return await this.awardRepository.save(award);
   }
 

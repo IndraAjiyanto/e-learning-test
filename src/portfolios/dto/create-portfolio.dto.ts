@@ -1,7 +1,6 @@
 import {
   IsArray,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,

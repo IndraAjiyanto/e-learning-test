@@ -22,7 +22,7 @@ export class BenefitCategoryService {
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    const benefitCategory = await this.benefitCategoryRepository.create({
+    const benefitCategory = this.benefitCategoryRepository.create({
       ...createBenefitCategoryDto,
       category: category,
     });

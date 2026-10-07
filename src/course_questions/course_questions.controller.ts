@@ -64,8 +64,9 @@ export class CourseQuestionsController {
         'The program FAQ has been added successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ program  failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'FAQ program  failed to create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -103,8 +104,9 @@ export class CourseQuestionsController {
         'The changes to this program FAQ have been saved.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ program failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'FAQ program failed to update');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -125,8 +127,9 @@ export class CourseQuestionsController {
         'The program FAQ has been removed successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ program failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'FAQ program failed to delete');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

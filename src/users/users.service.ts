@@ -371,7 +371,9 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async remove(id: string) {
@@ -423,7 +425,7 @@ export class UsersService {
         resetToken,
         user.username,
       );
-    } catch (error) {
+    } catch {
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
       await this.userRepository.save(user);

@@ -70,7 +70,7 @@ export class SessionService {
       throw new NotFoundException('weeks ini tidak ada');
     }
     if (createSessionDto.sessionOrder === 1) {
-      const data = await this.sessionRepository.create({
+      const data = this.sessionRepository.create({
         ...createSessionDto,
         weeks: weeks,
       });
@@ -122,7 +122,7 @@ export class SessionService {
         if (createSessionDto.isFinalCheck === 'true') {
           createSessionDto.isFinal = true;
         }
-        const user = await this.sessionRepository.create({
+        const user = this.sessionRepository.create({
           ...createSessionDto,
           weeks: weeks,
         });

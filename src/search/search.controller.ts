@@ -15,7 +15,7 @@ export class SearchController {
   ) {
     try {
       const query = queryDto?.q || '';
-      const userId = (req as any).user?.id;
+      const userId = (req.user as { id?: string } | undefined)?.id;
       const data = await this.searchService.search(query, userId);
       const total =
         (data.courses?.length || 0) +
@@ -31,10 +31,11 @@ export class SearchController {
         total,
         data,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       return res.status(500).json({
         status: 'error',
-        message: error.message || 'Failed to perform search',
+        message: err.message || 'Failed to perform search',
         data: {
           courses: [],
           programs: [],

@@ -4,24 +4,24 @@ export class AddProgramStatusLifecycle1790200000000 implements MigrationInterfac
   name = 'AddProgramStatusLifecycle1790200000000';
 
   public async up(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
-      `SELECT to_regclass('public.course') IS NOT NULL AS has_table`,
-    );
+    const [table] = (await q.query(
+      `SELECT to_regclass(table) IS NOT NULL AS has_table`,
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'course_status_enum'`,
-    );
+    )) as unknown[];
     if (!enumType) {
       await q.query(
         `CREATE TYPE "course_status_enum" AS ENUM('unlaunch', 'launch', 'learning', 'done')`,
       );
     }
 
-    const [statusCol] = await q.query(
+    const [statusCol] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'course' AND column_name = 'status'`,
-    );
+    )) as unknown[];
     if (!statusCol) {
       await q.query(
         `ALTER TABLE "course" ADD "status" "course_status_enum" NOT NULL DEFAULT 'unlaunch'`,
@@ -38,22 +38,22 @@ export class AddProgramStatusLifecycle1790200000000 implements MigrationInterfac
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
-      `SELECT to_regclass('public.course') IS NOT NULL AS has_table`,
-    );
+    const [table] = (await q.query(
+      `SELECT to_regclass(table) IS NOT NULL AS has_table`,
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    const [statusCol] = await q.query(
+    const [statusCol] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'course' AND column_name = 'status'`,
-    );
+    )) as unknown[];
     if (statusCol) {
       await q.query(`ALTER TABLE "course" DROP COLUMN "status"`);
     }
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'course_status_enum'`,
-    );
+    )) as unknown[];
     if (enumType) {
       await q.query(`DROP TYPE "course_status_enum"`);
     }

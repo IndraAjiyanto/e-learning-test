@@ -1,4 +1,9 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from 'src/entities/payment.entity';
@@ -7,7 +12,6 @@ import { UserCourse } from 'src/entities/user_course.entity';
 import { Invoice as InvoiceClient } from 'xendit-node';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
-import { UnauthorizedException } from '@nestjs/common';
 import { PaymentsService } from 'src/payments/payments.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
@@ -82,11 +86,12 @@ export class InvoiceService {
       status: invoiceStatus,
       user_fullname:
         payment.user_fullname ||
-        (user as any)?.biodata?.fullName ||
+        (user?.biodata as { fullName?: string })?.fullName ||
         user?.username ||
         null,
       user_email: payment.user_email || user?.email || payerEmail,
-      user_phone: payment.user_no || (user as any)?.biodata?.no || null,
+      user_phone:
+        payment.user_no || (user?.biodata as { no?: string })?.no || null,
       course_name: courseName,
       category_name: course?.category?.name || null,
       proof_url: payment.file || null,
@@ -126,7 +131,7 @@ export class InvoiceService {
       // Return both for the controller
       payment.invoice = invoice;
       return payment;
-    } catch (error) {
+    } catch {
       payment.process = 'rejected';
       await this.paymentRepository.save(payment);
       throw new Error('Gagal terhubung dengan Xendit Payment Gateway');
@@ -170,11 +175,12 @@ export class InvoiceService {
       status: 'pending',
       user_fullname:
         payment.user_fullname ||
-        (user as any)?.biodata?.fullName ||
+        (user?.biodata as { fullName?: string })?.fullName ||
         user?.username ||
         null,
       user_email: payment.user_email || user?.email || null,
-      user_phone: payment.user_no || (user as any)?.biodata?.no || null,
+      user_phone:
+        payment.user_no || (user?.biodata as { no?: string })?.no || null,
       course_name: course.name,
       category_name: course.category?.name || null,
       proof_url: payment.file || null,
@@ -225,7 +231,7 @@ export class InvoiceService {
       row.xendit_invoice_url = xenditResponse.invoiceUrl;
       await this.installmentPaymentService.save(row);
       return row;
-    } catch (error) {
+    } catch {
       row.status = 'rejected';
       await this.installmentPaymentService.save(row);
       throw new Error('Gagal terhubung dengan Xendit Payment Gateway');
@@ -238,11 +244,11 @@ export class InvoiceService {
       const inv = await this.xenditInvoiceClient.getInvoiceById({
         invoiceId: xenditInvoiceId,
       });
-      const paidAt = (inv as any)?.paid_at
-        ? new Date((inv as any).paid_at)
-        : null;
+      const invPaidAt = (inv as unknown as { paid_at?: string | number | Date })
+        ?.paid_at;
+      const paidAt = invPaidAt ? new Date(invPaidAt) : null;
       return { status: inv.status, paidAt };
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -261,8 +267,12 @@ export class InvoiceService {
         invoiceId: xenditInvoiceId,
       });
       return { expired: true, reason: 'expired' };
-    } catch (error) {
-      return { expired: false, reason: 'error', error };
+    } catch (error: unknown) {
+      return {
+        expired: false,
+        reason: 'error',
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
@@ -387,8 +397,14 @@ export class InvoiceService {
       );
     }
 
-    const externalId = payload.external_id;
-    const status = payload.status;
+    const p = payload as {
+      external_id?: string;
+      status?: string;
+      payment_method?: string;
+      payment_channel?: string;
+    };
+    const externalId = p.external_id;
+    const status = p.status;
 
     if (!externalId) return;
 
@@ -431,11 +447,11 @@ export class InvoiceService {
       if (payment.invoice) {
         payment.invoice.paid_at = new Date();
         payment.invoice.status = 'paid';
-        if (payload.payment_method) {
-          payment.invoice.payment_method = payload.payment_method;
+        if (p.payment_method) {
+          payment.invoice.payment_method = p.payment_method;
         }
-        if (payload.payment_channel) {
-          payment.invoice.xendit_payment_channel = payload.payment_channel;
+        if (p.payment_channel) {
+          payment.invoice.xendit_payment_channel = p.payment_channel;
         }
         await this.invoiceRepository.save(payment.invoice);
       }

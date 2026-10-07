@@ -54,7 +54,8 @@ export class MentorController {
   ) {
     try {
       createMentorDto.courseId = courseId;
-      const uploadedImages = req.body.uploadedImageUrls || [];
+      const uploadedImages =
+        (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls || [];
 
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (files?.profile?.length) {
@@ -68,8 +69,9 @@ export class MentorController {
         'The mentor has been assigned to this program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'mentor failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'mentor failed to create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -150,7 +152,8 @@ export class MentorController {
   ) {
     try {
       const mentor = await this.mentorService.findOne(mentorId);
-      const uploadedImages = req.body.uploadedImageUrls || [];
+      const uploadedImages =
+        (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls || [];
 
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (files?.profile?.length) {
@@ -167,8 +170,9 @@ export class MentorController {
         'The changes to this mentor have been saved.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'mentor failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'mentor failed to update');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -195,8 +199,9 @@ export class MentorController {
         'The mentor has been removed from this program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'mentor failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'mentor failed to delete');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

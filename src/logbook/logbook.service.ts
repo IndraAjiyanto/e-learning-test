@@ -47,7 +47,7 @@ export class LogbookService {
       throw new Error('session tidak ada');
     }
 
-    const logbooks = await this.logBookRepository.create({
+    const logbooks = this.logBookRepository.create({
       ...createLogbookDto,
       user: user,
       session: session,
@@ -143,7 +143,9 @@ export class LogbookService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async findOne(logbookId: string) {

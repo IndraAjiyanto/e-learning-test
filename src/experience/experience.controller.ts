@@ -112,7 +112,7 @@ export class ExperienceController {
         'The experience has been removed successfully.',
       );
       res.redirect('/experience');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'experience failed to delete');
       res.redirect('/experience');
     }
@@ -120,7 +120,7 @@ export class ExperienceController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/experience/create', { user: req.user });
   }
 }

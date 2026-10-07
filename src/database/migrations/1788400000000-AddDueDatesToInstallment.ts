@@ -12,10 +12,10 @@ export class AddDueDatesToInstallment1788400000000 implements MigrationInterface
 
   public async up(q: QueryRunner): Promise<void> {
     // Idempoten: kolom bisa terlanjur ada dari synchronize di masa lalu.
-    const [existing] = await q.query(
+    const [existing] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'installment' AND column_name = 'dueDates'`,
-    );
+    )) as unknown[];
     if (existing) {
       return;
     }
@@ -25,10 +25,10 @@ export class AddDueDatesToInstallment1788400000000 implements MigrationInterface
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [existing] = await q.query(
+    const [existing] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'installment' AND column_name = 'dueDates'`,
-    );
+    )) as unknown[];
     if (!existing) {
       return;
     }

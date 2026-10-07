@@ -43,7 +43,7 @@ export class CategoriesService {
   async create(createCategoriesDto: CreateCategoriesDto) {
     const { courseType: courseTypeIds, ...categoryData } = createCategoriesDto;
     this.normalizeLangNames(categoryData);
-    const category = await this.categoryRepository.create(categoryData);
+    const category = this.categoryRepository.create(categoryData);
 
     if (courseTypeIds && courseTypeIds.length > 0) {
       const courseTypes =
@@ -133,10 +133,18 @@ export class CategoriesService {
       take: 6,
     });
 
+    const initial: ((typeof gallery)[number] | null)[] = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    ];
     return gallery.reduce((items, item) => {
       items[Number(item.no) - 1] = item;
       return items;
-    }, Array(6).fill(null));
+    }, initial);
   }
 
   async findPortfolioByCategory(categoryId: string) {
@@ -189,10 +197,12 @@ export class CategoriesService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
-  async validateImage(
+  validateImage(
     file: Express.Multer.File,
     options: {
       maxSize: number;
@@ -214,7 +224,7 @@ export class CategoriesService {
     }
   }
 
-  async validateImageDimensions(
+  validateImageDimensions(
     file: Express.Multer.File,
     options: {
       minWidth: number;

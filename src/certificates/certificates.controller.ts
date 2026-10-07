@@ -50,11 +50,14 @@ export class CertificatesController {
       }
 
       return res.redirect(certificate.certificate);
-    } catch (error: any) {
-      console.error('Gagal membuat sertifikat:', error?.message ?? error);
+    } catch (error: unknown) {
+      console.error(
+        'Gagal membuat sertifikat:',
+        error instanceof Error ? error.message : error,
+      );
       req.flash(
         'error',
-        error?.message ||
+        (error instanceof Error ? error.message : null) ||
           'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
       );
       return res.redirect('/users/profile?tab=certificate');

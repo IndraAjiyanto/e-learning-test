@@ -59,15 +59,17 @@ export class PortfoliosController {
     folder: 'portfolio/temp',
     skipTransformation: true,
   })
-  async uploadImage(@Res() res: Response, @Req() req: Request) {
+  uploadImage(@Res() res: Response, @Req() req: Request) {
     try {
-      const imageUrl = req.body.uploadedImageUrls?.[0];
+      const imageUrl = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Portfolio not saved',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       res.redirect('/portfolios');
     }
@@ -102,7 +104,7 @@ export class PortfoliosController {
       (req.headers.accept && req.headers.accept.includes('application/json'));
 
     try {
-      const editorjsData = await this.portfoliosService.ChangeImageEditorJS(
+      const editorjsData = this.portfoliosService.ChangeImageEditorJS(
         createPortfolioDto.content,
         '/asset/portfolio/temp',
         '/asset/portfolio/isi',
@@ -111,12 +113,15 @@ export class PortfoliosController {
 
       createPortfolioDto.content = editorjsData;
 
-      const html = editorjsHTML.parse(JSON.parse(editorjsData));
+      const html = editorjsHTML.parse(
+        JSON.parse(editorjsData) as import('@editorjs/editorjs').OutputData,
+      );
 
       createPortfolioDto.contentHtml = html;
 
       const courseId = createPortfolioDto.courseId;
-      createPortfolioDto.image = req.body.uploadedImageUrls;
+      createPortfolioDto.image =
+        (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls || [];
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
@@ -133,18 +138,19 @@ export class PortfoliosController {
 
       req.flash('success', 'portofolios successfully upload');
       res.redirect(this.portfolioRedirectUrl(courseId));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Failed to upload portofolios',
+          message: err.message || 'Failed to upload portofolios',
         });
       }
 
       flashToastError(
         req,
         'Upload failed',
-        error.message || 'The image could not be uploaded. Please try again.',
+        err.message || 'The image could not be uploaded. Please try again.',
       );
       res.redirect(this.portfolioRedirectUrl(createPortfolioDto.courseId));
     }
@@ -172,7 +178,7 @@ export class PortfoliosController {
 
   @Roles('user')
   @Get('formCreate/:courseId')
-  async formCreate(
+  formCreate(
     @Param('courseId') courseId: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -303,20 +309,21 @@ export class PortfoliosController {
       );
 
       if (updatePortfolioDto.content) {
-        await this.portfoliosService.ChangeImageEditorJS(
+        this.portfoliosService.ChangeImageEditorJS(
           oldPortfolio.content,
           '/asset/portfolio/isi',
           '/asset/portfolio/temp',
         );
-        updatePortfolioDto.content =
-          await this.portfoliosService.ChangeImageEditorJS(
-            updatePortfolioDto.content,
-            '/asset/portfolio/temp',
-            '/asset/portfolio/isi',
-            '/asset/portfolio/temp',
-          );
+        updatePortfolioDto.content = this.portfoliosService.ChangeImageEditorJS(
+          updatePortfolioDto.content,
+          '/asset/portfolio/temp',
+          '/asset/portfolio/isi',
+          '/asset/portfolio/temp',
+        );
         updatePortfolioDto.contentHtml = editorjsHTML.parse(
-          JSON.parse(updatePortfolioDto.content),
+          JSON.parse(
+            updatePortfolioDto.content,
+          ) as import('@editorjs/editorjs').OutputData,
         );
       }
 
@@ -326,17 +333,18 @@ export class PortfoliosController {
       // `image[]` sehingga tidak pernah terbaca DTO, dan setiap penyimpanan
       // menghapus seluruh gambar lamanya. `image` tetap dibaca sebagai
       // cadangan untuk pemanggil lama.
-      const rawKeep = (req.body.keepImages ??
-        req.body['keepImages[]'] ??
-        updatePortfolioDto.image ??
-        []) as string | string[];
+      interface PortfolioUpdateBody {
+        keepImages?: string | string[];
+        'keepImages[]'?: string | string[];
+        uploadedImageUrls?: string[];
+      }
+      const b = req.body as PortfolioUpdateBody;
+      const rawKeep =
+        b.keepImages ?? b['keepImages[]'] ?? updatePortfolioDto.image ?? [];
       const keptImages = (Array.isArray(rawKeep) ? rawKeep : [rawKeep]).filter(
         (url): url is string => typeof url === 'string' && url.length > 0,
       );
-      const combineImage = [
-        ...keptImages,
-        ...(req.body.uploadedImageUrls || []),
-      ];
+      const combineImage = [...keptImages, ...(b.uploadedImageUrls || [])];
       const newImageUrls = await this.portfoliosService.deleteUnusedImages(
         oldPortfolio.image,
         combineImage,
@@ -364,18 +372,19 @@ export class PortfoliosController {
 
       flashToast(req, 'Portfolio updated', 'Your changes have been saved.');
       return res.redirect(this.portfolioRedirectUrl(courseId));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Failed to update portfolio',
+          message: err.message || 'Failed to update portfolio',
         });
       }
 
       flashToastError(
         req,
         'Portfolio not saved',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       return res.redirect(this.portfolioRedirectUrl(courseId));
     }
@@ -399,10 +408,7 @@ export class PortfoliosController {
     try {
       const portfolio = isPrivileged
         ? await this.portfoliosService.findOne(portfolioId)
-        : await this.portfoliosService.findOwnedOne(
-            portfolioId,
-            req.user?.id,
-          );
+        : await this.portfoliosService.findOwnedOne(portfolioId, req.user?.id);
       for (const imageUrl of portfolio.image ?? []) {
         await this.portfoliosService.deleteFile(imageUrl);
       }
@@ -420,18 +426,19 @@ export class PortfoliosController {
         return res.redirect(`/program/detail/program/admin/${courseId}`);
       }
       res.redirect(this.portfolioRedirectUrl(courseId));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Failed to delete portfolio',
+          message: err.message || 'Failed to delete portfolio',
         });
       }
 
       flashToastError(
         req,
         'Portfolio not deleted',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       if (isPrivileged) {
         return res.redirect(`/program/detail/program/admin/${courseId}`);

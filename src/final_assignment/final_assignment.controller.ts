@@ -34,7 +34,9 @@ export class FinalAssignmentController {
       false,
     );
     const hasApprovedSubmission = finalAssignment
-      ? await this.finalAssignmentService.hasApprovedSubmission(finalAssignment.id)
+      ? await this.finalAssignmentService.hasApprovedSubmission(
+          finalAssignment.id,
+        )
       : false;
 
     return res.json({
@@ -62,12 +64,12 @@ export class FinalAssignmentController {
         'Final Assignment Deleted',
         'The final assignment has been removed successfully.',
       );
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Cannot Delete Final Assignment',
-        error.message || 'Failed to delete final assignment.',
-      );
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete final assignment.';
+      flashToastError(req, 'Cannot Delete Final Assignment', message);
     }
     return res.redirect(`/program/detail/program/admin/${courseId}`);
   }

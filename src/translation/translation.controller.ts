@@ -7,7 +7,7 @@ export class TranslationController {
   constructor(private readonly translationService: TranslationService) {}
 
   @Post()
-  async setLang(
+  setLang(
     @Body('lang') lang: string,
     @Res() res: Response,
     @Req() req: Request,

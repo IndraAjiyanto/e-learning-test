@@ -1,21 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Request,
-  Res,
-  Req,
-  Param,
-  Body,
-} from '@nestjs/common';
-import { Response } from 'express';
+type PassportRequest = Request & {
+  login: (user: unknown, done: (err: unknown) => void) => void;
+  logout: (done: (err: unknown) => void) => void;
+};
+import { Controller, Get, Post, Res, Req, Param, Body } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserActivityService } from 'src/user_activity/user-activity.service';
 import {
   flashToast,
   flashToastError,
-  flashToastInfo,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
 
@@ -27,7 +21,7 @@ export class AuthController {
   ) {}
 
   @Get('login')
-  async getLogin(@Res() res: Response, @Req() req: any) {
+  getLogin(@Res() res: Response, @Req() req: Request) {
     if (req.user && req.user.isVerified) {
       if (req.user.role === 'user') {
         return res.redirect('/users/profile');
@@ -45,7 +39,7 @@ export class AuthController {
   async registerCourse(
     @Param('id') id: string,
     @Res() res: Response,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const course = await this.authService.findCourse(id);
     if (!req.user) {
@@ -56,14 +50,14 @@ export class AuthController {
   }
 
   @Get('register')
-  async regis(@Res() res: Response) {
+  regis(@Res() res: Response) {
     res.render('regis');
   }
 
   @Post('register')
   async createAcount(
     @Body() createUserDto: CreateUserDto,
-    @Req() req: any,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
@@ -74,11 +68,12 @@ export class AuthController {
         'Verification email has been sent. Please check your inbox.',
       );
       res.redirect('/users/send-verify-email?token=' + user.verificationToken);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Registration Failed',
-        error.message || 'Registration failed',
+        err.message || 'Registration failed',
       );
       // res.redirect('/login');
       res.redirect('/register');
@@ -86,15 +81,19 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
+  async login(
+    @Body() body: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const passportReq = req as PassportRequest;
     try {
-      const user = await this.authService.validateUser(
-        body.email,
-        body.password,
-      );
+      const email = typeof body.email === 'string' ? body.email : '';
+      const password = typeof body.password === 'string' ? body.password : '';
+      const user = await this.authService.validateUser(email, password);
 
       if (user!.isVerified === false) {
-        req.login(user, (err) => {
+        passportReq.login(user, (err: unknown) => {
           if (err) {
             flashToastError(req, 'Login Failed', 'Email not verified');
             return res.redirect('/login');
@@ -102,7 +101,7 @@ export class AuthController {
           return res.redirect('/users/send-verify-email');
         });
       } else {
-        req.login(user, (err) => {
+        passportReq.login(user, (err: unknown) => {
           if (err) {
             flashToastError(req, 'Login Failed', 'Login failed');
             return res.redirect('/login');
@@ -132,27 +131,32 @@ export class AuthController {
           return res.redirect('/dashboard');
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Login Failed',
-        error.message || 'Email or password is incorrect',
+        err.message || 'Email or password is incorrect',
       );
       return res.redirect('/login');
     }
   }
 
   @Get('logout')
-  async logout(@Req() req: any, @Res() res: Response) {
+  async logout(@Req() req: Request, @Res() res: Response) {
+    const passportReq = req as PassportRequest;
     const userId = req.user?.id;
     if (userId) {
       await this.userActivityService
         .markInactive(userId)
         .catch(() => undefined);
     }
-    req.logout((err) => {
+    passportReq.logout((err: unknown) => {
       if (err) {
-        return res.status(500).send({ message: 'Logout failed', error: err });
+        return res.status(500).send({
+          message: 'Logout failed',
+          error: err instanceof Error ? err.message : 'Unknown error',
+        });
       }
 
       req.session.destroy(() => {

@@ -32,7 +32,7 @@ export class RenameTableAndColumn1785382749167 implements MigrationInterface {
       await queryRunner.query(
         `ALTER TABLE "category_course_types_course_type" RENAME TO "category_course_types"`,
       );
-    } catch (e) {
+    } catch {
       // table may not exist — skip safely
     }
 
@@ -103,7 +103,7 @@ export class RenameTableAndColumn1785382749167 implements MigrationInterface {
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
+  public async down(): Promise<void> {
     // WARNING: Irreversible migration.
     // Dropped tables cannot be restored automatically.
     // To revert, restore database from backup.

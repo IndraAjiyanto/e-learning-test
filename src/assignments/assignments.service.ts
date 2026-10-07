@@ -29,7 +29,7 @@ export class AssignmentsService {
     if (!session) {
       throw new NotFoundException('Session not found');
     }
-    const task = await this.assignmentRepository.create({
+    const task = this.assignmentRepository.create({
       ...createAssignmentDto,
       session: session,
     });
@@ -76,7 +76,9 @@ export class AssignmentsService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async remove(assignmentId: string) {
@@ -90,4 +92,3 @@ export class AssignmentsService {
     await this.assignmentRepository.remove(task);
   }
 }
-

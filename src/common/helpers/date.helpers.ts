@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { enUS, id, ja } from 'date-fns/locale';
+import { enUS, id, ja, type Locale } from 'date-fns/locale';
 
 export const dateHelpers = {
   formDate: (date: string | Date | null | undefined): string => {
@@ -11,7 +11,7 @@ export const dateHelpers = {
   formatDate: (date: string | Date, lang?: string) => {
     if (!date) return lang ? 'Not set' : '';
     if (lang) {
-      let locale;
+      let locale: Locale;
       switch (lang) {
         case 'id':
           locale = id;
@@ -42,7 +42,7 @@ export const dateHelpers = {
     if (!date) return lang ? 'Not set' : '-';
     const d = date instanceof Date ? date : new Date(date);
     if (isNaN(d.getTime())) return '-';
-    let locale;
+    let locale: Locale;
     switch (lang) {
       case 'en':
         locale = enUS;
@@ -67,7 +67,7 @@ export const dateHelpers = {
     if (!date) return '-';
     const d = date instanceof Date ? date : new Date(date);
     if (isNaN(d.getTime())) return '-';
-    let locale;
+    let locale: Locale;
     switch (lang) {
       case 'en':
         locale = enUS;

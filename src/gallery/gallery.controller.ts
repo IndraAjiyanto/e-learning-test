@@ -85,14 +85,13 @@ export class GalleryController {
     @Req() req: Request,
   ) {
     try {
-      if (
-        !req.body.uploadedImageUrls ||
-        req.body.uploadedImageUrls.length === 0
-      ) {
+      const uploaded = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls;
+      if (!uploaded || uploaded.length === 0 || !uploaded[0]) {
         throw new BadRequestException('No image uploaded');
       }
 
-      createGalleryDto.filePath = req.body.uploadedImageUrls[0];
+      createGalleryDto.filePath = uploaded[0];
 
       const gallery = await this.galleryService.create(createGalleryDto);
 
@@ -105,8 +104,12 @@ export class GalleryController {
       res.redirect(
         `/category/${gallery.category?.id ?? createGalleryDto.categoryId}`,
       );
-    } catch (error: any) {
-      req.flash('error', error.message || 'Gallery failed to create');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Gallery failed to create',
+      );
 
       res.redirect(`/category/${createGalleryDto.categoryId}`);
     }
@@ -164,8 +167,10 @@ export class GalleryController {
         ...updateGalleryDto,
       };
 
-      if (req.body.uploadedImageUrls && req.body.uploadedImageUrls.length > 0) {
-        data.filePath = req.body.uploadedImageUrls[0];
+      const updateUploaded = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls;
+      if (updateUploaded && updateUploaded.length > 0 && updateUploaded[0]) {
+        data.filePath = updateUploaded[0];
       }
 
       const gallery = await this.galleryService.update(id, data);
@@ -173,9 +178,16 @@ export class GalleryController {
       flashToast(req, 'Changes Saved', 'The gallery item has been updated.');
 
       res.redirect(`/category/${gallery.category?.id}`);
-    } catch (error: any) {
-      console.error('[Gallery Update Failed]', error.message || error);
-      req.flash('error', error.message || 'Gallery failed to update');
+    } catch (error: unknown) {
+      console.error(
+        '[Gallery Update Failed]',
+        (error instanceof Error ? error.message : null) || error,
+      );
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Gallery failed to update',
+      );
 
       res.redirect(`/category/${updateGalleryDto.categoryId ?? ''}`);
     }
@@ -204,15 +216,19 @@ export class GalleryController {
       );
 
       return res.redirect(`/category/${gallery.category?.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
         return res.status(400).json({
           success: false,
-          message: error.message,
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
 
-      req.flash('error', error.message || 'Gallery failed to delete');
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'Gallery failed to delete',
+      );
 
       return res.redirect('/category');
     }

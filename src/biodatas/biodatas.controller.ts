@@ -36,11 +36,12 @@ export class BiodatasController {
       await this.biodatasService.create(createBiodataDto);
       req.flash('success', 'biodata successfully create');
       res.redirect('/users/profile');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Biodata not saved',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       res.redirect('/users/profile');
     }
@@ -48,7 +49,7 @@ export class BiodatasController {
 
   @Roles('user')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('user/biodata/create', { user: req.user });
   }
 
@@ -75,11 +76,12 @@ export class BiodatasController {
       await this.biodatasService.update(biodataId, updateBiodataDto);
       req.flash('success', 'biodata successfully update');
       res.redirect('/users/profile');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Biodata not saved',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       res.redirect('/users/profile');
     }

@@ -41,8 +41,9 @@ export class SocialController {
         'The social media links have been added.',
       );
       res.redirect('/social');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create social');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create social');
       res.redirect('/social');
     }
   }
@@ -56,7 +57,7 @@ export class SocialController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/social/create', { user: req.user });
   }
 
@@ -87,8 +88,9 @@ export class SocialController {
         'The social media links have been updated.',
       );
       res.redirect('/social');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update social');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to update social');
       res.redirect('/social');
     }
   }
@@ -113,8 +115,9 @@ export class SocialController {
         'The social media links have been permanently removed.',
       );
       res.redirect('/social');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete social');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete social');
       res.redirect('/social');
     }
   }

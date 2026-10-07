@@ -26,14 +26,21 @@ describe('PaymentsService', () => {
       find: jest.fn(),
       findOne: jest.fn(),
       save: jest.fn((x) => Promise.resolve(x)),
-      create: jest.fn((x) => ({ ...x })),
+      create: jest.fn(
+        (x: Record<string, unknown>): Record<string, unknown> => ({ ...x }),
+      ),
     };
     installmentService = {
       findByPaymentId: jest.fn().mockResolvedValue([]),
       findByPaymentIds: jest.fn().mockResolvedValue([]),
       findOneByPaymentAndMonth: jest.fn(),
       save: jest.fn((x) => Promise.resolve(x)),
-      create: jest.fn((x) => ({ id: 'i-' + Date.now(), ...x })),
+      create: jest.fn(
+        (x: Record<string, unknown>): Record<string, unknown> => ({
+          id: 'i-' + Date.now(),
+          ...x,
+        }),
+      ),
     };
     invoiceService = {
       getXenditInvoiceStatus: jest.fn(),
@@ -254,7 +261,13 @@ describe('PaymentsService', () => {
         1,
       );
 
-      const createCall = installmentService.create.mock.calls[0][0];
+      const createCall = (
+        installmentService.create.mock.calls as [unknown[]]
+      )[0][0] as {
+        month: number;
+        amount: number;
+        payment: { id: string };
+      };
       expect(createCall.month).toBe(1);
       expect(createCall.amount).toBe(500000);
       expect(createCall.payment.id).toBe('p1');

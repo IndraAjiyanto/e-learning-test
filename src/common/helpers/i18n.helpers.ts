@@ -39,7 +39,9 @@ export const i18nHelpers = {
         }
         return value;
       }
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
     return '';
   },
 };

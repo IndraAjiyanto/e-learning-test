@@ -48,7 +48,9 @@ export class FinalAssignmentService {
     });
   }
 
-  async hasApprovedSubmission(courseIdOrFinalAssignmentId: string): Promise<boolean> {
+  async hasApprovedSubmission(
+    courseIdOrFinalAssignmentId: string,
+  ): Promise<boolean> {
     const fa = await this.finalAssignmentRepo.findOne({
       where: [
         { id: courseIdOrFinalAssignmentId },
@@ -87,15 +89,15 @@ export class FinalAssignmentService {
       throw new NotFoundException('Course not found');
     }
 
-    let parsedContent: any = undefined;
+    let parsedContent: Record<string, unknown> | undefined = undefined;
     if (typeof dto.content === 'string') {
       try {
-        parsedContent = JSON.parse(dto.content);
-      } catch (err) {
+        parsedContent = JSON.parse(dto.content) as Record<string, unknown>;
+      } catch {
         parsedContent = undefined;
       }
     } else if (dto.content) {
-      parsedContent = dto.content;
+      parsedContent = dto.content as Record<string, unknown>;
     }
 
     let fa = await this.finalAssignmentRepo.findOne({ where: { courseId } });
@@ -193,7 +195,9 @@ export class FinalAssignmentService {
     finalAssignmentId: string,
     status?: ProcessStatus,
   ): Promise<UserAssignment[]> {
-    const where: any = { finalAssignmentId };
+    const where: import('typeorm').FindOptionsWhere<UserAssignment> = {
+      finalAssignmentId,
+    };
     if (status) {
       where.status = status;
     }
@@ -208,7 +212,7 @@ export class FinalAssignmentService {
     submissionId: string,
     status: ProcessStatus,
     commentText?: string,
-    reviewer?: any,
+    reviewer?: { id?: string; username?: string },
   ): Promise<UserAssignment> {
     const submission = await this.userAssignmentRepo.findOne({
       where: { id: submissionId },

@@ -40,15 +40,16 @@ export class ParticipantsController {
         'The participant has been added to this program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Participant failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Participant failed to create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
   @Roles('super_admin')
   @Get('formCreate/:courseId')
-  async formCreateWithKelas(
+  formCreateWithKelas(
     @Res() res: Response,
     @Req() req: Request,
     @Param('courseId') courseId: string,
@@ -90,8 +91,9 @@ export class ParticipantsController {
         'The changes to this participant have been saved.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Participant failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Participant failed to update');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -116,8 +118,9 @@ export class ParticipantsController {
         'The participant has been removed from this program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Participant failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Participant failed to delete');
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }

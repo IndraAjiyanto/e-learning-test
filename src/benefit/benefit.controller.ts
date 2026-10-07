@@ -38,8 +38,9 @@ export class BenefitController {
         'The benefit has been added successfully.',
       );
       res.redirect('/benefit');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Benefit failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Benefit failed to create');
       res.redirect('/benefit');
     }
   }
@@ -111,8 +112,9 @@ export class BenefitController {
         'The benefit has been updated successfully.',
       );
       res.redirect('/benefit');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Benefit failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Benefit failed to update');
       res.redirect('/benefit');
     }
   }
@@ -132,8 +134,9 @@ export class BenefitController {
         'The benefit has been removed successfully.',
       );
       res.redirect('/benefit');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Benefit failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Benefit failed to delete');
       res.redirect('/benefit');
     }
   }

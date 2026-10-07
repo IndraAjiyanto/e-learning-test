@@ -55,7 +55,9 @@ export class AboutController {
     @Req() req: Request,
   ) {
     try {
-      createTentangDto.image = req.body.uploadedImageUrls?.[0];
+      createTentangDto.image =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       await this.aboutService.create(createTentangDto);
       flashToast(
         req,
@@ -63,8 +65,9 @@ export class AboutController {
         'The header has been added successfully.',
       );
       res.redirect('/about');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Header failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Header failed to create');
       res.redirect('/about');
     }
   }
@@ -78,18 +81,13 @@ export class AboutController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/about/create', { user: req.user });
   }
 
   @Roles('super_admin')
   @Get(':id')
-  async findOne(
-    @Param('id') id: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const about = await this.aboutService.findOne(id);
+  findOne(@Param('id') id: string, @Res() res: Response) {
     res.redirect(`/about/formEdit/${id}`);
   }
 
@@ -130,7 +128,9 @@ export class AboutController {
       const about = await this.aboutService.findOne(id);
       if (gambar) {
         await this.aboutService.deleteFile(about.image);
-        updateTentangDto.image = req.body.uploadedImageUrls?.[0];
+        updateTentangDto.image =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
       }
       await this.aboutService.update(id, updateTentangDto);
       flashToast(
@@ -139,8 +139,9 @@ export class AboutController {
         'The header has been updated successfully.',
       );
       res.redirect('/about');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Header failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Header failed to update');
       res.redirect('/about');
     }
   }
@@ -162,8 +163,9 @@ export class AboutController {
         'The header has been deleted successfully.',
       );
       res.redirect('/about');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Header failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Header failed to delete');
       res.redirect('/about');
     }
   }

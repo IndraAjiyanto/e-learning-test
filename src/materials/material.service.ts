@@ -23,7 +23,7 @@ export class MaterialService {
     if (!session) {
       throw new NotFoundException('Session not found');
     }
-    const material = await this.materialRepository.create({
+    const material = this.materialRepository.create({
       ...createMaterialDto,
       session: session,
     });
@@ -118,7 +118,9 @@ export class MaterialService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async update(id: string, updateMaterialDto: UpdateMaterialDto) {

@@ -44,7 +44,7 @@ export class WeeksController {
         'The new week has been added to the program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       req.flash('error', getErrorMessage(error, 'session unsucces create'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
@@ -147,7 +147,7 @@ export class WeeksController {
         'The week information has been updated.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       req.flash('error', getErrorMessage(error, 'week failed updated'));
       res.redirect(`/week/${weeksId}`);
     }
@@ -165,7 +165,7 @@ export class WeeksController {
       await this.weeksService.remove(id, courseId);
       flashToast(req, 'Week Deleted', 'The week has been permanently removed.');
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       req.flash('error', getErrorMessage(error, 'week failed deleted'));
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
