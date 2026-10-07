@@ -268,6 +268,23 @@ function kelasTable() {
       }
     },
 
+    getMentorName(course) {
+      if (!course) return '-';
+      if (course.mentorings && course.mentorings.length) {
+        const names = course.mentorings
+          .map(m => m.user?.username)
+          .filter(Boolean);
+        if (names.length) return names.join(', ');
+      }
+      if (course.mentors && course.mentors.length) {
+        const names = course.mentors
+          .map(m => m.name)
+          .filter(Boolean);
+        if (names.length) return names.join(', ');
+      }
+      return '-';
+    },
+
     confirmStatusChange(courseId, index, targetStatus) {
       const course = this.kelasList[index];
       const configs = {
