@@ -109,8 +109,9 @@ export class AssignmentsController {
         assignment,
         editMode: true,
       });
-    } catch (error: any) {
-      req.flash('error', error.message || 'Assignment not found');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Assignment not found');
       res.redirect('/program');
     }
   }
@@ -150,19 +151,22 @@ export class AssignmentsController {
         return res.redirect(`/session/${sessionId}`);
       }
 
-      if (file && req.body.uploadedFileUrls?.[0]) {
+      const uploaded = (req.body as { uploadedFileUrls?: string[] })
+        ?.uploadedFileUrls;
+      if (file && uploaded?.[0]) {
         await this.assignmentsService.deleteFile(assignment.file);
-        updateAssignmentDto.file = req.body.uploadedFileUrls[0];
+        updateAssignmentDto.file = uploaded[0];
       }
 
       await this.assignmentsService.update(assignmentId, updateAssignmentDto);
       flashToast(req, 'Changes Saved', 'The assignment has been updated.');
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Failed to Update Assignment',
-        error.message || 'Failed to update assignment',
+        err.message || 'Failed to update assignment',
       );
       res.redirect(`/session/${sessionId}`);
     }
@@ -208,4 +212,3 @@ export class AssignmentsController {
     }
   }
 }
-

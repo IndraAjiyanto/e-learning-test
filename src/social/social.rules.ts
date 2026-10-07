@@ -137,4 +137,3 @@ export function validateSocial(input: object) {
   }
   return clean;
 }
-

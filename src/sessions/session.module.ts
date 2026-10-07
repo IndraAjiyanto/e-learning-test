@@ -37,4 +37,3 @@ import { AnswerTask } from 'src/entities/answer_task.entity';
   exports: [SessionService],
 })
 export class SessionsModule {}
-

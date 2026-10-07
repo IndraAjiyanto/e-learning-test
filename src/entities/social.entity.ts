@@ -41,4 +41,3 @@ export class Social {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-
