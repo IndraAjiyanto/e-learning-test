@@ -11,9 +11,6 @@ export class CreateSocialDto {
   videoYoutube: string;
 
   @IsString()
-  linkForm: string;
-
-  @IsString()
   youtube: string;
 
   @IsEmail()
@@ -28,3 +25,4 @@ export class CreateSocialDto {
   @IsString()
   number: string;
 }
+

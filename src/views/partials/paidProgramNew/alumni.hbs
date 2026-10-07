@@ -165,6 +165,7 @@
       name: {{{json (getByLang this.name ../lang)}}},
       position: {{{json (getByLang this.currentPosition ../lang)}}},
       company: {{{json (default this.course.name '')}}},
+      category: {{{json (default (nameByLang this.course.category ../lang) (default this.course.category.name (default (nameByLang ../category ../lang) (default ../category.name ''))))}}},
       photo: {{{json (default this.profile '')}}},
       testimonial: {{{json (getByLang this.message ../lang)}}}
     }{{#unless @last}},{{/unless}}

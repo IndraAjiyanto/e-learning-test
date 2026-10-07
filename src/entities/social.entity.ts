@@ -23,9 +23,6 @@ export class Social {
   @Column({ nullable: true })
   videoYoutube: string;
 
-  @Column({ nullable: true })
-  linkForm: string;
-
   @Column()
   email: string;
 
@@ -44,3 +41,4 @@ export class Social {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+

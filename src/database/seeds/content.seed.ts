@@ -52,7 +52,6 @@ async function bootstrap() {
     instagram: 'https://www.instagram.com/kesatriaacademy',
     youtube: 'https://www.youtube.com/@kesatriaacademy',
     videoYoutube: 'https://youtu.be/Ft3UMrgTDpc',
-    linkForm: 'https://forms.gle/kesatria',
     email: 'kesatriaacademy@gmail.com',
     address:
       'Jl. S. Parman No.62, RT.002/RW.002, Karangbawang, Purwokerto Kulon, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah 53141',

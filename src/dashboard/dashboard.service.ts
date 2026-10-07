@@ -348,7 +348,7 @@ export class DashboardService {
 
   async findAllAlumni() {
     return await this.alumniRepository.find({
-      relations: ['course'],
+      relations: ['course', 'course.category'],
       order: { createdAt: 'DESC' },
       take: 6,
     });
@@ -492,3 +492,4 @@ export class DashboardService {
     });
   }
 }
+

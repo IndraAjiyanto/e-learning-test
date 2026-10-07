@@ -41,7 +41,6 @@ export const SOCIAL_FIELDS = [
   'number',
   'address',
   'linkAddress',
-  'linkForm',
 ] as const;
 
 export type SocialField = (typeof SOCIAL_FIELDS)[number];
@@ -99,8 +98,6 @@ const errorFor = (field: SocialField, val: string): string | null => {
       return urlError('YouTube URL', val, ['youtube.com', 'youtu.be']);
     case 'videoYoutube':
       return urlError('YouTube Video URL', val, ['youtube.com', 'youtu.be']);
-    case 'linkForm':
-      return urlError('Job Form Link', val, []);
     case 'linkAddress':
       if (!val) return 'Google Maps link is required';
       if (!isMapsUrl(val)) return 'Please enter a valid Google Maps link';
@@ -140,3 +137,4 @@ export function validateSocial(input: object) {
   }
   return clean;
 }
+

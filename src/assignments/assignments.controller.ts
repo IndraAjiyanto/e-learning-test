@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
   Param,
   Delete,
@@ -13,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { AssignmentsService } from './assignments.service';
 import { CreateAssignmentsDto } from './dto/create-assignments.dto';
+import { UpdateAssignmentsDto } from './dto/update-assignments.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -20,7 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('task')
@@ -82,6 +84,91 @@ export class AssignmentsController {
   }
 
   @Roles('admin')
+  @Get('formEdit/:assignmentId')
+  async formEdit(
+    @Param('assignmentId') assignmentId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const assignment = await this.assignmentsService.findOne(assignmentId);
+      const isCompleted =
+        await this.assignmentsService.hasApprovedSubmission(assignmentId);
+      if (isCompleted) {
+        flashToastError(
+          req,
+          'Cannot Edit Assignment',
+          'Assignment cannot be edited because it has already been completed by user',
+        );
+        return res.redirect(`/session/${assignment.session.id}`);
+      }
+
+      res.render('admin/assignments/create', {
+        user: req.user,
+        sessionId: assignment.session.id,
+        assignment,
+        editMode: true,
+      });
+    } catch (error: any) {
+      req.flash('error', error.message || 'Assignment not found');
+      res.redirect('/program');
+    }
+  }
+
+  @Roles('admin')
+  @Patch(':assignmentId')
+  @UseInterceptors(
+    FileInterceptor('file', multerConfigMemoryOnly),
+    ValidateFileInterceptor,
+  )
+  @ValidateFile({
+    maxSize: 10 * 1024 * 1024,
+    allowedTypes: ['application/pdf'],
+    fileExtensions: ['.pdf'],
+    folder: 'assignments',
+    resourceType: 'raw',
+  })
+  async update(
+    @Param('assignmentId') assignmentId: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateAssignmentDto: UpdateAssignmentsDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const assignment = await this.assignmentsService.findOne(assignmentId);
+    const sessionId = assignment.session.id;
+
+    try {
+      const isCompleted =
+        await this.assignmentsService.hasApprovedSubmission(assignmentId);
+      if (isCompleted) {
+        flashToastError(
+          req,
+          'Cannot Edit Assignment',
+          'Assignment cannot be edited because it has already been completed by user',
+        );
+        return res.redirect(`/session/${sessionId}`);
+      }
+
+      if (file && req.body.uploadedFileUrls?.[0]) {
+        await this.assignmentsService.deleteFile(assignment.file);
+        updateAssignmentDto.file = req.body.uploadedFileUrls[0];
+      }
+
+      await this.assignmentsService.update(assignmentId, updateAssignmentDto);
+      flashToast(req, 'Changes Saved', 'The assignment has been updated.');
+      res.redirect(`/session/${sessionId}`);
+    } catch (error: any) {
+      flashToastError(
+        req,
+        'Failed to Update Assignment',
+        error.message || 'Failed to update assignment',
+      );
+      res.redirect(`/session/${sessionId}`);
+    }
+  }
+
+  @Roles('admin')
   @Delete(':assignmentId/:sessionId')
   async remove(
     @Param('sessionId') sessionId: string,
@@ -90,6 +177,17 @@ export class AssignmentsController {
     @Res() res: Response,
   ) {
     try {
+      const isCompleted =
+        await this.assignmentsService.hasApprovedSubmission(assignmentId);
+      if (isCompleted) {
+        flashToastError(
+          req,
+          'Cannot Delete Assignment',
+          'Assignment cannot be deleted because it has already been completed by user',
+        );
+        return res.redirect(`/session/${sessionId}`);
+      }
+
       const assignments = await this.assignmentsService.findOne(assignmentId);
       await this.assignmentsService.deleteFile(assignments.file);
       await this.assignmentsService.remove(assignmentId);
@@ -101,8 +199,13 @@ export class AssignmentsController {
       res.redirect(`/session/${sessionId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'unsuccess delete assignment');
+      flashToastError(
+        req,
+        'Failed to Delete Assignment',
+        err.message || 'unsuccess delete assignment',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
 }
+
