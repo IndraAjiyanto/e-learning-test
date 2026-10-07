@@ -17,19 +17,19 @@
 <section id="programs" class="w-full bg-white py-16 sm:py-20 lg:py-24 font-inter">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    {{!-- section-header --}}
-    {{> components/ui/text/section_header/index
-        title=(t 'test.categoryPaidProgram.program.title')
-        titleSize="h2"
-        titleClass="font-inter font-bold text-3xl sm:text-4xl lg:text-[40px] lg:leading-[48px] text-[#6EB6E5] mb-3 text-center"
-        description=(t 'test.categoryPaidProgram.program.description')
-        descSize="lead"
-        descClass="font-inter font-normal text-base sm:text-lg text-[#6B7280] leading-relaxed max-w-[720px] text-center"
-        wrapperClass="max-w-[760px] items-center text-center"
-    }}
-
-    {{!-- program-cards grid --}}
     {{#if courses.length}}
+      {{!-- section-header --}}
+      {{> components/ui/text/section_header/index
+          title=(t 'test.categoryPaidProgram.program.title')
+          titleSize="h2"
+          titleClass="font-inter font-bold text-3xl sm:text-4xl lg:text-[40px] lg:leading-[48px] text-[#6EB6E5] mb-3 text-center"
+          description=(t 'test.categoryPaidProgram.program.description')
+          descSize="lead"
+          descClass="font-inter font-normal text-base sm:text-lg text-[#6B7280] leading-relaxed max-w-[720px] text-center"
+          wrapperClass="max-w-[760px] items-center text-center"
+      }}
+
+      {{!-- program-cards grid --}}
       <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
         {{#each courses}}
           {{> components/ui/card/program_showcase/index
@@ -47,45 +47,22 @@
         {{/each}}
       </div>
     {{else}}
-      {{!-- 3 Fallback Cards --}}
-      <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
-        {{> components/ui/card/program_showcase/index
-            id="#"
-            title=(default (nameByLang category lang) (default (t 'test.categoryPaidProgram.program.fallbackCard1Title') "Japan Program"))
-            icon="fa-solid fa-graduation-cap"
-            image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop"
-            tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
-            tag2=(concat "3 " (default (t 'test.categoryPaidProgram.program.month') "Month"))
-            tag3=(concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota"))
-            description=(default (t 'test.categoryPaidProgram.program.fallbackCard1Desc') "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.")
-            href="#programs"
-            lang=lang
-        }}
-        {{> components/ui/card/program_showcase/index
-            id="#"
-            title=(default (t 'test.categoryPaidProgram.program.fallbackCard2Title') "Japanese Language Training")
-            icon="eye"
-            image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
-            tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
-            tag2=(concat "3 " (default (t 'test.categoryPaidProgram.program.month') "Month"))
-            tag3=(concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota"))
-            description=(default (t 'test.categoryPaidProgram.program.fallbackCard2Desc') "Build strong communication skills through structured lessons and interactive practice.")
-            href="#programs"
-            lang=lang
-        }}
-        {{> components/ui/card/program_showcase/index
-            id="#"
-            title=(default (t 'test.categoryPaidProgram.program.fallbackCard3Title') "Career & Study Support")
-            icon="users"
-            image="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop"
-            tag1=(default (t 'test.categoryPaidProgram.program.online') "Online")
-            tag2=(concat "3 " (default (t 'test.categoryPaidProgram.program.month') "Month"))
-            tag3=(concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota"))
-            description=(default (t 'test.categoryPaidProgram.program.fallbackCard3Desc') "Receive support for applications, interviews, and planning your path in Japan.")
-            href="#programs"
-            lang=lang
-        }}
-      </div>
+      {{!-- Coming Soon: judul section = nama category dari backend, deskripsi = teks coming soon --}}
+      {{> components/ui/text/section_header/index
+          title=(default (nameByLang category lang) category.name)
+          titleSize="h2"
+          titleClass="font-inter font-bold text-3xl sm:text-4xl lg:text-[40px] lg:leading-[48px] text-[#6EB6E5] mb-3 text-center"
+          description=(default (t 'test.categoryPaidProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates.")
+          descSize="lead"
+          descClass="font-inter font-normal text-base sm:text-lg text-[#6B7280] leading-relaxed max-w-[720px] text-center"
+          wrapperClass="max-w-[760px] items-center text-center"
+      }}
+
+      {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
+      {{> components/ui/sections/program_coming_soon/index
+          title=(default (t 'test.categoryPaidProgram.program.comingSoonTitle') "Program Coming Soon")
+          text=(default (t 'test.categoryPaidProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates.")
+      }}
     {{/if}}
 
   </div>

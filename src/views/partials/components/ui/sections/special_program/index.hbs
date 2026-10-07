@@ -33,54 +33,12 @@
           }}
         {{/each}}
       </div>
-    {{else if (or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
-      {{!-- 3 Program Fallback Cards exactly from Figma --}}
-      <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
-        {{!-- Card 1: Japan Program --}}
-        {{> components/ui/card/program_showcase/index
-            title=(default (t 'test.special_program.program.card1Title') "Japan Program")
-            icon="fa-solid fa-graduation-cap"
-            image="/public/image/specialProgram/bgJapan.png"
-            tag1=(default (t 'test.special_program.program.language') "Language")
-            tag2=(default (t 'test.special_program.program.culture') "Culture")
-            tag3=(default (t 'test.special_program.program.career') "Career")
-            description=(default (t 'test.special_program.program.card1Desc') "A structured journey from language fundamentals to workplace readiness and long-term career opportunities.")
-            href="#explore-program"
-        }}
-
-        {{!-- Card 2: Japanese Language Training (Speaking, Listening, Reading, Writing) --}}
-        {{> components/ui/card/program_showcase/index
-            title=(default (t 'test.special_program.program.card2Title') "Japanese Language Training")
-            icon="eye"
-            image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&fit=crop"
-            tag1=(default (t 'test.special_program.program.speaking') "Speaking")
-            tag2=(default (t 'test.special_program.program.listening') "Listening")
-            tag3=(default (t 'test.special_program.program.reading') "Reading")
-            tag4=(default (t 'test.special_program.program.writing') "Writing")
-            description=(default (t 'test.special_program.program.card2Desc') "Build strong communication skills through structured lessons and interactive practice.")
-            href="#explore-program"
-        }}
-
-        {{!-- Card 3: Career & Study Support --}}
-        {{> components/ui/card/program_showcase/index
-            title=(default (t 'test.special_program.program.card3Title') "Career & Study Support")
-            icon="users"
-            image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&fit=crop"
-            tag1=(default (t 'test.special_program.program.applications') "Applications")
-            tag2=(default (t 'test.special_program.program.interviews') "Interviews")
-            tag3=(default (t 'test.special_program.program.planning') "Planning")
-            description=(default (t 'test.special_program.program.card3Desc') "Receive support for applications, interviews, and planning your path in Japan.")
-            href="#explore-program"
-        }}
-      </div>
     {{else}}
-      <div class="flex w-full max-w-[560px] flex-col items-center gap-4 rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-14">
-        <span class="grid size-14 place-items-center rounded-full bg-[#0B1F3B] text-white">
-          <i class="fas fa-clock text-lg"></i>
-        </span>
-        <h3 class="font-inter text-xl font-bold text-[#111827]">{{default (t 'test.special_program.program.comingSoonTitle') "Coming Soon"}}</h3>
-        <p class="font-inter text-sm leading-relaxed text-[#6B7280]">{{default (t 'test.special_program.program.comingSoonText') "Program courses for this category are being prepared."}}</p>
-      </div>
+      {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
+      {{> components/ui/sections/program_coming_soon/index
+          title=(default (t 'test.special_program.program.comingSoonTitle') "Coming Soon")
+          text=(default (t 'test.special_program.program.comingSoonText') "We're preparing something great for this category. Check back soon or reach out for details.")
+      }}
     {{/if}}
 
   </div>
