@@ -1,0 +1,136 @@
+{{!--
+  Component: Searchable Filter Dropdown (Admin Toolbar)
+  Path: components/ui/admin/toolbar/searchable_filter_dropdown.hbs
+  Level: L1 Atomik (Toolbar Filter)
+
+  Props:
+  - model             : string (wajib) — Alpine state key, contoh "selectedMentor"
+  - options           : string (wajib) — Nama array Alpine berisi [{ value, label }], contoh "mentorOptions"
+  - placeholder       : string (opsional, default "All") — Placeholder trigger button ketika belum ada nilai
+  - filterMethod      : string (opsional) — Nama method Alpine yang dipanggil saat memilih item, contoh "filterMentor"
+  - allOptionLabel    : string (opsional) — Label tombol "All" di atas list jika tidak ada di dalam options
+  - searchable        : boolean (opsional, default true) — Aktifkan kotak cari di atas list
+  - searchPlaceholder : string (opsional, default "Search...")
+  - emptyText         : string (opsional, default "No options found")
+  - wrapperClass      : string (opsional, default "relative w-full sm:w-[200px] shrink-0")
+--}}
+
+<div
+  class="relative {{default wrapperClass 'w-full sm:w-[200px] shrink-0'}}"
+  x-data="{
+    open: false,
+    search: '',
+    select(val) {
+      {{#if filterMethod}}
+        {{filterMethod}}(val);
+      {{else}}
+        {{model}} = val;
+      {{/if}}
+      this.open = false;
+      this.search = '';
+    }
+  }"
+  @click.outside="open = false; search = ''"
+  @keydown.escape.stop="open = false; search = ''"
+>
+  {{!-- Trigger Button --}}
+  <button
+    type="button"
+    @click="open = !open; if (open) $nextTick(() => $refs.searchInput?.focus())"
+    class="box-border flex flex-row justify-between items-center px-[16px] py-[10px] w-full h-[42px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] focus:outline-none transition-colors cursor-pointer text-left"
+  >
+    <span
+      class="flex-1 truncate font-inter text-[14px] leading-[20px] font-normal"
+      :class="{{model}} ? 'text-[#1A202C]' : 'text-[#718096]'"
+      x-text="({{options}}.find(o => o.value === {{model}}) || {}).label || '{{default placeholder (default allOptionLabel 'All')}}'"
+    ></span>
+    <svg
+      class="w-[10px] h-[5px] shrink-0 ml-2 transition-transform duration-200"
+      :class="open ? 'rotate-180' : ''"
+      viewBox="0 0 10 5"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M1 1L5 4L9 1" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  {{!-- Dropdown Menu Options --}}
+  <div
+    x-show="open"
+    x-transition:enter="transition ease-out duration-100"
+    x-transition:enter-start="transform opacity-0 scale-95"
+    x-transition:enter-end="transform opacity-100 scale-100"
+    x-transition:leave="transition ease-in duration-75"
+    x-transition:leave-start="transform opacity-100 scale-100"
+    x-transition:leave-end="transform opacity-0 scale-95"
+    class="absolute left-0 top-full mt-1 w-full bg-white rounded-[8px] border border-[#D9D9D9] shadow-lg py-1 z-50 overflow-hidden flex flex-col"
+    style="display: none;"
+  >
+    {{#unless (eq searchable false)}}
+      {{!-- Search Input --}}
+      <div class="p-2 border-b border-[#EDF2F7] sticky top-0 bg-white z-10">
+        <div class="relative flex items-center">
+          <i class="fas fa-search absolute left-2.5 text-xs text-[#718096]"></i>
+          <input
+            type="text"
+            x-ref="searchInput"
+            x-model="search"
+            @click.stop
+            placeholder="{{default searchPlaceholder 'Search...'}}"
+            class="w-full pl-7 pr-7 py-1.5 text-[13px] font-inter border border-[#D9D9D9] rounded-[6px] focus:outline-none focus:border-[#2B6CB0] text-[#1A202C] placeholder-[#A0AEC0]"
+          />
+          <button
+            type="button"
+            x-show="search"
+            @click.stop="search = ''; $refs.searchInput?.focus()"
+            class="absolute right-2 text-xs text-[#718096] hover:text-[#2D3748]"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    {{/unless}}
+
+    {{!-- Options List --}}
+    <div class="max-h-56 overflow-y-auto">
+      {{#if allOptionLabel}}
+        <button
+          type="button"
+          x-show="!search || '{{allOptionLabel}}'.toLowerCase().includes(search.trim().toLowerCase())"
+          @click="select('')"
+          class="w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors min-w-0"
+          :class="!{{model}} ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+        >
+          <span class="truncate flex-1 min-w-0">{{allOptionLabel}}</span>
+          <i x-show="!{{model}}" class="fas fa-check text-xs text-[#2B6CB0] ml-2 shrink-0"></i>
+        </button>
+      {{/if}}
+
+      <template
+        x-for="option in {{#if allOptionLabel}}({{options}} || []).filter(o => o.value !== '' && (!search || String(o.label).toLowerCase().includes(search.trim().toLowerCase()))){{else}}{{#unless (eq searchable false)}}({{options}} || []).filter(o => !search || String(o.label).toLowerCase().includes(search.trim().toLowerCase())){{else}}({{options}} || []){{/unless}}{{/if}}"
+        :key="String(option.value)"
+      >
+        <button
+          type="button"
+          @click="select(option.value)"
+          class="w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors min-w-0"
+          :class="{{model}} === option.value ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+        >
+          <span x-text="option.label" class="truncate flex-1 min-w-0"></span>
+          <i x-show="{{model}} === option.value" class="fas fa-check text-xs text-[#2B6CB0] ml-2 shrink-0"></i>
+        </button>
+      </template>
+
+      {{#unless (eq searchable false)}}
+        <div
+          x-show="search && !({{options}} || []).filter(o => String(o.label).toLowerCase().includes(search.trim().toLowerCase())).length{{#if allOptionLabel}} && !'{{allOptionLabel}}'.toLowerCase().includes(search.trim().toLowerCase()){{/if}}"
+          class="px-4 py-3 text-[13px] text-center text-[#718096]"
+        >
+          {{default emptyText 'No options found'}}
+        </div>
+      {{/unless}}
+    </div>
+  </div>
+</div>
+

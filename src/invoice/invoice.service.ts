@@ -43,6 +43,20 @@ export class InvoiceService {
     }
   }
 
+  private async generateInvoiceNumber(date = new Date()): Promise<string> {
+    const months = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const count = await this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .where('invoice.invoice_number LIKE :pattern', {
+        pattern: `WSA-KA.%/KW/${month}/${year}`,
+      })
+      .getCount();
+    const seq = String(count + 1).padStart(3, '0');
+    return `WSA-KA.${seq}/KW/${month}/${year}`;
+  }
+
   async createInvoiceForPayment(
     payment: Payment,
     finalTotal: number,
@@ -78,7 +92,7 @@ export class InvoiceService {
       discount_amount: courseDiscount,
       final_total: finalTotal,
       payment_method: paymentMethod,
-      invoice_number: payment.no,
+      invoice_number: await this.generateInvoiceNumber(),
       status: invoiceStatus,
       user_fullname:
         payment.user_fullname ||
@@ -166,7 +180,7 @@ export class InvoiceService {
       discount_amount: courseDiscount,
       final_total: finalTotal,
       payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
-      invoice_number: payment.no,
+      invoice_number: await this.generateInvoiceNumber(),
       status: 'pending',
       user_fullname:
         payment.user_fullname ||

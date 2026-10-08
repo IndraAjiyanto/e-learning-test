@@ -40,6 +40,7 @@ async function bootstrap() {
     },
     { path: join(process.cwd(), 'uploads'), prefix: '/uploads/' },
     { path: join(process.cwd(), 'public', 'asset'), prefix: '/asset/' },
+    { path: join(process.cwd(), 'src', 'common', 'assets'), prefix: '/asset/' },
   ];
 
   staticDirs.forEach(({ path, prefix }) => {

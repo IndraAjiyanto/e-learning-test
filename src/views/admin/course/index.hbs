@@ -4,8 +4,7 @@
   Komponen modular: partials/components/ui/admin/
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'
-     x-data='kelasTable()'
-     x-init='fetchKelas()'>
+     x-data='kelasTable()'>
 
   <div class='box-border w-full h-fit flex flex-col gap-[28px] justify-start items-stretch'>
 
@@ -30,15 +29,15 @@
         <div class='flex flex-col sm:flex-row gap-[12px] items-stretch sm:items-center flex-1'>
           {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
 
-          {{!-- Status Filter Dropdown (Figma: node-id=521-1697) --}}
-          <div class='relative w-full sm:w-[220px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
+          {{!-- Status Filter Dropdown --}}
+          <div class='relative w-full sm:w-[200px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
             <button
               type='button'
               @click='openStatus = !openStatus'
               class='box-border flex flex-row justify-between items-center px-[16px] py-[10px] w-full h-[42px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] focus:outline-none transition-colors cursor-pointer text-left'
             >
               <span
-                class='flex-1 truncate font-["Montserrat",sans-serif] text-[14px] leading-[20px] font-normal'
+                class='flex-1 truncate font-inter text-[14px] leading-[20px] font-normal'
                 :class="selectedStatus ? 'text-[#1A202C]' : 'text-[#718096]'"
                 x-text="statusOptions.find(o => o.value === selectedStatus)?.label || 'All Status'"
               ></span>
@@ -68,7 +67,7 @@
               <button
                 type='button'
                 @click="filterStatus(''); openStatus = false"
-                class='w-full px-[16px] py-[10px] text-left font-["Montserrat",sans-serif] text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
+                class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
                 :class="!selectedStatus ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
               >
                 <span>All Status</span>
@@ -79,7 +78,7 @@
                 <button
                   type='button'
                   @click="filterStatus(option.value); openStatus = false"
-                  class='w-full px-[16px] py-[10px] text-left font-["Montserrat",sans-serif] text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
+                  class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
                   :class="selectedStatus === option.value ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
                 >
                   <span x-text='option.label'></span>
@@ -88,6 +87,19 @@
               </template>
             </div>
           </div>
+
+          {{!-- Mentor Filter Dropdown (Super Admin only) --}}
+          {{#if isSuperAdmin}}
+          {{> components/ui/admin/toolbar/searchable_filter_dropdown
+            model='selectedMentor'
+            options='mentorOptions'
+            filterMethod='filterMentor'
+            placeholder='All Mentor'
+            searchPlaceholder='Search mentor...'
+            emptyText='Mentor not found'
+            wrapperClass='w-full sm:w-[200px] shrink-0'
+          }}
+          {{/if}}
         </div>
 
         <div class='w-[158px] shrink-0 self-end sm:self-auto'>
@@ -131,6 +143,11 @@ function kelasTable() {
     kelasList: [],
     searchInput: '',
     selectedStatus: '',
+    selectedMentor: '',
+    mentorOptions: [
+      { value: '', label: 'All Mentor' },
+      ...({{#if mentorings}}{{{json mentorings}}}{{else}}[]{{/if}}).map(m => ({ value: m.id, label: m.username })),
+    ],
     statusOptions: [
       { value: 'unlaunch', label: 'Unpublished' },
       { value: 'launch', label: 'Published' },
@@ -144,12 +161,21 @@ function kelasTable() {
     loading: false,
     searchTimeout: null,
 
+    init() {
+      this.$watch('selectedMentor', () => {
+        this.currentPage = 1;
+        this.fetchKelas();
+      });
+      this.fetchKelas();
+    },
+
     async fetchKelas() {
       this.loading = true;
       try {
         const params = new URLSearchParams();
         if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
         if (this.selectedStatus) params.set('status', this.selectedStatus);
+        if (this.selectedMentor) params.set('mentor', this.selectedMentor);
         params.set('page', this.currentPage);
         params.set('limit', this.size);
 
@@ -179,6 +205,16 @@ function kelasTable() {
       this.selectedStatus = status || '';
       this.currentPage = 1;
       this.fetchKelas();
+    },
+
+    filterMentor(mentorId) {
+      const next = mentorId || '';
+      if (this.selectedMentor === next) {
+        this.currentPage = 1;
+        this.fetchKelas();
+      } else {
+        this.selectedMentor = next;
+      }
     },
 
     async changePage(page) {
@@ -230,6 +266,23 @@ function kelasTable() {
         case 'done': return 'text-[#7E22CE]';
         default: return 'text-[#475569]';
       }
+    },
+
+    getMentorName(course) {
+      if (!course) return '-';
+      if (course.mentorings && course.mentorings.length) {
+        const names = course.mentorings
+          .map(m => m.user?.username)
+          .filter(Boolean);
+        if (names.length) return names.join(', ');
+      }
+      if (course.mentors && course.mentors.length) {
+        const names = course.mentors
+          .map(m => m.name)
+          .filter(Boolean);
+        if (names.length) return names.join(', ');
+      }
+      return '-';
     },
 
     confirmStatusChange(courseId, index, targetStatus) {

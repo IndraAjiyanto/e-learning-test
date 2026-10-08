@@ -1,4 +1,8 @@
-import { capabilitiesFor, capabilitiesForCourse } from './program-type';
+import {
+  capabilitiesFor,
+  capabilitiesForCourse,
+  certificateTemplateForCourse,
+} from './program-type';
 
 describe('program-type capabilities', () => {
   describe('capabilitiesFor', () => {
@@ -72,5 +76,28 @@ describe('program-type capabilities', () => {
       expect(caps.finalAssignment).toBe(false);
       expect(caps.structure).toBe('weeks');
     });
+  });
+
+  describe('certificateTemplateForCourse', () => {
+    it('uses bootcamp certificate for week-based programs', () => {
+      expect(certificateTemplateForCourse({ programType: 'bootcamp' })).toBe(
+        'bootcamp.html',
+      );
+      expect(certificateTemplateForCourse({ programType: 'lpk' })).toBe(
+        'bootcamp.html',
+      );
+    });
+
+    it.each(['hacker', 'hipster', 'hustler'] as const)(
+      'uses the %s certificate for non_bootcamp programs',
+      (type) => {
+        expect(
+          certificateTemplateForCourse({
+            programType: 'non_bootcamp',
+            courseType: { type },
+          }),
+        ).toBe(`${type}.html`);
+      },
+    );
   });
 });
