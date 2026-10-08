@@ -74,7 +74,7 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Post('create')
+  @Post(['create', 'create/:courseId'])
   @UseInterceptors(
     FilesInterceptor('image', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -115,7 +115,9 @@ export class PortfoliosController {
 
       createPortfolioDto.contentHtml = html;
 
-      const courseId = createPortfolioDto.courseId;
+      const courseId =
+        createPortfolioDto.courseId || (req.params.courseId as string);
+      createPortfolioDto.courseId = courseId;
       createPortfolioDto.image = req.body.uploadedImageUrls;
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
@@ -177,9 +179,13 @@ export class PortfoliosController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    const course = await this.portfoliosService.findCourseForPortfolio(
+      String(courseId),
+    );
     res.render('user/portofolios/create', {
       user: req.user,
       courseId,
+      course,
       bareShell: true,
     });
   }
