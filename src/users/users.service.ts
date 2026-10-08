@@ -144,6 +144,7 @@ export class UsersService {
 
   async findAllPaginated(params: {
     search?: string;
+    role?: string;
     page: number;
     limit: number;
   }) {
@@ -152,10 +153,14 @@ export class UsersService {
       .orderBy('user.createdAt', 'DESC');
 
     if (params.search) {
-      query.where(
+      query.andWhere(
         '(user.username ILIKE :search OR user.email ILIKE :search OR CAST(user.role AS text) ILIKE :search)',
         { search: `%${params.search}%` },
       );
+    }
+
+    if (params.role) {
+      query.andWhere('user.role = :role', { role: params.role });
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);

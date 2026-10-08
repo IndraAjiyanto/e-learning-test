@@ -534,6 +534,7 @@ export class UsersController {
   async filterUsers(
     @Res() res: Response,
     @Query('search') search?: string,
+    @Query('role') role?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -542,6 +543,7 @@ export class UsersController {
 
     const result = await this.usersService.findAllPaginated({
       search: search || undefined,
+      role: role || undefined,
       page: currentPage,
       limit: itemsPerPage,
     });

@@ -257,9 +257,14 @@ export class CoursesController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const paymentSettings = await this.paymentSettingsService.effective();
+    const mentorings =
+      req.user!.role === 'super_admin'
+        ? await this.coursesService.findMentoring()
+        : [];
     res.render('admin/course/index', {
       user: req.user,
       paymentSettings,
+      mentorings,
       isSuperAdmin: req.user!.role === 'super_admin',
     });
   }
@@ -272,6 +277,7 @@ export class CoursesController {
     @Query('search') search?: string,
     @Query('alphabet') alphabet?: string,
     @Query('status') status?: string,
+    @Query('mentor') mentor?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -282,6 +288,8 @@ export class CoursesController {
       search: search || undefined,
       alphabet: alphabet || undefined,
       status: status || undefined,
+      mentor:
+        req.user!.role === 'super_admin' ? mentor || undefined : undefined,
       page: currentPage,
       limit: itemsPerPage,
       userId: req.user!.role === 'admin' ? req.user!.id : undefined,
