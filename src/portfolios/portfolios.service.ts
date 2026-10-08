@@ -245,6 +245,17 @@ export class PortfoliosService {
     return course ? this.mapCourseForPanel(course) : null;
   }
 
+  async findEnrolledCourses(userId: string) {
+    if (!userId) return [];
+    const userCourses = await this.userCourseRepository.find({
+      where: { user: { id: userId } },
+      relations: ['course'],
+    });
+    return userCourses
+      .map((uc) => uc.course)
+      .filter((c): c is Course => Boolean(c));
+  }
+
   /**
    * Student hanya boleh melihat galeri program yang ia ikuti. Tanpa ini
    * `courseId` pada rute fragment bisa diisi program mana saja dan isi
