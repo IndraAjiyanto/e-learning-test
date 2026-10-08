@@ -6,11 +6,20 @@ import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
 import { Certificates } from 'src/entities/certificate.entity';
 import { Biodata } from 'src/entities/biodata.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Course, User, Certificates, Biodata])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Course,
+      User,
+      Certificates,
+      Biodata,
+      Portofolios,
+    ]),
+  ],
   controllers: [CertificatesController],
   providers: [CertificatesService],
   exports: [CertificatesService],
 })
-export class CertificatesModule {}
+export class CertificatesModule { }
