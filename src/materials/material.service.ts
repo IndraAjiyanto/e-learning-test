@@ -141,7 +141,7 @@ export class MaterialService {
     if (material.fileType === 'pdf') {
       await this.deleteFile(material.file);
     } else if (material.fileType === 'ppt') {
-      await this.googleSlidesService.delete(material.file);
+      await this.googleSlidesService.delete(material.file, material.driveFileId);
     }
 
     return await this.materialRepository.remove(material);

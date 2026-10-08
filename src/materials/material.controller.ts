@@ -98,7 +98,9 @@ export class MaterialController {
   ) {
     try {
       if (!file) throw new Error('Please upload a PPT or PPTX file.');
-      createMaterialDto.file = await this.googleSlidesService.upload(file);
+      const uploaded = await this.googleSlidesService.upload(file);
+      createMaterialDto.file = uploaded.url;
+      createMaterialDto.driveFileId = uploaded.fileId;
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'ppt';
 
@@ -348,10 +350,13 @@ export class MaterialController {
 
     try {
       if (file) {
-        updateMaterialDto.file = await this.googleSlidesService.upload(
+        const uploaded = await this.googleSlidesService.upload(
           file,
           material.file,
+          material.driveFileId,
         );
+        updateMaterialDto.file = uploaded.url;
+        updateMaterialDto.driveFileId = uploaded.fileId;
       } else if (!updateMaterialDto.file) {
         updateMaterialDto.file = material.file;
       }

@@ -26,13 +26,13 @@ export class GoogleSlidesService {
         const auth = oauthClientId && oauthClientSecret && oauthRefreshToken
             ? new google.auth.OAuth2(oauthClientId, oauthClientSecret)
             : clientEmail && privateKey
-              ? new google.auth.JWT({
-                  email: clientEmail,
-                  key: privateKey,
-                  scopes: ['https://www.googleapis.com/auth/drive'],
-                  ...(delegatedUser ? { subject: delegatedUser } : {}),
+                ? new google.auth.JWT({
+                    email: clientEmail,
+                    key: privateKey,
+                    scopes: ['https://www.googleapis.com/auth/drive'],
+                    ...(delegatedUser ? { subject: delegatedUser } : {}),
                 })
-              : null;
+                : null;
 
         if (!auth) {
             throw new Error(
@@ -91,10 +91,14 @@ export class GoogleSlidesService {
         return path.basename(originalName).replace(/\.(pptx?|PPTX?)$/, '');
     }
 
-    async upload(file: Express.Multer.File, existingUrl?: string): Promise<string> {
+    async upload(
+        file: Express.Multer.File,
+        existingUrl?: string,
+        existingFileId?: string,
+    ): Promise<{ url: string; fileId: string }> {
         const { drive, folderId } = this.getDriveClient();
-        const existingId = existingUrl?.match(
-            /docs\.google\.com\/presentation\/d\/([^/]+)/,
+        const existingId = existingFileId || existingUrl?.match(
+            /docs\.google\.com\/presentation\/d\/(?!e\/)([^/]+)/,
         )?.[1];
         const media = {
             mimeType: file.mimetype,
@@ -136,12 +140,12 @@ export class GoogleSlidesService {
                 // The old presentation may belong to a different Drive owner.
             }
         }
-        return publishedUrl;
+        return { url: publishedUrl, fileId };
     }
 
-    async delete(fileUrl?: string): Promise<void> {
-        const fileId = fileUrl?.match(
-            /docs\.google\.com\/presentation\/d\/([^/]+)/,
+    async delete(fileUrl?: string, storedFileId?: string): Promise<void> {
+        const fileId = storedFileId || fileUrl?.match(
+            /docs\.google\.com\/presentation\/d\/(?!e\/)([^/]+)/,
         )?.[1];
         if (!fileId) return;
 
