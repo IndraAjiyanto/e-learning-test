@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Certificate of Completion - Kesatria Starter Class</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --blue-dark: #1d4ed8;
+        --blue-light: #60a5fa;
+        --ink: #0f1a24;
+        --muted: #6b7280;
+        --text: #374151;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #e5e7eb;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        font-family: 'Open Sans', sans-serif;
+      }
+
+      /* Semua ukuran memakai cqw (1cqw = 1% lebar sertifikat) agar selalu proporsional */
+      .certificate {
+        container-type: inline-size;
+        position: relative;
+        width: 100%;
+        max-width: 1123px; /* A4 landscape @96dpi */
+        aspect-ratio: 2000 / 1414;
+        background:
+          radial-gradient(
+            ellipse 45% 55% at 100% 0%,
+            #e8f0fe 0%,
+            rgba(232, 240, 254, 0) 100%
+          ),
+          #fff;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+      }
+      .abs {
+        position: absolute;
+      }
+
+      /* ===== PANEL KIRI ===== */
+      .side {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          165deg,
+          #3f7cf2 0%,
+          #2159e3 25%,
+          #1c4fd2 60%,
+          #1e3a8a 100%
+        );
+        clip-path: polygon(0 0, 33.85% 0, 29.15% 100%, 0 100%);
+      }
+      /* Watermark dekoratif (ganti dengan gambar ksatria/pemanah milikmu bila ada) */
+      .side::after {
+        content: '';
+        position: absolute;
+        left: 12%;
+        top: 54%;
+        width: 18cqw;
+        height: 18cqw;
+        border-radius: 50%;
+        border: 0.5cqw solid rgba(255, 255, 255, 0.06);
+        box-shadow:
+          0 0 0 2.5cqw rgba(255, 255, 255, 0.03),
+          0 0 0 5cqw rgba(255, 255, 255, 0.02);
+      }
+
+      .logo {
+        left: 4%;
+        top: 6%;
+        color: #fff;
+      }
+      .logo .wordmark {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 5.2cqw;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+      .logo .tagline {
+        font-size: 0.8cqw;
+        letter-spacing: 0.2em;
+        margin-top: 0.3cqw;
+        font-weight: 600;
+      }
+      /* Kalau punya file logo: <img class="logo-img" src="logo.png"> lalu hapus .wordmark & .tagline */
+
+      .program-label {
+        left: 4%;
+        top: 42%;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.2cqw;
+        letter-spacing: 0.14em;
+        color: #fff;
+      }
+      .program-title {
+        left: 4%;
+        top: 45.2%;
+        width: 24cqw;
+        max-width: 24cqw;
+        overflow-wrap: anywhere;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 3.9cqw;
+        line-height: 1.12;
+        color: #fff;
+      }
+      .program-sub {
+        left: 4%;
+        top: 57.6%;
+        font-size: 1.45cqw;
+        color: #fff;
+      }
+
+      .level {
+        left: 4%;
+        top: 88.6%;
+        font-weight: 700;
+        font-size: 1.2cqw;
+        color: #fff;
+      }
+      .bars {
+        left: 4%;
+        top: 92.6%;
+        display: flex;
+        gap: 0.55cqw;
+      }
+      .bars span {
+        display: block;
+        width: 3.2cqw;
+        height: 0.5cqw;
+        border-radius: 1cqw;
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .bars span.on {
+        background: #fff;
+      }
+
+      /* ===== PANEL KANAN ===== */
+      .cert-title {
+        left: 36%;
+        top: 6.4%;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.5cqw;
+        letter-spacing: 0.1em;
+        color: var(--blue-dark);
+      }
+      .cert-no {
+        right: 6%;
+        top: 6.9%;
+        font-size: 1.45cqw;
+        color: #4b5563;
+      }
+
+      .certify {
+        left: 36%;
+        top: 14.8%;
+        font-style: italic;
+        font-size: 1.45cqw;
+        color: #4b5563;
+      }
+      .name {
+        left: 36%;
+        top: 18.5%;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 4.2cqw;
+        line-height: 1.2;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .rule {
+        left: 36%;
+        top: 28.9%;
+        width: 8.5cqw;
+        height: 0.45cqw;
+        border-radius: 1cqw;
+        background: linear-gradient(90deg, var(--blue-dark), var(--blue-light));
+      }
+      .completed {
+        left: 36%;
+        top: 32.1%;
+        width: 54%;
+        font-size: 1.5cqw;
+        line-height: 1.5;
+        color: var(--text);
+      }
+      .class-title {
+        left: 36%;
+        top: 39.6%;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 2.3cqw;
+        color: var(--blue-dark);
+      }
+
+      .meta {
+        top: 65.2%;
+      }
+      .meta .label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 1.1cqw;
+        letter-spacing: 0.15em;
+        color: var(--muted);
+      }
+      .meta .value {
+        margin-top: 0.9cqw;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 1.45cqw;
+        color: var(--ink);
+      }
+      .m1 {
+        left: 36%;
+      }
+      .m2 {
+        left: 54.5%;
+      }
+      .m3 {
+        left: 73%;
+      }
+
+      .sign {
+        top: 86%;
+        width: 23.1%;
+        border-top: 0.07cqw solid #cbd0d6;
+        padding-top: 1cqw;
+      }
+      .sign .who {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.25cqw;
+        color: var(--ink);
+      }
+      .sign .role {
+        margin-top: 0.35cqw;
+        font-size: 1.15cqw;
+        color: var(--muted);
+      }
+      .s1 {
+        left: 36%;
+      }
+      .s2 {
+        left: 61.3%;
+      }
+
+      .qr {
+        left: 86.35%;
+        top: 76.1%;
+        width: 7.5cqw;
+        height: 7.5cqw;
+        border: 0.12cqw dashed #9ca3af;
+        border-radius: 1.2cqw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.1cqw;
+        color: var(--muted);
+      }
+      .qr img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 1.2cqw;
+      }
+      .qr-caption {
+        left: 85.4%;
+        width: 9.4cqw;
+        top: 86.7%;
+        text-align: center;
+        font-size: 1.12cqw;
+        line-height: 1.3;
+        color: var(--muted);
+      }
+
+      /* ===== CETAK / SIMPAN PDF ===== */
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+      @media print {
+        body {
+          background: none;
+          padding: 0;
+          display: block;
+          min-height: 0;
+        }
+        .certificate {
+          max-width: none;
+          width: 297mm;
+          height: 210mm;
+          box-shadow: none;
+        }
+        * {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="certificate">
+      <!-- Panel kiri -->
+      <div class="side"></div>
+
+      <div class="abs logo">
+        <div class="wordmark">Kesatria</div>
+        <div class="tagline">Empowering Future Tech Talents</div>
+      </div>
+
+      <div class="abs program-label">PROGRAM</div>
+      <div class="abs program-title">Starter<br />Class</div>
+      <div class="abs program-sub">Beginner Level</div>
+
+      <div class="abs level">Level 2 of 4</div>
+      <div class="abs bars">
+        <span class="on"></span><span class="on"></span><span></span
+        ><span></span>
+      </div>
+
+      <!-- Panel kanan -->
+      <div class="abs cert-title">CERTIFICATE OF COMPLETION</div>
+      <div class="abs cert-no">No. KSA-KC-[0000]</div>
+
+      <div class="abs certify">This is to certify that</div>
+      <div class="abs name">Participant Full Name</div>
+      <div class="abs rule"></div>
+
+      <div class="abs completed">
+        has successfully completed all modules, quizzes, and portfolio
+        assignments of the course
+      </div>
+      <div class="abs class-title">[Class Title]</div>
+
+      <div class="abs meta m1">
+        <div class="label">DATE</div>
+        <div class="value">[Month DD, YYYY]</div>
+      </div>
+      <div class="abs meta m2">
+        <div class="label">FORMAT</div>
+        <div class="value">Self-Paced Learning</div>
+      </div>
+      <div class="abs meta m3">
+        <div class="label">SCOPE</div>
+        <div class="value">[Field of Scope]</div>
+      </div>
+
+      <div class="abs sign s1">
+        <div class="who">Faisal Wirakusuma, S.Kom., M.Sc.</div>
+        <div class="role">President Director</div>
+      </div>
+      <div class="abs sign s2">
+        <div class="who">Adipura Arya Kangsadewa, S.Bns.</div>
+        <div class="role">Education and Culture Manager</div>
+      </div>
+
+      <div class="abs qr">
+        <!-- ganti dengan <img src="qr.png" alt="QR"> -->QR
+      </div>
+      <div class="abs qr-caption">Scan to follow us<br />on social media</div>
+    </div>
+  </body>
+</html>

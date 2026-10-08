@@ -50,6 +50,12 @@ export interface ProgramCapabilities {
   finalAssignment: boolean;
 }
 
+export type CertificateTemplate =
+  | 'bootcamp.html'
+  | 'hacker.html'
+  | 'hipster.html'
+  | 'hustler.html';
+
 const BOOTCAMP: ProgramCapabilities = {
   structure: 'weeks',
   unlockUnit: 'week',
@@ -126,4 +132,24 @@ export function capabilitiesForCourse(
       ? course?.logbookEnabled !== false
       : true,
   };
+}
+
+export function certificateTemplateForCourse(course?: {
+  programType?: ProgramType | null;
+  courseType?: { type?: string | null } | null;
+} | null): CertificateTemplate {
+  if (capabilitiesFor(course?.programType).structure === 'weeks') {
+    return 'bootcamp.html';
+  }
+
+  switch (course?.courseType?.type) {
+    case 'hacker':
+      return 'hacker.html';
+    case 'hipster':
+      return 'hipster.html';
+    case 'hustler':
+      return 'hustler.html';
+    default:
+      return 'bootcamp.html';
+  }
 }
