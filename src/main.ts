@@ -21,6 +21,7 @@ import {
   readFlashToast,
   readFlashToastError,
   readFlashToastWarning,
+  readFlashToastInfo,
 } from './common/utils/toast.util';
 
 async function bootstrap() {
@@ -31,17 +32,23 @@ async function bootstrap() {
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useGlobalFilters(new NotFoundExceptionFilter());
 
-  // Static assets
-  app.useStaticAssets(join(process.cwd(), 'src', 'common', 'public'), {
-    prefix: '/public/',
-  });
+  // Static assets (Shared CORS header for canvas & PDF generation)
+  const staticDirs = [
+    {
+      path: join(process.cwd(), 'src', 'common', 'public'),
+      prefix: '/public/',
+    },
+    { path: join(process.cwd(), 'uploads'), prefix: '/uploads/' },
+    { path: join(process.cwd(), 'public', 'asset'), prefix: '/asset/' },
+    { path: join(process.cwd(), 'src', 'common', 'assets'), prefix: '/asset/' },
+  ];
 
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads/',
-  });
-
-  app.useStaticAssets(join(process.cwd(), 'public', 'asset'), {
-    prefix: '/asset/',
+  staticDirs.forEach(({ path, prefix }) => {
+    app.useStaticAssets(path, {
+      prefix,
+      setHeaders: (res: Response) =>
+        res.set('Access-Control-Allow-Origin', '*'),
+    });
   });
 
   // Cookie parser
@@ -129,6 +136,7 @@ async function bootstrap() {
     res.locals.toast = readFlashToast(req);
     res.locals.toastError = readFlashToastError(req);
     res.locals.toastWarning = readFlashToastWarning(req);
+    res.locals.toastInfo = readFlashToastInfo(req);
     next();
   });
 

@@ -38,7 +38,7 @@ export class UsersService {
     private readonly certificateRepository: Repository<Certificates>,
 
     private readonly emailService: EmailService,
-  ) {}
+  ) { }
 
   private async generateVerificationToken(user: User): Promise<string> {
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -196,6 +196,16 @@ export class UsersService {
       ],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async findCertificateCourseIds(userId: string): Promise<string[]> {
+    const certificates = await this.certificateRepository.find({
+      where: { user: { id: userId } },
+      relations: ['course'],
+    });
+    return certificates
+      .map((certificate) => certificate.course?.id)
+      .filter((courseId): courseId is string => Boolean(courseId));
   }
 
   async findCompletedCoursesByUser(userId: string) {
@@ -376,7 +386,7 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async remove(id: string) {

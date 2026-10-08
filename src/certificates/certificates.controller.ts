@@ -6,7 +6,62 @@ import { Request, Response } from 'express';
 
 @Controller('certificates')
 export class CertificatesController {
-  constructor(private readonly certificatesService: CertificatesService) {}
+  constructor(private readonly certificatesService: CertificatesService) { }
+
+  @Roles('user')
+  @Get(':courseId/preview')
+  async preview(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!req.user) {
+      return res.redirect('/login');
+    }
+
+    try {
+      const html = await this.certificatesService.getPreviewHtml(
+        courseId,
+        req.user.id,
+      );
+      return res.type('html').send(html);
+    } catch (error: any) {
+      return res
+        .status(error?.status ?? 500)
+        .type('text')
+        .send(error?.message || 'Certificate preview is not available.');
+    }
+  }
+
+  @Roles('user')
+  @Get(':courseId/download')
+  async download(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!req.user) {
+      return res.redirect('/login');
+    }
+
+    try {
+      const html = await this.certificatesService.getPreviewHtml(
+        courseId,
+        req.user.id,
+      );
+      const pdf = await this.certificatesService.renderCertificatePdf(html);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="certificate-${courseId}.pdf"`,
+      );
+      return res.type('application/pdf').send(pdf);
+    } catch (error: any) {
+      return res
+        .status(error?.status ?? 500)
+        .type('text')
+        .send(error?.message || 'Certificate download is not available.');
+    }
+  }
 
   @Roles('user')
   @Get(':courseId')
@@ -17,16 +72,6 @@ export class CertificatesController {
   ) {
     if (!req.user) {
       return res.redirect('/login');
-    }
-
-    const biodata = await this.certificatesService.findBiodata(req.user.id);
-    if (!biodata) {
-      flashToastError(
-        req,
-        'Certificate not ready',
-        'Fill in your biodata first - the certificate is printed with the full name saved there.',
-      );
-      return res.redirect('/users/profile?tab=profile');
     }
 
     try {
@@ -55,7 +100,7 @@ export class CertificatesController {
       req.flash(
         'error',
         error?.message ||
-          'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
+        'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
       );
       return res.redirect('/users/profile?tab=certificate');
     }

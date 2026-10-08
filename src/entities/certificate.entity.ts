@@ -16,8 +16,11 @@ export class Certificates {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'certificate_file' })
+  @Column({ name: 'certificate_file', nullable: true })
   certificate: string;
+
+  @Column({ name: 'no_certificate', nullable: true })
+  noCertificate: string;
 
   @CreateDateColumn()
   createdAt: Date;
