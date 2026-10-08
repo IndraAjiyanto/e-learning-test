@@ -465,7 +465,7 @@
               description: isEdit ? 'Your changes have been saved.' : 'Your project is now in your portfolio list.',
             }));
           } catch (e) {}
-          window.location.href = window.location.pathname + '?tab=portfolio';
+          window.location.href = window.location.pathname + '?tab=portfolio&courseId=' + encodeURIComponent(courseId);
         } else {
           showErrorToast('Portfolio not saved', result.message || 'Please try again in a moment.');
         }

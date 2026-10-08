@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
-import { capabilitiesForCourse } from './program-type';
+import {
+  capabilitiesForCourse,
+  certificateTemplateForCourse,
+} from './program-type';
 import { CourseStatus } from 'src/entities/types/course-status';
 import { REFERAL_SOURCES } from 'src/entities/types/referal-source';
 import { CreateCoursesDto } from './dto/create-courses.dto';
@@ -48,7 +51,7 @@ export class CoursesController {
     private readonly usersService: UsersService,
     private readonly finalAssignmentService: FinalAssignmentService,
     private readonly paymentSettingsService: PaymentSettingsService,
-  ) {}
+  ) { }
 
   private readonly createValidationPipe = new ValidationPipe({
     whitelist: true,
@@ -167,7 +170,7 @@ export class CoursesController {
       if (rawUrl) {
         title = new URL(rawUrl).hostname;
       }
-    } catch (_) {}
+    } catch (_) { }
 
     return res.json({
       success: 1,
@@ -828,8 +831,14 @@ export class CoursesController {
     const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
+    const profileUser = await this.usersService.findOne(id);
     const logbooks = await this.usersService.findAllLogbooks(id);
     const portfolio = await this.usersService.findPortfolio(id);
+    const portfolioCourseIds = portfolio
+      .map((item) => item.course?.id)
+      .filter((courseId): courseId is string => Boolean(courseId));
+    const certificateCourseIds =
+      await this.usersService.findCertificateCourseIds(id);
 
     // Rute ini merender shell yang sama dengan GET /users/profile, termasuk tab
     // Dashboard-nya. Tanpa data ini, menekan Dashboard di sidebar dari halaman
@@ -879,6 +888,12 @@ export class CoursesController {
       userWithCourses,
       logbooks,
       portfolio,
+      portfolioCourseIds,
+      certificateCourseIds,
+      hasBiodata: Boolean(profileUser.biodata?.fullName?.trim()),
+      certificateTemplates: Object.fromEntries(
+        course.map((item) => [item.id, certificateTemplateForCourse(item)]),
+      ),
       activeSection: courseId ? 'uiux' : 'learning',
       initialSection,
       stats,
@@ -1022,9 +1037,9 @@ export class CoursesController {
       const finalAssignmentSubmission =
         finalAssignment?.id && id
           ? await this.finalAssignmentService.findSubmissionByUser(
-              finalAssignment.id,
-              id,
-            )
+            finalAssignment.id,
+            id,
+          )
           : null;
       const isLocked =
         activeCourse?.id && id

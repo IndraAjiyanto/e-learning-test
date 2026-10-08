@@ -37,13 +37,16 @@ import {
   flashToastInfo,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
-import { capabilitiesForCourse } from 'src/courses/program-type';
+import {
+  capabilitiesForCourse,
+  certificateTemplateForCourse,
+} from 'src/courses/program-type';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   // ============================================
   // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
@@ -406,7 +409,16 @@ export class UsersController {
     );
     const logbooks = await this.usersService.findAllLogbooks(req.user.id);
     const portfolio = await this.usersService.findPortfolio(req.user.id);
+    const certificateCourseIds =
+      await this.usersService.findCertificateCourseIds(req.user.id);
+    const hasBiodata = Boolean(user.biodata?.fullName?.trim());
+    const portfolioCourseIds = portfolio
+      .map((item) => item.course?.id)
+      .filter((courseId): courseId is string => Boolean(courseId));
     const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
+    const certificateTemplates = Object.fromEntries(
+      course.map((item) => [item.id, certificateTemplateForCourse(item)]),
+    );
     const category = [
       ...new Map(
         course
@@ -427,8 +439,18 @@ export class UsersController {
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
     const requestedCourseId = String(req.query.courseId || '');
+    let initialSection = String(req.query.tab || '') || 'dashboard';
     const activeCourse =
-      course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
+      course.find((c) => c.id === requestedCourseId) ??
+      (initialSection === 'certificate'
+        ? course.find(
+          (c) =>
+            certificateCourseIds.includes(c.id) ||
+            portfolioCourseIds.includes(c.id),
+        )
+        : null) ??
+      course[0] ??
+      null;
     const stats = null;
     const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
@@ -441,7 +463,6 @@ export class UsersController {
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    let initialSection = String(req.query.tab || '') || 'dashboard';
     if (initialSection === 'portfolio' && requestedCourseId) {
       initialSection = 'course-portfolio';
     }
@@ -463,6 +484,10 @@ export class UsersController {
       userWithCourses,
       logbooks,
       portfolio,
+      portfolioCourseIds,
+      certificateCourseIds,
+      hasBiodata,
+      certificateTemplates,
       course,
       category,
       courseType,
