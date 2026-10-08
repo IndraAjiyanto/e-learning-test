@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Session } from 'src/entities/session.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { GoogleSlidesService } from './google-slides.service';
 
 @Injectable()
 export class MaterialService {
@@ -15,7 +16,8 @@ export class MaterialService {
     private readonly materialRepository: Repository<Material>,
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
-  ) {}
+    private readonly googleSlidesService: GoogleSlidesService,
+  ) { }
   async create(createMaterialDto: CreateMaterialDto) {
     const session = await this.sessionRepository.findOne({
       where: { id: createMaterialDto.sessionId },
@@ -118,7 +120,7 @@ export class MaterialService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async update(id: string, updateMaterialDto: UpdateMaterialDto) {
@@ -136,8 +138,10 @@ export class MaterialService {
       throw new NotFoundException('Material not found');
     }
 
-    if (material.fileType == 'pdf') {
+    if (material.fileType === 'pdf') {
       await this.deleteFile(material.file);
+    } else if (material.fileType === 'ppt') {
+      await this.googleSlidesService.delete(material.file);
     }
 
     return await this.materialRepository.remove(material);

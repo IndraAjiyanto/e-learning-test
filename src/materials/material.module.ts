@@ -7,6 +7,7 @@ import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
 import { LibreOfficeService } from 'src/common/config/libreoffice.service';
 import { CommonModule } from 'src/common/common.module';
+import { GoogleSlidesService } from './google-slides.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { CommonModule } from 'src/common/common.module';
     CommonModule,
   ],
   controllers: [MaterialController],
-  providers: [MaterialService, LibreOfficeService],
+  providers: [MaterialService, LibreOfficeService, GoogleSlidesService],
   exports: [MaterialService],
 })
-export class MaterialsModule {}
+export class MaterialsModule { }
