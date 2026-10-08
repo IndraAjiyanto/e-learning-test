@@ -414,7 +414,7 @@
         const div = document.createElement('div');
         div.id = 'courseOverviewEditor';
         div.setAttribute('x-ignore', '');
-        div.className = 'min-h-[100px] max-h-[140px] overflow-y-auto w-full max-w-none rounded-[10px] border border-[#D4D4D4] bg-white p-4 text-left font-inter text-sm text-black transition-colors hover:shadow-sm focus-within:border-[#003060] sm:text-base';
+        div.className = 'editorjs-container w-full font-inter text-[16px] leading-[24px] text-[#171717] pl-8 sm:pl-10';
         holder.replaceWith(div);
       }
 
@@ -1025,11 +1025,11 @@
               <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
                 {{t 'test.myPortfolio.createPortfolio.overview'}}
               </label>
-              <div
+              {{> components/ui/admin/form/editor-input
                 id="courseOverviewEditor"
-                x-ignore
-                class="min-h-[100px] max-h-[100px] overflow-y-auto w-full max-w-none rounded-[10px] border border-[#D4D4D4] bg-white p-4 text-left font-inter text-sm text-black transition-colors hover:shadow-sm focus-within:border-[#003060] sm:text-base"
-              ></div>
+                name="content"
+                inputId="courseOverviewEditor_input"
+              }}
             </div>
 
             <!-- Upload Images* -->
@@ -1238,13 +1238,11 @@
     padding-left: 0 !important;
   }
 
-  #courseOverviewEditor .codex-editor__redactor,
   #overviewEditor .codex-editor__redactor {
     min-height: 80px !important;
     padding-bottom: 16px !important;
   }
 
-  #courseOverviewEditor img,
   #overviewEditor img,
   #overviewDetail img {
     max-width: 300px;
@@ -1252,7 +1250,6 @@
     border-radius: 1rem;
   }
 
-  #courseOverviewEditor h4,
   #overviewEditor h4,
   #overviewDetail h4 {
     margin-bottom: 0.5rem;
@@ -1261,7 +1258,6 @@
     font-weight: 600;
   }
 
-  #courseOverviewEditor h5,
   #overviewEditor h5,
   #overviewDetail h5 {
     margin-bottom: 0.5rem;
@@ -1270,7 +1266,6 @@
     font-weight: 500;
   }
 
-  #courseOverviewEditor h6,
   #overviewEditor h6,
   #overviewDetail h6 {
     margin-bottom: 0.5rem;
