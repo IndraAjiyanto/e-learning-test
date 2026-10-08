@@ -24,7 +24,7 @@
   <div x-show='!loading' class='table-scroll w-full min-h-[280px] overflow-x-auto [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
 
     {{!-- Header Row --}}
-    <div class='w-full {{#if isSuperAdmin}}min-w-[1298px]{{else}}min-w-[1043px]{{/if}} h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+    <div class='w-full {{#if isSuperAdmin}}min-w-[1298px]{{else}}min-w-[1168px]{{/if}} h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
       <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-center items-center'>
         <div class='text-[12px]/[normal] text-[#525252] font-inter font-medium text-center whitespace-nowrap'>No</div>
       </div>
@@ -54,11 +54,9 @@
       <div class='box-border w-[7.5%] min-w-[86px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Student</div>
       </div>
-      {{#if isSuperAdmin}}
       <div class='box-border w-[10.5%] min-w-[125px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Status Program</div>
       </div>
-      {{/if}}
       <div class='box-border w-[10%] min-w-[110px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'>
         <div class='text-[12px]/[normal] flex-1 text-[#525252] font-inter font-medium text-left'>Action</div>
       </div>
@@ -66,7 +64,7 @@
 
     {{!-- Body Rows --}}
     <template x-for='(course, index) in kelasList' :key='course.id'>
-      <div class='w-full {{#if isSuperAdmin}}min-w-[1298px]{{else}}min-w-[1043px]{{/if}} h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+      <div class='w-full {{#if isSuperAdmin}}min-w-[1298px]{{else}}min-w-[1168px]{{/if}} h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
 
         {{!-- No --}}
         <div class='box-border w-[5%] min-w-[60px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-center items-center'>
@@ -235,6 +233,15 @@
               </div>
             </div>
           </template>
+        </div>
+        {{else}}
+        {{!-- Status Program (Read-only Badge untuk Admin - Hanya Tampilkan Status) --}}
+        <div class='box-border w-[10.5%] min-w-[125px] shrink-0 h-full flex flex-row p-[16px_8px] justify-start items-center'>
+          <div class='box-border w-fit shrink-0 h-fit flex flex-row gap-[6px] p-[3px_10px] justify-start items-center rounded-[16px] border text-[12px] font-inter font-medium'
+               :class='getStatusBadgeClass(course.status)'>
+            <div class='box-border w-[6px] shrink-0 h-[6px] rounded-full' :class='getStatusDotClass(course.status)'></div>
+            <span :class='getStatusTextClass(course.status)' x-text='getStatusLabel(course.status)'></span>
+          </div>
         </div>
         {{/if}}
 
