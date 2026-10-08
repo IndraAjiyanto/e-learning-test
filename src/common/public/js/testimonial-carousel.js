@@ -241,3 +241,34 @@ function alumniDeck(customData = []) {
     goTo(i) { this.active = Math.max(0, Math.min(i, this.maxActive)); this._auto(); }
   };
 }
+
+/**
+ * Partner Grid - 6 box per halaman dengan pagination per kategori tab.
+ * Pagination API disamakan dengan alumniDeck (dots/active/goTo/prev/next circular),
+ * tanpa autoplay.
+ */
+function partnerGrid(customData = [], defaultTab = 'Institutions') {
+  return {
+    allPartners: Array.isArray(customData) ? customData : [],
+    activeTab: defaultTab,
+    active: 0,
+    perPage: 6,
+    get filteredPartners() {
+      return this.allPartners.filter(p => p.category === this.activeTab);
+    },
+    get dots() {
+      return Math.max(1, Math.ceil(this.filteredPartners.length / this.perPage));
+    },
+    get visiblePartners() {
+      const start = this.active * this.perPage;
+      return this.filteredPartners.slice(start, start + this.perPage);
+    },
+    next() { this.active = this.active >= this.dots - 1 ? 0 : this.active + 1; },
+    prev() { this.active = this.active <= 0 ? this.dots - 1 : this.active - 1; },
+    goTo(i) { this.active = Math.max(0, Math.min(i, this.dots - 1)); },
+    setTab(tab) {
+      this.activeTab = tab;
+      this.active = 0;
+    }
+  };
+}
