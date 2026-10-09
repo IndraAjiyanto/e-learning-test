@@ -6,6 +6,7 @@
   class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
   :class="scrolled ? 'border-b border-slate-200/60 bg-white/80 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)]' : 'border-b border-transparent bg-white/70 backdrop-blur-md shadow-none'"
   {{/if}}
+  @click.outside="open = false; menu = null"
   x-data="{
     open: false,
     isDesktop: window.innerWidth >= 1024,
@@ -22,7 +23,6 @@
       this.menu = null;
       this.classOpen = false;
       this.infoOpen = false;
-      document.body.style.overflow = '';
     },
     isActive(path) {
       const cur = this.active;
@@ -59,7 +59,6 @@
     },
     toggleMenu() {
       this.open = !this.open;
-      document.body.style.overflow = this.open ? 'hidden' : '';
     },
     async init() {
       this.active = window.location.pathname;
@@ -67,7 +66,7 @@
       window.addEventListener('scroll', () => { this.scrolled = window.scrollY > 8; }, { passive: true });
       window.addEventListener('resize', () => {
         this.isDesktop = window.innerWidth >= 1024;
-        if (this.isDesktop) { this.open = false; document.body.style.overflow = ''; }
+        if (this.isDesktop) { this.open = false; }
       });
       window.addEventListener('popstate', () => { this.active = window.location.pathname; });
       try {

@@ -3,15 +3,7 @@
   Lokasi: src/views/partials/components/ui/user/user_mobile_nav_drawer/index.hbs
   Spesifikasi: Dropdown sheet dari header ke bawah (full width), scrollable menu, backdrop blur.
 --}}
-{{!-- Overlay Latar Belakang --}}
-<div
-  x-cloak
-  x-show="open"
-  x-transition.opacity.duration.200ms
-  class="fixed inset-0 top-16 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
-  style="display:none"
-  @click="toggleMenu()"
-></div>
+
 
 {{!-- Panel Menu Dropdown Atas ke Bawah --}}
 <div
