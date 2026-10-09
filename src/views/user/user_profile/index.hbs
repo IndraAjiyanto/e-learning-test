@@ -654,7 +654,7 @@
         </div>
 
         <!-- Join Group Class Tab Content -->
-        <div x-show="activeSection === 'group-class'"{{#unless (eq initialSection 'group-class')}} style="display:none"{{/unless}}>
+        <div x-show="activeSection === 'group-class'" class="max-w-[1334px] mx-auto w-full"{{#unless (eq initialSection 'group-class')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index course=activeCourse }}
         </div>
 
@@ -664,9 +664,9 @@
         </div>
 
         <!-- Certificate Tab Content -->
-        <div x-show="activeSection === 'certificate'" class="mx-4 my-4 max-w-[1334px] sm:mx-8 sm:my-6 lg:mx-auto">
+        <div x-show="activeSection === 'certificate'" class="max-w-[1334px] mx-auto w-full my-4 sm:my-6">
           <template x-if="!hasActiveCourseCertificate && !hasActiveCoursePortfolio">
-            <div class="overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.18)]">
+            <div class="w-full overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.18)]">
               <div class="flex flex-col items-center px-5 py-12 text-center sm:px-8 sm:py-16">
                 <span class="grid size-16 place-items-center rounded-full bg-[#FFF7E6] text-[#B7791F]">
                   <i class="ph ph-lock-key text-3xl"></i>
@@ -688,7 +688,7 @@
           </template>
 
           <template x-if="hasActiveCoursePortfolio && !hasBiodata">
-            <div class="overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.18)]">
+            <div class="w-full overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.18)]">
               <div class="flex flex-col items-center px-5 py-12 text-center sm:px-8 sm:py-16">
                 <span class="grid size-16 place-items-center rounded-full bg-[#FFF7E6] text-[#B7791F]">
                   <i class="ph ph-lock-key text-3xl"></i>
@@ -710,7 +710,7 @@
           </template>
 
           <template x-if="hasCertificateRequirements">
-          <div class="overflow-hidden rounded-[24px] border border-[#D9E3EF] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.25)]">
+          <div class="w-full overflow-hidden rounded-[24px] border border-[#D9E3EF] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.25)]">
             <div class="border-b border-[#E5EAF0] bg-[#F7FAFC] px-5 py-6 sm:px-8">
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -725,7 +725,7 @@
               </div>
             </div>
 
-            <div class="grid gap-6 p-5 sm:p-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-center">
+            <div class="grid gap-6 p-5 sm:p-8">
               <div class="relative aspect-[1.414/1] overflow-hidden rounded-[12px] border border-[#D9E3EF] bg-[#E5E7EB] shadow-[0px_10px_24px_-12px_rgba(0,48,96,0.45)]">
                 <iframe
                   :src="'/certificates/' + activeCourseId + '/preview'"
@@ -734,17 +734,17 @@
                 ></iframe>
               </div>
 
-              <div class="rounded-[16px] border border-[#E5EAF0] bg-[#F8FAFC] p-5 sm:p-6">
+              <div class="rounded-[16px] border border-[#E5EAF0] bg-[#F8FAFC] p-5 sm:p-6 flex flex-col items-center text-center">
                 <div class="mb-5 flex size-12 items-center justify-center rounded-[12px] bg-[#E4F1F7] text-[#003060]">
                   <i class="ph ph-download-simple text-2xl"></i>
                 </div>
                 <h3 class="font-inter text-lg font-bold text-[#003060]">{{t 'test.startLearning.downloadCertificate'}}</h3>
-                <p class="mt-2 font-inter text-sm leading-6 text-[#718096]" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
+                <p class="mt-2 font-inter text-sm leading-6 text-[#718096] max-w-md" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
                 <a
                   :href="'/certificates/' + activeCourseId + '/download'"
                   target="_blank"
                   rel="noopener"
-                  class="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254A]"
+                  class="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-6 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254A]"
                 >
                   <i class="ph ph-download-simple text-base"></i>
                   {{t 'test.startLearning.downloadCertificate'}}
