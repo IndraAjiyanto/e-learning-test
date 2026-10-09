@@ -1,43 +1,24 @@
 {{!--
-  Komponen: User Mobile Nav Drawer (Level 2)
+  Komponen: User Mobile Nav Dropdown (Top-to-Bottom / MarineTech Style)
   Lokasi: src/views/partials/components/ui/user/user_mobile_nav_drawer/index.hbs
-  Spesifikasi: Drawer panel putih (288px), logo proporsional, scrollable menu, safe-area footer.
+  Spesifikasi: Dropdown sheet dari header ke bawah (full width), scrollable menu, backdrop blur.
 --}}
-<div
-  x-show="open"
-  x-transition.opacity
-  class="fixed inset-0 z-40 bg-black/50 lg:hidden"
-  style="display:none"
-  @click="toggleMenu()"
-></div>
 
-<nav
+
+{{!-- Panel Menu Dropdown Atas ke Bawah --}}
+<div
   x-cloak
   x-show="open"
-  x-transition:enter="transition ease-out duration-300 transform"
-  x-transition:enter-start="translate-x-full"
-  x-transition:enter-end="translate-x-0"
+  x-transition:enter="transition ease-out duration-250 transform"
+  x-transition:enter-start="opacity-0 -translate-y-4"
+  x-transition:enter-end="opacity-100 translate-y-0"
   x-transition:leave="transition ease-in duration-200 transform"
-  x-transition:leave-start="translate-x-0"
-  x-transition:leave-end="translate-x-full"
-  class="fixed right-0 top-0 z-50 flex h-full h-[100dvh] w-72 max-w-[calc(100vw-24px)] flex-col bg-white text-[#1F2937] shadow-2xl lg:hidden"
+  x-transition:leave-start="opacity-100 translate-y-0"
+  x-transition:leave-end="opacity-0 -translate-y-4"
+  class="absolute inset-x-0 top-full z-50 flex max-h-[calc(100dvh-4rem)] flex-col border-b border-slate-200/80 bg-white shadow-2xl backdrop-blur-xl lg:hidden"
   style="display:none"
 >
-  {{!-- Drawer Header --}}
-  <div class="flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] px-4">
-    <a href="/dashboard" @click="setActive('/dashboard')" class="flex items-center">
-      <img src="/public/image/logo_baru.png" alt="Kesatria Academy" class="h-7 max-h-[28px] w-auto object-contain" />
-    </a>
-    <button
-      @click="toggleMenu()"
-      class="grid size-11 shrink-0 place-items-center rounded-lg text-[#1F2937] transition hover:bg-gray-100"
-      aria-label="Tutup menu"
-    >
-      <i class="fas fa-xmark text-lg"></i>
-    </button>
-  </div>
-
-  {{!-- Scrollable Menu Content --}}
+  {{!-- Scrollable Menu Items --}}
   <div class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-4 font-inter text-sm font-medium">
     {{!-- Beranda --}}
     <a
@@ -59,9 +40,11 @@
       <i class="fas fa-chevron-down text-xs transition-transform" :class="classOpen && 'rotate-180'"></i>
     </button>
     <div x-show="classOpen" x-collapse class="flex flex-col gap-2 py-1 pl-2" style="display:none">
-      <template x-for="kat in category" :key="kat.id">
-        {{> components/ui/card/category/dynamic/index userMobile=true }}
-      </template>
+      <div class="flex max-h-[260px] flex-col gap-1.5 overflow-y-auto sidebar-scroll pr-1">
+        <template x-for="kat in category" :key="kat.id">
+          {{> components/ui/card/category/dynamic/index userMobile=true }}
+        </template>
+      </div>
 
       {{!-- CTA Konsultasi Kelas --}}
       <div class="mt-1 flex flex-col gap-3 rounded-xl bg-[#003060] p-4 text-white">
@@ -109,7 +92,7 @@
   </div>
 
   {{!-- Safe-Area Footer --}}
-  <div class="flex shrink-0 flex-col gap-3 border-t border-[#E5E7EB] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+  <div class="flex shrink-0 flex-col gap-3 border-t border-[#E5E7EB] bg-slate-50/80 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
     {{!-- Language Switcher Segmented --}}
     {{> components/ui/nav/lang_switcher/index userMobile=true }}
 
@@ -125,7 +108,7 @@
           target="_blank" rel="noopener noreferrer"
         {{/if}}
         @click="open = false; document.body.style.overflow = ''"
-        class="flex min-h-[44px] items-center gap-3 rounded-lg border border-[#E5E7EB] p-2.5 transition-colors hover:bg-gray-50"
+        class="flex min-h-[44px] items-center gap-3 rounded-lg border border-[#E5E7EB] bg-white p-2.5 transition-colors hover:bg-gray-50"
       >
         <span class="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border border-gray-300 bg-gray-600 text-white">
           {{#if user.profile}}
@@ -148,4 +131,4 @@
       {{/unless}}
     {{/if}}
   </div>
-</nav>
+</div>
