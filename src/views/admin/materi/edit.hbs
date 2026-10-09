@@ -252,16 +252,6 @@
             placeholder='https://docs.google.com/presentation/d/e/xxxx/pub?...'
           />
 
-          <!-- Hint -->
-          <div class='flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-            <i class='fas fa-info-circle text-blue-500 mt-0.5'></i>
-            <p class='text-xs text-blue-700'>
-              Cara mendapatkan link: Buka Google Slides →
-              <span class='font-semibold'>File → Share → Publish to web → Embed</span>
-              → Copy URL dari src iframe.
-            </p>
-          </div>
-
           <!-- Error Message -->
           <template x-if='hasInput && !isValid && errorMessage'>
             <div class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
