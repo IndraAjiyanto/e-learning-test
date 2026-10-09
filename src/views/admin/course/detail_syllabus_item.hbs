@@ -6,6 +6,7 @@
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
     x-data="{
+      showContentModal: false,
       hasQuiz: {{#if (and syllabus.quiz syllabus.quiz.length)}}true{{else}}false{{/if}},
       handleDelete() {
         if (typeof openDeleteModal === 'function') {
@@ -51,9 +52,19 @@
             </h1>
           </div>
 
-          {{!-- Frame 2147229614: Buttons (Delete + Edit Syllabus) --}}
-          {{#unless isCompleted}}
+          {{!-- Frame 2147229614: Buttons (Detail Content + Delete + Edit Syllabus) --}}
           <div class='shrink-0 flex flex-row items-center gap-[12px]'>
+            {{!-- Detail Syllabus Content button --}}
+            <button
+              type='button'
+              @click='showContentModal = true'
+              class='box-border min-w-[132px] h-[44px] bg-[#FFFFFF] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F0F7FF] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060] whitespace-nowrap'>
+                Detail Content
+              </span>
+            </button>
+
+            {{#unless isCompleted}}
             {{!-- Delete button --}}
             <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
               <button
@@ -74,8 +85,8 @@
                 Edit Syllabus
               </span>
             </a>
+            {{/unless}}
           </div>
-          {{/unless}}
 
         </div>
       </div>
@@ -168,6 +179,57 @@
 
     {{/components/ui/admin/form/form-card}}
 
+    {{!-- Modal Detail Syllabus Content --}}
+    <div
+      x-show='showContentModal'
+      x-cloak
+      @keydown.escape.window='showContentModal = false'
+      class='fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur'
+      @click.self='showContentModal = false'>
+      <div
+        class='box-border w-full max-w-[800px] max-h-[85vh] bg-[#FFFFFF] rounded-[16px] shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)] flex flex-col overflow-hidden'>
+
+        {{!-- Modal Header --}}
+        <div class='box-border w-full min-h-[64px] bg-[#003060] px-[24px] py-[16px] flex flex-row items-center justify-between'>
+          <div class='flex flex-col gap-[2px] min-w-0'>
+            <h2 class='font-inter font-bold text-[18px] leading-[24px] text-[#FFFFFF] truncate'>
+              {{#if syllabus.title}}{{syllabus.title}}{{else}}Syllabus Content{{/if}}
+            </h2>
+            <p class='font-inter font-normal text-[13px] leading-[18px] text-[#E2E8F0]'>
+              {{default syllabus.description 'Syllabus Content Detail'}}
+            </p>
+          </div>
+          <button
+            type='button'
+            @click='showContentModal = false'
+            class='text-[#FFFFFF]/80 hover:text-[#FFFFFF] transition-colors p-1 rounded-lg focus:outline-none'>
+            <svg xmlns='http://www.w3.org/2000/svg' class='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
+            </svg>
+          </button>
+        </div>
+
+        {{!-- Modal Body --}}
+        <div
+          class='box-border w-full p-[24px] overflow-y-auto flex-1 bg-[#FFFFFF]'
+          x-data='finalAssignmentContentRenderer("syllabus_content_data", "Belum ada konten untuk silabus ini.")'
+          x-init='init()'>
+          <div class='final-assignment-content w-full font-inter text-[14px] leading-[22px] text-[#171717]' x-html='renderedHtml'></div>
+        </div>
+
+        {{!-- Modal Footer --}}
+        <div class='box-border w-full px-[24px] py-[14px] bg-[#F9FAFB] border-t border-[#E5E7EB] flex justify-end'>
+          <button
+            type='button'
+            @click='showContentModal = false'
+            class='box-border h-[40px] px-[20px] bg-[#FFFFFF] border border-[#D4D4D4] rounded-[8px] font-inter font-semibold text-[14px] text-[#003060] hover:bg-[#F5F5F5] transition-colors shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'>
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -176,3 +238,10 @@
     title='Delete Sylabus'
     description='Are you sure you want to delete this sylabus item? Contents inside it will be removed too.'
     confirmLabel='Delete' }}
+
+{{!-- Syllabus content data & renderer --}}
+{{> components/ui/final_assignment/content_data/index
+    contentId='syllabus_content_data'
+    content=syllabus.content }}
+
+{{> components/ui/final_assignment/renderer/index }}
