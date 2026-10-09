@@ -3,6 +3,10 @@ import { DashboardService } from './dashboard.service';
 import { GalleryService } from '../gallery/gallery.service';
 import { Request, Response } from 'express';
 import { CategoriesService } from 'src/categories/categories.service';
+import {
+  corporateTrainingFaqs,
+  corporateTrainingPrograms,
+} from './corporate-training.data';
 
 @Controller('dashboard')
 export class DashboardController {
@@ -10,7 +14,7 @@ export class DashboardController {
     private readonly dashboardService: DashboardService,
     private readonly galleryService: GalleryService,
     private readonly kategorisService: CategoriesService,
-  ) {}
+  ) { }
 
   @Get('course/filter')
   async kelasFilter(
@@ -378,6 +382,8 @@ export class DashboardController {
       courseType,
       categoryPartner,
       partners,
+      corporateTrainingPrograms,
+      corporateTrainingFaqs,
     });
   }
 }

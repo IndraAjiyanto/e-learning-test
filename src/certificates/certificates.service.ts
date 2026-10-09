@@ -130,6 +130,7 @@ export class CertificatesService {
     );
     const certificateNumber = this.escapeHtml(certificate.noCertificate);
     let html = fs.readFileSync(templatePath, 'utf8');
+    let programLabelIndex = 0;
 
     html = html
       .replace('No. KSA-KC-[0000]', `No. ${certificateNumber}`)
@@ -144,7 +145,15 @@ export class CertificatesService {
       .replace('Intensive<br>Bootcamp', categoryName)
       .replace('Kickstart<br>Class', categoryName)
       .replace('Faster<br>Class', categoryName)
-      .replace('Starter<br>Class', categoryName);
+      .replace('Starter<br>Class', categoryName)
+      .replace(
+        /(<div[^>]*(?:data-role="big"|id="k[12]")[^>]*>)[^<]*(<\/div>)/g,
+        (_match, openingTag, closingTag) => {
+          const label = programLabelIndex === 0 ? categoryName : '';
+          programLabelIndex += 1;
+          return `${openingTag}${label}${closingTag}`;
+        },
+      );
 
     return html;
   }

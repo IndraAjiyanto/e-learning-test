@@ -15,8 +15,7 @@
   tautan yang dirender server akan menunjuk grup program sebelumnya.
 --}}
 
-<div
-  class="w-full min-h-[500px] flex items-center justify-center font-inter p-5"
+<div class="w-full mx-auto min-h-[500px] flex items-center justify-center font-inter p-5"
   x-data="{
     get groupLink() {
       const c = (typeof activeCourseData !== 'undefined') ? activeCourseData : null;
@@ -24,7 +23,7 @@
     }
   }"
 >
-  <div class="w-full max-w-[720px] mx-auto rounded-[16px] border border-[#E6ECF7] bg-white shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden">
+  <div class="w-full mx-auto rounded-[16px] border border-[#E6ECF7] bg-white shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden">
 
     {{!-- Header: ikon, judul, deskripsi, ringkasan manfaat --}}
     <div class="flex flex-col items-center text-center gap-4 px-6 sm:px-10 pt-9 pb-7">

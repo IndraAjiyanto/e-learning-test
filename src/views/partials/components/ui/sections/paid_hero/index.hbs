@@ -109,12 +109,12 @@
 
     {{!-- hero-right: visual (full width) --}}
     <div class="w-full lg:flex-1">
-      <div class="aspect-[16/9] w-full overflow-hidden rounded-xl lg:rounded-2xl">
+      <div class="w-full overflow-hidden rounded-xl lg:rounded-2xl">
         <img
           src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
           alt="{{nameByLang category lang}}"
           onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="size-full object-cover object-center"
+          class="block h-auto w-full"
         />
       </div>
     </div>
