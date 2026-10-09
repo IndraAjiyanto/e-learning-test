@@ -75,6 +75,29 @@ export const stringHelpers = {
     }
   },
   default: (value: any, defaultValue: any) => value || defaultValue,
+  // Melokalkan list record: setiap field yang berupa objek {id,en,ja} diubah jadi
+  // string sesuai bahasa aktif. Dipakai agar data statis (program/FAQ) bisa
+  // disimpan multibahasa lalu di-serialize sebagai JSON untuk Alpine.
+  localizeList: (list: unknown, lang: string): unknown[] => {
+    if (!Array.isArray(list)) return [];
+    const isLangObj = (value: unknown): value is Record<string, unknown> =>
+      !!value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      ['id', 'en', 'ja'].some(
+        (code) => code in (value as Record<string, unknown>),
+      );
+    return list.map((item: unknown) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
+      const out: Record<string, unknown> = {};
+      for (const [field, value] of Object.entries(
+        item as Record<string, unknown>,
+      )) {
+        out[field] = isLangObj(value) ? pickLang(value, lang) : value;
+      }
+      return out;
+    });
+  },
   getByLang: (obj: any, lang: string) => {
     if (!obj) return '';
     if (typeof obj === 'string') {

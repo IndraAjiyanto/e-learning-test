@@ -4,12 +4,6 @@
     searchQuery: '',
     scope: 'all',
     sortBy: 'newest',
-    createPortofolio: false,
-    savingPortfolio: false,
-    editingId: null,
-    existingImages: [],
-    formBaseline: '',
-    editorDirty: false,
     deleteTarget: null,
     showDetail: false,
     selectedPortfolio: null,
@@ -20,16 +14,6 @@
     programCategory: '',
     courseProgramType: '',
     canCreatePortfolio: false,
-    imageUploads: [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }],
-    newForm: {
-      title: '',
-      description: '',
-      link: '',
-      overview: '',
-      program: '',
-      courseId: ''
-    },
-    overviewEditorInstance: null,
     portfolios: [],
 
     // Program milik student ini saja, kalau sudah ada. Satu student
@@ -128,7 +112,7 @@
         images: p.image && Array.isArray(p.image) ? p.image : []
       }));
 
-      // Pesan sukses dari aksi sebelum muat ulang (lihat submitPortfolio).
+      // Pesan sukses dari aksi sebelum muat ulang
       try {
         const pending = sessionStorage.getItem('portfolioToast');
         if (pending) {
@@ -137,23 +121,6 @@
           setTimeout(() => window.dispatchEvent(new CustomEvent('toast:success', { detail })), 400);
         }
       } catch (e) {}
-
-      // EditorJS hanya hidup selama modal create terbuka. Memasukannya
-      // ulang tiap kali modal dibuka, dan menghancurkan saat ditutup,
-      // supaya tidak ada dua instance yang menulis ke field yang sama.
-      this.$watch('createPortofolio', (value) => {
-        const overflowVal = value ? 'hidden' : '';
-        document.body.style.overflow = overflowVal;
-        document.documentElement.style.overflow = overflowVal;
-        if (value) {
-          setTimeout(() => this.initOverviewEditor(), 300);
-        } else if (this.overviewEditorInstance) {
-          try {
-            this.overviewEditorInstance.destroy();
-          } catch (e) {}
-          this.overviewEditorInstance = null;
-        }
-      });
     },
 
     resetFilters() {
@@ -162,518 +129,10 @@
       this.sortBy = 'newest';
     },
 
-    // Program di dalam panel ini selalu program yang sedang dibuka, jadi
-    // Student tidak pernah memilih: galeri, tombol Create, dan tempat
-    // portfolio disimpan semuanya terikat ke program itu.
-    openCreatePortfolio() {
-      if (this.myPortfolio) return;
-      this.editingId = null;
-      this.existingImages = [];
-      this.newForm = { title: '', description: '', link: '', overview: '', program: this.programName, courseId: this.courseId };
-      this.imageUploads = [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }];
-      this.editorDirty = false;
-      this.formBaseline = JSON.stringify(this.portfolioSnapshot());
-      this.createPortofolio = true;
-    },
-
-    // Hanya bisa dipanggil untuk portfolio milik sendiri; pemanggilannya
-    // sudah dijaga x-show='item.isMine', dan server menolaknya lagi.
-    // Catatan: jangan pernah menulis tanda kutip ganda di dalam x-data.
-    // Atribut HTML diakhiri oleh kutip ganda pertama, sehingga satu saja di
-    // sini membuat seluruh JS setelahnya tampil sebagai teks di halaman.
-    openEditPortfolio(item) {
-      if (!item.isMine) return;
-      this.editingId = item.id;
-      this.existingImages = [...(item.images || [])];
-      this.newForm = {
-        title: item.title || '',
-        description: item.description || '',
-        link: item.link || '',
-        overview: item.contentRaw || '',
-        program: item.program || this.programName,
-        courseId: this.courseId,
-      };
-      this.imageUploads = [{ id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }];
-      this.editorDirty = false;
-      this.formBaseline = JSON.stringify(this.portfolioSnapshot());
-      this.createPortofolio = true;
-    },
-
-    closePortfolioModal() {
-      this.createPortofolio = false;
-      this.editingId = null;
-      this.existingImages = [];
-      this.editorDirty = false;
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    },
-
-    removeExistingImage(url) {
-      this.existingImages = this.existingImages.filter((item) => item !== url);
-    },
-
-    portfolioSnapshot() {
-      const f = this.newForm;
-      return {
-        title: f.title,
-        description: f.description,
-        link: f.link,
-        images: this.existingImages,
-        files: this.imageUploads.filter((u) => u.file).map((u) => u.name),
-      };
-    },
-
-    portfolioFormTouched() {
-      if (this.editorDirty) return true;
-      return JSON.stringify(this.portfolioSnapshot()) !== this.formBaseline;
-    },
-
-    // Isi awal editor saat menyunting. Mendukung format JSON EditorJS,
-    // HTML (mis. hasil render / seed), maupun teks polos.
-    editorInitialData() {
-      const raw = this.newForm.overview;
-      if (!raw) return undefined;
-
-      let parsed = raw;
-      if (typeof parsed === 'string') {
-        const trimmed = parsed.trim();
-        if (!trimmed) return undefined;
-        try {
-          parsed = JSON.parse(trimmed);
-          if (typeof parsed === 'string') {
-            try { parsed = JSON.parse(parsed); } catch (e) {}
-          }
-        } catch (e) {
-          parsed = null;
-        }
-      }
-
-      if (parsed && typeof parsed === 'object' && Array.isArray(parsed.blocks)) {
-        return parsed;
-      }
-
-      if (typeof raw === 'string' && raw.trim()) {
-        const trimmed = raw.trim();
-
-        if (/<[a-z][\s\S]*>/i.test(trimmed)) {
-          try {
-            const doc = new DOMParser().parseFromString(trimmed, 'text/html');
-            const blocks = [];
-            const children = Array.from(doc.body.children);
-            if (children.length > 0) {
-              children.forEach((child) => {
-                const tag = child.tagName.toLowerCase();
-                if (/^h[1-6]$/.test(tag)) {
-                  blocks.push({
-                    type: 'header',
-                    data: {
-                      text: child.innerHTML || child.textContent || '',
-                      level: parseInt(tag[1], 10),
-                    },
-                  });
-                } else if (tag === 'ul' || tag === 'ol') {
-                  const lis = Array.from(child.querySelectorAll('li')).map(
-                    (li) => li.innerHTML || li.textContent || ''
-                  );
-                  blocks.push({
-                    type: 'list',
-                    data: {
-                      style: tag === 'ol' ? 'ordered' : 'unordered',
-                      items: lis,
-                    },
-                  });
-                } else if (tag === 'blockquote') {
-                  blocks.push({
-                    type: 'quote',
-                    data: {
-                      text: child.innerHTML || child.textContent || '',
-                    },
-                  });
-                } else {
-                  const text = child.innerHTML || child.textContent || '';
-                  if (text.trim()) {
-                    blocks.push({
-                      type: 'paragraph',
-                      data: { text },
-                    });
-                  }
-                }
-              });
-            }
-            if (blocks.length > 0) {
-              return { time: Date.now(), blocks };
-            }
-          } catch (e) {}
-        }
-
-        const paragraphs = trimmed
-          .split(/\n\s*\n/)
-          .map((p) => p.trim())
-          .filter(Boolean);
-
-        if (paragraphs.length > 0) {
-          return {
-            time: Date.now(),
-            blocks: paragraphs.map((p) => ({
-              type: 'paragraph',
-              data: { text: p.replace(/\n/g, '<br>') },
-            })),
-          };
-        }
-
-        return {
-          time: Date.now(),
-          blocks: [{ type: 'paragraph', data: { text: trimmed } }],
-        };
-      }
-
-      return undefined;
-    },
-
     askDeletePortfolio(item) {
       if (!item.isMine) return;
       this.deleteTarget = item;
-    },
-
-    canSubmitPortfolio() {
-      const f = this.newForm;
-      if (!f.title.trim() || !f.courseId) return false;
-      if (!this.imageUploads.some((u) => u.file) && this.existingImages.length === 0) return false;
-      if (this.imageUploads.some((u) => u.error)) return false;
-      // Keterangan di bawah field link menjanjikan URL http/https; sebelum
-      // ini tidak ada yang memeriksanya.
-      if (f.link.trim() && !/^https?:\/\/\S+$/i.test(f.link.trim())) return false;
-      return true;
-    },
-
-    handleFile(event, idx) {
-      const file = event.target.files[0];
-      if (!file) return;
-      this.imageUploads[idx].file = file;
-      this.imageUploads[idx].name = file.name;
-      this.imageUploads[idx].error = '';
-      this.checkImage(file, idx);
-    },
-
-    // Syarat berkas, disalin dari @ValidateImage pada POST /portfolio/create
-    // (dimensi) dan dari keterangan di bawah kotak unggah. Diperiksa di sini
-    // supaya student tahu sebelum menunggu unggahan gagal.
-    checkImage(file, idx) {
-      const TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-      const MAX = 5 * 1024 * 1024;
-      if (!TYPES.includes(file.type)) {
-        this.imageUploads[idx].error = '{{t 'test.myPortfolio.messages.invalidType'}}';
-        return;
-      }
-      if (file.size > MAX) {
-        this.imageUploads[idx].error = '{{t 'test.myPortfolio.messages.fileTooLarge'}}';
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        const okW = img.naturalWidth >= 1900 && img.naturalWidth <= 1920;
-        const okH = img.naturalHeight >= 1000 && img.naturalHeight <= 1080;
-        this.imageUploads[idx].error = okW && okH
-          ? ''
-          : `${img.naturalWidth}x${img.naturalHeight}{{t 'test.myPortfolio.messages.dimensionError'}}`;
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        this.imageUploads[idx].error = '{{t 'test.myPortfolio.messages.unreadableImage'}}';
-      };
-      img.src = url;
-    },
-
-    addImageRow() {
-      this.imageUploads.push({ id: Date.now(), file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' });
-    },
-
-    getOverviewHolder() {
-      return (this.$root && this.$root.querySelector('#courseOverviewEditor'))
-        || document.getElementById('courseOverviewEditor');
-    },
-
-    async initOverviewEditor() {
-      // Destroy previous instance if exists (for re-open scenarios)
-      if (this.overviewEditorInstance) {
-        try {
-          if (typeof this.overviewEditorInstance.destroy === 'function') {
-            await this.overviewEditorInstance.destroy();
-          }
-        } catch (e) {}
-        this.overviewEditorInstance = null;
-      }
-
-      if (!this.createPortofolio) return;
-
-      // Ensure holder is a div element in case a previous fallback replaced it with textarea
-      let holder = this.getOverviewHolder();
-      if (holder && holder.tagName.toLowerCase() === 'textarea') {
-        const div = document.createElement('div');
-        div.id = 'courseOverviewEditor';
-        div.setAttribute('x-ignore', '');
-        div.className = 'editorjs-container w-full font-inter text-[16px] leading-[24px] text-[#171717] pl-8 sm:pl-10';
-        holder.replaceWith(div);
-      }
-
-      // Wait for EditorJS library to load
-      let libAttempts = 0;
-      while (!window.EditorJS || !window.EditorTools) {
-        libAttempts++;
-        if (libAttempts > 30) {
-          console.error('[Portfolio] EditorJS library not loaded after 6s.');
-          this.fallbackOverviewTextarea();
-          return;
-        }
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-
-      if (!this.createPortofolio) return;
-
-      // Wait for the holder element to be visible in the DOM
-      let domAttempts = 0;
-      const waitForVisible = () => new Promise((resolve, reject) => {
-        const check = () => {
-          domAttempts++;
-          const el = this.getOverviewHolder();
-          if (el && (el.offsetParent !== null || el.getClientRects().length > 0)) {
-            resolve(el);
-          } else if (domAttempts > 30) {
-            reject(new Error('courseOverviewEditor element not visible after 6s'));
-          } else {
-            setTimeout(check, 200);
-          }
-        };
-        check();
-      });
-
-      try {
-        await waitForVisible();
-      } catch (e) {
-        console.error('[Portfolio]', e.message);
-        this.fallbackOverviewTextarea();
-        return;
-      }
-
-      if (!this.createPortofolio) return;
-
-      // Clear holder innerHTML before re-init
-      holder = this.getOverviewHolder();
-      if (holder) holder.innerHTML = '';
-
-      try {
-        this.overviewEditorInstance = new window.EditorJS({
-          holder: holder,
-          placeholder: 'Enter your content here...',
-          data: this.editorInitialData(),
-          minHeight: 0,
-          onChange: () => { this.editorDirty = true; },
-          tools: {
-            header: {
-              class: window.EditorTools.Header,
-              inlineToolbar: ['link']
-            },
-            paragraph: {
-              class: window.EditorTools.Paragraph,
-              inlineToolbar: true
-            },
-            list: {
-              class: window.EditorTools.List,
-              inlineToolbar: true
-            },
-            marker: {
-              class: window.EditorTools.Marker,
-              shortcut: 'CMD+SHIFT+M'
-            },
-            image: {
-              class: window.EditorTools.ImageTool,
-              tunes: {
-                stretched: false,
-                withBorder: false,
-                withBackground: false
-              },
-              config: {
-                endpoints: {
-                  byFile: '/portfolio/upload-image',
-                  byUrl: '/portfolio/fetch-image'
-                }
-              }
-            },
-            linkTool: {
-              class: window.EditorTools.LinkTool,
-              config: {
-                endpoint: '/portfolio/fetch-link'
-              }
-            }
-          }
-        });
-        console.log('[Portfolio] Course overview editor initialized successfully');
-      } catch (e) {
-        console.error('[Portfolio] Failed to initialize EditorJS:', e);
-        this.fallbackOverviewTextarea();
-      }
-    },
-
-    getOverviewPlainText() {
-      const raw = this.newForm.overview;
-      if (!raw) return '';
-      if (typeof raw === 'string') {
-        const trimmed = raw.trim();
-        if (trimmed.startsWith('{')) {
-          try {
-            const parsed = JSON.parse(trimmed);
-            if (parsed && Array.isArray(parsed.blocks)) {
-              return parsed.blocks
-                .map(b => {
-                  if (b.type === 'paragraph' || b.type === 'header') return b.data?.text || '';
-                  if (b.type === 'list') return (b.data?.items || []).join('\n');
-                  return b.data?.text || '';
-                })
-                .filter(Boolean)
-                .join('\n\n');
-            }
-          } catch (e) {}
-        }
-        if (/<[a-z][\s\S]*>/i.test(trimmed)) {
-          try {
-            const doc = new DOMParser().parseFromString(trimmed, 'text/html');
-            return doc.body.textContent || '';
-          } catch (e) {}
-        }
-        return trimmed;
-      }
-      return '';
-    },
-
-    fallbackOverviewTextarea() {
-      const holder = this.getOverviewHolder();
-      if (!holder) return;
-      if (holder.tagName.toLowerCase() === 'textarea') {
-        holder.value = this.getOverviewPlainText();
-        return;
-      }
-
-      const ta = document.createElement('textarea');
-      ta.id = 'courseOverviewEditor';
-      ta.rows = 8;
-      ta.placeholder = 'FALLBACK MODE: Enter your content here... (EditorJS failed to load)';
-      ta.value = this.getOverviewPlainText();
-      ta.className = 'w-full min-h-[140px] rounded-[10px] border border-slate-300 p-4 font-inter text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm';
-      const self = this;
-      ta.addEventListener('input', function () {
-        self.newForm.overview = ta.value;
-        self.editorDirty = true;
-      });
-      holder.replaceWith(ta);
-    },
-
-    async submitPortfolio() {
-      if (this.savingPortfolio) return;
-      if (!this.newForm.title.trim()) {
-        showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', '{{t 'test.myPortfolio.messages.titleRequired'}}');
-        return;
-      }
-
-      let overviewData = this.newForm.overview;
-      if (this.overviewEditorInstance) {
-        try {
-          const output = await this.overviewEditorInstance.save();
-          overviewData = JSON.stringify(output);
-        } catch (e) {
-          console.error('Failed to save editor content:', e);
-        }
-      }
-
-      // Pastikan overviewData selalu JSON EditorJS valid
-      if (!overviewData || !overviewData.trim()) {
-        overviewData = JSON.stringify({ time: Date.now(), blocks: [] });
-      } else {
-        let parsed = null;
-        try { parsed = JSON.parse(overviewData); } catch (e) { parsed = null; }
-        if (!parsed || !Array.isArray(parsed.blocks)) {
-          overviewData = JSON.stringify({
-            time: Date.now(),
-            blocks: [{ type: 'paragraph', data: { text: overviewData } }]
-          });
-        }
-      }
-
-      const isEdit = !!this.editingId;
-      const formData = new FormData();
-      formData.append('title', this.newForm.title);
-      formData.append('description', this.newForm.description || '');
-      formData.append('link', this.newForm.link || '');
-      formData.append('content', overviewData);
-
-      let hasNewImage = false;
-      this.imageUploads.forEach(item => {
-        if (item.file) {
-          formData.append('image', item.file);
-          hasNewImage = true;
-        }
-      });
-
-      // Gambar lama yang dipertahankan dikirim terpisah dari berkas baru;
-      // lihat catatan `keepImages` di portfolios.controller.
-      if (isEdit) {
-        this.existingImages.forEach((url) => formData.append('keepImages', url));
-      }
-
-      if (!hasNewImage && this.existingImages.length === 0) {
-        showErrorToast(
-          '{{t 'test.myPortfolio.messages.saveErrorTitle'}}',
-          isEdit ? '{{t 'test.myPortfolio.messages.imageRequiredEdit'}}' : '{{t 'test.myPortfolio.messages.imageRequiredCreate'}}',
-        );
-        return;
-      }
-
-      const courseId = this.courseId;
-      if (!courseId) {
-        showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', '{{t 'test.myPortfolio.messages.programRequired'}}');
-        return;
-      }
-
-      if (!isEdit) formData.append('courseId', courseId);
-
-      this.savingPortfolio = true;
-      try {
-        const response = await fetch(
-          isEdit ? `/portfolio/${this.editingId}/${courseId}` : '/portfolio/create',
-          {
-            method: isEdit ? 'PATCH' : 'POST',
-            body: formData,
-            headers: {
-              'Accept': 'application/json'
-            }
-          }
-        );
-
-        const result = await response.json().catch(() => ({}));
-
-        if (response.ok) {
-          // Halaman dimuat ulang supaya galerinya benar-benar dari server
-          // (termasuk karya student lain yang mungkin baru muncul), jadi
-          // toast-nya dititipkan dulu dan ditampilkan sesudah muat.
-          try {
-            sessionStorage.setItem('portfolioToast', JSON.stringify({
-              title: isEdit ? '{{t 'test.myPortfolio.messages.updatedTitle'}}' : '{{t 'test.myPortfolio.messages.createdTitle'}}',
-              description: isEdit ? '{{t 'test.myPortfolio.messages.updatedDesc'}}' : '{{t 'test.myPortfolio.messages.createdDesc'}}',
-            }));
-          } catch (e) {}
-          window.location.href = window.location.pathname
-            + '?tab=portfolio&courseId=' + encodeURIComponent(courseId);
-        } else {
-          showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', result.message || '{{t 'test.myPortfolio.messages.tryAgain'}}');
-        }
-      } catch (err) {
-        console.error('Error saving portfolio:', err);
-        showErrorToast('{{t 'test.myPortfolio.messages.saveErrorTitle'}}', '{{t 'test.myPortfolio.messages.networkError'}}');
-      } finally {
-        this.savingPortfolio = false;
-      }
-    },
+    }
   }"
 >
   <script type="application/json" id="portfolio-data">{{{jsonSafe portfolioData}}}</script>
@@ -733,15 +192,14 @@
             {{t 'test.myPortfolio.gallery.projectCount'}}
           </span>
 
-          <button
-            type="button"
+          <a
+            :href="'/portfolio/formCreate/' + courseId"
             x-show="!myPortfolio && canCreatePortfolio"
-            @click="openCreatePortfolio()"
-            class="h-11 w-full cursor-pointer rounded-lg border border-[#003060] bg-[#003060] px-5 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f] sm:w-auto"
+            class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-5 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f] sm:w-auto"
           >
             <i class="fa-solid fa-plus text-xs"></i>
             <span>{{t 'test.myPortfolio.createButton'}}</span>
-          </button>
+          </a>
         </div>
       </div>
 
@@ -753,14 +211,13 @@
           <i class="fa-solid fa-circle-check mt-0.5 text-xs text-[#0369A1]"></i>
           <span>{{t 'test.myPortfolio.gallery.mineNotice'}}</span>
         </p>
-        <button
-          type="button"
-          @click="openEditPortfolio(myPortfolio)"
+        <a
+          :href="'/portfolio/formEdit/' + myPortfolio.id + '/' + courseId"
           class="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#003060] bg-white px-3.5 font-inter text-sm font-medium text-[#003060] transition-colors hover:bg-[#E0F2F9]"
         >
           <i class="fa-regular fa-pen-to-square text-xs"></i>
           <span>{{t 'test.myPortfolio.gallery.editMine'}}</span>
-        </button>
+        </a>
       </div>
 
       <div
@@ -804,15 +261,14 @@
             : '{{t 'test.myPortfolio.emptyStateCourse.lockedNotice'}}'"
       ></p>
 
-      <button
-        type="button"
+      <a
+        :href="'/portfolio/formCreate/' + courseId"
         x-show="!myPortfolio && canCreatePortfolio"
-        @click="openCreatePortfolio()"
         class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#003060] px-6 font-inter text-sm font-medium leading-none text-white shadow-md transition-all hover:bg-[#001f3f]"
       >
         <i class="fa-solid fa-plus text-sm"></i>
         <span>{{t 'test.myPortfolio.createButton'}}</span>
-      </button>
+      </a>
     </div>
 
         <div
@@ -909,14 +365,13 @@
                 {{t "test.portfolio.detailButton"}}
               </button>
               <div x-show="item.isMine" class="flex items-center gap-2">
-                <button
-                  type="button"
-                  @click="openEditPortfolio(item)"
+                <a
+                  :href="'/portfolio/formEdit/' + item.id + '/' + courseId"
                   class="flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-[#D4D4D4] bg-white font-inter text-xs font-medium text-[#003060] transition-colors hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
                 >
                   <i class="fa-regular fa-pen-to-square text-[11px]"></i>
                   {{t 'test.myPortfolio.editButton'}}
-                </button>
+                </a>
                 <button
                   type="button"
                   @click="askDeletePortfolio(item)"
@@ -934,197 +389,8 @@
 
   </div>
 
-    <div x-show="showDetail" x-cloak style="display: none;" class="!mt-0">
+  <div x-show="showDetail" x-cloak style="display: none;" class="!mt-0">
     {{> user/sidebar_user_profile/my_portofolio/detail/index }}
-  </div>
-
-    <div
-    x-cloak
-    style="display: none;"
-    x-show="createPortofolio"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-    @keydown.escape.window="if (!portfolioFormTouched()) closePortfolioModal()"
-  >
-    <div
-      id="courseOverviewModal"
-      @click.away="if (!portfolioFormTouched()) closePortfolioModal()"
-      class="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[24px] bg-white p-6 font-inter shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:p-10"
-      style="color-scheme: light;"
-    >
-            <h2
-        class="mb-8 font-inter text-2xl font-semibold leading-none text-[#003060] sm:text-4xl"
-        x-text="editingId ? '{{t 'test.myPortfolio.modal.editTitle'}}' : '{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}'"
-      >{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}</h2>
-
-            <form @submit.prevent="submitPortfolio()" class="space-y-8">
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-
-                    <div class="space-y-6">
-                        <div class="space-y-3">
-              <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
-                {{t 'test.myPortfolio.createPortfolio.portfolioTittle'}}<span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                x-model="newForm.title"
-                placeholder="{{t 'test.myPortfolio.createPortfolio.placeholderTittle'}}"
-                class="h-[48px] w-full rounded-[10px] border border-[#D4D4D4] bg-white px-4 font-inter text-sm text-black placeholder:text-[#676767] transition-colors hover:shadow-sm focus:border-[#003060] focus:outline-none sm:text-base"
-              >
-            </div>
-
-                        <div class="space-y-3">
-              <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
-                {{t 'test.myPortfolio.createPortfolio.description'}}
-              </label>
-              <textarea
-                rows="4"
-                x-model="newForm.description"
-                placeholder="{{t 'test.myPortfolio.createPortfolio.placeholderDescription'}}"
-                class="w-full resize-none rounded-[10px] border border-[#D4D4D4] bg-white p-4 font-inter text-sm text-black placeholder:text-[#676767] transition-colors hover:shadow-sm focus:border-[#003060] focus:outline-none sm:text-base"
-              ></textarea>
-            </div>
-
-                        <div class="space-y-3">
-              <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
-                {{t 'test.myPortfolio.detailPortfolio.program'}}<span class="text-red-500">*</span>
-              </label>
-              <div>
-                <div class="flex h-[48px] items-center rounded-[10px] border border-[#D4D4D4] bg-[#F5F5F5] px-4 font-inter text-sm text-[#666666] sm:text-base" x-text="newForm.program || '{{t 'test.myPortfolio.detailPortfolio.program'}}'"></div>
-                <p class="pt-1 font-inter text-xs font-normal text-[#666666]">
-                  {{t 'test.myPortfolio.modal.programLockedHint'}}
-                </p>
-              </div>
-            </div>
-
-            <!-- Link* -->
-            <div>
-              <label class="mb-3 block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
-                {{t 'test.myPortfolio.createPortfolio.link'}}
-              </label>
-              <input
-                type="text"
-                x-model="newForm.link"
-                placeholder="{{t 'test.myPortfolio.createPortfolio.placeholderLink'}}"
-                class="h-[48px] w-full rounded-[10px] border border-[#D4D4D4] bg-white px-4 font-inter text-sm text-black placeholder:text-[#676767] transition-colors hover:shadow-sm focus:border-[#003060] focus:outline-none sm:text-base"
-              >
-              <p class="pt-1 font-inter text-xs font-normal text-[#666666] sm:text-sm">
-                {{t 'test.myPortfolio.createPortfolio.spanLink'}}
-              </p>
-            </div>
-          </div>
-
-                    <div class="space-y-6">
-
-                        <div class="space-y-3">
-              <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
-                {{t 'test.myPortfolio.createPortfolio.overview'}}
-              </label>
-              {{> components/ui/admin/form/editor-input
-                id="courseOverviewEditor"
-                name="content"
-                inputId="courseOverviewEditor_input"
-              }}
-            </div>
-
-            <!-- Upload Images* -->
-            <div class="space-y-3">
-              <label class="block font-inter text-base font-semibold text-[#003060] sm:text-lg md:text-xl">
-                {{t 'test.myPortfolio.createPortfolio.uploadImages'}}<span class="text-red-500">*</span>
-              </label>
-
-              <template x-if="editingId && existingImages.length > 0">
-                <div class="mb-3 space-y-2">
-                  <template x-for="url in existingImages" :key="url">
-                    <div class="flex items-center gap-3 rounded-[10px] border border-[#D4D4D4] bg-white px-3 py-2">
-                      <span class="relative grid h-10 w-16 shrink-0 place-items-center overflow-hidden rounded bg-[#F1F5F9] text-[#94A3B8]">
-                        <i class="fa-regular fa-image text-xs"></i>
-                        <img :src="url" alt="" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
-                      </span>
-                      <span class="min-w-0 flex-1 truncate font-inter text-xs text-[#676767]" x-text="url.split('/').pop()"></span>
-                      <button
-                        type="button"
-                        @click="removeExistingImage(url)"
-                        class="shrink-0 px-2 py-1 text-xs text-red-500 transition-colors hover:text-red-700"
-                        title="{{t 'test.myPortfolio.modal.removeThisImage'}}"
-                      >
-                        <i class="fa-solid fa-trash-can"></i>
-                      </button>
-                    </div>
-                  </template>
-                </div>
-              </template>
-
-                            <div class="max-h-[185px] space-y-3 overflow-y-auto p-1">
-                <template x-for="(upload, idx) in imageUploads" :key="upload.id">
-                  <div class="flex h-[52px] w-full items-center justify-between gap-3 rounded-[10px] border border-[#D4D4D4] bg-white px-3 hover:shadow-sm">
-                    <div class="flex min-w-0 items-center gap-3">
-                      <label class="flex-shrink-0 cursor-pointer rounded-[6px] bg-[#0B1F3B1A] px-4 py-2 font-inter text-sm font-medium text-black transition-colors hover:bg-slate-200">
-                        {{t 'test.myPortfolio.modal.chooseFile'}}
-                        <input type="file" class="hidden" accept="image/*" @change="handleFile($event, idx)">
-                      </label>
-                      <span class="truncate font-inter text-sm text-[#676767]" x-text="upload.name"></span>
-                    </div>
-                                        <button
-                      type="button"
-                      x-show="imageUploads.length > 1"
-                      @click="imageUploads.splice(idx, 1)"
-                      class="cursor-pointer px-2 py-1 text-xs text-red-500 transition-colors hover:text-red-700"
-                      title="{{t 'test.myPortfolio.modal.removeImage'}}"
-                    >
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                  </div>
-                </template>
-              </div>
-
-                            <p class="pt-0.5 font-inter text-xs font-normal text-[#666666]">
-                {{t 'test.myPortfolio.modal.formatSubtitle'}}
-              </p>
-              <template x-for="upload in imageUploads.filter(u => u.error)" :key="'err-' + upload.id">
-                <p class="flex items-start gap-1.5 font-inter text-xs text-[#dc2626]">
-                  <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                  <span x-text="upload.name + ': ' + upload.error"></span>
-                </p>
-              </template>
-
-                            <div
-                @click="addImageRow()"
-                class="mt-3 flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#D4D4D4] font-inter text-sm font-medium text-[#666666] transition-colors hover:bg-[#FAFAFA] sm:text-base"
-              >
-                <i class="fa-solid fa-plus text-xs"></i>
-                <span>{{t 'test.myPortfolio.createPortfolio.addImage'}}</span>
-              </div>
-            </div>
-            <!-- ACTION BUTTONS ROW (SAVE & CANCEL) -->
-        <div class="flex items-center justify-center gap-4 pt-6">
-          <button
-            type="submit"
-            :disabled="!canSubmitPortfolio() || savingPortfolio"
-            class="flex h-[48px] w-full max-w-[240px] cursor-pointer items-center justify-center rounded-[8px] bg-[#003060] font-inter text-base font-semibold text-white shadow-md transition-all hover:bg-[#001f3f] disabled:pointer-events-none disabled:opacity-50 sm:text-lg"
-          >
-            <span x-text="savingPortfolio ? '{{t 'test.myPortfolio.modal.saving'}}' : (editingId ? '{{t 'test.myPortfolio.modal.saveChanges'}}' : '{{t 'test.myPortfolio.modal.save'}}')">{{t 'test.myPortfolio.modal.save'}}</span>
-          </button>
-          <button
-            type="button"
-            @click="closePortfolioModal()"
-            class="w-full h-[48px] max-w-[240px] cursor-pointer rounded-[8px] border border-[#003060] bg-white font-inter text-base font-semibold text-[#003060] shadow-sm transition-all hover:bg-[#FAFAFA] sm:text-lg"
-          >
-            {{t 'test.myPortfolio.modal.cancel'}}
-          </button>
-        </div>
-          </div>
-
-        </div>
-
-        
-      </form>
-    </div>
   </div>
 
   <div
@@ -1175,104 +441,6 @@
 </div>
 
 <style>
-  #courseOverviewModal,
-  #overviewModal {
-    color-scheme: light;
-  }
-
-  #courseOverviewModal input,
-  #courseOverviewModal textarea,
-  #overviewModal input,
-  #overviewModal textarea {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  #courseOverviewModal input::placeholder,
-  #courseOverviewModal textarea::placeholder,
-  #overviewModal input::placeholder,
-  #overviewModal textarea::placeholder {
-    color: #676767 !important;
-    opacity: 1;
-  }
-
-  #courseOverviewEditor,
-  #overviewEditor {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  #courseOverviewEditor .codex-editor,
-  #courseOverviewEditor .codex-editor__redactor,
-  #courseOverviewEditor .ce-toolbar__content,
-  #courseOverviewEditor .ce-block__content,
-  #courseOverviewEditor .ce-inline-toolbar,
-  #courseOverviewEditor .ce-toolbox,
-  #courseOverviewEditor .ce-settings,
-  #courseOverviewEditor .ce-conversion-toolbar,
-  #overviewEditor .codex-editor,
-  #overviewEditor .codex-editor__redactor,
-  #overviewEditor .ce-toolbar__content,
-  #overviewEditor .ce-block__content,
-  #overviewEditor .ce-inline-toolbar,
-  #overviewEditor .ce-toolbox,
-  #overviewEditor .ce-settings,
-  #overviewEditor .ce-conversion-toolbar {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  #courseOverviewEditor .ce-placeholder,
-  #overviewEditor .ce-placeholder {
-    color: #676767 !important;
-  }
-
-  .codex-editor .ce-block__content,
-  .codex-editor .ce-toolbar__content {
-    max-width: 100% !important;
-    margin-left: 16px !important;
-    margin-right: auto !important;
-  }
-
-  .codex-editor__redactor {
-    padding-left: 0 !important;
-  }
-
-  #overviewEditor .codex-editor__redactor {
-    min-height: 80px !important;
-    padding-bottom: 16px !important;
-  }
-
-  #overviewEditor img,
-  #overviewDetail img {
-    max-width: 300px;
-    margin: auto;
-    border-radius: 1rem;
-  }
-
-  #overviewEditor h4,
-  #overviewDetail h4 {
-    margin-bottom: 0.5rem;
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-    font-weight: 600;
-  }
-
-  #overviewEditor h5,
-  #overviewDetail h5 {
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    font-weight: 500;
-  }
-
-  #overviewEditor h6,
-  #overviewDetail h6 {
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 500;
-  }
 
   /* Tailwind preflight me-reset elemen di bawah ini, jadi dikembalikan manual
      supaya HTML dari Editor.js tampil rapi di blok Project Overview. */

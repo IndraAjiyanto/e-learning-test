@@ -3,9 +3,10 @@
   class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
   :class="scrolled ? 'border-b border-white/40 bg-white/20 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.10)]' : 'border-b border-transparent bg-transparent shadow-none'"
   {{else}}
-  class="sticky inset-x-0 top-0 z-50 bg-white font-inter text-[#4A5568] transition-shadow duration-200"
-  :class="scrolled ? 'border-b-[3px] border-[#F3F4F6] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]' : 'border-b border-transparent shadow-none'"
+  class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
+  :class="scrolled ? 'border-b border-slate-200/60 bg-white/80 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)]' : 'border-b border-transparent bg-white/70 backdrop-blur-md shadow-none'"
   {{/if}}
+  @click.outside="open = false; menu = null"
   x-data="{
     open: false,
     isDesktop: window.innerWidth >= 1024,
@@ -22,7 +23,6 @@
       this.menu = null;
       this.classOpen = false;
       this.infoOpen = false;
-      document.body.style.overflow = '';
     },
     isActive(path) {
       const cur = this.active;
@@ -59,7 +59,6 @@
     },
     toggleMenu() {
       this.open = !this.open;
-      document.body.style.overflow = this.open ? 'hidden' : '';
     },
     async init() {
       this.active = window.location.pathname;
@@ -67,7 +66,7 @@
       window.addEventListener('scroll', () => { this.scrolled = window.scrollY > 8; }, { passive: true });
       window.addEventListener('resize', () => {
         this.isDesktop = window.innerWidth >= 1024;
-        if (this.isDesktop) { this.open = false; document.body.style.overflow = ''; }
+        if (this.isDesktop) { this.open = false; }
       });
       window.addEventListener('popstate', () => { this.active = window.location.pathname; });
       try {
@@ -127,8 +126,8 @@
               </div>
               <p class="font-inter text-sm leading-relaxed text-[#1F2937]">{{t 'test.navbar.classMenuIntro'}}</p>
             </div>
-            <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-              <template x-for="(cols, ci) in [category.slice(0, 3), category.slice(3)]" :key="ci">
+            <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 max-h-[360px] overflow-y-auto sidebar-scroll pr-2">
+              <template x-for="(cols, ci) in [category.slice(0, Math.ceil(category.length / 2)), category.slice(Math.ceil(category.length / 2))]" :key="ci">
                 <div class="flex flex-col gap-5">
                   <template x-for="kat in cols" :key="kat.id">
                     <a
@@ -137,10 +136,10 @@
                       class="group flex items-center gap-4 border-b border-[#E5E7EB] pb-5 last:border-0 last:pb-0"
                     >
                       <span class="grid size-8 shrink-0 place-items-center text-[#003060]">
-                        <template x-if="kat.icon">
-                          <img :src="kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon" class="size-5 object-contain" alt="" />
+                        <template x-if="kat && kat.icon">
+                          <img :src="kat.icon && kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon" class="size-5 object-contain" alt="" />
                         </template>
-                        <template x-if="!kat.icon">
+                        <template x-if="!kat || !kat.icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                         </template>
                       </span>
@@ -238,10 +237,16 @@
 
       {{#if (and isAuthenticated user.isVerified)}}
         <a
-          href="/users/profile"
-          {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}}
-          :class="isUserActive() ? 'bg-gray-100' : 'hover:bg-gray-100'"
-          class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
+          {{#if (eq user.role 'super_admin')}}
+            href="/information"
+          {{else if (eq user.role 'admin')}}
+            href="/program"
+          {{else}}
+            href="/users/profile"
+            target="_blank" rel="noopener noreferrer"
+          {{/if}}
+          :class="isUserActive() ? 'bg-gray-100/80' : 'hover:bg-gray-100/60'"
+          class="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
         >
           <span class="block w-24 truncate">{{user.username}}</span>
           <span class="grid size-7 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-gray-300 bg-gray-600 text-white">
