@@ -2,58 +2,37 @@
      belajar tetapi punya rute sendiri; sebelumnya memakai navbar publik
      dan footer. Controller-nya merender dengan bareShell: true.
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
-{{#> user/shell_frame/index user=user active='portfolio' pageTitle=(t 'test.myPortfolio.uploadPortfolio')}}
-<div
-  class='min-h-full py-4 sm:py-6'
->
-  <div class='max-w-6xl mx-auto px-6'>
-    <div class='bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6'>
-      <h2
-        class='text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center font-inter'
-      >{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}</h2>
+{{#> user/shell_frame/index
+  user=user
+  active=(ternary isFromCourse 'learning' 'portfolio')
+  pageTitle=(t 'test.myPortfolio.uploadPortfolio')
+  back=false
+  trail=(ternary isFromCourse
+    (array
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+      (obj 'label' (t 'test.startLearning.portfolio') 'href' (concat '/users/profile?tab=course-portfolio&courseId=' courseId))
+      (obj 'label' (t 'test.myPortfolio.uploadPortfolio'))
+    )
+    (array
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
+      (obj 'label' (t 'test.userSidebar.myPortfolio') 'href' '/users/profile?tab=portfolio')
+      (obj 'label' (t 'test.myPortfolio.uploadPortfolio'))
+    )
+  )
+}}
+<div class='min-h-full py-4 sm:py-6'>
+  <div class='max-w-5xl mx-auto px-4 sm:px-6'>
+    <div class='bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6 sm:p-8'>
+      <h1
+        class='text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center font-inter'
+      >{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}</h1>
+      <p class='text-sm sm:text-base text-[#718096] mb-8 font-inter text-center'>
+        {{t 'test.myPortfolio.createPortfolio.placeholderDescription'}}
+      </p>
 
-{{> user/portfolio/create/form}}
+      {{> user/portfolio/create/form}}
     </div>
   </div>
 </div>
-
-<style>
-  .codex-editor .ce-block__content,
-  .codex-editor .ce-toolbar__content {
-    max-width: 100% !important;
-    margin-left: 16px !important;
-    margin-right: auto !important;
-  }
-
-  .codex-editor__redactor {
-    padding-left: 0 !important;
-  }
-
-  #editor img {
-    max-width: 300px;
-    margin: auto;
-    border-radius: 1rem;
-  }
-
-  #editor h4 {
-    margin-bottom: 0.5rem;
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-    font-weight: 600;
-  }
-
-  #editor h5 {
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    font-weight: 500;
-  }
-
-  #editor h6 {
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 500;
-  }
-</style>
 {{/user/shell_frame/index}}

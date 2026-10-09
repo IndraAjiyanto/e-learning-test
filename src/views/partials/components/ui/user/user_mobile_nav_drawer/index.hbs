@@ -116,8 +116,14 @@
     {{!-- Account Action (Profile / Login) --}}
     {{#if (and isAuthenticated user.isVerified)}}
       <a
-        href="/users/profile"
-        {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}}
+        {{#if (eq user.role 'super_admin')}}
+          href="/information"
+        {{else if (eq user.role 'admin')}}
+          href="/program"
+        {{else}}
+          href="/users/profile"
+          target="_blank" rel="noopener noreferrer"
+        {{/if}}
         @click="open = false; document.body.style.overflow = ''"
         class="flex min-h-[44px] items-center gap-3 rounded-lg border border-[#E5E7EB] p-2.5 transition-colors hover:bg-gray-50"
       >

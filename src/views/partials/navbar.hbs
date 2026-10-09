@@ -3,8 +3,8 @@
   class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
   :class="scrolled ? 'border-b border-white/40 bg-white/20 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.10)]' : 'border-b border-transparent bg-transparent shadow-none'"
   {{else}}
-  class="sticky inset-x-0 top-0 z-50 bg-white font-inter text-[#4A5568] transition-shadow duration-200"
-  :class="scrolled ? 'border-b-[3px] border-[#F3F4F6] shadow-[0_0_4px_0_rgba(0,0,0,0.25),0_0_6px_0_rgba(0,0,0,0.1)]' : 'border-b border-transparent shadow-none'"
+  class="sticky inset-x-0 top-0 z-50 font-inter text-[#4A5568] transition-all duration-300"
+  :class="scrolled ? 'border-b border-slate-200/60 bg-white/80 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)]' : 'border-b border-transparent bg-white/70 backdrop-blur-md shadow-none'"
   {{/if}}
   x-data="{
     open: false,
@@ -238,10 +238,16 @@
 
       {{#if (and isAuthenticated user.isVerified)}}
         <a
-          href="/users/profile"
-          {{#if (eq user.role 'user')}}target="_blank" rel="noopener noreferrer"{{/if}}
-          :class="isUserActive() ? 'bg-gray-100' : 'hover:bg-gray-100'"
-          class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
+          {{#if (eq user.role 'super_admin')}}
+            href="/information"
+          {{else if (eq user.role 'admin')}}
+            href="/program"
+          {{else}}
+            href="/users/profile"
+            target="_blank" rel="noopener noreferrer"
+          {{/if}}
+          :class="isUserActive() ? 'bg-gray-100/80' : 'hover:bg-gray-100/60'"
+          class="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
         >
           <span class="block w-24 truncate">{{user.username}}</span>
           <span class="grid size-7 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-gray-300 bg-gray-600 text-white">
