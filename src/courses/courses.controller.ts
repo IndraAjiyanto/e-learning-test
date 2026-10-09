@@ -1472,9 +1472,6 @@ export class CoursesController {
         metatype: UpdateCoursesDto,
         data: '',
       });
-      if (gambar) {
-        await this.coursesService.deleteFile(course.image);
-      }
 
       if (dto.mentoringsId) {
         const currentMentoringUserId = course.mentorings?.[0]?.user?.id;
@@ -1489,6 +1486,13 @@ export class CoursesController {
       }
 
       await this.coursesService.update(courseId, dto);
+
+      // Hapus gambar lama SETELAH update DB berhasil agar tidak kehilangan
+      // referensi jika update() melempar error.
+      if (gambar) {
+        await this.coursesService.deleteFile(course.image);
+      }
+
       flashToast(
         req,
         'Changes Saved',
