@@ -58,6 +58,10 @@ export class CertificatesService {
     });
   }
 
+  private formatCategoryName(value: string): string {
+    return this.escapeHtml(value).replace(/\s+/g, '<br>');
+  }
+
   private formatDate(date: Date): string {
     return new Intl.DateTimeFormat('en-GB', {
       day: 'numeric',
@@ -120,7 +124,9 @@ export class CertificatesService {
       certificateTemplateForCourse(course),
     );
     const certificateDate = this.formatDate(certificate.createdAt);
-    const categoryName = this.escapeHtml(course.category?.name || 'Program');
+    const categoryName = this.formatCategoryName(
+      course.category?.name || 'Program',
+    );
     const courseName = this.escapeHtml(course.name);
     const classType = this.escapeHtml(
       course.courseType?.nameClassesType || 'Excellent',
@@ -138,7 +144,7 @@ export class CertificatesService {
       .replace('[Bootcamp Track Name]', courseName)
       .replace('[Class Title]', courseName)
       .replace('[Webinar Title]', courseName)
-      .replace('[Field of Scope]', categoryName)
+      .replace('[Field of Scope]', classType)
       .replace('[Month DD, YYYY]', certificateDate)
       .replace('[Month YYYY] – [Month YYYY]', certificateDate)
       .replace('>Excellent<', `>${classType}<`)
