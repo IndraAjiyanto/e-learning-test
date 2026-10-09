@@ -627,10 +627,10 @@ export class UsersController {
   ) {
     try {
       const user = await this.usersService.findOne(userId);
+      let oldProfile: string | undefined;
       if (profile) {
-        if (user.profile) {
-          await this.usersService.deleteFile(user.profile);
-        }
+        // Preserve existing profile to delete after successful DB update
+        oldProfile = user.profile;
         updateUserDto.profile = req.body.uploadedImageUrls?.[0];
       }
       // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
