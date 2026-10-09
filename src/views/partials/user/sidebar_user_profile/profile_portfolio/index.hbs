@@ -13,32 +13,10 @@
     categoryOpen: false,
     classTypeOpen: false,
     sortOpen: false,
-    createPortofolio: false,
-    savingPortfolio: false,
     loading: false,
-    editingId: null,
-    existingImages: [],
-    formBaseline: '',
-    editorDirty: false,
     deleteTarget: null,
-    modalProgramOpen: false,
     showDetail: false,
     selectedPortfolio: null,
-    imageUploads: [{ id: 1, file: null, name: 'No file chosen', error: '' }],
-    userCourses: (window.userCoursesData && window.userCoursesData.length > 0) ? window.userCoursesData : (window.userCourses || []),
-    newForm: {
-      title: '',
-      description: '',
-      link: '',
-      overview: '',
-      {{!-- Sengaja kosong. Sebelumnya terisi 'Data Analyst' dengan
-           courseId 10 - nama program karangan dan id yang bahkan bukan UUID,
-           jadi student yang tidak menyentuh dropdown mengirim program yang
-           tidak ada. --}}
-      program: '',
-      courseId: ''
-    },
-    overviewEditorInstance: null,
     portfolios: [],
     get categoryOptions() {
       return [...new Set((this.portfolios || []).map(p => p.category).filter(Boolean))].sort();
@@ -121,370 +99,34 @@
         }
       } catch (e) {}
 
-      this.$watch('createPortofolio', value => {
-        const overflowVal = value ? 'hidden' : '';
-        document.body.style.overflow = overflowVal;
-        document.documentElement.style.overflow = overflowVal;
-        if (value) {
-          setTimeout(() => this.initOverviewEditor(), 300);
-        } else {
-          if (this.overviewEditorInstance) {
-            try { this.overviewEditorInstance.destroy(); } catch(e) {}
-            this.overviewEditorInstance = null;
-          }
-        }
-      });
     },
     resetFilters() {
       this.searchQuery = '';
       this.categoryFilter = 'all';
       this.classTypeFilter = 'all';
       this.sortBy = 'newest';
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
     },
-    handleFile(event, idx) {
-      const file = event.target.files[0];
-      if (!file) return;
-      this.imageUploads[idx].file = file;
-      this.imageUploads[idx].name = file.name;
-      this.imageUploads[idx].error = '';
-      this.checkImage(file, idx);
-    },
-
-    {{!-- Syarat berkas, disalin dari @ValidateImage pada POST /portfolio/create
-         (dimensi) dan dari keterangan di bawah kotak unggah. Diperiksa di sini
-         supaya student tahu sebelum menunggu unggahan gagal. --}}
-    checkImage(file, idx) {
-      const TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-      const MAX = 5 * 1024 * 1024;
-      if (!TYPES.includes(file.type)) {
-        this.imageUploads[idx].error = 'use a JPG, PNG, or GIF file';
-        return;
-      }
-      if (file.size > MAX) {
-        this.imageUploads[idx].error = 'file is larger than 5MB';
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        const okW = img.naturalWidth >= 1900 && img.naturalWidth <= 1920;
-        const okH = img.naturalHeight >= 1000 && img.naturalHeight <= 1080;
-        this.imageUploads[idx].error = okW && okH
-          ? ''
-          : `${img.naturalWidth}x${img.naturalHeight}px - needs 1900-1920 x 1000-1080`;
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        this.imageUploads[idx].error = 'this file could not be read as an image';
-      };
-      img.src = url;
-    },
-
-    {{!-- Membuka modal dalam dua mode. Keduanya memasang patokan isian,
-         yang dipakai portfolioFormTouched() untuk tahu apakah ada yang sudah
-         diubah - di mode edit isiannya memang sudah terisi sejak dibuka, jadi
-         "ada isinya" saja bukan ukuran yang benar. --}}
-    openCreatePortfolio() {
-      this.editingId = null;
-      this.existingImages = [];
-      this.newForm = { title: '', description: '', link: '', overview: '', program: '', courseId: '' };
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
-      this.editorDirty = false;
-      this.formBaseline = JSON.stringify(this.portfolioSnapshot());
-      this.createPortofolio = true;
-    },
-
-    openEditPortfolio(item) {
-      this.editingId = item.id;
-      this.existingImages = [...(item.images || [])];
-      this.newForm = {
-        title: item.title || '',
-        description: item.description || '',
-        link: item.link || '',
-        overview: item.contentRaw || '',
-        program: item.program || '',
-        courseId: item.courseId || '',
-      };
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen', error: '' }];
-      this.editorDirty = false;
-      this.formBaseline = JSON.stringify(this.portfolioSnapshot());
-      this.createPortofolio = true;
-    },
-
-    closePortfolioModal() {
-      this.createPortofolio = false;
-      this.editingId = null;
-      this.existingImages = [];
-      this.editorDirty = false;
-    },
-
-    removeExistingImage(url) {
-      this.existingImages = this.existingImages.filter((item) => item !== url);
-    },
-
-    portfolioSnapshot() {
-      const f = this.newForm;
-      return {
-        title: f.title,
-        description: f.description,
-        link: f.link,
-        program: f.program,
-        images: this.existingImages,
-        files: this.imageUploads.filter((u) => u.file).map((u) => u.name),
-      };
-    },
-
-    portfolioFormTouched() {
-      if (this.editorDirty) return true;
-      return JSON.stringify(this.portfolioSnapshot()) !== this.formBaseline;
-    },
-
-    {{!-- Isi awal editor saat menyunting. Yang tersimpan JSON EditorJS; kalau
-         bentuknya bukan itu (mis. baris lama), editor dibiarkan kosong daripada
-         gagal memuat. --}}
-    editorInitialData() {
-      const raw = this.newForm.overview;
-      if (!raw) return undefined;
-      try {
-        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        return parsed && Array.isArray(parsed.blocks) ? parsed : undefined;
-      } catch (e) {
-        return undefined;
-      }
-    },
-
     askDeletePortfolio(item) {
       this.deleteTarget = item;
-    },
-
-    canSubmitPortfolio() {
-      const f = this.newForm;
-      if (!f.title.trim() || !f.courseId) return false;
-      if (!this.imageUploads.some((u) => u.file) && this.existingImages.length === 0) return false;
-      if (this.imageUploads.some((u) => u.error)) return false;
-      {{!-- Keterangan di bawah field link menjanjikan URL http/https; sebelum
-           ini tidak ada yang memeriksanya. --}}
-      if (f.link.trim() && !/^https?:\/\/\S+$/i.test(f.link.trim())) return false;
-      return true;
-    },
-    addImageRow() {
-      this.imageUploads.push({ id: Date.now(), file: null, name: 'No file chosen', error: '' });
-    },
-    async initOverviewEditor() {
-      // Destroy previous instance if exists (for re-open scenarios)
-      if (this.overviewEditorInstance) {
-        try { this.overviewEditorInstance.destroy(); } catch(e) {}
-        this.overviewEditorInstance = null;
-      }
-
-      // Wait for EditorJS library to load
-      let libAttempts = 0;
-      while (!window.EditorJS || !window.EditorTools) {
-        libAttempts++;
-        if (libAttempts > 30) {
-          console.error('[Portfolio] EditorJS library not loaded after 6s.');
-          this.fallbackOverviewTextarea();
-          return;
-        }
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-
-      // Wait for the holder element to be visible in the DOM
-      let domAttempts = 0;
-      const waitForVisible = () => new Promise((resolve, reject) => {
-        const check = () => {
-          domAttempts++;
-          const el = document.getElementById('overviewEditor');
-          if (el && el.offsetParent !== null) {
-            resolve(el);
-          } else if (domAttempts > 30) {
-            reject(new Error('overviewEditor element not visible after 6s'));
-          } else {
-            setTimeout(check, 200);
-          }
-        };
-        check();
-      });
-
-      try {
-        await waitForVisible();
-      } catch(e) {
-        console.error('[Portfolio]', e.message);
-        this.fallbackOverviewTextarea();
-        return;
-      }
-
-      // Clear holder innerHTML before re-init
-      const holder = document.getElementById('overviewEditor');
-      if (holder) holder.innerHTML = '';
-
-      try {
-        this.overviewEditorInstance = new window.EditorJS({
-          holder: 'overviewEditor',
-          placeholder: 'Enter your content here...',
-          data: this.editorInitialData(),
-          minHeight: 0,
-          onChange: () => { this.editorDirty = true; },
-          tools: {
-            header: {
-              class: window.EditorTools.Header,
-              inlineToolbar: ['link']
-            },
-            paragraph: {
-              class: window.EditorTools.Paragraph,
-              inlineToolbar: true
-            },
-            list: {
-              class: window.EditorTools.List,
-              inlineToolbar: true
-            },
-            marker: {
-              class: window.EditorTools.Marker,
-              shortcut: 'CMD+SHIFT+M'
-            },
-            image: {
-              class: window.EditorTools.ImageTool,
-              tunes: {
-                stretched: false,
-                withBorder: false,
-                withBackground: false
-              },
-              config: {
-                endpoints: {
-                  byFile: '/portfolio/upload-image',
-                  byUrl: '/portfolio/fetch-image'
-                }
-              }
-            },
-            linkTool: {
-              class: window.EditorTools.LinkTool,
-              config: {
-                endpoint: '/portfolio/fetch-link'
-              }
-            }
-          }
-        });
-        console.log('[Portfolio] Overview editor initialized successfully');
-      } catch (e) {
-        console.error('[Portfolio] Failed to initialize EditorJS:', e);
-        this.fallbackOverviewTextarea();
-      }
-    },
-    fallbackOverviewTextarea() {
-      const holder = document.getElementById('overviewEditor');
-      if (!holder) return;
-      if (holder.tagName.toLowerCase() === 'textarea') return;
-      
-      const ta = document.createElement('textarea');
-      ta.id = 'overviewEditor';
-      ta.rows = 8;
-      ta.placeholder = 'FALLBACK MODE: Enter your content here... (EditorJS failed to load)';
-      ta.value = this.newForm.overview || '';
-      ta.className = 'w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-inter text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm';
-      const self = this;
-      ta.addEventListener('input', function () { self.newForm.overview = ta.value; });
-      holder.replaceWith(ta);
-    },
-    async submitPortfolio() {
-      if (this.savingPortfolio) return;
-      if (!this.newForm.title.trim()) {
-        showErrorToast('Portfolio not saved', 'Give your portfolio a title first.');
-        return;
-      }
-
-      let overviewData = this.newForm.overview;
-      if (this.overviewEditorInstance) {
-        try {
-          const output = await this.overviewEditorInstance.save();
-          overviewData = JSON.stringify(output);
-        } catch (e) {
-          console.error('Failed to save editor content:', e);
-        }
-      }
-
-      const isEdit = !!this.editingId;
-      const formData = new FormData();
-      formData.append('title', this.newForm.title);
-      formData.append('description', this.newForm.description || '');
-      formData.append('link', this.newForm.link || '');
-      formData.append('content', overviewData);
-
-      let hasNewImage = false;
-      this.imageUploads.forEach(item => {
-        if (item.file) {
-          formData.append('image', item.file);
-          hasNewImage = true;
-        }
-      });
-
-      {{!-- Gambar lama yang dipertahankan dikirim terpisah dari berkas baru;
-           lihat catatan `keepImages` di portfolios.controller. --}}
-      if (isEdit) {
-        this.existingImages.forEach((url) => formData.append('keepImages', url));
-      }
-
-      if (!hasNewImage && this.existingImages.length === 0) {
-        showErrorToast(
-          'Portfolio not saved',
-          isEdit ? 'Keep at least one image, or upload a new one.' : 'Upload at least one image first.',
-        );
-        return;
-      }
-
-      const courseId = this.newForm.courseId;
-      if (!courseId) {
-        showErrorToast('Portfolio not saved', 'Choose which program this portfolio belongs to.');
-        return;
-      }
-
-      if (!isEdit) formData.append('courseId', courseId);
-
-      this.savingPortfolio = true;
-      try {
-        const response = await fetch(
-          isEdit ? `/portfolio/${this.editingId}/${courseId}` : '/portfolio/create',
-          {
-            method: isEdit ? 'PATCH' : 'POST',
-            body: formData,
-            headers: {
-              'Accept': 'application/json'
-            }
-          }
-        );
-        
-        const result = await response.json().catch(() => ({}));
-        
-        if (response.ok) {
-          {{!-- Halaman dimuat ulang supaya daftarnya benar-benar dari server,
-               jadi toast-nya dititipkan dulu dan ditampilkan sesudah muat. --}}
-          try {
-            sessionStorage.setItem('portfolioToast', JSON.stringify({
-              title: isEdit ? 'Portfolio updated' : 'Portfolio created',
-              description: isEdit ? 'Your changes have been saved.' : 'Your project is now in your portfolio list.',
-            }));
-          } catch (e) {}
-          window.location.href = window.location.pathname + '?tab=portfolio';
-        } else {
-          showErrorToast('Portfolio not saved', result.message || 'Please try again in a moment.');
-        }
-      } catch (err) {
-        console.error('Error saving portfolio:', err);
-        showErrorToast('Portfolio not saved', 'The request did not go through. Check your connection and try again.');
-      } finally {
-        this.savingPortfolio = false;
-      }
-    },
+    }
   }"
 >
   <!-- LIST PORTOFOLIO VIEW -->
   <div x-show="!showDetail" class="flex flex-col gap-7">
-    <div class="flex flex-col gap-1">
-      {{> components/ui/super_admin/page_header/index titleTag='h2' title=(t "test.myPortfolio.title") }}
-      {{> components/ui/super_admin/description/index
-        text=(t "test.myPortfolio.description")
-      }}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex flex-col gap-1">
+        {{> components/ui/super_admin/page_header/index titleTag='h2' title=(t "test.myPortfolio.title") }}
+        {{> components/ui/super_admin/description/index
+          text=(t "test.myPortfolio.description")
+        }}
+      </div>
+      <a
+        href="/portfolio/formCreate"
+        class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#003060] px-5 font-inter text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001f3f]"
+      >
+        <i class="fa-solid fa-plus text-xs"></i>
+        <span>{{t "test.myPortfolio.createPortfolio.createPortfolioButton"}}</span>
+      </a>
     </div>
 
     <div class="relative w-full">
@@ -636,6 +278,14 @@
 
       <!-- Action Buttons -->
       <div class="flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/portfolio/formCreate"
+          x-show="portfolios.length === 0"
+          class="h-11 px-6 rounded-lg bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none inline-flex items-center justify-center gap-2 transition-all"
+        >
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span>{{t "test.myPortfolio.createPortfolio.createPortfolioButton"}}</span>
+        </a>
         <button
           type="button"
           x-show="portfolios.length > 0"
@@ -770,14 +420,13 @@
               {{t "test.myPortfolio.detailButton"}}
             </button>
             <div class="flex items-center gap-2">
-              <button
-                type="button"
-                @click="openEditPortfolio(item)"
+              <a
+                :href="'/portfolio/formEdit/' + item.id"
                 class="h-11 flex-1 rounded-xl border border-[#D4D4D4] bg-white text-[#003060] font-inter font-medium text-sm leading-none flex items-center justify-center gap-2 transition-colors cursor-pointer hover:border-[#a3a3a3] hover:bg-[#F5F5F5]"
               >
                 <i class="fa-regular fa-pen-to-square text-xs"></i>
                 {{t "test.myPortfolio.editPortfolio.editPortfolio"}}
-              </button>
+              </a>
               <button
                 type="button"
                 @click="askDeletePortfolio(item)"
@@ -799,273 +448,6 @@
   <!-- DETAIL PORTOFOLIO VIEW -->
   <div x-show="showDetail" x-cloak style="display: none;" class="!mt-0">
     {{> user/sidebar_user_profile/my_portofolio/detail/index }}
-  </div>
-
-  <!-- POP UP CREATE PORTOFOLIO MODAL -->
-  <div 
-    x-cloak
-    style="display: none;"
-    x-show="createPortofolio" 
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    @keydown.escape.window="if (!portfolioFormTouched()) closePortfolioModal()"
-  >
-    <div 
-      id="overviewModal"
-      {{!-- Hanya menutup selama isiannya masih kosong: dulu satu klik di
-           luar modal membuang formulir yang sudah terisi tanpa bertanya. --}}
-      @click.away="if (!portfolioFormTouched()) closePortfolioModal()"
-      class="bg-white rounded-[24px] p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] font-inter relative"
-      style="color-scheme: light;"
-    >
-      <!-- Close Button (X) -->
-      <button
-        type="button"
-        @click="closePortfolioModal()"
-        class="absolute top-6 right-6 sm:top-8 sm:right-8 size-9 sm:size-10 rounded-full flex items-center justify-center text-[#718096] hover:text-[#003060] hover:bg-[#F4F7FC] transition-colors cursor-pointer group z-10"
-        aria-label="Close"
-      >
-        <i class="fa-solid fa-xmark text-xl transition-transform group-hover:scale-110"></i>
-      </button>
-
-      <!-- Title Header -->
-      <h2
-        class="font-inter font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8 pr-12"
-        x-text="editingId ? '{{t "test.myPortfolio.editPortfolio.editPortfolio"}}' : '{{t "test.myPortfolio.createPortfolio.createYourPortfolio"}}'"
-      >{{t "test.myPortfolio.createPortfolio.createYourPortfolio"}}</h2>
-
-      <!-- Form Grid (2 Columns on Desktop) -->
-      <form @submit.prevent="submitPortfolio()" class="space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          
-          <!-- LEFT COLUMN -->
-          <div class="space-y-6">
-            <!-- Portfolio Title -->
-            <div class="space-y-3">
-              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                {{t "test.myPortfolio.createPortfolio.portfolioTittle"}}<span class="text-red-500">*</span>
-              </label>
-              <input 
-                type="text" 
-                x-model="newForm.title"
-                placeholder="{{t "test.myPortfolio.createPortfolio.placeholderTittle"}}"
-                class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
-              >
-            </div>
-
-            <!-- Description -->
-            <div class="space-y-3">
-              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                {{t "test.myPortfolio.createPortfolio.description"}}
-              </label>
-              <textarea 
-                rows="4"
-                x-model="newForm.description"
-                placeholder="{{t "test.myPortfolio.createPortfolio.placeholderDescription"}}"
-                class="w-full bg-white rounded-[10px] border border-[#D4D4D4] p-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none hover:shadow-sm"
-              ></textarea>
-            </div>
-
-
-            <!-- Program Dropdown -->
-            <div class="space-y-3">
-              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                Program<span class="text-red-500">*</span>
-              </label>
-              {{!-- Saat menyunting, program tidak bisa dipindah: rute update
-                   tidak menyentuh courseId sama sekali. Ditampilkan terkunci
-                   dengan alasannya, bukan dropdown yang menjanjikan sesuatu
-                   yang tidak akan tersimpan. --}}
-              <template x-if="editingId">
-                <div>
-                  <div class="w-full h-[48px] bg-[#F5F5F5] rounded-[10px] border border-[#D4D4D4] px-4 flex items-center font-inter text-sm sm:text-base text-[#666666]" x-text="newForm.program || 'Program'"></div>
-                  <p class="font-inter font-normal text-xs text-[#666666] pt-1">
-                    {{t "test.myPortfolio.programLockedNote"}}
-                  </p>
-                </div>
-              </template>
-              <div x-show="!editingId" class="relative" @click.away="modalProgramOpen = false">
-                <button 
-                  type="button"
-                  @click="modalProgramOpen = !modalProgramOpen"
-                  class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 flex items-center justify-between font-inter text-sm sm:text-base text-black hover:shadow-sm cursor-pointer"
-                >
-                  <span x-text="newForm.program || '{{t "test.myPortfolio.selectProgram"}}'">{{t "test.myPortfolio.selectProgram"}}</span>
-                  <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060]" :class="modalProgramOpen ? 'rotate-180' : ''"></i>
-                </button>
-                <div 
-                  x-show="modalProgramOpen" 
-                  x-transition
-                  class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-[#E5E5E5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] py-2 z-30 font-inter text-sm sm:text-base text-black max-h-[200px] overflow-y-auto"
-                >
-                  <template x-for="uc in userCourses" :key="uc.course ? uc.course.id : uc.id">
-                    <button type="button" @click="newForm.program = (uc.course ? uc.course.name : uc.name); newForm.courseId = (uc.course ? uc.course.id : uc.id); modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors" x-text="uc.course ? uc.course.name : uc.name"></button>
-                  </template>
-                  <template x-if="!userCourses || userCourses.length === 0">
-                    <div class="px-4 py-2 text-[#A3A3A3] text-sm">{{t "test.myPortfolio.noProgramsEnrolled"}}</div>
-                  </template>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Link* -->
-            <div>
-              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060] mb-3">
-                {{t "test.myPortfolio.createPortfolio.link"}}
-              </label>
-              <input 
-                type="text" 
-                x-model="newForm.link"
-                placeholder="{{t "test.myPortfolio.createPortfolio.placeholderLink"}}"
-                class="w-full h-[48px] bg-white rounded-[10px] border border-[#D4D4D4] px-4 font-inter text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors hover:shadow-sm"
-              >
-              <p class="font-inter font-normal text-xs sm:text-sm text-[#666666] pt-1">
-                {{t "test.myPortfolio.createPortfolio.spanLink"}}
-              </p>
-            </div>
-          </div>
-
-          <!-- RIGHT COLUMN -->
-          <div class="space-y-6">
-
-            <!-- Project Overview -->
-            <div class="space-y-3">
-              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                {{t "test.myPortfolio.createPortfolio.overview"}}
-              </label>
-              <div 
-                id="overviewEditor"
-                x-ignore
-                class="w-full min-h-[100px] max-h-[100px] overflow-y-auto rounded-[10px] border border-[#D4D4D4] p-4 font-inter text-sm sm:text-base text-black bg-white focus-within:border-[#003060] transition-colors hover:shadow-sm max-w-none text-left"
-              ></div>
-            </div>
-
-            <!-- Upload Images* -->
-            <div class="space-y-3">
-              <label class="block font-inter font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
-                {{t "test.myPortfolio.createPortfolio.uploadImages"}}<span class="text-red-500">*</span>
-              </label>
-              
-              {{!-- Gambar yang sudah tersimpan. Yang dibuang di sini ikut
-                   hilang begitu disimpan; sisanya dikirim lewat keepImages. --}}
-              <template x-if="editingId && existingImages.length > 0">
-                <div class="mb-3 space-y-2">
-                  <template x-for="url in existingImages" :key="url">
-                    <div class="flex items-center gap-3 rounded-[10px] border border-[#D4D4D4] bg-white px-3 py-2">
-                      {{!-- Ikon di lapisan bawah, gambar menimpanya. Kalau
-                           URL-nya mati, gambarnya dibuang dan ikonnya yang
-                           terlihat - bukan kotak kosong. --}}
-                      <span class="relative grid h-10 w-16 shrink-0 place-items-center overflow-hidden rounded bg-[#F1F5F9] text-[#94A3B8]">
-                        <i class="fa-regular fa-image text-xs"></i>
-                        <img :src="url" alt="" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
-                      </span>
-                      <span class="min-w-0 flex-1 truncate font-inter text-xs text-[#676767]" x-text="url.split('/').pop()"></span>
-                      <button
-                        type="button"
-                        @click="removeExistingImage(url)"
-                        class="shrink-0 px-2 py-1 text-xs text-red-500 transition-colors hover:text-red-700"
-                        title="Remove this image"
-                      >
-                        <i class="fa-solid fa-trash-can"></i>
-                      </button>
-                    </div>
-                  </template>
-                </div>
-              </template>
-
-              <!-- Dynamic File Chooser Rows -->
-              <div class="space-y-3 max-h-[185px] overflow-y-auto p-1">
-                <template x-for="(upload, idx) in imageUploads" :key="upload.id">
-                  <div class="w-full h-[52px] rounded-[10px] border border-[#D4D4D4] px-3 flex items-center justify-between gap-3 bg-white hover:shadow-sm">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <label class="cursor-pointer bg-[#0B1F3B1A] hover:bg-slate-200 text-black font-inter font-medium text-sm px-4 py-2 rounded-[6px] transition-colors flex-shrink-0">
-                        {{t "test.myPortfolio.chooseFile"}}
-                        <input type="file" class="hidden" accept="image/*" @change="handleFile($event, idx)">
-                      </label>
-                      <span class="font-inter text-sm text-[#676767] truncate" x-text="upload.name === 'No file chosen' ? '{{t "test.myPortfolio.noFileChosen"}}' : upload.name">{{t "test.myPortfolio.noFileChosen"}}</span>
-                    </div>
-                    <!-- Remove row button if more than 1 -->
-                    <button 
-                      type="button" 
-                      x-show="imageUploads.length > 1" 
-                      @click="imageUploads.splice(idx, 1)" 
-                      class="text-red-500 hover:text-red-700 text-xs px-2 py-1 transition-colors"
-                      title="Remove image"
-                    >
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                  </div>
-                </template>
-              </div>
-
-              <!-- Allowed format subtitle -->
-              <p class="font-inter font-normal text-xs text-[#666666] pt-0.5">
-                {{t "test.myPortfolio.allowedImageFormat"}}
-              </p>
-              {{!-- Pesan ini muncul begitu berkas dipilih, bukan setelah
-                   unggahannya ditolak server. Syaratnya sama persis dengan
-                   @ValidateImage pada POST /portfolio/create. --}}
-              <template x-for="upload in imageUploads.filter(u => u.error)" :key="'err-' + upload.id">
-                <p class="flex items-start gap-1.5 font-inter text-xs text-[#dc2626]">
-                  <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                  <span x-text="upload.name + ': ' + upload.error"></span>
-                </p>
-              </template>
-
-              <!-- Dotted Add Image Box -->
-              <div 
-                @click="addImageRow()" 
-                class="w-full h-[52px] rounded-[10px] border border-dashed border-[#D4D4D4] flex items-center justify-center gap-2 cursor-pointer hover:bg-[#FAFAFA] text-[#666666] font-inter font-medium text-sm sm:text-base transition-colors mt-3"
-              >
-                <i class="fa-solid fa-plus text-xs"></i>
-                <span>{{t "test.myPortfolio.createPortfolio.addImage"}}</span>
-              </div>
-            </div>
-             <!-- ACTION BUTTONS ROW (SAVE & CANCEL) -->
-        <div class="flex items-center justify-center gap-4 pt-6">
-          <button 
-            type="submit"
-            :disabled="!canSubmitPortfolio() || savingPortfolio"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md disabled:pointer-events-none disabled:opacity-50"
-          >
-            <span x-text="savingPortfolio ? '{{t "test.myPortfolio.saving"}}' : (editingId ? '{{t "test.myPortfolio.saveChanges"}}' : '{{t "test.myPortfolio.save"}}')">{{t "test.myPortfolio.save"}}</span>
-          </button>
-          <button 
-            type="button"
-            @click="closePortfolioModal()"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] border border-[#003060] bg-white hover:bg-[#FAFAFA] text-[#003060] font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
-          >
-            {{t "test.myPortfolio.cancel"}}
-          </button>
-        </div>
-          </div>
-
-        </div>
-
-        {{!-- <!-- ACTION BUTTONS ROW (SAVE & CANCEL) -->
-        <div class="flex items-center justify-center gap-4 pt-6">
-          <button 
-            type="submit"
-            :disabled="!canSubmitPortfolio() || savingPortfolio"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md disabled:pointer-events-none disabled:opacity-50"
-          >
-            <span x-text="savingPortfolio ? '{{t "test.myPortfolio.saving"}}' : (editingId ? '{{t "test.myPortfolio.saveChanges"}}' : '{{t "test.myPortfolio.save"}}')">{{t "test.myPortfolio.save"}}</span>
-          </button>
-          <button 
-            type="button"
-            @click="closePortfolioModal()"
-            class="w-full max-w-[240px] h-[48px] rounded-[8px] border border-[#003060] bg-white hover:bg-[#FAFAFA] text-[#003060] font-inter font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
-          >
-            {{t "test.myPortfolio.cancel"}}
-          </button>
-        </div> --}}
-      </form>
-    </div>
   </div>
 
   {{!--
@@ -1125,64 +507,12 @@
 </div>
 
 <style>
-  #overviewModal {
-    color-scheme: light;
-  }
-
-  #overviewModal input,
-  #overviewModal textarea {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  #overviewModal input::placeholder,
-  #overviewModal textarea::placeholder {
-    color: #676767 !important;
-    opacity: 1;
-  }
-
-  #overviewEditor {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  #overviewEditor .codex-editor,
-  #overviewEditor .codex-editor__redactor,
-  #overviewEditor .ce-toolbar__content,
-  #overviewEditor .ce-block__content,
-  #overviewEditor .ce-inline-toolbar,
-  #overviewEditor .ce-toolbox,
-  #overviewEditor .ce-settings,
-  #overviewEditor .ce-conversion-toolbar {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-  }
-
-  #overviewEditor .ce-placeholder {
-    color: #676767 !important;
-  }
-
-  .codex-editor .ce-block__content,
-  .codex-editor .ce-toolbar__content {
-    max-width: 100% !important;
-    margin-left: 16px !important;
-    margin-right: auto !important;
-  }
-
-  #overviewEditor .codex-editor__redactor {
-    padding-left: 0 !important;
-    padding-bottom: 16px !important;
-    min-height: auto !important;
-  }
-
-  #overviewEditor img,
   #overviewDetail img {
     max-width: 300px;
     margin: auto;
     border-radius: 1rem;
   }
 
-  #overviewEditor h4,
   #overviewDetail h4 {
     margin-bottom: 0.5rem;
     font-size: 1.125rem;
@@ -1190,7 +520,6 @@
     font-weight: 600;
   }
 
-  #overviewEditor h5,
   #overviewDetail h5 {
     margin-bottom: 0.5rem;
     font-size: 1rem;
@@ -1198,7 +527,6 @@
     font-weight: 500;
   }
 
-  #overviewEditor h6,
   #overviewDetail h6 {
     margin-bottom: 0.5rem;
     font-size: 0.875rem;

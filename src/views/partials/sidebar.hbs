@@ -34,6 +34,57 @@
       const next = el.dataset.adminSidebar === 'expanded' ? 'collapsed' : 'expanded';
       el.dataset.adminSidebar = next;
       try { localStorage.setItem('admin-sidebar-open', next === 'expanded'); } catch (e) {}
+      if (next === 'collapsed') {
+        this._stashOpenDropdowns();
+      } else {
+        this._restoreHiddenDropdowns();
+      }
+    },
+
+    _stashOpenDropdowns() {
+      try {
+        if (this.activeDropdown) {
+          localStorage.setItem('sidebar-hidden-dropdown', this.activeDropdown);
+        } else {
+          localStorage.removeItem('sidebar-hidden-dropdown');
+        }
+        if (this.activeSubDropdown) {
+          localStorage.setItem('sidebar-hidden-sub-dropdown', this.activeSubDropdown);
+        } else {
+          localStorage.removeItem('sidebar-hidden-sub-dropdown');
+        }
+      } catch (e) {}
+      this.activeDropdown = null;
+      this.activeSubDropdown = null;
+      try {
+        localStorage.removeItem('activeDropdown');
+        localStorage.removeItem('activeSubDropdown');
+      } catch (e) {}
+    },
+
+    _restoreHiddenDropdowns() {
+      let d = null;
+      let s = null;
+      try {
+        d = localStorage.getItem('sidebar-hidden-dropdown');
+        s = localStorage.getItem('sidebar-hidden-sub-dropdown');
+        localStorage.removeItem('sidebar-hidden-dropdown');
+        localStorage.removeItem('sidebar-hidden-sub-dropdown');
+      } catch (e) {}
+      this.activeDropdown = d;
+      this.activeSubDropdown = s;
+      try {
+        if (d) {
+          localStorage.setItem('activeDropdown', d);
+        } else {
+          localStorage.removeItem('activeDropdown');
+        }
+        if (s) {
+          localStorage.setItem('activeSubDropdown', s);
+        } else {
+          localStorage.removeItem('activeSubDropdown');
+        }
+      } catch (e) {}
     },
 
     setActive(path) {
@@ -73,6 +124,12 @@
     },
 
     init() {
+      if (
+        document.documentElement.dataset.adminSidebar === 'collapsed' &&
+        (this.activeDropdown || this.activeSubDropdown)
+      ) {
+        this._stashOpenDropdowns();
+      }
       window.addEventListener('resize', () => {
         const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth < 1024;

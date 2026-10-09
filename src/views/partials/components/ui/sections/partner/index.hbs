@@ -4,6 +4,18 @@
   Satu pohon markup, base + lg. Data: categoryPartner[] (filter), partners[] ({ image, categoryPartner.category }).
   Hanya dipakai dashboard.hbs.
 --}}
+<script>
+  window.__partners = [
+    {{#each partners}}
+    {
+      id: {{{json this.id}}},
+      image: {{{json this.image}}},
+      category: {{{json this.categoryPartner.category}}}
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ];
+</script>
+
 <section class="relative w-full overflow-hidden bg-white py-16 font-inter lg:py-24">
   <div class="page-shell flex flex-col items-center">
 
@@ -14,7 +26,7 @@
       <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    <div class="mt-10 w-full lg:mt-14" x-data="{ activeTab: '{{default categoryPartner.[0].category 'Institutions'}}' }">
+    <div class="mt-10 w-full lg:mt-14" x-data="partnerGrid(window.__partners || [], '{{default categoryPartner.[0].category 'Institutions'}}')">
       <div class="flex flex-wrap items-center justify-center gap-3 lg:gap-5">
         {{#each categoryPartner}}
           {{> components/ui/button/tab_filter/index
@@ -22,24 +34,37 @@
               targetValue=this.category
               activeClass="bg-[#003060] text-white"
               inactiveClass="bg-transparent text-[#003060] hover:bg-[#003060]/5"
-              buttonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-sm lg:text-base px-5 py-2.5 lg:px-7 lg:py-3" }}
+              buttonClass="border-2 border-[#003060] rounded-full whitespace-nowrap text-sm lg:text-base px-5 py-2.5 lg:px-7 lg:py-3"
+              onClick=(concat "setTab('" this.category "')") }}
         {{/each}}
       </div>
 
-      {{!-- flex-wrap + justify-center: a short tab (or last row) stays centered, no left-hugging gap --}}
-      <div class="mt-10 flex flex-wrap justify-center gap-4 lg:mt-14 lg:gap-6 [&>*]:w-[calc((100%-1rem)/2)] [&>*]:sm:w-[calc((100%-2rem)/3)] [&>*]:lg:w-[calc((100%-4.5rem)/4)]">
-        {{#each partners}}
-          <div
-            x-show="activeTab === '{{this.categoryPartner.category}}'"
-            class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
-          >
-            <img src="{{this.image}}" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
-          </div>
-        {{else}}
-          <div class="flex aspect-[3/2] items-center justify-center rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
+      <div class="relative z-10 flex w-full flex-col gap-8">
+        <div class="mt-10 flex flex-wrap justify-center gap-4 lg:mt-14 lg:gap-6 [&>*]:w-[calc((100%-1rem)/2)] [&>*]:sm:w-[calc((100%-2rem)/3)] [&>*]:lg:w-[calc((100%-4.5rem)/4)]">
+          <template x-for="partner in visiblePartners" :key="partner.id">
+            <div
+              class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
+            >
+              <img :src="partner.image" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
+            </div>
+          </template>
+          <div x-show="visiblePartners.length === 0" class="flex aspect-[3/2] items-center justify-center rounded-xl bg-white/50 shadow-[0_0_4px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
             <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[70%] max-w-[70%] object-contain" />
           </div>
-        {{/each}}
+        </div>
+
+        {{> components/ui/nav/carousel_nav/index
+            count="dots"
+            index="active"
+            goTo="goTo"
+            goPrev="prev()"
+            goNext="next()"
+            btnClass="flex size-14 sm:size-16 lg:size-[78px] items-center justify-center rounded-[20px] border border-[#F3F4F6] bg-white text-[#6B7280] shadow-[0_4px_12px_rgba(0,0,0,0.03)] transition hover:border-gray-300 hover:text-[#111827] focus:outline-none"
+            iconClass="text-base text-[#6B7280]"
+            dotsClass="flex items-center gap-3"
+            activeDotClass="bg-[#111827]"
+            inactiveDotClass="bg-[#D1D5DB] hover:bg-gray-400"
+        }}
       </div>
     </div>
   </div>

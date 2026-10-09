@@ -1191,6 +1191,7 @@ export class CoursesService {
     search?: string;
     alphabet?: string;
     status?: string;
+    mentor?: string;
     page: number;
     limit: number;
     userId?: string; // kalau ada = admin, kalau tidak = super_admin
@@ -1208,6 +1209,15 @@ export class CoursesService {
       query
         .innerJoin('course.mentorings', 'm')
         .andWhere('m.userId = :userId', { userId: params.userId });
+    }
+
+    // Filter by mentor user id (super admin)
+    if (params.mentor) {
+      query
+        .innerJoin('course.mentorings', 'filterMentoring')
+        .andWhere('filterMentoring.userId = :mentorUserId', {
+          mentorUserId: params.mentor,
+        });
     }
 
     if (params.search) {

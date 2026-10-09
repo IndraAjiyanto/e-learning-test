@@ -25,13 +25,7 @@
             <span class="w-2 h-2 rounded-full bg-[#6EB6E5] shrink-0"></span>
             {{!-- Category / Program Name --}}
             <span class="font-['Montserrat',sans-serif] font-bold text-[12px] leading-[15px] uppercase tracking-wider text-[#0B1F3B]">
-              {{#if (eq course.checkPaid true)}}
-                {{default (t 'test.paidProgram.hero.paidProgramBadge') 'Paid Program'}}
-              {{else if (eq course.checkPaid false)}}
-                {{default (t 'test.paidProgram.hero.freeProgramBadge') 'Free Program'}}
-              {{else if course.checkPaid}}
-                {{default (t 'test.paidProgram.hero.paidProgramBadge') 'Paid Program'}}
-              {{else if category.name}}
+              {{#if category.name}}
                 {{nameByLang category lang}}
               {{else if course.group}}
                 {{course.group}}
@@ -63,13 +57,23 @@
         {{!-- Action CTA Group --}}
         <div class="flex flex-row flex-wrap items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
           {{!-- Button Primary --}}
-          <a
-            href="#pricing"
-            onclick="document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); return false;"
-            class="inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[184px] h-[51px] px-7 bg-[#003060] text-white font-inter font-bold text-base leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] hover:bg-[#002244] active:scale-[0.98] transition-all duration-200 cursor-pointer"
-          >
-            {{default (t 'test.paidProgram.hero.btnRegister') 'Daftar Sekarang'}}
-          </a>
+          {{#if regisClick}}
+            <button
+              type="button"
+              @click.prevent="{{regisClick}}"
+              class="inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[184px] h-[51px] px-7 bg-[#003060] text-white font-inter font-bold text-base leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] hover:bg-[#002244] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+            >
+              {{default (t 'test.paidProgram.hero.btnRegister') 'Daftar Sekarang'}}
+            </button>
+          {{else}}
+            <a
+              href="#pricing"
+              onclick="document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); return false;"
+              class="inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[184px] h-[51px] px-7 bg-[#003060] text-white font-inter font-bold text-base leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] hover:bg-[#002244] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+            >
+              {{default (t 'test.paidProgram.hero.btnRegister') 'Daftar Sekarang'}}
+            </a>
+          {{/if}}
 
           {{!-- Button Secondary --}}
           <a
@@ -184,12 +188,12 @@
       </div>
 
       {{!-- Hero Right Container (Visual Banner) --}}
-      <div class="w-full lg:flex-1 lg:max-w-[720px] xl:max-w-[823px] h-[280px] sm:h-[380px] lg:h-[460px] xl:h-[529px] rounded-[24px] overflow-hidden relative bg-[#F8F9FA] shadow-sm border border-[#E2E8F0]/60 flex items-center justify-center shrink-0 lg:shrink">
+      <div class="w-full lg:flex-1 lg:max-w-[720px] xl:max-w-[823px] rounded-[24px] overflow-hidden relative bg-[#F8F9FA] shadow-sm border border-[#E2E8F0]/60">
         <img
           src="{{#if course.image}}{{course.image}}{{else if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
           alt="{{#if course.name}}{{course.name}}{{else}}Program Visual{{/if}}"
           onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="w-full h-full object-cover object-center rounded-[24px]"
+          class="w-full h-auto object-contain object-center rounded-[24px]"
         />
       </div>
 

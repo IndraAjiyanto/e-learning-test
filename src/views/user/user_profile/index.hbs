@@ -14,6 +14,10 @@
 <script>
   window.userLogbooks = {{{json logbooks}}};
   window.userCourses = {{{json userWithCourses.userCourses}}};
+  window.portfolioCourseIds = {{{json portfolioCourseIds}}};
+  window.certificateCourseIds = {{{json certificateCourseIds}}};
+  window.hasBiodata = {{{json hasBiodata}}};
+  window.certificateTemplates = {{{json certificateTemplates}}};
   // Kapabilitas per program, dihitung server (courses/program-type.ts). Sisi
   // klien TIDAK menghitung ulang aturannya - kalau ia ikut menghitung, aturan
   // yang sama hidup di dua tempat dan akan berbeda suatu hari.
@@ -42,6 +46,10 @@
     openedCourses: {},
     activeCourseId: {{#if activeCourse}}'{{activeCourse.id}}'{{else}}null{{/if}},
     userCourses: window.userCourses || [],
+    portfolioCourseIds: window.portfolioCourseIds || [],
+    certificateCourseIds: window.certificateCourseIds || [],
+    hasBiodata: window.hasBiodata === true,
+    certificateTemplates: window.certificateTemplates || {},
     allLogbooks: window.userLogbooks || [],
     logbookSearchInput: '',
     logbookCurrentPage: 1,
@@ -74,6 +82,12 @@
         const url = new URL(window.location);
         if (status !== 'all') url.searchParams.set('status', status);
         else url.searchParams.delete('status');
+        history.replaceState({}, '', url);
+      }
+      if (section === 'certificate' && this.activeCourseId) {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', 'certificate');
+        url.searchParams.set('courseId', this.activeCourseId);
         history.replaceState({}, '', url);
       }
       window.dispatchEvent(new CustomEvent('section-changed', { detail: { section } }));
@@ -120,6 +134,23 @@
     get activeCourseName() {
       const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
       return found ? found.course.name : 'My Program';
+    },
+    get hasActiveCoursePortfolio() {
+      return this.portfolioCourseIds
+        .map((courseId) => String(courseId))
+        .includes(String(this.activeCourseId));
+    },
+    get hasActiveCourseCertificate() {
+      return this.certificateCourseIds
+        .map((courseId) => String(courseId))
+        .includes(String(this.activeCourseId));
+    },
+    get hasCertificateRequirements() {
+      return this.hasActiveCourseCertificate ||
+        (this.hasActiveCoursePortfolio && this.hasBiodata);
+    },
+    get activeCertificateTemplate() {
+      return this.certificateTemplates[this.activeCourseId] || 'bootcamp.html';
     },
     get filteredLogbooks() {
       if (!this.activeCourseId) return [];
@@ -535,6 +566,17 @@
             >
               {{t 'test.startLearning.joinGroup'}}
             </button>
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="activeSection === 'certificate' ? 'true' : 'false'"
+              @click="toggleActiveSection('certificate')"
+              class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'certificate' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+            >
+              <i class="ph ph-certificate text-base"></i>
+              {{t 'test.startLearning.certificate'}}
+            </button>
           </div>
         </div>
 
@@ -612,7 +654,7 @@
         </div>
 
         <!-- Join Group Class Tab Content -->
-        <div x-show="activeSection === 'group-class'"{{#unless (eq initialSection 'group-class')}} style="display:none"{{/unless}}>
+        <div x-show="activeSection === 'group-class'" class="max-w-[1334px] mx-auto w-full"{{#unless (eq initialSection 'group-class')}} style="display:none"{{/unless}}>
           {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index course=activeCourse }}
         </div>
 
@@ -622,63 +664,96 @@
         </div>
 
         <!-- Certificate Tab Content -->
-        {{!--
-          Panel ini dulu hanya ikon dan satu tombol unduh, tanpa menyebutkan
-          apakah sertifikatnya memang sudah bisa diambil. Sekarang keadaannya
-          disebut: kalau program sudah tuntas, tombolnya muncul; kalau belum,
-          dijelaskan syaratnya - bukan tombol unduh yang menjanjikan sesuatu
-          yang belum tentu ada.
-        --}}
-        <div x-show="activeSection === 'certificate'" class="mx-4 my-4 rounded-xl border border-[#E5E5E5] bg-white p-8 text-center shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] sm:mx-8 sm:my-6 sm:p-12">
-          <template x-if="!activeCourseId">
-            <div>
-              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
-                <i class="fas fa-award text-2xl"></i>
-              </span>
-              <p class="mx-auto max-w-sm font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateNoCourse'}}</p>
+        <div x-show="activeSection === 'certificate'" class="max-w-[1334px] mx-auto w-full my-4 sm:my-6">
+          <template x-if="!hasActiveCourseCertificate && !hasActiveCoursePortfolio">
+            <div class="w-full overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.18)]">
+              <div class="flex flex-col items-center px-5 py-12 text-center sm:px-8 sm:py-16">
+                <span class="grid size-16 place-items-center rounded-full bg-[#FFF7E6] text-[#B7791F]">
+                  <i class="ph ph-lock-key text-3xl"></i>
+                </span>
+                <p class="mt-5 font-inter text-xs font-bold uppercase tracking-[0.16em] text-[#8B6B1D]">{{t 'test.startLearning.certificate'}}</p>
+                <h2 class="mt-2 font-inter text-2xl font-bold text-[#003060]">{{t 'test.startLearning.certificatePortfolioRequiredTitle'}}</h2>
+                <p class="mx-auto mt-2 max-w-md font-inter text-sm leading-6 text-[#718096]">{{t 'test.startLearning.certificatePortfolioRequiredBody'}}</p>
+                <button
+                  type="button"
+                  @click="toggleActiveSection('course-portfolio')"
+                  class="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-5 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254A]"
+                >
+                  <i class="ph ph-briefcase text-base"></i>
+                  {{t 'test.startLearning.portfolio'}}
+                  <i class="ph ph-arrow-right text-base"></i>
+                </button>
+              </div>
             </div>
           </template>
 
-          {{#if activeCourseCompleted}}
-          <template x-if="activeCourseId">
-            <div>
-              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#f0fdf4] text-[#15803d]">
-                <i class="fas fa-award text-2xl"></i>
-              </span>
-              <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateReadyTitle'}}</h3>
-              <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
-              <a
-                :href="'/certificates/' + activeCourseId"
-                target="_blank"
-                rel="noopener"
-                class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
-              >
-                <i class="fa-solid fa-download text-xs"></i>
-                {{t 'test.startLearning.downloadCertificate'}}
-              </a>
+          <template x-if="hasActiveCoursePortfolio && !hasBiodata">
+            <div class="w-full overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.18)]">
+              <div class="flex flex-col items-center px-5 py-12 text-center sm:px-8 sm:py-16">
+                <span class="grid size-16 place-items-center rounded-full bg-[#FFF7E6] text-[#B7791F]">
+                  <i class="ph ph-lock-key text-3xl"></i>
+                </span>
+                <p class="mt-5 font-inter text-xs font-bold uppercase tracking-[0.16em] text-[#8B6B1D]">{{t 'test.startLearning.certificate'}}</p>
+                <h2 class="mt-2 font-inter text-2xl font-bold text-[#003060]">{{t 'test.startLearning.certificateBiodataRequiredTitle'}}</h2>
+                <p class="mx-auto mt-2 max-w-md font-inter text-sm leading-6 text-[#718096]">{{t 'test.startLearning.certificateBiodataRequiredBody'}}</p>
+                <button
+                  type="button"
+                  @click="toggleActiveSection('profile')"
+                  class="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-5 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254A]"
+                >
+                  <i class="ph ph-user-circle text-base"></i>
+                  {{t 'test.profile.personalInfo'}}
+                  <i class="ph ph-arrow-right text-base"></i>
+                </button>
+              </div>
             </div>
           </template>
 
-          {{/if}}
-          {{#unless activeCourseCompleted}}
-          <template x-if="activeCourseId">
-            <div>
-              <span class="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-[#F5F5F5] text-[#a3a3a3]">
-                <i class="fas fa-lock text-xl"></i>
-              </span>
-              <h3 class="font-inter text-lg font-bold text-[#171717]">{{t 'test.startLearning.certificateLockedTitle'}}</h3>
-              <p class="mx-auto mt-1.5 max-w-md font-inter text-sm text-[#737373]">{{t 'test.startLearning.certificateLockedBody'}}</p>
-              <button
-                type="button"
-                @click="toggleActiveSection('uiux')"
-                class="mt-5 inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-[18px] font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
-              >
-                {{t 'test.startLearning.tabSessions'}}
-                <i class="fa-solid fa-arrow-right text-xs"></i>
-              </button>
+          <template x-if="hasCertificateRequirements">
+          <div class="w-full overflow-hidden rounded-[24px] border border-[#D9E3EF] bg-white shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.25)]">
+            <div class="border-b border-[#E5EAF0] bg-[#F7FAFC] px-5 py-6 sm:px-8">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="font-inter text-xs font-bold uppercase tracking-[0.16em] text-[#6B86A5]">{{t 'test.startLearning.certificate'}}</p>
+                  <h2 class="mt-1 font-inter text-2xl font-bold text-[#003060]">{{t 'test.startLearning.certificateReadyTitle'}}</h2>
+                  <p class="mt-1 font-inter text-sm text-[#718096]" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
+                </div>
+                <span class="inline-flex w-fit items-center gap-2 rounded-full border border-[#B9E2C5] bg-[#F0FFF4] px-3 py-1.5 font-inter text-xs font-semibold text-[#287A3D]">
+                  <i class="ph ph-seal-check text-base"></i>
+                  {{t 'test.startLearning.certificate' }}
+                </span>
+              </div>
             </div>
+
+            <div class="grid gap-6 p-5 sm:p-8">
+              <div class="relative aspect-[1.414/1] overflow-hidden rounded-[12px] border border-[#D9E3EF] bg-[#E5E7EB] shadow-[0px_10px_24px_-12px_rgba(0,48,96,0.45)]">
+                <iframe
+                  :src="'/certificates/' + activeCourseId + '/preview'"
+                  title="Certificate preview"
+                  class="absolute inset-0 h-full w-full border-0"
+                ></iframe>
+              </div>
+
+              <div class="rounded-[16px] border border-[#E5EAF0] bg-[#F8FAFC] p-5 sm:p-6 flex flex-col items-center text-center">
+                <div class="mb-5 flex size-12 items-center justify-center rounded-[12px] bg-[#E4F1F7] text-[#003060]">
+                  <i class="ph ph-download-simple text-2xl"></i>
+                </div>
+                <h3 class="font-inter text-lg font-bold text-[#003060]">{{t 'test.startLearning.downloadCertificate'}}</h3>
+                <p class="mt-2 font-inter text-sm leading-6 text-[#718096] max-w-md" x-text="'{{t 'test.startLearning.certificateReadyBody'}}'.replace('%s', activeCourseName)"></p>
+                <a
+                  :href="'/certificates/' + activeCourseId + '/download'"
+                  target="_blank"
+                  rel="noopener"
+                  class="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-6 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254A]"
+                >
+                  <i class="ph ph-download-simple text-base"></i>
+                  {{t 'test.startLearning.downloadCertificate'}}
+                </a>
+                <p class="mt-3 text-center font-inter text-xs text-[#8A98A8]">PDF</p>
+              </div>
+            </div>
+          </div>
           </template>
-          {{/unless}}
         </div>
 
         <!-- Other Tabs Placeholder Content -->
