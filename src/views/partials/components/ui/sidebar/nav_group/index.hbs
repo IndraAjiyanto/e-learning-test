@@ -69,7 +69,7 @@
   <div
     x-show="{{#if (eq level 2)}}activeSubDropdown{{else}}activeDropdown{{/if}} === '{{key}}'"
     x-collapse
-    class="ml-[21px] pl-[12px] border-l border-[#D9D9D9] {{#if (eq level 2)}}space-y-[2px]{{else}}space-y-[4px]{{/if}}"
+    class="ml-[21px] pl-[12px] border-l border-[#D9D9D9] max-h-[224px] overflow-y-auto sidebar-scroll pr-1 {{#if (eq level 2)}}space-y-[2px]{{else}}space-y-[4px]{{/if}}"
   >
     {{> @partial-block}}
   </div>
