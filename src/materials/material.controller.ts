@@ -20,7 +20,10 @@ import { MaterialService } from './material.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import {
+  createMemoryConfig,
+  multerConfigMemoryOnly,
+} from 'src/common/config/multer.config';
 import { FileType } from 'src/entities/materials.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -29,14 +32,18 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
+import { GoogleSlidesService } from './google-slides.service';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('learning-material')
 export class MaterialController {
-  constructor(private readonly materialService: MaterialService) {}
+  constructor(
+    private readonly materialService: MaterialService,
+    private readonly googleSlidesService: GoogleSlidesService,
+  ) { }
 
   @Roles('admin')
   @Post('pdf/:sessionId')
@@ -69,20 +76,31 @@ export class MaterialController {
       );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create PDF material');
+      flashToastError(req, 'Failed to create material', error.message || 'Failed to create PDF material');
       res.redirect(`/session/${sessionId}`);
     }
   }
 
   @Roles('admin')
   @Post('ppt/:sessionId')
+  @UseInterceptors(
+    FileInterceptor(
+      'file',
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }) as any,
+    ),
+  )
   async createPpt(
     @Body() createMaterialDto: CreateMaterialDto,
     @Res() res: Response,
     @Param('sessionId') sessionId: string,
     @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     try {
+      if (!file) throw new Error('Please upload a PPT or PPTX file.');
+      const uploaded = await this.googleSlidesService.upload(file);
+      createMaterialDto.file = uploaded.url;
+      createMaterialDto.driveFileId = uploaded.fileId;
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'ppt';
 
@@ -94,8 +112,11 @@ export class MaterialController {
       );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      console.error('Error creating PPT material:', error);
-      req.flash('error', error.message || 'Failed to create PPT material');
+      console.error(
+        'Error creating PPT material:',
+        error instanceof Error ? error.message : error,
+      );
+      flashToastError(req, 'Failed to create material', error.message || 'Failed to create PPT material');
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -119,7 +140,7 @@ export class MaterialController {
       );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create video material');
+      flashToastError(req, 'Failed to create material', error.message || 'Failed to create video material');
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -304,28 +325,46 @@ export class MaterialController {
       flashToast(req, 'Changes Saved', 'The PDF material has been updated.');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update PDF material');
+      flashToastError(req, 'Failed to update material', error.message || 'Failed to update PDF material');
       res.redirect(`/session/${sessionId}`);
     }
   }
 
   @Roles('admin')
   @Patch('ppt/:id')
+  @UseInterceptors(
+    FileInterceptor(
+      'file',
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }) as any,
+    ),
+  )
   async updatePpt(
     @Param('id') id: string,
     @Body() updateMaterialDto: UpdateMaterialDto,
     @Req() req: Request,
     @Res() res: Response,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     const material = await this.materialService.findOne(id);
     const sessionId = material.session.id;
 
     try {
+      if (file) {
+        const uploaded = await this.googleSlidesService.upload(
+          file,
+          material.file,
+          material.driveFileId,
+        );
+        updateMaterialDto.file = uploaded.url;
+        updateMaterialDto.driveFileId = uploaded.fileId;
+      } else if (!updateMaterialDto.file) {
+        updateMaterialDto.file = material.file;
+      }
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The PPT material has been updated.');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update PPT material');
+      flashToastError(req, 'Failed to update material', error.message || 'Failed to update PPT material');
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -346,7 +385,7 @@ export class MaterialController {
       flashToast(req, 'Changes Saved', 'The video material has been updated.');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update video material');
+      flashToastError(req, 'Failed to update material', error.message || 'Failed to update video material');
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -368,7 +407,7 @@ export class MaterialController {
       );
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'failed delete materi');
+      flashToastError(req, 'Failed to delete material', error.message || 'Failed to delete material');
       res.redirect(`/session/${sessionId}`);
     }
   }

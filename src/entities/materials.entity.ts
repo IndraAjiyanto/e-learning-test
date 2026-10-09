@@ -22,6 +22,9 @@ export class Material {
   @Column()
   file: string;
 
+  @Column({ nullable: true })
+  driveFileId?: string;
+
   @Column({ type: 'enum', enum: ['video', 'pdf', 'ppt'] })
   fileType: FileType;
 

@@ -15,6 +15,10 @@ export class CreateMaterialDto {
   @IsString()
   file: string;
 
+  @IsOptional()
+  @IsString()
+  driveFileId?: string;
+
   @IsArray()
   slides: string[];
 

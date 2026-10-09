@@ -128,11 +128,12 @@
 
     {{> components/ui/admin/text/page-header
       title=(ternary editMode 'Edit Material' 'Add Material')
-      subtitle=(ternary editMode 'Update the material details for this session' 'Add a Google Slides material to this session')}}
+      subtitle=(ternary editMode 'Replace the PPT file; it will be updated in Google Slides' 'Upload a PPT file; it will be converted to Google Slides')}}
 
     <form
       {{#if editMode}}action='/learning-material/ppt/{{material.id}}?_method=PATCH'{{else}}action='/learning-material/ppt/{{sessionId}}'{{/if}}
       method='POST'
+      enctype='multipart/form-data'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
         ...adminFormGate(),
@@ -169,10 +170,7 @@
         },
         canSubmit() {
           if (!this.formValid) return false;
-          if (this.hasInput) {
-            return this.isValid;
-          }
-          return this.editMode;
+          return this.editMode || this.$refs.pptFile?.files?.length > 0;
         }
       }"
       x-init="recomputeFormValid()"
@@ -190,14 +188,9 @@
           }}
         {{/components/ui/admin/form/form-field}}
 
-        {{#> components/ui/admin/form/form-field label="Google Slides Link (Google Slides)*" for="file"}}
-          {{> components/ui/admin/form/text-input
-            type="url" id="file" name="file" required=true
-            placeholder="https://docs.google.com/presentation/d/.../embed"
-            value=material.file
-            onInput="validateLink($event.target.value)"
-          }}
-          <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>Paste the embed URL (src) from Publish to web</p>
+        {{#> components/ui/admin/form/form-field label=(ternary editMode 'Replace PPT/PPTX file (optional)' 'Upload PPT/PPTX file*') for="file"}}
+          <input x-ref="pptFile" type="file" id="file" name="file" accept=".ppt,.pptx" {{#unless editMode}}required{{/unless}} class="block w-full rounded-[6px] border border-[#D4D4D4] bg-white px-3 py-2 font-inter text-sm text-[#171717] file:mr-3 file:rounded file:border-0 file:bg-[#E8F1F8] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-[#003060]" />
+          <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>The uploaded file will be converted into a Google Slides presentation.</p>
         {{/components/ui/admin/form/form-field}}
 
         {{> components/ui/admin/material/material-info-box}}
