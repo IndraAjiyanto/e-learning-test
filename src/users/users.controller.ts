@@ -627,10 +627,10 @@ export class UsersController {
   ) {
     try {
       const user = await this.usersService.findOne(userId);
+      let oldProfile: string | null | undefined;
       if (profile) {
-        if (user.profile) {
-          await this.usersService.deleteFile(user.profile);
-        }
+        // Preserve existing profile to delete after successful DB update
+        oldProfile = user.profile ?? null;
         updateUserDto.profile = req.body.uploadedImageUrls?.[0];
       }
       // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
@@ -640,6 +640,10 @@ export class UsersController {
         updateUserDto.isVerified = `${updateUserDto.isVerified}` === 'true';
       }
       await this.usersService.update(userId, updateUserDto);
+      // Delete old profile image after successful DB update
+      if (oldProfile) {
+        await this.usersService.deleteFile(oldProfile);
+      }
       flashToast(
         req,
         'User Updated',
