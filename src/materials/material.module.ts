@@ -19,4 +19,3 @@ import { GoogleSlidesService } from './google-slides.service';
   exports: [MaterialService],
 })
 export class MaterialsModule {}
-

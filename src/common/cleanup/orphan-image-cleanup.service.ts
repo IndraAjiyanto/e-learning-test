@@ -70,8 +70,9 @@ export class OrphanImageCleanupService {
       try {
         await fs.unlink(absPath);
         this.logger.log(`Deleted orphan: ${url}`);
-      } catch (err) {
-        this.logger.warn(`Failed to delete ${url}: ${err.message}`);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.warn(`Failed to delete ${url}: ${message}`);
       }
     }
   }
@@ -83,7 +84,7 @@ export class OrphanImageCleanupService {
    * ponytail: satu query UNION sudah cukup, tidak perlu ORM per-tabel.
    */
   private async isReferenced(url: string, table: string, column: string) {
-    const result = await this.dataSource.query(
+    const result: unknown[] = await this.dataSource.query(
       `SELECT 1 FROM "${table}" WHERE "${column}"::text ILIKE $1 LIMIT 1`,
       [`%${url}%`],
     );
@@ -98,4 +99,3 @@ export class OrphanImageCleanupService {
     return false;
   }
 }
-

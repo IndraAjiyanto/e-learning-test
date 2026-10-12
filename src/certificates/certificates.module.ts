@@ -23,4 +23,3 @@ import { Portofolios } from 'src/entities/portofolios.entity';
   exports: [CertificatesService],
 })
 export class CertificatesModule {}
-

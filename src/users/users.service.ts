@@ -386,7 +386,9 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore if file doesn't exist
+    }
   }
 
   async remove(id: string) {
@@ -671,4 +673,3 @@ export class UsersService {
     return user;
   }
 }
-

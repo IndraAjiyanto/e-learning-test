@@ -40,4 +40,3 @@ export class Material {
   @Exclude()
   session: Session;
 }
-

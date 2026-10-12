@@ -307,4 +307,3 @@ export class CategoriesService {
     return { message: 'category successfully deleted' };
   }
 }
-

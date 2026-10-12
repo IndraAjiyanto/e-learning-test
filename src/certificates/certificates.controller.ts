@@ -25,11 +25,16 @@ export class CertificatesController {
         req.user.id,
       );
       return res.type('html').send(html);
-    } catch (error: any) {
-      return res
-        .status(error?.status ?? 500)
-        .type('text')
-        .send(error?.message || 'Certificate preview is not available.');
+    } catch (error: unknown) {
+      const status =
+        typeof error === 'object' && error && 'status' in error
+          ? Number(error.status) || 500
+          : 500;
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Certificate preview is not available.';
+      return res.status(status).type('text').send(message);
     }
   }
 
@@ -55,11 +60,16 @@ export class CertificatesController {
         `attachment; filename="certificate-${courseId}.pdf"`,
       );
       return res.type('application/pdf').send(pdf);
-    } catch (error: any) {
-      return res
-        .status(error?.status ?? 500)
-        .type('text')
-        .send(error?.message || 'Certificate download is not available.');
+    } catch (error: unknown) {
+      const status =
+        typeof error === 'object' && error && 'status' in error
+          ? Number(error.status) || 500
+          : 500;
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Certificate download is not available.';
+      return res.status(status).type('text').send(message);
     }
   }
 
@@ -109,4 +119,3 @@ export class CertificatesController {
     }
   }
 }
-

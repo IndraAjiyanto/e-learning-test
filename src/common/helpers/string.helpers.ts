@@ -74,7 +74,8 @@ export const stringHelpers = {
       return jsonStr;
     }
   },
-  default: (value: any, defaultValue: any) => value || defaultValue,
+  default: (value: unknown, defaultValue: unknown): unknown =>
+    value || defaultValue,
   // Melokalkan list record: setiap field yang berupa objek {id,en,ja} diubah jadi
   // string sesuai bahasa aktif. Dipakai agar data statis (program/FAQ) bisa
   // disimpan multibahasa lalu di-serialize sebagai JSON untuk Alpine.
@@ -198,4 +199,3 @@ export const stringHelpers = {
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 };
-

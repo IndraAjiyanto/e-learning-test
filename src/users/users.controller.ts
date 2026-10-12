@@ -443,8 +443,12 @@ export class UsersController {
     ];
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
-    const requestedCourseId = String(req.query.courseId || '');
-    let initialSection = String(req.query.tab || '') || 'dashboard';
+    const requestedCourseId =
+      typeof req.query.courseId === 'string' ? req.query.courseId : '';
+    let initialSection =
+      typeof req.query.tab === 'string' && req.query.tab
+        ? req.query.tab
+        : 'dashboard';
     const activeCourse =
       course.find((c) => c.id === requestedCourseId) ??
       (initialSection === 'certificate'
@@ -640,7 +644,8 @@ export class UsersController {
       if (profile) {
         // Preserve existing profile to delete after successful DB update
         oldProfile = user.profile ?? null;
-        updateUserDto.profile = req.body.uploadedImageUrls?.[0];
+        const body = req.body as { uploadedImageUrls?: string[] };
+        updateUserDto.profile = body.uploadedImageUrls?.[0];
       }
       // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
       // Belum ada global ValidationPipe, jadi coerce manual sebelum disimpan
@@ -823,4 +828,3 @@ export class UsersController {
     }
   }
 }
-

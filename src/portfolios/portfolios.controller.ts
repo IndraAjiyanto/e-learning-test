@@ -120,9 +120,14 @@ export class PortfoliosController {
       createPortfolioDto.contentHtml = html;
 
       const courseId =
-        createPortfolioDto.courseId || (req.params.courseId as string);
+        createPortfolioDto.courseId || String(req.params.courseId || '');
       createPortfolioDto.courseId = courseId;
-      createPortfolioDto.image = req.body.uploadedImageUrls;
+      const body = req.body as {
+        uploadedImageUrls?: string[];
+        from?: string;
+        fromCourse?: unknown;
+      };
+      createPortfolioDto.image = body.uploadedImageUrls || [];
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
@@ -138,29 +143,34 @@ export class PortfoliosController {
       }
 
       const isFromProfile =
-        req.body.from === 'portfolio' ||
+        body.from === 'portfolio' ||
         req.query.from === 'portfolio' ||
-        (!req.body.fromCourse && !req.params.courseId);
+        (!body.fromCourse && !req.params.courseId);
 
       req.flash('success', 'portofolios successfully upload');
       res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to upload portofolios';
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: err.message || 'Failed to upload portofolios',
+          message,
         });
       }
 
       flashToastError(
         req,
         'Upload failed',
-        err.message || 'The image could not be uploaded. Please try again.',
+        error instanceof Error
+          ? error.message
+          : 'The image could not be uploaded. Please try again.',
       );
+      const body = req.body as { from?: string; fromCourse?: unknown };
       const isFromProfile =
-        req.body.from === 'portfolio' ||
+        body.from === 'portfolio' ||
         req.query.from === 'portfolio' ||
-        (!req.body.fromCourse && !req.params.courseId);
+        (!body.fromCourse && !req.params.courseId);
       res.redirect(
         this.portfolioRedirectUrl(createPortfolioDto.courseId, isFromProfile),
       );
@@ -401,26 +411,26 @@ export class PortfoliosController {
         });
       }
 
+      const body = req.body as { from?: string };
       const isFromProfile =
-        req.body.from === 'portfolio' || req.query.from === 'portfolio';
+        body.from === 'portfolio' || req.query.from === 'portfolio';
 
       flashToast(req, 'Portfolio updated', 'Your changes have been saved.');
       return res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to update portfolio';
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: err.message || 'Failed to update portfolio',
+          message,
         });
       }
 
-      flashToastError(
-        req,
-        'Portfolio not saved',
-        err.message || 'Please try again in a moment.',
-      );
+      flashToastError(req, 'Portfolio not saved', message);
+      const body = req.body as { from?: string };
       const isFromProfile =
-        req.body.from === 'portfolio' || req.query.from === 'portfolio';
+        body.from === 'portfolio' || req.query.from === 'portfolio';
       return res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
     }
   }
@@ -482,4 +492,3 @@ export class PortfoliosController {
     }
   }
 }
-

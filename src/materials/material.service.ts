@@ -120,7 +120,9 @@ export class MaterialService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore if file doesn't exist
+    }
   }
 
   async update(id: string, updateMaterialDto: UpdateMaterialDto) {
@@ -150,4 +152,3 @@ export class MaterialService {
     return await this.materialRepository.remove(material);
   }
 }
-

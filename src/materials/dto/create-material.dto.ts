@@ -22,4 +22,3 @@ export class CreateMaterialDto {
   @IsUUID()
   sessionId: string;
 }
-

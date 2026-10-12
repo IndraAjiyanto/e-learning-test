@@ -155,4 +155,3 @@ export function certificateTemplateForCourse(
       return 'bootcamp.html';
   }
 }
-

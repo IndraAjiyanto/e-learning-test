@@ -93,7 +93,7 @@ export class MaterialController {
   @UseInterceptors(
     FileInterceptor(
       'file',
-      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }) as any,
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
     ),
   )
   async createPpt(
@@ -359,7 +359,7 @@ export class MaterialController {
   @UseInterceptors(
     FileInterceptor(
       'file',
-      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }) as any,
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
     ),
   )
   async updatePpt(
@@ -451,4 +451,3 @@ export class MaterialController {
     }
   }
 }
-

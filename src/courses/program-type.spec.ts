@@ -101,4 +101,3 @@ describe('program-type capabilities', () => {
     );
   });
 });
-

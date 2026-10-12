@@ -187,7 +187,9 @@ export class CoursesController {
       if (rawUrl) {
         title = new URL(rawUrl).hostname;
       }
-    } catch (_) {}
+    } catch {
+      // ignore invalid URL
+    }
 
     return res.json({
       success: 1,
