@@ -245,88 +245,25 @@ function editPortfolioForm() {
       { id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }
     ],
     loading: false,
-    editorInstance: null,
+    quillInstance: null,
 
     init() {
-      let isInitializing = false;
       const initEditor = () => {
-        if (isInitializing) return;
-        if (!window.EditorJS || !window.EditorTools) {
+        if (!window.QuillEditor) {
           setTimeout(initEditor, 100);
           return;
         }
-        isInitializing = true;
-        const holder = document.getElementById('portfolio_edit_editor');
-        if (holder) holder.innerHTML = '';
-
-        if (this.editorInstance && typeof this.editorInstance.destroy === 'function') {
-          try { this.editorInstance.destroy(); } catch (e) {}
-        }
-
-        let initialData = undefined;
+        let initialContent = '';
         try {
           const raw = JSON.parse(document.getElementById('portfolio_bootstrap_data').textContent);
-          if (raw && raw.content) {
-            let parsed = raw.content;
-            if (typeof parsed === 'string') {
-              try { parsed = JSON.parse(parsed); } catch (e) {}
-            }
-            if (parsed && typeof parsed === 'object' && Array.isArray(parsed.blocks)) {
-              initialData = parsed;
-            }
-          }
+          if (raw && raw.content) initialContent = raw.content;
         } catch (e) {}
 
-        try {
-          this.editorInstance = new window.EditorJS({
-            holder: 'portfolio_edit_editor',
-            placeholder: 'Enter your content here...',
-            data: initialData,
-            tools: {
-              header: {
-                class: window.EditorTools.Header,
-                inlineToolbar: ['link'],
-                config: {
-                  placeholder: 'Enter a heading...',
-                  levels: [1, 2, 3, 4, 5, 6],
-                  defaultLevel: 2
-                }
-              },
-              paragraph: {
-                class: window.EditorTools.Paragraph,
-                inlineToolbar: true
-              },
-              list: {
-                class: window.EditorTools.List,
-                inlineToolbar: true
-              },
-              marker: {
-                class: window.EditorTools.Marker,
-                shortcut: 'CMD+SHIFT+M'
-              },
-              image: {
-                class: window.EditorTools.ImageTool,
-                tunes: {
-                  stretched: false,
-                  withBorder: false,
-                  withBackground: false
-                },
-                config: {
-                  endpoints: {
-                    byFile: '/portfolio/upload-image',
-                    byUrl: '/program/fetch-image'
-                  }
-                }
-              },
-              linkTool: {
-                class: window.EditorTools.LinkTool,
-                config: { endpoint: '/program/fetch-link' }
-              }
-            }
-          });
-        } catch (err) {
-          console.error('[Portfolio] Failed to init EditorJS in edit mode:', err);
-        }
+        this.quillInstance = window.QuillEditor.create('portfolio_edit_editor', {
+          placeholder: 'Enter your content here...',
+          initialContent: initialContent,
+          uploadUrl: '/portfolio/upload-image'
+        });
       };
       initEditor();
     },
@@ -393,19 +330,17 @@ function editPortfolioForm() {
     async handleSubmit(e) {
       if (!this.canSubmit() || this.loading) return;
 
-      let editorData = null;
-      if (this.editorInstance && typeof this.editorInstance.save === 'function') {
-        try {
-          editorData = await this.editorInstance.save();
-        } catch (err) {
-          console.error('[Portfolio] EditorJS save error:', err);
-        }
+      let contentHtml = '';
+      if (this.quillInstance) {
+        contentHtml = this.quillInstance.getSemanticHTML
+          ? this.quillInstance.getSemanticHTML()
+          : this.quillInstance.root.innerHTML;
+        if (contentHtml === '<p><br></p>') contentHtml = '';
       }
 
-      const jsonContent = editorData ? JSON.stringify(editorData) : JSON.stringify({ time: Date.now(), blocks: [] });
       const contentInput = document.getElementById('portfolio_edit_content_input') || document.querySelector('input[name="content"]');
       if (contentInput) {
-        contentInput.value = jsonContent;
+        contentInput.value = contentHtml;
       }
 
       this.loading = true;

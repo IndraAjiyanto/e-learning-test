@@ -570,62 +570,69 @@ export class PortfoliosService {
     };
   }
 
+  // Memindahkan file gambar di dalam konten (baik HTML Quill maupun EditorJS JSON legacy)
+  // dari folder temp ke folder tujuan permanen
   ChangeImageEditorJS(
     isi: string,
     oldFolder: string,
     newFolder: string,
     deleteFileInFolder?: string,
   ): string {
-    // EditorJS memang mengirim JSON, tapi ada dua jalan yang bisa mengirim
-    // teks polos: textarea cadangan yang muncul saat EditorJS gagal dimuat,
-    // dan baris lama yang isinya bukan JSON EditorJS. `JSON.parse` tanpa
-    // penjaga membuat keduanya jadi 500, jadi teks polos dibungkus jadi satu
-    // blok paragraph - isinya tetap tersimpan dan bentuknya tetap valid.
-    const editorjsData = this.parseEditorJsContent(isi);
-
+    if (!isi) return isi;
+    const contentStr = String(isi).trim();
     const tempDir = path.join(process.cwd(), 'public' + oldFolder);
     const finalDir = path.join(process.cwd(), 'public' + newFolder);
-
-    // Folder tujuan harus dibuat lebih dulu. `public/` diabaikan git dan tidak
-    // ada yang membuatnya, jadi di mesin yang belum pernah menyimpan portfolio
-    // ber gambar di editor, `rename` ke sini gagal ENOENT - dan penjaga
-    // `existsSync(oldPath)` di bawah tidak menangkapnya, karena yang diperiksa
-    // hanya file sumber, bukan folder tujuan.
     fs.mkdirSync(finalDir, { recursive: true });
 
-    interface EditorJsImageBlock {
-      type: string;
-      data?: {
-        file?: {
-          url?: string;
-        };
-      };
-    }
-    (editorjsData.blocks as EditorJsImageBlock[]).forEach((block) => {
-      if (block.type === 'image' && block.data?.file?.url) {
-        const oldUrl = block.data.file.url;
+    const moveImageFile = (oldUrl: string): string => {
+      const fileName = oldUrl.split('/').pop() || '';
+      const oldPath = path.join(tempDir, fileName);
+      const newPath = path.join(finalDir, fileName);
 
-        const fileName = oldUrl.split('/').pop() || '';
-
-        const oldPath = path.join(tempDir, fileName);
-        const newPath = path.join(finalDir, fileName);
-
-        if (fs.existsSync(oldPath)) {
-          // `rename` lintas device (temp dan isi bisa berada di mount berbeda)
-          // melempar EXDEV; `copyFile` + `unlink` menyelesaikan pemindahan yang
-          // sama dan tidak menggagalkan penyimpanan portfolio.
-          try {
-            fs.renameSync(oldPath, newPath);
-          } catch (err: unknown) {
-            if ((err as { code?: string })?.code !== 'EXDEV') throw err;
-            fs.copyFileSync(oldPath, newPath);
-            fs.unlinkSync(oldPath);
-          }
+      if (fs.existsSync(oldPath)) {
+        try {
+          fs.renameSync(oldPath, newPath);
+        } catch (err: unknown) {
+          if ((err as { code?: string })?.code !== 'EXDEV') throw err;
+          fs.copyFileSync(oldPath, newPath);
+          fs.unlinkSync(oldPath);
         }
-
-        block.data.file.url = `${newFolder}/${fileName}`;
       }
-    });
+      return `${newFolder}/${fileName}`;
+    };
+
+    let result = contentStr;
+
+    // 1. Jika konten berupa HTML (dari Quill)
+    if (/<\/?[a-z][\s\S]*>/i.test(contentStr) || !contentStr.startsWith('{')) {
+      // Regex replace semua img src yang menuju ke oldFolder
+      const regex = new RegExp(`src=["'](${oldFolder.replace('/', '\\/')}[^"']+)["']`, 'gi');
+      result = contentStr.replace(regex, (match, url) => {
+        const newUrl = moveImageFile(url);
+        return `src="${newUrl}"`;
+      });
+    } else {
+      // 2. Konten berupa JSON legacy
+      try {
+        const editorjsData = this.parseEditorJsContent(contentStr);
+        interface EditorJsImageBlock {
+          type: string;
+          data?: {
+            file?: {
+              url?: string;
+            };
+          };
+        }
+        (editorjsData.blocks as EditorJsImageBlock[]).forEach((block) => {
+          if (block.type === 'image' && block.data?.file?.url) {
+            block.data.file.url = moveImageFile(block.data.file.url);
+          }
+        });
+        result = JSON.stringify(editorjsData);
+      } catch {
+        result = contentStr;
+      }
+    }
 
     if (deleteFileInFolder) {
       const deleteDir = path.join(process.cwd(), 'public' + deleteFileInFolder);
@@ -643,7 +650,7 @@ export class PortfoliosService {
       }
     }
 
-    return JSON.stringify(editorjsData);
+    return result;
   }
 
   async update(portfolioId: string, updatePortfolioDto: UpdatePortfolioDto) {
