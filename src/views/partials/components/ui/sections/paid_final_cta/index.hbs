@@ -35,7 +35,7 @@
       </span>
 
       {{!-- Start Your Career in [Course Name] Now (Montserrat 800 32px-42px #003060) --}}
-      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[42px] font-extrabold leading-[120%] tracking-tight text-[#003060]">
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[42px] font-extrabold leading-[1.3] text-[#003060] [text-wrap:balance]">
         {{default (t 'test.paidProgram.finalCta.titlePrefix') 'Start Your Career in'}} {{#if course.name}}{{course.name}}{{else if category.name}}{{nameByLang category lang}}{{else}}UI/UX{{/if}} {{default (t 'test.paidProgram.finalCta.titleSuffix') 'Now'}}
       </h2>
 
