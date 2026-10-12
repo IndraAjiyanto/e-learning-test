@@ -86,7 +86,7 @@ export class CourseFlowsService {
     return await this.courseFlowRepository.save(courseFlow);
   }
 
-  async remove(courseFlowId: string, courseId) {
+  async remove(courseFlowId: string, courseId: string) {
     const courseFlow = await this.findOne(courseFlowId);
     if (!courseFlow) {
       throw new NotFoundException('Flow Program not found');

@@ -28,7 +28,7 @@ export class QuestionsService {
     if (!quiz) {
       throw new NotFoundException('Quiz not found');
     }
-    const questions = await this.questionRepository.create({
+    const questions = this.questionRepository.create({
       questionText: createQuestionDto.questionText,
       image: createQuestionDto.image,
       quiz: quiz,
@@ -107,6 +107,8 @@ export class QuestionsService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 }

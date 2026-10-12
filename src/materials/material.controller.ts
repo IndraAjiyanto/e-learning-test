@@ -43,7 +43,7 @@ export class MaterialController {
   constructor(
     private readonly materialService: MaterialService,
     private readonly googleSlidesService: GoogleSlidesService,
-  ) { }
+  ) {}
 
   @Roles('admin')
   @Post('pdf/:sessionId')
@@ -65,7 +65,9 @@ export class MaterialController {
     @Req() req: Request,
   ) {
     try {
-      createMaterialDto.file = req.body.uploadedFileUrls?.[0];
+      createMaterialDto.file =
+        (req.body as { uploadedFileUrls?: string[] })?.uploadedFileUrls?.[0] ||
+        '';
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'pdf';
       await this.materialService.create(createMaterialDto);
@@ -75,8 +77,13 @@ export class MaterialController {
         'The new PDF material has been added to this session.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      flashToastError(req, 'Failed to create material', error.message || 'Failed to create PDF material');
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to create material',
+        err.message || 'Failed to create PDF material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -86,7 +93,7 @@ export class MaterialController {
   @UseInterceptors(
     FileInterceptor(
       'file',
-      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }) as any,
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
     ),
   )
   async createPpt(
@@ -111,12 +118,17 @@ export class MaterialController {
         'The new PPT material has been added to this session.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error(
         'Error creating PPT material:',
         error instanceof Error ? error.message : error,
       );
-      flashToastError(req, 'Failed to create material', error.message || 'Failed to create PPT material');
+      flashToastError(
+        req,
+        'Failed to create material',
+        err.message || 'Failed to create PPT material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -139,8 +151,13 @@ export class MaterialController {
         'The new video material has been added to this session.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      flashToastError(req, 'Failed to create material', error.message || 'Failed to create video material');
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to create material',
+        err.message || 'Failed to create video material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -149,7 +166,7 @@ export class MaterialController {
   @Get('formCreate/:id')
   async formCreate(
     @Param('id') id: string,
-    @Req() req: any,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     const materipdf = await this.materialService.findMaterialPdf(id);
@@ -280,7 +297,7 @@ export class MaterialController {
 
   @Roles('admin')
   @Get('formCreate/:jenis_file/:sessionId')
-  async formEditMateri(
+  formEditMateri(
     @Param('sessionId') sessionId: string,
     @Param('jenis_file') jenis_file: string,
     @Req() req: Request,
@@ -318,14 +335,21 @@ export class MaterialController {
     try {
       if (file) {
         await this.materialService.deleteFile(material.file);
-        updateMaterialDto.file = req.body.uploadedFileUrls?.[0];
+        updateMaterialDto.file =
+          (req.body as { uploadedFileUrls?: string[] })
+            ?.uploadedFileUrls?.[0] || '';
       }
 
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The PDF material has been updated.');
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      flashToastError(req, 'Failed to update material', error.message || 'Failed to update PDF material');
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to update material',
+        err.message || 'Failed to update PDF material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -335,7 +359,7 @@ export class MaterialController {
   @UseInterceptors(
     FileInterceptor(
       'file',
-      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }) as any,
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
     ),
   )
   async updatePpt(
@@ -363,8 +387,13 @@ export class MaterialController {
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The PPT material has been updated.');
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      flashToastError(req, 'Failed to update material', error.message || 'Failed to update PPT material');
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to update material',
+        err.message || 'Failed to update PPT material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -384,8 +413,13 @@ export class MaterialController {
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The video material has been updated.');
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      flashToastError(req, 'Failed to update material', error.message || 'Failed to update video material');
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to update material',
+        err.message || 'Failed to update video material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }
@@ -406,8 +440,13 @@ export class MaterialController {
         'The material has been permanently removed.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      flashToastError(req, 'Failed to delete material', error.message || 'Failed to delete material');
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to delete material',
+        err.message || 'Failed to delete material',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }

@@ -134,10 +134,12 @@ export function capabilitiesForCourse(
   };
 }
 
-export function certificateTemplateForCourse(course?: {
-  programType?: ProgramType | null;
-  courseType?: { type?: string | null } | null;
-} | null): CertificateTemplate {
+export function certificateTemplateForCourse(
+  course?: {
+    programType?: ProgramType | null;
+    courseType?: { type?: string | null } | null;
+  } | null,
+): CertificateTemplate {
   if (capabilitiesFor(course?.programType).structure === 'weeks') {
     return 'bootcamp.html';
   }

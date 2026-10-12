@@ -72,7 +72,9 @@ export class ApiPaymentController {
       });
     }
 
-    const patch: any = {};
+    const patch: Partial<
+      import('../entities/payment-settings.entity').PaymentSettings
+    > = {};
     if (typeof manualEnabled === 'boolean') {
       patch.manual_enabled = manualEnabled;
     }
@@ -108,7 +110,7 @@ export class ApiPaymentController {
       };
     },
     @Res() res: Response,
-    @Req() req: Request & { user?: any },
+    @Req() req: Request,
   ) {
     try {
       const { courseId, paymentMethod, promoCode, formData } = body;
@@ -178,12 +180,12 @@ export class ApiPaymentController {
         redirect_url: invoiceUrl,
         message: 'Mengalihkan ke halaman pembayaran Xendit...',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error('Xendit Order Error:', error);
       return res.status(400).json({
         status: 'error',
-        message:
-          error.message || 'Terjadi kesalahan saat memproses pembayaran.',
+        message: err.message || 'Terjadi kesalahan saat memproses pembayaran.',
       });
     }
   }
@@ -196,7 +198,7 @@ export class ApiPaymentController {
       month: number;
     },
     @Res() res: Response,
-    @Req() req: Request & { user?: any },
+    @Req() req: Request,
   ) {
     try {
       const userId = req.user?.id;
@@ -238,11 +240,12 @@ export class ApiPaymentController {
         redirect_url: orderData.xendit_invoice_url,
         message: 'Mengalihkan ke halaman pembayaran cicilan Xendit...',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error('Installment Month Payment Error:', error);
       return res.status(400).json({
         status: 'error',
-        message: error.message || 'Terjadi kesalahan saat bayar cicilan.',
+        message: err.message || 'Terjadi kesalahan saat bayar cicilan.',
       });
     }
   }

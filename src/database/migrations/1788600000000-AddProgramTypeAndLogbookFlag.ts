@@ -25,34 +25,34 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
   name = 'AddProgramTypeAndLogbookFlag1788600000000';
 
   public async up(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
+    const [table] = (await q.query(
       `SELECT to_regclass('public.course') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'course_program_type_enum'`,
-    );
+    )) as unknown[];
     if (!enumType) {
       await q.query(
         `CREATE TYPE "course_program_type_enum" AS ENUM('bootcamp', 'non_bootcamp', 'lpk')`,
       );
     }
 
-    const [programType] = await q.query(
+    const [programType] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'course' AND column_name = 'program_type'`,
-    );
+    )) as unknown[];
     if (!programType) {
       await q.query(
         `ALTER TABLE "course" ADD "program_type" "course_program_type_enum" NOT NULL DEFAULT 'bootcamp'`,
       );
     }
 
-    const [logbookEnabled] = await q.query(
+    const [logbookEnabled] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'course' AND column_name = 'logbook_enabled'`,
-    );
+    )) as unknown[];
     if (!logbookEnabled) {
       await q.query(
         `ALTER TABLE "course" ADD "logbook_enabled" boolean NOT NULL DEFAULT true`,
@@ -61,7 +61,7 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
 
     // FK tag: cari berdasarkan kolomnya, bukan namanya - nama constraint
     // dihasilkan TypeORM dan bisa berbeda antar environment.
-    const rows = await q.query(
+    const rows = (await q.query(
       `SELECT con.conname, con.confdeltype
          FROM pg_constraint con
          JOIN pg_class cl ON cl.oid = con.conrelid
@@ -70,7 +70,7 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
         WHERE cl.relname = 'course'
           AND con.contype = 'f'
           AND a.attname = 'courseTypeId'`,
-    );
+    )) as { conname: string; confdeltype: string }[];
     for (const row of rows) {
       if (row.confdeltype === 'n') continue; // sudah SET NULL
       await q.query(`ALTER TABLE "course" DROP CONSTRAINT "${row.conname}"`);
@@ -83,12 +83,12 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
+    const [table] = (await q.query(
       `SELECT to_regclass('public.course') IS NOT NULL AS has_table`,
-    );
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    const rows = await q.query(
+    const rows = (await q.query(
       `SELECT con.conname, con.confdeltype
          FROM pg_constraint con
          JOIN pg_class cl ON cl.oid = con.conrelid
@@ -97,7 +97,7 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
         WHERE cl.relname = 'course'
           AND con.contype = 'f'
           AND a.attname = 'courseTypeId'`,
-    );
+    )) as { conname: string; confdeltype: string }[];
     for (const row of rows) {
       if (row.confdeltype === 'c') continue;
       await q.query(`ALTER TABLE "course" DROP CONSTRAINT "${row.conname}"`);
@@ -108,25 +108,25 @@ export class AddProgramTypeAndLogbookFlag1788600000000 implements MigrationInter
       );
     }
 
-    const [logbookEnabled] = await q.query(
+    const [logbookEnabled] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'course' AND column_name = 'logbook_enabled'`,
-    );
+    )) as unknown[];
     if (logbookEnabled) {
       await q.query(`ALTER TABLE "course" DROP COLUMN "logbook_enabled"`);
     }
 
-    const [programType] = await q.query(
+    const [programType] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'course' AND column_name = 'program_type'`,
-    );
+    )) as unknown[];
     if (programType) {
       await q.query(`ALTER TABLE "course" DROP COLUMN "program_type"`);
     }
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'course_program_type_enum'`,
-    );
+    )) as unknown[];
     if (enumType) {
       await q.query(`DROP TYPE "course_program_type_enum"`);
     }

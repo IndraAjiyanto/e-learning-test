@@ -40,7 +40,7 @@ export class CourseTypesController {
         'The program type has been added successfully.',
       );
       res.redirect('/type-program');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'Program type failed to created');
       res.redirect('/type-program/formCreate');
     }
@@ -85,7 +85,7 @@ export class CourseTypesController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Req() req: Request, @Res() res: Response) {
+  formCreate(@Req() req: Request, @Res() res: Response) {
     res.render('super_admin/courseType/create', { user: req.user });
   }
 
@@ -111,7 +111,6 @@ export class CourseTypesController {
     @Res() res: Response,
   ) {
     try {
-      const courseType = await this.courseTypeService.findOne(courseTypeId);
       await this.courseTypeService.update(courseTypeId, updateJenisKelaDto);
       flashToast(
         req,
@@ -119,8 +118,9 @@ export class CourseTypesController {
         'The changes to this program type have been saved.',
       );
       res.redirect('/type-program');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Program type failed to updated');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Program type failed to updated');
       res.redirect('/type-program');
     }
   }
@@ -145,8 +145,9 @@ export class CourseTypesController {
         'The program type has been removed successfully.',
       );
       res.redirect('/type-program');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Program type failed to deleted');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Program type failed to deleted');
       res.redirect('/type-program');
     }
   }

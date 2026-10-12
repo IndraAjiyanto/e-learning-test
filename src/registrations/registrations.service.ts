@@ -49,7 +49,7 @@ export class RegistrationsService {
     if (check == false) {
       return false;
     } else {
-      const registration = await this.registrationRepository.create({
+      const registration = this.registrationRepository.create({
         ...createRegistrationDto,
         user: user,
         course: course,
@@ -80,7 +80,9 @@ export class RegistrationsService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async findAll() {
@@ -129,7 +131,7 @@ export class RegistrationsService {
       throw new BadRequestException('User already joined the program');
     }
 
-    const userCourses = await this.userCourseRepository.create({
+    const userCourses = this.userCourseRepository.create({
       progress: false,
       user: user,
       course: course,

@@ -38,7 +38,7 @@ export class UsersService {
     private readonly certificateRepository: Repository<Certificates>,
 
     private readonly emailService: EmailService,
-  ) { }
+  ) {}
 
   private async generateVerificationToken(user: User): Promise<string> {
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -386,7 +386,9 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) { }
+    } catch {
+      // ignore if file doesn't exist
+    }
   }
 
   async remove(id: string) {
@@ -438,7 +440,7 @@ export class UsersService {
         resetToken,
         user.username,
       );
-    } catch (error) {
+    } catch {
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
       await this.userRepository.save(user);

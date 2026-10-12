@@ -56,7 +56,9 @@ export class QuestionsController {
   ) {
     try {
       createQuestionDto.quizId = quizId;
-      createQuestionDto.image = req.body.uploadedImageUrls?.[0];
+      createQuestionDto.image = (
+        req.body as { uploadedImageUrls?: string[] }
+      )?.uploadedImageUrls?.[0];
 
       const questions = await this.questionsService.create(createQuestionDto);
       for (let i = 0; i < createQuestionDto.options.length; i++) {
@@ -73,11 +75,12 @@ export class QuestionsController {
         'The new question has been added to this quiz.',
       );
       return res.redirect(`/quiz/${quizId}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       flashToastError(
         req,
         'Failed to Create Question',
-        err.message || 'Unable to create question.',
+        (err instanceof Error ? err.message : null) ||
+          'Unable to create question.',
       );
       return res.redirect(`/quiz/${quizId}`);
     }
@@ -110,7 +113,7 @@ export class QuestionsController {
   async findQuestionsBySession(
     @Param('sessionId') sessionId: string,
     @Param('courseId') courseId: string,
-    @Req() req: any,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     const session = await this.sessionService.findOne(sessionId);
@@ -144,8 +147,13 @@ export class QuestionsController {
   ) {
     try {
       const questions = await this.questionsService.findOne(questionId);
-      if (req.body.uploadedImageUrls?.length) {
-        updateQuestionDto.image = req.body.uploadedImageUrls[0];
+      if (
+        (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls
+          ?.length
+      ) {
+        updateQuestionDto.image =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
         if (questions.image) {
           await this.questionsService.deleteFile(questions.image);
         }
@@ -157,11 +165,12 @@ export class QuestionsController {
         'The question information has been updated.',
       );
       res.redirect(`/quiz/${quizId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Failed to Update Question',
-        error.message || 'Unable to update question.',
+        (error instanceof Error ? error.message : null) ||
+          'Unable to update question.',
       );
       res.redirect(`/quiz/${quizId}`);
     }
@@ -187,11 +196,12 @@ export class QuestionsController {
         'The question has been permanently removed.',
       );
       res.redirect(`/quiz/${quizId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Failed to Delete Question',
-        error.message || 'Unable to delete question.',
+        (error instanceof Error ? error.message : null) ||
+          'Unable to delete question.',
       );
       res.redirect(`/quiz/${quizId}`);
     }

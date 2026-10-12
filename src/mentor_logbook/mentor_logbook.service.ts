@@ -34,7 +34,7 @@ export class MentorLogbookService {
     if (!session) {
       throw new Error('Session not found');
     }
-    const logbooks = await this.mentorLogbookRepository.create({
+    const logbooks = this.mentorLogbookRepository.create({
       ...createMentorLogbookDto,
       user: user,
       session: session,
@@ -72,8 +72,9 @@ export class MentorLogbookService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error: any) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(message);
     }
   }
 

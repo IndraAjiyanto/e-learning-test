@@ -13,7 +13,7 @@ export class VisionsService {
   ) {}
 
   async create(createVisionDto: CreateVisionsDto) {
-    const vision = await this.visionRepository.create(createVisionDto);
+    const vision = this.visionRepository.create(createVisionDto);
     return await this.visionRepository.save(vision);
   }
 

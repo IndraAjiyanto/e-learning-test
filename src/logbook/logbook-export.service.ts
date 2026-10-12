@@ -3,11 +3,29 @@ import * as ExcelJS from 'exceljs';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 
+interface LogbookExportItem {
+  proses?: string;
+  user?: { username?: string };
+  kegiatan?: string;
+  rincian_kegiatan?: string;
+  kendala?: string;
+  dokumentasi?: string;
+  dokumentasi_lain?: string;
+  pertemuan?: {
+    minggu?: {
+      kelas?: {
+        nama_kelas?: string;
+      };
+    };
+  };
+  createdAt?: Date | string;
+}
+
 @Injectable()
 export class LogbookExportService {
   private readonly publicDir = path.join(process.cwd(), 'public');
 
-  async exportLogbookToExcel(logbooks: any[]): Promise<Buffer> {
+  async exportLogbookToExcel(logbooks: LogbookExportItem[]): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Logbook');
 
@@ -61,7 +79,9 @@ export class LogbookExportService {
     return Buffer.from(await workbook.xlsx.writeBuffer());
   }
 
-  async exportLogbookMentorToExcel(logbooks: any[]): Promise<Buffer> {
+  async exportLogbookMentorToExcel(
+    logbooks: LogbookExportItem[],
+  ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Logbook Mentor');
 
@@ -107,10 +127,15 @@ export class LogbookExportService {
   private async embedImage(
     workbook: ExcelJS.Workbook,
     sheet: ExcelJS.Worksheet,
-    dokumentasiPath: string,
+    dokumentasiPath: string | undefined,
     rowNum: number,
     colNum: number,
   ): Promise<void> {
+    if (!dokumentasiPath) {
+      sheet.getCell(rowNum, colNum).value = '-';
+      return;
+    }
+
     const buffer = await this.getImageBuffer(dokumentasiPath);
     if (!buffer) {
       sheet.getCell(rowNum, colNum).value = '-';
@@ -119,13 +144,13 @@ export class LogbookExportService {
 
     const ext = this.getImageExtension(dokumentasiPath);
     const imageId = workbook.addImage({
-      buffer: buffer as any,
+      buffer: buffer as unknown as ExcelJS.Buffer,
       extension: ext,
     });
 
     // 3x4 cm at 96 DPI = 113x151 pixels
     sheet.addImage(imageId, {
-      tl: { col: colNum - 1, row: rowNum - 1 } as any,
+      tl: { col: colNum - 1, row: rowNum - 1 },
       ext: { width: 113, height: 120 },
     });
   }
@@ -158,7 +183,7 @@ export class LogbookExportService {
     headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
   }
 
-  private formatDate(date: Date | string): string {
+  private formatDate(date: Date | string | undefined): string {
     if (!date) return '-';
     return new Date(date).toLocaleDateString('id-ID', {
       year: 'numeric',

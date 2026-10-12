@@ -12,8 +12,7 @@ export class CourseTypesService {
     private readonly courseTypeRepository: Repository<CourseType>,
   ) {}
   async create(createJenisKelaDto: CreateCourseTypeDto) {
-    const courseType =
-      await this.courseTypeRepository.create(createJenisKelaDto);
+    const courseType = this.courseTypeRepository.create(createJenisKelaDto);
     return await this.courseTypeRepository.save(courseType);
   }
 

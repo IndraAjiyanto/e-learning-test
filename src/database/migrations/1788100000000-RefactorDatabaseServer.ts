@@ -46,9 +46,9 @@ export class RefactorDatabaseServer1788100000000 implements MigrationInterface {
     //  sehingga `migration:run` bisa dijalankan di environment mana pun
     //  tanpa perlu menyisipkan baris ke tabel `migrations` secara manual.
     // ======================================================================
-    const [probe] = await q.query(
+    const [probe] = (await q.query(
       `SELECT to_regclass('public.pertemuan') IS NOT NULL AS needs_refactor`,
-    );
+    )) as { needs_refactor: boolean }[];
     if (!probe.needs_refactor) {
       // Skema sudah berbentuk target: tidak ada yang perlu diubah.
       return;
@@ -1159,9 +1159,9 @@ export class RefactorDatabaseServer1788100000000 implements MigrationInterface {
     //  karena setelah up() sukses tabel itu sudah di-rename menjadi
     //  `session` - sama seperti pada database yang up()-nya no-op.
     // ======================================================================
-    const [probe] = await q.query(
+    const [probe] = (await q.query(
       `SELECT to_regclass('public._refactor_server_applied') IS NOT NULL AS was_applied`,
-    );
+    )) as { was_applied: boolean }[];
     if (!probe.was_applied) {
       // up() tadi no-op di database ini: tidak ada yang perlu dibalik.
       return;

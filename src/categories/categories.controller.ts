@@ -10,7 +10,6 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
-  BadRequestException,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
@@ -55,7 +54,7 @@ export class CategoriesController {
       const heroFile = files?.hero_section_image?.[0];
 
       if (iconFile && iconFile.size > 0) {
-        await this.categoriesService.validateImage(iconFile, {
+        this.categoriesService.validateImage(iconFile, {
           maxSize: 5 * 1024 * 1024,
           allowedTypes: [
             'image/jpeg',
@@ -66,7 +65,7 @@ export class CategoriesController {
         });
 
         if (!iconFile.mimetype.includes('svg')) {
-          await this.categoriesService.validateImageDimensions(iconFile, {
+          this.categoriesService.validateImageDimensions(iconFile, {
             minWidth: 1000,
             maxWidth: 2000,
             minHeight: 1000,
@@ -81,7 +80,7 @@ export class CategoriesController {
       }
 
       if (heroFile && heroFile.size > 0) {
-        await this.categoriesService.validateImage(heroFile, {
+        this.categoriesService.validateImage(heroFile, {
           maxSize: 5 * 1024 * 1024,
           allowedTypes: [
             'image/jpeg',
@@ -102,8 +101,9 @@ export class CategoriesController {
         'The new category has been added to Kesatria Academy.',
       );
       res.redirect('/category');
-    } catch (error: any) {
-      req.flash('error', error.message || 'category failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'category failed to create');
       res.redirect('/category');
     }
   }
@@ -289,7 +289,7 @@ export class CategoriesController {
       const heroFile = files?.hero_section_image?.[0];
 
       if (iconFile && iconFile.size > 0) {
-        await this.categoriesService.validateImage(iconFile, {
+        this.categoriesService.validateImage(iconFile, {
           maxSize: 5 * 1024 * 1024,
           allowedTypes: [
             'image/jpeg',
@@ -300,7 +300,7 @@ export class CategoriesController {
         });
 
         if (!iconFile.mimetype.includes('svg')) {
-          await this.categoriesService.validateImageDimensions(iconFile, {
+          this.categoriesService.validateImageDimensions(iconFile, {
             minWidth: 1000,
             maxWidth: 2000,
             minHeight: 1000,
@@ -319,7 +319,7 @@ export class CategoriesController {
       }
 
       if (heroFile && heroFile.size > 0) {
-        await this.categoriesService.validateImage(heroFile, {
+        this.categoriesService.validateImage(heroFile, {
           maxSize: 5 * 1024 * 1024,
           allowedTypes: [
             'image/jpeg',
@@ -344,9 +344,10 @@ export class CategoriesController {
         'The category information has been updated.',
       );
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.log(error);
-      req.flash('error', error.message || 'category failed to update');
+      req.flash('error', err.message || 'category failed to update');
       res.redirect('/category/' + categoryId);
     }
   }
@@ -371,8 +372,9 @@ export class CategoriesController {
         'The category has been permanently removed.',
       );
       res.redirect('/category');
-    } catch (error: any) {
-      const errorMessage = error.message || 'category failed to delete';
+    } catch (error: unknown) {
+      const err = error as Error;
+      const errorMessage = err.message || 'category failed to delete';
       flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
       req.flash('error', errorMessage);
       res.redirect('/category');

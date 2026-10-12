@@ -41,8 +41,9 @@ export class CommitmentController {
         'The commitment has been added successfully.',
       );
       res.redirect('/commitment');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create commitment');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create commitment');
       res.redirect('/commitment/formCreate');
     }
   }
@@ -78,8 +79,9 @@ export class CommitmentController {
         commitment,
         error: req.flash('error'),
       };
-    } catch (error: any) {
-      req.flash('error', error.message || 'Commitment not found');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Commitment not found');
       return { redirect: '/commitment' };
     }
   }
@@ -99,8 +101,9 @@ export class CommitmentController {
         'The changes to this commitment have been saved.',
       );
       res.redirect('/commitment');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update commitment');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to update commitment');
       res.redirect(`/commitment/formEdit/${id}`);
     }
   }
@@ -119,8 +122,9 @@ export class CommitmentController {
         'The commitment has been removed successfully.',
       );
       res.redirect('/commitment');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete commitment');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete commitment');
       res.redirect('/commitment');
     }
   }

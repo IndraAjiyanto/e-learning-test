@@ -42,8 +42,9 @@ export class ValueController {
         'The value has been added successfully.',
       );
       res.redirect('/value');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create value');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create value');
       res.redirect('/value');
     }
   }
@@ -57,7 +58,7 @@ export class ValueController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/value/create', { user: req.user });
   }
 
@@ -88,8 +89,9 @@ export class ValueController {
         'The changes to this value have been saved.',
       );
       res.redirect('/value');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update value');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to update value');
       res.redirect('/value');
     }
   }
@@ -114,8 +116,9 @@ export class ValueController {
         'The value has been removed successfully.',
       );
       res.redirect('/value');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete value');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete value');
       res.redirect('/value');
     }
   }

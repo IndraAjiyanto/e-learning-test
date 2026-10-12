@@ -219,15 +219,19 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     name: 'attendance-create',
     method: 'POST',
     match: /^\/attendance\/(?<sessionId>[^/]+)\/[^/]+\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) =>
-      ids.courseId ? { courseId: ids.courseId, label: 'Absensi' } : null,
+    resolve: (ids) =>
+      Promise.resolve(
+        ids.courseId ? { courseId: ids.courseId, label: 'Absensi' } : null,
+      ),
   },
   {
     name: 'questions-quiz',
     method: 'GET',
     match: /^\/question\/quiz\/[^/]+\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) =>
-      ids.courseId ? { courseId: ids.courseId, label: 'Quiz' } : null,
+    resolve: (ids) =>
+      Promise.resolve(
+        ids.courseId ? { courseId: ids.courseId, label: 'Quiz' } : null,
+      ),
   },
   {
     name: 'program-session-detail',
@@ -240,10 +244,12 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     method: 'GET',
     match:
       /^\/program\/(?:program\/detail\/|detail\/)?(?<courseId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i,
-    resolve: async (ids) =>
-      ids.courseId
-        ? { courseId: ids.courseId, label: 'Melihat Program' }
-        : null,
+    resolve: (ids) =>
+      Promise.resolve(
+        ids.courseId
+          ? { courseId: ids.courseId, label: 'Melihat Program' }
+          : null,
+      ),
   },
   {
     name: 'program-session',
@@ -281,15 +287,19 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     name: 'logbook-user',
     method: 'GET',
     match: /^\/logbooks\/user\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) =>
-      ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null,
+    resolve: (ids) =>
+      Promise.resolve(
+        ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null,
+      ),
   },
   {
     name: 'logbook-formCreate',
     method: 'GET',
     match: /^\/logbooks\/formCreate\/[^/]+\/(?<courseId>[^/]+)$/,
-    resolve: async (ids) =>
-      ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null,
+    resolve: (ids) =>
+      Promise.resolve(
+        ids.courseId ? { courseId: ids.courseId, label: 'Logbook' } : null,
+      ),
   },
   {
     name: 'logbook-formEdit',
@@ -332,7 +342,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
 
       const byQuery = req.query?.courseId;
       const courseId = Array.isArray(byQuery) ? byQuery[0] : byQuery;
-      const user = (req as any).user;
+      const user = req.user;
       if (typeof courseId === 'string' && courseId) {
         return { courseId, label: 'Belajar' };
       }

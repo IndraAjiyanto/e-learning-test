@@ -59,8 +59,9 @@ export class AnswerTasksController {
         'Your answer has been sent and is waiting for review.',
       );
       res.redirect(`/answer-assigment/${sessionId}/${assignmentId}`);
-    } catch (error: any) {
-      const message = error.message || 'submission unsuccess send';
+    } catch (error: unknown) {
+      const err = error as Error;
+      const message = err.message || 'submission unsuccess send';
       if (wantsJson) {
         return res.status(400).json({ success: false, message });
       }
@@ -167,8 +168,9 @@ export class AnswerTasksController {
           `/answer-assigment/${assignments.session.id}/${assignments.id}`,
         );
       }
-    } catch (error: any) {
-      const message = error.message || 'Update answer unsuccessfully';
+    } catch (error: unknown) {
+      const err = error as Error;
+      const message = err.message || 'Update answer unsuccessfully';
       if (wantsJson) {
         return res.status(400).json({ success: false, message });
       }

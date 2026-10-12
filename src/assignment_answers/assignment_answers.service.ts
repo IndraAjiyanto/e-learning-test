@@ -32,7 +32,7 @@ export class AnswerTasksService {
     if (!assignments) {
       throw new NotFoundException('assignments Not found');
     }
-    const taskAnswers = await this.assignmentAnswerRepository.create({
+    const taskAnswers = this.assignmentAnswerRepository.create({
       file: createAssignmentAnswerDto.file,
       process: createAssignmentAnswerDto.process,
       user: user,
@@ -48,7 +48,7 @@ export class AnswerTasksService {
     if (!answersTask) {
       throw new NotFoundException('answer not found');
     }
-    const comment = await this.commentRepository.create({
+    const comment = this.commentRepository.create({
       comment: commentText,
       answer_task: answersTask,
     });

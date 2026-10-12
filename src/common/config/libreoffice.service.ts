@@ -59,11 +59,11 @@ export class LibreOfficeService {
         env: { ...process.env, HOME: '/tmp' },
       });
 
-      proc.stdout.on('data', (data) => {
+      proc.stdout.on('data', (data: Buffer) => {
         console.log('[LibreOffice stdout]', data.toString());
       });
 
-      proc.stderr.on('data', (data) => {
+      proc.stderr.on('data', (data: Buffer) => {
         console.error('[LibreOffice stderr]', data.toString());
       });
 
@@ -101,10 +101,10 @@ export class LibreOfficeService {
     await new Promise<void>((resolve, reject) => {
       const proc = spawn('pdftoppm', cmdArgs);
 
-      proc.stdout.on('data', (data) =>
+      proc.stdout.on('data', (data: Buffer) =>
         console.log('[pdftoppm stdout]', data.toString()),
       );
-      proc.stderr.on('data', (data) =>
+      proc.stderr.on('data', (data: Buffer) =>
         console.error('[pdftoppm stderr]', data.toString()),
       );
 
@@ -178,7 +178,9 @@ export class LibreOfficeService {
         } finally {
           try {
             await fs.unlink(slidePath);
-          } catch (_) {}
+          } catch {
+            // ignore
+          }
         }
       });
 
@@ -195,7 +197,8 @@ export class LibreOfficeService {
       return { pptUrl: pptUpload.secure_url, slideUrls };
     } catch (err) {
       console.error('Convert and upload failed:', err);
-      throw new Error(`Failed to convert and upload PPT: ${err.message}`);
+      const error = err as Error;
+      throw new Error(`Failed to convert and upload PPT: ${error.message}`);
     }
   }
 }

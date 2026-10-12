@@ -12,11 +12,14 @@ export class SessionSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: User, done: CallableFunction) {
+  serializeUser(user: User, done: (err: Error | null, id?: unknown) => void) {
     done(null, user.id);
   }
 
-  async deserializeUser(userId: any, done: CallableFunction) {
+  async deserializeUser(
+    userId: unknown,
+    done: (err: Error | null, user?: User | null) => void,
+  ) {
     const id = String(userId);
     if (!id || !UUID_REGEX.test(id)) {
       return done(null, null);

@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 
 @Controller('certificates')
 export class CertificatesController {
-  constructor(private readonly certificatesService: CertificatesService) { }
+  constructor(private readonly certificatesService: CertificatesService) {}
 
   @Roles('user')
   @Get(':courseId/preview')
@@ -25,11 +25,16 @@ export class CertificatesController {
         req.user.id,
       );
       return res.type('html').send(html);
-    } catch (error: any) {
-      return res
-        .status(error?.status ?? 500)
-        .type('text')
-        .send(error?.message || 'Certificate preview is not available.');
+    } catch (error: unknown) {
+      const status =
+        typeof error === 'object' && error && 'status' in error
+          ? Number(error.status) || 500
+          : 500;
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Certificate preview is not available.';
+      return res.status(status).type('text').send(message);
     }
   }
 
@@ -55,11 +60,16 @@ export class CertificatesController {
         `attachment; filename="certificate-${courseId}.pdf"`,
       );
       return res.type('application/pdf').send(pdf);
-    } catch (error: any) {
-      return res
-        .status(error?.status ?? 500)
-        .type('text')
-        .send(error?.message || 'Certificate download is not available.');
+    } catch (error: unknown) {
+      const status =
+        typeof error === 'object' && error && 'status' in error
+          ? Number(error.status) || 500
+          : 500;
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Certificate download is not available.';
+      return res.status(status).type('text').send(message);
     }
   }
 
@@ -95,12 +105,15 @@ export class CertificatesController {
       }
 
       return res.redirect(certificate.certificate);
-    } catch (error: any) {
-      console.error('Gagal membuat sertifikat:', error?.message ?? error);
+    } catch (error: unknown) {
+      console.error(
+        'Gagal membuat sertifikat:',
+        error instanceof Error ? error.message : error,
+      );
       req.flash(
         'error',
-        error?.message ||
-        'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
+        (error instanceof Error ? error.message : null) ||
+          'Sertifikat gagal dibuat. Hubungi admin bila berlanjut.',
       );
       return res.redirect('/users/profile?tab=certificate');
     }

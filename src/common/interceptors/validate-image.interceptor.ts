@@ -89,7 +89,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
           options.minHeight &&
           options.maxHeight
         ) {
-          await this.uploadService.validateImageDimensions(file, {
+          this.uploadService.validateImageDimensions(file, {
             minWidth: options.minWidth,
             maxWidth: options.maxWidth,
             minHeight: options.minHeight,
@@ -133,9 +133,12 @@ export class ValidateImageInterceptor implements NestInterceptor {
         }
       }
 
-      request.body.uploadedImageUrls = uploadResults;
+      (request.body as { uploadedImageUrls?: string[] }).uploadedImageUrls =
+        uploadResults;
     } catch (err) {
-      throw new BadRequestException(err.message);
+      throw new BadRequestException(
+        err instanceof Error ? err.message : 'Image upload error',
+      );
     }
 
     return next.handle();

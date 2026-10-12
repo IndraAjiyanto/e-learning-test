@@ -39,7 +39,7 @@ export class MissionController {
         'The misi statement has been added successfully.',
       );
       res.redirect('/mission');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'missions failed to create');
       res.redirect('/mission');
     }
@@ -85,7 +85,7 @@ export class MissionController {
         'The changes to this misi statement have been saved.',
       );
       res.redirect('/mission');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'missions failed to update');
       res.redirect('/mission');
     }
@@ -106,7 +106,7 @@ export class MissionController {
         'The misi statement has been removed successfully.',
       );
       res.redirect('/mission');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'missions failed to delete');
       res.redirect('/mission');
     }

@@ -22,7 +22,7 @@ export class ParticipantsService {
     if (!course) {
       throw new NotFoundException('Program not found');
     }
-    const participants = await this.participantsRepository.create({
+    const participants = this.participantsRepository.create({
       ...createParticipantsDto,
       course: course,
     });

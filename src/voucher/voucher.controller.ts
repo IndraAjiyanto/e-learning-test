@@ -81,13 +81,14 @@ export class VoucherController {
         'The voucher has been issued successfully.',
       );
       res.redirect('/voucher');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string; detail?: string };
       console.error(
         'CREATE VOUCHER ERROR:',
-        error.message,
-        error.detail || error,
+        err?.message,
+        err?.detail || error,
       );
-      req.flash('error', error.message || 'Voucher gagal dibuat');
+      req.flash('error', err?.message || 'Voucher gagal dibuat');
       res.redirect('/voucher/formCreate');
     }
   }
@@ -112,8 +113,9 @@ export class VoucherController {
         users,
         error: req.flash('error')[0],
       });
-    } catch (error: any) {
-      req.flash('error', error.message || 'Voucher tidak ditemukan');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Voucher tidak ditemukan');
       res.redirect('/voucher');
     }
   }
@@ -137,8 +139,9 @@ export class VoucherController {
         'The changes to this voucher have been saved.',
       );
       res.redirect('/voucher');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Voucher gagal diperbarui');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Voucher gagal diperbarui');
       res.redirect(`/voucher/formEdit/${id}`);
     }
   }
@@ -161,8 +164,9 @@ export class VoucherController {
         'The voucher has been removed successfully.',
       );
       res.redirect('/voucher');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Voucher gagal dihapus');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Voucher gagal dihapus');
       res.redirect('/voucher');
     }
   }

@@ -4,24 +4,24 @@ export class AddAlumniRating1790400000000 implements MigrationInterface {
   name = 'AddAlumniRating1790400000000';
 
   public async up(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
-      `SELECT to_regclass('public.alumni') IS NOT NULL AS has_table`,
-    );
+    const [table] = (await q.query(
+      `SELECT to_regclass(table) IS NOT NULL AS has_table`,
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'alumni_rating_enum'`,
-    );
+    )) as unknown[];
     if (!enumType) {
       await q.query(
         `CREATE TYPE "alumni_rating_enum" AS ENUM('1','2','3','4','5')`,
       );
     }
 
-    const [ratingCol] = await q.query(
+    const [ratingCol] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'alumni' AND column_name = 'rating'`,
-    );
+    )) as unknown[];
     if (!ratingCol) {
       // DEFAULT '5' sekaligus menjadi backfill untuk alumni yang sudah ada,
       // sehingga tidak ada baris lama yang tampil tanpa bintang.
@@ -32,22 +32,22 @@ export class AddAlumniRating1790400000000 implements MigrationInterface {
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [table] = await q.query(
-      `SELECT to_regclass('public.alumni') IS NOT NULL AS has_table`,
-    );
+    const [table] = (await q.query(
+      `SELECT to_regclass(table) IS NOT NULL AS has_table`,
+    )) as { has_table: boolean }[];
     if (!table?.has_table) return;
 
-    const [ratingCol] = await q.query(
+    const [ratingCol] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'alumni' AND column_name = 'rating'`,
-    );
+    )) as unknown[];
     if (ratingCol) {
       await q.query(`ALTER TABLE "alumni" DROP COLUMN "rating"`);
     }
 
-    const [enumType] = await q.query(
+    const [enumType] = (await q.query(
       `SELECT 1 FROM pg_type WHERE typname = 'alumni_rating_enum'`,
-    );
+    )) as unknown[];
     if (enumType) {
       await q.query(`DROP TYPE "alumni_rating_enum"`);
     }
