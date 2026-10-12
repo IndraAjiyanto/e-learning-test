@@ -26,7 +26,7 @@ export class WeeksController {
     private readonly coursesService: CoursesService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: string,
@@ -50,13 +50,13 @@ export class WeeksController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formAdd/:id')
   formAdd(@Res() res: Response, @Req() req: Request, @Param('id') id: string) {
     res.render('admin/weeks/create', { user: req.user, id });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('/session/:weeksId')
   async getSession(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -66,7 +66,7 @@ export class WeeksController {
     res.json(session);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('/quiz/:weeksId')
   async getQuiz(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -76,7 +76,7 @@ export class WeeksController {
     res.json(quiz);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:weeksId')
   async formEdit(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -107,7 +107,7 @@ export class WeeksController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':weeksId')
   async findOne(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -131,7 +131,7 @@ export class WeeksController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch('update/:weeksId')
   async update(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -153,7 +153,7 @@ export class WeeksController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':id/:courseId')
   async remove(
     @Param('id') id: string,

@@ -18,7 +18,7 @@ import { Request, Response } from 'express';
 export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':assignmentId/:assignment_answerId')
   async create(
     @Param('assignmentId') assignmentId: string,

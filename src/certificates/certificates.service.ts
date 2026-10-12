@@ -124,10 +124,14 @@ export class CertificatesService {
       certificateTemplateForCourse(course),
     );
     const certificateDate = this.formatDate(certificate.createdAt);
+    const certificateStartDate = this.formatDate(course.startDate);
+    const certificateEndDate = this.formatDate(course.startEnd);
+    const certificateDateRange = `${certificateStartDate} - ${certificateEndDate}`;
     const categoryName = this.formatCategoryName(
       course.category?.name || 'Program',
     );
-    const categoryType = this.escapeHtml(course.category.type);
+    const categoryNameDesc = this.escapeHtml(course.category.name);
+    const categoryType = this.escapeHtml(course.category?.type);
     const courseMethod = this.escapeHtml(course.method);
     const courseName = this.escapeHtml(course.name);
     const classType = this.escapeHtml(
@@ -149,14 +153,14 @@ export class CertificatesService {
       .replace('[Method]', courseMethod)
       .replace('[Field of Scope]', classType)
       .replace('[Month DD, YYYY]', certificateDate)
-      .replace('[Month YYYY] – [Month YYYY]', certificateDate)
+      .replace('[Month YYYY] – [Month YYYY]', certificateDateRange)
       .replace('>Excellent<', `>${classType}<`)
-      .replace('[Category name]', categoryName)
+      .replace('[Category name]', categoryNameDesc)
       .replace('Intensive<br>Bootcamp', categoryName)
       .replace('Kickstart<br>Class', categoryName)
       .replace('Faster<br>Class', categoryName)
       .replace('Starter<br>Class', categoryName)
-      .replace('[Typer program]', categoryType)
+      .replace('[Type program]', categoryType)
       .replace(
         /(<div[^>]*(?:data-role="big"|id="k[12]")[^>]*>)[^<]*(<\/div>)/g,
         (_match, openingTag, closingTag) => {

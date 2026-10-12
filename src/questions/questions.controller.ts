@@ -37,7 +37,7 @@ export class QuestionsController {
     private readonly userAnswersService: UserAnswersService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':quizId')
   @UseInterceptors(
     FileInterceptor('image', multerConfigMemoryOnly),
@@ -86,7 +86,7 @@ export class QuestionsController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:quizId')
   async formCreate(
     @Req() req: Request,
@@ -97,7 +97,7 @@ export class QuestionsController {
     res.render('admin/questions/create', { user: req.user, quiz });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('FormEdit/:questionId')
   async findQuestions(
     @Req() req: Request,
@@ -127,7 +127,7 @@ export class QuestionsController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':questionId/:quizId')
   @UseInterceptors(
     FileInterceptor('image', multerConfigMemoryOnly),
@@ -176,7 +176,7 @@ export class QuestionsController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':questionId/:quizId')
   async remove(
     @Param('quizId') quizId: string,

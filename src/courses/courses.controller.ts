@@ -853,10 +853,14 @@ export class CoursesController {
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);
+      const lastWeek = await this.coursesService.findLastWeek(courseId);
+      const caps = capabilitiesForCourse(course);
       res.render('super_admin/course/detail', {
         user: req.user,
         course,
         categoryId,
+        lastWeek,
+        caps,
       });
     }
   }

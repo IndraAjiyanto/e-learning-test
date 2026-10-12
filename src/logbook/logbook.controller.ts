@@ -30,7 +30,7 @@ import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 export class LogbookController {
   constructor(private readonly logbookService: LogbookService) {}
 
-  @Roles('user', 'admin')
+  @Roles('user', 'admin', 'super_admin')
   @Post(':sessionId')
   @UseInterceptors(
     FileInterceptor('documentation', multerConfigMemoryOnly),
@@ -66,13 +66,16 @@ export class LogbookController {
       if (req.user?.role === 'user') {
         createLogbookDto.userId = req.user.id;
         createLogbookDto.process = 'process';
-      } else if (req.user?.role === 'admin') {
+      } else if (
+        req.user?.role === 'admin' ||
+        req.user?.role === 'super_admin'
+      ) {
         createLogbookDto.process = 'approved';
       }
       createLogbookDto.sessionId = sessionId;
       await this.logbookService.create(createLogbookDto);
       const session = await this.logbookService.findSession(sessionId);
-      if (req.user?.role === 'admin') {
+      if (req.user?.role === 'admin' || req.user?.role === 'super_admin') {
         flashToast(
           req,
           'Logbook Created',
@@ -96,7 +99,7 @@ export class LogbookController {
         (error instanceof Error ? error.message : null) ||
         'Failed to add log book';
       flashToastError(req, 'Logbook not saved', errorMessage);
-      if (req.user?.role === 'admin') {
+      if (req.user?.role === 'admin' || req.user?.role === 'super_admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
         res.redirect(
@@ -153,7 +156,7 @@ export class LogbookController {
     });
   }
 
-  @Roles('user', 'admin')
+  @Roles('user', 'admin', 'super_admin')
   @Get('formEdit/:logbookId')
   async formEdit(
     @Param('logbookId') logbookId: string,
@@ -161,7 +164,7 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
-    if (req.user!.role === 'admin') {
+    if (req.user!.role === 'admin' || req.user!.role === 'super_admin') {
       res.render('admin/logbooks/edit', { user: req.user, logbook: logbooks });
     } else {
       res.render('user/logbooks/edit', {
@@ -172,7 +175,7 @@ export class LogbookController {
     }
   }
 
-  @Roles('user', 'admin')
+  @Roles('user', 'admin', 'super_admin')
   @Get(':logbookId')
   async findOne(
     @Param('logbookId') logbookId: string,
@@ -187,7 +190,7 @@ export class LogbookController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('create/:sessionId')
   async createLogbookUser(
     @Param('sessionId') sessionId: string,
@@ -198,7 +201,7 @@ export class LogbookController {
     res.render('admin/logbooks/create', { user: req.user, sessionId, users });
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'user', 'super_admin')
   @Patch(':logbookId')
   @UseInterceptors(
     FileInterceptor('documentation', multerConfigMemoryOnly),
@@ -229,7 +232,7 @@ export class LogbookController {
       updateLogbookDto.process = 'process';
       await this.logbookService.update(logbookId, updateLogbookDto);
       flashToast(req, 'Changes Saved', 'The logbook has been updated.');
-      if (req.user?.role === 'admin') {
+      if (req.user?.role === 'admin' || req.user?.role === 'super_admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
         res.redirect(
@@ -251,7 +254,7 @@ export class LogbookController {
         (error instanceof Error ? error.message : null) ||
           'Please try again in a moment.',
       );
-      if (req.user?.role === 'admin') {
+      if (req.user?.role === 'admin' || req.user?.role === 'super_admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
         res.redirect(
@@ -261,7 +264,7 @@ export class LogbookController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':logbookId/:proses')
   async updateProses(
     @Body() updateLogbookDto: UpdateLogbookDto,
@@ -295,7 +298,7 @@ export class LogbookController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':sessionId/:logbookId')
   async remove(
     @Param('logbookId') logbookId: string,

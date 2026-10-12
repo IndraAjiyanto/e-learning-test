@@ -99,7 +99,7 @@ export class AnswerTasksController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':assignmentId')
   async findOne(
     @Param('assignmentId') assignmentId: string,
@@ -117,7 +117,7 @@ export class AnswerTasksController {
     });
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'user', 'super_admin')
   @Patch(':assignmentId/:assignment_answerId')
   async update(
     @Param('assignment_answerId') assignment_answerId: string,

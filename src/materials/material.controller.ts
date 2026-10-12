@@ -45,7 +45,7 @@ export class MaterialController {
     private readonly googleSlidesService: GoogleSlidesService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post('pdf/:sessionId')
   @UseInterceptors(
     FileInterceptor('file', multerConfigMemoryOnly),
@@ -88,7 +88,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post('ppt/:sessionId')
   @UseInterceptors(
     FileInterceptor(
@@ -133,7 +133,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post('video/:sessionId')
   async createVideo(
     @Body() createMaterialDto: CreateMaterialDto,
@@ -162,7 +162,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:id')
   async formCreate(
     @Param('id') id: string,
@@ -181,7 +181,7 @@ export class MaterialController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:id')
   async formEdit(
     @Param('id') id: string,
@@ -198,7 +198,7 @@ export class MaterialController {
     });
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'user', 'super_admin')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.materialService.findOne(id);
@@ -210,7 +210,7 @@ export class MaterialController {
   //   return this.materisService.findMateriBypertemuan(sessionId);
   // }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'user', 'super_admin')
   @Get(':fileType/:sessionId')
   async findMateriByJenisFile(
     @Param('fileType') fileType: FileType,
@@ -295,7 +295,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:jenis_file/:sessionId')
   formEditMateri(
     @Param('sessionId') sessionId: string,
@@ -310,7 +310,7 @@ export class MaterialController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch('pdf/:id')
   @UseInterceptors(
     FileInterceptor('file', multerConfigMemoryOnly),
@@ -354,7 +354,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch('ppt/:id')
   @UseInterceptors(
     FileInterceptor(
@@ -398,7 +398,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch('video/:id')
   async updateVideo(
     @Param('id') id: string,
@@ -424,7 +424,7 @@ export class MaterialController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':materialId/:sessionId')
   async remove(
     @Param('materialId') materialId: string,

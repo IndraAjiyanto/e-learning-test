@@ -73,7 +73,7 @@ export class AttendanceController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':sessionId')
   async createAttendance(
     @Param('sessionId') sessionId: string,
@@ -114,14 +114,14 @@ export class AttendanceController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const attendance = await this.attendanceService.findAll();
     res.render('admin/attendance/index', { user: req.user, attendance });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('create/:sessionId')
   async attendanceCreate(
     @Res() res: Response,
@@ -132,7 +132,7 @@ export class AttendanceController {
     res.render('admin/attendance/create', { user: req.user, users, sessionId });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':id')
   async findOne(
     @Param('id') id: string,
@@ -143,7 +143,7 @@ export class AttendanceController {
     res.render('admin/attendance/detail', { user: req.user, attendance });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:id')
   async formEdit(
     @Param('id') id: string,
@@ -154,7 +154,7 @@ export class AttendanceController {
     res.render('admin/attendance/edit', { user: req.user, attendance });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':attendanceId/:sessionId')
   async update(
     @Param('sessionId') sessionId: string,
@@ -178,7 +178,7 @@ export class AttendanceController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':attendanceId/:sessionId')
   async remove(
     @Param('attendanceId') attendanceId: string,
