@@ -140,7 +140,11 @@ export class PortfoliosController {
         req.query.from === 'portfolio' ||
         (!body.fromCourse && !req.params.courseId);
 
-      req.flash('success', 'portofolios successfully upload');
+      flashToast(
+        req,
+        'Portfolio created',
+        'Your project is now in your portfolio list.',
+      );
       res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
     } catch (error: unknown) {
       const message =
