@@ -608,7 +608,7 @@ export class PortfoliosService {
       // Regex replace semua img src yang menuju ke oldFolder
       const escapedFolder = oldFolder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(`src=["'](${escapedFolder}[^"']+)["']`, 'gi');
-      result = contentStr.replace(regex, (match, url) => {
+      result = contentStr.replace(regex, (_match: string, url: string) => {
         const newUrl = moveImageFile(url);
         return `src="${newUrl}"`;
       });

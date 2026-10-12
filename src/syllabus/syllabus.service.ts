@@ -84,7 +84,7 @@ export class SyllabusService {
       }
     }
 
-    let parsedContent: any = null;
+    let parsedContent: object | string | null = null;
     if (
       typeof createSyllabusDto.content === 'string' &&
       createSyllabusDto.content.trim()
@@ -92,7 +92,7 @@ export class SyllabusService {
       const trimmed = createSyllabusDto.content.trim();
       if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
         try {
-          parsedContent = JSON.parse(trimmed);
+          parsedContent = JSON.parse(trimmed) as object;
         } catch {
           parsedContent = trimmed;
         }
@@ -113,7 +113,7 @@ export class SyllabusService {
     const data = this.syllabusRepository.create({
       title: createSyllabusDto.title,
       description: createSyllabusDto.description,
-      content: parsedContent ?? undefined,
+      content: (parsedContent ?? undefined) as object | undefined,
       syllabusNumber: syllabusNumber,
       isFinal: isFinal,
       course: course,
@@ -311,7 +311,7 @@ export class SyllabusService {
       );
     }
 
-    let parsedContent: any = null;
+    let parsedContent: object | string | null = null;
     if (
       typeof updateSyllabusDto.content === 'string' &&
       updateSyllabusDto.content.trim()
@@ -319,7 +319,7 @@ export class SyllabusService {
       const trimmed = updateSyllabusDto.content.trim();
       if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
         try {
-          parsedContent = JSON.parse(trimmed);
+          parsedContent = JSON.parse(trimmed) as object;
         } catch {
           parsedContent = trimmed;
         }
