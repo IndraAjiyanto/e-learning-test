@@ -533,3 +533,27 @@ body {
 #route-progress.is-active {
   opacity: 1;
 }
+
+/* Quill text & image alignment */
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-right {
+  text-align: right;
+}
+.ql-align-justify {
+  text-align: justify;
+}
+.ql-align-center img {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.ql-align-right img {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+.ql-align-left img {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+

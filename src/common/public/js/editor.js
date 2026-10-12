@@ -31,10 +31,13 @@ export function editorJsBlocksToHtml(raw) {
         switch (type) {
           case 'header': {
             const lvl = Math.min(Math.max(d.level || 2, 1), 6);
-            return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
+            const align = d.alignment && d.alignment !== 'left' ? ' class="ql-align-' + d.alignment + '"' : '';
+            return '<h' + lvl + align + '>' + (d.text || '') + '</h' + lvl + '>';
           }
-          case 'paragraph':
-            return '<p>' + (d.text || '') + '</p>';
+          case 'paragraph': {
+            const align = d.alignment && d.alignment !== 'left' ? ' class="ql-align-' + d.alignment + '"' : '';
+            return '<p' + align + '>' + (d.text || '') + '</p>';
+          }
           case 'list': {
             const listItems = (d.items || [])
               .map(itemText)
@@ -79,6 +82,7 @@ export function createQuillEditor(holder, options = {}) {
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
     ['bold', 'italic', 'underline', 'strike'],
     [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ align: [] }],
     ['blockquote', 'code-block'],
     ['link', 'image'],
     ['clean'],
