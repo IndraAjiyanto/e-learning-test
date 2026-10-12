@@ -35,7 +35,7 @@ import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 import { CourseStatus, COURSE_STATUSES } from './types/course-status';
 
-export type Method = 'online' | 'offline';
+export type Method = 'online' | 'offline' | 'hybrid';
 
 /**
  * Bentuk belajar sebuah program. Bukan nama program dan bukan harganya -
@@ -79,7 +79,7 @@ export class Course {
   @Column('jsonb', { nullable: true })
   locations: { id: string; en: string; ja: string };
 
-  @Column({ type: 'enum', enum: ['online', 'offline'] })
+  @Column({ type: 'enum', enum: ['online', 'offline', 'hybrid'] })
   method: Method;
 
   @Column('jsonb', { nullable: true })
