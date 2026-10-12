@@ -20,7 +20,6 @@ import { WeekProgress } from 'src/entities/week_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { VoucherService } from 'src/voucher/voucher.service';
-import { Voucher } from 'src/entities/voucher.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { InvoiceService } from 'src/invoice/invoice.service';
@@ -32,6 +31,16 @@ import { dateHelpers } from 'src/common/helpers';
 // Hasil `createXenditInvoice`. Kalau payment-nya sudah pernah dibuat, service
 // mengembalikan objek ringkas yang menyertakan invoice lama; kalau baru, objek
 // `Payment` yang sama dengan `createInvoiceForPayment`.
+export interface PaymentFormData {
+  user_fullname?: string;
+  user_email?: string;
+  user_no?: string;
+  no?: string;
+  current_status?: string;
+  referal_source?: string | null;
+  attend_program?: boolean | string;
+}
+
 export type XenditOrderResult =
   | { process: 'approved' | 'process'; payment: Payment; invoice: Invoice }
   | Payment;
@@ -118,15 +127,15 @@ export class PaymentsService {
             );
             discountAmount = validationResult.discountAmount;
             finalTotal = validationResult.finalTotal;
-          } catch (err: any) {
+          } catch (err: unknown) {
             console.warn(
               '[PaymentsService] Invalid voucher on manual installment:',
-              err?.message,
+              err instanceof Error ? err.message : String(err),
             );
           }
         }
 
-        const payment = await this.paymentRepository.create({
+        const payment: Payment = this.paymentRepository.create({
           ...createPaymentDto,
           user: user,
           course: course,
@@ -175,15 +184,15 @@ export class PaymentsService {
           );
           discountAmount = validationResult.discountAmount;
           finalTotal = validationResult.finalTotal;
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.warn(
             '[PaymentsService] Invalid voucher on manual payment:',
-            err?.message,
+            err instanceof Error ? err.message : String(err),
           );
         }
       }
 
-      const payment = await this.paymentRepository.create({
+      const payment = this.paymentRepository.create({
         ...createPaymentDto,
         user: user,
         course: course,
@@ -233,7 +242,7 @@ export class PaymentsService {
       throw new BadRequestException('User already joined the program');
     }
 
-    const userCourses = await this.userCourseRepository.create({
+    const userCourses = this.userCourseRepository.create({
       progress: false,
       user: user,
       course: course,
@@ -854,7 +863,9 @@ export class PaymentsService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async createXenditInvoice(
@@ -862,7 +873,7 @@ export class PaymentsService {
     courseId: string,
     paymentMethod: string,
     promoCode?: string,
-    formData?: any,
+    formData?: PaymentFormData,
   ): Promise<XenditOrderResult> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
@@ -918,7 +929,6 @@ export class PaymentsService {
 
     let discountAmount = 0;
     let finalTotal = basePrice;
-    let appliedVoucherCode: string | undefined = undefined;
 
     if (promoCode) {
       const validationResult = await this.voucherService.validateVoucher(
@@ -929,7 +939,6 @@ export class PaymentsService {
       );
       discountAmount = validationResult.discountAmount;
       finalTotal = validationResult.finalTotal;
-      appliedVoucherCode = promoCode;
     }
 
     const payment = this.paymentRepository.create({
@@ -939,11 +948,13 @@ export class PaymentsService {
       process: finalTotal <= 0 ? 'approved' : 'process',
       no: `INV-${Date.now()}`,
       // Simpan data dari form
-      user_fullname: formData?.user_fullname || null,
-      user_email: formData?.user_email || null,
-      user_no: formData?.user_no || formData?.no || null,
-      current_status: formData?.current_status || null,
-      referalSource: formData?.referal_source || null,
+      user_fullname: formData?.user_fullname || undefined,
+      user_email: formData?.user_email || undefined,
+      user_no: formData?.user_no || formData?.no || undefined,
+      current_status:
+        (formData?.current_status as import('../entities/payment.entity').currentStatus) ||
+        undefined,
+      referalSource: formData?.referal_source || undefined,
       attend_program: formData?.attend_program ? true : false,
     });
 

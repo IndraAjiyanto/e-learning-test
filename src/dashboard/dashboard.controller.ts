@@ -14,7 +14,7 @@ export class DashboardController {
     private readonly dashboardService: DashboardService,
     private readonly galleryService: GalleryService,
     private readonly kategorisService: CategoriesService,
-  ) { }
+  ) {}
 
   @Get('course/filter')
   async kelasFilter(

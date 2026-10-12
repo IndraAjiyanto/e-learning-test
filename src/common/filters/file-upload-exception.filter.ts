@@ -16,11 +16,21 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
     let message = 'Terjadi kesalahan saat upload file';
 
     if (exception instanceof BadRequestException) {
-      const exceptionResponse = exception.getResponse();
-      message =
-        typeof exceptionResponse === 'string'
-          ? exceptionResponse
-          : (exceptionResponse as any).message || message;
+      const exceptionResponse: unknown = exception.getResponse();
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null &&
+        'message' in exceptionResponse
+      ) {
+        const resMsg = (exceptionResponse as { message?: unknown }).message;
+        message = Array.isArray(resMsg)
+          ? resMsg.map(String).join(', ')
+          : typeof resMsg === 'string'
+            ? resMsg
+            : message;
+      }
     } else if (exception instanceof Error) {
       message = exception.message;
     }
@@ -36,7 +46,9 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
       msgLower.includes('diperbolehkan') ||
       msgLower.includes('dimension') ||
       msgLower.includes('image') ||
-      (exception as any).storageErrors;
+      Boolean(
+        (exception as unknown as { storageErrors?: unknown })?.storageErrors,
+      );
 
     if (isFileError) {
       const isAjax =
@@ -50,7 +62,9 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
         return response.status(400).json({ success: 0, message: message });
       }
 
-      (request as any).flash('error', message);
+      (
+        request as Request & { flash?: (key: string, val: string) => void }
+      ).flash?.('error', message);
       const referer = request.get('Referer') || '/';
       return response.redirect(referer);
     }

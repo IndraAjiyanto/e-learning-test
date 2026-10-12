@@ -182,11 +182,13 @@ export class ConvertIdsToUuid1788300000000 implements MigrationInterface {
         )
     `);
 
-    const targets: TargetMeta[] = await q.query(TARGET_SELECT);
-    const fks: FkMeta[] = await q.query(FK_SELECT);
-    const compositePks: CompositePkMeta[] = await q.query(COMPOSITE_PK_SELECT);
-    const indexes: { def: string }[] = await q.query(INDEX_SELECT);
-    const uniqueCons: UniqueMeta[] = await q.query(UNIQUE_SELECT);
+    const targets = (await q.query(TARGET_SELECT)) as TargetMeta[];
+    const fks = (await q.query(FK_SELECT)) as FkMeta[];
+    const compositePks = (await q.query(
+      COMPOSITE_PK_SELECT,
+    )) as CompositePkMeta[];
+    const indexes = (await q.query(INDEX_SELECT)) as { def: string }[];
+    const uniqueCons = (await q.query(UNIQUE_SELECT)) as UniqueMeta[];
 
     if (targets.length === 0) {
       throw new Error(
@@ -234,12 +236,12 @@ export class ConvertIdsToUuid1788300000000 implements MigrationInterface {
     //          di-rollback dan database tetap utuh.
     // ==================================================================
     for (const fk of fks) {
-      const [orphan] = await q.query(
+      const [orphan] = (await q.query(
         `SELECT count(*)::int AS n
          FROM "${fk.table_name}" c
          LEFT JOIN "${fk.parent}" p ON p."id__uuid" = c."${fk.column}__uuid"
          WHERE c."${fk.column}" IS NOT NULL AND p."id__uuid" IS NULL`,
-      );
+      )) as { n: number }[];
       if (orphan.n > 0) {
         throw new Error(
           `ConvertIdsToUuid: ${orphan.n} baris di "${fk.table_name}"."${fk.column}" ` +
@@ -249,12 +251,12 @@ export class ConvertIdsToUuid1788300000000 implements MigrationInterface {
       }
     }
     for (const t of targets) {
-      const [dup] = await q.query(
+      const [dup] = (await q.query(
         `SELECT count(*)::int AS n FROM (
            SELECT "id__uuid" FROM "${t.table_name}"
            GROUP BY "id__uuid" HAVING count(*) > 1
          ) d`,
-      );
+      )) as { n: number }[];
       if (dup.n > 0) {
         throw new Error(
           `ConvertIdsToUuid: ${dup.n} UUID duplikat di "${t.table_name}". Migrasi dibatalkan.`,
@@ -356,9 +358,9 @@ export class ConvertIdsToUuid1788300000000 implements MigrationInterface {
   //        Bukan sekadar "bikin integer baru" — nilai lamanya dipulihkan.
   // ====================================================================
   public async down(q: QueryRunner): Promise<void> {
-    const [meta] = await q.query(
+    const [meta] = (await q.query(
       `SELECT to_regclass('public._uuid_migration_meta') IS NOT NULL AS ok`,
-    );
+    )) as { ok: boolean }[];
     if (!meta.ok) {
       throw new Error(
         'ConvertIdsToUuid.down(): tabel "_uuid_migration_meta" tidak ada, ' +
@@ -367,11 +369,19 @@ export class ConvertIdsToUuid1788300000000 implements MigrationInterface {
       );
     }
 
-    const targets: TargetMeta[] = await q.query(TARGET_SELECT);
-    const fks: FkMeta[] = await q.query(FK_SELECT);
-    const compositePks: CompositePkMeta[] = await q.query(COMPOSITE_PK_SELECT);
-    const indexes: { def: string }[] = await q.query(INDEX_SELECT);
-    const uniqueCons: UniqueMeta[] = await q.query(UNIQUE_SELECT);
+    const targets: TargetMeta[] = (await q.query(
+      TARGET_SELECT,
+    )) as TargetMeta[];
+    const fks: FkMeta[] = (await q.query(FK_SELECT)) as FkMeta[];
+    const compositePks: CompositePkMeta[] = (await q.query(
+      COMPOSITE_PK_SELECT,
+    )) as CompositePkMeta[];
+    const indexes: { def: string }[] = (await q.query(INDEX_SELECT)) as {
+      def: string;
+    }[];
+    const uniqueCons: UniqueMeta[] = (await q.query(
+      UNIQUE_SELECT,
+    )) as UniqueMeta[];
 
     // 1. Kolom integer sementara, diisi dari legacy_id lewat JOIN uuid.
     for (const fk of fks) {

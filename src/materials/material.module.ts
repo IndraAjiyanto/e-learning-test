@@ -18,4 +18,4 @@ import { GoogleSlidesService } from './google-slides.service';
   providers: [MaterialService, LibreOfficeService, GoogleSlidesService],
   exports: [MaterialService],
 })
-export class MaterialsModule { }
+export class MaterialsModule {}

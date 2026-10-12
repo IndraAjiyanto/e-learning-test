@@ -24,4 +24,3 @@ export class AddHybridToCourseMethodEnum1791772417391 implements MigrationInterf
     );
   }
 }
-

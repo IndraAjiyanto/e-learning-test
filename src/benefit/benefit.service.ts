@@ -27,7 +27,7 @@ export class BenefitService {
         'Maksimal 5 benefit telah tercapai. Hapus atau edit benefit yang ada terlebih dahulu.',
       );
     }
-    const benefit = await this.benefitRepository.create(createBenefitDto);
+    const benefit = this.benefitRepository.create(createBenefitDto);
     return await this.benefitRepository.save(benefit);
   }
 

@@ -32,7 +32,7 @@ export class CertificatesService {
     private readonly biodataRepository: Repository<Biodata>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
-  ) { }
+  ) {}
 
   private async nextCertificateNumber(): Promise<string> {
     const certificates = await this.certificatesRepository.find({
@@ -349,7 +349,7 @@ export class CertificatesService {
         });
       }
 
-      const rows: any[] = [];
+      const rows: string[][] = [];
 
       const headers = ['Material', 'Interval', 'Predicate'];
       for (const m of course.weeks) {
@@ -409,22 +409,35 @@ export class CertificatesService {
       const buffer = Buffer.from(pdfBytes);
 
       // 4. Upload ke Cloudinary
-      const result: any = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'nestjs/certificates',
-            resource_type: 'raw', // wajib biar pdf diterima
-            public_id: `certificate-${user.username}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
-            allowed_formats: ['pdf'],
-          },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          },
-        );
+      const result = await new Promise<{ secure_url: string }>(
+        (resolve, reject) => {
+          const doReject = (e: Error) => reject(e);
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'nestjs/certificates',
+              resource_type: 'raw', // wajib biar pdf diterima
+              public_id: `certificate-${user.username}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+              allowed_formats: ['pdf'],
+            },
+            (error, result) => {
+              if (error) {
+                const err =
+                  error instanceof Error
+                    ? error
+                    : new Error(
+                        (error as { message?: string })?.message ||
+                          'Upload failed',
+                      );
+                doReject(err);
+                return;
+              }
+              resolve(result as { secure_url: string });
+            },
+          );
 
-        uploadStream.end(buffer);
-      });
+          uploadStream.end(buffer);
+        },
+      );
 
       // sekarang result sudah berisi object Cloudinary
       const cert = this.certificatesRepository.create({

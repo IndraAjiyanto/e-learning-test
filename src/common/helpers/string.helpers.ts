@@ -31,33 +31,33 @@ export const stringHelpers = {
     const escaped = Handlebars.escapeExpression(text);
     return new Handlebars.SafeString(escaped.replace(/\n/g, '<br>'));
   },
-  isArray: (value: any) => Array.isArray(value),
-  array: function (...args: any[]) {
+  isArray: (value: unknown) => Array.isArray(value),
+  array: function (...args: unknown[]) {
     return args.slice(0, -1);
   },
-  lookup: (str: any[], index: number) => (str ? str[index] : ''),
-  json: (context: any) => JSON.stringify(context),
+  lookup: (str: unknown[], index: number) => (str ? str[index] : ''),
+  json: (context: unknown) => JSON.stringify(context),
   // Untuk data island: <script type="application/json">{{{jsonSafe x}}}</script>.
   //
   // `json` polosnya bisa berisi urutan `</script>`, dan browser memotong blok
   // script di situ -sisanya jadi markup halaman, bukan JSON. Menyelipkan
   // garis miring di depan '/' menutup lubang itu tanpa mengubah nilai
   // JSON.parse-nya (JSON memperlakukan `\/` sama dengan `/`).
-  jsonSafe: (context: any) =>
+  jsonSafe: (context: unknown) =>
     String(JSON.stringify(context) ?? 'null').replace(/<\//g, '<\\/'),
   isJSON: (str: string) => {
     if (!str || typeof str !== 'string') return false;
     try {
       JSON.parse(str);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   },
   jsonToText: (jsonStr: string) => {
     if (!jsonStr || typeof jsonStr !== 'string') return '';
     try {
-      const data = JSON.parse(jsonStr);
+      const data = JSON.parse(jsonStr) as { html?: string; text?: string };
       if (data.html) {
         return data.html
           .replace(/<[^>]*>/g, '')
@@ -70,11 +70,12 @@ export const stringHelpers = {
         return data.text;
       }
       return '';
-    } catch (e) {
+    } catch {
       return jsonStr;
     }
   },
-  default: (value: any, defaultValue: any) => value || defaultValue,
+  default: (value: unknown, defaultValue: unknown): unknown =>
+    value || defaultValue,
   // Melokalkan list record: setiap field yang berupa objek {id,en,ja} diubah jadi
   // string sesuai bahasa aktif. Dipakai agar data statis (program/FAQ) bisa
   // disimpan multibahasa lalu di-serialize sebagai JSON untuk Alpine.
@@ -102,9 +103,9 @@ export const stringHelpers = {
     if (!obj) return '';
     if (typeof obj === 'string') {
       try {
-        const parsed = JSON.parse(obj);
+        const parsed = JSON.parse(obj) as Record<string, string>;
         if (parsed && typeof parsed === 'object') {
-          return pickLang(parsed as Record<string, unknown>, lang);
+          return pickLang(parsed, lang);
         }
       } catch {
         return obj;
@@ -145,7 +146,7 @@ export const stringHelpers = {
     text: string,
     count: number,
     color: string,
-    cjkCount?: any,
+    cjkCount?: unknown,
   ): Handlebars.SafeString => {
     const raw = (text || '').toString().trim();
     if (!raw) return new Handlebars.SafeString('');
@@ -179,7 +180,7 @@ export const stringHelpers = {
         : wrap(tail.join(' ')),
     );
   },
-  concat: function (...args: any[]) {
+  concat: function (...args: unknown[]) {
     // Remove the Handlebars options object from the end
     const strings = args.slice(0, -1);
     return strings.join('');

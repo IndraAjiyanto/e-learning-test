@@ -73,6 +73,8 @@ export class PartnerService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 }

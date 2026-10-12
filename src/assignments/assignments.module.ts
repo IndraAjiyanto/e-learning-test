@@ -17,4 +17,3 @@ import { CommonModule } from 'src/common/common.module';
   exports: [AssignmentsService],
 })
 export class AssignmentsModule {}
-

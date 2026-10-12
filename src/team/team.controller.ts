@@ -50,7 +50,9 @@ export class TeamController {
     @Req() req: Request,
   ) {
     try {
-      createTeamDto.profile = req.body.uploadedImageUrls?.[0];
+      createTeamDto.profile =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       createTeamDto.teamOrder = await this.teamService.getNextOrder();
 
       await this.teamService.create(createTeamDto);
@@ -60,9 +62,13 @@ export class TeamController {
         'The new team member has been added.',
       );
       res.redirect('/team');
-    } catch (error: any) {
-      await this.teamService.deleteFile(req.body.uploadedImageUrls?.[0]);
-      req.flash('error', error.message || 'Failed to create team member');
+    } catch (error: unknown) {
+      const err = error as Error;
+      await this.teamService.deleteFile(
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '',
+      );
+      req.flash('error', err.message || 'Failed to create team member');
       res.redirect('/team');
     }
   }
@@ -76,7 +82,7 @@ export class TeamController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/team/create', { user: req.user });
   }
 
@@ -110,15 +116,20 @@ export class TeamController {
   ) {
     try {
       const team = await this.teamService.findOne(teamId);
-      const newProfile = req.body.uploadedImageUrls?.[0];
+      const newProfile = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
       if (newProfile) updateTeamDto.profile = newProfile;
       await this.teamService.update(teamId, updateTeamDto);
       if (newProfile) await this.teamService.deleteFile(team.profile);
       flashToast(req, 'Changes Saved', 'The team member has been updated.');
       res.redirect('/team');
-    } catch (error: any) {
-      await this.teamService.deleteFile(req.body.uploadedImageUrls?.[0]);
-      req.flash('error', error.message || 'Failed to update team member');
+    } catch (error: unknown) {
+      const err = error as Error;
+      await this.teamService.deleteFile(
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '',
+      );
+      req.flash('error', err.message || 'Failed to update team member');
       res.redirect('/team');
     }
   }
@@ -140,8 +151,9 @@ export class TeamController {
         'The team member has been permanently removed.',
       );
       res.redirect('/team');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete team member');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete team member');
       res.redirect('/team');
     }
   }
