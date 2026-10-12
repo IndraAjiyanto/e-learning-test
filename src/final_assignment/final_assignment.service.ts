@@ -89,15 +89,20 @@ export class FinalAssignmentService {
       throw new NotFoundException('Course not found');
     }
 
-    let parsedContent: Record<string, unknown> | undefined = undefined;
+    let parsedContent: any = undefined;
     if (typeof dto.content === 'string') {
-      try {
-        parsedContent = JSON.parse(dto.content) as Record<string, unknown>;
-      } catch {
-        parsedContent = undefined;
+      const trimmed = dto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed);
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
-    } else if (dto.content) {
-      parsedContent = dto.content as Record<string, unknown>;
+    } else if (dto.content !== undefined) {
+      parsedContent = dto.content;
     }
 
     let fa = await this.finalAssignmentRepo.findOne({ where: { courseId } });

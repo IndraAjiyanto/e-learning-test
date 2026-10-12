@@ -63,11 +63,6 @@
             this.renderedHtml = this.emptyHtml();
             return;
           }
-          // Jika sudah berupa HTML langsung (dari Quill)
-          if (/<\/?[a-z][\s\S]*>/i.test(text)) {
-            this.renderedHtml = text;
-            return;
-          }
           let parsed = null;
           try {
             parsed = JSON.parse(text);
@@ -195,6 +190,18 @@
     margin-top: 8px !important;
     margin-bottom: 4px !important;
   }
+  .final-assignment-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .final-assignment-content p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    margin-bottom: 12px;
+  }
+  .final-assignment-content p:last-child {
+    margin-bottom: 0;
+  }
   .final-assignment-content figure {
     display: flex;
     flex-direction: column;
@@ -202,11 +209,13 @@
     margin: 16px 0;
   }
   .final-assignment-content img {
-    max-width: 648px !important;
-    max-height: 486px !important;
+    max-width: 100% !important;
+    max-height: 280px !important;
     width: auto;
     height: auto;
     object-fit: contain;
     border-radius: 8px;
+    display: block;
+    margin: 12px auto;
   }
 </style>
