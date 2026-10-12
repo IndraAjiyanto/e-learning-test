@@ -127,6 +127,7 @@ export class CertificatesService {
     const categoryName = this.formatCategoryName(
       course.category?.name || 'Program',
     );
+    const courseMethod = this.escapeHtml(course.method);
     const courseName = this.escapeHtml(course.name);
     const classType = this.escapeHtml(
       course.courseType?.nameClassesType || 'Excellent',
@@ -144,6 +145,7 @@ export class CertificatesService {
       .replace('[Bootcamp Track Name]', courseName)
       .replace('[Class Title]', courseName)
       .replace('[Webinar Title]', courseName)
+      .replace('[Method]', courseMethod)
       .replace('[Field of Scope]', classType)
       .replace('[Month DD, YYYY]', certificateDate)
       .replace('[Month YYYY] – [Month YYYY]', certificateDate)
