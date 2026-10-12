@@ -38,7 +38,10 @@ import {
   flashToastInfo,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
-import { capabilitiesForCourse } from 'src/courses/program-type';
+import {
+  capabilitiesForCourse,
+  certificateTemplateForCourse,
+} from 'src/courses/program-type';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -411,7 +414,16 @@ export class UsersController {
     );
     const logbooks = await this.usersService.findAllLogbooks(req.user.id);
     const portfolio = await this.usersService.findPortfolio(req.user.id);
+    const certificateCourseIds =
+      await this.usersService.findCertificateCourseIds(req.user.id);
+    const hasBiodata = Boolean(user.biodata?.fullName?.trim());
+    const portfolioCourseIds = portfolio
+      .map((item) => item.course?.id)
+      .filter((courseId): courseId is string => Boolean(courseId));
     const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
+    const certificateTemplates = Object.fromEntries(
+      course.map((item) => [item.id, certificateTemplateForCourse(item)]),
+    );
     const category = [
       ...new Map(
         course
@@ -431,9 +443,19 @@ export class UsersController {
     ];
     const { dashboardStats, ongoingCourses, programComposition } =
       await this.usersService.getDashboardData(user.id);
-    const requestedCourseId = (req.query.courseId as string) || '';
+    const requestedCourseId = String(req.query.courseId || '');
+    let initialSection = String(req.query.tab || '') || 'dashboard';
     const activeCourse =
-      course.find((c) => c.id === requestedCourseId) ?? course[0] ?? null;
+      course.find((c) => c.id === requestedCourseId) ??
+      (initialSection === 'certificate'
+        ? course.find(
+            (c) =>
+              certificateCourseIds.includes(c.id) ||
+              portfolioCourseIds.includes(c.id),
+          )
+        : null) ??
+      course[0] ??
+      null;
     const stats = null;
     const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
@@ -446,7 +468,6 @@ export class UsersController {
     // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    let initialSection = (req.query.tab as string) || '' || 'dashboard';
     if (initialSection === 'portfolio' && requestedCourseId) {
       initialSection = 'course-portfolio';
     }
@@ -468,6 +489,10 @@ export class UsersController {
       userWithCourses,
       logbooks,
       portfolio,
+      portfolioCourseIds,
+      certificateCourseIds,
+      hasBiodata,
+      certificateTemplates,
       course,
       category,
       courseType,
@@ -514,6 +539,7 @@ export class UsersController {
   async filterUsers(
     @Res() res: Response,
     @Query('search') search?: string,
+    @Query('role') role?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -522,6 +548,7 @@ export class UsersController {
 
     const result = await this.usersService.findAllPaginated({
       search: search || undefined,
+      role: role || undefined,
       page: currentPage,
       limit: itemsPerPage,
     });
@@ -609,13 +636,11 @@ export class UsersController {
   ) {
     try {
       const user = await this.usersService.findOne(userId);
+      let oldProfile: string | null | undefined;
       if (profile) {
-        if (user.profile) {
-          await this.usersService.deleteFile(user.profile);
-        }
-        updateUserDto.profile = (
-          req.body as { uploadedImageUrls?: string[] }
-        )?.uploadedImageUrls?.[0];
+        // Preserve existing profile to delete after successful DB update
+        oldProfile = user.profile ?? null;
+        updateUserDto.profile = req.body.uploadedImageUrls?.[0];
       }
       // Form Edit User multipart mengirim 'true' | 'false' sebagai string.
       // Belum ada global ValidationPipe, jadi coerce manual sebelum disimpan
@@ -624,6 +649,10 @@ export class UsersController {
         updateUserDto.isVerified = `${updateUserDto.isVerified}` === 'true';
       }
       await this.usersService.update(userId, updateUserDto);
+      // Delete old profile image after successful DB update
+      if (oldProfile) {
+        await this.usersService.deleteFile(oldProfile);
+      }
       flashToast(
         req,
         'User Updated',
@@ -794,3 +823,4 @@ export class UsersController {
     }
   }
 }
+

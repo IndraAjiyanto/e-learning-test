@@ -79,9 +79,14 @@ window.downloadInvoicePdf = async function (elementId, invoiceNo) {
       'FAST'
     );
 
-    // 5. Simpan file PDF
-    const safeNo = String(invoiceNo || 'Invoice').replace(/[^a-zA-Z0-9_-]/g, '_');
-    pdf.save(`Invoice-${safeNo}.pdf`);
+    // 5. Simpan file PDF sesuai nama/nomor invoice
+    const safeNo = String(invoiceNo || '')
+      .trim()
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    const fileName = safeNo ? `${safeNo}.pdf` : 'Invoice.pdf';
+    pdf.save(fileName);
 
     return true;
   } catch (error) {

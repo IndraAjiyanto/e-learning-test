@@ -8,6 +8,10 @@ export class CreateMaterialDto {
   @IsString()
   file: string;
 
+  @IsOptional()
+  @IsString()
+  driveFileId?: string;
+
   @IsArray()
   slides: string[];
 
@@ -18,3 +22,4 @@ export class CreateMaterialDto {
   @IsUUID()
   sessionId: string;
 }
+

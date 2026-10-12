@@ -257,16 +257,17 @@
 
   {{!-- Method Row --}}
   <div class='flex flex-row gap-[16px] w-full'>
-    <div class='w-[240px] shrink-0'>
+    <div class='w-[360px] max-w-full shrink-0'>
       {{#> components/ui/admin/form/form-field label="Method*" errorId="method_error"}}
         {{> components/ui/admin/form/segmented-button
-          alpineVar="methodOnline"
+          alpineVar="method"
           options=(array
-            (obj 'label' 'Online' 'value' 'online' 'onClick' 'methodOnline = true; updateCompleteness()' 'activeIf' 'methodOnline')
-            (obj 'label' 'Offline' 'value' 'offline' 'onClick' 'methodOnline = false; updateCompleteness()' 'activeIf' '!methodOnline')
+            (obj 'label' 'Online' 'value' 'online' 'onClick' 'method = \'online\'; updateCompleteness()' 'activeIf' 'method === \'online\'')
+            (obj 'label' 'Offline' 'value' 'offline' 'onClick' 'method = \'offline\'; updateCompleteness()' 'activeIf' 'method === \'offline\'')
+            (obj 'label' 'Hybrid' 'value' 'hybrid' 'onClick' 'method = \'hybrid\'; updateCompleteness()' 'activeIf' 'method === \'hybrid\'')
           )
         }}
-        <input type='hidden' name='method' :value='methodOnline ? "online" : "offline"' />
+        <input type='hidden' name='method' :value='method' />
       {{/components/ui/admin/form/form-field}}
     </div>
   </div>

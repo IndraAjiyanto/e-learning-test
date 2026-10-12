@@ -2,19 +2,19 @@
   Komponen: Card Program (L1)
   Lokasi: src/views/partials/components/ui/card/card_program/index.hbs
   Kartu putih kompak: gambar ~150px, judul, deskripsi 3 baris, footer bergaris + Learn More.
-  Props: image, name, text (string|{en,id,ja}), lang, learnMore, href (opsional; default /category/program/{name})
+  Props: image, name (slug URL), category (objek kategori utk nameByLang), text (string|{en,id,ja}), lang, learnMore, href (opsional; default /category/program/{name})
 
 --}}
 <div class="group flex w-full flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]">
   <img
     src="{{image}}"
-    alt="{{name}}"
+    alt="{{default (nameByLang category lang) name}}"
     onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
     class="h-[140px] w-full object-cover sm:h-[150px] lg:h-[160px]"
   />
 
   <div class="flex flex-1 flex-col gap-2 p-5">
-    <h3 class="text-base font-inter font-bold text-[#0B1F3B]">{{name}}</h3>
+    <h3 class="text-base font-inter font-bold text-[#0B1F3B]">{{default (nameByLang category lang) name}}</h3>
     <p class="{{sizeClass 'body-sm'}} font-inter font-normal text-[#4A5568] line-clamp-3">
       {{default (getByLang text lang) text}}
     </p>

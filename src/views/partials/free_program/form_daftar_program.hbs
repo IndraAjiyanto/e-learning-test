@@ -436,6 +436,27 @@
     }
 
     if (form) {
+      // Register Now hanya bisa diklik setelah semua field wajib terisi.
+      // Pola sama dengan payments/registration.hbs (isFormReady): baca
+      // validity.valid per kontrol, bukan checkValidity(), supaya bubble
+      // validasi browser tidak muncul di tengah mengetik.
+      const btnRegister = document.getElementById('btn-register-form');
+      const isRegisterReady = () =>
+        Array.from(form.elements).every((el) => el.validity.valid);
+
+      function updateRegisterState() {
+        if (!btnRegister) return;
+        const ready = isRegisterReady();
+        btnRegister.disabled = !ready;
+        btnRegister.setAttribute('aria-disabled', String(!ready));
+        btnRegister.style.opacity = ready ? '' : '0.5';
+        btnRegister.style.pointerEvents = ready ? '' : 'none';
+      }
+
+      form.addEventListener('input', updateRegisterState);
+      form.addEventListener('change', updateRegisterState);
+      updateRegisterState();
+
       // Submit form -> validasi + kirim data + buka pop up sukses HANYA jika berhasil
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -517,7 +538,7 @@
             error.message || MSG_NETWORK_ERROR
           );
         } finally {
-          if (registerBtn) registerBtn.disabled = false;
+          updateRegisterState();
           if (registerText) registerText.classList.remove('opacity-0');
           if (registerSpinner) registerSpinner.classList.add('hidden');
         }

@@ -51,8 +51,8 @@
       </span>
 
       {{!-- Frame: headline + headline + subheading --}}
-      <div class="flex flex-col items-start gap-4">
-        <h1 class="max-w-[809px] font-inter text-3xl font-extrabold leading-[110%] tracking-[-1px] text-[#0B1F3B] lg:text-[52px]">
+      <div class="flex flex-col items-start gap-4 sm:gap-5">
+        <h1 class="max-w-[809px] font-inter text-3xl font-extrabold leading-[1.25] sm:leading-[1.2] tracking-normal sm:tracking-tight text-[#0B1F3B] lg:text-[50px] [text-wrap:balance]">
           {{#if category.name}}{{nameByLang category lang}}{{else}}{{t 'test.categoryPaidProgram.hero.eyebrow'}}{{/if}}
         </h1>
 
@@ -109,12 +109,12 @@
 
     {{!-- hero-right: visual (full width) --}}
     <div class="w-full lg:flex-1">
-      <div class="aspect-[16/9] w-full overflow-hidden rounded-xl lg:rounded-2xl">
+      <div class="w-full overflow-hidden rounded-xl lg:rounded-2xl">
         <img
           src="{{#if category.hero_section_image}}{{category.hero_section_image}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
           alt="{{nameByLang category lang}}"
           onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
-          class="size-full object-cover object-center"
+          class="block h-auto w-full"
         />
       </div>
     </div>

@@ -144,6 +144,7 @@ export class UsersService {
 
   async findAllPaginated(params: {
     search?: string;
+    role?: string;
     page: number;
     limit: number;
   }) {
@@ -152,10 +153,14 @@ export class UsersService {
       .orderBy('user.createdAt', 'DESC');
 
     if (params.search) {
-      query.where(
+      query.andWhere(
         '(user.username ILIKE :search OR user.email ILIKE :search OR CAST(user.role AS text) ILIKE :search)',
         { search: `%${params.search}%` },
       );
+    }
+
+    if (params.role) {
+      query.andWhere('user.role = :role', { role: params.role });
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);
@@ -191,6 +196,16 @@ export class UsersService {
       ],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async findCertificateCourseIds(userId: string): Promise<string[]> {
+    const certificates = await this.certificateRepository.find({
+      where: { user: { id: userId } },
+      relations: ['course'],
+    });
+    return certificates
+      .map((certificate) => certificate.course?.id)
+      .filter((courseId): courseId is string => Boolean(courseId));
   }
 
   async findCompletedCoursesByUser(userId: string) {
@@ -371,9 +386,7 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch {
-      // ignore
-    }
+    } catch (error) {}
   }
 
   async remove(id: string) {
@@ -389,7 +402,7 @@ export class UsersService {
   // ============================================
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const { email } = forgotPasswordDto;
+    const email = forgotPasswordDto.email.trim();
 
     const user = await this.userRepository.findOne({ where: { email } });
 
@@ -658,3 +671,4 @@ export class UsersService {
     return user;
   }
 }
+

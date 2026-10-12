@@ -41,11 +41,11 @@ export class PortfoliosController {
    * melempar student kembali ke program pertama yang ia ikuti, bukan ke
    * program tempat ia sedang menyunting.
    */
-  private portfolioRedirectUrl(courseId?: string) {
-    const query = courseId
-      ? `?tab=course-portfolio&courseId=${encodeURIComponent(courseId)}`
-      : '?tab=portfolio';
-    return `/users/profile${query}`;
+  private portfolioRedirectUrl(courseId?: string, isFromProfile?: boolean) {
+    if (isFromProfile || !courseId) {
+      return '/users/profile?tab=portfolio';
+    }
+    return `/users/profile?tab=course-portfolio&courseId=${encodeURIComponent(courseId)}`;
   }
 
   @Roles('user')
@@ -76,7 +76,7 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Post('create')
+  @Post(['create', 'create/:courseId'])
   @UseInterceptors(
     FilesInterceptor('image', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -119,9 +119,10 @@ export class PortfoliosController {
 
       createPortfolioDto.contentHtml = html;
 
-      const courseId = createPortfolioDto.courseId;
-      createPortfolioDto.image =
-        (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls || [];
+      const courseId =
+        createPortfolioDto.courseId || (req.params.courseId as string);
+      createPortfolioDto.courseId = courseId;
+      createPortfolioDto.image = req.body.uploadedImageUrls;
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
@@ -136,10 +137,14 @@ export class PortfoliosController {
         });
       }
 
+      const isFromProfile =
+        req.body.from === 'portfolio' ||
+        req.query.from === 'portfolio' ||
+        (!req.body.fromCourse && !req.params.courseId);
+
       req.flash('success', 'portofolios successfully upload');
-      res.redirect(this.portfolioRedirectUrl(courseId));
-    } catch (error: unknown) {
-      const err = error as Error;
+      res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
+    } catch (error: any) {
       if (isAjax) {
         return res.status(400).json({
           success: false,
@@ -152,7 +157,13 @@ export class PortfoliosController {
         'Upload failed',
         err.message || 'The image could not be uploaded. Please try again.',
       );
-      res.redirect(this.portfolioRedirectUrl(createPortfolioDto.courseId));
+      const isFromProfile =
+        req.body.from === 'portfolio' ||
+        req.query.from === 'portfolio' ||
+        (!req.body.fromCourse && !req.params.courseId);
+      res.redirect(
+        this.portfolioRedirectUrl(createPortfolioDto.courseId, isFromProfile),
+      );
     }
   }
 
@@ -177,15 +188,32 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Get('formCreate/:courseId')
-  formCreate(
-    @Param('courseId') courseId: string,
+  @Get(['formCreate', 'formCreate/:courseId'])
+  async formCreate(
+    @Param('courseId') courseId: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    const userId = req.user?.id;
+    const isFromCourse = Boolean(courseId);
+    let course: Awaited<
+      ReturnType<PortfoliosService['findCourseForPortfolio']>
+    > = null;
+    if (courseId) {
+      course = await this.portfoliosService.findCourseForPortfolio(
+        String(courseId),
+      );
+    }
+    const courses = userId
+      ? await this.portfoliosService.findEnrolledCourses(userId)
+      : [];
+
     res.render('user/portofolios/create', {
       user: req.user,
+      isFromCourse,
       courseId,
+      course,
+      courses,
       bareShell: true,
     });
   }
@@ -239,27 +267,10 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Get(':portofolioId/:courseId')
-  async findOne(
-    @Param('portofolioId') portofolioId: string,
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const portfolio = await this.portfoliosService.findOne(portofolioId);
-    res.render('user/portofolios/detail', {
-      user: req.user,
-      portfolio,
-      courseId,
-      bareShell: true,
-    });
-  }
-
-  @Roles('user')
-  @Get('formEdit/:portfolioId/:courseId')
+  @Get(['formEdit/:portfolioId', 'formEdit/:portfolioId/:courseId'])
   async formEdit(
     @Param('portfolioId') portfolioId: string,
-    @Param('courseId') courseId: string,
+    @Param('courseId') courseId: string | undefined,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -270,7 +281,27 @@ export class PortfoliosController {
       portfolioId,
       req.user?.id,
     );
+    const isFromCourse = Boolean(courseId);
+    const resolvedCourseId = courseId || portfolio.course?.id;
     res.render('user/portofolios/edit', {
+      user: req.user,
+      portfolio,
+      isFromCourse,
+      courseId: resolvedCourseId,
+      bareShell: true,
+    });
+  }
+
+  @Roles('user')
+  @Get(':portofolioId/:courseId')
+  async findOne(
+    @Param('portofolioId') portofolioId: string,
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const portfolio = await this.portfoliosService.findOne(portofolioId);
+    res.render('user/portofolios/detail', {
       user: req.user,
       portfolio,
       courseId,
@@ -370,10 +401,12 @@ export class PortfoliosController {
         });
       }
 
+      const isFromProfile =
+        req.body.from === 'portfolio' || req.query.from === 'portfolio';
+
       flashToast(req, 'Portfolio updated', 'Your changes have been saved.');
-      return res.redirect(this.portfolioRedirectUrl(courseId));
-    } catch (error: unknown) {
-      const err = error as Error;
+      return res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
+    } catch (error: any) {
       if (isAjax) {
         return res.status(400).json({
           success: false,
@@ -386,7 +419,9 @@ export class PortfoliosController {
         'Portfolio not saved',
         err.message || 'Please try again in a moment.',
       );
-      return res.redirect(this.portfolioRedirectUrl(courseId));
+      const isFromProfile =
+        req.body.from === 'portfolio' || req.query.from === 'portfolio';
+      return res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
     }
   }
 
@@ -447,3 +482,4 @@ export class PortfoliosController {
     }
   }
 }
+

@@ -1,0 +1,22 @@
+{{!--
+  Section: Program Coming Soon (kartu jam)
+  Lokasi: src/views/partials/components/ui/sections/program_coming_soon/index.hbs
+
+  Dipakai section program halaman detail category (special_program.hbs,
+  paid_program.hbs, free_program.hbs) ketika tidak ada program berstatus
+  launch/Published pada kategori tersebut. Markup identik dengan blok
+  coming soon di corporate_training.hbs.
+
+  Props:
+  - title : judul kartu (hasil t ...)
+  - text  : deskripsi kartu (hasil t ...)
+--}}
+<div class="flex w-full max-w-[722px] flex-col items-center gap-5 rounded-[20px] border border-[#E5E7EB] bg-white p-10 text-center shadow-[0px_10px_24px_-12px_rgba(0,0,0,0.06)] lg:p-16">
+  <span class="grid size-16 place-items-center rounded-full bg-[#0B1F3B] text-white">
+    <i class="fas fa-clock text-xl"></i>
+  </span>
+  <div class="flex flex-col items-center gap-2.5">
+    <h3 class="{{sizeClass 'h3'}} font-inter font-bold text-[#111827]">{{default title "Program Coming Soon"}}</h3>
+    <p class="{{sizeClass 'body'}} max-w-[440px] font-inter leading-relaxed text-[#6B7280]">{{default text "We're preparing this program to deliver the best learning experience. Stay tuned for updates."}}</p>
+  </div>
+</div>

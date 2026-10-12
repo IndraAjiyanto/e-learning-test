@@ -9,8 +9,8 @@ export class CertificatesController {
   constructor(private readonly certificatesService: CertificatesService) {}
 
   @Roles('user')
-  @Get(':courseId')
-  async generate(
+  @Get(':courseId/preview')
+  async preview(
     @Param('courseId') courseId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -19,14 +19,59 @@ export class CertificatesController {
       return res.redirect('/login');
     }
 
-    const biodata = await this.certificatesService.findBiodata(req.user.id);
-    if (!biodata) {
-      flashToastError(
-        req,
-        'Certificate not ready',
-        'Fill in your biodata first - the certificate is printed with the full name saved there.',
+    try {
+      const html = await this.certificatesService.getPreviewHtml(
+        courseId,
+        req.user.id,
       );
-      return res.redirect('/users/profile?tab=profile');
+      return res.type('html').send(html);
+    } catch (error: any) {
+      return res
+        .status(error?.status ?? 500)
+        .type('text')
+        .send(error?.message || 'Certificate preview is not available.');
+    }
+  }
+
+  @Roles('user')
+  @Get(':courseId/download')
+  async download(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!req.user) {
+      return res.redirect('/login');
+    }
+
+    try {
+      const html = await this.certificatesService.getPreviewHtml(
+        courseId,
+        req.user.id,
+      );
+      const pdf = await this.certificatesService.renderCertificatePdf(html);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="certificate-${courseId}.pdf"`,
+      );
+      return res.type('application/pdf').send(pdf);
+    } catch (error: any) {
+      return res
+        .status(error?.status ?? 500)
+        .type('text')
+        .send(error?.message || 'Certificate download is not available.');
+    }
+  }
+
+  @Roles('user')
+  @Get(':courseId')
+  async generate(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!req.user) {
+      return res.redirect('/login');
     }
 
     try {
@@ -64,3 +109,4 @@ export class CertificatesController {
     }
   }
 }
+

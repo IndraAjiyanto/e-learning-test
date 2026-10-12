@@ -15,6 +15,10 @@
   berdiri sendiri tidak punya state tab shell. Setiap item menuju tab yang
   bersangkutan di /users/profile.
 
+  Di layar mobile (< 1024px) sidebar tersembunyi dan tombol hamburger pada app
+  bar membuka drawer menu; itemnya tetap tautan biasa, sama seperti sidebar
+  desktop di sini (prop `active` app bar menandai item yang aktif).
+
   Pemanggil WAJIB dirender dengan `bareShell: true` supaya layouts/main.hbs
   tidak ikut memasang navbar publik dan footer.
 
@@ -37,7 +41,7 @@
      Alpine induk. Shell mendefinisikannya di x-data miliknya; halaman berdiri
      sendiri tidak punya itu, sehingga pemilih bahasanya dulu terender kosong. --}}
 <div class="relative flex h-screen supports-[height:100dvh]:h-[100dvh] flex-col overflow-hidden bg-[#F2F2F3] font-montserrat" x-data="{ lang: '{{lang}}' }">
-  {{> user/app_bar/index user=user sidebarToggle=true }}
+  {{> user/app_bar/index user=user sidebarToggle=true active=active }}
 
   <div class="flex w-full flex-1 min-h-0 items-stretch">
     <div class="js-user-sidebar hidden shrink-0 self-stretch border-r border-[#D9D9D9] bg-white transition-[width] duration-300 lg:flex">

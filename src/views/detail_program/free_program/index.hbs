@@ -114,18 +114,17 @@
 <div class="w-full text-slate-900" x-data="freeProgramDetail()">
 
 <!-- Ganti semua awalan detail_free_program menjadi free_program -->
-{{> components/ui/sections/program_detail_hero/index
+{{> components/ui/sections/paid_detail_hero/index
   course=course
-  lang=lang
-  showBatchPill=false
-  showTime=true
-  showLearnMore=true
-  learnMoreHref="#participants"
+  category=course.category
   regisClick="openRegistrationModal()"
+  lang=lang
 }}
 
 {{> components/ui/sections/free_detail_what_you_get/index
   course=course
+  course_benefits=course_benefits
+  benefit_category=course.category.benefit_category
   lang=lang
 }}
 

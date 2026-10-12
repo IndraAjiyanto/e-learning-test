@@ -34,6 +34,57 @@
       const next = el.dataset.adminSidebar === 'expanded' ? 'collapsed' : 'expanded';
       el.dataset.adminSidebar = next;
       try { localStorage.setItem('admin-sidebar-open', next === 'expanded'); } catch (e) {}
+      if (next === 'collapsed') {
+        this._stashOpenDropdowns();
+      } else {
+        this._restoreHiddenDropdowns();
+      }
+    },
+
+    _stashOpenDropdowns() {
+      try {
+        if (this.activeDropdown) {
+          localStorage.setItem('sidebar-hidden-dropdown', this.activeDropdown);
+        } else {
+          localStorage.removeItem('sidebar-hidden-dropdown');
+        }
+        if (this.activeSubDropdown) {
+          localStorage.setItem('sidebar-hidden-sub-dropdown', this.activeSubDropdown);
+        } else {
+          localStorage.removeItem('sidebar-hidden-sub-dropdown');
+        }
+      } catch (e) {}
+      this.activeDropdown = null;
+      this.activeSubDropdown = null;
+      try {
+        localStorage.removeItem('activeDropdown');
+        localStorage.removeItem('activeSubDropdown');
+      } catch (e) {}
+    },
+
+    _restoreHiddenDropdowns() {
+      let d = null;
+      let s = null;
+      try {
+        d = localStorage.getItem('sidebar-hidden-dropdown');
+        s = localStorage.getItem('sidebar-hidden-sub-dropdown');
+        localStorage.removeItem('sidebar-hidden-dropdown');
+        localStorage.removeItem('sidebar-hidden-sub-dropdown');
+      } catch (e) {}
+      this.activeDropdown = d;
+      this.activeSubDropdown = s;
+      try {
+        if (d) {
+          localStorage.setItem('activeDropdown', d);
+        } else {
+          localStorage.removeItem('activeDropdown');
+        }
+        if (s) {
+          localStorage.setItem('activeSubDropdown', s);
+        } else {
+          localStorage.removeItem('activeSubDropdown');
+        }
+      } catch (e) {}
     },
 
     setActive(path) {
@@ -73,6 +124,12 @@
     },
 
     init() {
+      if (
+        document.documentElement.dataset.adminSidebar === 'collapsed' &&
+        (this.activeDropdown || this.activeSubDropdown)
+      ) {
+        this._stashOpenDropdowns();
+      }
       window.addEventListener('resize', () => {
         const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth < 1024;
@@ -87,19 +144,17 @@
   {{!-- Tombol toggle (mobile) --}}
   <button
     type="button"
-    @click="sidebarOpen = !sidebarOpen"
+    x-show="!sidebarOpen"
+    @click="sidebarOpen = true"
     :aria-expanded="sidebarOpen"
     aria-label="Toggle sidebar"
-    class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-[8px] bg-white text-[#003060] border border-[#D9D9D9]
+    class="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-[8px] bg-white text-[#003060] border border-[#D9D9D9]
       shadow-[0px_1px_2px_0px_rgba(0,0,0,0.08)] transition-colors duration-150
       hover:bg-[#E7F3FB] active:bg-[#D7E9F6]
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#055C90]/40"
   >
-    <svg x-show="!sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-    <svg x-show="sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
     </svg>
   </button>
 
@@ -124,8 +179,8 @@
     x-transition:leave="transition ease-in duration-300 transform"
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="-translate-x-full"
-    class="js-admin-sidebar fixed left-0 top-0 z-40 h-screen w-[319px] max-w-[85vw] flex flex-col justify-between
-      bg-[#FAFAFA] border-r border-[#D9D9D9]"
+    class="js-admin-sidebar fixed left-0 top-0 z-50 h-screen w-[319px] max-w-[85vw] flex flex-col justify-between
+      bg-[#FAFAFA] border-r border-[#D9D9D9] shadow-xl lg:shadow-none"
   >
     {{!-- Header logo --}}
     <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -138,6 +193,19 @@
           />
         </a>
 
+        {{!-- Tombol Tutup Sidebar di Mobile --}}
+        <button
+          type="button"
+          @click="sidebarOpen = false"
+          class="lg:hidden grid size-10 shrink-0 place-items-center rounded-lg text-[#003060] hover:bg-[#E4F1F7] transition-colors"
+          aria-label="Close sidebar"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {{!-- Tombol Collapse di Desktop --}}
         <button
           type="button"
           @click="toggleSidebarCollapse()"

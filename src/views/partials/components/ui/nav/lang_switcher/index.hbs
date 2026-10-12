@@ -4,7 +4,28 @@
   POST ke /translation dengan hidden input `lang` (en | id | ja). Butuh `lang` context var.
   Props: mobile (boolean) - varian daftar untuk drawer mobile.
 --}}
-{{#if mobile}}
+{{#if userMobile}}
+  <div class="flex w-full items-center rounded-lg border border-[#E5E7EB] bg-[#F8FAFC] p-1 text-xs font-semibold text-[#4A5568]">
+    <form action="/translation" method="post" class="flex-1">
+      <input type="hidden" name="lang" value="id" />
+      <button type="submit" class="flex h-9 w-full items-center justify-center gap-1.5 rounded-md transition-colors" :class="lang === 'id' ? 'bg-[#003060] text-white shadow-sm' : 'hover:bg-gray-200/60 text-[#4A5568]'">
+        <span class="fi fi-id"></span><span>ID</span>
+      </button>
+    </form>
+    <form action="/translation" method="post" class="flex-1">
+      <input type="hidden" name="lang" value="en" />
+      <button type="submit" class="flex h-9 w-full items-center justify-center gap-1.5 rounded-md transition-colors" :class="lang === 'en' ? 'bg-[#003060] text-white shadow-sm' : 'hover:bg-gray-200/60 text-[#4A5568]'">
+        <span class="fi fi-gb"></span><span>EN</span>
+      </button>
+    </form>
+    <form action="/translation" method="post" class="flex-1">
+      <input type="hidden" name="lang" value="ja" />
+      <button type="submit" class="flex h-9 w-full items-center justify-center gap-1.5 rounded-md transition-colors" :class="lang === 'ja' ? 'bg-[#003060] text-white shadow-sm' : 'hover:bg-gray-200/60 text-[#4A5568]'">
+        <span class="fi fi-jp"></span><span>JP</span>
+      </button>
+    </form>
+  </div>
+{{else if mobile}}
   <div x-data="{ langOpen: false }" class="flex flex-col">
     <button
       @click="langOpen = !langOpen"

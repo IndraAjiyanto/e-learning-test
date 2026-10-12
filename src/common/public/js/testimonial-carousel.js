@@ -241,3 +241,35 @@ function alumniDeck(customData = []) {
     goTo(i) { this.active = Math.max(0, Math.min(i, this.maxActive)); this._auto(); }
   };
 }
+
+/**
+ * Partner Grid - tampil maksimal 36 (6 kolom x 6 baris) per kategori tab.
+ * Jika gambar pada kategori terpilih melebihi 36, tombol "Load More"
+ * akan menampilkan seluruh sisa gambar kategori tersebut sekaligus.
+ */
+function partnerGrid(customData = [], defaultTab = 'Institutions') {
+  return {
+    allPartners: Array.isArray(customData) ? customData : [],
+    activeTab: defaultTab,
+    showAll: false,
+    limit: 36,
+    get filteredPartners() {
+      return this.allPartners.filter(p => p.category === this.activeTab);
+    },
+    get visiblePartners() {
+      return this.showAll ? this.filteredPartners : this.filteredPartners.slice(0, this.limit);
+    },
+    get hasMore() {
+      return !this.showAll && this.filteredPartners.length > this.limit;
+    },
+    get canCollapse() {
+      return this.showAll && this.filteredPartners.length > this.limit;
+    },
+    loadMore() { this.showAll = true; },
+    showLess() { this.showAll = false; },
+    setTab(tab) {
+      this.activeTab = tab;
+      this.showAll = false;
+    }
+  };
+}
