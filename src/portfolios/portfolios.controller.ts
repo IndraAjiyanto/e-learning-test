@@ -107,7 +107,6 @@ export class PortfoliosController {
         createPortfolioDto.content,
         '/asset/portfolio/temp',
         '/asset/portfolio/isi',
-        '/asset/portfolio/temp',
       );
 
       createPortfolioDto.content = contentHtml;
@@ -344,19 +343,18 @@ export class PortfoliosController {
       );
 
       if (updatePortfolioDto.content) {
-        this.portfoliosService.ChangeImageEditorJS(
-          oldPortfolio.content,
-          '/asset/portfolio/isi',
-          '/asset/portfolio/temp',
-        );
         const finalHtml = this.portfoliosService.ChangeImageEditorJS(
           updatePortfolioDto.content,
           '/asset/portfolio/temp',
           '/asset/portfolio/isi',
-          '/asset/portfolio/temp',
         );
         updatePortfolioDto.content = finalHtml;
         updatePortfolioDto.contentHtml = finalHtml;
+
+        await this.portfoliosService.cleanupRemovedContentImages(
+          oldPortfolio.content,
+          finalHtml,
+        );
       }
 
       // Gambar lama yang dipertahankan dikirim lewat `keepImages`, bukan

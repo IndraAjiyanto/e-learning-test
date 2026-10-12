@@ -606,7 +606,8 @@ export class PortfoliosService {
     // 1. Jika konten berupa HTML (dari Quill)
     if (/<\/?[a-z][\s\S]*>/i.test(contentStr) || !contentStr.startsWith('{')) {
       // Regex replace semua img src yang menuju ke oldFolder
-      const regex = new RegExp(`src=["'](${oldFolder.replace('/', '\\/')}[^"']+)["']`, 'gi');
+      const escapedFolder = oldFolder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`src=["'](${escapedFolder}[^"']+)["']`, 'gi');
       result = contentStr.replace(regex, (match, url) => {
         const newUrl = moveImageFile(url);
         return `src="${newUrl}"`;
@@ -676,6 +677,37 @@ export class PortfoliosService {
     );
 
     return newImage;
+  }
+
+  async cleanupRemovedContentImages(oldContent: string, newContent: string) {
+    if (!oldContent) return;
+    const extractImages = (content: string): string[] => {
+      const urls: string[] = [];
+      const regex = /src=["'](\/asset\/portfolio\/isi\/[^"']+)["']/gi;
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(content)) !== null) {
+        urls.push(match[1]);
+      }
+      return urls;
+    };
+
+    const oldImages = extractImages(oldContent);
+    const newImages = new Set(extractImages(newContent || ''));
+    const toDelete = oldImages.filter((url) => !newImages.has(url));
+
+    const publicDir = path.join(process.cwd(), 'public');
+    await Promise.all(
+      toDelete.map(async (url) => {
+        try {
+          const filePath = path.join(publicDir, url);
+          if (fs.existsSync(filePath)) {
+            await ps.unlink(filePath);
+          }
+        } catch {
+          // ignore
+        }
+      }),
+    );
   }
 
   async remove(portfolio: Portofolios) {

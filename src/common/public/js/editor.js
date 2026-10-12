@@ -1,7 +1,4 @@
 import Quill from 'quill';
-import ImageUploader from 'quill-image-uploader';
-
-Quill.register('modules/imageUploader', ImageUploader);
 
 /**
  * Helper converter dari EditorJS blocks ke HTML jika ada data legacy
@@ -91,36 +88,54 @@ export function createQuillEditor(holder, options = {}) {
     toolbar: toolbarOptions,
   };
 
-  if (options.uploadUrl) {
-    modules.imageUploader = {
-      upload: (file) => {
-        return new Promise((resolve, reject) => {
-          const formData = new FormData();
-          formData.append('image', file);
-          fetch(options.uploadUrl, {
-            method: 'POST',
-            body: formData,
-          })
-            .then((res) => res.json())
-            .then((result) => {
-              const url =
-                result?.file?.url ||
-                result?.url ||
-                (result?.uploadedImageUrls && result.uploadedImageUrls[0]);
-              if (url) resolve(url);
-              else reject(result?.message || 'Upload failed');
-            })
-            .catch((err) => reject(err));
-        });
-      },
-    };
-  }
-
   const quill = new Quill(el, {
     theme: 'snow',
     placeholder: options.placeholder || 'Write your content here...',
     modules,
   });
+
+  if (options.uploadUrl) {
+    const toolbar = quill.getModule('toolbar');
+    if (toolbar) {
+      toolbar.addHandler('image', () => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/jpeg,image/png,image/jpg,image/gif,image/webp');
+        input.onchange = async () => {
+          const file = input.files && input.files[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append('image', file);
+
+          try {
+            const res = await fetch(options.uploadUrl, {
+              method: 'POST',
+              body: formData,
+            });
+            const result = await res.json();
+            const url =
+              result?.file?.url ||
+              result?.url ||
+              (result?.uploadedImageUrls && result.uploadedImageUrls[0]);
+
+            if (url) {
+              const range = quill.getSelection(true) || { index: quill.getLength() };
+              quill.insertEmbed(range.index, 'image', url);
+              quill.setSelection(range.index + 1);
+            } else {
+              console.error('Upload failed:', result);
+              alert(result?.message || 'Upload gagal');
+            }
+          } catch (err) {
+            console.error('Upload error:', err);
+            alert('Gagal mengunggah gambar');
+          }
+        };
+        input.click();
+      });
+    }
+  }
 
   if (options.initialContent) {
     const html = editorJsBlocksToHtml(options.initialContent);

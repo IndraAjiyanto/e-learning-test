@@ -190,7 +190,8 @@ function createPortfolioForm() {
       title: '',
       description: '',
       link: '',
-      courseId: '{{courseId}}'
+      courseId: '{{courseId}}',
+      content: ''
     },
     imageUploads: [
       { id: 1, file: null, name: '{{t 'test.myPortfolio.modal.noFileChosen'}}', error: '' }
@@ -278,10 +279,19 @@ function createPortfolioForm() {
         if (contentHtml === '<p><br></p>') contentHtml = '';
       }
 
+      this.form.content = contentHtml;
+
       const contentInput = document.getElementById('portfolio_create_content_input') || document.querySelector('input[name="content"]');
       if (contentInput) {
         contentInput.value = contentHtml;
       }
+
+      const fileInputs = e.target.querySelectorAll('input[type="file"][name="image"]');
+      fileInputs.forEach((inp) => {
+        if (!inp.files || inp.files.length === 0) {
+          inp.disabled = true;
+        }
+      });
 
       this.loading = true;
       e.target.submit();
