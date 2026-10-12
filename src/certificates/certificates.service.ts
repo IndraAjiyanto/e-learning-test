@@ -127,6 +127,7 @@ export class CertificatesService {
     const categoryName = this.formatCategoryName(
       course.category?.name || 'Program',
     );
+    const categoryType = this.escapeHtml(course.category.type);
     const courseMethod = this.escapeHtml(course.method);
     const courseName = this.escapeHtml(course.name);
     const classType = this.escapeHtml(
@@ -150,10 +151,12 @@ export class CertificatesService {
       .replace('[Month DD, YYYY]', certificateDate)
       .replace('[Month YYYY] – [Month YYYY]', certificateDate)
       .replace('>Excellent<', `>${classType}<`)
+      .replace('[Category name]', categoryName)
       .replace('Intensive<br>Bootcamp', categoryName)
       .replace('Kickstart<br>Class', categoryName)
       .replace('Faster<br>Class', categoryName)
       .replace('Starter<br>Class', categoryName)
+      .replace('[Typer program]', categoryType)
       .replace(
         /(<div[^>]*(?:data-role="big"|id="k[12]")[^>]*>)[^<]*(<\/div>)/g,
         (_match, openingTag, closingTag) => {
