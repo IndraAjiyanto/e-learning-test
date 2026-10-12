@@ -89,15 +89,20 @@ export class FinalAssignmentService {
       throw new NotFoundException('Course not found');
     }
 
-    let parsedContent: Record<string, unknown> | undefined = undefined;
+    let parsedContent: object | string | null | undefined = undefined;
     if (typeof dto.content === 'string') {
-      try {
-        parsedContent = JSON.parse(dto.content) as Record<string, unknown>;
-      } catch {
-        parsedContent = undefined;
+      const trimmed = dto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
-    } else if (dto.content) {
-      parsedContent = dto.content as Record<string, unknown>;
+    } else if (dto.content !== undefined) {
+      parsedContent = dto.content;
     }
 
     let fa = await this.finalAssignmentRepo.findOne({ where: { courseId } });
@@ -111,7 +116,7 @@ export class FinalAssignmentService {
       fa.title = dto.title;
       fa.description = dto.description;
       if (parsedContent !== undefined) {
-        fa.content = parsedContent;
+        fa.content = parsedContent as object;
       }
       return this.finalAssignmentRepo.save(fa);
     }
@@ -120,7 +125,7 @@ export class FinalAssignmentService {
       courseId,
       title: dto.title,
       description: dto.description,
-      content: parsedContent,
+      content: parsedContent as object | undefined,
     });
     return this.finalAssignmentRepo.save(fa);
   }

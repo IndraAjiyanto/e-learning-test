@@ -6,15 +6,15 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Hapus file gambar orphan yang terupload ke server (via EditorJS byFile)
+ * Hapus file gambar orphan yang terupload ke server (via Quill image uploader)
  * tapi tidak pernah direferensikan di DB karena user batal submit form.
  *
  * Direktori yang dipantau:
- *   - public/asset/course/      → EditorJS di syllabus & final_assignment
- *   - public/asset/portfolio/temp/ → EditorJS di portfolio create/edit
+ *   - public/asset/course/         → Quill di syllabus & final_assignment
+ *   - public/asset/portfolio/temp/ → Quill di portfolio create/edit
  *
  * Strategi: file lebih dari MAX_AGE_HOURS jam & tidak ada URL-nya di DB → hapus.
- * ponytail: raw SQL ILIKE cukup, tidak perlu parse JSON per-row di JS.
+ * ponytail: raw SQL ILIKE '%url%' cukup, bekerja untuk teks HTML maupun legacy JSON.
  */
 @Injectable()
 export class OrphanImageCleanupService {

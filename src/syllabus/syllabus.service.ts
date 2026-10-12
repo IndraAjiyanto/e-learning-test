@@ -84,24 +84,26 @@ export class SyllabusService {
       }
     }
 
-    let parsedContent: Record<string, unknown> | null = null;
+    let parsedContent: object | string | null = null;
     if (
       typeof createSyllabusDto.content === 'string' &&
       createSyllabusDto.content.trim()
     ) {
-      try {
-        parsedContent = JSON.parse(createSyllabusDto.content) as Record<
-          string,
-          unknown
-        >;
-      } catch {
-        parsedContent = null;
+      const trimmed = createSyllabusDto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
     } else if (
       createSyllabusDto.content &&
       typeof createSyllabusDto.content === 'object'
     ) {
-      parsedContent = createSyllabusDto.content as Record<string, unknown>;
+      parsedContent = createSyllabusDto.content;
     }
 
     const isFinal =
@@ -111,7 +113,7 @@ export class SyllabusService {
     const data = this.syllabusRepository.create({
       title: createSyllabusDto.title,
       description: createSyllabusDto.description,
-      content: parsedContent ?? undefined,
+      content: (parsedContent ?? undefined) as object | undefined,
       syllabusNumber: syllabusNumber,
       isFinal: isFinal,
       course: course,
@@ -309,24 +311,26 @@ export class SyllabusService {
       );
     }
 
-    let parsedContent: Record<string, unknown> | null = null;
+    let parsedContent: object | string | null = null;
     if (
       typeof updateSyllabusDto.content === 'string' &&
       updateSyllabusDto.content.trim()
     ) {
-      try {
-        parsedContent = JSON.parse(updateSyllabusDto.content) as Record<
-          string,
-          unknown
-        >;
-      } catch {
-        parsedContent = null;
+      const trimmed = updateSyllabusDto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
     } else if (
       updateSyllabusDto.content &&
       typeof updateSyllabusDto.content === 'object'
     ) {
-      parsedContent = updateSyllabusDto.content as Record<string, unknown>;
+      parsedContent = updateSyllabusDto.content;
     }
 
     const isFinal =
