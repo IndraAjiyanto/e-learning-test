@@ -226,12 +226,15 @@ export class QuizController {
     @Req() req: Request,
   ) {
     try {
-      await this.quizService.update(quizId, updateQuizDto);
+      const updatedQuiz = await this.quizService.update(quizId, updateQuizDto);
       flashToast(
         req,
         'Changes Saved',
         'The quiz information has been updated.',
       );
+      if (updatedQuiz?.syllabus) {
+        return res.redirect(`/syllabus/quiz/detail/${quizId}`);
+      }
       res.redirect(`/quiz/${quizId}`);
     } catch (error: unknown) {
       const err = error as Error;

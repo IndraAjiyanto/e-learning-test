@@ -16,7 +16,7 @@
     'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'A', 'BLOCKQUOTE', 'PRE', 'CODE', 'HR',
     'FIGURE', 'FIGCAPTION', 'IMG', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD'
   ];
-  var OVERVIEW_ALLOWED_ATTRS = ['href', 'src', 'alt', 'title', 'colspan', 'rowspan', 'class'];
+  var OVERVIEW_ALLOWED_ATTRS = ['href', 'src', 'alt', 'title', 'colspan', 'rowspan', 'class', 'style'];
 
   function sanitizeOverviewHtml(html) {
     // DOMParser menghasilkan dokumen inert: script tidak jalan, resource tidak di-fetch.
