@@ -1,5 +1,6 @@
 import Quill from 'quill';
 import { StyleAttributor, Scope } from 'parchment';
+import QuillTableUI from 'quill-table-ui';
 
 export const LINE_HEIGHT_WHITELIST = [
   '1',
@@ -33,6 +34,7 @@ Quill.register(
     'formats/lineHeight': LineHeightStyle,
     'formats/line-height': LineHeightStyle,
     'formats/video': CustomVideo,
+    'modules/tableUI': QuillTableUI,
   },
   true,
 );
@@ -146,12 +148,15 @@ export function createQuillEditor(holder, options = {}) {
     [{ script: 'sub' }, { script: 'super' }],
     [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
     [{ direction: 'rtl' }, { align: [] }],
-    ['link', 'image', 'video', 'formula'],
+    ['link', 'image', 'video', 'formula', 'table'],
     ['clean'],
   ];
 
   const modules = {
     toolbar: toolbarOptions,
+    table: options.table !== undefined ? options.table : true,
+    tableUI: options.tableUI !== undefined ? options.tableUI : true,
+    ...options.modules,
   };
 
   const quill = new Quill(el, {
@@ -161,6 +166,19 @@ export function createQuillEditor(holder, options = {}) {
   });
 
   const toolbar = quill.getModule('toolbar');
+  if (toolbar) {
+    const tableModule = quill.getModule('table');
+    if (tableModule) {
+      toolbar.addHandler('table', () => {
+        const [table] = tableModule.getTable();
+        if (table) {
+          tableModule.insertRowBelow();
+        } else {
+          tableModule.insertTable(3, 3);
+        }
+      });
+    }
+  }
   if (toolbar && toolbar.container) {
     const lineHeightPicker = toolbar.container.querySelector('.ql-lineHeight, .ql-line-height');
     if (lineHeightPicker) {
