@@ -66,10 +66,15 @@
           let parsed = null;
           try {
             parsed = JSON.parse(text);
-          } catch (e) {}
+          } catch (e) {
+            parsed = text;
+          }
           if (typeof parsed === 'string') {
             try {
-              parsed = JSON.parse(parsed);
+              const second = JSON.parse(parsed);
+              if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+                parsed = second;
+              }
             } catch (e) {}
           }
           function normalizeVideoEmbedUrl(url) {

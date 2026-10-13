@@ -231,8 +231,8 @@
         </div>
 
         {{!-- Content Body: Render Content Saja --}}
-        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] bg-[#FFFFFF] min-h-[200px]' x-data='finalAssignmentContentRenderer("final_assignment_content_data")' x-init='init()'>
-          <div class='final-assignment-content w-full font-inter text-[14px] leading-[22px] text-[#171717]' x-html='renderedHtml'></div>
+        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] bg-[#FFFFFF] min-h-[200px]'>
+          {{> components/ui/content-preview/index content=finalAssignment.content emptyMessage="Belum ada konten untuk Final Assignment ini."}}
         </div>
 
       </div>
@@ -241,12 +241,6 @@
 
   </div>
 </div>
-
-{{> components/ui/final_assignment/content_data/index
-    contentId='final_assignment_content_data'
-    content=finalAssignment.content }}
-
-{{> components/ui/final_assignment/renderer/index }}
 
 <script id="final_assignment_submissions_data" type="application/json">
 {{{json submissions}}}

@@ -90,15 +90,19 @@ export function editorJsBlocksToHtml(raw) {
   let parsed = raw;
   if (typeof raw === 'string') {
     const trimmed = raw.trim();
-    if (trimmed.startsWith('{')) {
-      try {
-        parsed = JSON.parse(trimmed);
-      } catch (e) {
-        return raw;
-      }
-    } else {
-      return raw;
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch (e) {
+      parsed = trimmed;
     }
+  }
+  if (typeof parsed === 'string') {
+    try {
+      const second = JSON.parse(parsed);
+      if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+        parsed = second;
+      }
+    } catch (e) {}
   }
 
   if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
@@ -165,6 +169,7 @@ export function editorJsBlocksToHtml(raw) {
 export function createQuillEditor(holder, options = {}) {
   const el = typeof holder === 'string' ? document.getElementById(holder) : holder;
   if (!el) return null;
+  if (el.__quill) return el.__quill;
 
   const defaultLineHeights = options.lineHeights || [
     false,
@@ -203,6 +208,7 @@ export function createQuillEditor(holder, options = {}) {
     placeholder: options.placeholder || 'Write your content here...',
     modules,
   });
+  el.__quill = quill;
 
   const toolbar = quill.getModule('toolbar');
   if (toolbar) {
@@ -276,9 +282,7 @@ export function createQuillEditor(holder, options = {}) {
     let html = editorJsBlocksToHtml(options.initialContent);
     if (html) {
       if (typeof html === 'string') {
-        html = html.replace(/<iframe([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi, (match, before, src, after) => {
-          return '<iframe' + before + 'src="' + normalizeVideoEmbedUrl(src) + '"' + after + '>';
-        });
+        html = normalizeHtmlVideos(html);
       }
       quill.clipboard.dangerouslyPasteHTML(html);
     }
@@ -287,10 +291,125 @@ export function createQuillEditor(holder, options = {}) {
   return quill;
 }
 
+export function normalizeHtmlVideos(html) {
+  if (!html) return '';
+  return html.replace(/<iframe([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi, (match, before, src, after) => {
+    const embedUrl = normalizeVideoEmbedUrl(src);
+    if (!embedUrl) return '';
+    return '<iframe' + before + 'src="' + embedUrl + '"' + after + '>';
+  });
+}
+
+export function renderContentToHtml(raw, emptyMessage = '') {
+  if (!raw) return emptyMessage ? `<p class="text-[#737373] italic">${emptyMessage}</p>` : '';
+  let parsed = raw;
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch (e) {
+      parsed = trimmed;
+    }
+  }
+  if (typeof parsed === 'string') {
+    try {
+      const second = JSON.parse(parsed);
+      if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+        parsed = second;
+      }
+    } catch (e) {}
+  }
+  if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
+    return normalizeHtmlVideos(parsed.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '));
+  }
+  if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+    return editorJsBlocksToHtml(parsed);
+  }
+  if (typeof parsed === 'string' && parsed.trim()) {
+    return `<div class="whitespace-pre-line">${parsed}</div>`;
+  }
+  return emptyMessage ? `<p class="text-[#737373] italic">${emptyMessage}</p>` : '';
+}
+
+export function quillEditorContainer(config = {}) {
+  return {
+    quill: null,
+    init() {
+      const start = () => {
+        if (!window.QuillEditor) {
+          setTimeout(start, 50);
+          return;
+        }
+        let initialContent = config.value;
+        const scriptEl = document.getElementById(config.holderId + '_bootstrap_value');
+        if (scriptEl && scriptEl.textContent) {
+          try {
+            initialContent = JSON.parse(scriptEl.textContent.trim());
+          } catch (e) {
+            initialContent = scriptEl.textContent.trim();
+          }
+        }
+        if (typeof initialContent === 'string') {
+          try {
+            const second = JSON.parse(initialContent);
+            if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+              initialContent = second;
+            }
+          } catch (e) {}
+        }
+        this.quill = window.QuillEditor.create(config.holderId, {
+          placeholder: config.placeholder || 'Write your content here...',
+          uploadUrl: config.uploadUrl || '/program/upload-image',
+          initialContent,
+        });
+        const form = this.$el.closest('form');
+        const sync = () => {
+          const input = this.$refs?.input || document.getElementById(config.inputId);
+          if (input && this.quill) {
+            input.value = window.QuillEditor.getHtml(this.quill);
+          }
+        };
+        if (this.quill) {
+          this.quill.on('text-change', sync);
+          sync();
+        }
+        if (form) {
+          form.addEventListener('submit', sync);
+        }
+      };
+      start();
+    },
+  };
+}
+
+export function contentPreviewContainer(rawContent, emptyMessage = '') {
+  return {
+    renderedHtml: '',
+    init() {
+      const render = () => {
+        let content = rawContent;
+        if (typeof content === 'string' && document.getElementById(content)) {
+          content = document.getElementById(content).textContent;
+        }
+        this.renderedHtml = renderContentToHtml(content, emptyMessage);
+      };
+      render();
+      if (!this.renderedHtml && typeof rawContent === 'string') {
+        setTimeout(render, 50);
+      }
+    },
+  };
+}
+
 window.Quill = Quill;
+window.quillEditorContainer = quillEditorContainer;
+window.contentPreviewContainer = contentPreviewContainer;
+window.finalAssignmentContentRenderer = (sourceId, emptyMessage) => contentPreviewContainer(sourceId, emptyMessage);
 window.QuillEditor = {
   create: createQuillEditor,
   blocksToHtml: editorJsBlocksToHtml,
+  renderToHtml: renderContentToHtml,
+  normalizeHtmlVideos,
   getHtml: (quill) => {
     if (!quill) return '';
     const raw = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
