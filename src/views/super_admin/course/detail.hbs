@@ -172,7 +172,9 @@
         {{else}}
           {{> components/ui/super_admin/tabs/panel/index name='registration' label='Registration' }}
         {{/if}}
+        {{#unless (eq course.category.type 'Free Program')}}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
+        {{/unless}}
         {{> components/ui/super_admin/tabs/panel/index name='FAQs' label='FAQs' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
@@ -200,7 +202,9 @@
       {{else}}
         <div x-show="tab === 'registration'">{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
       {{/if}}
+      {{#unless (eq course.category.type 'Free Program')}}
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+      {{/unless}}
       <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
@@ -237,6 +241,7 @@
     const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
     const structure = '{{caps.structure}}';
     const hasFinal = {{#if caps.finalAssignment}}true{{else}}false{{/if}};
+    const hasAlumni = {{#if (eq course.category.type 'Free Program')}}false{{else}}true{{/if}};
     const fallbackTab = isPaid ? 'payment' : 'registration';
     return {
       tab: localStorage.getItem('activeTabProgram') || fallbackTab,
@@ -258,6 +263,8 @@
         } else if (this.tab === 'sylabus' && structure !== 'syllabus') {
           this.tab = fallbackTab;
         } else if (this.tab === 'final_assignment' && !hasFinal) {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'alumni' && !hasAlumni) {
           this.tab = fallbackTab;
         }
       },

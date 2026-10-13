@@ -247,7 +247,9 @@ export class DashboardController {
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
     const kelasList = await this.dashboardService.findCourses();
-    const kategoriList = await this.dashboardService.findCategories();
+    const kategoriList = (await this.dashboardService.findCategories()).filter(
+      (c) => c.type !== 'Free Program',
+    );
 
     res.render('alumni', {
       user: req.user,
