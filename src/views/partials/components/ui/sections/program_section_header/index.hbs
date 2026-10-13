@@ -1,0 +1,20 @@
+{{!--
+  Section Header: Program Section (dipakai bersama)
+  Lokasi: src/views/partials/components/ui/sections/program_section_header/index.hbs
+
+  Header seragam untuk section program (id="programs") di ketiga halaman detail
+  category publik (free_program, paid_program, special_program) — baik saat ada
+  program maupun saat kosong. Copy mengikuti halaman Free Program.
+
+  Props:
+  - category : objek category (dipakai .name via nameByLang)
+  - lang     : bahasa aktif
+--}}
+<div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
+  <h2 class="text-2xl sm:text-3xl lg:text-[36px] lg:leading-tight font-inter font-bold text-[#0B1F3B]">
+    <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span> {{default (t 'test.categoryFreeProgram.program.title') 'for You'}}
+  </h2>
+  <p class="text-[16px] leading-relaxed max-w-[620px] font-inter text-[#4A5568]">
+    {{default (t 'test.categoryFreeProgram.program.description1') 'Choose the '}} {{nameByLang category lang}} {{default (t 'test.categoryFreeProgram.program.description2') 'that matches your interests and start building practical skills.'}}
+  </p>
+</div>

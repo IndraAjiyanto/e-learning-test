@@ -17,17 +17,10 @@
 <section id="programs" class="w-full bg-[#FAFAFA] py-16 font-inter lg:py-24" data-node-id="2591:835">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-14">
 
-    {{#if courses.length}}
-      {{!-- section-header (Figma Node 2591:836) --}}
-      <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
-        <h2 class="text-2xl sm:text-3xl lg:text-[36px] lg:leading-tight font-inter font-bold text-[#0B1F3B]">
-          <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span> {{default (t 'test.categoryFreeProgram.program.title') 'for You'}}
-        </h2>
-        <p class="text-[16px] leading-relaxed max-w-[620px] font-inter text-[#4A5568]">
-          {{default (t 'test.categoryFreeProgram.program.description') 'Choose the short class that matches your interests and start building practical skills.'}}
-        </p>
-      </div>
+    {{!-- section-header seragam (mengikuti halaman Free Program) --}}
+    {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
+    {{#if courses.length}}
       {{!-- program-cards Grid (Figma Node 2591:839) --}}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center">
         {{#each courses}}
@@ -47,16 +40,6 @@
         {{/each}}
       </div>
     {{else}}
-      {{!-- Coming Soon: judul section = nama category dari backend, deskripsi = teks coming soon --}}
-      <div class="flex max-w-[760px] flex-col items-center gap-3 text-center">
-        <h2 class="font-montserrat text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[110%] tracking-tight text-[#0B1F3B]">
-          <span class="text-[#6EB6E5]">{{#if category.name}}{{nameByLang category lang}}{{else}}{{default (t 'test.categoryFreeProgram.hero.defaultCategoryName') 'Short Classes'}}{{/if}}</span>
-        </h2>
-        <p class="font-inter text-base sm:text-lg leading-[160%] text-[#6B7280] max-w-[760px]">
-          {{default (t 'test.categoryFreeProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates."}}
-        </p>
-      </div>
-
       {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
       {{> components/ui/sections/program_coming_soon/index
           title=(default (t 'test.categoryFreeProgram.program.comingSoonTitle') "Program Coming Soon")
