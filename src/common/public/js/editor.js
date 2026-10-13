@@ -249,8 +249,9 @@ window.QuillEditor = {
   blocksToHtml: editorJsBlocksToHtml,
   getHtml: (quill) => {
     if (!quill) return '';
-    const html = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
-    return html === '<p><br></p>' ? '' : html;
+    const raw = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
+    if (raw === '<p><br></p>') return '';
+    return raw.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
   },
   LineHeightStyle,
   LINE_HEIGHT_WHITELIST,

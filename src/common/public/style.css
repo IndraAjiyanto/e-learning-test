@@ -641,4 +641,15 @@ body {
   box-sizing: border-box !important;
 }
 
+/* Fix text wrapping: prevent words from splitting across lines mid-word */
+.final-assignment-content,
+.final-assignment-content *,
+.syllabus-theory-content,
+.syllabus-theory-content * {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  hyphens: manual !important;
+}
+
+
 

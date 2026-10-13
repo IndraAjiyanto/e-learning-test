@@ -73,7 +73,7 @@
             } catch (e) {}
           }
           if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
-            this.renderedHtml = parsed;
+            this.renderedHtml = parsed.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
             return;
           }
           if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
@@ -200,13 +200,13 @@
     margin-top: 8px !important;
     margin-bottom: 4px !important;
   }
-  .final-assignment-content {
-    overflow-wrap: break-word;
-    word-break: break-word;
+  .final-assignment-content,
+  .final-assignment-content * {
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: manual !important;
   }
   .final-assignment-content p {
-    overflow-wrap: break-word;
-    word-break: break-word;
     margin-bottom: 12px;
   }
   .final-assignment-content p:last-child {
