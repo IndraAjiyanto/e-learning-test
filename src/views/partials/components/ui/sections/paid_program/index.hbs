@@ -17,18 +17,10 @@
 <section id="programs" class="w-full bg-white py-16 sm:py-20 lg:py-24 font-inter">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    {{#if courses.length}}
-      {{!-- section-header --}}
-      {{> components/ui/text/section_header/index
-          title=(t 'test.categoryPaidProgram.program.title')
-          titleSize="h2"
-          titleClass="font-inter font-bold text-3xl sm:text-4xl lg:text-[40px] lg:leading-[48px] text-[#6EB6E5] mb-3 text-center"
-          description=(t 'test.categoryPaidProgram.program.description')
-          descSize="lead"
-          descClass="font-inter font-normal text-base sm:text-lg text-[#6B7280] leading-relaxed max-w-[720px] text-center"
-          wrapperClass="max-w-[760px] items-center text-center"
-      }}
+    {{!-- section-header seragam (mengikuti halaman Free Program) --}}
+    {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
+    {{#if courses.length}}
       {{!-- program-cards grid --}}
       <div class="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch justify-items-center max-w-[1568px]">
         {{#each courses}}
@@ -47,17 +39,6 @@
         {{/each}}
       </div>
     {{else}}
-      {{!-- Coming Soon: judul section = nama category dari backend, deskripsi = teks coming soon --}}
-      {{> components/ui/text/section_header/index
-          title=(default (nameByLang category lang) category.name)
-          titleSize="h2"
-          titleClass="font-inter font-bold text-3xl sm:text-4xl lg:text-[40px] lg:leading-[48px] text-[#6EB6E5] mb-3 text-center"
-          description=(default (t 'test.categoryPaidProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates.")
-          descSize="lead"
-          descClass="font-inter font-normal text-base sm:text-lg text-[#6B7280] leading-relaxed max-w-[720px] text-center"
-          wrapperClass="max-w-[760px] items-center text-center"
-      }}
-
       {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
       {{> components/ui/sections/program_coming_soon/index
           title=(default (t 'test.categoryPaidProgram.program.comingSoonTitle') "Program Coming Soon")

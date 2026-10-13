@@ -30,7 +30,7 @@ export class QuizController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':weeksId')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async create(
@@ -59,7 +59,7 @@ export class QuizController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:weeksId')
   formCreate(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -69,7 +69,7 @@ export class QuizController {
     res.render('admin/quiz/create', { weeksId, user: req.user });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':quizId')
   async findOne(
     @Param('quizId') quizId: string,
@@ -92,7 +92,7 @@ export class QuizController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:quizId')
   async formEdit(
     @Param('quizId') quizId: string,
@@ -216,7 +216,7 @@ export class QuizController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':quizId')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async update(
@@ -247,7 +247,7 @@ export class QuizController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':quizId/:weeksId')
   async remove(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
