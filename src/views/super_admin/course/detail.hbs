@@ -154,6 +154,15 @@
       x-data='tabData()'
     >
       <nav role='tablist' aria-label='Program sections' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
+        {{#if (eq caps.structure 'weeks')}}
+          {{> components/ui/super_admin/tabs/panel/index name='week' label='Week' }}
+        {{/if}}
+        {{#if (eq caps.structure 'syllabus')}}
+          {{> components/ui/super_admin/tabs/panel/index name='sylabus' label='Sylabus' }}
+        {{/if}}
+        {{#if caps.finalAssignment}}
+          {{> components/ui/super_admin/tabs/panel/index name='final_assignment' label='Final Assignment' }}
+        {{/if}}
         {{> components/ui/super_admin/tabs/panel/index name='benefit' label='Benefit' }}
         {{!-- {{> components/ui/super_admin/tabs/panel/index name='participants' label='Participants' }} --}}
         {{> components/ui/super_admin/tabs/panel/index name='flow' label='Flow' }}
@@ -163,7 +172,9 @@
         {{else}}
           {{> components/ui/super_admin/tabs/panel/index name='registration' label='Registration' }}
         {{/if}}
+        {{#unless (eq course.category.type 'Free Program')}}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
+        {{/unless}}
         {{> components/ui/super_admin/tabs/panel/index name='FAQs' label='FAQs' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
@@ -172,6 +183,15 @@
         {{> components/ui/super_admin/tabs/panel/index name='portfolio' label='Portfolio' }}
       </nav>
 
+      {{#if (eq caps.structure 'weeks')}}
+        <div x-show="tab === 'week'" class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
+      {{/if}}
+      {{#if (eq caps.structure 'syllabus')}}
+        <div x-show="tab === 'sylabus'" class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
+      {{/if}}
+      {{#if caps.finalAssignment}}
+        <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab }}</div>
+      {{/if}}
       <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
@@ -182,7 +202,9 @@
       {{else}}
         <div x-show="tab === 'registration'">{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
       {{/if}}
+      {{#unless (eq course.category.type 'Free Program')}}
       <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+      {{/unless}}
       <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
       <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
@@ -217,8 +239,12 @@
 <script>
   function tabData() {
     const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
+    const structure = '{{caps.structure}}';
+    const hasFinal = {{#if caps.finalAssignment}}true{{else}}false{{/if}};
+    const hasAlumni = {{#if (eq course.category.type 'Free Program')}}false{{else}}true{{/if}};
+    const fallbackTab = isPaid ? 'payment' : 'registration';
     return {
-      tab: localStorage.getItem('activeTabProgram') || (isPaid ? 'payment' : 'registration'),
+      tab: localStorage.getItem('activeTabProgram') || fallbackTab,
 
       init() {
         this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
@@ -227,6 +253,19 @@
           this.tab = 'registration';
         } else if (isPaid && this.tab === 'registration') {
           this.tab = 'payment';
+        }
+
+        // Tab Week/Sylabus/Final Assignment hanya ada pada tipe program tertentu,
+        // sedangkan kunci localStorage dipakai bersama - jadi nilai dari program
+        // lain bisa tertinggal lalu membuat tidak ada panel yang terbuka.
+        if (this.tab === 'week' && structure !== 'weeks') {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'sylabus' && structure !== 'syllabus') {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'final_assignment' && !hasFinal) {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'alumni' && !hasAlumni) {
+          this.tab = fallbackTab;
         }
       },
     };

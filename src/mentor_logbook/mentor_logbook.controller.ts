@@ -29,7 +29,7 @@ import { flashToast } from 'src/common/utils/toast.util';
 export class MentorLogbookController {
   constructor(private readonly mentorLogbookService: MentorLogbookService) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':sessionId')
   @UseInterceptors(
     FileInterceptor('documentation', multerConfigMemoryOnly),
@@ -66,7 +66,7 @@ export class MentorLogbookController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:sessionId')
   formCreate(
     @Param('sessionId') sessionId: string,
@@ -76,7 +76,7 @@ export class MentorLogbookController {
     res.render('admin/mentor_logbook/create', { user: req.user, sessionId });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:mentor_logbookId')
   async formEdit(
     @Param('mentor_logbookId') mentor_logbookId: string,
@@ -88,7 +88,7 @@ export class MentorLogbookController {
     res.render('admin/mentor_logbook/edit', { user: req.user, mentor_logbook });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':mentor_logbookId')
   async findOne(
     @Param('mentor_logbookId') mentor_logbookId: string,
@@ -103,7 +103,7 @@ export class MentorLogbookController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':mentor_logbookId')
   @UseInterceptors(
     FileInterceptor('documentation', multerConfigMemoryOnly),
@@ -145,7 +145,7 @@ export class MentorLogbookController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':sessionId/:mentor_logbookId')
   async remove(
     @Param('mentor_logbookId') mentor_logbookId: string,

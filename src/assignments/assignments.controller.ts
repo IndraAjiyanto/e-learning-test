@@ -29,7 +29,7 @@ import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':sessionId')
   @UseInterceptors(
     FileInterceptor('file', multerConfigMemoryOnly),
@@ -73,7 +73,7 @@ export class AssignmentsController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:sessionId')
   formCreate(
     @Res() res: Response,
@@ -83,7 +83,7 @@ export class AssignmentsController {
     res.render('admin/assignments/create', { user: req.user, sessionId });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:assignmentId')
   async formEdit(
     @Param('assignmentId') assignmentId: string,
@@ -116,7 +116,7 @@ export class AssignmentsController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':assignmentId')
   @UseInterceptors(
     FileInterceptor('file', multerConfigMemoryOnly),
@@ -172,7 +172,7 @@ export class AssignmentsController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':assignmentId/:sessionId')
   async remove(
     @Param('sessionId') sessionId: string,
