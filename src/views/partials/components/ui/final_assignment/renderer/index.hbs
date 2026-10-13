@@ -117,6 +117,16 @@
                   }).join('');
                   return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
                 }
+                case 'video':
+                case 'embed': {
+                  const url = (d.embed || d.source || (d.file && d.file.url) || d.url || '');
+                  let embedUrl = url;
+                  const yt = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) || url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/);
+                  if (yt) {
+                    embedUrl = (yt[1] || 'https') + '://www.youtube.com/embed/' + yt[2] + '?showinfo=0';
+                  }
+                  return '<div class="my-3 aspect-video w-full"><iframe class="ql-video w-full h-full min-h-[300px] rounded-lg" frameborder="0" allowfullscreen="true" src="' + embedUrl + '"></iframe></div>';
+                }
                 case 'image':
                   return '<figure class="my-3"><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" class="max-w-full rounded-lg"/>' +
                     (d.caption ? '<figcaption class="text-center text-xs text-[#737373] mt-1">' + d.caption + '</figcaption>' : '') + '</figure>';
@@ -217,5 +227,14 @@
     border-radius: 8px;
     display: block;
     margin: 12px auto;
+  }
+  .final-assignment-content iframe,
+  .final-assignment-content .ql-video {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    min-height: 320px;
+    border-radius: 8px;
+    display: block;
+    margin: 16px auto;
   }
 </style>

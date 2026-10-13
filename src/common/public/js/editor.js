@@ -18,12 +18,21 @@ export const LineHeightStyle = new StyleAttributor('lineHeight', 'line-height', 
   whitelist: LINE_HEIGHT_WHITELIST,
 });
 
+const BaseVideo = Quill.import('formats/video');
+class CustomVideo extends BaseVideo {
+  html() {
+    const url = this.value();
+    return `<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="${url}"></iframe>`;
+  }
+}
+
 Quill.register(
   {
     'attributors/style/lineHeight': LineHeightStyle,
     'attributors/style/line-height': LineHeightStyle,
     'formats/lineHeight': LineHeightStyle,
     'formats/line-height': LineHeightStyle,
+    'formats/video': CustomVideo,
   },
   true,
 );
@@ -83,6 +92,16 @@ export function editorJsBlocksToHtml(raw) {
               (d.caption || '') +
               '" /></p>'
             );
+          case 'video':
+          case 'embed': {
+            const url = d.embed || d.source || (d.file && d.file.url) || d.url || '';
+            let embedUrl = url;
+            const yt = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) || url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/);
+            if (yt) {
+              embedUrl = (yt[1] || 'https') + '://www.youtube.com/embed/' + yt[2] + '?showinfo=0';
+            }
+            return '<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="' + embedUrl + '"></iframe>';
+          }
           case 'quote':
             return '<blockquote>' + (d.text || '') + '</blockquote>';
           case 'code':
@@ -119,13 +138,15 @@ export function createQuillEditor(holder, options = {}) {
   ];
 
   const toolbarOptions = options.toolbar || [
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }, { size: [] }],
     [{ lineHeight: defaultLineHeights }],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }, 'blockquote', 'code-block'],
     ['bold', 'italic', 'underline', 'strike'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ align: [] }],
-    ['blockquote', 'code-block'],
-    ['link', 'image'],
+    [{ color: [] }, { background: [] }],
+    [{ script: 'sub' }, { script: 'super' }],
+    [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+    [{ direction: 'rtl' }, { align: [] }],
+    ['link', 'image', 'video', 'formula'],
     ['clean'],
   ];
 
@@ -208,6 +229,11 @@ window.Quill = Quill;
 window.QuillEditor = {
   create: createQuillEditor,
   blocksToHtml: editorJsBlocksToHtml,
+  getHtml: (quill) => {
+    if (!quill) return '';
+    const html = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
+    return html === '<p><br></p>' ? '' : html;
+  },
   LineHeightStyle,
   LINE_HEIGHT_WHITELIST,
 };
