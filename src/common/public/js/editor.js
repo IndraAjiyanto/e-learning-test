@@ -1,4 +1,32 @@
 import Quill from 'quill';
+import { StyleAttributor, Scope } from 'parchment';
+
+export const LINE_HEIGHT_WHITELIST = [
+  '1',
+  '1.15',
+  '1.2',
+  '1.25',
+  '1.5',
+  '1.75',
+  '2',
+  '2.5',
+  '3',
+];
+
+export const LineHeightStyle = new StyleAttributor('lineHeight', 'line-height', {
+  scope: Scope.BLOCK,
+  whitelist: LINE_HEIGHT_WHITELIST,
+});
+
+Quill.register(
+  {
+    'attributors/style/lineHeight': LineHeightStyle,
+    'attributors/style/line-height': LineHeightStyle,
+    'formats/lineHeight': LineHeightStyle,
+    'formats/line-height': LineHeightStyle,
+  },
+  true,
+);
 
 /**
  * Helper converter dari EditorJS blocks ke HTML jika ada data legacy
@@ -78,8 +106,21 @@ export function createQuillEditor(holder, options = {}) {
   const el = typeof holder === 'string' ? document.getElementById(holder) : holder;
   if (!el) return null;
 
+  const defaultLineHeights = options.lineHeights || [
+    false,
+    '1',
+    '1.15',
+    '1.25',
+    '1.5',
+    '1.75',
+    '2',
+    '2.5',
+    '3',
+  ];
+
   const toolbarOptions = options.toolbar || [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ lineHeight: defaultLineHeights }],
     ['bold', 'italic', 'underline', 'strike'],
     [{ list: 'ordered' }, { list: 'bullet' }],
     [{ align: [] }],
@@ -97,6 +138,18 @@ export function createQuillEditor(holder, options = {}) {
     placeholder: options.placeholder || 'Write your content here...',
     modules,
   });
+
+  const toolbar = quill.getModule('toolbar');
+  if (toolbar && toolbar.container) {
+    const lineHeightPicker = toolbar.container.querySelector('.ql-lineHeight, .ql-line-height');
+    if (lineHeightPicker) {
+      lineHeightPicker.setAttribute('title', 'Line Height');
+      const label = lineHeightPicker.querySelector('.ql-picker-label');
+      if (label) {
+        label.setAttribute('title', 'Line Height');
+      }
+    }
+  }
 
   if (options.uploadUrl) {
     const toolbar = quill.getModule('toolbar');
@@ -155,4 +208,6 @@ window.Quill = Quill;
 window.QuillEditor = {
   create: createQuillEditor,
   blocksToHtml: editorJsBlocksToHtml,
+  LineHeightStyle,
+  LINE_HEIGHT_WHITELIST,
 };
