@@ -6,15 +6,8 @@
 <section id="programs" class="{{default sectionClass 'w-full bg-gradient-to-b from-[#FAFAFA] via-white to-[#FAFAFA] py-14 font-inter lg:py-20'}}">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
-    {{!-- section-header sesuai Figma Layer 3 (Choose Your Program, tanpa eyebrow/dots) --}}
-    <div class="flex flex-col items-center gap-4 text-center w-full max-w-[1568px]">
-      <h2 class="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center">
-        <span class="text-[#6EB6E5]">{{default (t 'test.special_program.program.choosePrefix') 'Choose'}}</span> {{default (t 'test.special_program.program.chooseMiddle') 'Your'}} {{#if (includes category.name 'japan')}}{{default (t 'test.special_program.program.japanProgram') 'Japan Program'}}{{else}}{{default (nameByLang category lang) "Special Program"}}{{/if}}
-      </h2>
-      <p class="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center">
-        {{default (t 'test.special_program.program.description') "Select the program that aligns with your goals and passion."}}
-      </p>
-    </div>
+    {{!-- section-header seragam (mengikuti halaman Free Program) --}}
+    {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
     {{!-- Program Cards Grid (Figma Layer 3: cards showcase modern) --}}
     {{#if courses.length}}
