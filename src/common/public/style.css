@@ -536,13 +536,16 @@ body {
 
 /* Quill text & image alignment */
 .ql-align-center {
-  text-align: center;
+  text-align: center !important;
 }
 .ql-align-right {
-  text-align: right;
+  text-align: right !important;
 }
 .ql-align-justify {
-  text-align: justify;
+  text-align: justify !important;
+}
+.ql-align-left {
+  text-align: left !important;
 }
 .ql-align-center img {
   margin-left: auto !important;
@@ -640,5 +643,16 @@ body {
   vertical-align: top;
   box-sizing: border-box !important;
 }
+
+/* Fix text wrapping: prevent words from splitting across lines mid-word */
+.final-assignment-content,
+.final-assignment-content *,
+.syllabus-theory-content,
+.syllabus-theory-content * {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  hyphens: manual !important;
+}
+
 
 

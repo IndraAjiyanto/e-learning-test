@@ -19,11 +19,54 @@ export const LineHeightStyle = new StyleAttributor('lineHeight', 'line-height', 
   whitelist: LINE_HEIGHT_WHITELIST,
 });
 
+export function normalizeVideoEmbedUrl(url) {
+  if (!url) return '';
+  let cleanUrl = String(url).trim();
+  if (!cleanUrl || cleanUrl.includes('[object')) return '';
+
+  if (!/^[a-zA-Z]+:\/\//.test(cleanUrl) && !cleanUrl.startsWith('//')) {
+    cleanUrl = 'https://' + cleanUrl;
+  }
+
+  const ytWatch = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/watch.*[?&]v=([a-zA-Z0-9_-]+)/i);
+  const ytShort = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtu\.be\/([a-zA-Z0-9_-]+)/i);
+  const ytEmbed = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]+)/i);
+  const ytShorts = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/shorts\/([a-zA-Z0-9_-]+)/i);
+
+  const videoId =
+    (ytWatch && ytWatch[1]) ||
+    (ytShort && ytShort[1]) ||
+    (ytEmbed && ytEmbed[1]) ||
+    (ytShorts && ytShorts[1]);
+
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  return cleanUrl;
+}
+
 const BaseVideo = Quill.import('formats/video');
 class CustomVideo extends BaseVideo {
+  static sanitize(url) {
+    const cleanUrl = normalizeVideoEmbedUrl(url);
+    return super.sanitize(cleanUrl);
+  }
+
+  static create(value) {
+    const sanitized = this.sanitize(value);
+    const node = super.create(sanitized);
+    return node;
+  }
+
   html() {
-    const url = this.value();
-    return `<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="${url}"></iframe>`;
+    const val = this.value();
+    const url =
+      (typeof val === 'object' && val !== null ? val.video : val) ||
+      (this.domNode && this.domNode.getAttribute('src')) ||
+      '';
+    const embedUrl = normalizeVideoEmbedUrl(url);
+    return `<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="${embedUrl}"></iframe>`;
   }
 }
 
@@ -47,15 +90,19 @@ export function editorJsBlocksToHtml(raw) {
   let parsed = raw;
   if (typeof raw === 'string') {
     const trimmed = raw.trim();
-    if (trimmed.startsWith('{')) {
-      try {
-        parsed = JSON.parse(trimmed);
-      } catch (e) {
-        return raw;
-      }
-    } else {
-      return raw;
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch (e) {
+      parsed = trimmed;
     }
+  }
+  if (typeof parsed === 'string') {
+    try {
+      const second = JSON.parse(parsed);
+      if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+        parsed = second;
+      }
+    } catch (e) {}
   }
 
   if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
@@ -97,11 +144,7 @@ export function editorJsBlocksToHtml(raw) {
           case 'video':
           case 'embed': {
             const url = d.embed || d.source || (d.file && d.file.url) || d.url || '';
-            let embedUrl = url;
-            const yt = url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/) || url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/);
-            if (yt) {
-              embedUrl = (yt[1] || 'https') + '://www.youtube.com/embed/' + yt[2] + '?showinfo=0';
-            }
+            const embedUrl = normalizeVideoEmbedUrl(url);
             return '<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="' + embedUrl + '"></iframe>';
           }
           case 'quote':
@@ -126,6 +169,7 @@ export function editorJsBlocksToHtml(raw) {
 export function createQuillEditor(holder, options = {}) {
   const el = typeof holder === 'string' ? document.getElementById(holder) : holder;
   if (!el) return null;
+  if (el.__quill) return el.__quill;
 
   const defaultLineHeights = options.lineHeights || [
     false,
@@ -164,6 +208,7 @@ export function createQuillEditor(holder, options = {}) {
     placeholder: options.placeholder || 'Write your content here...',
     modules,
   });
+  el.__quill = quill;
 
   const toolbar = quill.getModule('toolbar');
   if (toolbar) {
@@ -234,8 +279,11 @@ export function createQuillEditor(holder, options = {}) {
   }
 
   if (options.initialContent) {
-    const html = editorJsBlocksToHtml(options.initialContent);
+    let html = editorJsBlocksToHtml(options.initialContent);
     if (html) {
+      if (typeof html === 'string') {
+        html = normalizeHtmlVideos(html);
+      }
       quill.clipboard.dangerouslyPasteHTML(html);
     }
   }
@@ -243,15 +291,132 @@ export function createQuillEditor(holder, options = {}) {
   return quill;
 }
 
+export function normalizeHtmlVideos(html) {
+  if (!html) return '';
+  return html.replace(/<iframe([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi, (match, before, src, after) => {
+    const embedUrl = normalizeVideoEmbedUrl(src);
+    if (!embedUrl) return '';
+    return '<iframe' + before + 'src="' + embedUrl + '"' + after + '>';
+  });
+}
+
+export function renderContentToHtml(raw, emptyMessage = '') {
+  if (!raw) return emptyMessage ? `<p class="text-[#737373] italic">${emptyMessage}</p>` : '';
+  let parsed = raw;
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch (e) {
+      parsed = trimmed;
+    }
+  }
+  if (typeof parsed === 'string') {
+    try {
+      const second = JSON.parse(parsed);
+      if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+        parsed = second;
+      }
+    } catch (e) {}
+  }
+  if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
+    return normalizeHtmlVideos(parsed.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '));
+  }
+  if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
+    return editorJsBlocksToHtml(parsed);
+  }
+  if (typeof parsed === 'string' && parsed.trim()) {
+    return `<div class="whitespace-pre-line">${parsed}</div>`;
+  }
+  return emptyMessage ? `<p class="text-[#737373] italic">${emptyMessage}</p>` : '';
+}
+
+export function quillEditorContainer(config = {}) {
+  return {
+    quill: null,
+    init() {
+      const start = () => {
+        if (!window.QuillEditor) {
+          setTimeout(start, 50);
+          return;
+        }
+        let initialContent = config.value;
+        const scriptEl = document.getElementById(config.holderId + '_bootstrap_value');
+        if (scriptEl && scriptEl.textContent) {
+          try {
+            initialContent = JSON.parse(scriptEl.textContent.trim());
+          } catch (e) {
+            initialContent = scriptEl.textContent.trim();
+          }
+        }
+        if (typeof initialContent === 'string') {
+          try {
+            const second = JSON.parse(initialContent);
+            if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+              initialContent = second;
+            }
+          } catch (e) {}
+        }
+        this.quill = window.QuillEditor.create(config.holderId, {
+          placeholder: config.placeholder || 'Write your content here...',
+          uploadUrl: config.uploadUrl || '/program/upload-image',
+          initialContent,
+        });
+        const form = this.$el.closest('form');
+        const sync = () => {
+          const input = this.$refs?.input || document.getElementById(config.inputId);
+          if (input && this.quill) {
+            input.value = window.QuillEditor.getHtml(this.quill);
+          }
+        };
+        if (this.quill) {
+          this.quill.on('text-change', sync);
+          sync();
+        }
+        if (form) {
+          form.addEventListener('submit', sync);
+        }
+      };
+      start();
+    },
+  };
+}
+
+export function contentPreviewContainer(rawContent, emptyMessage = '') {
+  return {
+    renderedHtml: '',
+    init() {
+      const render = () => {
+        let content = rawContent;
+        if (typeof content === 'string' && document.getElementById(content)) {
+          content = document.getElementById(content).textContent;
+        }
+        this.renderedHtml = renderContentToHtml(content, emptyMessage);
+      };
+      render();
+      if (!this.renderedHtml && typeof rawContent === 'string') {
+        setTimeout(render, 50);
+      }
+    },
+  };
+}
+
 window.Quill = Quill;
+window.quillEditorContainer = quillEditorContainer;
+window.contentPreviewContainer = contentPreviewContainer;
+window.finalAssignmentContentRenderer = (sourceId, emptyMessage) => contentPreviewContainer(sourceId, emptyMessage);
 window.QuillEditor = {
   create: createQuillEditor,
   blocksToHtml: editorJsBlocksToHtml,
+  renderToHtml: renderContentToHtml,
+  normalizeHtmlVideos,
   getHtml: (quill) => {
     if (!quill) return '';
-    const html = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
-    return html === '<p><br></p>' ? '' : html;
+    const raw = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
+    if (raw === '<p><br></p>') return '';
+    return raw.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
   },
   LineHeightStyle,
   LINE_HEIGHT_WHITELIST,
+  normalizeVideoEmbedUrl,
 };
