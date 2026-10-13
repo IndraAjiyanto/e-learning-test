@@ -12,7 +12,7 @@ import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.f
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
 import { InternalServerErrorExceptionFilter } from './common/filters/internal-server-error.filter';
 import cookieParser from 'cookie-parser';
-import { NextFunction, Request, Response } from 'express';
+import { json, urlencoded, NextFunction, Request, Response } from 'express';
 import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
@@ -26,6 +26,9 @@ import {
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Global filters
   app.useGlobalFilters(new InternalServerErrorExceptionFilter());
