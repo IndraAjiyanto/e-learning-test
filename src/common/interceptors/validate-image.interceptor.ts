@@ -58,7 +58,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
     try {
       const uploadResults: string[] = [];
 
-      for (const file of files) {
+      for (const file of validFiles) {
         // ========================================
         // VALIDASI 1: FILE SIZE
         // ========================================

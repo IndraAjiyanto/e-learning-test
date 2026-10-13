@@ -118,99 +118,19 @@ function editFinalAssignmentForm() {
     title: bootstrapData.title || '',
     description: bootstrapData.description || '',
     loading: false,
-    editorInstance: null,
-    getCleanInitialData() {
-      const raw = bootstrapData.content;
-      if (!raw) return undefined;
-      try {
-        let parsed = typeof raw === 'string' ? JSON.parse(raw) : JSON.parse(JSON.stringify(raw));
-        if (typeof parsed === 'string') {
-          try { parsed = JSON.parse(parsed); } catch (e) {}
-        }
-        if (!parsed || !Array.isArray(parsed.blocks)) return undefined;
-
-        parsed.blocks = parsed.blocks.map(function(block) {
-          if (!block) return block;
-          const b = { ...block };
-          if (b.type === 'List') {
-            b.type = 'list';
-          } else if (b.type === 'checklist') {
-            b.type = 'list';
-            b.data = b.data || {};
-            b.data.style = 'checklist';
-          }
-          return b;
-        });
-
-        return parsed;
-      } catch (e) {
-        console.error('[Final Assignment] Failed to clean initial data:', e);
-        return undefined;
-      }
-    },
+    quillInstance: null,
 
     init() {
-      let isInitializing = false;
       const initEditor = () => {
-        if (isInitializing) return;
-        if (!window.EditorJS || !window.EditorTools) {
+        if (!window.QuillEditor) {
           setTimeout(initEditor, 100);
           return;
         }
-        isInitializing = true;
-        const holder = document.getElementById('final_assignment_editorjs');
-        if (holder) holder.innerHTML = '';
-
-        if (this.editorInstance && typeof this.editorInstance.destroy === 'function') {
-          try { this.editorInstance.destroy(); } catch (e) {}
-        }
-
-        try {
-          this.editorInstance = new window.EditorJS({
-            holder: 'final_assignment_editorjs',
-            placeholder: 'Type "/" for commands...',
-            data: this.getCleanInitialData(),
-            tools: {
-              header: {
-                class: window.EditorTools.Header,
-                inlineToolbar: true,
-                shortcut: 'CMD+SHIFT+H',
-                config: {
-                  placeholder: 'Enter a heading...',
-                  levels: [1, 2, 3, 4, 5, 6],
-                  defaultLevel: 2
-                }
-              },
-              paragraph: {
-                class: window.EditorTools.Paragraph,
-                inlineToolbar: true,
-              },
-              list: {
-                class: window.EditorTools.List,
-                inlineToolbar: true
-              },
-              marker: {
-                class: window.EditorTools.Marker,
-                shortcut: 'CMD+SHIFT+M'
-              },
-              image: {
-                class: window.EditorTools.ImageTool,
-                config: {
-                  endpoints: {
-                    byFile: '/program/upload-image',
-                    byUrl: '/program/fetch-image'
-                  }
-                }
-              },
-              linkTool: {
-                class: window.EditorTools.LinkTool,
-                config: { endpoint: '/program/fetch-link' }
-              }
-            }
-          });
-        } catch (err) {
-          console.error('[Final Assignment] Failed to init EditorJS:', err);
-        }
+        this.quillInstance = window.QuillEditor.create('final_assignment_editorjs', {
+          placeholder: 'Write final assignment brief and content here...',
+          initialContent: bootstrapData.content,
+          uploadUrl: '/program/upload-image'
+        });
       };
       initEditor();
     },
@@ -228,17 +148,16 @@ function editFinalAssignmentForm() {
         alert('Title is required');
         return;
       }
-      let editorData = null;
-      if (this.editorInstance && typeof this.editorInstance.save === 'function') {
-        try {
-          editorData = await this.editorInstance.save();
-        } catch (err) {
-          console.error('EditorJS save error:', err);
-        }
+      let contentHtml = '';
+      if (this.quillInstance) {
+        contentHtml = this.quillInstance.getSemanticHTML
+          ? this.quillInstance.getSemanticHTML()
+          : this.quillInstance.root.innerHTML;
+        if (contentHtml === '<p><br></p>') contentHtml = '';
       }
       const hiddenInput = document.getElementById('final_assignment_content_input');
-      if (hiddenInput && editorData) {
-        hiddenInput.value = JSON.stringify(editorData);
+      if (hiddenInput) {
+        hiddenInput.value = contentHtml;
       }
       this.loading = true;
       e.target.submit();

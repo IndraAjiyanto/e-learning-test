@@ -322,6 +322,7 @@ export const multerConfigPdf = createCloudinaryConfig({
 export const multerConfigMemoryOnly = {
   storage: memoryStorage(),
   limits: {
-    fileSize: 20 * 1024 * 1024, // 20MB - batas kasar, validasi detail di interceptor
+    fileSize: 20 * 1024 * 1024, // 20MB - batas kasar berkas, validasi detail di interceptor
+    fieldSize: 50 * 1024 * 1024, // 50MB - mencegah Multer LIMIT_FIELD_VALUE pada form field berukuran besar (konten editor/HTML)
   },
 };

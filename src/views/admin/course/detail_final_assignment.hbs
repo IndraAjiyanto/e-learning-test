@@ -231,11 +231,8 @@
         </div>
 
         {{!-- Content Body: Render Content Saja --}}
-        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] relative bg-[#FFFFFF] min-h-[200px]' x-data='finalAssignmentContentRenderer("final_assignment_content_data")' x-init='init()'>
-          <div class='final-assignment-content w-full font-inter text-[14px] leading-[22px] text-[#171717] pb-[40px]' x-html='renderedHtml'></div>
-
-          {{!-- Gradient fade overlay on bottom --}}
-          <div class='pointer-events-none absolute bottom-0 inset-x-0 h-[60px] bg-gradient-to-t from-white to-transparent'></div>
+        <div class='box-border w-full p-[20px] flex flex-col gap-[16px] bg-[#FFFFFF] min-h-[200px]' x-data='finalAssignmentContentRenderer("final_assignment_content_data")' x-init='init()'>
+          <div class='final-assignment-content w-full font-inter text-[14px] leading-[22px] text-[#171717] break-words' x-html='renderedHtml'></div>
         </div>
 
       </div>

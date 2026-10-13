@@ -19,7 +19,6 @@ import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import editorjsHTML from 'src/common/public/js/edjs';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -104,20 +103,14 @@ export class PortfoliosController {
       (req.headers.accept && req.headers.accept.includes('application/json'));
 
     try {
-      const editorjsData = this.portfoliosService.ChangeImageEditorJS(
+      const contentHtml = this.portfoliosService.ChangeImageEditorJS(
         createPortfolioDto.content,
         '/asset/portfolio/temp',
         '/asset/portfolio/isi',
-        '/asset/portfolio/temp',
       );
 
-      createPortfolioDto.content = editorjsData;
-
-      const html = editorjsHTML.parse(
-        JSON.parse(editorjsData) as import('@editorjs/editorjs').OutputData,
-      );
-
-      createPortfolioDto.contentHtml = html;
+      createPortfolioDto.content = contentHtml;
+      createPortfolioDto.contentHtml = contentHtml;
 
       const courseId =
         createPortfolioDto.courseId || String(req.params.courseId || '');
@@ -147,7 +140,11 @@ export class PortfoliosController {
         req.query.from === 'portfolio' ||
         (!body.fromCourse && !req.params.courseId);
 
-      req.flash('success', 'portofolios successfully upload');
+      flashToast(
+        req,
+        'Portfolio created',
+        'Your project is now in your portfolio list.',
+      );
       res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
     } catch (error: unknown) {
       const message =
@@ -350,21 +347,17 @@ export class PortfoliosController {
       );
 
       if (updatePortfolioDto.content) {
-        this.portfoliosService.ChangeImageEditorJS(
-          oldPortfolio.content,
-          '/asset/portfolio/isi',
-          '/asset/portfolio/temp',
-        );
-        updatePortfolioDto.content = this.portfoliosService.ChangeImageEditorJS(
+        const finalHtml = this.portfoliosService.ChangeImageEditorJS(
           updatePortfolioDto.content,
           '/asset/portfolio/temp',
           '/asset/portfolio/isi',
-          '/asset/portfolio/temp',
         );
-        updatePortfolioDto.contentHtml = editorjsHTML.parse(
-          JSON.parse(
-            updatePortfolioDto.content,
-          ) as import('@editorjs/editorjs').OutputData,
+        updatePortfolioDto.content = finalHtml;
+        updatePortfolioDto.contentHtml = finalHtml;
+
+        await this.portfoliosService.cleanupRemovedContentImages(
+          oldPortfolio.content,
+          finalHtml,
         );
       }
 
