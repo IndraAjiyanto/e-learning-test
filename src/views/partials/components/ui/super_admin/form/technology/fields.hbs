@@ -60,64 +60,144 @@
   }}
 
   <div class='flex flex-col gap-3.5'>
-    <div class='flex flex-col gap-1'>
-      <h2 class='font-inter text-xl font-semibold leading-7 text-[#171717]'>Tools Logo</h2>
-      <p class='font-inter text-base leading-5 text-[#718096]'>
-        Wajib mengisi salah satu (SVG Code atau Upload Gambar)
-      </p>
+    <div class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+      <div class='flex flex-col gap-1'>
+        <h2 class='font-inter text-xl font-semibold leading-7 text-[#171717]'>Tools Logo</h2>
+        <p class='font-inter text-sm leading-5 text-[#718096]'>
+          Pilih salah satu metode logo: SVG Code atau Upload Gambar
+        </p>
+      </div>
+
+      {{!-- Toggle switch SVG / Upload Gambar --}}
+      <div class='flex items-center gap-2.5'>
+        <span
+          class='cursor-pointer select-none font-inter text-sm leading-5 transition-colors'
+          :class="mode === 'svg' ? 'font-semibold text-[#171717]' : 'font-medium text-[#718096]'"
+          @click="switchMode('svg')"
+        >SVG Code</span>
+
+        <button
+          type='button'
+          role='switch'
+          :aria-checked="mode === 'image'"
+          aria-label='Toggle SVG atau Upload Gambar'
+          @click="switchMode(mode === 'svg' ? 'image' : 'svg')"
+          class='relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+          :class="mode === 'image' ? 'bg-[#003060]' : 'bg-[#e5e5e5]'"
+        >
+          <span
+            class='inline-block h-5 w-5 transform rounded-full bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] transition-transform'
+            :class="mode === 'image' ? 'translate-x-5' : 'translate-x-0.5'"
+          ></span>
+        </button>
+
+        <span
+          class='cursor-pointer select-none font-inter text-sm leading-5 transition-colors'
+          :class="mode === 'image' ? 'font-semibold text-[#171717]' : 'font-medium text-[#718096]'"
+          @click="switchMode('image')"
+        >Upload Gambar</span>
+      </div>
     </div>
 
-    {{#if showPreview}}
-      <div class='grid grid-cols-1 gap-5 lg:grid-cols-2'>
-        {{> technologySvgField}}
+    {{!-- Input SVG Code --}}
+    <div x-show="mode === 'svg'" x-cloak>
+      {{#if showPreview}}
+        <div class='grid grid-cols-1 gap-5 lg:grid-cols-2'>
+          {{> technologySvgField}}
 
-        <div class='flex flex-col gap-1.5'>
-          <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Preview</span>
-          <div class='flex h-[147px] items-center justify-center rounded-lg border border-[#d4d4d4] bg-[#fafafa] p-4'>
-            <template x-if='svgPreview'>
-              <span class='flex h-20 w-20 items-center justify-center [&>svg]:h-full [&>svg]:w-full' x-html='svgPreview'></span>
-            </template>
-            <template x-if='!svgPreview'>
-              <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>No SVG to preview</span>
-            </template>
+          <div class='flex flex-col gap-1.5'>
+            <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Preview</span>
+            <div class='flex h-[147px] items-center justify-center rounded-lg border border-[#d4d4d4] bg-[#fafafa] p-4'>
+              <template x-if='svgPreview'>
+                <span class='flex h-20 w-20 items-center justify-center [&>svg]:h-full [&>svg]:w-full' x-html='svgPreview'></span>
+              </template>
+              <template x-if='!svgPreview'>
+                <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>No SVG to preview</span>
+              </template>
+            </div>
           </div>
         </div>
-      </div>
-    {{else}}
-      {{> technologySvgField}}
-    {{/if}}
-
-    {{!-- Pemisah "ATAU": garis di kiri-kanan label. --}}
-    <div class='flex items-center gap-4' aria-hidden='true'>
-      <span class='h-px flex-1 bg-[#e5e5e5]'></span>
-      <span class='font-inter text-sm leading-5 text-[#404040]'>ATAU</span>
-      <span class='h-px flex-1 bg-[#e5e5e5]'></span>
+      {{else}}
+        {{> technologySvgField}}
+      {{/if}}
     </div>
 
-    {{!-- Batas di `meta` mengikuti kontrak backend (@ValidateImage: JPG/PNG/SVG,
-         maks 2 MB, tanpa batas dimensi) — bukan baris contoh di Figma, yang
-         menyebut "Max 10 MB" dan rentang piksel yang tidak ditegakkan backend
-         dan juga bertentangan dengan labelnya sendiri, "Maks 2MB". --}}
-    {{> components/ui/super_admin/form/image_dropzone
-      id='image'
-      name='image'
-      label='Upload Gambar (Maks 2MB)'
-      meta='JPG / PNG / SVG · Max 2 MB'
-      accept='image/jpeg,image/jpg,image/png,image/svg+xml'
-      boxClass='h-[147px]'
-    }}
+    {{!-- Input Upload Gambar --}}
+    <div x-show="mode === 'image'" x-cloak>
+      {{> components/ui/super_admin/form/image_dropzone
+        id='image'
+        name='image'
+        label='Upload Gambar (Maks 2MB)'
+        meta='JPG / PNG / SVG · Max 2 MB'
+        accept='image/jpeg,image/jpg,image/png,image/svg+xml'
+        boxClass='h-[147px]'
+      }}
+    </div>
 
     {{!-- Nilai dibaca controller saat user menghapus gambar lama tanpa
-         mengunggah pengganti. --}}
-    <input type='hidden' name='remove_image' :value="previewUrl ? 'false' : 'true'" />
+         mengunggah pengganti atau saat beralih ke SVG. --}}
+    <input type='hidden' name='remove_image' :value="mode === 'image' && previewUrl ? 'false' : 'true'" />
 
-    {{!-- Jaring terakhir: hanya muncul kalau SVG dan gambar sama-sama kosong. --}}
+    {{!-- Pesan error validasi iconSource --}}
     <p
       x-show='formErrors.iconSource'
       x-cloak
       x-text='formErrors.iconSource'
       class='font-inter text-sm leading-5 text-[#ef4444]'
     ></p>
+  </div>
+
+  {{!-- Modal Konfirmasi Pergantian Mode Logo (Super Admin style) --}}
+  <div
+    x-show='confirmModal.open'
+    x-cloak
+    @keydown.escape.window='if (confirmModal.open) cancelSwitchMode()'
+    class='fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur-[16px]'
+    @click.self='cancelSwitchMode()'
+  >
+    <div
+      role='dialog'
+      aria-modal='true'
+      class='flex w-full max-w-[400px] flex-col gap-8 rounded-xl bg-white p-6 shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)]'
+    >
+      <div class='flex flex-col items-center gap-5'>
+        <span
+          class='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-[#FEF2F2] bg-[#FEE2E2]'
+        >
+          <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6'>
+            <circle cx='12' cy='12' r='10'></circle>
+            <line x1='12' y1='8' x2='12' y2='12'></line>
+            <line x1='12' y1='16' x2='12.01' y2='16'></line>
+          </svg>
+        </span>
+
+        <div class='flex flex-col items-center gap-2'>
+          <h2
+            class='text-center font-inter text-lg font-semibold leading-7 text-[#171717]'
+            x-text='confirmModal.title'
+          ></h2>
+
+          <p
+            class='text-center font-inter text-sm font-normal leading-5 text-[#525252]'
+            x-text='confirmModal.description'
+          ></p>
+        </div>
+      </div>
+
+      <div class='flex items-start gap-3'>
+        <button
+          type='button'
+          @click='cancelSwitchMode()'
+          class='inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] active:bg-[#ededed] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#404040]/40'
+        >Batal</button>
+
+        <button
+          type='button'
+          @click='confirmSwitchMode()'
+          class='inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#dc2626] bg-[#dc2626] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#b91c1c] hover:bg-[#b91c1c] active:bg-[#991b1b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40'
+        >Hapus &amp; Ubah</button>
+      </div>
+    </div>
   </div>
 
   {{#if @partial-block}}
