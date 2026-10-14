@@ -1,0 +1,122 @@
+{{!-- Admin - Create/Edit Portfolio Guide --}}
+{{!-- Bootstrap Data Script for robust escaping --}}
+<script id='portfolio_guide_bootstrap_data' type='application/json'>
+{
+  "content": {{{jsonSafe (default guide.content '')}}}
+}
+</script>
+
+<div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
+  <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] items-start' x-data="portfolioGuideForm()">
+    {{#if guide}}
+      {{> components/ui/admin/text/page-header
+        title='Edit Portfolio Guide'
+        subtitle='Update the portfolio instructions for program participants.'
+      }}
+    {{else}}
+      {{> components/ui/admin/text/page-header
+        title='Create Portfolio Guide'
+        subtitle='Add portfolio instructions for program participants.'
+      }}
+    {{/if}}
+
+    <form action='/program/portfolio-guide/{{course.id}}' method='POST' @submit.prevent='handleSubmit($event)' class='box-border w-full flex flex-col gap-[16px] items-start'>
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+        {{#> components/ui/admin/form/form-field label='Content*' for='portfolio_guide_editor'}}
+          {{> components/ui/admin/form/editor-input
+            id='portfolio_guide_editor'
+            name='content'
+            inputId='portfolio_guide_content_input'
+            value=guide.content
+            placeholder='Write portfolio instructions here...'
+          }}
+        {{/components/ui/admin/form/form-field}}
+      {{/components/ui/admin/form/form-card}}
+
+      {{#> components/ui/admin/form/form-card noNumber=true}}
+        <div class='flex flex-row items-center justify-end gap-[12px]'>
+          {{#if guide}}
+            <a href='/program/portfolio-guide/detail/{{course.id}}'
+              class='box-border w-[90px] h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060]'>Cancel</span>
+            </a>
+          {{else}}
+            <a href='/program/detail/program/admin/{{course.id}}'
+              class='box-border w-[90px] h-[44px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#F5F5F5] transition-colors'>
+              <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#003060]'>Cancel</span>
+            </a>
+          {{/if}}
+
+          <button
+            type='submit'
+            :disabled='loading'
+            class='box-border min-w-[158px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] disabled:opacity-70 transition-colors'>
+            <span x-show='!loading' class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF]'>
+              {{#if guide}}Save Changes{{else}}Create Guide{{/if}}
+            </span>
+            <span x-show='loading' style='display: none;' class='font-inter font-semibold text-[16px] leading-[24px] text-[#FFFFFF] flex items-center gap-2'>
+              <svg class='animate-spin h-4 w-4 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                <circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle>
+                <path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8H4z'></path>
+              </svg>
+              Saving...
+            </span>
+          </button>
+        </div>
+      {{/components/ui/admin/form/form-card}}
+    </form>
+  </div>
+</div>
+
+<script>
+function portfolioGuideForm() {
+  let bootstrapData = { content: null };
+  try {
+    const rawBootstrap = document.getElementById('portfolio_guide_bootstrap_data')?.textContent;
+    if (rawBootstrap) {
+      bootstrapData = JSON.parse(rawBootstrap);
+    }
+  } catch (e) {
+    console.error('[PortfolioGuide] Failed to parse bootstrap data:', e);
+  }
+
+  return {
+    loading: false,
+    quillInstance: null,
+
+    init() {
+      const initEditor = () => {
+        if (!window.QuillEditor) {
+          setTimeout(initEditor, 100);
+          return;
+        }
+        this.quillInstance = window.QuillEditor.create('portfolio_guide_editor', {
+          placeholder: 'Write portfolio instructions here...',
+          initialContent: bootstrapData.content,
+          uploadUrl: '/program/upload-image'
+        });
+      };
+      initEditor();
+    },
+
+    async handleSubmit(event) {
+      let contentHtml = '';
+      if (this.quillInstance) {
+        contentHtml = this.quillInstance.getSemanticHTML
+          ? this.quillInstance.getSemanticHTML()
+          : this.quillInstance.root.innerHTML;
+        if (contentHtml === '<p><br></p>') contentHtml = '';
+      }
+      const plainText = contentHtml.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+      if (!plainText) {
+        alert('Content is required');
+        return;
+      }
+      const input = document.getElementById('portfolio_guide_content_input');
+      if (input) input.value = contentHtml;
+      this.loading = true;
+      event.target.submit();
+    }
+  };
+}
+</script>

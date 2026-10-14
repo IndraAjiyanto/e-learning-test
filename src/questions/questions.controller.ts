@@ -55,6 +55,14 @@ export class QuestionsController {
     @Param('quizId') quizId: string,
   ) {
     try {
+      if (await this.quizService.hasAttempts(quizId)) {
+        flashToastError(
+          req,
+          'Cannot Add Question',
+          'Quiz cannot be edited because it has already been attempted by a user.',
+        );
+        return res.redirect(`/quiz/${quizId}`);
+      }
       createQuestionDto.quizId = quizId;
       createQuestionDto.image = (
         req.body as { uploadedImageUrls?: string[] }
@@ -146,6 +154,14 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     try {
+      if (await this.quizService.hasAttempts(quizId)) {
+        flashToastError(
+          req,
+          'Cannot Update Question',
+          'Quiz cannot be edited because it has already been attempted by a user.',
+        );
+        return res.redirect(`/quiz/${quizId}`);
+      }
       const questions = await this.questionsService.findOne(questionId);
       if (
         (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls
@@ -185,6 +201,14 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     try {
+      if (await this.quizService.hasAttempts(quizId)) {
+        flashToastError(
+          req,
+          'Cannot Delete Question',
+          'Quiz cannot be edited because it has already been attempted by a user.',
+        );
+        return res.redirect(`/quiz/${quizId}`);
+      }
       const questions = await this.questionsService.findOne(questionId);
       if (questions.image) {
         await this.questionsService.deleteFile(questions.image);

@@ -50,6 +50,12 @@
         {{/unless}}
       </div>
 
+      {{#if hasCompletedUser}}
+        {{> components/ui/admin/locked-notice/index
+          title='Week is locked'
+          message='This week cannot be edited or deleted because it has already been completed by a participant.' }}
+      {{/if}}
+
     </div>
 
     {{!-- Table Detail Week --}}

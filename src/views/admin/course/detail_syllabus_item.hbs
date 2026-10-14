@@ -89,6 +89,12 @@
           </div>
 
         </div>
+
+        {{#if isCompleted}}
+          {{> components/ui/admin/locked-notice/index
+            title='Syllabus is locked'
+            message='This syllabus cannot be edited or deleted because it has already been completed by a participant.' }}
+        {{/if}}
       </div>
 
     {{/components/ui/admin/form/form-card}}

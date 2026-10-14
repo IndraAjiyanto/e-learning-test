@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -191,14 +195,39 @@ export class QuizService {
       throw new NotFoundException('quiz not found');
     }
 
+    if (await this.hasAttempts(quizId)) {
+      throw new ForbiddenException(
+        'Quiz cannot be edited because it has already been attempted by a user',
+      );
+    }
+
     Object.assign(quiz, updateQuizDto);
     return await this.quizRepository.save(quiz);
+  }
+
+  /**
+   * Apakah sudah ada user yang mengerjakan quiz ini. Begitu ada satu skor,
+   * soal dan pengaturan quiz dikunci - mengubahnya akan membuat hasil yang
+   * sudah tercatat tidak lagi cocok dengan soalnya.
+   */
+  async hasAttempts(quizId: string): Promise<boolean> {
+    if (!quizId) return false;
+    const count = await this.scoreRepository.count({
+      where: { quiz: { id: quizId } },
+    });
+    return count > 0;
   }
 
   async remove(quizId: string) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
+    }
+
+    if (await this.hasAttempts(quizId)) {
+      throw new ForbiddenException(
+        'Quiz cannot be deleted because it has already been attempted by a user',
+      );
     }
     // Hapus manual berurutan dalam transaksi: FK di DB tidak punya
     // ON DELETE CASCADE (skema lama, synchronize:false), dan
