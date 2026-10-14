@@ -6,9 +6,11 @@
   (dipakai di paid_program, free_program, dan special_program).
 
   Props:
-  - courses     : array (data course dari backend)
-  - lang        : string (bahasa aktif)
-  - showPayment : boolean (default: true; set false untuk free_program)
+  - courses      : array (data course dari backend)
+  - lang         : string (bahasa aktif)
+  - showPayment  : boolean (default: true; set false untuk free_program)
+  - loadMoreText : string (opsional override teks load more)
+  - showLessText : string (opsional override teks show less)
   - @partial-block : grid kartu program yang di-filter
 --}}
 
@@ -35,6 +37,12 @@
       },
       loadMore() {
         this.limit = this.items.length;
+      },
+      showLess() {
+        this.limit = this.initialLimit;
+        if (this.$el && this.$el.scrollIntoView) {
+          this.$el.scrollIntoView({ behavior: 'smooth' });
+        }
       },
       items: [
         {{#each courses}}
@@ -70,19 +78,19 @@
         this.limit = this.initialLimit;
       },
       getMethodLabel() {
-        if (this.selectedMethod === 'online') return 'Online';
-        if (this.selectedMethod === 'offline') return 'Offline';
-        return '{{default (t 'test.home.programSection.allMethod') 'Semua Metode'}}';
+        if (this.selectedMethod === 'online') return "{{default (t 'test.home.programSection.online') 'Online'}}";
+        if (this.selectedMethod === 'offline') return "{{default (t 'test.home.programSection.offline') 'Offline'}}";
+        return "{{default (t 'test.home.programSection.allMethod') 'Semua Metode'}}";
       },
       getStructureLabel() {
-        if (this.selectedStructure === 'week') return 'Week';
-        if (this.selectedStructure === 'silabus') return 'Silabus';
-        return '{{default (t 'test.filter.allStructures') 'Semua Struktur'}}';
+        if (this.selectedStructure === 'week') return "{{default (t 'test.home.programSection.week') 'Week'}}";
+        if (this.selectedStructure === 'silabus') return "{{default (t 'test.home.programSection.silabus') 'Silabus'}}";
+        return "{{default (t 'test.home.programSection.allStructures') 'Semua Struktur'}}";
       },
       getPaymentLabel() {
-        if (this.selectedPayment === 'paid') return 'Paid';
-        if (this.selectedPayment === 'non_paid') return 'Non-Paid';
-        return '{{default (t 'test.filter.allPayment') 'Semua Pembayaran'}}';
+        if (this.selectedPayment === 'paid') return "{{default (t 'test.home.programSection.paid') 'Paid'}}";
+        if (this.selectedPayment === 'non_paid') return "{{default (t 'test.home.programSection.nonPaid') 'Non-Paid'}}";
+        return "{{default (t 'test.home.programSection.allPayment') 'Semua Pembayaran'}}";
       },
       get filteredIds() {
         var q = this.search.trim().toLowerCase();
@@ -118,13 +126,13 @@
       <div class="relative w-full">
         <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
           <i class="fas fa-magnifying-glass text-[#6EB6E5] mr-1"></i>
-          {{default (t 'test.home.programSection.search') 'Cari Program'}}
+          {{default (t 'test.home.programSection.searchProgram') (default (t 'test.home.programSection.search') 'Cari Program')}}
         </label>
         <div class="relative">
           <input
             type="text"
             x-model="search"
-            placeholder="{{default (t 'test.home.programSection.placeholderSearch') 'Cari nama program...'}}"
+            placeholder="{{default (t 'test.home.programSection.searchProgramPlaceholder') (default (t 'test.home.programSection.placeholderSearch') 'Cari nama program...')}}"
             class="w-full h-11 pl-9 pr-8 rounded-xl border border-[#E5E7EB] bg-white font-inter text-xs sm:text-sm text-[#0B1F3B] placeholder-[#9CA3AF] transition focus:border-[#003060] focus:ring-1 focus:ring-[#003060] focus:outline-none"
           />
           <i class="fas fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#9CA3AF]"></i>
@@ -134,7 +142,7 @@
             x-cloak
             @click="search = ''"
             class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
-            aria-label="Clear search"
+            aria-label="{{default (t 'test.home.programSection.clearSearch') 'Hapus pencarian'}}"
           >
             <i class="fas fa-times"></i>
           </button>
@@ -181,7 +189,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="selectedMethod === 'online' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>Online</span>
+            <span>{{default (t 'test.home.programSection.online') 'Online'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedMethod === 'online'"></i>
           </button>
           <button
@@ -190,7 +198,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="selectedMethod === 'offline' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>Offline</span>
+            <span>{{default (t 'test.home.programSection.offline') 'Offline'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedMethod === 'offline'"></i>
           </button>
         </div>
@@ -230,7 +238,7 @@
                 x-ref="typeSearchInput"
                 x-model="typeSearch"
                 @click.stop
-                placeholder="{{default (t 'test.portfolio.searchPlaceholder') 'Cari tipe program...'}}"
+                placeholder="{{default (t 'test.home.programSection.searchTypePlaceholder') 'Cari tipe program...'}}"
                 class="w-full pl-7 pr-7 py-1.5 text-xs font-inter border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] text-[#0B1F3B] placeholder-[#9CA3AF]"
               />
               <button
@@ -239,7 +247,7 @@
                 x-cloak
                 @click.stop="typeSearch = ''; $refs.typeSearchInput?.focus()"
                 class="absolute right-2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
-                aria-label="Clear type search"
+                aria-label="{{default (t 'test.home.programSection.clearTypeSearch') 'Hapus pencarian tipe'}}"
               >
                 <i class="fas fa-times"></i>
               </button>
@@ -274,7 +282,7 @@
               x-show="filteredProgramTypes.length === 0"
               class="py-3 px-2 text-center text-xs text-[#9CA3AF] font-inter"
             >
-              Tidak ada tipe ditemukan
+              {{default (t 'test.home.programSection.noTypesFound') 'Tidak ada tipe ditemukan'}}
             </div>
           </div>
         </div>
@@ -287,7 +295,7 @@
       >
         <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
           <i class="fas fa-graduation-cap text-[#6EB6E5] mr-1"></i>
-          {{default (t 'test.filter.learningStructure') 'Struktur Belajar'}}
+          {{default (t 'test.home.programSection.learningStructure') 'Struktur Belajar'}}
         </label>
         <button
           type="button"
@@ -311,7 +319,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="!selectedStructure ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>{{default (t 'test.filter.allStructures') 'Semua Struktur'}}</span>
+            <span>{{default (t 'test.home.programSection.allStructures') 'Semua Struktur'}}</span>
             <i class="fas fa-check text-xs" x-show="!selectedStructure"></i>
           </button>
           <button
@@ -320,7 +328,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="selectedStructure === 'week' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>Week</span>
+            <span>{{default (t 'test.home.programSection.week') 'Week'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedStructure === 'week'"></i>
           </button>
           <button
@@ -329,7 +337,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="selectedStructure === 'silabus' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>Silabus</span>
+            <span>{{default (t 'test.home.programSection.silabus') 'Silabus'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedStructure === 'silabus'"></i>
           </button>
         </div>
@@ -343,7 +351,7 @@
       >
         <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
           <i class="fas fa-money-bill-wave text-[#6EB6E5] mr-1"></i>
-          {{default (t 'test.filter.payment') 'Pembayaran'}}
+          {{default (t 'test.home.programSection.payment') 'Pembayaran'}}
         </label>
         <button
           type="button"
@@ -367,7 +375,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="!selectedPayment ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>{{default (t 'test.filter.allPayment') 'Semua Pembayaran'}}</span>
+            <span>{{default (t 'test.home.programSection.allPayment') 'Semua Pembayaran'}}</span>
             <i class="fas fa-check text-xs" x-show="!selectedPayment"></i>
           </button>
           <button
@@ -376,7 +384,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="selectedPayment === 'paid' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>Paid</span>
+            <span>{{default (t 'test.home.programSection.paid') 'Paid'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedPayment === 'paid'"></i>
           </button>
           <button
@@ -385,7 +393,7 @@
             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
             :class="selectedPayment === 'non_paid' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
           >
-            <span>Non-Paid</span>
+            <span>{{default (t 'test.home.programSection.nonPaid') 'Non-Paid'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedPayment === 'non_paid'"></i>
           </button>
         </div>
@@ -412,7 +420,7 @@
         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E7EB] bg-white font-inter text-xs font-semibold text-[#003060] hover:bg-slate-50 hover:text-red-600 transition"
       >
         <i class="fas fa-rotate-left text-[11px]"></i>
-        <span>{{default (t 'test.home.programSection.resetAll') 'Reset Filter'}}</span>
+        <span>{{default (t 'test.home.programSection.resetFilter') (default (t 'test.home.programSection.resetAll') 'Reset Filter')}}</span>
       </button>
     </div>
   </div>
@@ -421,19 +429,27 @@
   <div class="w-full flex flex-col items-center">
     {{> @partial-block}}
 
-    {{!-- Load More Button --}}
+    {{!-- Load More / Show Less Button --}}
     <div
-      x-show="filteredIds.length > visibleIds.length"
+      x-show="filteredIds.length > initialLimit"
       x-cloak
       class="mt-10 flex justify-center w-full"
     >
       <button
         type="button"
-        @click="loadMore()"
+        @click="filteredIds.length > visibleIds.length ? loadMore() : showLess()"
         class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#003060] font-inter text-sm font-semibold text-white shadow-sm hover:bg-[#00244a] active:scale-95 transition-all cursor-pointer"
       >
-        <span>{{default (t 'test.home.programSection.loadMore') 'Load More'}}</span>
-        <i class="fas fa-chevron-down text-xs"></i>
+        <span x-show="filteredIds.length > visibleIds.length">
+          {{default loadMoreText (default (t 'test.home.programSection.loadMore') 'Tampilkan Lebih Banyak')}}
+        </span>
+        <span x-show="filteredIds.length <= visibleIds.length">
+          {{default showLessText (default (t 'test.home.programSection.showLess') 'Tampilkan Lebih Sedikit')}}
+        </span>
+        <i
+          class="fas text-xs transition-transform"
+          :class="filteredIds.length > visibleIds.length ? 'fa-chevron-down' : 'fa-chevron-up'"
+        ></i>
       </button>
     </div>
   </div>

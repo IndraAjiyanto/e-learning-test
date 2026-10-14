@@ -47,8 +47,18 @@
     };
 
     window.technologyForm = function technologyForm({ name, svg, imgUrl } = {}) {
+      const initialMode = Boolean(imgUrl && !(svg || '').trim()) ? 'image' : 'svg';
+
       return {
         loading: false,
+        mode: initialMode,
+
+        confirmModal: {
+          open: false,
+          targetMode: null,
+          title: '',
+          description: '',
+        },
 
         formData: { name: name || '', svg: svg || '' },
         formErrors: { name: '', iconSource: '' },
@@ -69,12 +79,75 @@
           return /^<svg[\s>]/i.test(markup) ? markup : '';
         },
 
+        switchMode(target) {
+          if (this.mode === target) return;
+
+          if (target === 'image') {
+            const hasSvg = Boolean((this.formData.svg || '').trim());
+            if (hasSvg) {
+              this.confirmModal = {
+                open: true,
+                targetMode: 'image',
+                title: 'Ubah ke Upload Gambar?',
+                description: 'SVG Code yang sudah diisi akan dihapus jika beralih ke Upload Gambar. Yakin ingin melanjutkan?',
+              };
+              document.body.classList.add('overflow-hidden');
+              return;
+            }
+          } else if (target === 'svg') {
+            const hasImg = Boolean(this.previewUrl || this.hasFile);
+            if (hasImg) {
+              this.confirmModal = {
+                open: true,
+                targetMode: 'svg',
+                title: 'Ubah ke SVG Code?',
+                description: 'Gambar yang telah diunggah akan dihapus jika beralih ke SVG Code. Yakin ingin melanjutkan?',
+              };
+              document.body.classList.add('overflow-hidden');
+              return;
+            }
+          }
+
+          this.applyMode(target);
+        },
+
+        cancelSwitchMode() {
+          this.confirmModal.open = false;
+          this.confirmModal.targetMode = null;
+          document.body.classList.remove('overflow-hidden');
+        },
+
+        confirmSwitchMode() {
+          const target = this.confirmModal.targetMode;
+          if (!target) return;
+
+          if (target === 'image') {
+            this.formData.svg = '';
+            const svgEl = document.getElementById('svg');
+            if (svgEl) svgEl.value = '';
+          } else if (target === 'svg') {
+            this.clearFile();
+          }
+
+          this.cancelSwitchMode();
+          this.applyMode(target);
+        },
+
+        applyMode(target) {
+          this.mode = target;
+          this.validateIconSource();
+          this.$nextTick(() => {
+            if (typeof this.recomputeDirty === 'function') {
+              this.recomputeDirty();
+            }
+          });
+        },
+
         validateField(path, value) {
           this.formData[path] = value ?? '';
           this.formErrors[path] = this.touched[path]
             ? errorFor(path, this.formData[path])
             : '';
-          // Mengetik SVG harus langsung mencabut error "salah satu wajib".
           if (path === 'svg') this.validateIconSource();
         },
 
@@ -114,8 +187,6 @@
         },
 
         clearPreview() {
-          // Hanya object URL buatan sendiri yang perlu dicabut; imgUrl dari
-          // server adalah URL biasa dan revoke terhadapnya tidak ada gunanya.
           if (this.previewUrl && this.previewUrl.startsWith('blob:')) {
             URL.revokeObjectURL(this.previewUrl);
           }
@@ -128,17 +199,20 @@
 
         clearFile() {
           this.clearPreview();
-          this.$refs.dropInput.value = null;
+          if (this.$refs.dropInput) {
+            this.$refs.dropInput.value = null;
+          }
           this.validateIconSource();
         },
 
         validateIconSource() {
-          const hasSvg = (this.formData.svg || '').trim() !== '';
-          const hasImage = Boolean(this.previewUrl);
-          this.formErrors.iconSource =
-            hasSvg || hasImage
-              ? ''
-              : 'Provide an SVG code or upload an image — at least one is required.';
+          if (this.mode === 'svg') {
+            const hasSvg = (this.formData.svg || '').trim() !== '';
+            this.formErrors.iconSource = hasSvg ? '' : 'SVG Code is required.';
+          } else {
+            const hasImage = Boolean(this.previewUrl);
+            this.formErrors.iconSource = hasImage ? '' : 'Upload Gambar is required.';
+          }
         },
 
         validateAll() {
@@ -146,17 +220,11 @@
           this.validateIconSource();
         },
 
-        // Gating tombol simpan: form siap bila semua field wajib lolos errorFor,
-        // terlepas dari sudah disentuh atau belum. Sengaja bukan hasFormErrors(),
-        // yang hanya melihat error yang sudah diungkap `touched` sehingga form
-        // kosong yang belum disentuh justru terbaca "tanpa error".
-        // Sumber ikon mengikuti aturan backend: svg ATAU gambar, minimal satu.
-        // previewUrl sudah terisi saat mengedit tech bergambar, jadi halaman edit
-        // tidak ikut terkunci hanya karena file tidak diunggah ulang.
         canSubmit() {
           const fieldsOk = PATHS.every((path) => errorFor(path, this.formData[path]) === '');
-          const hasIconSource =
-            (this.formData.svg || '').trim() !== '' || Boolean(this.previewUrl);
+          const hasIconSource = this.mode === 'svg'
+            ? (this.formData.svg || '').trim() !== ''
+            : Boolean(this.previewUrl);
 
           return fieldsOk && hasIconSource && this.isValid && !this.errorMessage;
         },
@@ -168,7 +236,7 @@
         revealFirstInvalid() {
           const path = PATHS.find((p) => this.formErrors[p]);
           this.$nextTick(() => {
-            const el = document.getElementById(path || 'svg');
+            const el = document.getElementById(path || (this.mode === 'svg' ? 'svg' : 'image'));
             if (!el) {
               console.warn('technologyForm: field tidak ditemukan — id di form/technology/fields berubah?');
               return;

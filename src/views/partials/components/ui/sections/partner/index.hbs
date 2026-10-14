@@ -45,11 +45,11 @@
       <div
         class="flex h-[60px] w-[180px] items-center justify-center overflow-hidden rounded-md px-3 bg-white/50 shadow-[0_0_3px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
       >
-        <img :src="partner.image" alt="Partner Logo" class="max-h-[42px] max-w-full object-contain" />
+        <img :src="partner.image" alt="Partner Logo" class="max-h-[42px] max-w-full object-contain scale-125" />
       </div>
     </template>
     <div x-show="visiblePartners.length === 0" class="flex h-[60px] w-[180px] items-center justify-center rounded-md px-3 bg-white/50 shadow-[0_0_3px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
-      <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[42px] max-w-full object-contain" />
+      <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[42px] max-w-full object-contain scale-125" />
     </div>
   </div>
 
