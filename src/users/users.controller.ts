@@ -391,14 +391,27 @@ export class UsersController {
         'User Created',
         'The new user account has been created and verification email sent.',
       );
-      res.redirect('/users');
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.json({ success: true, redirect: '/users' });
+      }
+      return res.redirect('/users');
     } catch (error: unknown) {
-      req.flash(
-        'error',
+      const errorMessage =
         (error instanceof Error ? error.message : null) ||
-          'Failed to create user',
-      );
-      res.redirect('/users');
+        'Failed to create user';
+
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          success: false,
+          message: errorMessage,
+          field: errorMessage.toLowerCase().includes('email')
+            ? 'email'
+            : undefined,
+        });
+      }
+
+      flashToastError(req, 'Failed to Create User', errorMessage);
+      return res.redirect('/users/formCreate');
     }
   }
 
