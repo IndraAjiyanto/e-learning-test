@@ -40,16 +40,16 @@
       </div>
 
 <div class="relative z-10 flex w-full flex-col">
-  <div class="mx-auto mt-8 grid w-full max-w-3xl grid-cols-3 gap-3 sm:grid-cols-4 lg:mt-10 lg:max-w-4xl lg:grid-cols-6 lg:gap-3">
+  <div class="mx-auto mt-8 grid w-fit max-w-full grid-cols-2 justify-center gap-3 sm:grid-cols-3 md:grid-cols-4 lg:mt-10 lg:grid-cols-6 lg:gap-3">
     <template x-for="partner in visiblePartners" :key="partner.id">
       <div
-        class="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-md bg-white/50 shadow-[0_0_3px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
+        class="flex h-[60px] w-[180px] items-center justify-center overflow-hidden rounded-md px-3 bg-white/50 shadow-[0_0_3px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px] transition-transform hover:scale-[1.03]"
       >
-        <img :src="partner.image" alt="Partner Logo" class="max-h-[40%] max-w-[50%] object-contain" />
+        <img :src="partner.image" alt="Partner Logo" class="max-h-[42px] max-w-full object-contain" />
       </div>
     </template>
-    <div x-show="visiblePartners.length === 0" class="flex aspect-[3/2] items-center justify-center rounded-md bg-white/50 shadow-[0_0_3px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
-      <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[40%] max-w-[50%] object-contain" />
+    <div x-show="visiblePartners.length === 0" class="flex h-[60px] w-[180px] items-center justify-center rounded-md px-3 bg-white/50 shadow-[0_0_3px_0_rgba(0,0,0,0.3)] backdrop-blur-[3px]">
+      <img src="/public/image/logo.png" alt="Partner Logo" class="max-h-[42px] max-w-full object-contain" />
     </div>
   </div>
 

@@ -21,24 +21,35 @@
     {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
     {{#if courses.length}}
-      {{!-- program-cards Grid (Figma Node 2591:839) --}}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center">
-        {{#each courses}}
-          {{> components/ui/card/category/free/index
-              id=this.id
-              image=(default this.thumbnail this.image)
-              name=this.name
-              description=this.description
-              method=this.method
-              day=this.day
-              month=this.month
-              checkPaid=this.checkPaid
-              quota=this.quota
-              icon=this.icon
-              lang=../lang
-          }}
-        {{/each}}
-      </div>
+      {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=false}}
+        {{!-- program-cards Grid (Figma Node 2591:839) --}}
+        <div
+          x-show="visibleIds.length > 0"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-[1568px] justify-items-center"
+        >
+          {{#each courses}}
+            <div
+              x-show="visibleIds.includes('{{this.id}}')"
+              x-transition.opacity.duration.200ms
+              class="w-full flex justify-center"
+            >
+              {{> components/ui/card/category/free/index
+                  id=this.id
+                  image=(default this.thumbnail this.image)
+                  name=this.name
+                  description=this.description
+                  method=this.method
+                  day=this.day
+                  month=this.month
+                  checkPaid=this.checkPaid
+                  quota=this.quota
+                  icon=this.icon
+                  lang=../lang
+              }}
+            </div>
+          {{/each}}
+        </div>
+      {{/components/ui/filter/course_catalog_filter/index}}
     {{else}}
       {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
       {{> components/ui/sections/program_coming_soon/index
