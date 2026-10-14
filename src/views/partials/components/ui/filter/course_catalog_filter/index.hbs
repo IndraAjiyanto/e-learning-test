@@ -6,9 +6,11 @@
   (dipakai di paid_program, free_program, dan special_program).
 
   Props:
-  - courses     : array (data course dari backend)
-  - lang        : string (bahasa aktif)
-  - showPayment : boolean (default: true; set false untuk free_program)
+  - courses      : array (data course dari backend)
+  - lang         : string (bahasa aktif)
+  - showPayment  : boolean (default: true; set false untuk free_program)
+  - loadMoreText : string (opsional override teks load more)
+  - showLessText : string (opsional override teks show less)
   - @partial-block : grid kartu program yang di-filter
 --}}
 
@@ -35,6 +37,12 @@
       },
       loadMore() {
         this.limit = this.items.length;
+      },
+      showLess() {
+        this.limit = this.initialLimit;
+        if (this.$el && this.$el.scrollIntoView) {
+          this.$el.scrollIntoView({ behavior: 'smooth' });
+        }
       },
       items: [
         {{#each courses}}
@@ -421,19 +429,27 @@
   <div class="w-full flex flex-col items-center">
     {{> @partial-block}}
 
-    {{!-- Load More Button --}}
+    {{!-- Load More / Show Less Button --}}
     <div
-      x-show="filteredIds.length > visibleIds.length"
+      x-show="filteredIds.length > initialLimit"
       x-cloak
       class="mt-10 flex justify-center w-full"
     >
       <button
         type="button"
-        @click="loadMore()"
+        @click="filteredIds.length > visibleIds.length ? loadMore() : showLess()"
         class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#003060] font-inter text-sm font-semibold text-white shadow-sm hover:bg-[#00244a] active:scale-95 transition-all cursor-pointer"
       >
-        <span>{{default (t 'test.home.programSection.loadMore') 'Load More'}}</span>
-        <i class="fas fa-chevron-down text-xs"></i>
+        <span x-show="filteredIds.length > visibleIds.length">
+          {{default loadMoreText (default (t 'test.home.programSection.loadMore') 'Tampilkan Lebih Banyak')}}
+        </span>
+        <span x-show="filteredIds.length <= visibleIds.length">
+          {{default showLessText (default (t 'test.home.programSection.showLess') 'Tampilkan Lebih Sedikit')}}
+        </span>
+        <i
+          class="fas text-xs transition-transform"
+          :class="filteredIds.length > visibleIds.length ? 'fa-chevron-down' : 'fa-chevron-up'"
+        ></i>
       </button>
     </div>
   </div>
