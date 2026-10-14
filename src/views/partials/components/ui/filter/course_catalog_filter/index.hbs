@@ -23,6 +23,19 @@
       typeSearch: '',
       activeDropdown: null,
       showPayment: {{#if (eq showPayment false)}}false{{else}}true{{/if}},
+      limit: 12,
+      initialLimit: 12,
+      init() {
+        var self = this;
+        ['search', 'selectedMethod', 'selectedType', 'selectedStructure', 'selectedPayment'].forEach(function(prop) {
+          self.$watch(prop, function() {
+            self.limit = self.initialLimit;
+          });
+        });
+      },
+      loadMore() {
+        this.limit = this.items.length;
+      },
       items: [
         {{#each courses}}
         {
@@ -54,6 +67,7 @@
         this.selectedPayment = '';
         this.typeSearch = '';
         this.activeDropdown = null;
+        this.limit = this.initialLimit;
       },
       getMethodLabel() {
         if (this.selectedMethod === 'online') return 'Online';
@@ -83,6 +97,9 @@
           if (self.showPayment && self.selectedPayment === 'non_paid' && item.isPaid) return false;
           return true;
         }).map(function(i) { return i.id; });
+      },
+      get visibleIds() {
+        return this.filteredIds.slice(0, this.limit);
       }
     };
   }
@@ -381,9 +398,9 @@
     <div class="flex items-center justify-between pt-3 border-t border-[#F3F4F6] text-xs font-inter flex-wrap gap-2">
       <div class="text-[#6B7280]">
         {{default (t 'test.home.programSection.showing') 'Menampilkan'}}
-        <span class="font-bold text-[#003060]" x-text="filteredIds.length"></span>
+        <span class="font-bold text-[#003060]" x-text="visibleIds.length"></span>
         {{default (t 'test.home.programSection.of') 'dari'}}
-        <span class="font-bold text-[#003060]" x-text="items.length"></span>
+        <span class="font-bold text-[#003060]" x-text="filteredIds.length"></span>
         {{default (t 'test.home.programSection.program') 'program'}}
       </div>
 
@@ -403,6 +420,22 @@
   {{!-- Program Cards Grid (Slot via Handlebars partial block) --}}
   <div class="w-full flex flex-col items-center">
     {{> @partial-block}}
+
+    {{!-- Load More Button --}}
+    <div
+      x-show="filteredIds.length > visibleIds.length"
+      x-cloak
+      class="mt-10 flex justify-center w-full"
+    >
+      <button
+        type="button"
+        @click="loadMore()"
+        class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#003060] font-inter text-sm font-semibold text-white shadow-sm hover:bg-[#00244a] active:scale-95 transition-all cursor-pointer"
+      >
+        <span>{{default (t 'test.home.programSection.loadMore') 'Load More'}}</span>
+        <i class="fas fa-chevron-down text-xs"></i>
+      </button>
+    </div>
   </div>
 
   {{!-- Empty State when no courses match filter --}}

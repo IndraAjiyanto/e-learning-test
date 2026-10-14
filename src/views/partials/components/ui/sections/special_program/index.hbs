@@ -13,12 +13,12 @@
     {{#if courses.length}}
       {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=true isJapan=isJapan}}
         <div
-          x-show="filteredIds.length > 0"
-          class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]"
+          x-show="visibleIds.length > 0"
+          class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-[1568px]"
         >
           {{#each courses}}
             <div
-              x-show="filteredIds.includes('{{this.id}}')"
+              x-show="visibleIds.includes('{{this.id}}')"
               x-transition.opacity.duration.200ms
               class="w-full flex"
             >

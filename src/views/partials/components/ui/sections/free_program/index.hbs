@@ -24,12 +24,12 @@
       {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=false}}
         {{!-- program-cards Grid (Figma Node 2591:839) --}}
         <div
-          x-show="filteredIds.length > 0"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 w-full max-w-[1568px] justify-items-center"
+          x-show="visibleIds.length > 0"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-[1568px] justify-items-center"
         >
           {{#each courses}}
             <div
-              x-show="filteredIds.includes('{{this.id}}')"
+              x-show="visibleIds.includes('{{this.id}}')"
               x-transition.opacity.duration.200ms
               class="w-full flex justify-center"
             >
