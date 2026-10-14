@@ -32,7 +32,7 @@ export class CertificatesService {
     private readonly biodataRepository: Repository<Biodata>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
-  ) {}
+  ) { }
 
   private async nextCertificateNumber(): Promise<string> {
     const certificates = await this.certificatesRepository.find({
