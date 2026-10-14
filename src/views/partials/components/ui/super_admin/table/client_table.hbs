@@ -47,7 +47,7 @@
     return value == null ? '' : String(value);
   }
 
-  function clientTable({ items, size, searchKeys, url, dataKey, sortKey }) {
+  function clientTable({ items, size, searchKeys, url, dataKey, sortKey, maxRetries = 2, backoffDelay = 1000 }) {
     const byKey = (list) =>
       sortKey
         ? list.sort((a, b) => valueAt(a, sortKey).localeCompare(valueAt(b, sortKey)))
@@ -67,6 +67,11 @@
       currentPage: 1,
       size: size || 10,
       loading: Boolean(url),
+      errorMessage: null,
+      hadError: false,
+      retryAttempt: 0,
+      maxRetries,
+      backoffDelay,
       searchTimeout: null,
       // Payload mentah hasil load(), untuk endpoint yang mengirim field lain di
       // samping arraynya. Null bila datanya datang lewat `items`.
@@ -79,37 +84,90 @@
         if (!url) return;
 
         this.loading = true;
+        this.errorMessage = null;
 
-        try {
-          const response = await fetch(url);
-          if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+        const maxAttempts = this.maxRetries;
+        let lastError = null;
 
-          const data = await response.json();
-          this.raw = data;
+        for (let attempt = 0; attempt <= maxAttempts; attempt++) {
+          try {
+            this.retryAttempt = attempt;
+            if (attempt > 0) {
+              const backoff = this.backoffDelay * Math.pow(2, attempt - 1);
+              await new Promise((resolve) => setTimeout(resolve, backoff));
+            }
 
-          const list = dataKey ? data?.[dataKey] : data;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
 
-          // Bentuk yang tidak terduga JANGAN lewat diam-diam: tabel kosong tanpa
-          // pesan apa pun sulit dibedakan dari "memang belum ada data".
-          if (!Array.isArray(list)) {
-            console.error(
-              `clientTable: ${url} tidak mengembalikan array` +
-                (dataKey ? ` pada key "${dataKey}"` : '') +
-                '. Tabel dirender kosong.',
-            );
+            const data = await response.json();
+            this.raw = data;
+
+            const list = dataKey ? data?.[dataKey] : data;
+
+            // Bentuk yang tidak terduga JANGAN lewat diam-diam: tabel kosong tanpa
+            // pesan apa pun sulit dibedakan dari "memang belum ada data".
+            if (!Array.isArray(list)) {
+              console.error(
+                `clientTable: ${url} tidak mengembalikan array` +
+                  (dataKey ? ` pada key "${dataKey}"` : '') +
+                  '. Tabel dirender kosong.',
+              );
+              throw new Error('Invalid data format received from server');
+            }
+
+            this.items = byKey(list);
+            this.errorMessage = null;
+
+            if (this.hadError) {
+              this.hadError = false;
+              if (window.dispatchEvent) {
+                window.dispatchEvent(
+                  new CustomEvent('toast:success', {
+                    detail: {
+                      title: 'Data Loaded',
+                      description: 'Data has been loaded successfully.',
+                    },
+                  }),
+                );
+              }
+            }
+
+            lastError = null;
+            break;
+          } catch (error) {
+            lastError = error;
+            console.warn(`clientTable: load attempt ${attempt + 1} failed:`, error);
           }
+        }
 
-          this.items = byKey(Array.isArray(list) ? list : []);
-        } catch (error) {
-          // Tabel tetap dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
-          console.error('Failed to load table data:', error);
+        if (lastError) {
+          console.error('Failed to load table data:', lastError);
           this.raw = null;
           this.items = [];
-        } finally {
-          this.loading = false;
-          this.currentPage = 1;
-          this.applySearch(this.searchInput);
+          this.hadError = true;
+          this.errorMessage = 'Failed to load data. Please check your connection and try again.';
+          if (typeof window.showErrorToast === 'function') {
+            window.showErrorToast(
+              'Failed to load data',
+              'Connection or server error occurred. Please try again.',
+            );
+          } else if (window.dispatchEvent) {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to load data',
+                  description: 'Connection or server error occurred. Please try again.',
+                },
+              }),
+            );
+          }
         }
+
+        this.loading = false;
+        this.retryAttempt = 0;
+        this.currentPage = 1;
+        this.applySearch(this.searchInput);
       },
 
       // Membaca path bertitik ("categoryPartner.category") dengan aman —

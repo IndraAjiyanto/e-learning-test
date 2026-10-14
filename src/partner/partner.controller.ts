@@ -80,10 +80,25 @@ export class PartnerController {
   }
 
   @Roles('super_admin')
+  @Get('api')
+  async getPartnersApi(@Res() res: Response) {
+    try {
+      const partners = await this.PartnerService.findAll();
+      res.json(partners);
+    } catch (error: unknown) {
+      res.status(500).json({
+        statusCode: 500,
+        message:
+          (error instanceof Error ? error.message : null) ||
+          'Failed to load partnership data',
+      });
+    }
+  }
+
+  @Roles('super_admin')
   @Get()
-  async findAll(@Res() res: Response, @Req() req: Request) {
-    const partners = await this.PartnerService.findAll();
-    res.render('super_admin/partner/index', { user: req.user, partners });
+  findAll(@Res() res: Response, @Req() req: Request) {
+    res.render('super_admin/partner/index', { user: req.user });
   }
 
   @Roles('super_admin')
