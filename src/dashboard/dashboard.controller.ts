@@ -316,7 +316,7 @@ export class DashboardController {
 
   @Get('api/category')
   async getCategory(@Res() res: Response) {
-    const category = await this.dashboardService.findCategories();
+    const category = await this.dashboardService.findCategoriesOrdered();
     res.json(category);
   }
 

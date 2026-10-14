@@ -100,7 +100,7 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='{ ...categoryEditForm({ category: {{json category}}, courseTypes: {{json courseTypes}} }), ...formDirtyGate() }'
+      x-data='{ ...categoryEditForm({ category: {{json category}}, courseTypes: {{json courseTypes}}, noNumbers: {{json noNumbers}}, takenNumbers: {{json takenNumbers}} }), ...formDirtyGate() }'
       x-init='$nextTick(() => captureBaseline())'
       @input='recomputeDirty()'
       @change='recomputeDirty()'
@@ -171,6 +171,26 @@
               options='typeOptions'
               required=true
             }}
+
+            <div class='flex flex-col gap-1.5'>
+              {{> components/ui/super_admin/form/select_field
+                id='no'
+                name='no'
+                field='no'
+                label='Order Number'
+                placeholder='Select a number'
+                options='noOptions'
+                variant='dropdown'
+                searchable=false
+                hint='Display order of the category in the user navbar. Number 1 appears first.'
+                required=true
+              }}
+              <p
+                x-show='isNoTaken()'
+                x-cloak
+                class='font-inter text-sm leading-5 text-[#b45309]'
+              >This order number is already used by another category. Saving will shift the other categories.</p>
+            </div>
 
             {{> components/ui/super_admin/form/multi_select_field
               id='courseTypeSearch'
@@ -247,6 +267,7 @@
       'name_ja',
       'contact',
       'type',
+      'no',
       ...LANGS.map((l) => `text.${l}`),
       ...LANGS.map((l) => `description.${l}`),
     ];
@@ -289,6 +310,8 @@
           return val ? '' : 'Category name is required.';
         case 'type':
           return val ? '' : 'Please select a category type.';
+        case 'no':
+          return val ? '' : 'Please select a number.';
         case 'contact':
           return val && !/^[0-9+\-\s]+$/.test(val) ? 'Contact must be a valid phone number.' : '';
         case 'description':
@@ -298,18 +321,28 @@
       }
     };
 
-    window.categoryEditForm = function categoryEditForm({ category, courseTypes }) {
+    window.categoryEditForm = function categoryEditForm({ category, courseTypes, noNumbers, takenNumbers }) {
       return {
         loading: false,
         lang: 'id',
 
         typeOptions: TYPES.map((t) => ({ value: t, label: t })),
+        noOptions: (noNumbers || []).map((n) => ({
+          value: String(n),
+          label: String(n),
+          taken: (takenNumbers || []).includes(n),
+        })),
+
+        isNoTaken() {
+          return (takenNumbers || []).includes(Number(this.formData.no));
+        },
 
         formData: {
           name: category.name ?? '',
           name_en: category.name_en ?? '',
           name_ja: category.name_ja ?? '',
           type: category.type ?? '',
+          no: category.no != null ? String(category.no) : '',
           contact: category.contact ?? '',
           description: byLang((l) => category.description?.[l] ?? ''),
           text: byLang((l) => category.text?.[l] ?? ''),
@@ -319,6 +352,7 @@
           name_en: '',
           name_ja: '',
           type: '',
+          no: '',
           contact: '',
           description: byLang(() => ''),
           text: byLang(() => ''),
@@ -329,6 +363,7 @@
           name_en: false,
           name_ja: false,
           type: false,
+          no: false,
           contact: false,
           description: byLang(() => false),
           text: byLang(() => false),
@@ -470,7 +505,7 @@
             const [field, lang] = path.split('.');
             if (lang) this.lang = lang;
             else if (TAB_OF_FIELD[field]) this.lang = TAB_OF_FIELD[field];
-            const id = field === 'type' ? 'type-trigger' : path.replace('.', '-');
+            const id = field === 'type' || field === 'no' ? `${field}-trigger` : path.replace('.', '-');
             this.$nextTick(() => document.getElementById(id)?.focus());
             return;
           }

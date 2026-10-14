@@ -40,18 +40,78 @@ export class CategoriesService {
     private readonly portfolioRepository: Repository<Portofolios>,
   ) {}
 
-  async create(createCategoriesDto: CreateCategoriesDto) {
-    const { courseType: courseTypeIds, ...categoryData } = createCategoriesDto;
-    this.normalizeLangNames(categoryData);
-    const category = this.categoryRepository.create(categoryData);
-
-    if (courseTypeIds && courseTypeIds.length > 0) {
-      const courseTypes =
-        await this.courseTypeRepository.findByIds(courseTypeIds);
-      category.courseTypes = courseTypes;
+  // Nomor urut (1..N) untuk mengurutkan kategori di navbar user. Nilainya
+  // dikirim form sebagai string (multipart, tanpa global ValidationPipe), jadi
+  // di-coerce di sini. `required` = wajib saat create.
+  private parseNo(value: unknown, required: boolean): number | undefined {
+    if (value === undefined || value === null || value === '') {
+      if (required) {
+        throw new BadRequestException('Category order number is required.');
+      }
+      return undefined;
     }
 
-    return await this.categoryRepository.save(category);
+    const no = Number(value);
+    if (!Number.isInteger(no) || no < 1) {
+      throw new BadRequestException(
+        'Category order number must be a positive integer.',
+      );
+    }
+    return no;
+  }
+
+  async count() {
+    return await this.categoryRepository.count();
+  }
+
+  async getTakenNumbers(excludeId?: string) {
+    const qb = this.categoryRepository
+      .createQueryBuilder('c')
+      .select('c.no', 'no')
+      .where('c.no IS NOT NULL');
+    if (excludeId) {
+      qb.andWhere('c.id != :excludeId', { excludeId });
+    }
+    const rows: { no: number | null }[] = await qb.getRawMany<{
+      no: number | null;
+    }>();
+    return rows
+      .map((r) => r.no)
+      .filter((n): n is number => n !== null && n !== undefined)
+      .sort((a, b) => a - b);
+  }
+
+  async create(createCategoriesDto: CreateCategoriesDto) {
+    const {
+      courseType: courseTypeIds,
+      no,
+      ...categoryData
+    } = createCategoriesDto;
+    this.normalizeLangNames(categoryData);
+    const targetNo = this.parseNo(no, true) as number;
+
+    // Transaksi: geser kategori dengan no >= target ke +1, lalu simpan yang baru
+    // di posisi target. Menjaga urutan rapat 1..N tanpa duplikat/gap.
+    return await this.categoryRepository.manager.transaction(
+      async (manager) => {
+        await manager.query(
+          `UPDATE "category" SET "no" = "no" + 1 WHERE "no" >= $1`,
+          [targetNo],
+        );
+
+        const category = manager.create(Category, {
+          ...categoryData,
+          no: targetNo,
+        });
+
+        if (courseTypeIds && courseTypeIds.length > 0) {
+          category.courseTypes =
+            await this.courseTypeRepository.findByIds(courseTypeIds);
+        }
+
+        return manager.save(category);
+      },
+    );
   }
 
   async findOneCategory(categoryName: string) {
@@ -177,21 +237,52 @@ export class CategoriesService {
       throw new NotFoundException('Category not found');
     }
 
-    const { courseType: courseTypeIds, ...updateData } = updateCategoriesDto;
+    const {
+      courseType: courseTypeIds,
+      no,
+      ...updateData
+    } = updateCategoriesDto;
     this.normalizeLangNames(updateData);
-    Object.assign(category, updateData);
 
-    if (courseTypeIds !== undefined) {
-      if (courseTypeIds.length > 0) {
-        const courseTypes =
-          await this.courseTypeRepository.findByIds(courseTypeIds);
-        category.courseTypes = courseTypes;
-      } else {
-        category.courseTypes = [];
-      }
-    }
+    const oldNo = category.no;
+    const newNo = this.parseNo(no, false) ?? oldNo;
 
-    return await this.categoryRepository.save(category);
+    return await this.categoryRepository.manager.transaction(
+      async (manager) => {
+        // Auto geser saat nomor berubah: menutup celah di posisi lama, membuka
+        // celah di posisi baru. Baris lama yang masih NULL tidak digeser.
+        if (
+          newNo !== undefined &&
+          newNo !== null &&
+          oldNo !== null &&
+          newNo !== oldNo
+        ) {
+          if (newNo < oldNo) {
+            await manager.query(
+              `UPDATE "category" SET "no" = "no" + 1 WHERE "no" >= $1 AND "no" < $2`,
+              [newNo, oldNo],
+            );
+          } else {
+            await manager.query(
+              `UPDATE "category" SET "no" = "no" - 1 WHERE "no" > $1 AND "no" <= $2`,
+              [oldNo, newNo],
+            );
+          }
+        }
+
+        Object.assign(category, updateData);
+        if (newNo !== undefined) category.no = newNo;
+
+        if (courseTypeIds !== undefined) {
+          category.courseTypes =
+            courseTypeIds.length > 0
+              ? await this.courseTypeRepository.findByIds(courseTypeIds)
+              : [];
+        }
+
+        return manager.save(category);
+      },
+    );
   }
 
   // Form selalu mengirim name_en/name_ja (bisa berupa string kosong). Jadikan
@@ -300,10 +391,20 @@ export class CategoriesService {
     const programCount = category.courses?.length || 0;
     if (programCount > 0) {
       throw new BadRequestException(
-        `Kategori "${category.name}" tidak dapat dihapus karena masih memiliki ${programCount} program. Hapus atau pindahkan program tersebut terlebih dahulu.`,
+        `Category "${category.name}" cannot be deleted because it still has ${programCount} program(s). Please move or delete the programs first.`,
       );
     }
-    await this.categoryRepository.remove(category);
+    const removedNo = category.no;
+    await this.categoryRepository.manager.transaction(async (manager) => {
+      await manager.remove(category);
+      // Rapatkan nomor urut setelah penghapusan (menjaga count == max no).
+      if (removedNo !== null && removedNo !== undefined) {
+        await manager.query(
+          `UPDATE "category" SET "no" = "no" - 1 WHERE "no" > $1`,
+          [removedNo],
+        );
+      }
+    });
     return { message: 'category successfully deleted' };
   }
 }
