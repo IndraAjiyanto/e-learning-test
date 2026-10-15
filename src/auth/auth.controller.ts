@@ -12,7 +12,9 @@ import {
   flashToastError,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 
+@DenyRoles('super_admin', 'admin')
 @Controller()
 export class AuthController {
   constructor(
