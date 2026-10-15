@@ -62,6 +62,12 @@
         {{/unless}}
       </div>
 
+      {{#if isAttempted}}
+        {{> components/ui/admin/locked-notice/index
+          title='Quiz is locked'
+          message='This quiz cannot be edited or deleted because it has already been attempted by a participant. Its questions are locked too.' }}
+      {{/if}}
+
     </div>
 
     {{!-- Table Detail Quiz --}}
@@ -126,9 +132,10 @@
                   </button>
                 </form>
               </div>
-              {{/unless}}
-            </div>
-          </div>
+        {{/unless}}
+      </div>
+
+    </div>
           {{/each}}
         </div>
         {{else}}

@@ -41,6 +41,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
+import { PortfoliosService } from 'src/portfolios/portfolios.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -51,6 +52,7 @@ export class CoursesController {
     private readonly usersService: UsersService,
     private readonly finalAssignmentService: FinalAssignmentService,
     private readonly paymentSettingsService: PaymentSettingsService,
+    private readonly portfoliosService: PortfoliosService,
   ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
@@ -402,6 +404,126 @@ export class CoursesController {
       course,
       courseId,
     });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/portfolio-guide/:courseId')
+  async portfolioGuideForm(
+    @Param('courseId') courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    const guide = await this.portfoliosService.getPortfolioGuide(courseId);
+    const locked =
+      !!guide && (await this.portfoliosService.hasPortfolioForCourse(courseId));
+    if (locked) {
+      flashToastError(
+        req,
+        'Cannot Edit Portfolio Guide',
+        'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
+      );
+      return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+    }
+    return res.render('admin/course/portfolio_guide', {
+      user: req.user,
+      course,
+      guide,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/portfolio-guide/detail/:courseId')
+  async portfolioGuideDetail(
+    @Param('courseId') courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!course) {
+      req.flash('error', 'Program not found');
+      return res.redirect('/program');
+    }
+    const guide = await this.portfoliosService.getPortfolioGuide(courseId);
+    if (!guide) {
+      return res.redirect(`/program/portfolio-guide/${courseId}`);
+    }
+    const portfolioGuideLocked =
+      await this.portfoliosService.hasPortfolioForCourse(courseId);
+    return res.render('admin/course/detail_portfolio_guide', {
+      user: req.user,
+      course,
+      guide,
+      portfolioGuideLocked,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/portfolio-guide/:courseId')
+  async savePortfolioGuide(
+    @Param('courseId') courseId: string,
+    @Body('content') content: unknown,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      if (await this.portfoliosService.hasPortfolioForCourse(courseId)) {
+        flashToastError(
+          req,
+          'Cannot Edit Portfolio Guide',
+          'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
+        );
+        return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+      }
+      await this.coursesService.updatePortfolioGuide(courseId, content);
+      flashToast(
+        req,
+        'Portfolio Guide Saved',
+        'Portfolio instructions updated successfully.',
+      );
+      return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to save portfolio guide',
+      );
+      return res.redirect(`/program/portfolio-guide/${courseId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Delete('/portfolio-guide/:courseId')
+  async deletePortfolioGuide(
+    @Param('courseId') courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      if (await this.portfoliosService.hasPortfolioForCourse(courseId)) {
+        flashToastError(
+          req,
+          'Cannot Delete Portfolio Guide',
+          'Portfolio guide cannot be deleted because participants have already uploaded their portfolios.',
+        );
+        return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+      }
+      await this.portfoliosService.deletePortfolioGuide(courseId);
+      flashToast(
+        req,
+        'Portfolio Guide Deleted',
+        'Portfolio instructions removed successfully.',
+      );
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete portfolio guide',
+      );
+    }
+    return res.redirect(`/program/detail/program/admin/${courseId}`);
   }
 
   @Roles('admin', 'super_admin')
@@ -832,6 +954,11 @@ export class CoursesController {
       }
       const lastWeek = await this.coursesService.findLastWeek(courseId);
       const caps = capabilitiesForCourse(course);
+      const portfolioGuide =
+        await this.portfoliosService.getPortfolioGuide(courseId);
+      const portfolioGuideLocked =
+        !!portfolioGuide &&
+        (await this.portfoliosService.hasPortfolioForCourse(courseId));
       if (
         course.programType === 'non_bootcamp' ||
         caps.structure === 'syllabus'
@@ -842,6 +969,8 @@ export class CoursesController {
           lastWeek,
           categoryId,
           caps,
+          portfolioGuide,
+          portfolioGuideLocked,
         });
       }
       return res.render('admin/course/detail', {
@@ -850,17 +979,26 @@ export class CoursesController {
         lastWeek,
         categoryId,
         caps,
+        portfolioGuide,
+        portfolioGuideLocked,
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);
       const lastWeek = await this.coursesService.findLastWeek(courseId);
       const caps = capabilitiesForCourse(course);
+      const portfolioGuide =
+        await this.portfoliosService.getPortfolioGuide(courseId);
+      const portfolioGuideLocked =
+        !!portfolioGuide &&
+        (await this.portfoliosService.hasPortfolioForCourse(courseId));
       res.render('super_admin/course/detail', {
         user: req.user,
         course,
         categoryId,
         lastWeek,
         caps,
+        portfolioGuide,
+        portfolioGuideLocked,
       });
     }
   }
@@ -1054,6 +1192,40 @@ export class CoursesController {
         user_kelas,
         portfolio,
         user: req.user,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/portfolio-guide')
+  async myCoursePortfolioGuideFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    // Panduan portfolio milik program ini. Terbuka hanya setelah student lulus
+    // seluruh syarat pembelajaran (syllabus/week terakhir lewat
+    // hasCompletedLearning); sebelum itu kartu tampil terkunci.
+    const guide = activeCourse?.id
+      ? await this.portfoliosService.getPortfolioGuide(activeCourse.id)
+      : null;
+    const unlocked = activeCourse?.id
+      ? await this.portfoliosService.hasCompletedLearning(id, activeCourse.id)
+      : false;
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/portfolio_guide/index',
+      {
+        course: activeCourse,
+        guide,
+        unlocked,
         caps: capabilitiesForCourse(activeCourse),
         layout: false,
       },

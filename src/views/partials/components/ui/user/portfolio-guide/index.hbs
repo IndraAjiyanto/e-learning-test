@@ -1,0 +1,46 @@
+{{!--
+  Komponen: Kartu Portfolio Guide (area user)
+  Lokasi: src/views/partials/components/ui/user/portfolio-guide/index.hbs
+
+  Menampilkan panduan portfolio sebuah program. Dipakai oleh tab
+  "Portfolio Guide" di Start Learning (bootcamp & non_bootcamp) lewat fragment
+  my_learning/start_learning/portfolio_guide/index.hbs.
+
+  Desain mengikuti token area user: kartu putih ber-border #D9D9D9, brand
+  #003060, muted #718096, state terkunci #94A3B8 di atas #FAFAFA.
+
+  Props:
+  - guide    : object (wajib) — baris portfolio_guides, memuat relasi course
+  - unlocked : boolean — sudah lulus syarat pembelajaran sehingga panduan terbuka
+  - course   : object — program yang sedang dibuka (opsional, untuk konteks)
+--}}
+{{#if guide}}
+  {{#if unlocked}}
+    <section class='w-full overflow-hidden rounded-[16px] border border-[#D9D9D9] bg-white'>
+      <div class='flex items-center gap-4 border-b border-[#E9E9E9] px-5 py-4 sm:px-7'>
+        <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-[#E4F1F7] text-[#003060]'><i class='fa-solid fa-briefcase'></i></span>
+        <div class='min-w-0 flex-1'>
+          <p class='font-inter text-xs font-bold uppercase tracking-[0.12em] text-[#718096]'>{{default (t 'test.startLearning.portfolioGuide') 'Portfolio Guide'}}</p>
+          <p class='mt-1 font-inter text-sm font-semibold text-[#003060]'>{{default (t 'test.startLearning.portfolioGuideSubtitle') 'Guide to creating your portfolio'}}</p>
+        </div>
+      </div>
+      <div class='px-5 py-5 sm:px-7'>
+        {{> components/ui/content-preview/index content=guide.content}}
+      </div>
+      <div class='flex justify-end border-t border-[#E9E9E9] px-5 py-4 sm:px-7'>
+        <button type='button' @click="toggleActiveSection('course-portfolio')" class='inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-5 font-inter text-sm font-semibold text-white transition-colors hover:bg-[#00254A]'>
+          <i class='fa-solid fa-briefcase'></i> {{default (t 'test.startLearning.portfolioGuideCreate') 'Create Portfolio'}} <i class='fa-solid fa-arrow-right'></i>
+        </button>
+      </div>
+    </section>
+  {{else}}
+    <section class='flex w-full items-center gap-4 rounded-[16px] border border-[#E2E8F0] bg-[#FAFAFA] p-5 opacity-80'>
+      <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-[#E2E8F0] text-[#94A3B8]'><i class='fa-solid fa-lock'></i></span>
+      <div class='min-w-0 flex-1'>
+        <p class='font-inter text-sm font-semibold text-[#94A3B8]'>{{default (t 'test.startLearning.portfolioGuide') 'Portfolio Guide'}}</p>
+        <p class='mt-1 font-inter text-xs text-[#94A3B8]'>{{default (t 'test.startLearning.portfolioGuideLocked') 'Complete the final material to unlock the portfolio guide.'}}</p>
+      </div>
+      <i class='fa-solid fa-lock text-[#94A3B8]'></i>
+    </section>
+  {{/if}}
+{{/if}}

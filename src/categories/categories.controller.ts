@@ -112,7 +112,16 @@ export class CategoriesController {
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const courseTypes = await this.categoriesService.findCourseTypes();
-    res.render('super_admin/category/create', { user: req.user, courseTypes });
+    // Opsi nomor urut: 1..(jumlah data + 1) — posisi untuk kategori baru.
+    const count = await this.categoriesService.count();
+    const noNumbers = Array.from({ length: count + 1 }, (_, i) => i + 1);
+    const takenNumbers = await this.categoriesService.getTakenNumbers();
+    res.render('super_admin/category/create', {
+      user: req.user,
+      courseTypes,
+      noNumbers,
+      takenNumbers,
+    });
   }
 
   @Roles('super_admin')
@@ -253,10 +262,20 @@ export class CategoriesController {
   ) {
     const category = await this.categoriesService.findOne(categoryId);
     const courseTypes = await this.categoriesService.findCourseTypes();
+    // Opsi nomor urut saat edit: 1..jumlah data (kategori sendiri termasuk).
+    const count = await this.categoriesService.count();
+    const noNumbers = Array.from(
+      { length: Math.max(count, 1) },
+      (_, i) => i + 1,
+    );
+    const takenNumbers =
+      await this.categoriesService.getTakenNumbers(categoryId);
     res.render('super_admin/category/edit', {
       user: req.user,
       category,
       courseTypes,
+      noNumbers,
+      takenNumbers,
     });
   }
 

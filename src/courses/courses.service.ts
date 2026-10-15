@@ -44,6 +44,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { PortfolioGuide } from 'src/entities/portfolio-guide.entity';
 import { dateHelpers } from 'src/common/helpers/date.helpers';
 
 @Injectable()
@@ -51,6 +52,8 @@ export class CoursesService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @InjectRepository(PortfolioGuide)
+    private readonly portfolioGuideRepository: Repository<PortfolioGuide>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Category)
@@ -1617,6 +1620,33 @@ export class CoursesService {
       throw new NotFoundException('Program not found');
     }
     return course;
+  }
+
+  async updatePortfolioGuide(courseId: string, content: unknown) {
+    const course = await this.findOne(courseId);
+    const guide =
+      (await this.portfolioGuideRepository.findOne({
+        where: { course: { id: courseId } },
+      })) || this.portfolioGuideRepository.create({ course });
+
+    let parsedContent: object | string | null = null;
+    if (typeof content === 'string' && content.trim()) {
+      const trimmed = content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
+      }
+    } else if (content && typeof content === 'object') {
+      parsedContent = content;
+    }
+
+    guide.content = parsedContent as object | null;
+    return this.portfolioGuideRepository.save(guide);
   }
 
   async updateLaunch(courseId: string, updateCourseDto: UpdateCoursesDto) {

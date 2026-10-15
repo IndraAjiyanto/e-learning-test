@@ -35,7 +35,8 @@
   - label       : string (wajib)
   - field       : string (wajib) — key state Alpine (formData/formErrors)
   - options     : string (wajib) — nama variabel Alpine berisi
-                  [{ value, label, dot? }]; `dot` = class bg (mis. 'bg-[#22c55e]')
+                  [{ value, label, dot?, taken? }]; `dot` = class bg (mis. 'bg-[#22c55e]'),
+                  `taken` = boolean, menampilkan badge "Taken" pada opsi (mis. nomor urut terpakai)
   - iconLeft    : 'user' | 'mail' | 'map-pin' | 'graduation-cap' | 'book' | 'phone'
                   ikon 16px di kiri trigger. Aditif, default tanpa ikon.
   - variant     : 'menu' (default) | 'dropdown'
@@ -147,6 +148,11 @@
               <span class='h-2.5 w-2.5 shrink-0 rounded-full' :class='option.dot'></span>
             </template>
             <span class='flex-1 min-w-0 {{#if (eq variant 'dropdown')}}truncate{{/if}}' x-text='option.label'></span>
+            <span
+              x-show='option.taken'
+              x-cloak
+              class='shrink-0 rounded-full bg-[#fef3c7] px-2 py-0.5 font-inter text-xs font-medium leading-4 text-[#b45309]'
+            >Taken</span>
             <span
               x-show='formData.{{field}} === option.value'
               class='flex h-5 w-5 shrink-0 items-center justify-center {{#if (eq variant 'dropdown')}}text-[#404040]{{else}}text-[#055c90]{{/if}}'
