@@ -14,7 +14,7 @@
       {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=true isJapan=isJapan}}
         <div
           x-show="visibleIds.length > 0"
-          class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-[1568px]"
+          class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch justify-items-center max-w-[1568px]"
         >
           {{#each courses}}
             <div
