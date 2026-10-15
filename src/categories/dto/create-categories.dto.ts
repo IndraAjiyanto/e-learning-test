@@ -1,11 +1,4 @@
-import {
-  IsArray,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateCategoriesDto {
   @IsString()
@@ -20,6 +13,11 @@ export class CreateCategoriesDto {
   @IsOptional()
   @IsString()
   name_ja?: string | null;
+
+  // Nomor urut kategori (1..N+1). Tidak ada global ValidationPipe, jadi nilai
+  // multipart (string) di-coerce & divalidasi di CategoriesService.parseNo.
+  @IsOptional()
+  no?: number;
 
   @IsString()
   icon: string;

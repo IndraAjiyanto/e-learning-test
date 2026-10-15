@@ -49,12 +49,13 @@ export class TechnologiesController {
     @Req() req: Request,
   ) {
     try {
-      createTechnologiesDto.imgUrl = req.body.uploadedImageUrls?.[0] || null;
+      createTechnologiesDto.imgUrl =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] ||
+        '' ||
+        null;
 
-      if (createTechnologiesDto.svg) {
-        createTechnologiesDto.svg = createTechnologiesDto.svg.trim();
-      }
-      const isSvgEmpty = !createTechnologiesDto.svg;
+      const isSvgEmpty = createTechnologiesDto.svg === '';
       if (isSvgEmpty) {
         createTechnologiesDto.svg = null;
       }
@@ -65,18 +66,12 @@ export class TechnologiesController {
         );
       }
 
-      if (createTechnologiesDto.svg) {
-        const svgTrimmed = createTechnologiesDto.svg.trim();
-        if (!/^<svg[\s>][\s\S]*<\/svg>$/i.test(svgTrimmed)) {
-          throw new BadRequestException('Format kode SVG tidak valid.');
-        }
-      }
-
       await this.technologiesService.create(createTechnologiesDto);
       flashToast(req, 'Tool Created', 'The tool has been added successfully.');
       res.redirect('/technology');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Tool failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Tool failed to create');
       res.redirect('/technology');
     }
   }
@@ -120,7 +115,7 @@ export class TechnologiesController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/technologies/create', { user: req.user });
   }
 
@@ -156,9 +151,18 @@ export class TechnologiesController {
     @Req() req: Request,
   ) {
     try {
-      if (req.body.uploadedImageUrls?.[0]) {
-        updateTechnologiesDto.imgUrl = req.body.uploadedImageUrls[0];
-      } else if (req.body.remove_image === 'true') {
+      if (
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] ||
+        ''
+      ) {
+        updateTechnologiesDto.imgUrl =
+          (req.body as { uploadedImageUrls?: string[]; remove_image?: string })
+            ?.uploadedImageUrls?.[0] || '';
+      } else if (
+        (req.body as { uploadedImageUrls?: string[]; remove_image?: string })
+          ?.remove_image === 'true'
+      ) {
         updateTechnologiesDto.imgUrl = null;
       }
 
@@ -167,9 +171,6 @@ export class TechnologiesController {
         throw new BadRequestException('Tech not found');
       }
 
-      if (updateTechnologiesDto.svg !== undefined && updateTechnologiesDto.svg !== null) {
-        updateTechnologiesDto.svg = updateTechnologiesDto.svg.trim();
-      }
       const isSvgEmpty = updateTechnologiesDto.svg === '';
       const finalSvg =
         updateTechnologiesDto.svg !== undefined
@@ -186,13 +187,6 @@ export class TechnologiesController {
         );
       }
 
-      if (updateTechnologiesDto.svg) {
-        const svgTrimmed = updateTechnologiesDto.svg.trim();
-        if (!/^<svg[\s>][\s\S]*<\/svg>$/i.test(svgTrimmed)) {
-          throw new BadRequestException('Format kode SVG tidak valid.');
-        }
-      }
-
       // Ensure empty string SVG is saved as null to prevent Handlebars issues
       if (isSvgEmpty) {
         updateTechnologiesDto.svg = null;
@@ -205,8 +199,9 @@ export class TechnologiesController {
         'The changes to this tool have been saved.',
       );
       res.redirect('/technology');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Tool failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Tool failed to update');
       res.redirect(`/technology/formEdit/${id}`);
     }
   }
@@ -231,8 +226,9 @@ export class TechnologiesController {
         'The tool has been removed successfully.',
       );
       res.redirect('/technology');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete tool');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete tool');
       res.redirect('/technology');
     }
   }

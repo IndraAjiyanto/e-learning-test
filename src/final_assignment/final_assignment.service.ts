@@ -89,14 +89,19 @@ export class FinalAssignmentService {
       throw new NotFoundException('Course not found');
     }
 
-    let parsedContent: any = undefined;
+    let parsedContent: object | string | null | undefined = undefined;
     if (typeof dto.content === 'string') {
-      try {
-        parsedContent = JSON.parse(dto.content);
-      } catch (err) {
-        parsedContent = undefined;
+      const trimmed = dto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
-    } else if (dto.content) {
+    } else if (dto.content !== undefined) {
       parsedContent = dto.content;
     }
 
@@ -111,7 +116,7 @@ export class FinalAssignmentService {
       fa.title = dto.title;
       fa.description = dto.description;
       if (parsedContent !== undefined) {
-        fa.content = parsedContent;
+        fa.content = parsedContent as object;
       }
       return this.finalAssignmentRepo.save(fa);
     }
@@ -120,7 +125,7 @@ export class FinalAssignmentService {
       courseId,
       title: dto.title,
       description: dto.description,
-      content: parsedContent,
+      content: parsedContent as object | undefined,
     });
     return this.finalAssignmentRepo.save(fa);
   }
@@ -195,7 +200,9 @@ export class FinalAssignmentService {
     finalAssignmentId: string,
     status?: ProcessStatus,
   ): Promise<UserAssignment[]> {
-    const where: any = { finalAssignmentId };
+    const where: import('typeorm').FindOptionsWhere<UserAssignment> = {
+      finalAssignmentId,
+    };
     if (status) {
       where.status = status;
     }
@@ -210,7 +217,7 @@ export class FinalAssignmentService {
     submissionId: string,
     status: ProcessStatus,
     commentText?: string,
-    reviewer?: any,
+    reviewer?: { id?: string; username?: string },
   ): Promise<UserAssignment> {
     const submission = await this.userAssignmentRepo.findOne({
       where: { id: submissionId },

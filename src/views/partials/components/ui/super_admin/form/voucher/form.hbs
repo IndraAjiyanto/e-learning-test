@@ -65,7 +65,14 @@
       users,
       selectedCourseIds,
       selectedUserIds,
+      excludeId,
     } = {}) {
+      // Endpoint cek kode (VoucherController.checkCode). Dipanggil saat kode
+      // diketik supaya konflik terlihat SEBELUM tombol Create/Edit ditekan.
+      // `excludeId` diisi halaman edit agar voucher tidak bentrok dengan dirinya.
+      const CODE_API = '/voucher/check-code';
+      let codeCheckTimer = null;
+
       const courseOptions = (courses || []).map((c) => ({
         value: c.id,
         label: c.name,
@@ -114,11 +121,99 @@
         formErrors: { code_voucher: '', type: '', percent: '', active: '' },
         touched: { code_voucher: false, type: false, percent: false, active: false },
 
+        // Hasil cek kode dari server. `codeTaken` menandai kode sudah dipakai
+        // voucher lain; `codeChecking` aktif selama cek berjalan (debounce/fetch).
+        codeChecking: false,
+        codeTaken: false,
+        // Nomor urut cek: hasil fetch yang usang (kode berubah saat menunggu)
+        // dibuang agar pesan error tidak menempel pada kode yang salah.
+        codeCheckSeq: 0,
+
+        // Gabungan error lokal (required/panjang) dan error hasil cek server.
+        fieldError(path) {
+          const local = errorFor(path, this.formData[path], this.formData);
+          if (local) return local;
+          if (path === 'code_voucher' && this.codeTaken) {
+            return `${LABEL.code_voucher} is already in use.`;
+          }
+          return '';
+        },
+
+        // Simpan pesan error kode sesuai keadaan: error lokal selalu tampil
+        // (bila sudah disentuh), error "sudah dipakai" tampil tanpa perlu blur.
+        syncCodeError() {
+          this.formErrors.code_voucher =
+            this.touched.code_voucher || this.codeTaken
+              ? this.fieldError('code_voucher')
+              : '';
+        },
+
+        // Panggil server setelah jeda singkat supaya tidak menembak tiap ketikan.
+        scheduleCodeCheck() {
+          if (codeCheckTimer) clearTimeout(codeCheckTimer);
+          const code = (this.formData.code_voucher ?? '').toString().trim();
+          if (!code) {
+            this.codeChecking = false;
+            this.codeTaken = false;
+            this.syncCodeError();
+            return;
+          }
+          this.codeChecking = true;
+          codeCheckTimer = setTimeout(() => this.runCodeCheck(), 400);
+        },
+
+        async runCodeCheck() {
+          const code = (this.formData.code_voucher ?? '').toString().trim();
+          if (!code) {
+            this.codeChecking = false;
+            this.codeTaken = false;
+            this.syncCodeError();
+            return;
+          }
+          const seq = ++this.codeCheckSeq;
+          try {
+            const params = new URLSearchParams({ code });
+            if (excludeId) params.set('excludeId', excludeId);
+            const res = await fetch(`${CODE_API}?${params.toString()}`, {
+              headers: { Accept: 'application/json' },
+            });
+            if (!res.ok) throw new Error('check failed');
+            const data = await res.json();
+            if (seq !== this.codeCheckSeq) return;
+            this.codeTaken = !!(data && data.available === false);
+          } catch {
+            // Jaringan gagal: jangan menghalangi; pengecekan di server (create/
+            // update) tetap menjadi jaring pengaman terakhir.
+            if (seq !== this.codeCheckSeq) return;
+            this.codeTaken = false;
+          } finally {
+            if (seq === this.codeCheckSeq) {
+              this.codeChecking = false;
+              this.syncCodeError();
+            }
+          }
+        },
+
+        // Dipakai saat submit: jalankan cek tanpa menunggu debounce dan laporkan
+        // apakah kode boleh dipakai.
+        async ensureCodeAvailable() {
+          if (codeCheckTimer) clearTimeout(codeCheckTimer);
+          const code = (this.formData.code_voucher ?? '').toString().trim();
+          if (!code) return true;
+          await this.runCodeCheck();
+          return !this.codeTaken;
+        },
+
         validateField(path, value) {
           this.formData[path] = value ?? '';
-          this.formErrors[path] = this.touched[path]
-            ? errorFor(path, this.formData[path], this.formData)
-            : '';
+          if (path === 'code_voucher') {
+            this.syncCodeError();
+            this.scheduleCodeCheck();
+          } else {
+            this.formErrors[path] = this.touched[path]
+              ? errorFor(path, this.formData[path], this.formData)
+              : '';
+          }
 
           // Berganti tipe mengubah apakah percent wajib, jadi errornya dihitung ulang.
           if (path === 'type') {
@@ -143,13 +238,20 @@
         // yang hanya melihat error yang sudah diungkap `touched` sehingga form
         // kosong yang belum disentuh justru terbaca "tanpa error".
         canSubmit() {
-          return PATHS.every(
-            (path) => errorFor(path, this.formData[path], this.formData) === '',
+          return (
+            PATHS.every(
+              (path) => errorFor(path, this.formData[path], this.formData) === '',
+            ) &&
+            !this.codeChecking &&
+            !this.codeTaken
           );
         },
 
         hasFormErrors() {
-          return PATHS.some((path) => this.formErrors[path] !== '');
+          return (
+            this.codeTaken ||
+            PATHS.some((path) => this.formErrors[path] !== '')
+          );
         },
 
         revealFirstInvalid() {
@@ -167,15 +269,21 @@
         },
 
         // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
-        submitForm(event) {
+        async submitForm(event) {
+          const form = event.target;
           this.validateAll();
-          if (this.hasFormErrors()) {
+
+          // Pastikan kode sudah dicek server sebelum benar-benar submit.
+          const codeOk = await this.ensureCodeAvailable();
+          this.syncCodeError();
+
+          if (!codeOk || this.hasFormErrors()) {
             this.revealFirstInvalid();
             return;
           }
 
           this.loading = true;
-          event.target.submit();
+          form.submit();
         },
       };
     };

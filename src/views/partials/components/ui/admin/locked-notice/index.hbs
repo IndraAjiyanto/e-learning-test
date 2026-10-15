@@ -1,0 +1,15 @@
+{{!--
+  Component: Locked Notice (Admin) — banner "tidak dapat diedit/dihapus"
+  Path: components/ui/admin/locked-notice/index.hbs
+  Props: {{title}} (opsional), {{message}} (wajib)
+
+  Dipakai di halaman detail ketika aksi edit/hapus disembunyikan karena
+  sudah ada aktivitas user (peserta, progress, submission, dsb).
+--}}
+<div class='box-border w-full flex flex-row gap-[10px] p-[12px_16px] justify-start items-start bg-[#FFF7ED] [outline:1px_solid_#FED7AA] [outline-offset:-0.5px] rounded-[8px]'>
+  <i class='fa-solid fa-lock mt-[2px] text-[#C2410C]'></i>
+  <div class='flex flex-col gap-[2px] flex-1 min-w-0'>
+    {{#if title}}<span class='font-inter font-semibold text-[14px] leading-[20px] text-[#9A3412]'>{{title}}</span>{{/if}}
+    <span class='font-inter font-normal text-[13px] leading-[18px] text-[#9A3412]'>{{message}}</span>
+  </div>
+</div>

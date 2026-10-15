@@ -14,7 +14,7 @@ export class DashboardController {
     private readonly dashboardService: DashboardService,
     private readonly galleryService: GalleryService,
     private readonly kategorisService: CategoriesService,
-  ) { }
+  ) {}
 
   @Get('course/filter')
   async kelasFilter(
@@ -247,7 +247,9 @@ export class DashboardController {
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
     const kelasList = await this.dashboardService.findCourses();
-    const kategoriList = await this.dashboardService.findCategories();
+    const kategoriList = (await this.dashboardService.findCategories()).filter(
+      (c) => c.type !== 'Free Program',
+    );
 
     res.render('alumni', {
       user: req.user,
@@ -314,7 +316,7 @@ export class DashboardController {
 
   @Get('api/category')
   async getCategory(@Res() res: Response) {
-    const category = await this.dashboardService.findCategories();
+    const category = await this.dashboardService.findCategoriesOrdered();
     res.json(category);
   }
 

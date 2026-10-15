@@ -6,7 +6,7 @@
   - Container: bg #FFFFFF, padding 80px (responsive), gap 40px, width 1728px
   - Text:
     - Eyebrow: "REGISTRATION PROCESS" (Inter 700 14px uppercase #6EB6E5)
-    - Headline: "Start Your Career in {{course.name}} Now" (Montserrat 800 42px #003060)
+    - Headline: "Start Your Career in {{course.name}} Now" (Montserrat 800 36px #003060)
       * Sesuai instruksi user: teks UI/UX digantikan dinamis oleh course.name
     - Subtitle: "Don't miss the opportunity to learn exclusively and with guidance from industry experts. Seats are limited to maintain mentoring quality." (Open Sans 400 20px #003060, max-w 800px)
   - Action CTA Buttons:
@@ -34,8 +34,8 @@
         {{default (t 'test.paidProgram.finalCta.eyebrow') 'REGISTRATION PROCESS'}}
       </span>
 
-      {{!-- Start Your Career in [Course Name] Now (Montserrat 800 32px-42px #003060) --}}
-      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[42px] font-extrabold leading-[1.3] text-[#003060] [text-wrap:balance]">
+      {{!-- Start Your Career in [Course Name] Now (Montserrat 800 24px-36px #003060) --}}
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#003060] [text-wrap:balance]">
         {{default (t 'test.paidProgram.finalCta.titlePrefix') 'Start Your Career in'}} {{#if course.name}}{{course.name}}{{else if category.name}}{{nameByLang category lang}}{{else}}UI/UX{{/if}} {{default (t 'test.paidProgram.finalCta.titleSuffix') 'Now'}}
       </h2>
 

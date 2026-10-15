@@ -38,7 +38,7 @@ export class UsersService {
     private readonly certificateRepository: Repository<Certificates>,
 
     private readonly emailService: EmailService,
-  ) { }
+  ) {}
 
   private async generateVerificationToken(user: User): Promise<string> {
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -112,7 +112,9 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
     if (cekEmail) {
-      throw new NotFoundException('Email is already registered');
+      throw new BadRequestException(
+        'Email sudah terdaftar. Silakan gunakan alamat email lain.',
+      );
     }
 
     const user = this.userRepository.create({
@@ -120,7 +122,23 @@ export class UsersService {
       isVerified: false,
       resetPasswordToken: 'MUST_CHANGE_PASSWORD',
     });
-    const savedUser = await this.userRepository.save(user);
+
+    let savedUser: User;
+    try {
+      savedUser = await this.userRepository.save(user);
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string };
+      if (
+        err?.code === '23505' ||
+        err?.message?.includes('duplicate key') ||
+        err?.message?.includes('unique constraint')
+      ) {
+        throw new BadRequestException(
+          'Email sudah terdaftar. Silakan gunakan alamat email lain.',
+        );
+      }
+      throw error;
+    }
 
     await this.sendAdminVerificationEmailToUser(
       savedUser,
@@ -386,7 +404,9 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) { }
+    } catch {
+      // ignore if file doesn't exist
+    }
   }
 
   async remove(id: string) {
@@ -438,7 +458,7 @@ export class UsersService {
         resetToken,
         user.username,
       );
-    } catch (error) {
+    } catch {
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
       await this.userRepository.save(user);

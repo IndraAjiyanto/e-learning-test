@@ -30,7 +30,7 @@ export class QuizController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':weeksId')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async create(
@@ -48,19 +48,20 @@ export class QuizController {
         'The new quiz has been added to this week.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Failed to Create Quiz',
-        error.message || 'Unable to create quiz.',
+        err.message || 'Unable to create quiz.',
       );
       res.redirect(`/week/${weeksId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:weeksId')
-  async formCreate(
+  formCreate(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -68,7 +69,7 @@ export class QuizController {
     res.render('admin/quiz/create', { weeksId, user: req.user });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':quizId')
   async findOne(
     @Param('quizId') quizId: string,
@@ -91,7 +92,7 @@ export class QuizController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:quizId')
   async formEdit(
     @Param('quizId') quizId: string,
@@ -157,14 +158,14 @@ export class QuizController {
     );
     const questions = await this.quizService.findQuestions(quizId);
     const quiz = await this.quizService.findOne(quizId);
-    const userWithCourses = await this.usersService.findWithCourses(
-      req.user!.id,
-    );
-    const logbooks = await this.usersService.findAllLogbooks(req.user!.id);
-    const portfolio = await this.usersService.findPortfolio(req.user!.id);
-    const activeCourse = userWithCourses?.userCourses.find(
-      (userCourse) => userCourse.course?.id === quiz?.weeks?.course?.id,
-    )?.course;
+    // const userWithCourses = await this.usersService.findWithCourses(
+    //   req.user!.id,
+    // );
+    // const logbooks = await this.usersService.findAllLogbooks(req.user!.id);
+    // const portfolio = await this.usersService.findPortfolio(req.user!.id);
+    // const activeCourse = userWithCourses?.userCourses.find(
+    //   (userCourse) => userCourse.course?.id === quiz?.weeks?.course?.id,
+    // )?.course;
 
     if (check) {
       // res.render('user/user_profile/index', {
@@ -215,7 +216,7 @@ export class QuizController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':quizId')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async update(
@@ -225,24 +226,28 @@ export class QuizController {
     @Req() req: Request,
   ) {
     try {
-      await this.quizService.update(quizId, updateQuizDto);
+      const updatedQuiz = await this.quizService.update(quizId, updateQuizDto);
       flashToast(
         req,
         'Changes Saved',
         'The quiz information has been updated.',
       );
+      if (updatedQuiz?.syllabus) {
+        return res.redirect(`/syllabus/quiz/detail/${quizId}`);
+      }
       res.redirect(`/quiz/${quizId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Failed to Update Quiz',
-        error.message || 'Unable to update quiz.',
+        err.message || 'Unable to update quiz.',
       );
       res.redirect(`/quiz/${quizId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':quizId/:weeksId')
   async remove(
     @Param('weeksId', new ParseUUIDPipe()) weeksId: string,
@@ -254,11 +259,12 @@ export class QuizController {
       await this.quizService.remove(quizId);
       flashToast(req, 'Quiz Deleted', 'The quiz has been permanently removed.');
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Failed to Delete Quiz',
-        error.message || 'Unable to delete quiz.',
+        err.message || 'Unable to delete quiz.',
       );
       res.redirect(`/week/${weeksId}`);
     }

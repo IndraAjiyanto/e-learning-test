@@ -41,6 +41,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
+import { PortfoliosService } from 'src/portfolios/portfolios.service';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -51,14 +52,18 @@ export class CoursesController {
     private readonly usersService: UsersService,
     private readonly finalAssignmentService: FinalAssignmentService,
     private readonly paymentSettingsService: PaymentSettingsService,
-  ) { }
+    private readonly portfoliosService: PortfoliosService,
+  ) {}
 
   private readonly createValidationPipe = new ValidationPipe({
     whitelist: true,
     transform: true,
   });
 
-  private async buildCreateDto(body: any, user: any) {
+  private async buildCreateDto(
+    body: Record<string, unknown>,
+    user: Express.User | undefined,
+  ) {
     const dto = mapCreateProgram(body, user);
     // Validasi kontrak domain (field asing dibuang via whitelist).
     await this.createValidationPipe.transform(dto, {
@@ -84,7 +89,11 @@ export class CoursesController {
     maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
-  async create(@Body() body: any, @Res() res: Response, @Req() req: Request) {
+  async create(
+    @Body() body: Record<string, unknown>,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
       const dto = await this.buildCreateDto(body, req.user);
       const course = await this.coursesService.create(dto);
@@ -100,11 +109,19 @@ export class CoursesController {
         'The new program has been added successfully.',
       );
       res.redirect('/program');
-    } catch (error: any) {
-      const messages = error?.getResponse?.()?.message;
+    } catch (error: unknown) {
+      const resp =
+        error && typeof error === 'object' && 'getResponse' in error
+          ? (
+              error as { getResponse: () => { message?: string | string[] } }
+            ).getResponse()
+          : undefined;
+      const messages = resp?.message;
       const errorMessage = Array.isArray(messages)
         ? messages.join(', ')
-        : error.message || 'program failed created';
+        : error instanceof Error
+          ? error.message
+          : 'program failed created';
       req.flash('error', errorMessage);
       res.redirect('/program');
     }
@@ -128,26 +145,28 @@ export class CoursesController {
     maxSize: 10 * 1024 * 1024,
     skipTransformation: true,
   })
-  async uploadImage(@Res() res: Response, @Req() req: Request) {
+  uploadImage(@Res() res: Response, @Req() req: Request) {
     try {
-      const imageUrl = req.body.uploadedImageUrls?.[0];
+      const uploadedUrls = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls;
+      const imageUrl = uploadedUrls?.[0];
       if (!imageUrl) {
         return res
           .status(400)
           .json({ success: 0, message: 'Image upload failed' });
       }
       return res.json({ success: 1, file: { url: imageUrl } });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         success: 0,
-        message: error.message || 'Image upload failed',
+        message: error instanceof Error ? error.message : 'Image upload failed',
       });
     }
   }
 
   @Roles('admin', 'super_admin', 'user')
   @Post('fetch-image')
-  async fetchImage(@Body() body: { url?: string }, @Res() res: Response) {
+  fetchImage(@Body() body: { url?: string }, @Res() res: Response) {
     if (!body?.url) {
       return res
         .status(400)
@@ -163,14 +182,16 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin', 'user')
   @Get('fetch-link')
-  async fetchLink(@Query('url') url: string, @Res() res: Response) {
+  fetchLink(@Query('url') url: string, @Res() res: Response) {
     const rawUrl = url || '';
     let title = rawUrl;
     try {
       if (rawUrl) {
         title = new URL(rawUrl).hostname;
       }
-    } catch (_) { }
+    } catch {
+      // ignore invalid URL
+    }
 
     return res.json({
       success: 1,
@@ -199,7 +220,7 @@ export class CoursesController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async createKelas(
-    @Body() body: any,
+    @Body() body: Record<string, unknown>,
     @Res() res: Response,
     @Req() req: Request,
     @Param('categoryId') categoryId: string,
@@ -221,11 +242,19 @@ export class CoursesController {
         'The new program has been added to this category.',
       );
       res.redirect(`/category/${categoryId}`);
-    } catch (error: any) {
-      const messages = error?.getResponse?.()?.message;
+    } catch (error: unknown) {
+      const resp =
+        error && typeof error === 'object' && 'getResponse' in error
+          ? (
+              error as { getResponse: () => { message?: string | string[] } }
+            ).getResponse()
+          : undefined;
+      const messages = resp?.message;
       const errorMessage = Array.isArray(messages)
         ? messages.join(', ')
-        : error.message || 'program failed created';
+        : error instanceof Error
+          ? error.message
+          : 'program failed created';
       req.flash('error', errorMessage);
       res.redirect(`/category/${categoryId}`);
     }
@@ -243,11 +272,11 @@ export class CoursesController {
       await this.coursesService.addUserToCourse(userId, courseId);
       flashToast(req, 'User Added', 'User successfully added to program');
       res.redirect(`/program/addUser/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Failed to Add User',
-        error.message || 'User failed add to program',
+        error instanceof Error ? error.message : 'User failed add to program',
       );
       res.redirect(`/program/addUser/${courseId}`);
     }
@@ -378,6 +407,126 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/portfolio-guide/:courseId')
+  async portfolioGuideForm(
+    @Param('courseId') courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    const guide = await this.portfoliosService.getPortfolioGuide(courseId);
+    const locked =
+      !!guide && (await this.portfoliosService.hasPortfolioForCourse(courseId));
+    if (locked) {
+      flashToastError(
+        req,
+        'Cannot Edit Portfolio Guide',
+        'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
+      );
+      return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+    }
+    return res.render('admin/course/portfolio_guide', {
+      user: req.user,
+      course,
+      guide,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/portfolio-guide/detail/:courseId')
+  async portfolioGuideDetail(
+    @Param('courseId') courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const course = await this.coursesService.findOne(courseId);
+    if (!course) {
+      req.flash('error', 'Program not found');
+      return res.redirect('/program');
+    }
+    const guide = await this.portfoliosService.getPortfolioGuide(courseId);
+    if (!guide) {
+      return res.redirect(`/program/portfolio-guide/${courseId}`);
+    }
+    const portfolioGuideLocked =
+      await this.portfoliosService.hasPortfolioForCourse(courseId);
+    return res.render('admin/course/detail_portfolio_guide', {
+      user: req.user,
+      course,
+      guide,
+      portfolioGuideLocked,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('/portfolio-guide/:courseId')
+  async savePortfolioGuide(
+    @Param('courseId') courseId: string,
+    @Body('content') content: unknown,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      if (await this.portfoliosService.hasPortfolioForCourse(courseId)) {
+        flashToastError(
+          req,
+          'Cannot Edit Portfolio Guide',
+          'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
+        );
+        return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+      }
+      await this.coursesService.updatePortfolioGuide(courseId, content);
+      flashToast(
+        req,
+        'Portfolio Guide Saved',
+        'Portfolio instructions updated successfully.',
+      );
+      return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to save portfolio guide',
+      );
+      return res.redirect(`/program/portfolio-guide/${courseId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Delete('/portfolio-guide/:courseId')
+  async deletePortfolioGuide(
+    @Param('courseId') courseId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      if (await this.portfoliosService.hasPortfolioForCourse(courseId)) {
+        flashToastError(
+          req,
+          'Cannot Delete Portfolio Guide',
+          'Portfolio guide cannot be deleted because participants have already uploaded their portfolios.',
+        );
+        return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
+      }
+      await this.portfoliosService.deletePortfolioGuide(courseId);
+      flashToast(
+        req,
+        'Portfolio Guide Deleted',
+        'Portfolio instructions removed successfully.',
+      );
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete portfolio guide',
+      );
+    }
+    return res.redirect(`/program/detail/program/admin/${courseId}`);
+  }
+
+  @Roles('admin', 'super_admin')
   @Post('/create-final-assignment/:courseId')
   async createFinalAssignment(
     @Res() res: Response,
@@ -389,10 +538,15 @@ export class CoursesController {
       return res.redirect(`/program/detail/program/admin/${courseId}`);
     }
     try {
+      const formBody = req.body as {
+        title?: string;
+        description?: string;
+        content?: string;
+      };
       await this.finalAssignmentService.createOrUpdate(courseId, {
-        title: req.body.title,
-        description: req.body.description,
-        content: req.body.content,
+        title: String(formBody?.title ?? ''),
+        description: String(formBody?.description ?? ''),
+        content: String(formBody?.content ?? ''),
       });
       flashToast(
         req,
@@ -400,8 +554,13 @@ export class CoursesController {
         'The new final assignment has been added to the program.',
       );
       return res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create final assignment');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to create final assignment',
+      );
       return res.redirect(`/program/create-final-assignment/${courseId}`);
     }
   }
@@ -453,10 +612,15 @@ export class CoursesController {
       return res.redirect(`/program/detail/program/admin/${courseId}`);
     }
     try {
+      const formBody = req.body as {
+        title?: string;
+        description?: string;
+        content?: string;
+      };
       await this.finalAssignmentService.createOrUpdate(courseId, {
-        title: req.body.title,
-        description: req.body.description,
-        content: req.body.content,
+        title: String(formBody?.title ?? ''),
+        description: String(formBody?.description ?? ''),
+        content: String(formBody?.content ?? ''),
       });
       flashToast(
         req,
@@ -464,11 +628,13 @@ export class CoursesController {
         'Final assignment has been updated successfully.',
       );
       return res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Update Failed',
-        error.message || 'Failed to update final assignment',
+        error instanceof Error
+          ? error.message
+          : 'Failed to update final assignment',
       );
       return res.redirect(`/program/detail/program/admin/${courseId}`);
     }
@@ -505,7 +671,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/edit-syllabus/:id')
-  async formEditSyllabus(
+  formEditSyllabus(
     @Res() res: Response,
     @Req() req: Request,
     @Param('id') id: string,
@@ -530,7 +696,7 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/create-quiz-syllabus/:id')
-  async formCreateQuizSyllabus(
+  formCreateQuizSyllabus(
     @Res() res: Response,
     @Req() req: Request,
     @Param('id') id: string,
@@ -540,31 +706,25 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/detail-quiz-syllabus/:id')
-  async detailQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
+  detailQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
     return res.redirect(`/syllabus/quiz/detail/${id}`);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/edit-quiz-syllabus/:id')
-  async formEditQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
+  formEditQuizSyllabus(@Res() res: Response, @Param('id') id: string) {
     return res.redirect(`/quiz/formEdit/${id}`);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/create-question-syllabus/:id')
-  async formCreateQuestionSyllabus(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
+  formCreateQuestionSyllabus(@Res() res: Response, @Param('id') id: string) {
     return res.redirect(`/question/formCreate/${id}`);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/edit-question-syllabus/:id')
-  async formEditQuestionSyllabus(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
+  formEditQuestionSyllabus(@Res() res: Response, @Param('id') id: string) {
     return res.redirect(`/question/FormEdit/${id}`);
   }
 
@@ -794,6 +954,11 @@ export class CoursesController {
       }
       const lastWeek = await this.coursesService.findLastWeek(courseId);
       const caps = capabilitiesForCourse(course);
+      const portfolioGuide =
+        await this.portfoliosService.getPortfolioGuide(courseId);
+      const portfolioGuideLocked =
+        !!portfolioGuide &&
+        (await this.portfoliosService.hasPortfolioForCourse(courseId));
       if (
         course.programType === 'non_bootcamp' ||
         caps.structure === 'syllabus'
@@ -804,6 +969,8 @@ export class CoursesController {
           lastWeek,
           categoryId,
           caps,
+          portfolioGuide,
+          portfolioGuideLocked,
         });
       }
       return res.render('admin/course/detail', {
@@ -812,13 +979,26 @@ export class CoursesController {
         lastWeek,
         categoryId,
         caps,
+        portfolioGuide,
+        portfolioGuideLocked,
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);
+      const lastWeek = await this.coursesService.findLastWeek(courseId);
+      const caps = capabilitiesForCourse(course);
+      const portfolioGuide =
+        await this.portfoliosService.getPortfolioGuide(courseId);
+      const portfolioGuideLocked =
+        !!portfolioGuide &&
+        (await this.portfoliosService.hasPortfolioForCourse(courseId));
       res.render('super_admin/course/detail', {
         user: req.user,
         course,
         categoryId,
+        lastWeek,
+        caps,
+        portfolioGuide,
+        portfolioGuideLocked,
       });
     }
   }
@@ -863,7 +1043,8 @@ export class CoursesController {
     // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
     // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
     let initialSection =
-      String(req.query.tab || '') || (courseId ? 'uiux' : 'learning');
+      String(String(typeof req.query.tab === 'string' ? req.query.tab : '')) ||
+      (courseId ? 'uiux' : 'learning');
     if (
       initialSection === 'assignment' &&
       !caps.finalAssignment &&
@@ -938,7 +1119,7 @@ export class CoursesController {
 
     const isNonBootcamp =
       activeCourse.programType === 'non_bootcamp' ||
-      (activeCourse as any).program_type === 'non_bootcamp';
+      (activeCourse.programType as string) === 'non_bootcamp';
 
     if (isNonBootcamp) {
       const syllabuses = await this.coursesService.findSyllabusForUser(
@@ -1018,6 +1199,40 @@ export class CoursesController {
   }
 
   @Roles('user')
+  @Get('myProgram/:id/fragment/portfolio-guide')
+  async myCoursePortfolioGuideFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    // Panduan portfolio milik program ini. Terbuka hanya setelah student lulus
+    // seluruh syarat pembelajaran (syllabus/week terakhir lewat
+    // hasCompletedLearning); sebelum itu kartu tampil terkunci.
+    const guide = activeCourse?.id
+      ? await this.portfoliosService.getPortfolioGuide(activeCourse.id)
+      : null;
+    const unlocked = activeCourse?.id
+      ? await this.portfoliosService.hasCompletedLearning(id, activeCourse.id)
+      : false;
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/portfolio_guide/index',
+      {
+        course: activeCourse,
+        guide,
+        unlocked,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
   @Get('myProgram/:id/fragment/assignment')
   async myCourseAssignmentFragment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -1045,9 +1260,9 @@ export class CoursesController {
       const finalAssignmentSubmission =
         finalAssignment?.id && id
           ? await this.finalAssignmentService.findSubmissionByUser(
-            finalAssignment.id,
-            id,
-          )
+              finalAssignment.id,
+              id,
+            )
           : null;
       const isLocked =
         activeCourse?.id && id
@@ -1466,7 +1681,10 @@ export class CoursesController {
   ) {
     try {
       const course = await this.coursesService.findOne(courseId);
-      const dto = mapUpdateProgram(req.body ?? body, req.user);
+      const dto = mapUpdateProgram(
+        (req.body ?? body) as Record<string, unknown>,
+        req.user,
+      );
       await this.createValidationPipe.transform(dto, {
         type: 'body',
         metatype: UpdateCoursesDto,
@@ -1500,11 +1718,19 @@ export class CoursesController {
       );
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      const messages = error?.getResponse?.()?.message;
+    } catch (error: unknown) {
+      const resp =
+        error && typeof error === 'object' && 'getResponse' in error
+          ? (
+              error as { getResponse: () => { message?: string | string[] } }
+            ).getResponse()
+          : undefined;
+      const messages = resp?.message;
       const errorMessage = Array.isArray(messages)
         ? messages.join(', ')
-        : error.message || 'failed update program';
+        : error instanceof Error
+          ? error.message
+          : 'failed update program';
       flashToastError(req, 'Gagal Mengedit Program', errorMessage);
       req.flash('error', errorMessage);
       res.redirect(`/program/detail/program/admin/${courseId}`);
@@ -1527,8 +1753,11 @@ export class CoursesController {
         'The program launch status has been changed.',
       );
       res.redirect('/program');
-    } catch (error: any) {
-      req.flash('error', error.message || 'program failed to launch');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error ? error.message : 'program failed to launch',
+      );
       res.redirect('/program');
     }
   }
@@ -1546,10 +1775,11 @@ export class CoursesController {
         launch: result.launch,
         status: result.status,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(500).json({
         success: false,
-        message: error.message || 'Failed to toggle launch',
+        message:
+          error instanceof Error ? error.message : 'Failed to toggle launch',
       });
     }
   }
@@ -1571,10 +1801,13 @@ export class CoursesController {
         status: result.status,
         launch: result.launch,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(400).json({
         success: false,
-        message: error.message || 'Failed to update program status',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to update program status',
       });
     }
   }
@@ -1595,8 +1828,13 @@ export class CoursesController {
         'The program status has been changed.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'program failed to switch status');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'program failed to switch status',
+      );
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -1623,12 +1861,10 @@ export class CoursesController {
         'The program has been permanently removed.',
       );
       return res.redirect(previous || '/program');
-    } catch (error: any) {
-      flashToastError(
-        req,
-        'Failed to Remove Program',
-        error.message || 'Failed to remove program',
-      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : 'Failed to remove program';
+      flashToastError(req, 'Failed to Remove Program', msg);
       return res.redirect(
         previous || `/program/detail/program/admin/${courseId}`,
       );
@@ -1651,11 +1887,13 @@ export class CoursesController {
         'The user has been permanently removed from the program.',
       );
       res.redirect(`/program/addUser/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Failed to Remove Student',
-        error.message || 'Failed to remove user from program',
+        error instanceof Error
+          ? error.message
+          : 'Failed to remove user from program',
       );
       res.redirect(`/program/addUser/${courseId}`);
     }

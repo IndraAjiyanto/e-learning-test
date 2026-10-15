@@ -37,15 +37,19 @@ export class FaqsController {
         'The new FAQ has been added to this category.',
       );
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ failed to created');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'FAQ failed to created',
+      );
       res.redirect('/category/' + categoryId);
     }
   }
 
   @Roles('super_admin')
   @Get('formCreate/:categoryId')
-  async formCreate(
+  formCreate(
     @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -95,8 +99,12 @@ export class FaqsController {
       await this.faqsService.update(faqsId, updateFaqDto);
       flashToast(req, 'Changes Saved', 'The FAQ has been updated.');
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ failed to update');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'FAQ failed to update',
+      );
       res.redirect('/category/' + categoryId);
     }
   }
@@ -113,8 +121,12 @@ export class FaqsController {
       await this.faqsService.remove(faqsId);
       flashToast(req, 'FAQ Deleted', 'The FAQ has been permanently removed.');
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
-      req.flash('error', error.message || 'FAQ failed to delete');
+    } catch (error: unknown) {
+      req.flash(
+        'error',
+        (error instanceof Error ? error.message : null) ||
+          'FAQ failed to delete',
+      );
       res.redirect('/category/' + categoryId);
     }
   }

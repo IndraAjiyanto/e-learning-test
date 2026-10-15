@@ -61,10 +61,10 @@ export class AttendanceController {
       }
       req.flash('success', 'Successfully submitted attendance');
       res.redirect(`/program/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       const message =
-        error.message ||
-        'You have already submitted attendance for this meeting';
+        err.message || 'You have already submitted attendance for this meeting';
       if (wantsJson) {
         return res.status(400).json({ success: false, message });
       }
@@ -73,7 +73,7 @@ export class AttendanceController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':sessionId')
   async createAttendance(
     @Param('sessionId') sessionId: string,
@@ -90,7 +90,7 @@ export class AttendanceController {
         'The attendance record has been added to this session.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
+    } catch {
       req.flash(
         'error',
         'Failed to add attendance, user has already submitted attendance for this session',
@@ -114,14 +114,14 @@ export class AttendanceController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get()
-  async findAll(@Res() res: Response, @Req() req: any) {
+  async findAll(@Res() res: Response, @Req() req: Request) {
     const attendance = await this.attendanceService.findAll();
     res.render('admin/attendance/index', { user: req.user, attendance });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('create/:sessionId')
   async attendanceCreate(
     @Res() res: Response,
@@ -132,18 +132,18 @@ export class AttendanceController {
     res.render('admin/attendance/create', { user: req.user, users, sessionId });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':id')
   async findOne(
     @Param('id') id: string,
     @Res() res: Response,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const attendance = await this.attendanceService.findOne(id);
     res.render('admin/attendance/detail', { user: req.user, attendance });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:id')
   async formEdit(
     @Param('id') id: string,
@@ -154,7 +154,7 @@ export class AttendanceController {
     res.render('admin/attendance/edit', { user: req.user, attendance });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':attendanceId/:sessionId')
   async update(
     @Param('sessionId') sessionId: string,
@@ -171,13 +171,14 @@ export class AttendanceController {
         'The attendance record has been updated.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update attendance');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to update attendance');
       res.redirect(`/session/${sessionId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':attendanceId/:sessionId')
   async remove(
     @Param('attendanceId') attendanceId: string,
@@ -193,8 +194,9 @@ export class AttendanceController {
         'The attendance record has been permanently removed.',
       );
       res.redirect(`/session/${sessionId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete attendance');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete attendance');
       res.redirect(`/session/${sessionId}`);
     }
   }

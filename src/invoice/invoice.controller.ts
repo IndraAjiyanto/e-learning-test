@@ -6,10 +6,8 @@ import {
   Param,
   Res,
   Req,
-  Get,
   HttpCode,
   HttpStatus,
-  HttpException,
   InternalServerErrorException,
   UnauthorizedException,
   ForbiddenException,
@@ -27,20 +25,20 @@ export class InvoiceController {
   @Post('webhook/xendit')
   @HttpCode(HttpStatus.OK)
   async handleWebhook(
-    @Body() payload: any,
+    @Body() payload: Record<string, unknown>,
     @Headers('x-callback-token') callbackToken: string,
   ) {
     try {
       await this.invoiceService.handleXenditWebhook(payload, callbackToken);
       return { status: 'success' };
-    } catch (error) {
-      console.error('Webhook Error:', error.message);
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : 'Internal Server Error';
+      console.error('Webhook Error:', msg);
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        error.message || 'Internal Server Error',
-      );
+      throw new InternalServerErrorException(msg);
     }
   }
 
@@ -66,7 +64,7 @@ export class InvoiceController {
         course,
         autoStep: 3,
       });
-    } catch (error) {
+    } catch {
       return res.redirect('/');
     }
   }

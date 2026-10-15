@@ -12,7 +12,7 @@ import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.f
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
 import { InternalServerErrorExceptionFilter } from './common/filters/internal-server-error.filter';
 import cookieParser from 'cookie-parser';
-import { NextFunction, Request, Response } from 'express';
+import { json, urlencoded, NextFunction, Request, Response } from 'express';
 import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
 import { FooterService } from './footer/footer.service';
@@ -26,6 +26,9 @@ import {
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Global filters
   app.useGlobalFilters(new InternalServerErrorExceptionFilter());
@@ -52,6 +55,7 @@ async function bootstrap() {
   });
 
   // Cookie parser
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(cookieParser());
 
   const swaggerConfig = new DocumentBuilder()
@@ -81,6 +85,7 @@ async function bootstrap() {
 
   const PgSession = connectPgSimple(session);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(methodOverride('_method'));
   app.use(
     session({
@@ -112,14 +117,14 @@ async function bootstrap() {
   // kirim redirect. Dipasang global supaya berlaku untuk semua controller dan
   // kedua kanal notifikasi (flash `success` lama maupun flash `toast` baru).
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const redirect = res.redirect.bind(res) as (...args: any[]) => void;
+    const redirect = res.redirect.bind(res) as (url: string) => void;
 
-    res.redirect = ((...args: any[]) => {
-      if (!req.session) return redirect(...args);
+    res.redirect = ((url: string) => {
+      if (!req.session) return redirect(url);
 
       req.session.save((err) => {
         if (err) console.error('Gagal menyimpan sesi sebelum redirect:', err);
-        redirect(...args);
+        redirect(url);
       });
     }) as Response['redirect'];
 
@@ -140,18 +145,29 @@ async function bootstrap() {
     next();
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   app.use(passport.initialize());
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   app.use(passport.session());
 
-  app.use((req: any, res: Response, next: NextFunction) => {
-    res.locals.isAuthenticated = req.isAuthenticated();
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    res.locals.isAuthenticated =
+      typeof (req as Request & { isAuthenticated?: () => boolean })
+        .isAuthenticated === 'function'
+        ? Boolean(
+            (
+              req as Request & { isAuthenticated?: () => boolean }
+            ).isAuthenticated?.(),
+          )
+        : Boolean(req.user);
     next();
   });
 
   const footerService = app.get(FooterService);
-  app.use(async (req: any, res: Response, next: NextFunction) => {
+  app.use(async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const role = req.user?.role;
+      const user = req.user as { role?: string } | undefined;
+      const role = user?.role;
       if (role !== 'admin' && role !== 'super_admin') {
         const [footerData, footerCategories] = await Promise.all([
           footerService.getFooterData(),
@@ -169,7 +185,8 @@ async function bootstrap() {
   app.use((req: Request, res: Response, next: NextFunction) => {
     // Default to 'id' so this matches nestjs-i18n's fallbackLanguage: a cookie-less
     // visitor gets one consistent language across both t() and getByLang().
-    const lang = req.cookies?.lang || 'id';
+    const cookies = req.cookies as { lang?: string } | undefined;
+    const lang = cookies?.lang || 'id';
     res.locals.currentLang = lang;
     res.locals.lang = lang;
     // Auth screens (login/register/forgot/reset/verify) render over a photo bg -
@@ -187,4 +204,4 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 }
 
-bootstrap();
+void bootstrap();

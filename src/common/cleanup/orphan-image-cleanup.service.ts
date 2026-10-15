@@ -6,15 +6,15 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
- * Hapus file gambar orphan yang terupload ke server (via EditorJS byFile)
+ * Hapus file gambar orphan yang terupload ke server (via Quill image uploader)
  * tapi tidak pernah direferensikan di DB karena user batal submit form.
  *
  * Direktori yang dipantau:
- *   - public/asset/course/      → EditorJS di syllabus & final_assignment
- *   - public/asset/portfolio/temp/ → EditorJS di portfolio create/edit
+ *   - public/asset/course/         → Quill di syllabus & final_assignment
+ *   - public/asset/portfolio/temp/ → Quill di portfolio create/edit
  *
  * Strategi: file lebih dari MAX_AGE_HOURS jam & tidak ada URL-nya di DB → hapus.
- * ponytail: raw SQL ILIKE cukup, tidak perlu parse JSON per-row di JS.
+ * ponytail: raw SQL ILIKE '%url%' cukup, bekerja untuk teks HTML maupun legacy JSON.
  */
 @Injectable()
 export class OrphanImageCleanupService {
@@ -70,8 +70,9 @@ export class OrphanImageCleanupService {
       try {
         await fs.unlink(absPath);
         this.logger.log(`Deleted orphan: ${url}`);
-      } catch (err) {
-        this.logger.warn(`Failed to delete ${url}: ${err.message}`);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.warn(`Failed to delete ${url}: ${message}`);
       }
     }
   }
@@ -83,7 +84,7 @@ export class OrphanImageCleanupService {
    * ponytail: satu query UNION sudah cukup, tidak perlu ORM per-tabel.
    */
   private async isReferenced(url: string, table: string, column: string) {
-    const result = await this.dataSource.query(
+    const result: unknown[] = await this.dataSource.query(
       `SELECT 1 FROM "${table}" WHERE "${column}"::text ILIKE $1 LIMIT 1`,
       [`%${url}%`],
     );
@@ -98,4 +99,3 @@ export class OrphanImageCleanupService {
     return false;
   }
 }
-

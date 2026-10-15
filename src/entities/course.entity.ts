@@ -34,8 +34,9 @@ import { FinalAssignment } from './final_assignment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 import { CourseStatus, COURSE_STATUSES } from './types/course-status';
+import { PortfolioGuide } from './portfolio-guide.entity';
 
-export type Method = 'online' | 'offline';
+export type Method = 'online' | 'offline' | 'hybrid';
 
 /**
  * Bentuk belajar sebuah program. Bukan nama program dan bukan harganya -
@@ -79,7 +80,7 @@ export class Course {
   @Column('jsonb', { nullable: true })
   locations: { id: string; en: string; ja: string };
 
-  @Column({ type: 'enum', enum: ['online', 'offline'] })
+  @Column({ type: 'enum', enum: ['online', 'offline', 'hybrid'] })
   method: Method;
 
   @Column('jsonb', { nullable: true })
@@ -249,6 +250,12 @@ export class Course {
   })
   @Exclude()
   portofolios: Portofolios[];
+
+  @OneToOne(() => PortfolioGuide, (portfolioGuide) => portfolioGuide.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  portfolioGuide: PortfolioGuide;
 
   @OneToMany(() => Payment, (payments) => payments.course, {
     cascade: true,

@@ -161,9 +161,18 @@ function syllabusTheoryContent() {
         this.renderedHtml = empty;
         return;
       }
+      const text = rawEl.textContent.trim();
+      if (!text) {
+        this.renderedHtml = empty;
+        return;
+      }
+      if (/<\/?[a-z][\s\S]*>/i.test(text)) {
+        this.renderedHtml = text;
+        return;
+      }
       let parsed = null;
       try {
-        parsed = JSON.parse(rawEl.textContent);
+        parsed = JSON.parse(text);
       } catch (e) {
         parsed = null;
       }
@@ -173,6 +182,10 @@ function syllabusTheoryContent() {
         } catch (e) {
           parsed = null;
         }
+      }
+      if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
+        this.renderedHtml = parsed;
+        return;
       }
       if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
         this.renderedHtml = parsed.blocks.map(blockToHtml).join('');

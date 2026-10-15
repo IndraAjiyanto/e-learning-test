@@ -58,13 +58,14 @@
     handledSections: [
       'dashboard', 'profile', 'password', 'learning', 'uiux', 'portfolio', 'course-portfolio', 'history-payment',
       'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
-      'group-class', 'presentation'
+      'group-class', 'presentation', 'portfolio-guide'
     ],
     sectionFragmentConfig: {
       uiux: { url: '/program/myProgram/{{user.id}}/fragment', container: 'start-learning-container' },
       assignment: { url: '/program/myProgram/{{user.id}}/fragment/assignment', container: 'assignment-container' },
       presentation: { url: '/program/myProgram/{{user.id}}/fragment/presentation', container: 'presentation-container' },
       quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' },
+      'portfolio-guide': { url: '/program/myProgram/{{user.id}}/fragment/portfolio-guide', container: 'portfolio-guide-container' },
       'course-portfolio': { url: '/portfolio/fragment', container: 'course-portfolio-container' }
     },
     toggleActiveSection(section, status) {
@@ -113,7 +114,7 @@
     {{!-- Bagian yang memang milik sebuah program. Kepala program dan baris tab
          hanya muncul untuk section ini; Dashboard, Profile, My Portfolio, dan
          Payment History tidak boleh kebagian gambar program. --}}
-    programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'course-portfolio', 'logbook', 'certificate', 'group-class', 'quiz-start'],
+    programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'course-portfolio', 'portfolio-guide', 'logbook', 'certificate', 'group-class', 'quiz-start'],
     get isProgramSection() {
       return this.programSections.includes(this.activeSection);
     },
@@ -464,7 +465,7 @@
 
         <div
           x-show="isProgramSection"
-          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'course-portfolio') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
+          {{#unless (or (eq initialSection 'uiux') (eq initialSection 'presentation') (eq initialSection 'assignment') (eq initialSection 'quiz') (eq initialSection 'course-portfolio') (eq initialSection 'portfolio-guide') (eq initialSection 'logbook') (eq initialSection 'certificate') (eq initialSection 'group-class') (eq initialSection 'quiz-start'))}}style="display:none"{{/unless}}
           class="px-4 pt-4 sm:px-8 sm:pt-6 max-w-[1334px] mx-auto w-full"
         >
           <!-- Page Header -->
@@ -536,6 +537,16 @@
               :class="activeSection === 'assignment' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
             >
               {{t 'test.startLearning.finalAssignment'}}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="activeSection === 'portfolio-guide' ? 'true' : 'false'"
+              @click="toggleActiveSection('portfolio-guide')"
+              class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'portfolio-guide' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+            >
+              {{t 'test.startLearning.portfolioGuide'}}
             </button>
             <button
               type="button"
@@ -624,6 +635,16 @@
           id="course-portfolio-container"
           class="max-w-[1334px] mx-auto w-full"
           {{#unless (eq initialSection 'course-portfolio')}}style="display:none"{{/unless}}
+        >
+          {{> components/ui/learning/skeleton/index }}
+        </div>
+
+        <!-- Portfolio Guide Tab Content (loaded per course via loadCourseFragment) -->
+        <div
+          x-show="activeSection === 'portfolio-guide'"
+          id="portfolio-guide-container"
+          class="max-w-[1334px] mx-auto w-full"
+          {{#unless (eq initialSection 'portfolio-guide')}}style="display:none"{{/unless}}
         >
           {{> components/ui/learning/skeleton/index }}
         </div>

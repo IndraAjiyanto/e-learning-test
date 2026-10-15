@@ -35,6 +35,10 @@ export class AlumniService {
       return DEFAULT_RATING;
     }
 
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      throw new BadRequestException('Rating must be a number between 1 and 5');
+    }
+
     const normalized = String(value).trim() as AlumniRating;
     if (!ALUMNI_RATINGS.includes(normalized)) {
       throw new BadRequestException('Rating must be a number between 1 and 5');
@@ -50,7 +54,7 @@ export class AlumniService {
     if (!course) {
       throw new NotFoundException('Program not found');
     }
-    const alumni = await this.alumniRepository.create({
+    const alumni = this.alumniRepository.create({
       ...createAlumnusDto,
       rating: this.resolveRating(createAlumnusDto.rating),
       course: course,
@@ -90,7 +94,9 @@ export class AlumniService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   async update(alumniId: string, updateAlumnusDto: UpdateAlumnusDto) {

@@ -20,7 +20,7 @@ export class CommentsService {
     if (!taskAnswers) {
       throw new NotFoundException('User not found');
     }
-    const comment = await this.commentRepository.create({
+    const comment = this.commentRepository.create({
       ...createCommentDto,
       answer_task: taskAnswers,
     });

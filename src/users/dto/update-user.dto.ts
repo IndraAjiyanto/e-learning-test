@@ -15,11 +15,11 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
    * ValidationPipe({ transform: true }) dipasang.
    */
   @IsOptional()
-  @Transform(({ value }) => {
+  @Transform(({ value }: { value: unknown }) => {
     if (typeof value === 'boolean') return value;
     if (value === 'true') return true;
     if (value === 'false') return false;
-    return value;
+    return Boolean(value);
   })
   @IsBoolean()
   isVerified?: boolean;

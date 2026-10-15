@@ -1,11 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, type UploadApiOptions } from 'cloudinary';
 import { imageSize } from 'image-size';
 import * as streamifier from 'streamifier';
 
 @Injectable()
 export class UploadService {
-  async validateImageDimensions(
+  validateImageDimensions(
     file: Express.Multer.File,
     options: {
       minWidth: number;
@@ -28,7 +28,7 @@ export class UploadService {
       const dimensions = imageSize(file.buffer);
       width = dimensions.width;
       height = dimensions.height;
-    } catch (error) {
+    } catch {
       // Menangkap error jika file korup atau bukan gambar asli
       throw new BadRequestException('Invalid or corrupted image file');
     }
@@ -54,7 +54,7 @@ export class UploadService {
     folder: string,
     skipTransformation = false,
   ): Promise<string> {
-    const uploadOptions: any = {
+    const uploadOptions: UploadApiOptions = {
       folder,
       resource_type: 'auto',
       timeout: 60000,
@@ -66,21 +66,29 @@ export class UploadService {
       ];
     }
 
-    const startTime = Date.now();
-    const result: any = await new Promise((resolve, reject) => {
-      const upload = cloudinary.uploader.upload_stream(
-        uploadOptions,
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else if (result) {
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            resolve(result);
-          }
-        },
-      );
-      streamifier.createReadStream(file.buffer).pipe(upload);
-    });
+    // const startTime = Date.now();
+    const result = await new Promise<{ secure_url: string }>(
+      (resolve, reject) => {
+        const upload = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error, result) => {
+            if (error) {
+              const errReason: Error =
+                error instanceof Error
+                  ? error
+                  : new Error(
+                      (error as { message?: string })?.message ||
+                        'Upload failed',
+                    );
+              reject(errReason);
+            } else if (result) {
+              resolve(result);
+            }
+          },
+        );
+        streamifier.createReadStream(file.buffer).pipe(upload);
+      },
+    );
 
     return result.secure_url;
   }

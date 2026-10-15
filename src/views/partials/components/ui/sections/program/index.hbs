@@ -3,6 +3,57 @@
   Lokasi: src/views/partials/components/ui/sections/program/index.hbs
   Satu pohon markup, base + lg. Data: category[] (jsonb name/text + icon), social.[0].number.
 --}}
+<script>
+  function programCategorySection() {
+    return {
+      shown: false,
+      search: '',
+      selectedType: '',
+      activeDropdown: null,
+      items: [
+        {{#each category}}
+        {
+          id: '{{default this.id (concat "cat-" @index)}}',
+          name: {{#if this.name}}{{{json (default (nameByLang this ../lang) (default this.name ''))}}}{{else}}''{{/if}},
+          rawName: {{#if this.name}}{{{json this.name}}}{{else}}''{{/if}},
+          type: '{{default this.type ''}}'.toLowerCase().trim()
+        }{{#unless @last}},{{/unless}}
+        {{else}}
+        { id: 'cat-0', name: 'Bootcamp', rawName: 'Bootcamp', type: 'special program' },
+        { id: 'cat-1', name: 'Course', rawName: 'Course', type: 'paid program' },
+        { id: 'cat-2', name: 'In House Training', rawName: 'In House Training', type: 'special program' }
+        {{/each}}
+      ],
+      getTypeLabel() {
+        if (this.selectedType === 'special program') return 'Special Program';
+        if (this.selectedType === 'paid program') return 'Paid Program';
+        if (this.selectedType === 'free program') return 'Free Program';
+        return '{{default (t 'test.home.programSection.allTypes') 'Semua Tipe Program'}}';
+      },
+      get filteredIds() {
+        var q = this.search.trim().toLowerCase();
+        var t = this.selectedType.trim().toLowerCase();
+        return this.items.filter(function(item) {
+          if (q && !item.name.toLowerCase().includes(q) && !item.rawName.toLowerCase().includes(q)) return false;
+          if (t && item.type !== t) return false;
+          return true;
+        }).map(function(i) { return i.id; });
+      },
+      get filteredCount() {
+        return this.filteredIds.length;
+      },
+      isMatch(id) {
+        return this.filteredIds.includes(id);
+      },
+      resetFilters() {
+        this.search = '';
+        this.selectedType = '';
+        this.activeDropdown = null;
+      }
+    };
+  }
+</script>
+
 <section class="relative z-10 w-full bg-[#F8F9FA] py-14 font-inter lg:pt-[50px] lg:pb-[120px]" id="courses-section">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-16">
 
@@ -14,39 +65,199 @@
       class="flex flex-col items-center gap-4 text-center transition-all duration-700 ease-out"
     >
       {{> components/ui/text/eyebrow/index text=(t 'test.home.programSection.ourProgram') }}
-      <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0B1F3B]">{{t 'test.home.programSection.title'}}</h2>
-      <p class="{{sizeClass 'lead'}} max-w-[542px] font-inter text-[#4A5568]">{{t 'test.home.programSection.description'}}</p>
+      <h2 class="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#0B1F3B] text-center">{{t 'test.home.programSection.title'}}</h2>
+      <p class="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center">{{t 'test.home.programSection.description'}}</p>
       <div class="h-1 w-[60px] rounded-[2px] bg-[#003060]"></div>
     </div>
 
-    {{!-- programs grid --}}
-    {{!-- flex-wrap + justify-center so an incomplete last row stays centered (not left-aligned) --}}
+    {{!-- filter & programs container --}}
     <div
-      x-data="{ shown: false }"
-      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }).observe($el)"
+      class="w-full flex flex-col items-center gap-8 lg:gap-10"
+      x-data="programCategorySection()"
+      x-init="new IntersectionObserver(([e]) => { if (e.isIntersecting) { shown = true; } }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }).observe($el)"
       :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
-      class="flex w-full flex-wrap justify-center gap-6 transition-all duration-700 ease-out lg:gap-[30px] [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3.75rem)/3)]"
+      @keydown.escape.window="activeDropdown = null"
+      style="transition: opacity 700ms ease-out, transform 700ms ease-out;"
     >
-      {{!-- "In House Training" has a dedicated redesigned page; the rest route to the generic category page --}}
-      {{#each category}}
-        <div class="flex">{{> components/ui/card/card_program/index image=this.hero_section_image name=this.name category=this text=this.text learnMore=(t 'test.home.programSection.learnMore') lang=../lang href=(ternary (eq this.name 'In House Training') '/dashboard/corporate-training' (concat '/category/program/' this.name))}}</div>
-      {{else}}
-        <div class="flex">{{> components/ui/card/card_program/index image="/public/image/Bootcamp.png" name="Bootcamp" text="Intensive career-switch track with mentor-led projects and job-ready portfolio." learnMore=(t 'test.home.programSection.learnMore')}}</div>
-        <div class="flex">{{> components/ui/card/card_program/index image="/public/image/Course.png" name="Course" text="Self-paced modules to sharpen a specific technical skill at your own rhythm." learnMore=(t 'test.home.programSection.learnMore')}}</div>
-        <div class="flex">{{> components/ui/card/card_program/index image="/public/image/InHouseTraining.png" name="In House Training" text="Tailored team training designed around your company's stack and objectives." learnMore=(t 'test.home.programSection.learnMore') href="/dashboard/corporate-training"}}</div>
-      {{/each}}
+      {{!-- Filter Bar Container --}}
+      <div class="w-full bg-[#FFFFFF] rounded-2xl border border-[#E5E7EB] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-end">
 
-      {{!-- program banner --}}
-      <div class="flex flex-col justify-center gap-4 rounded-2xl bg-[#003060] p-7 lg:p-8">
-        <h3 class="text-lg font-inter font-bold leading-snug text-white">{{t 'test.home.programSection.bannerTitle'}}</h3>
-        <p class="{{sizeClass 'body-sm'}} font-inter text-[#E0F2F9]">{{t 'test.home.programSection.bannerDescription'}}</p>
-        {{> components/ui/button/consultation/index
-            phone=social.[0].number
-            variant="solid"
-            roundedClass="rounded-lg"
-            text=(t 'test.home.programSection.bannerCta')
-            class="self-start px-6 py-3 font-inter text-sm" }}
+          {{!-- 1. Search Nama Category Program --}}
+          <div class="relative w-full">
+            <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+              <i class="fas fa-magnifying-glass text-[#6EB6E5] mr-1"></i>
+              {{default (t 'test.home.programSection.search') 'Cari Kategori'}}
+            </label>
+            <div class="relative">
+              <input
+                type="text"
+                x-model="search"
+                placeholder="{{default (t 'test.home.programSection.placeholderSearch') 'Cari nama kategori program...'}}"
+                class="w-full h-11 pl-9 pr-8 rounded-xl border border-[#E5E7EB] bg-white font-inter text-xs sm:text-sm text-[#0B1F3B] placeholder-[#9CA3AF] transition focus:border-[#003060] focus:ring-1 focus:ring-[#003060] focus:outline-none"
+              />
+              <i class="fas fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#9CA3AF]"></i>
+              <button
+                type="button"
+                x-show="search"
+                x-cloak
+                @click="search = ''"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
+                aria-label="Clear search"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          {{!-- 2. Type Program Dropdown --}}
+          <div
+            class="relative w-full"
+            @click.outside="if (activeDropdown === 'type') activeDropdown = null"
+          >
+            <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+              <i class="fas fa-layer-group text-[#6EB6E5] mr-1"></i>
+              {{default (t 'test.home.programSection.programType') 'Tipe Program'}}
+            </label>
+            <button
+              type="button"
+              @click="activeDropdown = activeDropdown === 'type' ? null : 'type'"
+              class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
+              :class="activeDropdown === 'type' && 'border-[#003060] ring-1 ring-[#003060]'"
+            >
+              <span class="truncate text-left" x-text="getTypeLabel()"></span>
+              <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'type' && 'rotate-180'"></i>
+            </button>
+
+            <div
+              x-cloak
+              x-show="activeDropdown === 'type'"
+              x-transition.opacity.duration.150ms
+              class="absolute left-0 z-50 mt-1.5 w-full min-w-[180px] max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg space-y-0.5"
+            >
+              <button
+                type="button"
+                @click="selectedType = ''; activeDropdown = null"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition cursor-pointer"
+                :class="!selectedType ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span>{{default (t 'test.home.programSection.allTypes') 'Semua Tipe Program'}}</span>
+                <i class="fas fa-check text-xs" x-show="!selectedType"></i>
+              </button>
+              <button
+                type="button"
+                @click="selectedType = 'special program'; activeDropdown = null"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition cursor-pointer"
+                :class="selectedType === 'special program' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span>Special Program</span>
+                <i class="fas fa-check text-xs" x-show="selectedType === 'special program'"></i>
+              </button>
+              <button
+                type="button"
+                @click="selectedType = 'paid program'; activeDropdown = null"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition cursor-pointer"
+                :class="selectedType === 'paid program' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span>Paid Program</span>
+                <i class="fas fa-check text-xs" x-show="selectedType === 'paid program'"></i>
+              </button>
+              <button
+                type="button"
+                @click="selectedType = 'free program'; activeDropdown = null"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition cursor-pointer"
+                :class="selectedType === 'free program' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span>Free Program</span>
+                <i class="fas fa-check text-xs" x-show="selectedType === 'free program'"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        {{!-- Active Filters & Counter Row --}}
+        <div class="flex items-center justify-between pt-3 border-t border-[#F3F4F6] text-xs font-inter flex-wrap gap-2">
+          <div class="text-[#6B7280]">
+            {{default (t 'test.home.programSection.showing') 'Menampilkan'}}
+            <span class="font-bold text-[#003060]" x-text="filteredCount"></span>
+            {{default (t 'test.home.programSection.of') 'dari'}}
+            <span class="font-bold text-[#003060]" x-text="items.length"></span>
+            {{default (t 'test.home.programSection.program') 'program'}}
+          </div>
+
+          <button
+            type="button"
+            x-show="search || selectedType"
+            x-cloak
+            @click="resetFilters()"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E7EB] bg-white font-inter text-xs font-semibold text-[#003060] hover:bg-slate-50 hover:text-red-600 transition cursor-pointer"
+          >
+            <i class="fas fa-rotate-left text-[11px]"></i>
+            <span>{{default (t 'test.home.programSection.resetAll') 'Reset Filter'}}</span>
+          </button>
+        </div>
       </div>
+
+      {{!-- programs grid --}}
+      {{!-- flex-wrap + justify-center so an incomplete last row stays centered (not left-aligned) --}}
+      <div
+        x-show="filteredCount > 0"
+        class="flex w-full flex-wrap justify-center gap-6 lg:gap-[30px] [&>*]:w-full [&>*]:sm:w-[calc((100%-1.5rem)/2)] [&>*]:lg:w-[calc((100%-3.75rem)/3)]"
+      >
+        {{!-- "In House Training" has a dedicated redesigned page; the rest route to the generic category page --}}
+        {{#each category}}
+          <div
+            x-show="isMatch('{{default this.id (concat "cat-" @index)}}')"
+            x-transition.opacity.duration.200ms
+            class="flex"
+          >
+            {{> components/ui/card/card_program/index image=this.hero_section_image name=this.name category=this text=this.text learnMore=(t 'test.home.programSection.learnMore') lang=../lang href=(ternary (eq this.name 'In House Training') '/dashboard/corporate-training' (concat '/category/program/' this.name))}}
+          </div>
+        {{else}}
+          <div x-show="isMatch('cat-0')" x-transition.opacity.duration.200ms class="flex">{{> components/ui/card/card_program/index image="/public/image/Bootcamp.png" name="Bootcamp" text="Intensive career-switch track with mentor-led projects and job-ready portfolio." learnMore=(t 'test.home.programSection.learnMore')}}</div>
+          <div x-show="isMatch('cat-1')" x-transition.opacity.duration.200ms class="flex">{{> components/ui/card/card_program/index image="/public/image/Course.png" name="Course" text="Self-paced modules to sharpen a specific technical skill at your own rhythm." learnMore=(t 'test.home.programSection.learnMore')}}</div>
+          <div x-show="isMatch('cat-2')" x-transition.opacity.duration.200ms class="flex">{{> components/ui/card/card_program/index image="/public/image/InHouseTraining.png" name="In House Training" text="Tailored team training designed around your company's stack and objectives." learnMore=(t 'test.home.programSection.learnMore') href="/dashboard/corporate-training"}}</div>
+        {{/each}}
+
+        {{!-- program banner --}}
+        <div class="flex flex-col justify-center gap-4 rounded-2xl bg-[#003060] p-7 lg:p-8">
+          <h3 class="text-lg font-inter font-bold leading-snug text-white">{{t 'test.home.programSection.bannerTitle'}}</h3>
+          <p class="{{sizeClass 'body-sm'}} font-inter text-[#E0F2F9]">{{t 'test.home.programSection.bannerDescription'}}</p>
+          {{> components/ui/button/consultation/index
+              phone=social.[0].number
+              variant="solid"
+              roundedClass="rounded-lg"
+              text=(t 'test.home.programSection.bannerCta')
+              class="self-start px-6 py-3 font-inter text-sm" }}
+        </div>
+      </div>
+
+      {{!-- Empty State when no categories match filter --}}
+      <div
+        x-show="items.length > 0 && filteredCount === 0"
+        x-cloak
+        class="flex flex-col items-center justify-center py-12 px-4 text-center w-full"
+      >
+        <div class="size-16 rounded-full bg-slate-100 flex items-center justify-center text-[#9CA3AF] mb-4">
+          <i class="fas fa-magnifying-glass text-2xl"></i>
+        </div>
+        <h3 class="font-montserrat font-semibold text-lg text-[#0B1F3B] mb-1">
+          {{default (t 'test.home.programSection.noProgram') 'Program tidak ditemukan'}}
+        </h3>
+        <p class="font-inter text-sm text-[#6B7280] max-w-md mb-5">
+          {{default (t 'test.home.programSection.spanNoProgram') 'Coba sesuaikan kata kunci pencarian atau kriteria filter Anda.'}}
+        </p>
+        <button
+          type="button"
+          @click="resetFilters()"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#003060] font-inter text-sm font-semibold text-white hover:bg-[#00244a] transition cursor-pointer"
+        >
+          <i class="fas fa-rotate-left text-xs"></i>
+          <span>{{default (t 'test.home.programSection.resetAll') 'Reset Semua Filter'}}</span>
+        </button>
+      </div>
+
     </div>
   </div>
 </section>

@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
+import { IsArray, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CreateCourseQuestionDto {
   @IsArray()

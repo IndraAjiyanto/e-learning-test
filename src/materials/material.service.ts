@@ -17,7 +17,7 @@ export class MaterialService {
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
     private readonly googleSlidesService: GoogleSlidesService,
-  ) { }
+  ) {}
   async create(createMaterialDto: CreateMaterialDto) {
     const session = await this.sessionRepository.findOne({
       where: { id: createMaterialDto.sessionId },
@@ -25,7 +25,7 @@ export class MaterialService {
     if (!session) {
       throw new NotFoundException('Session not found');
     }
-    const material = await this.materialRepository.create({
+    const material = this.materialRepository.create({
       ...createMaterialDto,
       session: session,
     });
@@ -120,7 +120,9 @@ export class MaterialService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) { }
+    } catch {
+      // ignore if file doesn't exist
+    }
   }
 
   async update(id: string, updateMaterialDto: UpdateMaterialDto) {
@@ -141,7 +143,10 @@ export class MaterialService {
     if (material.fileType === 'pdf') {
       await this.deleteFile(material.file);
     } else if (material.fileType === 'ppt') {
-      await this.googleSlidesService.delete(material.file, material.driveFileId);
+      await this.googleSlidesService.delete(
+        material.file,
+        material.driveFileId,
+      );
     }
 
     return await this.materialRepository.remove(material);

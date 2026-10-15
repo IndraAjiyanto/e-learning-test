@@ -83,8 +83,9 @@ export class InstallmentsController {
         'The installment plan has been added successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create installment');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create installment');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -120,9 +121,10 @@ export class InstallmentsController {
         'The changes to this installment plan have been saved.',
       );
       res.redirect(`/program/detail/program/admin/${installments.course.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       const installments = await this.installmentsService.findOne(id);
-      req.flash('error', error.message || 'Failed to update installment');
+      req.flash('error', err.message || 'Failed to update installment');
       res.redirect(`/program/detail/program/admin/${installments.course.id}`);
     }
   }
@@ -144,10 +146,11 @@ export class InstallmentsController {
         'The installment plan has been removed successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       const installments = await this.installmentsService.findOne(id);
       const courseId = installments.course.id;
-      req.flash('error', error.message || 'Failed to delete installment');
+      req.flash('error', err.message || 'Failed to delete installment');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

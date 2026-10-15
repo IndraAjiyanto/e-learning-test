@@ -7,7 +7,7 @@ export class FooterMiddleware implements NestMiddleware {
   constructor(private readonly footerService: FooterService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const user = req.user as any;
+    const user = req.user as { role?: string } | undefined;
     const role = user?.role;
     if (role !== 'admin' && role !== 'super_admin') {
       const [footerData, footerCategories] = await Promise.all([

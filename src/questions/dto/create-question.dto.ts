@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class CreateQuestionDto {
   @IsString()

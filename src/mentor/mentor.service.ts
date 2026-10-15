@@ -36,7 +36,7 @@ export class MentorService {
         id: In(createMentorDto.technologyId),
       });
     }
-    const mentor = await this.mentorRepository.create({
+    const mentor = this.mentorRepository.create({
       ...createMentorDto,
       course: course,
       technologies: technologies,
@@ -74,7 +74,8 @@ export class MentorService {
       }
     }
 
-    const { technologyId: _technologyId, ...otherProperties } = updateMentorDto;
+    const otherProperties = { ...updateMentorDto };
+    delete otherProperties.technologyId;
     Object.assign(mentor, otherProperties);
 
     return await this.mentorRepository.save(mentor);
@@ -95,6 +96,8 @@ export class MentorService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 }

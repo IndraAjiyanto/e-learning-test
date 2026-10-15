@@ -14,10 +14,23 @@ import { User } from 'src/entities/user.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
+import { PortfolioGuide } from 'src/entities/portfolio-guide.entity';
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import * as ps from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
+
+interface QuizRef {
+  id: string;
+  minScore?: number;
+}
+interface SyllabusRef {
+  quiz?: QuizRef[];
+}
+interface ScoreRef {
+  score: number | string;
+  quiz?: { id: string };
+}
 
 @Injectable()
 export class PortfoliosService {
@@ -39,6 +52,9 @@ export class PortfoliosService {
 
     @InjectRepository(UserCourse)
     private readonly userCourseRepository: Repository<UserCourse>,
+
+    @InjectRepository(PortfolioGuide)
+    private readonly portfolioGuideRepository: Repository<PortfolioGuide>,
 
     private readonly finalAssignmentService: FinalAssignmentService,
   ) {}
@@ -89,7 +105,7 @@ export class PortfoliosService {
       );
     }
 
-    const portfolio = await this.portfolioRepository.create({
+    const portfolio = this.portfolioRepository.create({
       ...createPortfolioDto,
       user: user,
       course: course,
@@ -329,24 +345,24 @@ export class PortfoliosService {
           where: { course: { id: courseId } },
           order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
           relations: ['quiz'],
-        })) as any[];
+        })) as unknown as SyllabusRef[];
 
       if (syllabuses.length > 0) {
-        const quizIds = syllabuses
+        const quizIds: string[] = syllabuses
           .flatMap((s) => s.quiz || [])
           .map((q) => q.id)
           .filter(Boolean);
 
-        let userScores: any[] = [];
+        let userScores: ScoreRef[] = [];
         if (quizIds.length > 0) {
-          userScores = await this.courseRepository.manager
+          userScores = (await this.courseRepository.manager
             .getRepository('Score')
             .createQueryBuilder('score')
             .innerJoinAndSelect('score.quiz', 'quiz')
             .innerJoin('score.user', 'user')
             .where('quiz.id IN (:...quizIds)', { quizIds })
             .andWhere('user.id = :userId', { userId })
-            .getMany();
+            .getMany()) as unknown as ScoreRef[];
         }
 
         // Cek apakah setiap silabus sudah lulus kuisnya (jika ada kuis)
@@ -398,6 +414,35 @@ export class PortfoliosService {
     }
 
     return true;
+  }
+
+  async getPortfolioGuide(courseId: string) {
+    return this.portfolioGuideRepository.findOne({
+      where: { course: { id: courseId } },
+      relations: ['course'],
+    });
+  }
+
+  /**
+   * Apakah sudah ada peserta yang mengunggah portfolio untuk program ini.
+   * Dipakai untuk mengunci portfolio guide: begitu ada satu karya student,
+   * guide tidak boleh lagi diubah/dihapus karena sudah jadi acuan.
+   */
+  async hasPortfolioForCourse(courseId: string): Promise<boolean> {
+    if (!courseId) return false;
+    const count = await this.portfolioRepository.count({
+      where: { course: { id: courseId } },
+    });
+    return count > 0;
+  }
+
+  async deletePortfolioGuide(courseId: string) {
+    const guide = await this.portfolioGuideRepository.findOne({
+      where: { course: { id: courseId } },
+    });
+    if (guide) {
+      await this.portfolioGuideRepository.remove(guide);
+    }
   }
 
   async findByUser(userId: string) {
@@ -524,7 +569,9 @@ export class PortfoliosService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await ps.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
   }
 
   // Mengembalikan isi EditorJS dalam bentuk yang selalu bisa diproses di
@@ -556,54 +603,70 @@ export class PortfoliosService {
     };
   }
 
-  async ChangeImageEditorJS(
+  // Memindahkan file gambar di dalam konten (baik HTML Quill maupun EditorJS JSON legacy)
+  // dari folder temp ke folder tujuan permanen
+  ChangeImageEditorJS(
     isi: string,
     oldFolder: string,
     newFolder: string,
     deleteFileInFolder?: string,
-  ): Promise<string> {
-    // EditorJS memang mengirim JSON, tapi ada dua jalan yang bisa mengirim
-    // teks polos: textarea cadangan yang muncul saat EditorJS gagal dimuat,
-    // dan baris lama yang isinya bukan JSON EditorJS. `JSON.parse` tanpa
-    // penjaga membuat keduanya jadi 500, jadi teks polos dibungkus jadi satu
-    // blok paragraph - isinya tetap tersimpan dan bentuknya tetap valid.
-    const editorjsData = this.parseEditorJsContent(isi);
-
+  ): string {
+    if (!isi) return isi;
+    const contentStr = String(isi).trim();
     const tempDir = path.join(process.cwd(), 'public' + oldFolder);
     const finalDir = path.join(process.cwd(), 'public' + newFolder);
-
-    // Folder tujuan harus dibuat lebih dulu. `public/` diabaikan git dan tidak
-    // ada yang membuatnya, jadi di mesin yang belum pernah menyimpan portfolio
-    // ber gambar di editor, `rename` ke sini gagal ENOENT - dan penjaga
-    // `existsSync(oldPath)` di bawah tidak menangkapnya, karena yang diperiksa
-    // hanya file sumber, bukan folder tujuan.
     fs.mkdirSync(finalDir, { recursive: true });
 
-    editorjsData.blocks.forEach((block: any) => {
-      if (block.type === 'image' && block.data?.file?.url) {
-        const oldUrl = block.data.file.url;
+    const moveImageFile = (oldUrl: string): string => {
+      const fileName = oldUrl.split('/').pop() || '';
+      const oldPath = path.join(tempDir, fileName);
+      const newPath = path.join(finalDir, fileName);
 
-        const fileName = oldUrl.split('/').pop();
-
-        const oldPath = path.join(tempDir, fileName);
-        const newPath = path.join(finalDir, fileName);
-
-        if (fs.existsSync(oldPath)) {
-          // `rename` lintas device (temp dan isi bisa berada di mount berbeda)
-          // melempar EXDEV; `copyFile` + `unlink` menyelesaikan pemindahan yang
-          // sama dan tidak menggagalkan penyimpanan portfolio.
-          try {
-            fs.renameSync(oldPath, newPath);
-          } catch (err: any) {
-            if (err.code !== 'EXDEV') throw err;
-            fs.copyFileSync(oldPath, newPath);
-            fs.unlinkSync(oldPath);
-          }
+      if (fs.existsSync(oldPath)) {
+        try {
+          fs.renameSync(oldPath, newPath);
+        } catch (err: unknown) {
+          if ((err as { code?: string })?.code !== 'EXDEV') throw err;
+          fs.copyFileSync(oldPath, newPath);
+          fs.unlinkSync(oldPath);
         }
-
-        block.data.file.url = `${newFolder}/${fileName}`;
       }
-    });
+      return `${newFolder}/${fileName}`;
+    };
+
+    let result = contentStr;
+
+    // 1. Jika konten berupa HTML (dari Quill)
+    if (/<\/?[a-z][\s\S]*>/i.test(contentStr) || !contentStr.startsWith('{')) {
+      // Regex replace semua img src yang menuju ke oldFolder
+      const escapedFolder = oldFolder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`src=["'](${escapedFolder}[^"']+)["']`, 'gi');
+      result = contentStr.replace(regex, (_match: string, url: string) => {
+        const newUrl = moveImageFile(url);
+        return `src="${newUrl}"`;
+      });
+    } else {
+      // 2. Konten berupa JSON legacy
+      try {
+        const editorjsData = this.parseEditorJsContent(contentStr);
+        interface EditorJsImageBlock {
+          type: string;
+          data?: {
+            file?: {
+              url?: string;
+            };
+          };
+        }
+        (editorjsData.blocks as EditorJsImageBlock[]).forEach((block) => {
+          if (block.type === 'image' && block.data?.file?.url) {
+            block.data.file.url = moveImageFile(block.data.file.url);
+          }
+        });
+        result = JSON.stringify(editorjsData);
+      } catch {
+        result = contentStr;
+      }
+    }
 
     if (deleteFileInFolder) {
       const deleteDir = path.join(process.cwd(), 'public' + deleteFileInFolder);
@@ -621,7 +684,7 @@ export class PortfoliosService {
       }
     }
 
-    return JSON.stringify(editorjsData);
+    return result;
   }
 
   async update(portfolioId: string, updatePortfolioDto: UpdatePortfolioDto) {
@@ -640,11 +703,44 @@ export class PortfoliosService {
         try {
           const fullPath = path.join(publicDir, dbPath);
           await ps.unlink(fullPath);
-        } catch (err) {}
+        } catch {
+          // ignore
+        }
       }),
     );
 
     return newImage;
+  }
+
+  async cleanupRemovedContentImages(oldContent: string, newContent: string) {
+    if (!oldContent) return;
+    const extractImages = (content: string): string[] => {
+      const urls: string[] = [];
+      const regex = /src=["'](\/asset\/portfolio\/isi\/[^"']+)["']/gi;
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(content)) !== null) {
+        urls.push(match[1]);
+      }
+      return urls;
+    };
+
+    const oldImages = extractImages(oldContent);
+    const newImages = new Set(extractImages(newContent || ''));
+    const toDelete = oldImages.filter((url) => !newImages.has(url));
+
+    const publicDir = path.join(process.cwd(), 'public');
+    await Promise.all(
+      toDelete.map(async (url) => {
+        try {
+          const filePath = path.join(publicDir, url);
+          if (fs.existsSync(filePath)) {
+            await ps.unlink(filePath);
+          }
+        } catch {
+          // ignore
+        }
+      }),
+    );
   }
 
   async remove(portfolio: Portofolios) {

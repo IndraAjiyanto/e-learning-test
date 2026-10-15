@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
 import { Voucher } from 'src/entities/voucher.entity';
@@ -8,22 +12,23 @@ import { User } from 'src/entities/user.entity';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 
-function parseBool(val: any): boolean {
-  if (Array.isArray(val)) val = val[val.length - 1];
-  if (typeof val === 'string') return val === 'true';
-  return !!val;
+function parseBool(val: unknown): boolean {
+  let v = val;
+  if (Array.isArray(v)) v = v[v.length - 1];
+  if (typeof v === 'string') return v === 'true';
+  return !!v;
 }
 
-function parseFloat(val: any): number | null {
+function parseFloat(val: unknown): number | null {
   if (val === null || val === undefined || val === '') return null;
   const n = Number(val);
   return isNaN(n) ? null : n;
 }
 
-function parseIds(val: any): string[] {
+function parseIds(val: unknown): string[] {
   if (val === undefined || val === null) return [];
-  if (!Array.isArray(val)) val = [val];
-  return val.map(String).filter((s: string) => s.length > 0);
+  const arr = Array.isArray(val) ? val : [val];
+  return arr.map((item) => String(item)).filter((s: string) => s.length > 0);
 }
 
 @Injectable()
@@ -40,8 +45,34 @@ export class VoucherService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  // Cari voucher berdasarkan kode, tanpa membedakan besar/kecil huruf.
+  // Redemption memakai ILike, jadi "DISKON50" dan "diskon50" harus dianggap
+  // kode yang sama agar tidak ada dua voucher yang bentrok saat dipakai.
+  async findByCode(code: string): Promise<Voucher | null> {
+    const normalized = (code ?? '').trim();
+    if (!normalized) return null;
+    return this.voucherRepository
+      .createQueryBuilder('voucher')
+      .where('LOWER(voucher.code_voucher) = LOWER(:code)', {
+        code: normalized,
+      })
+      .getOne();
+  }
+
+  // True bila kode belum dipakai voucher lain. `excludeId` dipakai halaman edit
+  // supaya voucher yang sedang diedit tidak dianggap bentrok dengan dirinya.
+  async isCodeAvailable(code: string, excludeId?: string): Promise<boolean> {
+    const existing = await this.findByCode(code);
+    if (!existing) return true;
+    return !!excludeId && existing.id === excludeId;
+  }
+
   // Buat voucher baru + assign daftar program
   async create(dto: CreateVoucherDto): Promise<Voucher> {
+    if (!(await this.isCodeAvailable(dto.code_voucher))) {
+      throw new ConflictException('Voucher code is already in use.');
+    }
+
     const voucher = this.voucherRepository.create({
       code_voucher: dto.code_voucher,
       type: dto.type,
@@ -94,7 +125,12 @@ export class VoucherService {
     const voucher = await this.findOne(id);
 
     // Update field scalar
-    if (dto.code_voucher !== undefined) voucher.code_voucher = dto.code_voucher;
+    if (dto.code_voucher !== undefined) {
+      if (!(await this.isCodeAvailable(dto.code_voucher, id))) {
+        throw new ConflictException('Voucher code is already in use.');
+      }
+      voucher.code_voucher = dto.code_voucher;
+    }
     if (dto.type !== undefined) voucher.type = dto.type;
     if (dto.active !== undefined) voucher.active = parseBool(dto.active);
     if (dto.allowed_user_ids !== undefined)

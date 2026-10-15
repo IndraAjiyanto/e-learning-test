@@ -1,98 +1,170 @@
 {{!--
-  Component: EditorJS Input (Admin) — atomic
+  Component: Rich Text Editor Input (Admin) — reusable container (Quill)
   Path: components/ui/admin/form/editor-input.hbs
   Props: {{id}} (holder id, default 'editorjs'),
          {{name}} (hidden input name, default 'content'),
          {{inputId}} (hidden input id, default '{{id}}_input'),
+         {{value}} (initial content string/json),
+         {{placeholder}} (placeholder text),
+         {{uploadUrl}} (upload URL, default '/program/upload-image'),
          {{class}} (optional wrapper class),
          {{holderClass}} (optional holder class)
 --}}
-<div class='box-border w-full min-h-[160px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] p-[10px_14px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors {{class}}'>
-  {{!-- x-ignore prevents Alpine from re-scanning and breaking EditorJS event listeners --}}
-  <div
-    id='{{default id "editorjs"}}'
-    x-ignore
-    class='editorjs-container w-full font-inter text-[16px] leading-[24px] text-[#171717] pl-8 sm:pl-10 {{holderClass}}'
-  ></div>
+<div
+  x-data='quillEditorContainer({
+    holderId: "{{default id "editorjs"}}",
+    inputId: "{{#if inputId}}{{inputId}}{{else}}{{default id "editorjs"}}_input{{/if}}",
+    uploadUrl: "{{default uploadUrl "/program/upload-image"}}",
+    placeholder: "{{default placeholder "Write your content here..."}}"
+  })'
+  class='w-full'
+>
+  <div class='box-border w-full min-h-[200px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] overflow-hidden focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors {{class}}'>
+    {{!-- x-ignore prevents Alpine from re-scanning and breaking editor listeners --}}
+    <div
+      id='{{default id "editorjs"}}'
+      x-ignore
+      class='quill-editor-container w-full font-inter text-[16px] leading-[24px] text-[#171717] min-h-[160px] {{holderClass}}'
+    ></div>
+  </div>
+  <input
+    type='hidden'
+    name='{{default name "content"}}'
+    id='{{#if inputId}}{{inputId}}{{else}}{{default id "editorjs"}}_input{{/if}}'
+    x-ref='input'
+  />
+  {{#if value}}
+    <script type="application/json" id="{{default id 'editorjs'}}_bootstrap_value">
+      {{{jsonSafe value}}}
+    </script>
+  {{/if}}
 </div>
-<input
-  type='hidden'
-  name='{{default name "content"}}'
-  id='{{#if inputId}}{{inputId}}{{else}}{{default id "editorjs"}}_input{{/if}}'
-/>
 
 <style>
-  .editorjs-container .codex-editor__redactor {
-    padding-bottom: 24px !important;
+  .quill-editor-container.ql-container {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 16px !important;
+    border: none !important;
   }
-  .editorjs-container .ce-block__content,
-  .editorjs-container .ce-toolbar__content {
+  .ql-toolbar.ql-snow {
+    border: none !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    background-color: #F8FAFC !important;
+    padding: 8px 12px !important;
+  }
+  .quill-editor-container .ql-editor {
+    min-height: 160px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    color: #171717 !important;
+    padding: 12px 16px !important;
+  }
+  .quill-editor-container .ql-editor img {
     max-width: 100% !important;
-  }
-  .editorjs-container .ce-header {
-    font-family: 'Inter', sans-serif !important;
-    color: #171717 !important;
-    margin: 0 !important;
-    padding: 0.4em 0 !important;
-  }
-  .editorjs-container h1.ce-header {
-    font-size: 28px !important;
-    line-height: 36px !important;
-    font-weight: 700 !important;
-  }
-  .editorjs-container h2.ce-header {
-    font-size: 24px !important;
-    line-height: 32px !important;
-    font-weight: 700 !important;
-  }
-  .editorjs-container h3.ce-header {
-    font-size: 20px !important;
-    line-height: 28px !important;
-    font-weight: 600 !important;
-  }
-  .editorjs-container h4.ce-header {
-    font-size: 18px !important;
-    line-height: 26px !important;
-    font-weight: 600 !important;
-  }
-  .editorjs-container h5.ce-header {
-    font-size: 16px !important;
-    line-height: 24px !important;
-    font-weight: 600 !important;
-  }
-  .editorjs-container h6.ce-header {
-    font-size: 14px !important;
-    line-height: 20px !important;
-    font-weight: 600 !important;
-  }
-  .editorjs-container .ce-header[data-placeholder]:empty::before {
-    color: #737373 !important;
-    font-weight: 400 !important;
-  }
-  .editorjs-container .ce-paragraph {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 16px !important;
-    line-height: 24px !important;
-    color: #171717 !important;
-  }
-  .editorjs-container .ce-paragraph[data-placeholder]:empty::before {
-    color: #737373 !important;
-    font-weight: 400 !important;
-  }
-  .editorjs-container .image-tool__image,
-  .codex-editor .image-tool__image {
-    max-width: 648px !important;
-    max-height: 486px !important;
-  }
-  .editorjs-container .image-tool__image-picture,
-  .editorjs-container img,
-  .codex-editor .image-tool__image-picture,
-  .codex-editor img {
-    max-width: 648px !important;
-    max-height: 486px !important;
+    max-height: 280px !important;
     width: auto;
     height: auto;
     object-fit: contain;
+    border-radius: 8px;
+    margin: 8px auto;
+    display: block;
+  }
+  .quill-editor-container .ql-editor .ql-align-right img {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+  }
+  .quill-editor-container .ql-editor .ql-align-left img {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+  .quill-editor-container .ql-editor .ql-align-center img {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .ql-snow .ql-picker.ql-lineHeight,
+  .ql-snow .ql-picker.ql-line-height {
+    width: 105px;
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label::before {
+    content: 'Line Height';
+    line-height: 22px;
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item::before {
+    content: 'Normal';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="1"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="1"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="1"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="1"]::before {
+    content: '1.0';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="1.15"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="1.15"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="1.15"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="1.15"]::before {
+    content: '1.15';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="1.2"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="1.2"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="1.2"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="1.2"]::before {
+    content: '1.2';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="1.25"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="1.25"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="1.25"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="1.25"]::before {
+    content: '1.25';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="1.5"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="1.5"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="1.5"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="1.5"]::before {
+    content: '1.5';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="1.75"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="1.75"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="1.75"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="1.75"]::before {
+    content: '1.75';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="2"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="2"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="2"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="2"]::before {
+    content: '2.0';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="2.5"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="2.5"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="2.5"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="2.5"]::before {
+    content: '2.5';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-value="3"]::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-value="3"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-value="3"]::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-value="3"]::before {
+    content: '3.0';
+  }
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-label[data-label]:not([data-label=''])::before,
+  .ql-snow .ql-picker.ql-lineHeight .ql-picker-item[data-label]:not([data-label=''])::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-label[data-label]:not([data-label=''])::before,
+  .ql-snow .ql-picker.ql-line-height .ql-picker-item[data-label]:not([data-label=''])::before {
+    content: attr(data-label);
+  }
+  .quill-editor-container .ql-editor table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+  .quill-editor-container .ql-editor table td {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 10px !important;
+    min-width: 30px;
+    vertical-align: top;
+    box-sizing: border-box !important;
   }
 </style>
-

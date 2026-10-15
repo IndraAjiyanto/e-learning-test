@@ -47,8 +47,18 @@
     };
 
     window.technologyForm = function technologyForm({ name, svg, imgUrl } = {}) {
+      const initialMode = Boolean(imgUrl && !(svg || '').trim()) ? 'image' : 'svg';
+
       return {
         loading: false,
+        mode: initialMode,
+
+        confirmModal: {
+          open: false,
+          targetMode: null,
+          title: '',
+          description: '',
+        },
 
         formData: { name: name || '', svg: svg || '' },
         formErrors: { name: '', iconSource: '' },
@@ -64,24 +74,73 @@
 
         // Pratinjau hanya dipasang kalau isinya betul-betul elemen <svg>;
         // teks sembarang tidak ikut disuntikkan ke DOM.
-        get svgStatus() {
+        svgPreview() {
           const markup = (this.formData.svg || '').trim();
-          if (!markup) return 'empty';
-          if (!/^<svg[\s>][\s\S]*<\/svg>$/i.test(markup)) return 'invalid';
-          try {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(markup, 'image/svg+xml');
-            const hasError = doc.querySelector('parsererror');
-            return (!hasError && doc.documentElement.nodeName.toLowerCase() === 'svg')
-              ? 'valid'
-              : 'invalid';
-          } catch {
-            return 'invalid';
-          }
+          return /^<svg[\s>]/i.test(markup) ? markup : '';
         },
 
-        get svgPreview() {
-          return this.svgStatus === 'valid' ? (this.formData.svg || '').trim() : '';
+        switchMode(target) {
+          if (this.mode === target) return;
+
+          if (target === 'image') {
+            const hasSvg = Boolean((this.formData.svg || '').trim());
+            if (hasSvg) {
+              this.confirmModal = {
+                open: true,
+                targetMode: 'image',
+                title: 'Switch to Upload Image?',
+                description: 'The SVG code entered will be removed when switching to Upload Image. Are you sure you want to continue?',
+              };
+              document.body.classList.add('overflow-hidden');
+              return;
+            }
+          } else if (target === 'svg') {
+            const hasImg = Boolean(this.previewUrl || this.hasFile);
+            if (hasImg) {
+              this.confirmModal = {
+                open: true,
+                targetMode: 'svg',
+                title: 'Switch to SVG Code?',
+                description: 'The uploaded image will be removed when switching to SVG Code. Are you sure you want to continue?',
+              };
+              document.body.classList.add('overflow-hidden');
+              return;
+            }
+          }
+
+          this.applyMode(target);
+        },
+
+        cancelSwitchMode() {
+          this.confirmModal.open = false;
+          this.confirmModal.targetMode = null;
+          document.body.classList.remove('overflow-hidden');
+        },
+
+        confirmSwitchMode() {
+          const target = this.confirmModal.targetMode;
+          if (!target) return;
+
+          if (target === 'image') {
+            this.formData.svg = '';
+            const svgEl = document.getElementById('svg');
+            if (svgEl) svgEl.value = '';
+          } else if (target === 'svg') {
+            this.clearFile();
+          }
+
+          this.cancelSwitchMode();
+          this.applyMode(target);
+        },
+
+        applyMode(target) {
+          this.mode = target;
+          this.validateIconSource();
+          this.$nextTick(() => {
+            if (typeof this.recomputeDirty === 'function') {
+              this.recomputeDirty();
+            }
+          });
         },
 
         validateField(path, value) {
@@ -89,7 +148,6 @@
           this.formErrors[path] = this.touched[path]
             ? errorFor(path, this.formData[path])
             : '';
-          // Mengetik SVG harus langsung mencabut error "salah satu wajib".
           if (path === 'svg') this.validateIconSource();
         },
 
@@ -129,8 +187,6 @@
         },
 
         clearPreview() {
-          // Hanya object URL buatan sendiri yang perlu dicabut; imgUrl dari
-          // server adalah URL biasa dan revoke terhadapnya tidak ada gunanya.
           if (this.previewUrl && this.previewUrl.startsWith('blob:')) {
             URL.revokeObjectURL(this.previewUrl);
           }
@@ -143,23 +199,20 @@
 
         clearFile() {
           this.clearPreview();
-          this.$refs.dropInput.value = null;
+          if (this.$refs.dropInput) {
+            this.$refs.dropInput.value = null;
+          }
           this.validateIconSource();
         },
 
         validateIconSource() {
-          const svgState = this.svgStatus;
-          const hasImage = Boolean(this.previewUrl);
-
-          if (svgState === 'invalid') {
-            this.formErrors.iconSource = 'Format kode SVG tidak valid. Pastikan diawali <svg> dan ditutup </svg>.';
-            return;
+          if (this.mode === 'svg') {
+            const hasSvg = (this.formData.svg || '').trim() !== '';
+            this.formErrors.iconSource = hasSvg ? '' : 'SVG Code is required.';
+          } else {
+            const hasImage = Boolean(this.previewUrl);
+            this.formErrors.iconSource = hasImage ? '' : 'Upload Image is required.';
           }
-
-          this.formErrors.iconSource =
-            (svgState === 'valid') || hasImage
-              ? ''
-              : 'Provide an SVG code or upload an image — at least one is required.';
         },
 
         validateAll() {
@@ -167,20 +220,13 @@
           this.validateIconSource();
         },
 
-        // Gating tombol simpan: form siap bila semua field wajib lolos errorFor,
-        // terlepas dari sudah disentuh atau belum. Sengaja bukan hasFormErrors(),
-        // yang hanya melihat error yang sudah diungkap `touched` sehingga form
-        // kosong yang belum disentuh justru terbaca "tanpa error".
-        // Sumber ikon mengikuti aturan backend: svg ATAU gambar, minimal satu.
-        // previewUrl sudah terisi saat mengedit tech bergambar, jadi halaman edit
-        // tidak ikut terkunci hanya karena file tidak diunggah ulang.
         canSubmit() {
           const fieldsOk = PATHS.every((path) => errorFor(path, this.formData[path]) === '');
-          const svgState = this.svgStatus;
-          const hasImage = Boolean(this.previewUrl);
-          const hasValidIconSource = (svgState === 'valid') || (svgState === 'empty' && hasImage);
+          const hasIconSource = this.mode === 'svg'
+            ? (this.formData.svg || '').trim() !== ''
+            : Boolean(this.previewUrl);
 
-          return fieldsOk && hasValidIconSource && this.isValid && !this.errorMessage && !this.formErrors.iconSource;
+          return fieldsOk && hasIconSource && this.isValid && !this.errorMessage;
         },
 
         hasFormErrors() {
@@ -190,7 +236,7 @@
         revealFirstInvalid() {
           const path = PATHS.find((p) => this.formErrors[p]);
           this.$nextTick(() => {
-            const el = document.getElementById(path || 'svg');
+            const el = document.getElementById(path || (this.mode === 'svg' ? 'svg' : 'image'));
             if (!el) {
               console.warn('technologyForm: field tidak ditemukan — id di form/technology/fields berubah?');
               return;

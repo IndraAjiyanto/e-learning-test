@@ -40,7 +40,8 @@
           courses: {{json courses}},
           users: {{json users}},
           selectedCourseIds: {{json voucher.courses}},
-          selectedUserIds: {{json voucher.allowed_user_ids}}
+          selectedUserIds: {{json voucher.allowed_user_ids}},
+          excludeId: {{json voucher.id}}
         }), ...formDirtyGate() }'
         x-init='$nextTick(() => captureBaseline())'
         @input='recomputeDirty()'
@@ -62,7 +63,7 @@
               variant='primary'
               label='Save Changes'
               loading=true
-              disabled='!canSubmit() || !isDirty || loading'
+              disabled='!canSubmit() || !isDirty || loading || codeChecking || codeTaken'
             }}
           </div>
         {{/components/ui/super_admin/form/voucher/fields}}

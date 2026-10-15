@@ -239,7 +239,7 @@ export class SearchService {
           });
         }
       });
-    } catch (e) {
+    } catch {
       // Ignore if error
     }
 
@@ -279,7 +279,7 @@ export class SearchService {
           });
         }
       });
-    } catch (e) {
+    } catch {
       // Ignore
     }
 
@@ -324,7 +324,7 @@ export class SearchService {
           url: `/users/profile?tab=portfolio`,
         });
       });
-    } catch (e) {
+    } catch {
       // Ignore
     }
 

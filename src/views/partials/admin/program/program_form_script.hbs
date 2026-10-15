@@ -19,7 +19,13 @@ function programData(mode) {
     get logbookConfigurable() {
       return this.programType === 'non_bootcamp';
     },
-    methodOnline: true,
+    method: 'online',
+    get methodOnline() {
+      return this.method === 'online';
+    },
+    set methodOnline(val) {
+      this.method = val ? 'online' : 'offline';
+    },
     coverHasFile: false,
     coverValid: true,
     categorySelected: null,

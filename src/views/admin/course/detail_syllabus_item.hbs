@@ -89,6 +89,12 @@
           </div>
 
         </div>
+
+        {{#if isCompleted}}
+          {{> components/ui/admin/locked-notice/index
+            title='Syllabus is locked'
+            message='This syllabus cannot be edited or deleted because it has already been completed by a participant.' }}
+        {{/if}}
       </div>
 
     {{/components/ui/admin/form/form-card}}
@@ -210,11 +216,8 @@
         </div>
 
         {{!-- Modal Body --}}
-        <div
-          class='box-border w-full p-[24px] overflow-y-auto flex-1 bg-[#FFFFFF]'
-          x-data='finalAssignmentContentRenderer("syllabus_content_data", "Belum ada konten untuk silabus ini.")'
-          x-init='init()'>
-          <div class='final-assignment-content w-full font-inter text-[14px] leading-[22px] text-[#171717]' x-html='renderedHtml'></div>
+        <div class='box-border w-full p-[24px] overflow-y-auto flex-1 bg-[#FFFFFF]'>
+          {{> components/ui/content-preview/index content=syllabus.content emptyMessage="Belum ada konten untuk silabus ini."}}
         </div>
 
         {{!-- Modal Footer --}}
@@ -239,9 +242,5 @@
     description='Are you sure you want to delete this sylabus item? Contents inside it will be removed too.'
     confirmLabel='Delete' }}
 
-{{!-- Syllabus content data & renderer --}}
-{{> components/ui/final_assignment/content_data/index
-    contentId='syllabus_content_data'
-    content=syllabus.content }}
-
-{{> components/ui/final_assignment/renderer/index }}
+{{!-- Toast sukses --}}
+{{> components/ui/admin/toast/success/index toast=toast }}

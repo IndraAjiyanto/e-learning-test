@@ -4,8 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { AppModule } from 'src/app.module';
 import { Category } from 'src/entities/category.entity';
-import { Course, Method } from 'src/entities/course.entity';
-import { ProcessStatus } from 'src/entities/types/process-status';
+import { Course } from 'src/entities/course.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Technology } from 'src/entities/technology.entity';
 import { Mentorings } from 'src/entities/mentoring.entity';
@@ -164,4 +163,4 @@ async function bootstrap() {
 
   await app.close();
 }
-bootstrap();
+void bootstrap();

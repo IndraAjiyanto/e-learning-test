@@ -39,8 +39,9 @@ export class VisionsController {
         'The visi statement has been added successfully.',
       );
       res.redirect('/vision');
-    } catch (error: any) {
-      req.flash('error', error.message || 'vision failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'vision failed to create');
       res.redirect('/vision');
     }
   }
@@ -57,7 +58,7 @@ export class VisionsController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/visions/create', { user: req.user });
   }
 
@@ -88,8 +89,9 @@ export class VisionsController {
         'The changes to this visi statement have been saved.',
       );
       res.redirect('/vision');
-    } catch (error: any) {
-      req.flash('error', error.message || 'visions failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'visions failed to update');
       res.redirect('/vision');
     }
   }
@@ -109,8 +111,9 @@ export class VisionsController {
         'The visi statement has been removed successfully.',
       );
       res.redirect('/vision');
-    } catch (error: any) {
-      req.flash('error', error.message || 'visions failed to remove');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'visions failed to remove');
       res.redirect('/vision');
     }
   }

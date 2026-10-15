@@ -1,4 +1,3 @@
-import { User } from 'src/users/entities/user.entity';
 import 'express-session';
 
 declare global {
@@ -9,7 +8,11 @@ declare global {
       profile: string;
       email: string;
       role: 'admin' | 'super_admin' | 'user';
+      isVerified?: boolean;
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface User extends UserPayload {}
 
     interface Request {
       user?: UserPayload;

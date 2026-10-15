@@ -335,12 +335,10 @@ export class EmailService {
       `,
     };
 
-    try {
-      const info = await this.transporter.sendMail(mailOptions);
-      return { success: true, messageId: info.messageId };
-    } catch (error) {
-      throw error;
-    }
+    const info = (await this.transporter.sendMail(mailOptions)) as {
+      messageId?: string;
+    };
+    return { success: true, messageId: info.messageId };
   }
 
   async sendInstallmentReminderEmail(params: {
