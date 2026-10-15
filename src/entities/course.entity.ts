@@ -34,6 +34,7 @@ import { FinalAssignment } from './final_assignment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 import { CourseStatus, COURSE_STATUSES } from './types/course-status';
+import { PortfolioGuide } from './portfolio-guide.entity';
 
 export type Method = 'online' | 'offline' | 'hybrid';
 
@@ -249,6 +250,12 @@ export class Course {
   })
   @Exclude()
   portofolios: Portofolios[];
+
+  @OneToOne(() => PortfolioGuide, (portfolioGuide) => portfolioGuide.course, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  portfolioGuide: PortfolioGuide;
 
   @OneToMany(() => Payment, (payments) => payments.course, {
     cascade: true,

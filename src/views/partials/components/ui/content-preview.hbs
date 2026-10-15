@@ -1,0 +1,196 @@
+{{!--
+  Component: Content Preview Container (HTML & EditorJS Blocks)
+  Path: components/ui/content-preview.hbs
+  Props: {{content}} (HTML string or EditorJS blocks JSON/object),
+         {{emptyMessage}} (optional fallback text),
+         {{class}} (optional extra classes)
+--}}
+<div
+  data-empty-message='{{default emptyMessage "Belum ada konten."}}'
+  x-data='{
+    renderedHtml: "",
+    init() {
+      const render = () => {
+        const scriptEl = this.$el.querySelector("script[type=\"application/json\"]");
+        const raw = scriptEl ? scriptEl.textContent : "";
+        const fallback = this.$el.dataset.emptyMessage || "Belum ada konten.";
+        if (window.QuillEditor && window.QuillEditor.renderToHtml) {
+          this.renderedHtml = window.QuillEditor.renderToHtml(raw, fallback);
+        } else {
+          setTimeout(render, 50);
+        }
+      };
+      render();
+    }
+  }'
+  class='content-preview-container final-assignment-content w-full font-inter text-[14px] leading-[22px] text-[#171717] {{class}}'
+>
+  <script type="application/json">{{{jsonSafe content}}}</script>
+  <div x-html='renderedHtml'></div>
+</div>
+
+<style>
+  .content-preview-container .ql-align-center {
+    text-align: center !important;
+  }
+  .content-preview-container .ql-align-right {
+    text-align: right !important;
+  }
+  .content-preview-container .ql-align-justify {
+    text-align: justify !important;
+  }
+  .content-preview-container .ql-align-left {
+    text-align: left !important;
+  }
+
+  .content-preview-container .ql-align-center img {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+  }
+  .content-preview-container .ql-align-right img {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    display: block !important;
+  }
+  .content-preview-container .ql-align-left img {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    display: block !important;
+  }
+
+  .content-preview-container h1 {
+    font-size: 24px !important;
+    line-height: 32px !important;
+    font-weight: 700 !important;
+    color: #003060 !important;
+    margin-top: 18px !important;
+    margin-bottom: 8px !important;
+  }
+  .content-preview-container h2 {
+    font-size: 20px !important;
+    line-height: 28px !important;
+    font-weight: 700 !important;
+    color: #003060 !important;
+    margin-top: 16px !important;
+    margin-bottom: 6px !important;
+  }
+  .content-preview-container h3 {
+    font-size: 18px !important;
+    line-height: 26px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 14px !important;
+    margin-bottom: 6px !important;
+  }
+  .content-preview-container h4 {
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 12px !important;
+    margin-bottom: 4px !important;
+  }
+  .content-preview-container h5 {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 10px !important;
+    margin-bottom: 4px !important;
+  }
+  .content-preview-container h6 {
+    font-size: 12px !important;
+    line-height: 18px !important;
+    font-weight: 600 !important;
+    color: #003060 !important;
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .content-preview-container p {
+    margin-bottom: 12px;
+  }
+  .content-preview-container p:last-child {
+    margin-bottom: 0;
+  }
+
+  .content-preview-container ol {
+    list-style-type: decimal !important;
+    padding-left: 24px !important;
+    margin-bottom: 12px !important;
+  }
+  .content-preview-container ul {
+    list-style-type: disc !important;
+    padding-left: 24px !important;
+    margin-bottom: 12px !important;
+  }
+  .content-preview-container li {
+    margin-bottom: 4px !important;
+  }
+
+  .content-preview-container img {
+    max-width: 100% !important;
+    max-height: 380px !important;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+    margin: 12px auto;
+  }
+  .content-preview-container figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 16px 0;
+  }
+
+  .content-preview-container iframe,
+  .content-preview-container .ql-video {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    min-height: 320px;
+    border-radius: 8px;
+    display: block;
+    margin: 16px auto;
+  }
+
+  .content-preview-container table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+    margin: 16px 0 !important;
+  }
+  .content-preview-container table td,
+  .content-preview-container table th {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 10px !important;
+    min-width: 30px;
+    vertical-align: top;
+    box-sizing: border-box !important;
+  }
+
+  .content-preview-container blockquote {
+    border-left: 4px solid #003060 !important;
+    padding-left: 12px !important;
+    font-style: italic !important;
+    color: #525252 !important;
+    margin: 12px 0 !important;
+  }
+  .content-preview-container pre {
+    background-color: #f3f4f6 !important;
+    padding: 12px !important;
+    border-radius: 6px !important;
+    overflow-x: auto !important;
+    font-size: 13px !important;
+    margin: 12px 0 !important;
+  }
+
+  .content-preview-container,
+  .content-preview-container * {
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: manual !important;
+  }
+</style>

@@ -112,7 +112,9 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
     if (cekEmail) {
-      throw new NotFoundException('Email is already registered');
+      throw new BadRequestException(
+        'Email sudah terdaftar. Silakan gunakan alamat email lain.',
+      );
     }
 
     const user = this.userRepository.create({
@@ -120,7 +122,23 @@ export class UsersService {
       isVerified: false,
       resetPasswordToken: 'MUST_CHANGE_PASSWORD',
     });
-    const savedUser = await this.userRepository.save(user);
+
+    let savedUser: User;
+    try {
+      savedUser = await this.userRepository.save(user);
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string };
+      if (
+        err?.code === '23505' ||
+        err?.message?.includes('duplicate key') ||
+        err?.message?.includes('unique constraint')
+      ) {
+        throw new BadRequestException(
+          'Email sudah terdaftar. Silakan gunakan alamat email lain.',
+        );
+      }
+      throw error;
+    }
 
     await this.sendAdminVerificationEmailToUser(
       savedUser,

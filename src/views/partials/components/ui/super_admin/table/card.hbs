@@ -13,7 +13,7 @@
 --}}
 <div class='overflow-hidden rounded-xl border border-[#e5e5e5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)]'>
   <div class='overflow-x-auto'>
-    <table class='w-full table-fixed border-collapse text-left {{tableClass}}'>
+    <table class='w-full table-fixed border-collapse text-left [&_td]:border-x-0 [&_th]:border-x-0 [&_td]:border-t-0 [&_th]:border-t-0 {{tableClass}}'>
       {{> @partial-block}}
     </table>
   </div>

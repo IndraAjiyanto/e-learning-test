@@ -51,6 +51,12 @@
         </div>
 
       </div>
+
+      <template x-if='finalAssignment.hasApprovedSubmission'>
+        {{> components/ui/admin/locked-notice/index
+          title='Final assignment is locked'
+          message='This final assignment cannot be edited or deleted because a submission has already been approved.' }}
+      </template>
     </div>
   </template>
 

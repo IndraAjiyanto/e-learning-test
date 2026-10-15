@@ -66,14 +66,55 @@
           let parsed = null;
           try {
             parsed = JSON.parse(text);
-          } catch (e) {}
+          } catch (e) {
+            parsed = text;
+          }
           if (typeof parsed === 'string') {
             try {
-              parsed = JSON.parse(parsed);
+              const second = JSON.parse(parsed);
+              if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
+                parsed = second;
+              }
             } catch (e) {}
           }
+          function normalizeVideoEmbedUrl(url) {
+            if (!url) return '';
+            let cleanUrl = String(url).trim();
+            if (!cleanUrl || cleanUrl.includes('[object')) return '';
+
+            if (!/^[a-zA-Z]+:\/\//.test(cleanUrl) && !cleanUrl.startsWith('//')) {
+              cleanUrl = 'https://' + cleanUrl;
+            }
+
+            const ytWatch = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/watch.*[?&]v=([a-zA-Z0-9_-]+)/i);
+            const ytShort = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtu\.be\/([a-zA-Z0-9_-]+)/i);
+            const ytEmbed = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]+)/i);
+            const ytShorts = cleanUrl.match(/^(?:https?:)?\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/shorts\/([a-zA-Z0-9_-]+)/i);
+
+            const videoId =
+              (ytWatch && ytWatch[1]) ||
+              (ytShort && ytShort[1]) ||
+              (ytEmbed && ytEmbed[1]) ||
+              (ytShorts && ytShorts[1]);
+
+            if (videoId) {
+              return 'https://www.youtube.com/embed/' + videoId;
+            }
+
+            return cleanUrl;
+          }
+
+          function normalizeHtmlVideos(html) {
+            if (!html) return '';
+            return html.replace(/<iframe([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi, function(match, before, src, after) {
+              const embedUrl = normalizeVideoEmbedUrl(src);
+              if (!embedUrl) return '';
+              return '<iframe' + before + 'src="' + embedUrl + '"' + after + '>';
+            });
+          }
+
           if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
-            this.renderedHtml = parsed;
+            this.renderedHtml = normalizeHtmlVideos(parsed.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '));
             return;
           }
           if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
@@ -116,6 +157,12 @@
                       '<span>' + content + '</span></li>';
                   }).join('');
                   return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+                }
+                case 'video':
+                case 'embed': {
+                  const url = (d.embed || d.source || (d.file && d.file.url) || d.url || '');
+                  const embedUrl = normalizeVideoEmbedUrl(url);
+                  return '<div class="my-3 aspect-video w-full"><iframe class="ql-video w-full h-full min-h-[300px] rounded-lg" frameborder="0" allowfullscreen="true" src="' + embedUrl + '"></iframe></div>';
                 }
                 case 'image':
                   return '<figure class="my-3"><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" class="max-w-full rounded-lg"/>' +
@@ -190,13 +237,13 @@
     margin-top: 8px !important;
     margin-bottom: 4px !important;
   }
-  .final-assignment-content {
-    overflow-wrap: break-word;
-    word-break: break-word;
+  .final-assignment-content,
+  .final-assignment-content * {
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: manual !important;
   }
   .final-assignment-content p {
-    overflow-wrap: break-word;
-    word-break: break-word;
     margin-bottom: 12px;
   }
   .final-assignment-content p:last-child {
@@ -217,5 +264,28 @@
     border-radius: 8px;
     display: block;
     margin: 12px auto;
+  }
+  .final-assignment-content iframe,
+  .final-assignment-content .ql-video {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    min-height: 320px;
+    border-radius: 8px;
+    display: block;
+    margin: 16px auto;
+  }
+  .final-assignment-content table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+    margin: 16px 0 !important;
+  }
+  .final-assignment-content table td,
+  .final-assignment-content table th {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 10px !important;
+    min-width: 30px;
+    vertical-align: top;
+    box-sizing: border-box !important;
   }
 </style>

@@ -14,6 +14,11 @@ export class CreateCategoriesDto {
   @IsString()
   name_ja?: string | null;
 
+  // Nomor urut kategori (1..N+1). Tidak ada global ValidationPipe, jadi nilai
+  // multipart (string) di-coerce & divalidasi di CategoriesService.parseNo.
+  @IsOptional()
+  no?: number;
+
   @IsString()
   icon: string;
 

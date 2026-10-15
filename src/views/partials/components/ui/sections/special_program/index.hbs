@@ -11,21 +11,33 @@
 
     {{!-- Program Cards Grid (Figma Layer 3: cards showcase modern) --}}
     {{#if courses.length}}
-      <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-[1568px]">
-        {{#each courses}}
-          {{> components/ui/card/program_showcase/index
-              id=this.id
-              image=this.image
-              icon=(default this.icon "fa-solid fa-graduation-cap")
-              title=this.name
-              description=(default (getByLang this.description ../lang) (default (t 'test.special_program.program.defaultCardDesc') "A structured journey from fundamentals to workplace readiness and long-term career opportunities."))
-              tag1=(ternary this.method this.method (ternary ../isJapan (default (t 'test.special_program.program.language') "Language") (default (t 'test.special_program.program.practical') "Practical")))
-              tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " " (default (t 'test.special_program.program.day') "Day")) (concat (default this.month 1) " " (default (t 'test.special_program.program.month') "Month")))
-              tag3=(ternary this.quota (concat this.quota " " (default (t 'test.special_program.program.quota') "Quota")) (default (t 'test.special_program.program.career') "Career"))
-              href=(concat '/program/' this.id)
-          }}
-        {{/each}}
-      </div>
+      {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=true isJapan=isJapan}}
+        <div
+          x-show="visibleIds.length > 0"
+          class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-[1568px]"
+        >
+          {{#each courses}}
+            <div
+              x-show="visibleIds.includes('{{this.id}}')"
+              x-transition.opacity.duration.200ms
+              class="w-full flex"
+            >
+              {{> components/ui/card/program_showcase/index
+                  id=this.id
+                  image=this.image
+                  icon=(default this.icon "fa-solid fa-graduation-cap")
+                  title=this.name
+                  description=(default (getByLang this.description ../lang) (default (t 'test.special_program.program.defaultCardDesc') "A structured journey from fundamentals to workplace readiness and long-term career opportunities."))
+                  tag1=(ternary this.method this.method (ternary ../isJapan (default (t 'test.special_program.program.language') "Language") (default (t 'test.special_program.program.practical') "Practical")))
+                  tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " " (default (t 'test.special_program.program.day') "Day")) (concat (default this.month 1) " " (default (t 'test.special_program.program.month') "Month")))
+                  tag3=(ternary this.quota (concat this.quota " " (default (t 'test.special_program.program.quota') "Quota")) (default (t 'test.special_program.program.career') "Career"))
+                  href=(concat '/program/' this.id)
+                  lang=../lang
+              }}
+            </div>
+          {{/each}}
+        </div>
+      {{/components/ui/filter/course_catalog_filter/index}}
     {{else}}
       {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
       {{> components/ui/sections/program_coming_soon/index

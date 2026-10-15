@@ -14,6 +14,7 @@ import { User } from 'src/entities/user.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
+import { PortfolioGuide } from 'src/entities/portfolio-guide.entity';
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import * as ps from 'fs/promises';
 import * as path from 'path';
@@ -51,6 +52,9 @@ export class PortfoliosService {
 
     @InjectRepository(UserCourse)
     private readonly userCourseRepository: Repository<UserCourse>,
+
+    @InjectRepository(PortfolioGuide)
+    private readonly portfolioGuideRepository: Repository<PortfolioGuide>,
 
     private readonly finalAssignmentService: FinalAssignmentService,
   ) {}
@@ -410,6 +414,35 @@ export class PortfoliosService {
     }
 
     return true;
+  }
+
+  async getPortfolioGuide(courseId: string) {
+    return this.portfolioGuideRepository.findOne({
+      where: { course: { id: courseId } },
+      relations: ['course'],
+    });
+  }
+
+  /**
+   * Apakah sudah ada peserta yang mengunggah portfolio untuk program ini.
+   * Dipakai untuk mengunci portfolio guide: begitu ada satu karya student,
+   * guide tidak boleh lagi diubah/dihapus karena sudah jadi acuan.
+   */
+  async hasPortfolioForCourse(courseId: string): Promise<boolean> {
+    if (!courseId) return false;
+    const count = await this.portfolioRepository.count({
+      where: { course: { id: courseId } },
+    });
+    return count > 0;
+  }
+
+  async deletePortfolioGuide(courseId: string) {
+    const guide = await this.portfolioGuideRepository.findOne({
+      where: { course: { id: courseId } },
+    });
+    if (guide) {
+      await this.portfolioGuideRepository.remove(guide);
+    }
   }
 
   async findByUser(userId: string) {

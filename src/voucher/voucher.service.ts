@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
 import { Voucher } from 'src/entities/voucher.entity';
@@ -41,8 +45,34 @@ export class VoucherService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  // Cari voucher berdasarkan kode, tanpa membedakan besar/kecil huruf.
+  // Redemption memakai ILike, jadi "DISKON50" dan "diskon50" harus dianggap
+  // kode yang sama agar tidak ada dua voucher yang bentrok saat dipakai.
+  async findByCode(code: string): Promise<Voucher | null> {
+    const normalized = (code ?? '').trim();
+    if (!normalized) return null;
+    return this.voucherRepository
+      .createQueryBuilder('voucher')
+      .where('LOWER(voucher.code_voucher) = LOWER(:code)', {
+        code: normalized,
+      })
+      .getOne();
+  }
+
+  // True bila kode belum dipakai voucher lain. `excludeId` dipakai halaman edit
+  // supaya voucher yang sedang diedit tidak dianggap bentrok dengan dirinya.
+  async isCodeAvailable(code: string, excludeId?: string): Promise<boolean> {
+    const existing = await this.findByCode(code);
+    if (!existing) return true;
+    return !!excludeId && existing.id === excludeId;
+  }
+
   // Buat voucher baru + assign daftar program
   async create(dto: CreateVoucherDto): Promise<Voucher> {
+    if (!(await this.isCodeAvailable(dto.code_voucher))) {
+      throw new ConflictException('Voucher code is already in use.');
+    }
+
     const voucher = this.voucherRepository.create({
       code_voucher: dto.code_voucher,
       type: dto.type,
@@ -95,7 +125,12 @@ export class VoucherService {
     const voucher = await this.findOne(id);
 
     // Update field scalar
-    if (dto.code_voucher !== undefined) voucher.code_voucher = dto.code_voucher;
+    if (dto.code_voucher !== undefined) {
+      if (!(await this.isCodeAvailable(dto.code_voucher, id))) {
+        throw new ConflictException('Voucher code is already in use.');
+      }
+      voucher.code_voucher = dto.code_voucher;
+    }
     if (dto.type !== undefined) voucher.type = dto.type;
     if (dto.active !== undefined) voucher.active = parseBool(dto.active);
     if (dto.allowed_user_ids !== undefined)
