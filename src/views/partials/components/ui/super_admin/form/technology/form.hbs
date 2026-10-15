@@ -64,9 +64,24 @@
 
         // Pratinjau hanya dipasang kalau isinya betul-betul elemen <svg>;
         // teks sembarang tidak ikut disuntikkan ke DOM.
-        get svgPreview() {
+        get svgStatus() {
           const markup = (this.formData.svg || '').trim();
-          return /^<svg[\s>]/i.test(markup) ? markup : '';
+          if (!markup) return 'empty';
+          if (!/^<svg[\s>][\s\S]*<\/svg>$/i.test(markup)) return 'invalid';
+          try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(markup, 'image/svg+xml');
+            const hasError = doc.querySelector('parsererror');
+            return (!hasError && doc.documentElement.nodeName.toLowerCase() === 'svg')
+              ? 'valid'
+              : 'invalid';
+          } catch {
+            return 'invalid';
+          }
+        },
+
+        get svgPreview() {
+          return this.svgStatus === 'valid' ? (this.formData.svg || '').trim() : '';
         },
 
         validateField(path, value) {
@@ -133,10 +148,16 @@
         },
 
         validateIconSource() {
-          const hasSvg = (this.formData.svg || '').trim() !== '';
+          const svgState = this.svgStatus;
           const hasImage = Boolean(this.previewUrl);
+
+          if (svgState === 'invalid') {
+            this.formErrors.iconSource = 'Format kode SVG tidak valid. Pastikan diawali <svg> dan ditutup </svg>.';
+            return;
+          }
+
           this.formErrors.iconSource =
-            hasSvg || hasImage
+            (svgState === 'valid') || hasImage
               ? ''
               : 'Provide an SVG code or upload an image — at least one is required.';
         },
@@ -155,10 +176,11 @@
         // tidak ikut terkunci hanya karena file tidak diunggah ulang.
         canSubmit() {
           const fieldsOk = PATHS.every((path) => errorFor(path, this.formData[path]) === '');
-          const hasIconSource =
-            (this.formData.svg || '').trim() !== '' || Boolean(this.previewUrl);
+          const svgState = this.svgStatus;
+          const hasImage = Boolean(this.previewUrl);
+          const hasValidIconSource = (svgState === 'valid') || (svgState === 'empty' && hasImage);
 
-          return fieldsOk && hasIconSource && this.isValid && !this.errorMessage;
+          return fieldsOk && hasValidIconSource && this.isValid && !this.errorMessage && !this.formErrors.iconSource;
         },
 
         hasFormErrors() {

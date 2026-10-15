@@ -74,10 +74,20 @@
         <div class='flex flex-col gap-1.5'>
           <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Preview</span>
           <div class='flex h-[147px] items-center justify-center rounded-lg border border-[#d4d4d4] bg-[#fafafa] p-4'>
-            <template x-if='svgPreview'>
-              <span class='flex h-20 w-20 items-center justify-center [&>svg]:h-full [&>svg]:w-full' x-html='svgPreview'></span>
+            <template x-if="svgStatus === 'valid'">
+              <span class='flex h-20 w-20 items-center justify-center [&>svg]:h-full [&>svg]:w-full [&>svg]:max-h-full [&>svg]:max-w-full [&>svg]:object-contain' x-html='svgPreview'></span>
             </template>
-            <template x-if='!svgPreview'>
+            <template x-if="svgStatus === 'invalid'">
+              <div class='flex flex-col items-center justify-center gap-1 text-center'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-6 w-6 text-[#ef4444]'>
+                  <circle cx='12' cy='12' r='10' />
+                  <line x1='12' y1='8' x2='12' y2='12' />
+                  <line x1='12' y1='16' x2='12.01' y2='16' />
+                </svg>
+                <span class='font-inter text-xs font-medium leading-4 text-[#ef4444]'>Format SVG tidak valid</span>
+              </div>
+            </template>
+            <template x-if="svgStatus === 'empty'">
               <span class='font-inter text-sm leading-5 text-[#a3a3a3]'>No SVG to preview</span>
             </template>
           </div>

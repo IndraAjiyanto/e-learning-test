@@ -51,7 +51,10 @@ export class TechnologiesController {
     try {
       createTechnologiesDto.imgUrl = req.body.uploadedImageUrls?.[0] || null;
 
-      const isSvgEmpty = createTechnologiesDto.svg === '';
+      if (createTechnologiesDto.svg) {
+        createTechnologiesDto.svg = createTechnologiesDto.svg.trim();
+      }
+      const isSvgEmpty = !createTechnologiesDto.svg;
       if (isSvgEmpty) {
         createTechnologiesDto.svg = null;
       }
@@ -60,6 +63,13 @@ export class TechnologiesController {
         throw new BadRequestException(
           'SVG atau Gambar (Image) wajib diisi salah satunya!',
         );
+      }
+
+      if (createTechnologiesDto.svg) {
+        const svgTrimmed = createTechnologiesDto.svg.trim();
+        if (!/^<svg[\s>][\s\S]*<\/svg>$/i.test(svgTrimmed)) {
+          throw new BadRequestException('Format kode SVG tidak valid.');
+        }
       }
 
       await this.technologiesService.create(createTechnologiesDto);
@@ -157,6 +167,9 @@ export class TechnologiesController {
         throw new BadRequestException('Tech not found');
       }
 
+      if (updateTechnologiesDto.svg !== undefined && updateTechnologiesDto.svg !== null) {
+        updateTechnologiesDto.svg = updateTechnologiesDto.svg.trim();
+      }
       const isSvgEmpty = updateTechnologiesDto.svg === '';
       const finalSvg =
         updateTechnologiesDto.svg !== undefined
@@ -171,6 +184,13 @@ export class TechnologiesController {
         throw new BadRequestException(
           'SVG atau Gambar (Image) wajib diisi salah satunya!',
         );
+      }
+
+      if (updateTechnologiesDto.svg) {
+        const svgTrimmed = updateTechnologiesDto.svg.trim();
+        if (!/^<svg[\s>][\s\S]*<\/svg>$/i.test(svgTrimmed)) {
+          throw new BadRequestException('Format kode SVG tidak valid.');
+        }
       }
 
       // Ensure empty string SVG is saved as null to prevent Handlebars issues
