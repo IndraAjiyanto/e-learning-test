@@ -21,6 +21,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { flashToast, flashToastError } from 'src/common/utils/toast.util';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -131,6 +132,7 @@ export class CategoriesController {
     res.render('super_admin/category/index', { user: req.user, category });
   }
 
+  @DenyRoles('super_admin', 'admin')
   @Get('program/:categoryName')
   async program(
     @Param('categoryName') categoryName: string,

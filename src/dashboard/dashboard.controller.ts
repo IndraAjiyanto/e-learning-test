@@ -3,11 +3,13 @@ import { DashboardService } from './dashboard.service';
 import { GalleryService } from '../gallery/gallery.service';
 import { Request, Response } from 'express';
 import { CategoriesService } from 'src/categories/categories.service';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 import {
   corporateTrainingFaqs,
   corporateTrainingPrograms,
 } from './corporate-training.data';
 
+@DenyRoles('super_admin', 'admin')
 @Controller('dashboard')
 export class DashboardController {
   constructor(

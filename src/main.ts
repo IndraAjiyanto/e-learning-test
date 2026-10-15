@@ -120,11 +120,15 @@ async function bootstrap() {
     const redirect = res.redirect.bind(res) as (url: string) => void;
 
     res.redirect = ((url: string) => {
+      if (res.headersSent || (res as unknown as { __redirected?: boolean }).__redirected) return;
+      (res as unknown as { __redirected?: boolean }).__redirected = true;
       if (!req.session) return redirect(url);
 
       req.session.save((err) => {
         if (err) console.error('Gagal menyimpan sesi sebelum redirect:', err);
-        redirect(url);
+        if (!res.headersSent) {
+          redirect(url);
+        }
       });
     }) as Response['redirect'];
 
