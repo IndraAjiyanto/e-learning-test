@@ -126,6 +126,7 @@
               <button
                 type='button'
                 role='option'
+                @mousedown.prevent
                 :aria-selected="(formData.{{field}} || '').trim() === item.value"
                 @click='choose(item)'
                 :title='item.title'
@@ -181,6 +182,8 @@
     // Dipakai bersama semua instance di halaman, dan hanya sekali per load.
     let cache = null;
     let inflight = null;
+    let knownIcons = new Set();
+    let knownGlyphs = new Map();
 
     function loadIndex() {
       if (cache) return Promise.resolve(cache);
@@ -195,20 +198,42 @@
             // dan regular muncul dua kali, jadi pilihan gayanya kelihatan
             // langsung tanpa toggle tersembunyi.
             cache = [];
+            knownIcons = new Set();
+            knownGlyphs = new Map();
+
             for (const [name, label, styles, terms] of rows) {
               for (const code of styles) {
                 const prefix = STYLE_CLASS[code];
                 if (!prefix) continue;
+                const itemValue = `${prefix} fa-${name}`;
                 cache.push({
                   key: `${prefix} ${name}`,
-                  value: `${prefix} fa-${name}`,
+                  value: itemValue,
                   name,
                   label,
                   terms,
                   title: `${label} — ${STYLE_LABEL[code]} (${prefix} fa-${name})`,
                 });
+
+                knownIcons.add(itemValue);
+                knownIcons.add(`${prefix} ${name}`);
+                if (code === 's') {
+                  knownIcons.add(`fas fa-${name}`);
+                  knownIcons.add(`fas ${name}`);
+                } else if (code === 'r') {
+                  knownIcons.add(`far fa-${name}`);
+                  knownIcons.add(`far ${name}`);
+                } else if (code === 'b') {
+                  knownIcons.add(`fab fa-${name}`);
+                  knownIcons.add(`fab ${name}`);
+                }
               }
+              knownGlyphs.set(name, styles);
             }
+
+            window.__faKnownIcons = knownIcons;
+            window.__faKnownGlyphs = knownGlyphs;
+            window.dispatchEvent(new CustomEvent('fa-icons-loaded', { detail: { count: cache.length } }));
             return cache;
           })
           .finally(() => {
@@ -217,6 +242,36 @@
       }
       return inflight;
     }
+
+    // Pre-fetch segera di latar belakang agar validasi langsung siap
+    loadIndex().catch(() => {});
+
+    window.isKnownFontAwesomeIcon = function isKnownFontAwesomeIcon(val) {
+      if (!val) return false;
+      let raw = String(val).trim().toLowerCase();
+      if (!raw) return false;
+
+      const htmlMatch = raw.match(/class=['"]([^'"]+)['"]/i);
+      if (htmlMatch) {
+        raw = htmlMatch[1].trim().toLowerCase();
+      }
+
+      raw = raw.replace(/\s+/g, ' ');
+
+      if (window.__faKnownIcons && window.__faKnownIcons.size > 0) {
+        return window.__faKnownIcons.has(raw);
+      }
+
+      // Fallback bila indeks sedang dimuat: wajib berupa format lengkap style + glyph
+      const parts = raw.split(' ');
+      if (parts.length === 2) {
+        const [style, glyph] = parts;
+        const validStyle = /^(fa-solid|fa-regular|fa-brands|fas|far|fab)$/i.test(style);
+        const validGlyph = /^fa-[a-z0-9]+(-[a-z0-9]+)*$/i.test(glyph);
+        return validStyle && validGlyph;
+      }
+      return false;
+    };
 
     // Skor kecil = lebih relevan. Mengurutkan begini membuat "user" menaruh
     // fa-user di depan fa-user-astronaut, bukan sebaliknya.
@@ -272,8 +327,14 @@
         },
 
         onInput(value) {
+          let val = value;
+          const htmlMatch = String(val || '').match(/class=['"]([^'"]+)['"]/i);
+          if (htmlMatch) {
+            val = htmlMatch[1].trim();
+            this.formData[this.field] = val;
+          }
           // Field ini juga field form, jadi validasi induk tetap dipanggil.
-          this.validateField(this.field, value);
+          this.validateField(this.field, val);
           this.openPanel();
           this.search();
         },
