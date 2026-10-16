@@ -3,12 +3,9 @@
   Rute   : GET /syllabus/learn/:syllabusId  (syllabus.controller.ts)
 
   Menampilkan konten (dasar teori) milik silabus dan kartu quiz di sampingnya.
-  Konten disimpan sebagai EditorJS JSON (syllabus.content); dirender di sisi
-  klien lewat blok data JSON + fungsi syllabusTheoryContent(), mengikuti pola
-  yang sama seperti konten Final Assignment.
+  Konten disimpan sebagai EditorJS JSON atau HTML (syllabus.content);
+  dirender lewat components/ui/content-preview.
 --}}
-<script id="syllabus_theory_data" type="application/json">{{{json syllabus.content}}}</script>
-
 {{#> user/shell_frame/index
   user=user
   active='learning'
@@ -41,9 +38,8 @@
 
           <section
             class="box-border flex flex-col items-start gap-6 p-6 sm:p-8 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0"
-            x-data="syllabusTheoryContent()"
           >
-            <div class="w-full syllabus-theory-content" x-html="renderedHtml"></div>
+            {{> components/ui/content-preview/index content=syllabus.content emptyMessage="Belum ada konten untuk silabus ini."}}
           </section>
 
           <aside class="flex flex-col items-start gap-6">
@@ -118,161 +114,3 @@
   </div>
 </div>
 {{/user/shell_frame/index}}
-
-<script>
-function syllabusTheoryContent() {
-  function blockToHtml(b) {
-    const d = b.data || {};
-    const type = (b.type || '').toLowerCase();
-    const itemText = (i) => (typeof i === 'object' && i !== null) ? (i.content || i.text || '') : (i || '');
-    const listItems = (d.items || []).map(itemText).map((c) => '<li>' + c + '</li>').join('');
-    switch (type) {
-      case 'header': {
-        const lvl = Math.min(Math.max(d.level || 2, 1), 6);
-        return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
-      }
-      case 'paragraph':
-        return '<p>' + (d.text || '') + '</p>';
-      case 'list': {
-        if (d.style === 'ordered') {
-          return '<ol>' + listItems + '</ol>';
-        }
-        return '<ul>' + listItems + '</ul>';
-      }
-      case 'image':
-        return '<figure><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" /><figcaption>' + (d.caption || '') + '</figcaption></figure>';
-      case 'quote':
-        return '<blockquote>' + (d.text || '') + '</blockquote>';
-      case 'code':
-        return '<pre><code>' + (d.code || '') + '</code></pre>';
-      case 'delimiter':
-        return '<hr />';
-      default:
-        return d.text ? '<p>' + d.text + '</p>' : '';
-    }
-  }
-
-  return {
-    renderedHtml: '',
-    init() {
-      const empty = '<p class="italic">Belum ada konten untuk silabus ini.</p>';
-      const rawEl = document.getElementById('syllabus_theory_data');
-      if (!rawEl || !rawEl.textContent) {
-        this.renderedHtml = empty;
-        return;
-      }
-      const text = rawEl.textContent.trim();
-      if (!text) {
-        this.renderedHtml = empty;
-        return;
-      }
-      if (/<\/?[a-z][\s\S]*>/i.test(text)) {
-        this.renderedHtml = text;
-        return;
-      }
-      let parsed = null;
-      try {
-        parsed = JSON.parse(text);
-      } catch (e) {
-        parsed = null;
-      }
-      if (typeof parsed === 'string') {
-        try {
-          parsed = JSON.parse(parsed);
-        } catch (e) {
-          parsed = null;
-        }
-      }
-      if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
-        this.renderedHtml = parsed;
-        return;
-      }
-      if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
-        this.renderedHtml = parsed.blocks.map(blockToHtml).join('');
-      } else {
-        this.renderedHtml = empty;
-      }
-    },
-  };
-}
-</script>
-
-<style>
-  .syllabus-theory-content {
-    font-family: 'Inter', sans-serif;
-    line-height: 24px;
-  }
-  .syllabus-theory-content h1 {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 700;
-    color: #003060;
-    margin: 18px 0 8px;
-  }
-  .syllabus-theory-content h2 {
-    font-size: 20px;
-    line-height: 28px;
-    font-weight: 700;
-    color: #003060;
-    margin: 16px 0 6px;
-  }
-  .syllabus-theory-content h3 {
-    font-size: 18px;
-    line-height: 26px;
-    font-weight: 600;
-    color: #003060;
-    margin: 14px 0 6px;
-  }
-  .syllabus-theory-content h4,
-  .syllabus-theory-content h5,
-  .syllabus-theory-content h6 {
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 600;
-    color: #003060;
-    margin: 12px 0 6px;
-  }
-  .syllabus-theory-content p {
-    font-size: 14px;
-    line-height: 24px;
-    color: #2D3748;
-    margin: 0 0 20px;
-  }
-  .syllabus-theory-content ul,
-  .syllabus-theory-content ol {
-    font-size: 14px;
-    line-height: 24px;
-    color: #2D3748;
-    margin: 0 0 20px;
-  }
-  .syllabus-theory-content ul { list-style: disc; padding-left: 20px; }
-  .syllabus-theory-content ol { list-style: decimal; padding-left: 20px; }
-  .syllabus-theory-content blockquote {
-    border-left: 4px solid #3182CE;
-    padding-left: 12px;
-    font-style: italic;
-    margin: 0 0 20px;
-    color: #525252;
-  }
-  .syllabus-theory-content figure { margin: 0 0 20px; }
-  .syllabus-theory-content figure img { max-width: 100%; border-radius: 8px; }
-  .syllabus-theory-content figure figcaption {
-    text-align: center;
-    font-size: 12px;
-    color: #737373;
-    margin-top: 4px;
-  }
-  .syllabus-theory-content pre {
-    background: #F5F5F5;
-    padding: 12px;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-size: 12px;
-    margin: 0 0 20px;
-  }
-  .syllabus-theory-content hr {
-    border: none;
-    border-top: 2px solid #E5E5E5;
-    margin: 20px 0;
-  }
-</style>
