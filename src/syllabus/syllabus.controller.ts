@@ -9,7 +9,14 @@ import {
   Delete,
   Res,
   Req,
+  Query,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
@@ -23,6 +30,53 @@ import { Quiz } from 'src/entities/quiz.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { Course } from 'src/entities/course.entity';
 
+
+const syllabusFileStorage = diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = join(process.cwd(), 'uploads', 'syllabus');
+    if (!existsSync(uploadDir)) {
+      mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, unique + extname(file.originalname));
+  },
+});
+
+const syllabusFileFilter = (
+  _req: unknown,
+  file: Express.Multer.File,
+  cb: (err: Error | null, accept: boolean) => void,
+) => {
+  const ext = extname(file.originalname).toLowerCase();
+  if (file.fieldname === 'pdfFile') {
+    if (ext === '.pdf') return cb(null, true);
+    return cb(
+      new Error(
+        'Format file PDF tidak valid. Hanya berkas .pdf yang diperbolehkan.',
+      ),
+      false,
+    );
+  }
+  if (file.fieldname === 'pptFile') {
+    if (ext === '.ppt' || ext === '.pptx') return cb(null, true);
+    return cb(
+      new Error(
+        'Format file Presentasi tidak valid. Hanya berkas .ppt atau .pptx yang diperbolehkan.',
+      ),
+      false,
+    );
+  }
+  cb(null, true);
+};
+
+const syllabusMulterOptions = {
+  storage: syllabusFileStorage,
+  fileFilter: syllabusFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Batas 5 MB sesuai permintaan
+};
 @Controller('syllabus')
 export class SyllabusController {
   constructor(
@@ -33,13 +87,45 @@ export class SyllabusController {
 
   @Roles('admin', 'super_admin')
   @Post(':courseId')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'pdfFile', maxCount: 1 },
+        { name: 'pptFile', maxCount: 1 },
+      ],
+      syllabusMulterOptions,
+    ),
+  )
   async create(
     @Param('courseId') courseId: string,
     @Body() createSyllabusDto: CreateSyllabusDto,
     @Res() res: Response,
     @Req() req: Request,
+    @UploadedFiles()
+    files?: {
+      pdfFile?: Express.Multer.File[];
+      pptFile?: Express.Multer.File[];
+    },
   ) {
     try {
+      if (files?.pdfFile?.[0]) {
+        createSyllabusDto.pdfFile =
+          '/uploads/syllabus/' + files.pdfFile[0].filename;
+        createSyllabusDto.pdfOriginalName = files.pdfFile[0].originalname;
+        createSyllabusDto.pdfFileSize = files.pdfFile[0].size;
+      }
+      if (createSyllabusDto.pptUrl && createSyllabusDto.pptUrl.trim()) {
+        createSyllabusDto.pptFile = createSyllabusDto.pptUrl.trim();
+        createSyllabusDto.pptOriginalName = 'Slide-Google-Slides.pptx';
+      }
+      if (files?.pptFile?.[0]) {
+        createSyllabusDto.pptFile =
+          createSyllabusDto.pptUrl && createSyllabusDto.pptUrl.trim()
+            ? createSyllabusDto.pptUrl.trim()
+            : '/uploads/syllabus/' + files.pptFile[0].filename;
+        createSyllabusDto.pptOriginalName = files.pptFile[0].originalname;
+        createSyllabusDto.pptFileSize = files.pptFile[0].size;
+      }
       await this.syllabusService.create(createSyllabusDto, courseId);
       flashToast(
         req,
@@ -293,7 +379,7 @@ export class SyllabusController {
     });
   }
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Get('learn/:syllabusId')
   async detailForUser(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
@@ -313,20 +399,201 @@ export class SyllabusController {
       minScore: detail.minScore,
       quizStatus: detail.quizStatus,
       next: detail.next,
+      materials: detail.materials,
+      pdfMaterials: detail.pdfMaterials,
+      pptMaterials: detail.pptMaterials,
+      firstPdf: detail.firstPdf,
+      firstPpt: detail.firstPpt,
+      hasVideo: detail.hasVideo,
+      videoEmbedUrl: detail.videoEmbedUrl,
+      videoDuration: detail.videoDuration,
+      isYoutube: detail.isYoutube,
+      hasPdf: detail.hasPdf,
+      hasPpt: detail.hasPpt,
+      hasAnyMaterial: detail.hasAnyMaterial,
       bareShell: true,
     });
   }
 
+  @Roles('user', 'admin', 'super_admin')
+  @Get('learn/:syllabusId/view/ppt')
+  async viewPpt(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Query('materialId') materialId: string | undefined,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.syllabusService.findDetailForUser(
+      syllabusId,
+      req.user!.id,
+    );
+    const pptList = detail.pptMaterials || [];
+    const selected =
+      (materialId && pptList.find((m) => m.id === materialId)) ||
+      pptList[0] ||
+      null;
+
+    if (!selected) {
+      req.flash('error', 'Slide presentasi belum tersedia.');
+      return res.redirect(`/syllabus/learn/${syllabusId}`);
+    }
+
+    let embedUrl = selected.file || '';
+    const isGoogleSlides = embedUrl.includes('docs.google.com/presentation');
+    if (isGoogleSlides) {
+      embedUrl = embedUrl.replace('/pub?', '/pubembed?');
+    }
+    const isLocalFile =
+      !isGoogleSlides &&
+      (embedUrl.startsWith('/uploads/') || embedUrl.startsWith('/'));
+
+    return res.render('user/syllabus/ppt_viewer', {
+      user: req.user,
+      syllabus: detail.syllabus,
+      course: detail.course,
+      pptList,
+      selected: {
+        ...selected,
+        embedUrl,
+        isGoogleSlides,
+        isLocalFile,
+      },
+      bareShell: true,
+    });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('learn/:syllabusId/download/:type')
+  async downloadMaterial(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Param('type') type: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const syllabus = await this.syllabusService.findOne(syllabusId);
+    if (!syllabus) {
+      req.flash('error', 'Syllabus not found');
+      return res.redirect('/program');
+    }
+
+    const isPdf = type.toLowerCase() === 'pdf';
+    const fileUrl = isPdf ? syllabus.pdfFile : syllabus.pptFile;
+    const originalName =
+      (isPdf ? syllabus.pdfOriginalName : syllabus.pptOriginalName) ||
+      (isPdf ? 'modul.pdf' : 'slide.pptx');
+
+    if (!fileUrl) {
+      req.flash('error', `Berkas ${type.toUpperCase()} belum tersedia`);
+      return res.redirect(`/syllabus/learn/${syllabusId}`);
+    }
+
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return res.redirect(fileUrl);
+    }
+
+    const rel = fileUrl.startsWith('/') ? fileUrl.slice(1) : fileUrl;
+    const candidates = [
+      join(process.cwd(), rel),
+      join(process.cwd(), 'uploads', rel),
+      join(process.cwd(), 'public', rel),
+    ];
+
+    for (const filePath of candidates) {
+      if (existsSync(filePath)) {
+        return res.download(filePath, originalName);
+      }
+    }
+
+    req.flash('error', 'Berkas fisik tidak ditemukan di server.');
+    return res.redirect(`/syllabus/learn/${syllabusId}`);
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('learn/:syllabusId/materials/:materialId/download')
+  async downloadMaterialById(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Param('materialId', new ParseUUIDPipe()) materialId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.syllabusService.findDetailForUser(
+      syllabusId,
+      req.user!.id,
+    );
+    const material = (detail.materials || []).find((m) => m.id === materialId);
+    if (!material || !material.file) {
+      return this.downloadMaterial(syllabusId, 'pdf', res, req);
+    }
+
+    const fileUrl = material.file;
+    const originalName = material.originalFileName || 'materi-silabus';
+
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return res.redirect(fileUrl);
+    }
+
+    const rel = fileUrl.startsWith('/') ? fileUrl.slice(1) : fileUrl;
+    const candidates = [
+      join(process.cwd(), rel),
+      join(process.cwd(), 'uploads', rel),
+      join(process.cwd(), 'public', rel),
+    ];
+
+    for (const filePath of candidates) {
+      if (existsSync(filePath)) {
+        return res.download(filePath, originalName);
+      }
+    }
+
+    req.flash('error', 'Berkas fisik tidak ditemukan di server.');
+    return res.redirect(`/syllabus/learn/${syllabusId}`);
+  }
+
   @Roles('admin', 'super_admin')
   @Patch('update/:syllabusId')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'pdfFile', maxCount: 1 },
+        { name: 'pptFile', maxCount: 1 },
+      ],
+      syllabusMulterOptions,
+    ),
+  )
   async update(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
     @Body() updateSyllabusDto: UpdateSyllabusDto,
     @Req() req: Request,
     @Res() res: Response,
+    @UploadedFiles()
+    files?: {
+      pdfFile?: Express.Multer.File[];
+      pptFile?: Express.Multer.File[];
+    },
   ) {
     try {
       const syllabus = await this.syllabusService.findOne(syllabusId);
+      if (files?.pdfFile?.[0]) {
+        updateSyllabusDto.pdfFile =
+          '/uploads/syllabus/' + files.pdfFile[0].filename;
+        updateSyllabusDto.pdfOriginalName = files.pdfFile[0].originalname;
+        updateSyllabusDto.pdfFileSize = files.pdfFile[0].size;
+      }
+      if (updateSyllabusDto.pptUrl && updateSyllabusDto.pptUrl.trim()) {
+        updateSyllabusDto.pptFile = updateSyllabusDto.pptUrl.trim();
+        if (!updateSyllabusDto.pptOriginalName && !syllabus?.pptOriginalName) {
+          updateSyllabusDto.pptOriginalName = 'Slide-Google-Slides.pptx';
+        }
+      }
+      if (files?.pptFile?.[0]) {
+        updateSyllabusDto.pptFile =
+          updateSyllabusDto.pptUrl && updateSyllabusDto.pptUrl.trim()
+            ? updateSyllabusDto.pptUrl.trim()
+            : '/uploads/syllabus/' + files.pptFile[0].filename;
+        updateSyllabusDto.pptOriginalName = files.pptFile[0].originalname;
+        updateSyllabusDto.pptFileSize = files.pptFile[0].size;
+      }
+
       await this.syllabusService.update(syllabusId, updateSyllabusDto);
       flashToast(
         req,
@@ -345,13 +612,27 @@ export class SyllabusController {
 
   @Roles('admin', 'super_admin')
   @Post('update/:syllabusId')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'pdfFile', maxCount: 1 },
+        { name: 'pptFile', maxCount: 1 },
+      ],
+      syllabusMulterOptions,
+    ),
+  )
   async updatePost(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
     @Body() updateSyllabusDto: UpdateSyllabusDto,
     @Req() req: Request,
     @Res() res: Response,
+    @UploadedFiles()
+    files?: {
+      pdfFile?: Express.Multer.File[];
+      pptFile?: Express.Multer.File[];
+    },
   ) {
-    return this.update(syllabusId, updateSyllabusDto, req, res);
+    return this.update(syllabusId, updateSyllabusDto, req, res, files);
   }
 
   @Roles('admin', 'super_admin')

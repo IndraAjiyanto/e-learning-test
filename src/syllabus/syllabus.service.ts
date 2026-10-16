@@ -13,6 +13,7 @@ import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { Score } from 'src/entities/score.entity';
+import { Material } from 'src/entities/materials.entity';
 
 @Injectable()
 export class SyllabusService {
@@ -34,6 +35,9 @@ export class SyllabusService {
 
     @InjectRepository(Score)
     private readonly scoreRepository: Repository<Score>,
+
+    @InjectRepository(Material)
+    private readonly materialRepository: Repository<Material>,
   ) {}
 
   async findCourseSyllabus(courseId: string): Promise<number> {
@@ -117,9 +121,28 @@ export class SyllabusService {
       syllabusNumber: syllabusNumber,
       isFinal: isFinal,
       course: course,
+      videoUrl: createSyllabusDto.videoUrl,
+      videoDuration: createSyllabusDto.videoDuration,
+      pdfFile: createSyllabusDto.pdfFile,
+      pdfOriginalName: createSyllabusDto.pdfOriginalName,
+      pdfFileSize: createSyllabusDto.pdfFileSize,
+      pptFile: createSyllabusDto.pptFile,
+      pptOriginalName: createSyllabusDto.pptOriginalName,
+      pptFileSize: createSyllabusDto.pptFileSize,
+      pptDriveFileId: createSyllabusDto.pptDriveFileId,
     });
     const syllabus = await this.syllabusRepository.save(data);
 
+    await this.syncSyllabusMaterials(syllabus, {
+      videoUrl: createSyllabusDto.videoUrl,
+      videoDuration: createSyllabusDto.videoDuration,
+      pdfFile: createSyllabusDto.pdfFile,
+      pdfOriginalName: createSyllabusDto.pdfOriginalName,
+      pdfFileSize: createSyllabusDto.pdfFileSize,
+      pptFile: createSyllabusDto.pptFile,
+      pptOriginalName: createSyllabusDto.pptOriginalName,
+      pptFileSize: createSyllabusDto.pptFileSize,
+    });
     // Buat SyllabusProgress untuk semua user yang enrolled di course ini
     const userCourses = await this.userCourseRepository.find({
       where: { course: { id: course.id }, progress: false },
@@ -190,7 +213,7 @@ export class SyllabusService {
   async findDetailForUser(syllabusId: string, userId: string) {
     const syllabus = await this.syllabusRepository.findOne({
       where: { id: syllabusId },
-      relations: ['course', 'quiz', 'quiz.questions'],
+      relations: ['course', 'quiz', 'quiz.questions', 'materials'],
     });
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
@@ -222,6 +245,116 @@ export class SyllabusService {
     const idx = siblings.findIndex((s) => s.id === syllabus.id);
     const next = idx >= 0 ? siblings[idx + 1] || null : null;
 
+    const formatBytes = (bytes?: number | string | null): string => {
+      if (!bytes) return '';
+      const num = Number(bytes);
+      if (isNaN(num) || num <= 0) return '';
+      if (num < 1024) return `${num} B`;
+      if (num < 1024 * 1024) return `${(num / 1024).toFixed(1)} KB`;
+      return `${(num / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    const toEmbedUrl = (url?: string | null): string => {
+      if (!url) return '';
+      const trimmed = url.trim();
+      const ytMatch = trimmed.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/,
+      );
+      if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&enablejsapi=1&rel=0`;
+      }
+      return trimmed;
+    };
+
+    const materials = syllabus.materials || [];
+    const pdfMaterials = materials
+      .filter((m) => m.fileType === 'pdf')
+      .map((m) => ({
+        id: m.id,
+        title: m.title || 'Modul PDF',
+        file: m.file,
+        originalFileName: m.originalFileName || 'Modul.pdf',
+        fileSizeBytes: m.fileSizeBytes,
+        formattedSize: formatBytes(m.fileSizeBytes),
+      }));
+
+    if (pdfMaterials.length === 0 && syllabus.pdfFile) {
+      pdfMaterials.push({
+        id: syllabus.id,
+        title: 'Modul PDF',
+        file: syllabus.pdfFile,
+        originalFileName: syllabus.pdfOriginalName || 'Modul.pdf',
+        fileSizeBytes: syllabus.pdfFileSize,
+        formattedSize: formatBytes(syllabus.pdfFileSize),
+      });
+    }
+
+    const pptMaterials = materials
+      .filter((m) => m.fileType === 'ppt')
+      .map((m) => {
+        const fileUrl = m.file || '';
+        const isGoogleSlides = fileUrl.includes('docs.google.com/presentation');
+        const embedUrl = isGoogleSlides
+          ? fileUrl.replace('/pub?', '/pubembed?')
+          : fileUrl;
+        const isLocalFile =
+          !isGoogleSlides &&
+          (fileUrl.startsWith('/uploads/') || fileUrl.startsWith('/'));
+        return {
+          id: m.id,
+          title: m.title || 'Slide PPTX',
+          file: fileUrl,
+          embedUrl,
+          isGoogleSlides,
+          isLocalFile,
+          originalFileName: m.originalFileName || 'Slide.pptx',
+          fileSizeBytes: m.fileSizeBytes,
+          formattedSize: formatBytes(m.fileSizeBytes),
+          driveFileId: m.driveFileId,
+        };
+      });
+
+    if (pptMaterials.length === 0 && syllabus.pptFile) {
+      const fileUrl = syllabus.pptFile;
+      const isGoogleSlides = fileUrl.includes('docs.google.com/presentation');
+      const embedUrl = isGoogleSlides
+        ? fileUrl.replace('/pub?', '/pubembed?')
+        : fileUrl;
+      const isLocalFile =
+        !isGoogleSlides &&
+        (fileUrl.startsWith('/uploads/') || fileUrl.startsWith('/'));
+      pptMaterials.push({
+        id: syllabus.id,
+        title: 'Slide PPTX',
+        file: fileUrl,
+        embedUrl,
+        isGoogleSlides,
+        isLocalFile,
+        originalFileName: syllabus.pptOriginalName || 'Slide.pptx',
+        fileSizeBytes: syllabus.pptFileSize,
+        formattedSize: formatBytes(syllabus.pptFileSize),
+        driveFileId: syllabus.pptDriveFileId,
+      });
+    }
+
+    const videoMaterial = materials.find((m) => m.fileType === 'video');
+    const rawVideoUrl = videoMaterial?.file || syllabus.videoUrl || null;
+    const videoDuration =
+      videoMaterial?.durationSeconds || syllabus.videoDuration || null;
+
+    const hasVideo = !!(rawVideoUrl && rawVideoUrl.trim().length > 0);
+    const videoEmbedUrl = hasVideo ? toEmbedUrl(rawVideoUrl) : null;
+    const isYoutube = !!(
+      rawVideoUrl &&
+      (rawVideoUrl.includes('youtube.com') || rawVideoUrl.includes('youtu.be'))
+    );
+
+    const hasPdf = pdfMaterials.length > 0;
+    const hasPpt = pptMaterials.length > 0;
+    const hasAnyMaterial = hasPdf || hasPpt;
+    const firstPdf = pdfMaterials[0] || null;
+    const firstPpt = pptMaterials[0] || null;
+
     return {
       syllabus,
       course: syllabus.course,
@@ -230,6 +363,18 @@ export class SyllabusService {
       minScore,
       quizStatus: { hasAttempt, bestScore, isPassed },
       next,
+      materials,
+      pdfMaterials,
+      pptMaterials,
+      firstPdf,
+      firstPpt,
+      hasVideo,
+      videoEmbedUrl,
+      videoDuration,
+      isYoutube,
+      hasPdf,
+      hasPpt,
+      hasAnyMaterial,
     };
   }
 
@@ -344,7 +489,84 @@ export class SyllabusService {
       ...(parsedContent !== null ? { content: parsedContent } : {}),
       isFinal,
     });
-    return await this.syllabusRepository.save(syllabus);
+    const updatedSyllabus = await this.syllabusRepository.save(syllabus);
+
+    await this.syncSyllabusMaterials(updatedSyllabus, {
+      videoUrl: updateSyllabusDto.videoUrl,
+      videoDuration: updateSyllabusDto.videoDuration,
+      pdfFile: updateSyllabusDto.pdfFile,
+      pdfOriginalName: updateSyllabusDto.pdfOriginalName,
+      pdfFileSize: updateSyllabusDto.pdfFileSize,
+      pptFile: updateSyllabusDto.pptFile,
+      pptOriginalName: updateSyllabusDto.pptOriginalName,
+      pptFileSize: updateSyllabusDto.pptFileSize,
+    });
+
+    return updatedSyllabus;
+  }
+
+  async syncSyllabusMaterials(
+    syllabus: Syllabus,
+    items: {
+      videoUrl?: string;
+      videoDuration?: string;
+      pdfFile?: string;
+      pdfOriginalName?: string;
+      pdfFileSize?: number | string;
+      pptFile?: string;
+      pptOriginalName?: string;
+      pptFileSize?: number | string;
+    },
+  ) {
+    if (items.videoUrl && items.videoUrl.trim()) {
+      let video = await this.materialRepository.findOne({
+        where: { syllabus: { id: syllabus.id }, fileType: 'video' },
+      });
+      if (!video) {
+        video = this.materialRepository.create({
+          title: 'Video Pembelajaran',
+          fileType: 'video',
+          syllabus,
+        });
+      }
+      video.file = items.videoUrl.trim();
+      video.durationSeconds = items.videoDuration || undefined;
+      await this.materialRepository.save(video);
+    }
+
+    if (items.pdfFile) {
+      let pdf = await this.materialRepository.findOne({
+        where: { syllabus: { id: syllabus.id }, fileType: 'pdf' },
+      });
+      if (!pdf) {
+        pdf = this.materialRepository.create({
+          title: 'Modul PDF',
+          fileType: 'pdf',
+          syllabus,
+        });
+      }
+      pdf.file = items.pdfFile;
+      pdf.originalFileName = items.pdfOriginalName || 'Modul.pdf';
+      pdf.fileSizeBytes = items.pdfFileSize || undefined;
+      await this.materialRepository.save(pdf);
+    }
+
+    if (items.pptFile) {
+      let ppt = await this.materialRepository.findOne({
+        where: { syllabus: { id: syllabus.id }, fileType: 'ppt' },
+      });
+      if (!ppt) {
+        ppt = this.materialRepository.create({
+          title: 'Slide PPTX',
+          fileType: 'ppt',
+          syllabus,
+        });
+      }
+      ppt.file = items.pptFile;
+      ppt.originalFileName = items.pptOriginalName || 'Slide.pptx';
+      ppt.fileSizeBytes = items.pptFileSize || undefined;
+      await this.materialRepository.save(ppt);
+    }
   }
 
   async remove(id: string) {

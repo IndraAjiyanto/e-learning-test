@@ -40,8 +40,9 @@ export class CourseTypesController {
         'The program type has been added successfully.',
       );
       res.redirect('/type-program');
-    } catch {
-      req.flash('error', 'Program type failed to created');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Program type failed to created');
       res.redirect('/type-program/formCreate');
     }
   }
