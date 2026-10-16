@@ -12,6 +12,13 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
+    if (
+      response.headersSent ||
+      (response as unknown as { __redirected?: boolean }).__redirected
+    ) {
+      return;
+    }
+
     response.redirect('/login');
   }
 }

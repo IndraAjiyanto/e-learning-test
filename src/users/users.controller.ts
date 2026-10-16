@@ -42,6 +42,7 @@ import {
   capabilitiesForCourse,
   certificateTemplateForCourse,
 } from 'src/courses/program-type';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -52,7 +53,7 @@ export class UsersController {
   // ============================================
   // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
   // ============================================
-
+  @DenyRoles('super_admin', 'admin')
   @Get('forgot-password')
   async forgotPasswordPage(
     @Res() res: Response,

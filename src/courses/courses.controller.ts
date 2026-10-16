@@ -42,6 +42,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 import { PortfoliosService } from 'src/portfolios/portfolios.service';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -1475,7 +1476,7 @@ export class CoursesController {
       });
     }
   }
-
+  @DenyRoles('super_admin', 'admin')
   @Get(':id')
   async detail(
     @Param('id') id: string,

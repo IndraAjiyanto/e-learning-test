@@ -12,6 +12,7 @@ import {
   flashToastError,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 
 @Controller()
 export class AuthController {
@@ -19,7 +20,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userActivityService: UserActivityService,
   ) {}
-
+  @DenyRoles('super_admin', 'admin')
   @Get('login')
   getLogin(@Res() res: Response, @Req() req: Request) {
     if (req.user && req.user.isVerified) {
@@ -49,6 +50,7 @@ export class AuthController {
     }
   }
 
+  @DenyRoles('super_admin', 'admin')
   @Get('register')
   regis(@Res() res: Response) {
     res.render('regis');

@@ -17,33 +17,32 @@
 <section id="programs" class="w-full bg-[#FAFAFA] py-16 font-inter lg:py-24" data-node-id="2591:835">
   <div class="page-shell flex flex-col items-center gap-12 lg:gap-14">
 
-    {{!-- section-header seragam (mengikuti halaman Free Program) --}}
+
     {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
     {{#if courses.length}}
-      {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=false}}
-        {{!-- program-cards Grid (Figma Node 2591:839) --}}
+      {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=true}}
+
         <div
           x-show="visibleIds.length > 0"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-[1568px] justify-items-center"
+          class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch justify-items-center max-w-[1568px]"
         >
           {{#each courses}}
             <div
               x-show="visibleIds.includes('{{this.id}}')"
               x-transition.opacity.duration.200ms
-              class="w-full flex justify-center"
+              class="w-full flex"
             >
-              {{> components/ui/card/category/free/index
+              {{> components/ui/card/program_showcase/index
                   id=this.id
-                  image=(default this.thumbnail this.image)
-                  name=this.name
-                  description=this.description
-                  method=this.method
-                  day=this.day
-                  month=this.month
-                  checkPaid=this.checkPaid
-                  quota=this.quota
-                  icon=this.icon
+                  image=this.image
+                  icon=(default this.icon "fa-solid fa-graduation-cap")
+                  title=this.name
+                  description=(default (getByLang this.description ../lang) (default this.description "A structured journey from fundamentals to workplace readiness and long-term career opportunities."))
+                  tag1=(ternary this.method this.method (default (t 'test.categoryPaidProgram.program.online') "Online"))
+                  tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " " (default (t 'test.categoryPaidProgram.program.day') "Day")) (concat (default this.month 1) " " (default (t 'test.categoryPaidProgram.program.month') "Month")))
+                  tag3=(ternary this.quota (concat this.quota " " (default (t 'test.categoryPaidProgram.program.quota') "Quota")) (concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota")))
+                  href=(concat '/program/' this.id)
                   lang=../lang
               }}
             </div>
