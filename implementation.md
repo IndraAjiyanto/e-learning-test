@@ -1,135 +1,127 @@
-# Implementation Plan: Detail Harga History Payment dari Table Invoice
+# Implementation Plan: Penyempurnaan UX Slide Presentasi & Audio Video Silabus
 
-- **Task Link**: [ClickUp z8pbk8y6uc](https://app.clickup.com/t/90182814122/z8pbk8y6uc)
-- **Status**: Siap untuk Dieksekusi
-
----
-
-## 1. Daftar File yang Terlibat
-
-1. **`src/invoice/invoice.service.ts`**
-   - Mengisi kolom `price`, `promo`, `promo_code`, dan `subtotal` (sebagai penampung total akhir pembayaran) saat membuat invoice Xendit dan manual.
-2. **`src/payments/payments.service.ts`**
-   - Menyelaraskan fungsi `findPaymentHistory` agar membaca data riil dari relasi `payment.invoice` (`price`, `promo`, `promo_code`, dan `subtotal`).
-3. **`src/views/partials/components/ui/modal/transaction_detail/index.hbs`**
-   - Menyesuaikan getter modal Alpine.js (`priceFormatted`, `promoPriceFormatted`, `promoCodeFormatted`, dan `finalTotalFormatted`) agar mengambil data persis dari field snapshot invoice (`price`, `promo`, `promoCode`, dan `subtotal`).
+- **Dokumen**: `implementation.md`
+- **Revisi**: 16 Oktober 2026 (Revisi Navigasi Modal In-Page PPTX & Smart Soft Audio Autoplay)
+- **Status**: Draf Siap Review Pengguna (Belum dieksekusi sebelum ada persetujuan)
+- **Fokus Utama**: Menghilangkan kebingungan navigasi tab/halaman baru PPTX, dan mengatur suara autoplay agar menyala secara lembut (tidak full).
 
 ---
 
-## 2. Rincian Perubahan Kode Riil
+## 1. Analisis Kebutuhan & Masalah UX Saat Ini
 
-### Langkah 1: Penyesuaian Pembuatan Invoice (Xendit & Manual)
-**Berkas**: [`src/invoice/invoice.service.ts`](file:///E:/Wiratek%20Projek/clone%20e-learning/src/invoice/invoice.service.ts)
-
-- **Pada `createInvoiceForPayment` (Baris 66-76)**:
-  ```typescript
-  const invoice = this.invoiceRepository.create({
-    payment: payment,
-    price: course?.price ? Number(course.price) : null,
-    promo: course?.promo ? Number(course.promo) : null,
-    promo_code: discountAmount ?? 0,
-    subtotal: finalTotal, // Sesuai aturan task: nilai total pembayaran user disimpan di column subtotal
-    discount_amount: discountAmount,
-    final_total: finalTotal,
-    payment_method: paymentMethod,
-    invoice_number: payment.no,
-    status: invoiceStatus,
-    // ... metadata lainnya
-  });
-  ```
-- **Pada `createManualInvoice` (Baris 144-154)**:
-  ```typescript
-  const invoice = this.invoiceRepository.create({
-    payment: payment,
-    price: price,
-    promo: promo,
-    promo_code: 0,
-    subtotal: finalTotal, // Sesuai aturan task: total disimpan di column subtotal
-    discount_amount: 0,
-    final_total: finalTotal,
-    payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
-    invoice_number: payment.no,
-    status: 'pending',
-    // ... metadata lainnya
-  });
-  ```
+| Masalah yang Ditemukan | Dampak pada Peserta | Solusi Terbaik (Rekomendasi) |
+| :--- | :--- | :--- |
+| **Buka Tab Baru / Halaman Baru saat "Lihat Slide"** | Peserta bingung karena tab browser bertambah banyak, dan tombol "Kembali ke Silabus" membuat navigasi terasa bolak-balik berulang (*infinite loop*). | **Modal / Lightbox Overlay di Halaman yang Sama.**<br>Tombol "Lihat Slide" membuka viewer layar penuh langsung di halaman silabus tanpa reload dan tanpa buka tab baru. Tombol `✕ Tutup` langsung menutup modal dan peserta berada di posisi bacaan semula. |
+| **Suara Video Autoplay** | Kebijakan browser memblokir video bersuara saat halaman baru dibuka; namun jika bisu total, peserta tidak mendengar penjelasan materi. | **Smart Soft Audio Autoplay (Volume Lembut 25%).**<br>Video mulai berputar otomatis dengan volume yang dipatok di **25% - 30%** (tidak full) dengan badge aktivasi suara satu-klik (*One-Click Unmute*) agar lolos regulasi browser tanpa mengagetkan telinga peserta. |
 
 ---
 
-### Langkah 2: Penyesuaian Pengambilan Data di Payment History
-**Berkas**: [`src/payments/payments.service.ts`](file:///E:/Wiratek%20Projek/clone%20e-learning/src/payments/payments.service.ts)
+## 2. Rincian Solusi Teknis
 
-- **Pada `findPaymentHistory` (Baris 377-425)**:
-  ```typescript
-  const price =
-    payment.invoice?.price !== null && payment.invoice?.price !== undefined
-      ? Number(payment.invoice.price)
-      : normalPrice;
+### A. Modal In-Page Slide Viewer (Tanpa Buka Tab Baru)
 
-  const promo =
-    payment.invoice?.promo !== null && payment.invoice?.promo !== undefined
-      ? Number(payment.invoice.promo)
-      : promoPrice;
+```
++---------------------------------------------------------------------------------------------------------+
+| [ HALAMAN DETAIL SILABUS TETAP AKTIF DI BELAKANG ]                                                      |
+|                                                                                                         |
+|   +-------------------------------------------------------------------------------------------------+   |
+|   | MODAL OVERLAY PRESENTASI (Layar Penuh / Lightbox)                                               |   |
+|   | +---------------------------------------------------------------------------------------------+ |   |
+|   | | (PPTX) Slide Pengantar Business Model Canvas                   [Unduh .pptx]  [ ✕ Tutup ]   | |   |
+|   | +---------------------------------------------------------------------------------------------+ |   |
+|   | |                                                                                             | |   |
+|   | |                        [ GOOGLE SLIDES / VIEWER PRESENTASI ]                                | |   |
+|   | |                        (Slide interaktif, panah navigasi, fullscreen)                       | |   |
+|   | |                                                                                             | |   |
+|   | +---------------------------------------------------------------------------------------------+ |   |
+|   | | Navigasi: Tekan ESC atau klik tombol [✕ Tutup] untuk langsung kembali ke silabus           | |   |
+|   +-------------------------------------------------------------------------------------------------+   |
+|                                                                                                         |
++---------------------------------------------------------------------------------------------------------+
+```
 
-  const promoCode =
-    payment.invoice?.promo_code !== null && payment.invoice?.promo_code !== undefined
-      ? Number(payment.invoice.promo_code)
-      : (payment.invoice?.discount_amount ? Number(payment.invoice.discount_amount) : 0);
-
-  // Task aturan bisnis: Data "total" di ambil dari table invoice column "subtotal"
-  const total =
-    payment.invoice?.subtotal !== null && payment.invoice?.subtotal !== undefined
-      ? Number(payment.invoice.subtotal)
-      : (payment.invoice?.final_total !== null && payment.invoice?.final_total !== undefined
-          ? Number(payment.invoice.final_total)
-          : fallbackPrice);
-
-  return {
-    id: payment.id,
-    kind: isInstallment ? 'installment' : 'full',
-    // ...
-    amount: total,
-    subtotal: total,
-    total: total,
-    finalTotal: total,
-    discount: promoCode,
-    originalPrice: price,
-    price: price,
-    promo: promo,
-    promoPrice: promo,
-    promoCode: promoCode,
-    // ...
-  };
-  ```
+* **Mekanisme Kerja:**
+  1. Di sidebar Card Materi Pembelajaran, tombol **`Lihat Slide`** tidak lagi memiliki `target="_blank"` atau membuka URL baru.
+  2. Saat tombol diklik, Alpine.js / modal handler membuka dialog overlay semi-transparan berlatar gelap (`bg-black/80 backdrop-blur-sm`).
+  3. Di dalam modal, Google Slides dirender dengan ukuran besar (rasio 16:9).
+  4. Di pojok kanan atas modal tersedia:
+     * Tombol **Unduh .pptx** (jika ingin menyimpan berkas fisik).
+     * Tombol **✕ Tutup / Kembali ke Silabus**.
+  5. Peserta juga bisa menutup modal kapan saja dengan menekan tombol **`Escape (Esc)`** pada keyboard atau mengklik area luar modal.
+  6. **Hasil:** Peserta tidak pernah meninggalkan halaman silabus, tidak ada tab baru yang menumpuk, dan tidak ada kebingungan bolak-balik halaman.
 
 ---
 
-### Langkah 3: Penyesuaian Getter Modal Transaction Detail
-**Berkas**: [`src/views/partials/components/ui/modal/transaction_detail/index.hbs`](file:///E:/Wiratek%20Projek/clone%20e-learning/src/views/partials/components/ui/modal/transaction_detail/index.hbs)
+### B. Smart Soft Audio Video Autoplay (Volume Lembut ~25%)
 
-- **Pada `priceFormatted` (Baris 111-119)**:
-  Membaca `this.row?.price` dengan fallback `this.row?.originalPrice`.
-- **Pada `promoPriceFormatted` (Baris 121-129)**:
-  Membaca `this.row?.promo` dengan fallback `this.row?.promoPrice`.
-- **Pada `promoCodeFormatted` (Baris 131-137)**:
-  Membaca `this.row?.promoCode` dengan fallback `this.row?.discount`.
-- **Pada `finalTotalFormatted` (Baris 139-144)**:
-  Membaca `this.row?.subtotal` (sesuai instruksi: Data "total" di ambil dari table invoice column "subtotal") dengan fallback `this.row?.total` / `this.row?.finalTotal` / `this.row?.amount`.
+#### Mengapa Tidak Bisa Langsung Suara 100% dari Detik Pertama?
+Semua browser modern (Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge) memiliki sistem keamanan bernama **Autoplay Policy**:
+* Jika halaman baru dibuka dan kode mencoba memutar video dengan suara menyala tanpa ada interaksi klik dari user, browser **otomatis memblokir total video tersebut** dan melempar error:
+  `DOMException: play() failed because the user didn't interact with the document first.`
+
+#### Solusi yang Diterapkan:
+1. **YouTube IFrame API Integration:**
+   * Video mulai berputar otomatis secara aman (`autoplay=1&mute=1`).
+   * Melalui script YouTube API, sistem menyiapkan level volume pada **25%** (`player.setVolume(25)`).
+   * Menampilkan tombol badge transparan elegan di pojok kiri bawah video:
+     > **`[ 🔊 Suara Lembut Aktif (25%) ]`** atau **`[ 🔇 Klik untuk Nyalakan Suara ]`**.
+2. **HTML5 Video (MP4):**
+   * Video disetel atribut `autoplay muted playsinline`.
+   * Skrip otomatis mengatur `videoElement.volume = 0.25` (25%) dan menyediakan tombol kontrol suara lembut.
+3. **Hasil:**
+   * Video 100% aman berputar otomatis saat halaman dibuka.
+   * Suara materi tidak menggelegar/mengagetkan peserta, melainkan terdengar lembut dan nyaman di level 25%.
 
 ---
 
-## 3. Rencana Verifikasi Pengujian
+## 3. Rincian Berkas yang Akan Dimodifikasi
 
-1. **Pengujian Snapshot Pembayaran Xendit**:
-   - Lakukan simulasi pembuatan order Xendit dengan potongan voucher.
-   - Verifikasi record di tabel `invoice` memiliki `price`, `promo`, `promo_code`, dan `subtotal` yang terisi nominal final.
-2. **Pengujian Snapshot Pembayaran Manual**:
-   - Upload bukti pembayaran manual.
-   - Verifikasi record di tabel `invoice` terbuat dengan nilai `price`, `promo`, dan `subtotal`.
-3. **Pengujian Tampilan Modal History Payment**:
-   - Buka `/users/profile?tab=history-payment` dan klik *View Detail*.
-   - Verifikasi 4 baris ringkasan:
-     - `Harga`: mengambil dari `invoice.price`
-     - `Harga Promo`: mengambil dari `invoice.promo`
-     - `Promo Code`: mengambil dari `invoice.promo_code`
-     - `Total`: mengambil dari `invoice.subtotal`
+1. **`src/views/user/syllabus/detail.hbs`**:
+   * Menambahkan komponen **Modal In-Page Slide Viewer** dengan transisi Alpine.js (`x-show="showSlideModal"`).
+   * Mengubah link tombol `Lihat Slide` dari membuka tab baru menjadi `@click="openSlideModal(material)"`.
+   * Menambahkan handler YouTube API untuk mengatur volume video pada level 25% dan tombol kontrol audio lembut.
+2. **`src/syllabus/syllabus.controller.ts`**:
+   * Memastikan endpoint `findDetailForUser` mengembalikan URL embed Google Slides (`embedUrl`) langsung ke dalam payload detail silabus sehingga modal di `detail.hbs` dapat langsung merendernya secara instan tanpa perlu request halaman terpisah.
+3. **Pembersihan Rute Tambahan**:
+   * Rute `GET /syllabus/learn/:syllabusId/view/ppt` tetap dipertahankan sebagai fallback URL langsung jika sewaktu-waktu dibutuhkan, namun alur utama peserta adalah modal *in-page*.
+
+---
+
+## 4. Urutan Fase Eksekusi
+
+```mermaid
+flowchart TD
+    A[Review & Persetujuan Dokumen] --> B[Fase 1: Update Controller Payload embedUrl]
+    B --> C[Fase 2: Pasang Modal In-Page PPTX di detail.hbs]
+    C --> D[Fase 3: Pasang Smart Soft Audio Volume 25% pada Video]
+    D --> E[Fase 4: Testing & Verifikasi Kompilasi]
+```
+
+### Fase 1: Penyiapan Data Embed di Controller
+* Memastikan data `pptMaterials` di `syllabus.controller.ts` sudah menyertakan `embedUrl` Google Slides yang siap disematkan.
+
+### Fase 2: Pemasangan Modal In-Page di `detail.hbs`
+* Membuat modal lightbox elegan dengan tombol `✕ Tutup`, tombol `Unduh Berkas`, dan penutup tombol `Esc`.
+* Menghubungkan tombol `Lihat Slide` ke modal tersebut.
+
+### Fase 3: Pengaturan Volume Lembut Video (25%)
+* Memasang skrip pengatur volume default 25% dan tombol pintas audio di kartu pemutar video.
+
+### Fase 4: Pengujian & Build
+* Menguji buka/tutup modal slide: memastikan tidak ada tab baru dan tidak ada halaman reload.
+* Menguji pemutaran video dengan volume lembut.
+* Menjalankan `npm run build` untuk memastikan kompilasi 100% bersih.
+
+---
+
+## 5. Kriteria Penerimaan (Acceptance Criteria)
+
+1. **Navigasi Slide:**
+   * Mengklik tombol `Lihat Slide` membuka modal pop-up layar penuh di halaman yang sama.
+   * Tidak ada tab baru yang terbuka di browser.
+   * Mengklik tombol `✕` atau menekan tombol `Esc` langsung menutup modal, posisi scroll materi silabus tetap di tempat semula.
+2. **Audio Video:**
+   * Video berputar otomatis saat halaman silabus dibuka.
+   * Audio dapat diaktifkan dalam satu klik dengan volume lembut default 25% (tidak menggelegar/bising).
+3. **Kompilasi:**
+   * Seluruh kode lulus pengujian `npm run build` tanpa error.

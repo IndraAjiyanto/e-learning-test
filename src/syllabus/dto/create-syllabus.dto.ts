@@ -25,4 +25,42 @@ export class CreateSyllabusDto {
   )
   @IsNumber()
   syllabusNumber?: number;
+
+  @IsOptional()
+  @IsString()
+  videoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  videoDuration?: string;
+
+  @IsOptional()
+  @IsString()
+  pdfFile?: string;
+
+  @IsOptional()
+  @IsString()
+  pdfOriginalName?: string;
+
+  @IsOptional()
+  pdfFileSize?: number | string;
+
+  @IsOptional()
+  @IsString()
+  pptFile?: string;
+
+  @IsOptional()
+  @IsString()
+  pptOriginalName?: string;
+
+  @IsOptional()
+  pptFileSize?: number | string;
+
+  @IsOptional()
+  @IsString()
+  pptDriveFileId?: string;
+
+  @IsOptional()
+  @IsString()
+  pptUrl?: string;
 }

@@ -120,10 +120,6 @@ export class MaterialController {
       res.redirect(`/session/${sessionId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      console.error(
-        'Error creating PPT material:',
-        error instanceof Error ? error.message : error,
-      );
       flashToastError(
         req,
         'Failed to create material',
@@ -191,7 +187,7 @@ export class MaterialController {
     const material = await this.materialService.findOne(id);
     res.render('admin/materi/create', {
       user: req.user,
-      sessionId: material.session.id,
+      sessionId: material.session?.id || '',
       jenis_file: material.fileType,
       editMode: true,
       material,
@@ -330,7 +326,7 @@ export class MaterialController {
     @Res() res: Response,
   ) {
     const material = await this.materialService.findOne(id);
-    const sessionId = material.session.id;
+    const sessionId = material.session?.id || '';
 
     try {
       if (file) {
@@ -370,7 +366,7 @@ export class MaterialController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const material = await this.materialService.findOne(id);
-    const sessionId = material.session.id;
+    const sessionId = material.session?.id || '';
 
     try {
       if (file) {
@@ -407,7 +403,7 @@ export class MaterialController {
     @Res() res: Response,
   ) {
     const material = await this.materialService.findOne(id);
-    const sessionId = material.session.id;
+    const sessionId = material.session?.id || '';
 
     try {
       await this.materialService.update(id, updateMaterialDto);

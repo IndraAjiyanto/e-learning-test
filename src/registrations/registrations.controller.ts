@@ -55,15 +55,7 @@ export class RegistrationsController {
         attend_program?: string;
       }
       const b = req.body as RegistrationReqBody;
-      console.log('🔵 [Registration] Attempt:', {
-        userId,
-        courseId,
-        file: req.file,
-        body: b,
-        uploadedImageUrls: b?.uploadedImageUrls,
-      });
       createRegistrationDto.file = b?.uploadedImageUrls?.[0] || '';
-      console.log('🔵 [Registration] File URL:', createRegistrationDto.file);
       createRegistrationDto.courseId = courseId;
       createRegistrationDto.userId = userId;
       createRegistrationDto.process = 'approved';
