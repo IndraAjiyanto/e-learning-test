@@ -11,8 +11,8 @@ import {
 import { Course } from './course.entity';
 import { Quiz } from './quiz.entity';
 import { SyllabusProgress } from './syllabus_progress.entity';
+import { Material } from './materials.entity';
 import { Exclude } from 'class-transformer';
-
 @Entity()
 export class Syllabus {
   @PrimaryGeneratedColumn('uuid')
@@ -32,6 +32,33 @@ export class Syllabus {
 
   @Column({ name: 'isFinal', default: false })
   isFinal: boolean;
+
+  @Column({ nullable: true })
+  videoUrl?: string;
+
+  @Column({ nullable: true })
+  videoDuration?: string;
+
+  @Column({ nullable: true })
+  pdfFile?: string;
+
+  @Column({ nullable: true })
+  pdfOriginalName?: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  pdfFileSize?: number | string;
+
+  @Column({ nullable: true })
+  pptFile?: string;
+
+  @Column({ nullable: true })
+  pptOriginalName?: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  pptFileSize?: number | string;
+
+  @Column({ nullable: true })
+  pptDriveFileId?: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -56,6 +83,12 @@ export class Syllabus {
   })
   @Exclude()
   quiz: Quiz[];
+
+  @OneToMany(() => Material, (material) => material.syllabus, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  materials: Material[];
 
   @ManyToOne(() => Course, (course) => course.syllabus, {
     onDelete: 'CASCADE',

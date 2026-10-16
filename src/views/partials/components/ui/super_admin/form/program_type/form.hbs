@@ -38,12 +38,36 @@
       else obj[field] = value;
     };
 
+    const STYLE_PREFIXES = new Set([
+      'fa', 'fas', 'far', 'fab', 'fal', 'fad',
+      'fa-solid', 'fa-regular', 'fa-brands', 'fa-light', 'fa-thin', 'fa-duotone'
+    ]);
+
+    const isTargetedIcon = (value) => {
+      if (typeof window !== 'undefined' && typeof window.isKnownFontAwesomeIcon === 'function') {
+        return window.isKnownFontAwesomeIcon(value);
+      }
+      const raw = String(value || '').trim().toLowerCase();
+      if (!raw) return false;
+      const parts = raw.split(/\s+/);
+      if (parts.length === 2) {
+        const [style, glyph] = parts;
+        return STYLE_PREFIXES.has(style) && /^fa-[a-z0-9]+(-[a-z0-9]+)*$/.test(glyph) && !STYLE_PREFIXES.has(glyph);
+      }
+      return false;
+    };
+
     const errorFor = (path, value) => {
       const [field, lang] = path.split('.');
       const val = (value ?? '').toString().trim();
 
       const label = lang ? `${LABEL[field]} (${LANG_LABEL[lang]})` : LABEL[field];
       if (!val) return `${label} is required.`;
+      if (field === 'icon') {
+        if (!isTargetedIcon(val)) {
+          return 'Please select a valid icon from the list or enter a recognized icon code.';
+        }
+      }
       if (MIN[field] && val.length < MIN[field]) return `${label} must be at least ${MIN[field]} characters.`;
 
       return '';
@@ -52,7 +76,7 @@
     // Sama dengan helper computeIcon di server; helper itu tidak bisa dipanggil dari Alpine.
     const toIconClass = (value) => {
       const icon = String(value || '').trim();
-      if (!icon) return 'fa-solid fa-circle-question';
+      if (!icon || !isTargetedIcon(icon)) return 'fa-solid fa-circle-question';
       const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(icon)
         || icon.split(/\s+/).some((part) => /^fa-/i.test(part));
       if (hasFaPrefix) return /^fa-\w+/i.test(icon) && !/\s/.test(icon) ? 'fa-solid ' + icon : icon;
@@ -76,6 +100,16 @@
         loading: false,
         descriptionLang: 'id',
         TYPE_BADGE_OPTIONS,
+
+        init() {
+          if (typeof window !== 'undefined') {
+            window.addEventListener('fa-icons-loaded', () => {
+              if (this.formData.icon) {
+                this.validateField('icon', this.formData.icon);
+              }
+            });
+          }
+        },
 
         formData: {
           icon: icon || '',
@@ -137,8 +171,13 @@
           });
         },
 
-        // Tombol submit tidak pernah disabled; validasi dijalankan di sini.
         submitForm(event) {
+          if (!this.canSubmit()) {
+            this.validateAll();
+            this.revealFirstInvalid();
+            return;
+          }
+
           this.validateAll();
           if (this.hasFormErrors()) {
             this.revealFirstInvalid();

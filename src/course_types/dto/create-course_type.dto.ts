@@ -1,10 +1,17 @@
-import { IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsObject, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateCourseTypeDto {
   @IsString()
   nameClassesType: string;
 
   @IsString()
+  @Matches(
+    /^((fa-(solid|regular|brands|light|thin|duotone)|fas|far|fab)\s+fa-[a-z0-9]+(-[a-z0-9]+)*|fa-[a-z0-9]+(-[a-z0-9]+)*|[a-z0-9]+(-[a-z0-9]+)*)$/i,
+    {
+      message:
+        'icon format is invalid or incomplete (e.g. "code", "fa-code", or "fa-solid fa-code")',
+    },
+  )
   icon: string;
 
   // Dikirim form sebagai description[id] / description[en] / description[ja],
