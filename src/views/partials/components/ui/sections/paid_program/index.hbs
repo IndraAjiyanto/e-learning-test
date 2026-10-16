@@ -17,7 +17,7 @@
 <section id="programs" class="w-full bg-white py-16 sm:py-20 lg:py-24 font-inter">
   <div class="page-shell flex flex-col items-center gap-10 lg:gap-14">
 
-    {{!-- section-header seragam (mengikuti halaman Free Program) --}}
+
     {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
     {{#if courses.length}}
@@ -49,7 +49,7 @@
         </div>
       {{/components/ui/filter/course_catalog_filter/index}}
     {{else}}
-      {{!-- Tidak ada program berstatus Published/launch -> Coming Soon (gaya corporate_training) --}}
+
       {{> components/ui/sections/program_coming_soon/index
           title=(default (t 'test.categoryPaidProgram.program.comingSoonTitle') "Program Coming Soon")
           text=(default (t 'test.categoryPaidProgram.program.comingSoonText') "We're preparing this program to deliver the best learning experience. Stay tuned for updates.")
