@@ -30,7 +30,6 @@ import { Quiz } from 'src/entities/quiz.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
 import { Course } from 'src/entities/course.entity';
 
-
 const syllabusFileStorage = diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = join(process.cwd(), 'uploads', 'syllabus');
