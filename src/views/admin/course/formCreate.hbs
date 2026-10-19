@@ -135,6 +135,7 @@
                 field='programType'
                 label='Learning Structure'
                 options='programTypeOptions'
+                placeholder='Select learning structure'
                 searchable=false
                 required=true
                 highlight=true
@@ -432,7 +433,7 @@
     const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
 
     const sectionPaths = (paid) => ({
-      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentoringsId'],
+      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'programType', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentoringsId'],
       'section-description': LANGS.map((l) => `description.${l}`),
       'section-schedule': [
         ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
@@ -452,7 +453,7 @@
     });
 
     const emptyErrors = () => ({
-      name: '', group: '', categoryId: '', jenis_kelasId: '', mentoringsId: '', paid: '', method: '',
+      name: '', group: '', categoryId: '', jenis_kelasId: '', programType: '', mentoringsId: '', paid: '', method: '',
       quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
       date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
       description: byLang(() => ''), locations: byLang(() => ''),
@@ -496,7 +497,7 @@
         formData: {
           name: '', group: '',
           categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
-          jenis_kelasId: '', programType: 'bootcamp', mentoringsId: '', paid: 'true', method: 'online',
+          jenis_kelasId: '', programType: '', mentoringsId: '', paid: 'true', method: 'online',
           quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
           date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
           description: byLang(() => ''), locations: byLang(() => ''),
@@ -537,6 +538,8 @@
               return UUID.test(val) ? '' : 'Please select a category.';
             case 'jenis_kelasId':
               return UUID.test(val) ? '' : 'Please select a program type.';
+            case 'programType':
+              return ['bootcamp', 'non_bootcamp'].includes(val) ? '' : 'Please select a learning structure.';
             case 'mentoringsId':
               return UUID.test(val) ? '' : 'Please select a mentoring.';
             case 'quota':
