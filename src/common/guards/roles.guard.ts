@@ -39,4 +39,3 @@ export class RolesGuard implements CanActivate {
     return typeof role === 'string' && requiredRoles.includes(role);
   }
 }
-

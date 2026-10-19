@@ -120,7 +120,11 @@ async function bootstrap() {
     const redirect = res.redirect.bind(res) as (url: string) => void;
 
     res.redirect = ((url: string) => {
-      if (res.headersSent || (res as unknown as { __redirected?: boolean }).__redirected) return;
+      if (
+        res.headersSent ||
+        (res as unknown as { __redirected?: boolean }).__redirected
+      )
+        return;
       (res as unknown as { __redirected?: boolean }).__redirected = true;
       if (!req.session) return redirect(url);
 

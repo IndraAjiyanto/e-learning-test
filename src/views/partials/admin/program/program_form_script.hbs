@@ -115,10 +115,10 @@ function programData(mode) {
         try {
           const u = new URL(value.trim());
           if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-            msg = 'Please enter a valid URL (http/https)';
+            msg = label + ' must be a valid URL (http/https)';
           }
         } catch (e) {
-          msg = 'Please enter a valid URL (http/https)';
+          msg = label + ' must be a valid URL (http/https)';
         }
       }
       this.setFieldError(elId, msg);
@@ -236,9 +236,6 @@ function programData(mode) {
       return !msg;
     },
 
-    // Dipanggil select_field (components/ui/super_admin/form/select_field)
-    // saat sebuah opsi dipilih. Menulis formErrors supaya pesan error di
-    // bawah listbox tampil/tersembunyi mengikuti state sentuh+submit.
     touch(path) {
       this.touched[path] = true;
       if (path === 'programType') {
@@ -260,8 +257,12 @@ function programData(mode) {
       let msg = '';
       if (!raw) {
         if (!optional) msg = label + ' is required';
-      } else if (!/^\d+$/.test(raw)) {
+      } else if (!/^-?\d+$/.test(raw)) {
         msg = label + ' must contain numbers only';
+      } else if (min !== undefined && parseInt(raw, 10) < min) {
+        msg = min === 1
+          ? label + ' must be greater than 0'
+          : label + ' must be at least ' + min;
       }
       this.setFieldError(elId, msg);
       this.setFieldStatus(elId, !msg);
@@ -393,7 +394,7 @@ function programData(mode) {
       }
 
       results.push(this.validateTextField('name', 'Program Name'));
-      results.push(this.validateUrlField('group', 'Group'));
+      results.push(this.validateUrlField('group', 'Group Link'));
       results.push(this.validateMultiLang('description', 'description', {
         id: 'Indonesian description', en: 'English description', ja: 'Japanese description'
       }));
@@ -401,7 +402,7 @@ function programData(mode) {
       results.push(this.validateMethod());
 
       results.push(this.validateDropdown('categoryId', 'categoryId', 'Category'));
-      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Program Type'));
+      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Tag'));
       results.push(this.validateList('technologiesIds[]', 'technologies', 'technology'));
       results.push(this.validateProgramType());
 
@@ -420,7 +421,7 @@ function programData(mode) {
         } else { this.clearField('promo1'); }
       }
       if (document.getElementById('quota')) {
-        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false));
+        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false, 1));
       }
 
       if (this.paidClass) {

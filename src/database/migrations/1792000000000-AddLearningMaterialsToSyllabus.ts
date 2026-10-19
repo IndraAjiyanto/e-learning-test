@@ -5,9 +5,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Bersifat opsional (nullable) dengan batas unggah berkas maksimal 5 MB.
  * Idempoten agar aman dijalankan berkali-kali.
  */
-export class AddLearningMaterialsToSyllabus1792000000000
-  implements MigrationInterface
-{
+export class AddLearningMaterialsToSyllabus1792000000000 implements MigrationInterface {
   name = 'AddLearningMaterialsToSyllabus1792000000000';
 
   public async up(q: QueryRunner): Promise<void> {

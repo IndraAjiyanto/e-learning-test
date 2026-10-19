@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCourseTypeDto } from './dto/create-course_type.dto';
 import { UpdateCourseTypeDto } from './dto/update-course_type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,25 +10,41 @@ import { CourseType } from 'src/entities/course_type.entity';
 import { Repository } from 'typeorm';
 
 const STYLE_PREFIXES = new Set([
-  'fa', 'fas', 'far', 'fab', 'fal', 'fad',
-  'fa-solid', 'fa-regular', 'fa-brands', 'fa-light', 'fa-thin', 'fa-duotone',
+  'fa',
+  'fas',
+  'far',
+  'fab',
+  'fal',
+  'fad',
+  'fa-solid',
+  'fa-regular',
+  'fa-brands',
+  'fa-light',
+  'fa-thin',
+  'fa-duotone',
 ]);
 
-export function isValidIconFormat(value: string): boolean {
-  const raw = String(value || '').trim().toLowerCase();
+export function isValidIconFormat(value?: string | null): boolean {
+  const raw = String(value || '')
+    .trim()
+    .toLowerCase();
   if (!raw || STYLE_PREFIXES.has(raw)) return false;
   const parts = raw.split(/\s+/);
   if (parts.length === 2) {
     const [style, glyph] = parts;
     if (!STYLE_PREFIXES.has(style)) return false;
-    return /^fa-[a-z0-9]+(-[a-z0-9]+)*$/.test(glyph) && !STYLE_PREFIXES.has(glyph);
+    return (
+      /^fa-[a-z0-9]+(-[a-z0-9]+)*$/.test(glyph) && !STYLE_PREFIXES.has(glyph)
+    );
   }
   if (parts.length === 1) {
     const single = parts[0];
     if (/^fa-[a-z0-9]+(-[a-z0-9]+)*$/.test(single)) {
       return !STYLE_PREFIXES.has(single);
     }
-    return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(single) && !STYLE_PREFIXES.has(single);
+    return (
+      /^[a-z0-9]+(-[a-z0-9]+)*$/.test(single) && !STYLE_PREFIXES.has(single)
+    );
   }
   return false;
 }
