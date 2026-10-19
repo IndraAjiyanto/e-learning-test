@@ -58,7 +58,7 @@
     handledSections: [
       'dashboard', 'profile', 'password', 'learning', 'uiux', 'portfolio', 'course-portfolio', 'history-payment',
       'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
-      'group-class', 'presentation', 'portfolio-guide'
+      'group-class', 'presentation', 'portfolio-guide', 'detail-program'
     ],
     sectionFragmentConfig: {
       uiux: { url: '/program/myProgram/{{user.id}}/fragment', container: 'start-learning-container' },
@@ -66,6 +66,7 @@
       presentation: { url: '/program/myProgram/{{user.id}}/fragment/presentation', container: 'presentation-container' },
       quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' },
       'portfolio-guide': { url: '/program/myProgram/{{user.id}}/fragment/portfolio-guide', container: 'portfolio-guide-container' },
+      'detail-program': { url: '/program/myProgram/{{user.id}}/fragment/detail-program', container: 'detail-program-container' },
       'course-portfolio': { url: '/portfolio/fragment', container: 'course-portfolio-container' }
     },
     toggleActiveSection(section, status) {
@@ -114,7 +115,7 @@
     {{!-- Bagian yang memang milik sebuah program. Kepala program dan baris tab
          hanya muncul untuk section ini; Dashboard, Profile, My Portfolio, dan
          Payment History tidak boleh kebagian gambar program. --}}
-    programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'course-portfolio', 'portfolio-guide', 'logbook', 'certificate', 'group-class', 'quiz-start'],
+    programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'course-portfolio', 'portfolio-guide', 'logbook', 'certificate', 'group-class', 'quiz-start', 'detail-program'],
     get isProgramSection() {
       return this.programSections.includes(this.activeSection);
     },
@@ -392,7 +393,8 @@
               quiz: '{{t 'test.startLearning.quiz'}}',
               logbook: '{{t 'test.startLearning.myLogbook'}}',
               certificate: '{{t 'test.startLearning.certificate'}}',
-              'group-class': '{{t 'test.startLearning.joinGroup'}}'
+              'group-class': '{{t 'test.startLearning.joinGroup'}}',
+              'detail-program': '{{t 'test.startLearning.detailProgram'}}'
             },
             icons: {
               dashboard: 'ph ph-squares-four',
@@ -408,9 +410,10 @@
               quiz: 'ph ph-question',
               logbook: 'ph ph-notebook',
               certificate: 'ph ph-certificate',
-              'group-class': 'ph ph-users'
+              'group-class': 'ph ph-users',
+              'detail-program': 'ph ph-info'
             },
-            nested: ['uiux','assignment','course-portfolio','presentation','quiz','logbook','certificate','group-class'],
+            nested: ['uiux','assignment','course-portfolio','presentation','quiz','logbook','certificate','group-class','detail-program'],
             get isNested() { return this.nested.includes(this.activeSection); },
             get label() { return this.labels[this.activeSection] || this.labels.dashboard; },
             get sectionIcon() { return this.icons[this.activeSection] || 'ph ph-squares-four'; }
@@ -500,7 +503,7 @@
                 {{#if activeCourse.category.type}}{{activeCourse.category.type}}{{else if category.name}}{{category.type}}{{else}}Japanese Class{{/if}}
               </span>
               <span class="inline-flex items-center rounded-full bg-[#1E293B] px-4 py-1.5 font-inter text-xs font-semibold text-white">
-                {{#if activeCourse.category.name}}{{activeCourse.category.name}}{{else if category.type}}{{category.name}}{{else}}Special Program{{/if}}
+                {{#if activeCourse.category}}{{nameByLang activeCourse.category lang}}{{else if category}}{{nameByLang category lang}}{{else}}Special Program{{/if}}
               </span>
             </div>
 
@@ -561,6 +564,17 @@
             <button
               type="button"
               role="tab"
+              :aria-selected="activeSection === 'certificate' ? 'true' : 'false'"
+              @click="toggleActiveSection('certificate')"
+              class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'certificate' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+            >
+              <i class="ph ph-certificate text-base"></i>
+              {{t 'test.startLearning.certificate'}}
+            </button>
+            <button
+              type="button"
+              role="tab"
               x-show="activeCaps.logbookEnabled !== false && (activeCourseData?.programType ?? activeCourseData?.program_type) !== 'non_bootcamp'"
               @click="toggleActiveSection('logbook')"
               class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
@@ -580,13 +594,12 @@
             <button
               type="button"
               role="tab"
-              :aria-selected="activeSection === 'certificate' ? 'true' : 'false'"
-              @click="toggleActiveSection('certificate')"
-              class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
-              :class="activeSection === 'certificate' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
+              :aria-selected="activeSection === 'detail-program' ? 'true' : 'false'"
+              @click="toggleActiveSection('detail-program')"
+              class="rounded-full px-4 py-2 font-inter text-sm font-semibold transition-colors cursor-pointer"
+              :class="activeSection === 'detail-program' ? 'bg-[#1D2D5B] text-white shadow-sm' : 'text-[#718096] hover:text-[#1D2D5B] hover:bg-[#F8FAFC]'"
             >
-              <i class="ph ph-certificate text-base"></i>
-              {{t 'test.startLearning.certificate'}}
+              {{t 'test.startLearning.detailProgram'}}
             </button>
           </div>
         </div>
@@ -621,6 +634,16 @@
           {{> components/ui/learning/skeleton/index }}
         </template>
         <div x-show="activeSection === 'uiux'" id="start-learning-container" class="max-w-[1334px] mx-auto w-full"{{#unless (eq initialSection 'uiux')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
+        </div>
+
+        <!-- Detail Program Tab Content (loaded per course via loadCourseFragment) -->
+        <div
+          x-show="activeSection === 'detail-program'"
+          id="detail-program-container"
+          class="max-w-[1334px] mx-auto w-full"
+          {{#unless (eq initialSection 'detail-program')}}style="display:none"{{/unless}}
+        >
           {{> components/ui/learning/skeleton/index }}
         </div>
 

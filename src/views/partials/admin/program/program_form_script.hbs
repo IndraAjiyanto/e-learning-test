@@ -218,10 +218,11 @@ function programData(mode) {
     },
 
     validateLocationLink() {
-      const value = this.formData.locationLink || '';
-      let msg = this.nonEmpty(value, 'Link Location');
-      if (!msg) {
-        try { new URL(value.trim()); } catch (e) { msg = 'Please enter a valid URL'; }
+      // Opsional: kosong selalu valid, URL hanya dicek bila diisi.
+      const value = (this.formData.locationLink || '').trim();
+      let msg = '';
+      if (value) {
+        try { new URL(value); } catch (e) { msg = 'Please enter a valid URL'; }
       }
       const show = this.submitAttempted || this.touched.locationLink;
       this.formErrors.locationLink = show ? msg : '';
@@ -371,9 +372,7 @@ function programData(mode) {
       results.push(this.validateMultiLang('description', 'description', {
         id: 'Indonesian description', en: 'English description', ja: 'Japanese description'
       }));
-      results.push(this.validateMultiLang('location', 'lokasi', {
-        id: 'Location (ID)', en: 'Location (EN)', ja: 'Location (JP)'
-      }));
+      // Location opsional - tidak divalidasi wajib.
       results.push(this.validateMethod());
 
       results.push(this.validateDropdown('categoryId', 'categoryId', 'Category'));

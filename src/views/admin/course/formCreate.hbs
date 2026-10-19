@@ -277,7 +277,7 @@
             </div>
 
             <div class='flex flex-col gap-2'>
-              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location<span class='text-[#dc2626]'>*</span></span>
+              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location</span>
               <div class='flex flex-col gap-4'>
                 {{> langTabs ariaLabel='Location language' state='locLang' short=true }}
 
@@ -304,7 +304,6 @@
               icon='link'
               label='Link Location'
               placeholder='https://maps.app.goo.gl/...'
-              required=true
             }}
           </div>
         {{/components/ui/super_admin/form/section_card}}
@@ -560,14 +559,14 @@
               if (!val) return 'End date is required.';
               return d.startDate && val < d.startDate ? 'End date must be on or after the start date.' : '';
             case 'locationLink':
-              if (!val) return 'Link location is required.';
+              if (!val) return '';
               return isHttpUrl(val) ? '' : 'Link location must be a valid URL.';
             case 'technologies':
               return val > 0 ? '' : 'Please select at least one tool.';
             case 'description':
               return val ? '' : `Description (${LANG_LABEL[lang]}) is required.`;
             case 'locations':
-              return val ? '' : `Location (${LANG_LABEL[lang]}) is required.`;
+              return '';
             default:
               return '';
           }

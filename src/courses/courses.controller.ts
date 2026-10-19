@@ -1233,6 +1233,44 @@ export class CoursesController {
   }
 
   @Roles('user')
+  @Get('myProgram/:id/fragment/detail-program')
+  async myCourseDetailProgramFragment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? String(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    // Informasi program untuk tab Detail Program. Teknologi, mentor, dan alur
+    // belajar dimuat hanya jika course aktif tersedia supaya tab tetap aman
+    // ketika student belum punya program.
+    const technologies = activeCourse?.id
+      ? await this.coursesService.findCourseTechnologies(activeCourse.id)
+      : [];
+    const mentors = activeCourse?.id
+      ? await this.coursesService.findCourseMentors(activeCourse.id)
+      : [];
+    const course_flows = activeCourse?.id
+      ? await this.coursesService.findCourseFlows(activeCourse.id)
+      : [];
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/detail_program/index',
+      {
+        course: activeCourse,
+        technologies,
+        mentors,
+        course_flows,
+        caps: capabilitiesForCourse(activeCourse),
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
   @Get('myProgram/:id/fragment/assignment')
   async myCourseAssignmentFragment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -1427,6 +1465,7 @@ export class CoursesController {
     const installments =
       await this.coursesService.findCourseInstallments(courseId);
     const studentList = await this.coursesService.sumStudent(course.id);
+    const mentors = await this.coursesService.findCourseMentors(course.id);
 
     const statusOptions = [
       'University Student',
@@ -1453,6 +1492,7 @@ export class CoursesController {
         course_benefits,
         technologies,
         installments,
+        mentors,
         currentStatusOptions: statusOptions,
         referalSourceOptions,
       });
@@ -1472,6 +1512,7 @@ export class CoursesController {
         benefit_category: course.category?.benefit_category || [],
         technologies,
         installments,
+        mentors,
       });
     }
   }
@@ -1504,6 +1545,7 @@ export class CoursesController {
       const userCourses = await this.coursesService.findCourseUsers(id);
       const kelass = await this.coursesService.allClassExcept(course.id);
       const studentList = await this.coursesService.sumStudent(course.id);
+      const mentors = await this.coursesService.findCourseMentors(course.id);
       const statusOptions = [
         'University Student',
         'Fresh Graduate',
@@ -1526,6 +1568,7 @@ export class CoursesController {
           studentList,
           technologies,
           installments,
+          mentors,
           userCourses,
           faqs,
           currentStatusOptions: statusOptions,
@@ -1545,6 +1588,7 @@ export class CoursesController {
           benefit_category: course.category?.benefit_category || [],
           technologies,
           installments,
+          mentors,
           userCourses,
         });
       }
@@ -1584,6 +1628,7 @@ export class CoursesController {
         const userCourses = await this.coursesService.findCourseUsers(id);
         const kelass = await this.coursesService.allClassExcept(course.id);
         const studentList = await this.coursesService.sumStudent(course.id);
+        const mentors = await this.coursesService.findCourseMentors(course.id);
         const statusOptions = [
           'University Student',
           'Fresh Graduate',
@@ -1607,6 +1652,7 @@ export class CoursesController {
             technologies,
             userCourses,
             installments,
+            mentors,
             faqs,
             currentStatusOptions: statusOptions,
             referalSourceOptions,
@@ -1627,6 +1673,7 @@ export class CoursesController {
             technologies,
             userCourses,
             installments,
+            mentors,
           });
         }
       }

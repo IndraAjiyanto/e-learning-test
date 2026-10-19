@@ -3,8 +3,11 @@
   Lokasi: src/views/partials/components/ui/sections/free_detail_format_class/index.hbs
   Level: L2 Section
 
+  Kartu: Tanggal Mulai, Tanggal Akhir Registrasi, Jam Sesi, Opsi Format
+  (nilai method apa adanya dari DB), dan Lokasi (locations / locationLink).
+
   Props:
-  - course : object (course data: startDate, date_registration, time_start, time_end, method)
+  - course : object (course data: startDate, date_registration, time_start, time_end, method, locations, locationLink)
   - lang   : string (optional, locale code)
 --}}
 
@@ -122,16 +125,30 @@
               {{default (t 'test.freeProgram.formatClass.formatOption') 'Opsi Format'}}
             </span>
             <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
-              {{#if (eq course.method 'online')}}
-                {{default (t 'test.freeProgram.formatClass.methodOnline') 'Online (Zoom Meeting)'}}
-              {{else if (eq course.method 'offline')}}
-                {{default (t 'test.freeProgram.formatClass.methodOffline') 'Offline (Meetup)'}}
-              {{else if (eq course.method 'hybrid')}}
-                {{default (t 'test.freeProgram.formatClass.methodHybrid') 'Hybrid (Online Zoom & Offline Meetup)'}}
-              {{else if course.method}}
-                <span class="capitalize">{{course.method}}</span>
+              {{default course.method '-'}}
+            </span>
+          </div>
+        </div>
+
+        <!-- Detail Item 5 - Lokasi -->
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+          <!-- Icon Circle -->
+          <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <!-- Text Content -->
+          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+            <span class="font-inter font-normal text-[14px] leading-[17px] text-[#64748B]">
+              {{default (t 'test.detailProgram.infoProgram.location') 'Lokasi'}}
+            </span>
+            <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
+              {{#if course.locationLink}}
+                <a href="{{course.locationLink}}" target="_blank" rel="noopener noreferrer" class="underline decoration-[#003060]/40 hover:text-[#003060]">{{default (getByLang course.locations lang) course.method}}</a>
               {{else}}
-                {{default (t 'test.freeProgram.formatClass.methodHybrid') 'Hybrid (Online Zoom & Offline Meetup)'}}
+                {{default (getByLang course.locations lang) (default course.method '-')}}
               {{/if}}
             </span>
           </div>
