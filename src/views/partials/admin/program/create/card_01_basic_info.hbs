@@ -172,10 +172,11 @@
          baca tanpa manfaat langsung; yang diubah labelnya, dan aturan hapusnya
          (CASCADE menjadi SET NULL) di migrasi 1788600000000. --}}
     {{> components/ui/admin/form/searchable_select/index
-      label="Tag"
+      label="Tag*"
       forId="courseTypeId"
       errorId="courseTypeId_error"
       name="courseTypeId"
+      required=true
       itemsJson=(json courseType)
       displayField="nameClassesType"
       placeholder="Search tag..."

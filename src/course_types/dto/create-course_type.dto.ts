@@ -1,4 +1,10 @@
-import { IsEnum, IsObject, IsOptional, IsString, Matches } from 'class-validator';
+import {
+  IsEnum,
+  IsObject,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CreateCourseTypeDto {
   @IsString()
