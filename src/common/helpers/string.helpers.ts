@@ -130,11 +130,18 @@ export const stringHelpers = {
   computeIcon: (iconValue: string) => {
     const raw = (iconValue || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
+    const STYLE_ONLY =
+      /^(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-thin|fa-duotone|fa-brands|fa-)$/i;
+    if (STYLE_ONLY.test(raw)) return 'fa-solid fa-circle-question';
+    const parts = raw.split(/\s+/);
+    if (parts.length === 2 && STYLE_ONLY.test(parts[1])) {
+      return 'fa-solid fa-circle-question';
+    }
     const v = raw;
     const hasFaPrefix =
-      /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(
+      /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-thin|fa-duotone|fa-brands)\b/i.test(
         v,
-      ) || v.split(/\s+/).some((s: string) => /^fa-/i.test(s));
+      ) || parts.some((s: string) => /^fa-/i.test(s));
     if (hasFaPrefix) {
       if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
       return v;

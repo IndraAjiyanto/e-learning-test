@@ -88,21 +88,14 @@ Quill.register(
 export function editorJsBlocksToHtml(raw) {
   if (!raw) return '';
   let parsed = raw;
-  if (typeof raw === 'string') {
-    const trimmed = raw.trim();
+  while (typeof parsed === 'string') {
+    const trimmed = parsed.trim();
     try {
       parsed = JSON.parse(trimmed);
     } catch (e) {
       parsed = trimmed;
+      break;
     }
-  }
-  if (typeof parsed === 'string') {
-    try {
-      const second = JSON.parse(parsed);
-      if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
-        parsed = second;
-      }
-    } catch (e) {}
   }
 
   if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
@@ -125,6 +118,16 @@ export function editorJsBlocksToHtml(raw) {
             return '<p' + align + '>' + (d.text || '') + '</p>';
           }
           case 'list': {
+            if (d.style === 'checklist') {
+              const items = (d.items || []).map(function(i) {
+                const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                const checked = (typeof i === 'object' && i !== null && i.meta && i.meta.checked);
+                return '<li class="flex items-start gap-2 my-1">' +
+                  '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                  '<span>' + content + '</span></li>';
+              }).join('');
+              return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+            }
             const listItems = (d.items || [])
               .map(itemText)
               .map((c) => '<li>' + c + '</li>')
@@ -133,20 +136,47 @@ export function editorJsBlocksToHtml(raw) {
               ? '<ol>' + listItems + '</ol>'
               : '<ul>' + listItems + '</ul>';
           }
-          case 'image':
+          case 'checklist': {
+            const items = (d.items || []).map(function(i) {
+              const content = (typeof i === 'object' && i !== null) ? (i.text || i.content || '') : i;
+              const checked = (typeof i === 'object' && i !== null && (i.checked || (i.meta && i.meta.checked)));
+              return '<li class="flex items-start gap-2 my-1">' +
+                '<input type="checkbox" ' + (checked ? 'checked' : '') + ' disabled class="mt-1 h-4 w-4 rounded border-gray-300 text-[#003060] focus:ring-0 cursor-default" />' +
+                '<span>' + content + '</span></li>';
+            }).join('');
+            return '<ul class="space-y-1 mb-3 list-none pl-0">' + items + '</ul>';
+          }
+          case 'image': {
+            const url = (d.file && d.file.url) || d.url || (typeof d.file === 'string' ? d.file : '');
+            if (!url) return '';
+            const caption = d.caption
+              ? '<figcaption class="text-center text-xs text-[#737373] mt-1">' + d.caption + '</figcaption>'
+              : '';
             return (
-              '<p><img src="' +
-              ((d.file && d.file.url) || '') +
+              '<figure class="my-3"><img src="' +
+              url +
               '" alt="' +
-              (d.caption || '') +
-              '" /></p>'
+              (d.caption || 'image') +
+              '" class="max-w-full rounded-lg" onerror="this.parentElement.style.display=\'none\'" />' +
+              caption +
+              '</figure>'
             );
+          }
           case 'video':
           case 'embed': {
             const url = d.embed || d.source || (d.file && d.file.url) || d.url || '';
             const embedUrl = normalizeVideoEmbedUrl(url);
             return '<iframe class="ql-video" frameborder="0" allowfullscreen="true" src="' + embedUrl + '"></iframe>';
           }
+          case 'table': {
+            const rows = (d.content || []).map((row) => {
+              const cells = (row || []).map((cell) => '<td>' + (cell || '') + '</td>').join('');
+              return '<tr>' + cells + '</tr>';
+            }).join('');
+            return '<table><tbody>' + rows + '</tbody></table>';
+          }
+          case 'raw':
+            return d.html || '';
           case 'quote':
             return '<blockquote>' + (d.text || '') + '</blockquote>';
           case 'code':
@@ -303,27 +333,21 @@ export function normalizeHtmlVideos(html) {
 export function renderContentToHtml(raw, emptyMessage = '') {
   if (!raw) return emptyMessage ? `<p class="text-[#737373] italic">${emptyMessage}</p>` : '';
   let parsed = raw;
-  if (typeof raw === 'string') {
-    const trimmed = raw.trim();
+  while (typeof parsed === 'string') {
+    const trimmed = parsed.trim();
     try {
-      parsed = JSON.parse(trimmed);
+      const next = JSON.parse(trimmed);
+      parsed = next;
     } catch (e) {
       parsed = trimmed;
+      break;
     }
-  }
-  if (typeof parsed === 'string') {
-    try {
-      const second = JSON.parse(parsed);
-      if (typeof second === 'string' || (typeof second === 'object' && second !== null)) {
-        parsed = second;
-      }
-    } catch (e) {}
-  }
-  if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
-    return normalizeHtmlVideos(parsed.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '));
   }
   if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
     return editorJsBlocksToHtml(parsed);
+  }
+  if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
+    return normalizeHtmlVideos(parsed.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' '));
   }
   if (typeof parsed === 'string' && parsed.trim()) {
     return `<div class="whitespace-pre-line">${parsed}</div>`;

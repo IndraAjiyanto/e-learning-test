@@ -46,8 +46,8 @@
     
     <div class="flex flex-col gap-3">
       {{!-- Frame 2147229474: icon-badge + title --}}
-      <div class="flex items-start gap-3.5">
-        <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#003060] shadow-[0px_6px_16px_-6px_rgba(0,0,0,0.0784314)] text-white mt-0.5">
+      <div class="flex items-center gap-3.5 min-h-[52px]">
+        <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#003060] shadow-[0px_6px_16px_-6px_rgba(0,0,0,0.0784314)] text-white">
           {{#if (eq icon 'eye')}}
             <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -69,7 +69,7 @@
             <i class="{{default icon 'fa-solid fa-graduation-cap'}} text-lg text-white"></i>
           {{/if}}
         </div>
-        <h3 class="font-montserrat text-[20px] sm:text-[22px] font-semibold leading-snug sm:leading-[1.3] text-[#0B1F3B] line-clamp-2 min-h-[52px] [text-wrap:balance]">
+        <h3 class="font-montserrat text-[18px] font-semibold leading-snug sm:leading-[1.3] text-[#0B1F3B] line-clamp-2 [text-wrap:balance]">
           {{title}}
         </h3>
       </div>
