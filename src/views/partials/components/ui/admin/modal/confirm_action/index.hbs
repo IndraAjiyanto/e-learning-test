@@ -11,6 +11,10 @@
   `openConfirmModal({ title, description, confirmLabel, cancelLabel, onConfirm, onCancel })`
   dari mana saja. `onConfirm` dipanggil saat user menekan tombol confirm;
   `onCancel` (opsional) dipanggil saat modal ditutup tanpa konfirmasi (Cancel/Escape/klik luar).
+
+  Ada juga helper `openConfirmDiscard(isDirty, href)` untuk tombol Cancel form
+  create: navigasi langsung bila form masih bersih, buka modal konfirmasi bila
+  sudah ada inputan yang akan hilang. `isDirty` berasal dari formDirtyGate().
 --}}
 <div
   x-data='confirmActionModal()'
@@ -87,6 +91,24 @@
     window.dispatchEvent(
       new CustomEvent('confirm-action:open', { detail: options }),
     );
+  }
+
+  function openConfirmDiscard(isDirty, href) {
+    if (!isDirty) {
+      window.location.href = href;
+      return;
+    }
+
+    openConfirmModal({
+      title: 'Discard changes?',
+      description:
+        'You have unsaved data in this form. Are you sure you want to leave? Your changes will not be saved.',
+      confirmLabel: 'Yes, Discard',
+      cancelLabel: 'Keep Editing',
+      onConfirm: () => {
+        window.location.href = href;
+      },
+    });
   }
 
   function confirmActionModal() {
