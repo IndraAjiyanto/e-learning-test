@@ -64,10 +64,13 @@ export class CreateCoursesDto {
   @IsObject()
   description: { id: string; en: string; ja: string };
 
-  /** jsonb: { id, en, ja } */
+  /** jsonb: { id, en, ja }. Opsional - kolom `locations` nullable. */
+  @IsOptional()
   @IsObject()
   locations: { id: string; en: string; ja: string };
 
+  /** Opsional - kolom `locationLink` nullable. */
+  @IsOptional()
   @IsString()
   locationLink: string;
 
