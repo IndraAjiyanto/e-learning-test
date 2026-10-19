@@ -31,12 +31,18 @@ export class MovePortfolioGuideToTable1788900000000 implements MigrationInterfac
         )
     `);
 
-    await q.query(`ALTER TABLE "course" DROP COLUMN IF EXISTS "portfolioGuideContent"`);
-    await q.query(`ALTER TABLE "course" DROP COLUMN IF EXISTS "portfolioGuideTitle"`);
+    await q.query(
+      `ALTER TABLE "course" DROP COLUMN IF EXISTS "portfolioGuideContent"`,
+    );
+    await q.query(
+      `ALTER TABLE "course" DROP COLUMN IF EXISTS "portfolioGuideTitle"`,
+    );
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    await q.query(`ALTER TABLE "course" ADD COLUMN IF NOT EXISTS "portfolioGuideContent" text`);
+    await q.query(
+      `ALTER TABLE "course" ADD COLUMN IF NOT EXISTS "portfolioGuideContent" text`,
+    );
     await q.query(`
       UPDATE "course" course
         SET "portfolioGuideContent" = guide."content"

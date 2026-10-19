@@ -381,7 +381,7 @@ function programData(mode) {
       results.push(this.validateMethod());
 
       results.push(this.validateDropdown('categoryId', 'categoryId', 'Category'));
-      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Program Type'));
+      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Tag'));
       results.push(this.validateList('technologiesIds[]', 'technologies', 'technology'));
 
       if (document.querySelector('input[name="mentoringsId"]')) {

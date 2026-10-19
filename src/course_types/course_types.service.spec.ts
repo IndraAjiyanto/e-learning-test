@@ -2,16 +2,28 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseTypesService, isValidIconFormat } from './course_types.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CourseType } from 'src/entities/course_type.entity';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
+import { CreateCourseTypeDto } from './dto/create-course_type.dto';
 
 describe('CourseTypesService', () => {
   let service: CourseTypesService;
-  let mockRepository: any;
+  let mockRepository: {
+    create: jest.Mock;
+    save: jest.Mock;
+    findOne: jest.Mock;
+    find: jest.Mock;
+    remove: jest.Mock;
+    createQueryBuilder: jest.Mock;
+  };
 
   beforeEach(async () => {
     mockRepository = {
-      create: jest.fn().mockImplementation((dto) => dto),
-      save: jest.fn().mockImplementation((entity) => Promise.resolve({ id: 'ct-1', ...entity })),
+      create: jest.fn((dto: CreateCourseTypeDto) => dto),
+      save: jest
+        .fn()
+        .mockImplementation((entity: Partial<CourseType>) =>
+          Promise.resolve({ id: 'ct-1', ...entity }),
+        ),
       findOne: jest.fn(),
       find: jest.fn(),
       remove: jest.fn(),
@@ -39,8 +51,8 @@ describe('CourseTypesService', () => {
     it('should reject empty or whitespace strings', () => {
       expect(isValidIconFormat('')).toBe(false);
       expect(isValidIconFormat('   ')).toBe(false);
-      expect(isValidIconFormat(null as any)).toBe(false);
-      expect(isValidIconFormat(undefined as any)).toBe(false);
+      expect(isValidIconFormat(null)).toBe(false);
+      expect(isValidIconFormat(undefined)).toBe(false);
     });
 
     it('should reject style prefixes without glyph name', () => {
@@ -85,15 +97,31 @@ describe('CourseTypesService', () => {
 
   describe('create', () => {
     it('should throw BadRequestException if icon format is invalid or incomplete', async () => {
-      const invalidDtos = [
-        { nameClassesType: 'Fullstack', icon: 'fa-solid', description: { id: 'a', en: 'b', ja: 'c' } },
-        { nameClassesType: 'Fullstack', icon: 'fa-', description: { id: 'a', en: 'b', ja: 'c' } },
-        { nameClassesType: 'Fullstack', icon: 'fa-solid fa-', description: { id: 'a', en: 'b', ja: 'c' } },
-        { nameClassesType: 'Fullstack', icon: '', description: { id: 'a', en: 'b', ja: 'c' } },
+      const invalidDtos: CreateCourseTypeDto[] = [
+        {
+          nameClassesType: 'Fullstack',
+          icon: 'fa-solid',
+          description: { id: 'a', en: 'b', ja: 'c' },
+        },
+        {
+          nameClassesType: 'Fullstack',
+          icon: 'fa-',
+          description: { id: 'a', en: 'b', ja: 'c' },
+        },
+        {
+          nameClassesType: 'Fullstack',
+          icon: 'fa-solid fa-',
+          description: { id: 'a', en: 'b', ja: 'c' },
+        },
+        {
+          nameClassesType: 'Fullstack',
+          icon: '',
+          description: { id: 'a', en: 'b', ja: 'c' },
+        },
       ];
 
       for (const dto of invalidDtos) {
-        await expect(service.create(dto as any)).rejects.toThrow(BadRequestException);
+        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
       }
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
@@ -105,7 +133,7 @@ describe('CourseTypesService', () => {
         description: { id: 'Deskripsi', en: 'Description', ja: '説明' },
       };
 
-      const result = await service.create(dto as any);
+      const result = await service.create(dto);
       expect(mockRepository.create).toHaveBeenCalledWith(dto);
       expect(mockRepository.save).toHaveBeenCalled();
       expect(result).toEqual({ id: 'ct-1', ...dto });
@@ -121,12 +149,12 @@ describe('CourseTypesService', () => {
       });
 
       await expect(
-        service.update('ct-1', { icon: 'fa-regular' } as any),
+        service.update('ct-1', { icon: 'fa-regular' }),
       ).rejects.toThrow(BadRequestException);
 
-      await expect(
-        service.update('ct-1', { icon: 'fa-' } as any),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.update('ct-1', { icon: 'fa-' })).rejects.toThrow(
+        BadRequestException,
+      );
 
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
@@ -139,7 +167,9 @@ describe('CourseTypesService', () => {
       };
       mockRepository.findOne.mockResolvedValue(existing);
 
-      const result = await service.update('ct-1', { icon: 'fa-solid fa-laptop-code' } as any);
+      const result = await service.update('ct-1', {
+        icon: 'fa-solid fa-laptop-code',
+      });
       expect(mockRepository.save).toHaveBeenCalledWith({
         ...existing,
         icon: 'fa-solid fa-laptop-code',
@@ -155,9 +185,8 @@ describe('CourseTypesService', () => {
       };
       mockRepository.findOne.mockResolvedValue(existing);
 
-      await service.update('ct-1', { nameClassesType: 'New Frontend' } as any);
+      await service.update('ct-1', { nameClassesType: 'New Frontend' });
       expect(mockRepository.save).toHaveBeenCalled();
     });
   });
 });
-
