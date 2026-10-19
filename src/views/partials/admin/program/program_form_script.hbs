@@ -109,10 +109,10 @@ function programData(mode) {
         try {
           const u = new URL(value.trim());
           if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-            msg = 'Please enter a valid URL (http/https)';
+            msg = label + ' must be a valid URL (http/https)';
           }
         } catch (e) {
-          msg = 'Please enter a valid URL (http/https)';
+          msg = label + ' must be a valid URL (http/https)';
         }
       }
       this.setFieldError(elId, msg);
@@ -229,13 +229,17 @@ function programData(mode) {
       return !msg;
     },
 
-    validateMoneyInput(nameAttr, elId, label, optional) {
+    validateMoneyInput(nameAttr, elId, label, optional, min) {
       const raw = this.hiddenValue(nameAttr);
       let msg = '';
       if (!raw) {
         if (!optional) msg = label + ' is required';
-      } else if (!/^\d+$/.test(raw)) {
+      } else if (!/^-?\d+$/.test(raw)) {
         msg = label + ' must contain numbers only';
+      } else if (min !== undefined && parseInt(raw, 10) < min) {
+        msg = min === 1
+          ? label + ' must be greater than 0'
+          : label + ' must be at least ' + min;
       }
       this.setFieldError(elId, msg);
       this.setFieldStatus(elId, !msg);
@@ -367,7 +371,7 @@ function programData(mode) {
       }
 
       results.push(this.validateTextField('name', 'Program Name'));
-      results.push(this.validateUrlField('group', 'Group'));
+      results.push(this.validateUrlField('group', 'Group Link'));
       results.push(this.validateMultiLang('description', 'description', {
         id: 'Indonesian description', en: 'English description', ja: 'Japanese description'
       }));
@@ -395,7 +399,7 @@ function programData(mode) {
         } else { this.clearField('promo1'); }
       }
       if (document.getElementById('quota')) {
-        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false));
+        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false, 1));
       }
 
       if (this.paidClass) {

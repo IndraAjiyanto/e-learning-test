@@ -538,7 +538,8 @@
             case 'mentoringsId':
               return UUID.test(val) ? '' : 'Please select a mentoring.';
             case 'quota':
-              return +digits(val) > 0 ? '' : 'Program quota is required.';
+              if (!digits(val)) return 'Program quota is required.';
+              return +digits(val) > 0 ? '' : 'Program quota must be greater than 0.';
             case 'price':
               return +digits(val) > 0 ? '' : 'Price is required.';
             case 'promo':
