@@ -125,6 +125,7 @@
         // voucher lain; `codeChecking` aktif selama cek berjalan (debounce/fetch).
         codeChecking: false,
         codeTaken: false,
+        checkedCode: '',
         // Nomor urut cek: hasil fetch yang usang (kode berubah saat menunggu)
         // dibuang agar pesan error tidak menempel pada kode yang salah.
         codeCheckSeq: 0,
@@ -133,8 +134,13 @@
         fieldError(path) {
           const local = errorFor(path, this.formData[path], this.formData);
           if (local) return local;
-          if (path === 'code_voucher' && this.codeTaken) {
-            return `${LABEL.code_voucher} is already in use.`;
+          const currentCode = (this.formData.code_voucher ?? '').toString().trim();
+          if (
+            path === 'code_voucher' &&
+            this.codeTaken &&
+            currentCode.toLowerCase() === (this.checkedCode || '').toLowerCase()
+          ) {
+            return `${LABEL.code_voucher} is already in use and must be unique.`;
           }
           return '';
         },
@@ -155,6 +161,7 @@
           if (!code) {
             this.codeChecking = false;
             this.codeTaken = false;
+            this.checkedCode = '';
             this.syncCodeError();
             return;
           }
@@ -167,6 +174,7 @@
           if (!code) {
             this.codeChecking = false;
             this.codeTaken = false;
+            this.checkedCode = '';
             this.syncCodeError();
             return;
           }
@@ -180,8 +188,8 @@
             if (!res.ok) throw new Error('check failed');
             const data = await res.json();
             if (seq !== this.codeCheckSeq) return;
+            this.checkedCode = code;
             this.codeTaken = !!(data && data.available === false);
-          } catch {
             // Jaringan gagal: jangan menghalangi; pengecekan di server (create/
             // update) tetap menjadi jaring pengaman terakhir.
             if (seq !== this.codeCheckSeq) return;
