@@ -9,7 +9,9 @@ import {
   IsString,
   IsUUID,
   IsUrl,
+  Max,
   Min,
+  ValidateIf,
 } from 'class-validator';
 import { Method, PROGRAM_TYPES, ProgramType } from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
@@ -128,8 +130,10 @@ export class CreateCoursesDto {
   @IsInt()
   month?: number;
 
-  @IsOptional()
+  @ValidateIf((o: CreateCoursesDto) => !o.checkPaid)
   @IsInt()
+  @Min(1, { message: 'Day must be between 1 and 31' })
+  @Max(31, { message: 'Day must be between 1 and 31' })
   day?: number;
 
   @IsDateString()

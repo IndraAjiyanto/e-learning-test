@@ -31,8 +31,9 @@ export class VoucherController {
   // balapan (dua submit hampir bersamaan).
   private isDuplicateCode(error: unknown): boolean {
     if (error instanceof ConflictException) return true;
-    const err = error as { message?: string; detail?: string };
+    const err = error as { message?: string; detail?: string; code?: string };
     return (
+      err?.code === '23505' ||
       /code_voucher/i.test(err?.detail ?? '') ||
       /duplicate key value/i.test(err?.message ?? '')
     );
@@ -112,22 +113,24 @@ export class VoucherController {
       );
       res.redirect('/voucher');
     } catch (error: unknown) {
-      const err = error as { message?: string; detail?: string };
-      console.error(
-        'CREATE VOUCHER ERROR:',
-        err?.message,
-        err?.detail || error,
-      );
       // Jaring pengaman server-side: walau cek kode di sisi klien dilewati
       // (JS mati, balapan, atau cek jaringan gagal), kode duplikat tetap
       // memunculkan notifikasi lewat flashToastError -> toast error global.
       if (this.isDuplicateCode(error)) {
+        console.warn(
+          `[Voucher] Rejected: duplicate voucher code "${createVoucherDto.code_voucher}"`,
+        );
         flashToastError(
           req,
           'Voucher Code Already In Use',
           'That code is already taken by another voucher. Please use a different code.',
         );
       } else {
+        console.error(
+          'CREATE VOUCHER ERROR:',
+          err?.message,
+          err?.detail || error,
+        );
         flashToastError(
           req,
           'Voucher Not Created',
@@ -188,12 +191,16 @@ export class VoucherController {
       const err = error as Error;
       // Sama seperti create: kode duplikat harus tetap memunculkan notifikasi.
       if (this.isDuplicateCode(error)) {
+        console.warn(
+          `[Voucher] Rejected: duplicate voucher code "${updateVoucherDto.code_voucher}" on update ID ${id}`,
+        );
         flashToastError(
           req,
           'Voucher Code Already In Use',
           'That code is already taken by another voucher. Please use a different code.',
         );
       } else {
+        console.error('UPDATE VOUCHER ERROR:', err?.message, err || error);
         flashToastError(
           req,
           'Voucher Not Updated',
