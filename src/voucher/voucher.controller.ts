@@ -113,9 +113,7 @@ export class VoucherController {
       );
       res.redirect('/voucher');
     } catch (error: unknown) {
-      // Jaring pengaman server-side: walau cek kode di sisi klien dilewati
-      // (JS mati, balapan, atau cek jaringan gagal), kode duplikat tetap
-      // memunculkan notifikasi lewat flashToastError -> toast error global.
+      const err = error as Error;
       if (this.isDuplicateCode(error)) {
         console.warn(
           `[Voucher] Rejected: duplicate voucher code "${createVoucherDto.code_voucher}"`,
@@ -126,11 +124,6 @@ export class VoucherController {
           'That code is already taken by another voucher. Please use a different code.',
         );
       } else {
-        console.error(
-          'CREATE VOUCHER ERROR:',
-          err?.message,
-          err?.detail || error,
-        );
         flashToastError(
           req,
           'Voucher Not Created',
