@@ -146,8 +146,6 @@ export class CoursesService {
       }
     }
 
-
-
     const category = await this.categoryRepository.findOne({
       where: { id: createCourseDto.categoryId },
     });
@@ -1777,8 +1775,6 @@ export class CoursesService {
         );
       }
     }
-
-
 
     if (updateCourseDto.categoryId) {
       const category = await this.categoryRepository.findOne({
