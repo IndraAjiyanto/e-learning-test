@@ -9,9 +9,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Idempoten: setiap ALTER hanya dijalankan bila kolomnya ada dan saat ini
  * masih `NOT NULL`.
  */
-export class MakeCourseLocationOptional1792000000000
-  implements MigrationInterface
-{
+export class MakeCourseLocationOptional1792000000000 implements MigrationInterface {
   name = 'MakeCourseLocationOptional1792000000000';
 
   private async isNotNull(q: QueryRunner, column: string): Promise<boolean> {
