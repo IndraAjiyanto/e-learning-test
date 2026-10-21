@@ -56,7 +56,10 @@ describe('VoucherController', () => {
 
       await controller.checkCode('PROMO123', '', res);
 
-      expect(service.isCodeAvailable).toHaveBeenCalledWith('PROMO123', undefined);
+      expect(service.isCodeAvailable).toHaveBeenCalledWith(
+        'PROMO123',
+        undefined,
+      );
       expect(res.json).toHaveBeenCalledWith({ available: true });
     });
 
@@ -68,7 +71,10 @@ describe('VoucherController', () => {
 
       await controller.checkCode('DUPLICATE', '', res);
 
-      expect(service.isCodeAvailable).toHaveBeenCalledWith('DUPLICATE', undefined);
+      expect(service.isCodeAvailable).toHaveBeenCalledWith(
+        'DUPLICATE',
+        undefined,
+      );
       expect(res.json).toHaveBeenCalledWith({ available: false });
     });
   });
@@ -106,8 +112,12 @@ describe('VoucherController', () => {
     });
 
     it('shows toast error and redirects to /voucher/formCreate when code is duplicate', async () => {
-      service.create.mockRejectedValue(new ConflictException('Voucher code is already in use.'));
-      const spyError = jest.spyOn(toastUtil, 'flashToastError').mockImplementation();
+      service.create.mockRejectedValue(
+        new ConflictException('Voucher code is already in use.'),
+      );
+      const spyError = jest
+        .spyOn(toastUtil, 'flashToastError')
+        .mockImplementation();
 
       await controller.create(
         { code_voucher: 'DUPLICATE', type: 'free' },
@@ -138,8 +148,12 @@ describe('VoucherController', () => {
     });
 
     it('shows toast error and redirects to edit form when code is duplicate', async () => {
-      service.update.mockRejectedValue(new ConflictException('Voucher code is already in use.'));
-      const spyError = jest.spyOn(toastUtil, 'flashToastError').mockImplementation();
+      service.update.mockRejectedValue(
+        new ConflictException('Voucher code is already in use.'),
+      );
+      const spyError = jest
+        .spyOn(toastUtil, 'flashToastError')
+        .mockImplementation();
 
       await controller.update(
         'v1',

@@ -6,7 +6,8 @@
   Route: GET /category/:categoryId -> { user, category }
          Edit   -> GET /category/formEdit/:categoryId
          Delete -> DELETE /category/:categoryId
-  Tab mengambil data lewat toggleFetch(); konten tiap tab ada di partials/category/*.
+  Tiap tab mengambil datanya sendiri via clientTable/fetch, jadi tombolnya memakai
+  tabs/panel (hanya menukar state) dan lazy fetch memakai template x-if loaded[tab].
 
   Tombol hapus memakai openDeleteModal dari modal/delete_confirm, bukan
   confirmDelete milik partial sweetalert global yang menimpa fungsi senama.
@@ -148,35 +149,56 @@
       <div
         class='flex flex-col gap-5 rounded-xl border border-[#d9d9d9] bg-white px-4 pb-5 pt-3 sm:px-5'
         x-data='tabData()'
-        x-init='init()'
       >
         <nav role='tablist' aria-label='Category sections' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
-          {{> components/ui/super_admin/tabs/fetch/index name='course' label='Program' url=(concat '/category/admin/program/' category.id) }}
+          {{> components/ui/super_admin/tabs/panel/index name='course' label='Program' }}
           {{#unless (eq category.type 'Free Program')}}
-          {{> components/ui/super_admin/tabs/fetch/index name='alumni' label='Alumni' url=(concat '/category/alumni/' category.id) }}
+          {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
           {{/unless}}
-          {{> components/ui/super_admin/tabs/fetch/index name='gallery' label='Gallery' url=(concat '/category/gallery/' category.id) }}
-          {{> components/ui/super_admin/tabs/fetch/index name='faq' label='FAQ' url=(concat '/category/faq/' category.id) }}
-          {{> components/ui/super_admin/tabs/fetch/index name='benefit' label='Benefit' url=(concat '/category/benefit/' category.id) }}
+          {{> components/ui/super_admin/tabs/panel/index name='gallery' label='Gallery' }}
+          {{> components/ui/super_admin/tabs/panel/index name='faq' label='FAQ' }}
+          {{> components/ui/super_admin/tabs/panel/index name='benefit' label='Benefit' }}
         </nav>
 
-        {{> category/kelas_tab }}
+        <div x-show="tab === 'course'">
+          <template x-if="loaded['course']">
+            <div>{{> category/kelas_tab }}</div>
+          </template>
+        </div>
 
         {{#unless (eq category.type 'Free Program')}}
-        <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index categoryId=category.id }}</div>
+        <div x-show="tab === 'alumni'">
+          <template x-if="loaded['alumni']">
+            <div>{{> components/ui/super_admin/program/alumni_tab/index categoryId=category.id }}</div>
+          </template>
+        </div>
         {{/unless}}
 
-        <div x-show="tab === 'faq'">{{> components/ui/super_admin/program/faq_tab/index categoryId=category.id }}</div>
+        <div x-show="tab === 'gallery'">
+          <template x-if="loaded['gallery']">
+            <div>{{> category/gallery_tab category=category }}</div>
+          </template>
+        </div>
 
-        <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index categoryId=category.id }}</div>
+        <div x-show="tab === 'faq'">
+          <template x-if="loaded['faq']">
+            <div>{{> components/ui/super_admin/program/faq_tab/index categoryId=category.id }}</div>
+          </template>
+        </div>
 
-        {{> category/gallery_tab category=category }}
+        <div x-show="tab === 'benefit'">
+          <template x-if="loaded['benefit']">
+            <div>{{> components/ui/super_admin/program/benefit_tab/index categoryId=category.id }}</div>
+          </template>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 {{> components/ui/super_admin/toast/success/index toast=toast }}
+
+{{> components/ui/super_admin/table/client_table }}
 
 {{> components/ui/super_admin/table/fa_icon }}
 
@@ -187,39 +209,36 @@
 
 <script>
   function tabData() {
+    const isFree = {{#if (eq category.type 'Free Program')}}true{{else}}false{{/if}};
+    const fallbackTab = 'course';
+    const validTabs = isFree
+      ? ['course', 'gallery', 'faq', 'benefit']
+      : ['course', 'alumni', 'gallery', 'faq', 'benefit'];
+
+    let initialTab = localStorage.getItem('activeTabKategori') || fallbackTab;
+    if (!validTabs.includes(initialTab)) {
+      initialTab = fallbackTab;
+    }
+
     return {
-      search: '',
-      tab: {{#if (eq category.type 'Free Program')}}(localStorage.getItem('activeTabKategori') === 'alumni' ? 'course' : (localStorage.getItem('activeTabKategori') || 'course')){{else}}(localStorage.getItem('activeTabKategori') || 'course'){{/if}},
-      data: localStorage.getItem('activeData')
-        ? JSON.parse(localStorage.getItem('activeData'))
-        : [],
+      tab: initialTab,
+      loaded: {},
 
-      async init() {
-        if (!this.tab) {
-          this.tab = 'course';
-          localStorage.setItem('activeTabKategori', 'course');
+      init() {
+        this.$watch('tab', (tabName) => {
+          this.loaded[tabName] = true;
+          localStorage.setItem('activeTabKategori', tabName);
+        });
+
+        if (isFree && this.tab === 'alumni') {
+          this.tab = fallbackTab;
         }
-      },
 
-      async toggleFetch(url, tabName) {
-        this.tab = tabName;
-        localStorage.setItem('activeTabKategori', tabName);
-
-        try {
-          if (url === '') {
-            this.data = [];
-            localStorage.removeItem('activeData');
-            return;
-          }
-
-          const response = await fetch(url);
-          if (!response.ok) throw new Error('Network error');
-
-          this.data = await response.json();
-          localStorage.setItem('activeData', JSON.stringify(this.data));
-        } catch (error) {
-          console.error('Failed to fetch tab data:', error);
+        if (!validTabs.includes(this.tab)) {
+          this.tab = fallbackTab;
         }
+
+        this.loaded[this.tab] = true;
       },
     };
   }
