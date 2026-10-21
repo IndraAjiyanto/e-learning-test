@@ -5,9 +5,15 @@
   Routes:
     Create: GET /learning-material/formCreate/:jenis_file/:sessionId
             -> POST /learning-material/{pdf,ppt,video}/:sessionId
-    Edit:   GET /learning-material/formEdit/:id (editMode=true, material)
+            GET /learning-material/formCreate/syllabus/:jenis_file/:syllabusId
+            -> POST /learning-material/syllabus/{pdf,ppt,video}/:syllabusId
+    Edit:   GET /learning-material/formEdit/:id (editMode=true, material;
+            material milik sylabus → syllabusMode=true, syllabusId terisi)
             -> PATCH /learning-material/{pdf,ppt,video}/:id
-  Data: { user, sessionId, jenis_file } (+ { material, editMode } saat edit)
+            (redirect ditentukan material.session / material.syllabus)
+  Data: { user, sessionId, jenis_file } atau (syllabusMode)
+        { user, syllabusId, syllabusMode, jenis_file }
+        (+ { material, editMode } saat edit)
   Komponen (reuse): text/page-header, form/form-card, form/form-field,
           form/text-input, button/primary-button, button/secondary-button.
           Baru (prefix material-): material/material-file-upload (pdf),
@@ -22,10 +28,12 @@
 
     {{> components/ui/admin/text/page-header
       title=(ternary editMode 'Edit Material' 'Add Material')
-      subtitle=(ternary editMode 'Update the material details for this session' 'Upload a PDF material to this session')}}
+      subtitle=(ternary editMode
+        (ternary syllabusMode 'Update the material details for this syllabus' 'Update the material details for this session')
+        (ternary syllabusMode 'Upload a PDF material to this syllabus' 'Upload a PDF material to this session'))}}
 
     <form
-      {{#if editMode}}action='/learning-material/pdf/{{material.id}}?_method=PATCH'{{else}}action='/learning-material/pdf/{{sessionId}}'{{/if}}
+      {{#if editMode}}action='/learning-material/pdf/{{material.id}}?_method=PATCH'{{else}}{{#if syllabusMode}}action='/learning-material/syllabus/pdf/{{syllabusId}}'{{else}}action='/learning-material/pdf/{{sessionId}}'{{/if}}{{/if}}
       method='POST'
       enctype='multipart/form-data'
       class='flex flex-col gap-[16px] w-full'
@@ -104,7 +112,11 @@
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
+          {{#if syllabusMode}}
+          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/syllabus/' syllabusId) width='90'}}
+          {{else}}
           {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
+          {{/if}}
           {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='185'}}
         </div>
       {{/components/ui/admin/form/form-card}}
@@ -128,27 +140,38 @@
 
     {{> components/ui/admin/text/page-header
       title=(ternary editMode 'Edit Material' 'Add Material')
-      subtitle=(ternary editMode 'Replace the PPT file; it will be updated in Google Slides' 'Upload a PPT file; it will be converted to Google Slides')}}
+      subtitle=(ternary editMode 'Replace the PPT source: upload a file or paste a Google Slides link' 'Add a PPT material from an uploaded file or a published Google Slides link')}}
 
     <form
-      {{#if editMode}}action='/learning-material/ppt/{{material.id}}?_method=PATCH'{{else}}action='/learning-material/ppt/{{sessionId}}'{{/if}}
+      {{#if editMode}}action='/learning-material/ppt/{{material.id}}?_method=PATCH'{{else}}{{#if syllabusMode}}action='/learning-material/syllabus/ppt/{{syllabusId}}'{{else}}action='/learning-material/ppt/{{sessionId}}'{{/if}}{{/if}}
       method='POST'
       enctype='multipart/form-data'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
         ...adminFormGate(),
         loading: false,
+        attempted: false,
         errorMessage: '',
         isValid: false,
-        slideUrl: '',
         hasInput: false,
+        slideUrl: {{#if material}}{{json material.file}}{{else}}''{{/if}},
         editMode: {{#if editMode}}true{{else}}false{{/if}},
+        sourceMode: {{#if editMode}}{{#if material.driveFileId}}'file'{{else}}'link'{{/if}}{{else}}'link'{{/if}},
+        hasExistingFile: {{#if material.driveFileId}}true{{else}}false{{/if}},
+        hasExistingLink: {{#if material.driveFileId}}false{{else}}{{#if material.file}}true{{else}}false{{/if}}{{/if}},
+        fileSelected: false,
+        get hasFile() { return this.fileSelected; },
+        get hasLink() { return this.slideUrl.trim().length > 0; },
+        onFileChange(event) {
+          this.fileSelected = Boolean(event.target.files?.length);
+          this.recomputeFormValid();
+        },
         validateLink(value) {
           this.errorMessage = '';
           this.slideUrl = value;
-          this.hasInput = value.length > 0;
+          this.hasInput = value.trim().length > 0;
 
-          if (!value) {
+          if (!value.trim()) {
             this.isValid = false;
             return;
           }
@@ -168,15 +191,61 @@
 
           this.isValid = true;
         },
+        switchSource(target) {
+          if (this.sourceMode === target) return;
+
+          const hasOtherSource = target === 'file' ? this.hasLink : this.hasFile;
+          if (hasOtherSource) {
+            openConfirmModal({
+              title: target === 'file' ? 'Switch to Upload PPT File?' : 'Switch to Google Slides Link?',
+              description: target === 'file'
+                ? 'The Google Slides link you entered will be removed when switching. Are you sure you want to continue?'
+                : 'The PPT file you selected will be removed when switching. Are you sure you want to continue?',
+              confirmLabel: 'Switch',
+              cancelLabel: 'Cancel',
+              onConfirm: () => this.applySourceMode(target),
+            });
+            return;
+          }
+
+          this.applySourceMode(target);
+        },
+        applySourceMode(target) {
+          this.sourceMode = target;
+
+          if (target === 'file') {
+            this.slideUrl = '';
+            this.hasInput = false;
+            this.isValid = false;
+            this.errorMessage = '';
+            if (this.$refs.linkInput) this.$refs.linkInput.value = '';
+          } else {
+            this.fileSelected = false;
+            if (this.$refs.pptFile) this.$refs.pptFile.value = '';
+          }
+
+          this.recomputeFormValid();
+        },
         canSubmit() {
           if (!this.formValid) return false;
-          return this.editMode || this.$refs.pptFile?.files?.length > 0;
+
+          if (this.sourceMode === 'file') {
+            return this.hasFile || (this.editMode && this.hasExistingFile);
+          }
+
+          return this.isValid || (this.editMode && this.hasExistingLink);
+        },
+        submitPpt(event) {
+          return this.submitGate(event, () => {
+            this.attempted = true;
+            return this.canSubmit();
+          });
         }
       }"
-      x-init="recomputeFormValid()"
+      x-init="recomputeFormValid(); if (sourceMode === 'link' && slideUrl) { validateLink(slideUrl); if ($refs.linkInput) $refs.linkInput.value = slideUrl; }"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
-      novalidate @focusout="markField($event.target)" @submit="submitGate($event, () => canSubmit())"
+      novalidate @focusout="markField($event.target)" @submit="submitPpt($event)"
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
@@ -188,39 +257,116 @@
           }}
         {{/components/ui/admin/form/form-field}}
 
-        {{#> components/ui/admin/form/form-field label=(ternary editMode 'Replace PPT/PPTX file (optional)' 'Upload PPT/PPTX file*') for="file"}}
-          <input x-ref="pptFile" type="file" id="file" name="file" accept=".ppt,.pptx" {{#unless editMode}}required{{/unless}} class="block w-full rounded-[6px] border border-[#D4D4D4] bg-white px-3 py-2 font-inter text-sm text-[#171717] file:mr-3 file:rounded file:border-0 file:bg-[#E8F1F8] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-[#003060]" />
-          <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>The uploaded file will be converted into a Google Slides presentation.</p>
-        {{/components/ui/admin/form/form-field}}
+        {{!-- Radio pemilih sumber PPT, mengikuti pola form Tools (SVG/Image). --}}
+        <div class='flex flex-col gap-2'>
+          <p class='font-inter text-sm font-medium leading-5 text-[#404040]'>PPT source</p>
+          <p class='font-inter text-sm leading-5 text-[#525252]'>Choose one source: a published Google Slides link or an uploaded PPT file.</p>
+
+          <fieldset class='flex flex-col gap-1'>
+            <legend class='sr-only'>PPT source</legend>
+            <div class='flex items-center gap-4' role='radiogroup' aria-label='PPT source'>
+              <button
+                type='button'
+                role='radio'
+                :aria-checked="sourceMode === 'link' ? 'true' : 'false'"
+                @click="switchSource('link')"
+                class='flex cursor-pointer items-center gap-2 font-inter text-sm leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+              >
+                <span
+                  class='flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors'
+                  :class="sourceMode === 'link' ? 'border-[#003060]' : 'border-[#a3a3a3]'"
+                >
+                  <span
+                    class='h-2 w-2 rounded-full transition-colors'
+                    :class="sourceMode === 'link' ? 'bg-[#003060]' : 'bg-transparent'"
+                  ></span>
+                </span>
+                <span :class="sourceMode === 'link' ? 'font-semibold text-[#171717]' : 'font-medium text-[#718096]'">Google Slides Link</span>
+              </button>
+
+              <button
+                type='button'
+                role='radio'
+                :aria-checked="sourceMode === 'file' ? 'true' : 'false'"
+                @click="switchSource('file')"
+                class='flex cursor-pointer items-center gap-2 font-inter text-sm leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+              >
+                <span
+                  class='flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors'
+                  :class="sourceMode === 'file' ? 'border-[#003060]' : 'border-[#a3a3a3]'"
+                >
+                  <span
+                    class='h-2 w-2 rounded-full transition-colors'
+                    :class="sourceMode === 'file' ? 'bg-[#003060]' : 'bg-transparent'"
+                  ></span>
+                </span>
+                <span :class="sourceMode === 'file' ? 'font-semibold text-[#171717]' : 'font-medium text-[#718096]'">Upload PPT File</span>
+              </button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div x-show="sourceMode === 'link'" x-cloak class='flex flex-col gap-[12px]'>
+          {{#> components/ui/admin/form/form-field label='Google Slides Link' for="link"}}
+            <input x-ref='linkInput' type='url' id='link' name='link' placeholder='https://docs.google.com/presentation/d/e/.../pub'
+              :disabled="sourceMode !== 'link'"
+              @input='validateLink($event.target.value)'
+              class='block w-full rounded-[6px] border border-[#D4D4D4] bg-white px-3 py-2 font-inter text-sm text-[#171717]' />
+            <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>Paste a published Google Slides URL (File → Share → Publish to web).</p>
+          {{/components/ui/admin/form/form-field}}
+
+          <template x-if='hasInput && !isValid && errorMessage'>
+            <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#DC2626]' x-text='errorMessage'></span>
+            </div>
+          </template>
+          <template x-if='hasInput && isValid'>
+            <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#16A34A]'>Valid Google Slides URL</span>
+            </div>
+          </template>
+          <template x-if='attempted && !hasInput && !(editMode && hasExistingLink)'>
+            <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#DC2626]'>Please paste a published Google Slides link.</span>
+            </div>
+          </template>
+        </div>
+
+        <div x-show="sourceMode === 'file'" x-cloak class='flex flex-col gap-[12px]'>
+          {{#> components/ui/admin/form/form-field label=(ternary editMode 'Replace PPT/PPTX file' 'Upload PPT/PPTX file') for="file"}}
+            <input x-ref="pptFile" type="file" id="file" name="file" accept=".ppt,.pptx"
+              :disabled="sourceMode !== 'file'"
+              @change="onFileChange($event)"
+              class="block w-full rounded-[6px] border border-[#D4D4D4] bg-white px-3 py-2 font-inter text-sm text-[#171717] file:mr-3 file:rounded file:border-0 file:bg-[#E8F1F8] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-[#003060]" />
+            <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>The uploaded file will be converted into a Google Slides presentation.</p>
+          {{/components/ui/admin/form/form-field}}
+
+          <template x-if='attempted && !hasFile && !(editMode && hasExistingFile)'>
+            <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#DC2626]'>Please choose a PPT/PPTX file.</span>
+            </div>
+          </template>
+        </div>
 
         {{> components/ui/admin/material/material-info-box}}
-
-        <template x-if='hasInput && !isValid && errorMessage'>
-          <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
-            <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
-            <span class='text-[12px]/[normal] font-inter text-[#DC2626]' x-text='errorMessage'></span>
-          </div>
-        </template>
-        <template x-if='hasInput && isValid'>
-          <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
-            <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
-            <span class='text-[12px]/[normal] font-inter text-[#16A34A]'>Valid Google Slides URL</span>
-          </div>
-        </template>
       {{/components/ui/admin/form/form-card}}
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
-          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
+          {{#if syllabusMode}}{{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/syllabus/' syllabusId) width='90'}}{{else}}{{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}{{/if}}
           {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}
 
-      <template x-if='hasInput && !isValid'>
+      <template x-if='sourceMode === "link" && hasInput && !isValid'>
         <div class='flex items-center gap-[8px] p-[12px] bg-[#FEF2F2] [outline:1px_solid_#DC2626] rounded-[8px]'>
           <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>
           <p class='text-[14px] text-[#DC2626] font-inter'>
-            <span class='font-semibold'>Cannot submit:</span> Please enter a valid Google Slides URL.
+            <span class='font-semibold'>Cannot submit:</span> <span x-text='errorMessage'></span>
           </p>
         </div>
       </template>
@@ -229,16 +375,20 @@
   </div>
 </div>
 
+{{> components/ui/admin/modal/confirm_action/index }}
+
 {{else if (eq jenis_file 'video')}}
 <div class='py-10 px-6'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[28px] w-full'>
 
     {{> components/ui/admin/text/page-header
       title=(ternary editMode 'Edit Material' 'Add Material')
-      subtitle=(ternary editMode 'Update the material details for this session' 'Add a video material to this session')}}
+      subtitle=(ternary editMode
+        (ternary syllabusMode 'Update the material details for this syllabus' 'Update the material details for this session')
+        (ternary syllabusMode 'Add a video material to this syllabus' 'Add a video material to this session'))}}
 
     <form
-      {{#if editMode}}action='/learning-material/video/{{material.id}}?_method=PATCH'{{else}}action='/learning-material/video/{{sessionId}}'{{/if}}
+      {{#if editMode}}action='/learning-material/video/{{material.id}}?_method=PATCH'{{else}}{{#if syllabusMode}}action='/learning-material/syllabus/video/{{syllabusId}}'{{else}}action='/learning-material/video/{{sessionId}}'{{/if}}{{/if}}
       method='POST'
       class='flex flex-col gap-[16px] w-full'
       x-data="{
@@ -317,7 +467,7 @@
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
         <div class='flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-[12px] w-full'>
-          {{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}
+          {{#if syllabusMode}}{{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/syllabus/' syllabusId) width='90'}}{{else}}{{> components/ui/admin/button/secondary-button text='Cancel' href=(concat '/session/' sessionId) width='90'}}{{/if}}
           {{> components/ui/admin/button/primary-button text=(ternary editMode 'Update Material' 'Save Material') type='submit' loading='loading' width='142'}}
         </div>
       {{/components/ui/admin/form/form-card}}

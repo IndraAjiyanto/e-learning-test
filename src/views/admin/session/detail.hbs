@@ -24,26 +24,49 @@
       {{!-- Underline tabs --}}
       {{> components/ui/admin/form/underline-tabs activeTabVar='tab' fetchFn='toggleFetch'}}
 
-      {{!-- Attendance --}}
-      <div x-show="tab === 'attendance'" x-cloak x-data='absenData()' x-init='fetchAbsens()' class='flex flex-col gap-[12px] w-full'>
-        {{> components/ui/admin/session/session-attendance-table}}
+      {{!-- Attendance — lazy: partial baru di-mount saat tab pertama aktif --}}
+      <div x-show="tab === 'attendance'" x-cloak class='flex flex-col gap-[12px] w-full'>
+        <template x-if="loaded['attendance']">
+          <div class='w-full' x-data='absenData()' x-init='fetchAbsens()'>
+            {{> components/ui/admin/session/session-attendance-table}}
+          </div>
+        </template>
       </div>
 
-      {{!-- Materi / Assignment / Logbook (partials lama, perilaku tidak berubah) --}}
-      <div x-show="tab === 'materi'" x-cloak x-data='materiData()' x-init='init()'>
-        {{> session/materi_tab}}
+      {{!-- Materi — lazy; sub-tab pdf/video/ppt tetap fetch saat diklik --}}
+      <div x-show="tab === 'materi'" x-cloak class='w-full'>
+        <template x-if="loaded['materi']">
+          <div class='w-full' x-data='materiData()' x-init='init()'>
+            {{> session/materi_tab}}
+          </div>
+        </template>
       </div>
 
-      <div x-show="tab === 'assignment'" x-cloak x-data='tugasData()' x-init='fetchTugas()'>
-        {{> session/tugas_tab}}
+      {{!-- Assignment — lazy --}}
+      <div x-show="tab === 'assignment'" x-cloak class='w-full'>
+        <template x-if="loaded['assignment']">
+          <div class='w-full' x-data='tugasData()' x-init='fetchTugas()'>
+            {{> session/tugas_tab}}
+          </div>
+        </template>
       </div>
 
-      <div x-show="tab === 'logbook'" x-cloak x-data='logbookData()' x-init='fetchLogBook()'>
-        {{> session/logbook_tab}}
+      {{!-- Logbook User — lazy --}}
+      <div x-show="tab === 'logbook'" x-cloak class='w-full'>
+        <template x-if="loaded['logbook']">
+          <div class='w-full' x-data='logbookData()' x-init='fetchLogBook()'>
+            {{> session/logbook_tab}}
+          </div>
+        </template>
       </div>
 
-      <div x-show="tab === 'logbook_mentor'" x-cloak x-data='logBookMentorData()' x-init='fetchLogBookMentor()'>
-        {{> session/logbook_mentor_tab}}
+      {{!-- Logbook Mentor — lazy --}}
+      <div x-show="tab === 'logbook_mentor'" x-cloak class='w-full'>
+        <template x-if="loaded['logbook_mentor']">
+          <div class='w-full' x-data='logBookMentorData()' x-init='fetchLogBookMentor()'>
+            {{> session/logbook_mentor_tab}}
+          </div>
+        </template>
       </div>
 
 
@@ -64,9 +87,7 @@ function tabData() {
   return {
     search: '',
     tab: localStorage.getItem('activeTabSession'),
-    data: localStorage.getItem('activeData')
-      ? JSON.parse(localStorage.getItem('activeData'))
-      : [],
+    loaded: {},
     tabs: [
       { name: 'attendance', label: 'Attendance', url: '/session/attendance/{{session.id}}' },
       { name: 'materi', label: 'Materi', url: '' },
@@ -80,33 +101,24 @@ function tabData() {
           this.tab = 'attendance';
           localStorage.setItem('activeTabSession', 'attendance');
       }
+      this.loaded[this.tab] = true;
+      this.$watch('tab', (tabName) => {
+        this.loaded[tabName] = true;
+        localStorage.setItem('activeTabSession', tabName);
+      });
     },
 
-    async toggleFetch(url, tabName) {
+    toggleFetch(url, tabName) {
       this.tab = tabName;
+      this.loaded[tabName] = true;
       localStorage.setItem('activeTabSession', tabName);
-
-      try {
-        if(url === '') {
-          this.data = [];
-          localStorage.removeItem('activeData');
-          return;
-        }else{
-          const response = await fetch(url);
-        if (!response.ok) throw new Error('Network error');
-
-        this.data = await response.json();
-        localStorage.setItem('activeData', JSON.stringify(this.data));
-        }
-      } catch (error) {
-      }
     }
   }
 }
 
 function absenData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
     searchInput: '',
     search: '',
     pageNumber: 0,
@@ -116,7 +128,6 @@ function absenData() {
     async fetchAbsens() {
       const res = await fetch('/session/attendance/{{session.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
     get filteredData() {

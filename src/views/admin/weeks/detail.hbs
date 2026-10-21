@@ -71,12 +71,20 @@
         {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
       </div>
 
-      {{!-- Session Rows --}}
-      <div x-show="tab === 'session'" x-cloak class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
+      {{!-- Session Rows — lazy: partial baru di-mount saat tab pertama aktif --}}
+      <div x-show="tab === 'session'" x-cloak class='w-full'>
+        <template x-if="loaded['session']">
+          <div class='w-full' x-data="sessionData()" x-init="fetchSessions()">{{> weeks/session_tab}}</div>
+        </template>
+      </div>
 
-      {{!-- Quiz (frozen) --}}
+      {{!-- Quiz (frozen) — lazy --}}
       {{#if lastSession}}
-      <div x-show="tab === 'quiz'" x-cloak class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+      <div x-show="tab === 'quiz'" x-cloak class='w-full'>
+        <template x-if="loaded['quiz']">
+          <div class='w-full' x-data="quizData()" x-init="fetchQuizzes()">{{> weeks/quiz_tab}}</div>
+        </template>
+      </div>
       {{/if}}
 
     </div>
@@ -98,36 +106,24 @@ function tabData() {
   return {
     search: '',
     tab: localStorage.getItem('activeTabWeek'),
-    data: localStorage.getItem('activeData')
-      ? JSON.parse(localStorage.getItem('activeData'))
-      : [],
-
+    loaded: {},
 
     async init() {
       if(!this.tab) {
           this.tab = 'session';
           localStorage.setItem('activeTabWeek', 'session');
       }
+      this.loaded[this.tab] = true;
+      this.$watch('tab', (tabName) => {
+        this.loaded[tabName] = true;
+        localStorage.setItem('activeTabWeek', tabName);
+      });
     },
 
-    async toggleFetch(url, tabName) {
+    toggleFetch(url, tabName) {
       this.tab = tabName;
+      this.loaded[tabName] = true;
       localStorage.setItem('activeTabWeek', tabName);
-
-      try {
-        if(url === '') {
-          this.data = [];
-          localStorage.removeItem('activeData');
-          return;
-        }else{
-          const response = await fetch(url);
-        if (!response.ok) throw new Error('Network error');
-
-        this.data = await response.json();
-        localStorage.setItem('activeData', JSON.stringify(this.data));
-        }
-      } catch (error) {
-      }
     }
   }
 }

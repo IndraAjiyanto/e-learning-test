@@ -7,7 +7,7 @@
   // Alpine.js Component: Logbook Table
   function logbookData() {
     return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
       searchInput: "",
       search: "",
       pageNumber: 0,
@@ -20,7 +20,6 @@
             async fetchLogBook() {
       const res = await fetch('/session/logbooks/{{session.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
    

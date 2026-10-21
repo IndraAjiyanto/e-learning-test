@@ -24,8 +24,8 @@ export class Material {
   @Column()
   file: string;
 
-  @Column({ nullable: true })
-  driveFileId?: string;
+  @Column({ type: 'varchar', nullable: true })
+  driveFileId?: string | null;
 
   @Column({ nullable: true })
   originalFileName?: string;
