@@ -8,6 +8,10 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  IsUrl,
+  Max,
+  Min,
+  ValidateIf,
 } from 'class-validator';
 import { Method, PROGRAM_TYPES, ProgramType } from 'src/entities/course.entity';
 import { ProcessStatus } from 'src/entities/types/process-status';
@@ -25,6 +29,10 @@ export class CreateCoursesDto {
   name: string;
 
   @IsString()
+  @IsUrl(
+    { require_protocol: true, protocols: ['http', 'https'] },
+    { message: 'Group link must be a valid URL (http/https)' },
+  )
   group: string;
 
   @IsEnum(['online', 'offline'])
@@ -58,10 +66,13 @@ export class CreateCoursesDto {
   @IsObject()
   description: { id: string; en: string; ja: string };
 
-  /** jsonb: { id, en, ja } */
+  /** jsonb: { id, en, ja }. Opsional - kolom `locations` nullable. */
+  @IsOptional()
   @IsObject()
   locations: { id: string; en: string; ja: string };
 
+  /** Opsional - kolom `locationLink` nullable. */
+  @IsOptional()
   @IsString()
   locationLink: string;
 
@@ -119,8 +130,10 @@ export class CreateCoursesDto {
   @IsInt()
   month?: number;
 
-  @IsOptional()
+  @ValidateIf((o: CreateCoursesDto) => !o.checkPaid)
   @IsInt()
+  @Min(1, { message: 'Day must be between 1 and 31' })
+  @Max(31, { message: 'Day must be between 1 and 31' })
   day?: number;
 
   @IsDateString()
@@ -139,6 +152,7 @@ export class CreateCoursesDto {
 
   @IsOptional()
   @IsInt()
+  @Min(1, { message: 'Program quota must be greater than 0' })
   quota?: number;
 
   @IsOptional()

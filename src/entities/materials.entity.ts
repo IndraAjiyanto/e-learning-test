@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Session } from './session.entity';
+import { Syllabus } from './syllabus.entity';
 import { Exclude } from 'class-transformer';
 
 export type FileType = 'video' | 'pdf' | 'ppt';
@@ -25,9 +27,17 @@ export class Material {
   @Column({ nullable: true })
   driveFileId?: string;
 
+  @Column({ nullable: true })
+  originalFileName?: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  fileSizeBytes?: number | string;
+
+  @Column({ nullable: true })
+  durationSeconds?: string;
+
   @Column({ type: 'enum', enum: ['video', 'pdf', 'ppt'] })
   fileType: FileType;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -36,7 +46,17 @@ export class Material {
 
   @ManyToOne(() => Session, (session) => session.materials, {
     onDelete: 'CASCADE',
+    nullable: true,
   })
   @Exclude()
-  session: Session;
+  @JoinColumn({ name: 'sessionId' })
+  session?: Session;
+
+  @ManyToOne(() => Syllabus, (syllabus) => syllabus.materials, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @Exclude()
+  @JoinColumn({ name: 'syllabusId' })
+  syllabus?: Syllabus;
 }

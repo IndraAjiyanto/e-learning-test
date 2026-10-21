@@ -3,12 +3,9 @@
   Rute   : GET /syllabus/learn/:syllabusId  (syllabus.controller.ts)
 
   Menampilkan konten (dasar teori) milik silabus dan kartu quiz di sampingnya.
-  Konten disimpan sebagai EditorJS JSON (syllabus.content); dirender di sisi
-  klien lewat blok data JSON + fungsi syllabusTheoryContent(), mengikuti pola
-  yang sama seperti konten Final Assignment.
+  Konten disimpan sebagai EditorJS JSON atau HTML (syllabus.content);
+  dirender lewat components/ui/content-preview.
 --}}
-<script id="syllabus_theory_data" type="application/json">{{{json syllabus.content}}}</script>
-
 {{#> user/shell_frame/index
   user=user
   active='learning'
@@ -23,7 +20,7 @@
     (obj 'label' 'Silabus')
   )
 }}
-<div class="min-h-full px-4 pb-10 pt-6 sm:px-8 font-inter">
+<div class="min-h-full px-4 pb-10 pt-6 sm:px-8 font-inter" x-data="syllabusDetailPage()">
   <div class="max-w-[1440px] mx-auto flex flex-col gap-8 items-start">
 
     <div class="flex flex-col gap-2 items-start">
@@ -41,12 +38,185 @@
 
           <section
             class="box-border flex flex-col items-start gap-6 p-6 sm:p-8 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0"
-            x-data="syllabusTheoryContent()"
           >
-            <div class="w-full syllabus-theory-content" x-html="renderedHtml"></div>
+            {{> components/ui/content-preview/index content=syllabus.content emptyMessage="Belum ada konten untuk silabus ini."}}
           </section>
 
+            {{!-- Card 1: Video Pembelajaran (Header Selalu Tampil) --}}
+            <section class="box-border flex flex-col gap-4 p-5 sm:p-6 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0">
+              <div class="w-full flex items-center justify-between border-b border-[#F1F5F9] pb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="grid place-items-center w-6 h-6 rounded-full bg-[#E6F0FA] text-[#003060]">
+                    <i class="fa-solid fa-play text-xs ml-0.5"></i>
+                  </span>
+                  <h2 class="font-bold text-[18px] leading-[24px] text-[#003060]">
+                    Video Pembelajaran
+                  </h2>
+                </div>
+                {{#if hasVideo}}
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF5FF] text-[#003060] text-xs font-semibold">
+                    <i class="fa-solid fa-circle-play text-[11px]"></i>
+                    <span>Tersedia</span>
+                  </span>
+                {{else}}
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F1F5F9] text-[#64748B] text-xs font-medium">
+                    <span>Belum tersedia</span>
+                  </span>
+                {{/if}}
+              </div>
+
+              {{#if hasVideo}}
+                <div class="relative w-full rounded-[12px] overflow-hidden bg-black aspect-video flex flex-col justify-center items-center shadow-inner group">
+                  {{#if isYoutube}}
+                    <iframe
+                      x-ref="youtubeIframe"
+                      src="{{videoEmbedUrl}}"
+                      class="w-full h-full border-none"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                      @load="onYoutubeLoaded()"
+                    ></iframe>
+                  {{else}}
+                    <video
+                      x-ref="videoPlayer"
+                      controls
+                      autoplay
+                      muted
+                      playsinline
+                      class="w-full h-full object-contain"
+                      src="{{videoEmbedUrl}}"
+                    ></video>
+                  {{/if}}
+                </div>
+              {{else}}
+                {{!-- Empty State Video: Header Tetap Utuh --}}
+                <div class="w-full min-h-[180px] sm:min-h-[220px] bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-[12px] flex flex-col items-center justify-center p-6 text-center gap-2.5">
+                  <span class="grid size-11 place-items-center rounded-full bg-[#E2E8F0] text-[#64748B]">
+                    <i class="fa-solid fa-video-slash text-lg"></i>
+                  </span>
+                  <div class="flex flex-col gap-1">
+                    <p class="font-semibold text-xs sm:text-sm text-[#003060]">Video Pembelajaran Belum Tersedia</p>
+                    <p class="text-[11px] sm:text-xs text-[#64748B] max-w-sm">Materi video untuk silabus ini belum diunggah. Kamu tetap dapat mempelajari dasar teori di bawah.</p>
+                  </div>
+                </div>
+              {{/if}}
+            </section>
+
+            {{!-- Card 2: Konten Teori Silabus --}}
+            <section
+              class="box-border flex flex-col items-start gap-6 p-6 sm:p-8 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0"
+              x-data="syllabusTheoryContent()"
+            >
+              <div class="w-full syllabus-theory-content" x-html="renderedHtml"></div>
+            </section>
+          </div>
+
+          {{!-- Kolom Kanan: Sidebar --}}
           <aside class="flex flex-col items-start gap-6">
+
+            {{!-- Card 1: Materi Pembelajaran (Header Selalu Tampil) --}}
+            <section class="box-border w-full bg-white border border-[#D9D9D9] rounded-[16px] p-6 flex flex-col items-start gap-4">
+              <div class="w-full flex flex-col gap-1 border-b border-[#F1F5F9] pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="grid place-items-center w-5 h-5 shrink-0 text-[#003060]">
+                    <i class="fa-solid fa-book-bookmark text-[15px]"></i>
+                  </span>
+                  <h3 class="font-bold text-[15px] leading-[20px] text-[#003060]">
+                    Materi Pembelajaran
+                  </h3>
+                </div>
+                <p class="font-medium text-[11px] leading-[16px] text-[#718096]">
+                  Lihat atau unduh materi pendukung sebelum mengerjakan quiz.
+                </p>
+              </div>
+
+              {{#if hasAnyMaterial}}
+                <div class="w-full flex flex-col gap-3">
+                  {{#each pdfMaterials}}
+                    <div class="w-full p-3.5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] flex flex-col gap-2.5 hover:border-[#003060] transition-colors shadow-sm">
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="px-2 py-0.5 rounded bg-[#FEF2F2] border border-[#FEE2E2] text-[#DC2626] font-bold text-[11px] shrink-0">
+                          PDF
+                        </span>
+                        <div class="flex flex-col min-w-0">
+                          <h4 class="font-semibold text-xs text-[#1E293B] truncate">
+                            {{default this.title 'Modul PDF'}}
+                          </h4>
+                          <span class="text-[11px] text-[#64748B] truncate">
+                            {{default this.originalFileName 'Modul.pdf'}} {{#if this.formattedSize}}· {{this.formattedSize}}{{/if}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 pt-1">
+                        <a
+                          href="{{this.file}}"
+                          target="_blank"
+                          rel="noopener"
+                          class="flex-1 h-8 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-[#003060] text-white text-xs font-semibold hover:bg-[#002244] transition-colors no-underline"
+                        >
+                          <i class="fa-regular fa-eye text-[12px]"></i>
+                          <span>Lihat PDF</span>
+                        </a>
+                        <a
+                          href="/syllabus/learn/{{../syllabus.id}}/materials/{{this.id}}/download"
+                          class="w-8 h-8 inline-flex items-center justify-center rounded-[6px] border border-[#CBD5E1] bg-white text-[#475569] hover:bg-[#F1F5F9] transition-colors no-underline"
+                          title="Unduh Modul PDF"
+                        >
+                          <i class="fa-solid fa-download text-[12px]"></i>
+                        </a>
+                      </div>
+                    </div>
+                  {{/each}}
+
+                  {{#each pptMaterials}}
+                    <div class="w-full p-3.5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] flex flex-col gap-2.5 hover:border-[#003060] transition-colors shadow-sm">
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="px-2 py-0.5 rounded bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] font-bold text-[11px] shrink-0">
+                          PPTX
+                        </span>
+                        <div class="flex flex-col min-w-0">
+                          <h4 class="font-semibold text-xs text-[#1E293B] truncate">
+                            {{default this.title 'Slide PPTX'}}
+                          </h4>
+                          <span class="text-[11px] text-[#64748B] truncate">
+                            {{default this.originalFileName 'Slide.pptx'}} {{#if this.formattedSize}}· {{this.formattedSize}}{{/if}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          @click="openSlideModal({{json this}})"
+                          class="flex-1 h-8 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-[#003060] text-white text-xs font-semibold hover:bg-[#002244] transition-colors"
+                        >
+                          <i class="fa-regular fa-eye text-[12px]"></i>
+                          <span>Lihat Slide</span>
+                        </button>
+                        <a
+                          href="/syllabus/learn/{{../syllabus.id}}/materials/{{this.id}}/download"
+                          class="w-8 h-8 inline-flex items-center justify-center rounded-[6px] border border-[#CBD5E1] bg-white text-[#475569] hover:bg-[#F1F5F9] transition-colors no-underline"
+                          title="Unduh Slide PPTX"
+                        >
+                          <i class="fa-solid fa-download text-[12px]"></i>
+                        </a>
+                      </div>
+                    </div>
+                  {{/each}}
+                </div>
+              {{else}}
+                {{!-- Empty State Materi: Header Tetap Utuh --}}
+                <div class="w-full p-4 bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-[12px] flex flex-col items-center justify-center text-center gap-2">
+                  <span class="grid size-9 place-items-center rounded-full bg-[#E2E8F0] text-[#64748B]">
+                    <i class="fa-regular fa-folder-open text-base"></i>
+                  </span>
+                  <p class="font-medium text-xs text-[#64748B]">
+                    Belum ada modul PDF atau slide materi untuk silabus ini.
+                  </p>
+                </div>
+              {{/if}}
+            </section>
+
+            {{!-- Card 2: Status & Aksi Quiz --}}
             <section class="box-border w-full bg-white border border-[#D9D9D9] rounded-[16px] p-6 flex flex-col items-center gap-5">
               {{#if quiz}}
                 <span class="inline-flex items-center gap-1.5 px-3 py-[6px] rounded-[100px] {{#if quizStatus.isPassed}}bg-[#F0FDF4] text-[#15803D]{{else if quizStatus.hasAttempt}}bg-[#FEF2F2] text-[#B42318]{{else}}bg-[#FEF3C7] text-[#D97706]{{/if}}">
@@ -86,6 +256,7 @@
               {{/if}}
             </section>
 
+            {{!-- Card 3: Cara Belajar --}}
             <section class="box-border w-full bg-white border border-[#D9D9D9] rounded-[16px] p-6 flex flex-col items-start gap-5">
               <div class="w-full flex flex-row items-center gap-2">
                 <span class="grid place-items-center w-4 h-4 shrink-0">
@@ -116,163 +287,106 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal In-Page Slide Viewer (Lightbox) -->
+  <div
+    x-show="showSlideModal"
+    x-cloak
+    style="display: none;"
+    @keydown.escape.window="closeSlideModal()"
+    class="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+  >
+    <!-- Backdrop click to close -->
+    <div class="absolute inset-0" @click="closeSlideModal()"></div>
+
+    <!-- Modal Container -->
+    <div
+      class="relative w-full max-w-[1280px] h-[90vh] bg-[#0F172A] rounded-[20px] shadow-2xl flex flex-col overflow-hidden border border-white/10 z-10"
+      @click.stop
+    >
+      <!-- Top Modal Header Bar -->
+      <div class="w-full h-14 bg-[#1E293B] border-b border-white/10 px-5 flex items-center justify-between gap-4 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="px-2 py-0.5 rounded bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] font-bold text-xs shrink-0">
+            PPTX
+          </span>
+          <h3 class="font-bold text-sm text-white truncate" x-text="selectedSlide.title || 'Slide Presentasi Silabus'"></h3>
+          <span class="hidden sm:inline-block text-xs text-slate-400" x-text="selectedSlide.originalFileName ? ('(' + selectedSlide.originalFileName + ')') : ''"></span>
+        </div>
+
+        <!-- Right Header Actions -->
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Download button -->
+          <a
+            :href="'/syllabus/learn/{{syllabus.id}}/materials/' + selectedSlide.id + '/download'"
+            class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#003060] border border-white/20 px-3 text-xs font-semibold text-white no-underline hover:bg-[#002244] transition-colors"
+            title="Unduh Berkas PPTX Asli"
+          >
+            <i class="fa-solid fa-download text-[11px]"></i>
+            <span class="hidden sm:inline">Unduh .pptx</span>
+          </a>
+
+          <!-- Close button -->
+          <button
+            type="button"
+            @click="closeSlideModal()"
+            class="h-8 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
+            title="Tutup (Esc)"
+          >
+            <i class="fa-solid fa-xmark text-sm"></i>
+            <span>Tutup</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body / Slide Screen -->
+      <div class="flex-1 w-full bg-[#0F172A] relative flex items-center justify-center overflow-hidden">
+        <!-- Google Slides Iframe -->
+        <template x-if="selectedSlide.isGoogleSlides && selectedSlide.embedUrl">
+          <iframe
+            class="w-full h-full border-none bg-slate-900"
+            :src="selectedSlide.embedUrl"
+            allowfullscreen="true"
+            mozallowfullscreen="true"
+            webkitallowfullscreen="true"
+          ></iframe>
+        </template>
+
+        <!-- Local File PPTX Card -->
+        <template x-if="selectedSlide.isLocalFile || (!selectedSlide.isGoogleSlides && !selectedSlide.embedUrl?.includes('docs.google.com'))">
+          <div class="flex flex-col items-center justify-center p-8 text-center text-white gap-4 max-w-lg">
+            <div class="w-20 h-20 rounded-2xl bg-[#2563EB]/20 border border-[#2563EB]/40 flex items-center justify-center shadow-lg">
+              <i class="fa-solid fa-file-powerpoint text-4xl text-[#60A5FA]"></i>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <h4 class="font-bold text-lg text-white" x-text="selectedSlide.originalFileName || 'Slide-Presentasi.pptx'"></h4>
+              <p class="text-xs text-slate-300">
+                File presentasi tersimpan dengan aman di server (<span x-text="selectedSlide.formattedSize || '31.9 KB'"></span>). Berkas ini siap diunduh untuk dibuka di Microsoft PowerPoint atau Google Slides Anda.
+              </p>
+            </div>
+            <div class="flex items-center gap-3 mt-2">
+              <a
+                :href="'/syllabus/learn/{{syllabus.id}}/materials/' + selectedSlide.id + '/download'"
+                class="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#2563EB] px-5 font-semibold text-xs text-white no-underline hover:bg-[#1D4ED8] transition-colors shadow-md"
+              >
+                <i class="fa-solid fa-download text-xs"></i>
+                <span>Unduh & Buka Berkas (.pptx)</span>
+              </a>
+            </div>
+            <div class="mt-4 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-[11px] text-slate-400">
+              <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>
+              <span><strong>Tips:</strong> Agar slide tampil interaktif di layar ini seperti di Bootcamp, masukkan <em>Link Google Slides</em> pada menu Edit Silabus admin.</span>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
 </div>
 {{/user/shell_frame/index}}
-
-<script>
-function syllabusTheoryContent() {
-  function blockToHtml(b) {
-    const d = b.data || {};
-    const type = (b.type || '').toLowerCase();
-    const itemText = (i) => (typeof i === 'object' && i !== null) ? (i.content || i.text || '') : (i || '');
-    const listItems = (d.items || []).map(itemText).map((c) => '<li>' + c + '</li>').join('');
-    switch (type) {
-      case 'header': {
-        const lvl = Math.min(Math.max(d.level || 2, 1), 6);
-        return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
-      }
-      case 'paragraph':
-        return '<p>' + (d.text || '') + '</p>';
-      case 'list': {
-        if (d.style === 'ordered') {
-          return '<ol>' + listItems + '</ol>';
-        }
-        return '<ul>' + listItems + '</ul>';
-      }
-      case 'image':
-        return '<figure><img src="' + ((d.file && d.file.url) || '') + '" alt="' + (d.caption || 'image') + '" /><figcaption>' + (d.caption || '') + '</figcaption></figure>';
-      case 'quote':
-        return '<blockquote>' + (d.text || '') + '</blockquote>';
-      case 'code':
-        return '<pre><code>' + (d.code || '') + '</code></pre>';
-      case 'delimiter':
-        return '<hr />';
-      default:
-        return d.text ? '<p>' + d.text + '</p>' : '';
-    }
-  }
-
-  return {
-    renderedHtml: '',
-    init() {
-      const empty = '<p class="italic">Belum ada konten untuk silabus ini.</p>';
-      const rawEl = document.getElementById('syllabus_theory_data');
-      if (!rawEl || !rawEl.textContent) {
-        this.renderedHtml = empty;
-        return;
-      }
-      const text = rawEl.textContent.trim();
-      if (!text) {
-        this.renderedHtml = empty;
-        return;
-      }
-      if (/<\/?[a-z][\s\S]*>/i.test(text)) {
-        this.renderedHtml = text;
-        return;
-      }
-      let parsed = null;
-      try {
-        parsed = JSON.parse(text);
-      } catch (e) {
-        parsed = null;
-      }
-      if (typeof parsed === 'string') {
-        try {
-          parsed = JSON.parse(parsed);
-        } catch (e) {
-          parsed = null;
-        }
-      }
-      if (typeof parsed === 'string' && /<\/?[a-z][\s\S]*>/i.test(parsed)) {
-        this.renderedHtml = parsed;
-        return;
-      }
-      if (parsed && Array.isArray(parsed.blocks) && parsed.blocks.length > 0) {
-        this.renderedHtml = parsed.blocks.map(blockToHtml).join('');
-      } else {
-        this.renderedHtml = empty;
-      }
-    },
-  };
-}
-</script>
-
-<style>
-  .syllabus-theory-content {
-    font-family: 'Inter', sans-serif;
-    line-height: 24px;
-  }
-  .syllabus-theory-content h1 {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 700;
-    color: #003060;
-    margin: 18px 0 8px;
-  }
-  .syllabus-theory-content h2 {
-    font-size: 20px;
-    line-height: 28px;
-    font-weight: 700;
-    color: #003060;
-    margin: 16px 0 6px;
-  }
-  .syllabus-theory-content h3 {
-    font-size: 18px;
-    line-height: 26px;
-    font-weight: 600;
-    color: #003060;
-    margin: 14px 0 6px;
-  }
-  .syllabus-theory-content h4,
-  .syllabus-theory-content h5,
-  .syllabus-theory-content h6 {
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 600;
-    color: #003060;
-    margin: 12px 0 6px;
-  }
-  .syllabus-theory-content p {
-    font-size: 14px;
-    line-height: 24px;
-    color: #2D3748;
-    margin: 0 0 20px;
-  }
-  .syllabus-theory-content ul,
-  .syllabus-theory-content ol {
-    font-size: 14px;
-    line-height: 24px;
-    color: #2D3748;
-    margin: 0 0 20px;
-  }
-  .syllabus-theory-content ul { list-style: disc; padding-left: 20px; }
-  .syllabus-theory-content ol { list-style: decimal; padding-left: 20px; }
-  .syllabus-theory-content blockquote {
-    border-left: 4px solid #3182CE;
-    padding-left: 12px;
-    font-style: italic;
-    margin: 0 0 20px;
-    color: #525252;
-  }
-  .syllabus-theory-content figure { margin: 0 0 20px; }
-  .syllabus-theory-content figure img { max-width: 100%; border-radius: 8px; }
-  .syllabus-theory-content figure figcaption {
-    text-align: center;
-    font-size: 12px;
-    color: #737373;
-    margin-top: 4px;
-  }
-  .syllabus-theory-content pre {
-    background: #F5F5F5;
-    padding: 12px;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-size: 12px;
-    margin: 0 0 20px;
-  }
-  .syllabus-theory-content hr {
-    border: none;
-    border-top: 2px solid #E5E5E5;
-    margin: 20px 0;
-  }
-</style>

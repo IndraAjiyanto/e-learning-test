@@ -12,12 +12,9 @@ function programData(mode) {
     submitAttempted: false,
     touched: {},
     paidClass: false,
-    // Bentuk belajar program. Lihat courses/program-type.ts - hanya
-    // non_bootcamp yang boleh mematikan logbook.
-    programType: 'bootcamp',
     logbookEnabled: true,
     get logbookConfigurable() {
-      return this.programType === 'non_bootcamp';
+      return this.formData.programType === 'non_bootcamp';
     },
     method: 'online',
     get methodOnline() {
@@ -36,12 +33,21 @@ function programData(mode) {
     activeStep: 1,
 
     formData: {
+      programType: '',
       description: { id: '', en: '', ja: '' },
       location: { id: '', en: '', ja: '' },
       locationLink: ''
     },
-    formErrors: { locationLink: '' },
+    formErrors: { programType: '', locationLink: '' },
     formValid: { locationLink: false },
+
+    // Opsi learning structure — sama dengan form Create Program di tab
+    // Program pada halaman Detail Category (admin/course/formCreate.hbs).
+    programTypeOptions: [
+      { value: 'bootcamp', label: 'Bootcamp — weeks, sessions, weekly quiz' },
+      { value: 'non_bootcamp', label: 'Non Bootcamp — flat syllabus (Starter / Faster Class)' },
+      // { value: 'lpk', label: 'Japan Pathway — same as bootcamp, sensei-led' },
+    ],
 
     val(elId) {
       const el = document.getElementById(elId);
@@ -109,10 +115,10 @@ function programData(mode) {
         try {
           const u = new URL(value.trim());
           if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-            msg = 'Please enter a valid URL (http/https)';
+            msg = label + ' must be a valid URL (http/https)';
           }
         } catch (e) {
-          msg = 'Please enter a valid URL (http/https)';
+          msg = label + ' must be a valid URL (http/https)';
         }
       }
       this.setFieldError(elId, msg);
@@ -218,10 +224,11 @@ function programData(mode) {
     },
 
     validateLocationLink() {
-      const value = this.formData.locationLink || '';
-      let msg = this.nonEmpty(value, 'Link Location');
-      if (!msg) {
-        try { new URL(value.trim()); } catch (e) { msg = 'Please enter a valid URL'; }
+      // Opsional: kosong selalu valid, URL hanya dicek bila diisi.
+      const value = (this.formData.locationLink || '').trim();
+      let msg = '';
+      if (value) {
+        try { new URL(value); } catch (e) { msg = 'Please enter a valid URL'; }
       }
       const show = this.submitAttempted || this.touched.locationLink;
       this.formErrors.locationLink = show ? msg : '';
@@ -229,13 +236,33 @@ function programData(mode) {
       return !msg;
     },
 
+    touch(path) {
+      this.touched[path] = true;
+      if (path === 'programType') {
+        this.touched['program_type'] = true;
+        this.validateProgramType();
+      }
+    },
+
+    validateProgramType() {
+      const ok = ['bootcamp', 'non_bootcamp'].includes(this.formData.programType);
+      const show = this.submitAttempted || this.touched.programType;
+      this.formErrors.programType = show && !ok ? 'Learning Structure is required' : '';
+      this.setFieldStatus('program_type', ok);
+      return ok;
+    },
+
     validateMoneyInput(nameAttr, elId, label, optional) {
       const raw = this.hiddenValue(nameAttr);
       let msg = '';
       if (!raw) {
         if (!optional) msg = label + ' is required';
-      } else if (!/^\d+$/.test(raw)) {
+      } else if (!/^-?\d+$/.test(raw)) {
         msg = label + ' must contain numbers only';
+      } else if (min !== undefined && parseInt(raw, 10) < min) {
+        msg = min === 1
+          ? label + ' must be greater than 0'
+          : label + ' must be at least ' + min;
       }
       this.setFieldError(elId, msg);
       this.setFieldStatus(elId, !msg);
@@ -367,18 +394,17 @@ function programData(mode) {
       }
 
       results.push(this.validateTextField('name', 'Program Name'));
-      results.push(this.validateUrlField('group', 'Group'));
+      results.push(this.validateUrlField('group', 'Group Link'));
       results.push(this.validateMultiLang('description', 'description', {
         id: 'Indonesian description', en: 'English description', ja: 'Japanese description'
       }));
-      results.push(this.validateMultiLang('location', 'lokasi', {
-        id: 'Location (ID)', en: 'Location (EN)', ja: 'Location (JP)'
-      }));
+      // Location opsional - tidak divalidasi wajib.
       results.push(this.validateMethod());
 
       results.push(this.validateDropdown('categoryId', 'categoryId', 'Category'));
-      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Program Type'));
+      results.push(this.validateDropdown('courseTypeId', 'courseTypeId', 'Tag'));
       results.push(this.validateList('technologiesIds[]', 'technologies', 'technology'));
+      results.push(this.validateProgramType());
 
       if (document.querySelector('input[name="mentoringsId"]')) {
         results.push(this.validateDropdown('mentoringsId', 'mentoringId', 'Mentoring'));
@@ -395,7 +421,7 @@ function programData(mode) {
         } else { this.clearField('promo1'); }
       }
       if (document.getElementById('quota')) {
-        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false));
+        results.push(this.validateMoneyInput('quota', 'quota', 'Program Quota', false, 1));
       }
 
       if (this.paidClass) {

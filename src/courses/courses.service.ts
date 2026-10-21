@@ -124,6 +124,27 @@ export class CoursesService {
     if (!createCourseDto.image || createCourseDto.image.trim() === '') {
       throw new BadRequestException('Image file is required');
     }
+    if (
+      createCourseDto.quota !== undefined &&
+      createCourseDto.quota !== null &&
+      createCourseDto.quota <= 0
+    ) {
+      throw new BadRequestException('Program quota must be greater than 0');
+    }
+    if (createCourseDto.group) {
+      try {
+        const u = new URL(createCourseDto.group);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+          throw new BadRequestException(
+            'Group link must be a valid URL (http/https)',
+          );
+        }
+      } catch {
+        throw new BadRequestException(
+          'Group link must be a valid URL (http/https)',
+        );
+      }
+    }
 
     const category = await this.categoryRepository.findOne({
       where: { id: createCourseDto.categoryId },
@@ -1732,6 +1753,27 @@ export class CoursesService {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException(`Program not found`);
+    }
+    if (
+      updateCourseDto.quota !== undefined &&
+      updateCourseDto.quota !== null &&
+      updateCourseDto.quota <= 0
+    ) {
+      throw new BadRequestException('Program quota must be greater than 0');
+    }
+    if (updateCourseDto.group) {
+      try {
+        const u = new URL(updateCourseDto.group);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+          throw new BadRequestException(
+            'Group link must be a valid URL (http/https)',
+          );
+        }
+      } catch {
+        throw new BadRequestException(
+          'Group link must be a valid URL (http/https)',
+        );
+      }
     }
 
     if (updateCourseDto.categoryId) {

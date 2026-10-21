@@ -12,7 +12,7 @@
     - Value: Inter 700 18px leading 22px #0B1F3B
 
   Props:
-  - iconType : "calendar" | "clock" | "format" | "custom"
+  - iconType : "calendar" | "clock" | "format" | "location" | "custom"
   - label    : string (e.g. "Tanggal Mulai", "Tanggal Selesai", "Tanggal Akhir Registration", "Opsi Format")
   - value    : string (e.g. "21 April 2026", "Hybrid (Online Zoom & Offline Meetup)")
   - class    : string
@@ -43,6 +43,12 @@
         <path d="M3 9h18"/>
         <path d="M9 21V9"/>
       </svg>
+    {{else if (eq iconType "location")}}
+      {{!-- Location / Map Pin Icon --}}
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
     {{else}}
       {{!-- Generic Info Icon --}}
       <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="#003060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -59,7 +65,11 @@
       {{label}}
     </span>
     <h4 class="font-inter text-base sm:text-[18px] font-bold leading-snug sm:leading-[22px] text-[#0B1F3B] break-words w-full">
-      {{value}}
+      {{#if link}}
+        <a href="{{link}}" target="_blank" rel="noopener noreferrer" class="underline decoration-[#003060]/40 hover:text-[#003060]">{{value}}</a>
+      {{else}}
+        {{value}}
+      {{/if}}
     </h4>
   </div>
 

@@ -11,8 +11,8 @@ describe('PaymentsController', () => {
   let controller: PaymentsController;
   let paymentsService: Record<string, jest.Mock>;
   let invoiceService: Record<string, jest.Mock>;
-  type MockReq = Partial<Request> & {
-    user?: { id: string; role?: string };
+  type MockReq = Omit<Partial<Request>, 'user'> & {
+    user?: { id: string; role?: string; [key: string]: any };
     flash: jest.Mock;
   };
   type MockRes = Partial<Response> & {

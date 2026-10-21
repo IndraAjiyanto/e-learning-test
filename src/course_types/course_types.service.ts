@@ -1,9 +1,53 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCourseTypeDto } from './dto/create-course_type.dto';
 import { UpdateCourseTypeDto } from './dto/update-course_type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Repository } from 'typeorm';
+
+const STYLE_PREFIXES = new Set([
+  'fa',
+  'fas',
+  'far',
+  'fab',
+  'fal',
+  'fad',
+  'fa-solid',
+  'fa-regular',
+  'fa-brands',
+  'fa-light',
+  'fa-thin',
+  'fa-duotone',
+]);
+
+export function isValidIconFormat(value?: string | null): boolean {
+  const raw = String(value || '')
+    .trim()
+    .toLowerCase();
+  if (!raw || STYLE_PREFIXES.has(raw)) return false;
+  const parts = raw.split(/\s+/);
+  if (parts.length === 2) {
+    const [style, glyph] = parts;
+    if (!STYLE_PREFIXES.has(style)) return false;
+    return (
+      /^fa-[a-z0-9]+(-[a-z0-9]+)*$/.test(glyph) && !STYLE_PREFIXES.has(glyph)
+    );
+  }
+  if (parts.length === 1) {
+    const single = parts[0];
+    if (/^fa-[a-z0-9]+(-[a-z0-9]+)*$/.test(single)) {
+      return !STYLE_PREFIXES.has(single);
+    }
+    return (
+      /^[a-z0-9]+(-[a-z0-9]+)*$/.test(single) && !STYLE_PREFIXES.has(single)
+    );
+  }
+  return false;
+}
 
 @Injectable()
 export class CourseTypesService {
@@ -12,6 +56,11 @@ export class CourseTypesService {
     private readonly courseTypeRepository: Repository<CourseType>,
   ) {}
   async create(createJenisKelaDto: CreateCourseTypeDto) {
+    if (!isValidIconFormat(createJenisKelaDto.icon)) {
+      throw new BadRequestException(
+        'Invalid or incomplete icon format. Please provide a valid icon name (e.g. "code", "fa-code", or "fa-solid fa-code").',
+      );
+    }
     const courseType = this.courseTypeRepository.create(createJenisKelaDto);
     return await this.courseTypeRepository.save(courseType);
   }
@@ -65,6 +114,14 @@ export class CourseTypesService {
     const courseType = await this.findOne(courseTypeId);
     if (!courseType) {
       throw new NotFoundException('Program type not found');
+    }
+    if (
+      updateJenisKelaDto.icon !== undefined &&
+      !isValidIconFormat(updateJenisKelaDto.icon)
+    ) {
+      throw new BadRequestException(
+        'Invalid or incomplete icon format. Please provide a valid icon name (e.g. "code", "fa-code", or "fa-solid fa-code").',
+      );
     }
     Object.assign(courseType, updateJenisKelaDto);
     return await this.courseTypeRepository.save(courseType);

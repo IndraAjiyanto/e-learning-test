@@ -174,32 +174,96 @@
       </nav>
 
       {{#if (eq caps.structure 'weeks')}}
-        <div x-show="tab === 'week'" class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
+        <div x-show="tab === 'week'" class='w-full'>
+          <template x-if="loaded['week']">
+            <div class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
+          </template>
+        </div>
       {{/if}}
       {{#if (eq caps.structure 'syllabus')}}
-        <div x-show="tab === 'sylabus'" class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
+        <div x-show="tab === 'sylabus'" class='w-full'>
+          <template x-if="loaded['sylabus']">
+            <div class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
+          </template>
+        </div>
       {{/if}}
       {{#if caps.finalAssignment}}
-        <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab }}</div>
+        <div x-show="tab === 'final_assignment'" class='w-full'>
+          <template x-if="loaded['final_assignment']">
+            <div class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab }}</div>
+          </template>
+        </div>
       {{/if}}
-      <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'FAQs'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'benefit'">
+        <template x-if="loaded['benefit']">
+          <div>{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'participants'">
+        <template x-if="loaded['participants']">
+          <div>{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'flow'">
+        <template x-if="loaded['flow']">
+          <div>{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'FAQs'">
+        <template x-if="loaded['FAQs']">
+          <div>{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
       {{#if course.checkPaid}}
-        <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
-        <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+        <div x-show="tab === 'payment'">
+          <template x-if="loaded['payment']">
+            <div>{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
+          </template>
+        </div>
+        <div x-show="tab === 'installment'">
+          <template x-if="loaded['installment']">
+            <div>{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+          </template>
+        </div>
       {{else}}
-        <div x-show="tab === 'registration'">{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
+        <div x-show="tab === 'registration'">
+          <template x-if="loaded['registration']">
+            <div>{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
+          </template>
+        </div>
       {{/if}}
       {{#unless (eq course.category.type 'Free Program')}}
-      <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'alumni'">
+        <template x-if="loaded['alumni']">
+          <div>{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
       {{/unless}}
-      <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'mentor'">{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'portfolio'">{{> components/ui/super_admin/program/portfolio_tab/index courseId=course.id }}</div>
+      <div x-show="tab === 'user'">
+        <template x-if="loaded['user']">
+          <div>{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'log_book_user'">
+        <template x-if="loaded['log_book_user']">
+          <div>{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'log_book_mentor'">
+        <template x-if="loaded['log_book_mentor']">
+          <div>{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'mentor'">
+        <template x-if="loaded['mentor']">
+          <div>{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'portfolio'">
+        <template x-if="loaded['portfolio']">
+          <div>{{> components/ui/super_admin/program/portfolio_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
     </div>
 
   </div>
@@ -235,9 +299,13 @@
     const fallbackTab = isPaid ? 'payment' : 'registration';
     return {
       tab: localStorage.getItem('activeTabProgram') || fallbackTab,
+      loaded: {},
 
       init() {
-        this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
+        this.$watch('tab', (tabName) => {
+          this.loaded[tabName] = true;
+          localStorage.setItem('activeTabProgram', tabName);
+        });
 
         if (!isPaid && (this.tab === 'installment' || this.tab === 'payment')) {
           this.tab = 'registration';
@@ -257,6 +325,8 @@
         } else if (this.tab === 'alumni' && !hasAlumni) {
           this.tab = fallbackTab;
         }
+
+        this.loaded[this.tab] = true;
       },
     };
   }

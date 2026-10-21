@@ -42,13 +42,16 @@
 <div class='min-h-screen bg-[#f3f3f3] px-4 pt-8 pb-32 sm:px-[34px] sm:pt-[42px] sm:pb-36'>
   <div
     class='flex flex-col gap-7'
-    x-data='programCreateForm({
-      categoryId: {{json categoryId}},
-      categories: [{{#each category}}{ value: {{json id}}, label: {{json name}} }{{#unless @last}},{{/unless}}{{/each}}],
-      courseTypes: [{{#each courseType}}{ value: {{json id}}, label: {{json nameClassesType}} }{{#unless @last}},{{/unless}}{{/each}}],
-      technologies: [{{#each technologies}}{ value: {{json id}}, label: {{json name}}, iconUrl: {{json imgUrl}}, iconSvg: {{json svg}}, isTool: true }{{#unless @last}},{{/unless}}{{/each}}],
-      mentorings: [{{#each mentorings}}{ value: {{json id}}, label: {{json username}} }{{#unless @last}},{{/unless}}{{/each}}],
-    })'
+    x-data='{
+      ...programCreateForm({
+        categoryId: {{json categoryId}},
+        categories: [{{#each category}}{ value: {{json id}}, label: {{json name}} }{{#unless @last}},{{/unless}}{{/each}}],
+        courseTypes: [{{#each courseType}}{ value: {{json id}}, label: {{json nameClassesType}} }{{#unless @last}},{{/unless}}{{/each}}],
+        technologies: [{{#each technologies}}{ value: {{json id}}, label: {{json name}}, iconUrl: {{json imgUrl}}, iconSvg: {{json svg}}, isTool: true }{{#unless @last}},{{/unless}}{{/each}}],
+        mentorings: [{{#each mentorings}}{ value: {{json id}}, label: {{json username}} }{{#unless @last}},{{/unless}}{{/each}}],
+      }),
+      ...formDirtyGate()
+    }'
   >
     <div class='flex flex-col gap-1'>
       {{> components/ui/super_admin/page_header/index title='Create Program' }}
@@ -132,6 +135,7 @@
                 field='programType'
                 label='Learning Structure'
                 options='programTypeOptions'
+                placeholder='Select learning structure'
                 searchable=false
                 required=true
                 highlight=true
@@ -277,7 +281,7 @@
             </div>
 
             <div class='flex flex-col gap-2'>
-              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location<span class='text-[#dc2626]'>*</span></span>
+              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location</span>
               <div class='flex flex-col gap-4'>
                 {{> langTabs ariaLabel='Location language' state='locLang' short=true }}
 
@@ -304,7 +308,6 @@
               icon='link'
               label='Link Location'
               placeholder='https://maps.app.goo.gl/...'
-              required=true
             }}
           </div>
         {{/components/ui/super_admin/form/section_card}}
@@ -359,10 +362,10 @@
 
         <div class='flex flex-col-reverse gap-3 rounded-xl border border-[#d9d9d9] bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5'>
           {{> components/ui/super_admin/form/button
-            as='link'
+            as='button'
             variant='secondary'
-            href=(concat '/category/' categoryId)
             label='Cancel'
+            atClick=(concat "openConfirmDiscard(isDirty, '/category/" categoryId "')")
             loading=true
           }}
 
@@ -430,7 +433,7 @@
     const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
 
     const sectionPaths = (paid) => ({
-      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentoringsId'],
+      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'programType', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentoringsId'],
       'section-description': LANGS.map((l) => `description.${l}`),
       'section-schedule': [
         ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
@@ -450,7 +453,7 @@
     });
 
     const emptyErrors = () => ({
-      name: '', group: '', categoryId: '', jenis_kelasId: '', mentoringsId: '', paid: '', method: '',
+      name: '', group: '', categoryId: '', jenis_kelasId: '', programType: '', mentoringsId: '', paid: '', method: '',
       quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
       date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
       description: byLang(() => ''), locations: byLang(() => ''),
@@ -494,7 +497,7 @@
         formData: {
           name: '', group: '',
           categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
-          jenis_kelasId: '', programType: 'bootcamp', mentoringsId: '', paid: 'true', method: 'online',
+          jenis_kelasId: '', programType: '', mentoringsId: '', paid: 'true', method: 'online',
           quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
           date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
           description: byLang(() => ''), locations: byLang(() => ''),
@@ -535,10 +538,13 @@
               return UUID.test(val) ? '' : 'Please select a category.';
             case 'jenis_kelasId':
               return UUID.test(val) ? '' : 'Please select a program type.';
+            case 'programType':
+              return ['bootcamp', 'non_bootcamp'].includes(val) ? '' : 'Please select a learning structure.';
             case 'mentoringsId':
               return UUID.test(val) ? '' : 'Please select a mentoring.';
             case 'quota':
-              return +digits(val) > 0 ? '' : 'Program quota is required.';
+              if (!digits(val)) return 'Program quota is required.';
+              return +digits(val) > 0 ? '' : 'Program quota must be greater than 0.';
             case 'price':
               return +digits(val) > 0 ? '' : 'Price is required.';
             case 'promo':
@@ -560,14 +566,14 @@
               if (!val) return 'End date is required.';
               return d.startDate && val < d.startDate ? 'End date must be on or after the start date.' : '';
             case 'locationLink':
-              if (!val) return 'Link location is required.';
+              if (!val) return '';
               return isHttpUrl(val) ? '' : 'Link location must be a valid URL.';
             case 'technologies':
               return val > 0 ? '' : 'Please select at least one tool.';
             case 'description':
               return val ? '' : `Description (${LANG_LABEL[lang]}) is required.`;
             case 'locations':
-              return val ? '' : `Location (${LANG_LABEL[lang]}) is required.`;
+              return '';
             default:
               return '';
           }
@@ -615,6 +621,7 @@
           };
           window.addEventListener('scroll', track, { passive: true });
           track();
+          this.$nextTick(() => this.captureBaseline());
         },
 
         // Langkah menyala bila card-nya lengkap, atau card-nya sedang/sudah dilewati saat scroll.
@@ -730,3 +737,5 @@
     };
   })();
 </script>
+
+{{> components/ui/admin/modal/confirm_action/index}}

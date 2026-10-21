@@ -61,6 +61,7 @@
             name='type'
             :value='t.value'
             x-model='formData.type'
+            @change='validateField("type", formData.type)'
             class='sr-only'
           />
           <span

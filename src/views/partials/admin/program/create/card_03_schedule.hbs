@@ -58,7 +58,7 @@
       {{#> components/ui/admin/form/form-field label="Day*" for="day" errorId="day_error"}}
         <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
           :class="borderClass('day')">
-          <input type='number' id='day' name='day' placeholder='1-31' min='0' value='{{#if course}}{{course.day}}{{/if}}'
+          <input type='number' id='day' name='day' placeholder='1-31' min='1' max='31' value='{{#if course}}{{course.day}}{{/if}}'
             :disabled='paidClass'
             class='text-[16px]/[normal] flex-1 min-w-0 text-[#404040] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]'
             @input='$event.target.value = $event.target.value.replace(/[^0-9]/g, "")'
@@ -95,7 +95,7 @@
 
     {{!-- Location Inputs --}}
     <div class='flex flex-col gap-[6px] w-full'>
-      <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Location*</label>
+      <label class='text-[14px]/[normal] text-[#404040] font-inter font-medium'>Location</label>
       <div x-show='locTab === "id"'>
         <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
           :class="borderClass('lokasi_id')">
@@ -131,7 +131,7 @@
   </div>
 
   {{!-- Link Location --}}
-  {{#> components/ui/admin/form/form-field label="Link Location*" for="locationLink" errorId="locationLink_error"}}
+  {{#> components/ui/admin/form/form-field label="Link Location" for="locationLink" errorId="locationLink_error"}}
     <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
       :class="formErrors.locationLink ? '![outline-color:#DC2626]' : (formValid.locationLink ? '![outline-color:#22C55E]' : '')">
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>
