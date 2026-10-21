@@ -41,13 +41,11 @@
 <script>
 function quizData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
 
     async fetchQuizzes() {
       const res = await fetch('/week/quiz/{{weeks.id}}');
       this.data = await res.json();
-
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     }
   }
 }
