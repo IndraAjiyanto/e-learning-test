@@ -5,12 +5,17 @@ export class CreateMaterialDto {
   @IsString()
   title: string;
 
+  @IsOptional()
   @IsString()
   file: string;
 
   @IsOptional()
   @IsString()
-  driveFileId?: string;
+  link?: string;
+
+  @IsOptional()
+  @IsString()
+  driveFileId?: string | null;
 
   @IsArray()
   slides: string[];
@@ -19,6 +24,11 @@ export class CreateMaterialDto {
   @IsOptional()
   fileType: FileType;
 
+  @IsOptional()
   @IsUUID()
-  sessionId: string;
+  sessionId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  syllabusId?: string;
 }

@@ -45,6 +45,22 @@ export class MaterialController {
     private readonly googleSlidesService: GoogleSlidesService,
   ) {}
 
+  private resolvePptLink(dto: CreateMaterialDto | UpdateMaterialDto): string {
+    const link = (dto.link || '').trim();
+    if (
+      link &&
+      !(
+        /^https:\/\/docs\.google\.com\/presentation\//.test(link) &&
+        (link.includes('/pub') || link.includes('/embed'))
+      )
+    ) {
+      throw new Error(
+        'Please use a published Google Slides URL (File → Share → Publish to web).',
+      );
+    }
+    return link;
+  }
+
   @Roles('admin', 'super_admin')
   @Post('pdf/:sessionId')
   @UseInterceptors(
@@ -104,10 +120,25 @@ export class MaterialController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      if (!file) throw new Error('Please upload a PPT or PPTX file.');
-      const uploaded = await this.googleSlidesService.upload(file);
-      createMaterialDto.file = uploaded.url;
-      createMaterialDto.driveFileId = uploaded.fileId;
+      const link = this.resolvePptLink(createMaterialDto);
+      if (file && link) {
+        throw new Error(
+          'Please choose either a file upload or a Google Slides link, not both.',
+        );
+      }
+      if (!file && !link) {
+        throw new Error(
+          'Please upload a PPT/PPTX file or provide a published Google Slides link.',
+        );
+      }
+      if (link) {
+        createMaterialDto.file = link;
+        createMaterialDto.driveFileId = undefined;
+      } else {
+        const uploaded = await this.googleSlidesService.upload(file);
+        createMaterialDto.file = uploaded.url;
+        createMaterialDto.driveFileId = uploaded.fileId;
+      }
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'ppt';
 
@@ -159,6 +190,137 @@ export class MaterialController {
   }
 
   @Roles('admin', 'super_admin')
+  @Post('syllabus/pdf/:syllabusId')
+  @UseInterceptors(
+    FileInterceptor('file', multerConfigMemoryOnly),
+    ValidateFileInterceptor,
+  )
+  @ValidateFile({
+    maxSize: 10 * 1024 * 1024,
+    allowedTypes: ['application/pdf'],
+    fileExtensions: ['.pdf'],
+    folder: 'material/pdf',
+    resourceType: 'raw',
+  })
+  async createPdfForSyllabus(
+    @Body() createMaterialDto: CreateMaterialDto,
+    @Res() res: Response,
+    @Param('syllabusId') syllabusId: string,
+    @Req() req: Request,
+  ) {
+    try {
+      createMaterialDto.file =
+        (req.body as { uploadedFileUrls?: string[] })?.uploadedFileUrls?.[0] ||
+        '';
+      createMaterialDto.syllabusId = syllabusId;
+      createMaterialDto.sessionId = undefined;
+      createMaterialDto.fileType = 'pdf';
+      await this.materialService.create(createMaterialDto);
+      flashToast(
+        req,
+        'Material Created',
+        'The new PDF material has been added to this syllabus.',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to create material',
+        err.message || 'Failed to create PDF material',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('syllabus/ppt/:syllabusId')
+  @UseInterceptors(
+    FileInterceptor(
+      'file',
+      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
+    ),
+  )
+  async createPptForSyllabus(
+    @Body() createMaterialDto: CreateMaterialDto,
+    @Res() res: Response,
+    @Param('syllabusId') syllabusId: string,
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const link = this.resolvePptLink(createMaterialDto);
+      if (file && link) {
+        throw new Error(
+          'Please choose either a file upload or a Google Slides link, not both.',
+        );
+      }
+      if (!file && !link) {
+        throw new Error(
+          'Please upload a PPT/PPTX file or provide a published Google Slides link.',
+        );
+      }
+      if (link) {
+        createMaterialDto.file = link;
+        createMaterialDto.driveFileId = undefined;
+      } else {
+        const uploaded = await this.googleSlidesService.upload(file);
+        createMaterialDto.file = uploaded.url;
+        createMaterialDto.driveFileId = uploaded.fileId;
+      }
+      createMaterialDto.syllabusId = syllabusId;
+      createMaterialDto.sessionId = undefined;
+      createMaterialDto.fileType = 'ppt';
+
+      await this.materialService.create(createMaterialDto);
+      flashToast(
+        req,
+        'Material Created',
+        'The new PPT material has been added to this syllabus.',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to create material',
+        err.message || 'Failed to create PPT material',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('syllabus/video/:syllabusId')
+  async createVideoForSyllabus(
+    @Body() createMaterialDto: CreateMaterialDto,
+    @Res() res: Response,
+    @Param('syllabusId') syllabusId: string,
+    @Req() req: Request,
+  ) {
+    try {
+      createMaterialDto.syllabusId = syllabusId;
+      createMaterialDto.sessionId = undefined;
+      createMaterialDto.fileType = 'video';
+      await this.materialService.create(createMaterialDto);
+      flashToast(
+        req,
+        'Material Created',
+        'The new video material has been added to this syllabus.',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to create material',
+        err.message || 'Failed to create video material',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:id')
   async formCreate(
     @Param('id') id: string,
@@ -178,6 +340,22 @@ export class MaterialController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('formCreate/syllabus/:jenis_file/:syllabusId')
+  formCreateForSyllabus(
+    @Param('syllabusId') syllabusId: string,
+    @Param('jenis_file') jenis_file: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    res.render('admin/materi/create', {
+      user: req.user,
+      syllabusId,
+      syllabusMode: true,
+      jenis_file,
+    });
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:id')
   async formEdit(
     @Param('id') id: string,
@@ -188,6 +366,8 @@ export class MaterialController {
     res.render('admin/materi/create', {
       user: req.user,
       sessionId: material.session?.id || '',
+      syllabusId: material.syllabus?.id || '',
+      syllabusMode: !!material.syllabus?.id,
       jenis_file: material.fileType,
       editMode: true,
       material,
@@ -326,7 +506,7 @@ export class MaterialController {
     @Res() res: Response,
   ) {
     const material = await this.materialService.findOne(id);
-    const sessionId = material.session?.id || '';
+    const redirectPath = this.materialService.findRedirectPath(material);
 
     try {
       if (file) {
@@ -338,7 +518,7 @@ export class MaterialController {
 
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The PDF material has been updated.');
-      res.redirect(`/session/${sessionId}`);
+      res.redirect(redirectPath);
     } catch (error: unknown) {
       const err = error as Error;
       flashToastError(
@@ -346,7 +526,7 @@ export class MaterialController {
         'Failed to update material',
         err.message || 'Failed to update PDF material',
       );
-      res.redirect(`/session/${sessionId}`);
+      res.redirect(redirectPath);
     }
   }
 
@@ -366,10 +546,29 @@ export class MaterialController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const material = await this.materialService.findOne(id);
-    const sessionId = material.session?.id || '';
+    const redirectPath = this.materialService.findRedirectPath(material);
 
     try {
-      if (file) {
+      const link = this.resolvePptLink(updateMaterialDto);
+      if (file && link) {
+        throw new Error(
+          'Please choose either a file upload or a Google Slides link, not both.',
+        );
+      }
+      if (link) {
+        if (material.driveFileId) {
+          try {
+            await this.googleSlidesService.delete(
+              material.file,
+              material.driveFileId,
+            );
+          } catch {
+            // The old presentation may belong to a different Drive owner.
+          }
+        }
+        updateMaterialDto.file = link;
+        updateMaterialDto.driveFileId = null;
+      } else if (file) {
         const uploaded = await this.googleSlidesService.upload(
           file,
           material.file,
@@ -377,12 +576,12 @@ export class MaterialController {
         );
         updateMaterialDto.file = uploaded.url;
         updateMaterialDto.driveFileId = uploaded.fileId;
-      } else if (!updateMaterialDto.file) {
+      } else {
         updateMaterialDto.file = material.file;
       }
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The PPT material has been updated.');
-      res.redirect(`/session/${sessionId}`);
+      res.redirect(redirectPath);
     } catch (error: unknown) {
       const err = error as Error;
       flashToastError(
@@ -390,7 +589,7 @@ export class MaterialController {
         'Failed to update material',
         err.message || 'Failed to update PPT material',
       );
-      res.redirect(`/session/${sessionId}`);
+      res.redirect(redirectPath);
     }
   }
 
@@ -403,12 +602,12 @@ export class MaterialController {
     @Res() res: Response,
   ) {
     const material = await this.materialService.findOne(id);
-    const sessionId = material.session?.id || '';
+    const redirectPath = this.materialService.findRedirectPath(material);
 
     try {
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The video material has been updated.');
-      res.redirect(`/session/${sessionId}`);
+      res.redirect(redirectPath);
     } catch (error: unknown) {
       const err = error as Error;
       flashToastError(
@@ -416,7 +615,34 @@ export class MaterialController {
         'Failed to update material',
         err.message || 'Failed to update video material',
       );
-      res.redirect(`/session/${sessionId}`);
+      res.redirect(redirectPath);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Delete('syllabus/:materialId/:syllabusId')
+  async removeForSyllabus(
+    @Param('materialId') materialId: string,
+    @Param('syllabusId') syllabusId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.materialService.remove(materialId);
+      flashToast(
+        req,
+        'Material Deleted',
+        'The material has been permanently removed.',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
+    } catch (error: unknown) {
+      const err = error as Error;
+      flashToastError(
+        req,
+        'Failed to delete material',
+        err.message || 'Failed to delete material',
+      );
+      res.redirect(`/syllabus/${syllabusId}`);
     }
   }
 
