@@ -505,24 +505,34 @@ export class PaymentsService {
                 ? Math.max(0, price - total - promoCode)
                 : 0;
 
+        const invoice = payment.invoice;
+        const hasXendit =
+          !!(invoice?.xendit_invoice_url || invoice?.xendit_invoice_id || invoice?.xendit_payment_channel);
+        const paymentChannel = hasXendit ? 'xendit' : 'manual';
+        const transactionType = isInstallment ? 'installment' : 'full payment';
+
         return {
           id: payment.id,
           kind: isInstallment ? 'installment' : 'full',
+          transactionType,
+          transactionKind: transactionType,
+          type: transactionType,
           courseId: payment.course?.id ?? null,
           courseName: payment.course?.name ?? 'Program',
           categoryName: payment.course?.category?.name ?? null,
-          date: payment.invoice?.paid_at ?? payment.createdAt,
-          invoiceDate: payment.invoice?.createdAt ?? payment.createdAt,
+          date: invoice?.paid_at ?? payment.createdAt,
+          invoiceDate: invoice?.createdAt ?? payment.createdAt,
           paidAt:
-            payment.invoice?.paid_at ??
+            invoice?.paid_at ??
             (payment.process === 'approved'
-              ? (payment.invoice?.updatedAt ??
+              ? (invoice?.updatedAt ??
                 payment.updatedAt ??
                 payment.createdAt)
               : null),
-          method:
-            payment.invoice?.payment_method ||
-            (isInstallment ? 'Installment' : 'Full Payment'),
+          method: invoice?.payment_method || (isInstallment ? 'Installment' : (paymentChannel === 'manual' ? 'Manual Transfer' : 'Xendit')),
+          paymentMethod: invoice?.payment_method || (isInstallment ? 'Installment' : (paymentChannel === 'manual' ? 'Manual Transfer' : 'Xendit')),
+          paymentChannel,
+          channel: paymentChannel,
           amount: total,
           subtotal: total,
           total: total,
@@ -576,6 +586,9 @@ export class PaymentsService {
         return {
           id: registration.id,
           kind: 'registration',
+          transactionType: 'registration',
+          transactionKind: 'registration',
+          type: 'registration',
           courseId: registration.course?.id ?? null,
           courseName: registration.course?.name ?? 'Program',
           categoryName: registration.course?.category?.name ?? null,
@@ -583,6 +596,9 @@ export class PaymentsService {
           invoiceDate: registration.createdAt,
           paidAt: registration.createdAt,
           method: 'Registration',
+          paymentMethod: 'Registration',
+          paymentChannel: 'manual',
+          channel: 'manual',
           amount: subtotal,
           subtotal,
           discount: regDiscount,
