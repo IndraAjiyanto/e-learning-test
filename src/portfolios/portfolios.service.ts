@@ -25,6 +25,7 @@ interface QuizRef {
   minScore?: number;
 }
 interface SyllabusRef {
+  isFinal?: boolean;
   quiz?: QuizRef[];
 }
 interface ScoreRef {
@@ -161,6 +162,8 @@ export class PortfoliosService {
         'user.profile',
         'course.id',
         'course.name',
+        'course.startEnd',
+        'course.month',
         'category.id',
         'category.name',
         'courseType.id',
@@ -209,6 +212,8 @@ export class PortfoliosService {
     return {
       id: course.id,
       name: course.name,
+      startEnd: course.startEnd,
+      month: course.month,
       // Dibutuhkan oleh panel Portfolio untuk menentukan syarat tambahan
       // create: bootcamp dan lpk wajib menyelesaikan final assignment juga.
       programType: course.programType || 'bootcamp',
@@ -249,6 +254,8 @@ export class PortfoliosService {
       .select([
         'course.id',
         'course.name',
+        'course.startEnd',
+        'course.month',
         'course.programType',
         'category.id',
         'category.name',
@@ -301,9 +308,10 @@ export class PortfoliosService {
    * seluruh pembelajaran di program itu.
    *
    * Syarat umum:
-   * 1. Jika program berbasis silabus (non_bootcamp), periksa apakah seluruh silabus
-   *    yang memiliki kuis telah lulus (atau jika user_courses.progress sudah true).
-   *    Jika seluruh silabus sudah lulus, perbarui user_courses.progress = true secara otomatis.
+   * 1. Jika program berbasis silabus (non_bootcamp), periksa kuis di silabus
+   *    terakhir: skor terbaik harus >= minimum_score milik kuis tersebut (atau
+   *    jika user_courses.progress sudah true). Jika lulus, perbarui
+   *    user_courses.progress = true secara otomatis.
    * 2. Jika program bootcamp/lpk, pastikan user_courses.progress = true (seluruh week selesai).
    *
    * Syarat tambahan untuk bootcamp dan lpk: student juga harus sudah
@@ -337,7 +345,10 @@ export class PortfoliosService {
       return false;
     }
 
-    // Untuk program berbasis silabus, verifikasi secara dinamis jika progress belum true
+    // Untuk program berbasis silabus, verifikasi secara dinamis jika progress belum true.
+    // Patokannya adalah kuis di silabus terakhir: silabus yang ditandai final,
+    // atau silabus bernomor paling besar. Kalau silabus terakhir tidak punya
+    // kuis, pakai silabus terakhir yang memang punya kuis.
     if (isNonBootcamp && !userCourse.progress) {
       const syllabuses = (await this.courseRepository.manager
         .getRepository('Syllabus')
@@ -348,14 +359,23 @@ export class PortfoliosService {
         })) as unknown as SyllabusRef[];
 
       if (syllabuses.length > 0) {
-        const quizIds: string[] = syllabuses
-          .flatMap((s) => s.quiz || [])
-          .map((q) => q.id)
-          .filter(Boolean);
+        const finalSyllabus =
+          syllabuses.find((s) => s.isFinal) ||
+          syllabuses[syllabuses.length - 1];
+        const quizSyllabus = finalSyllabus.quiz?.length
+          ? finalSyllabus
+          : [...syllabuses].reverse().find((s) => (s.quiz?.length ?? 0) > 0) ||
+            null;
+        const quizzes = quizSyllabus?.quiz ?? [];
 
-        let userScores: ScoreRef[] = [];
-        if (quizIds.length > 0) {
-          userScores = (await this.courseRepository.manager
+        // Program tanpa kuis sama sekali tidak punya syarat skor, jadi
+        // pembelajaran dianggap selesai.
+        if (quizzes.length === 0) {
+          userCourse.progress = true;
+          await this.userCourseRepository.save(userCourse);
+        } else {
+          const quizIds = quizzes.map((q) => q.id).filter(Boolean);
+          const userScores = (await this.courseRepository.manager
             .getRepository('Score')
             .createQueryBuilder('score')
             .innerJoinAndSelect('score.quiz', 'quiz')
@@ -363,26 +383,23 @@ export class PortfoliosService {
             .where('quiz.id IN (:...quizIds)', { quizIds })
             .andWhere('user.id = :userId', { userId })
             .getMany()) as unknown as ScoreRef[];
-        }
 
-        // Cek apakah setiap silabus sudah lulus kuisnya (jika ada kuis)
-        const allPassed = syllabuses.every((s) => {
-          const quiz = s.quiz?.[0] || null;
-          if (!quiz) return true; // Tidak ada kuis dianggap selesai
-          const minScore = quiz.minScore ?? 80;
-          const matchingScores = userScores.filter(
-            (sc) => sc.quiz?.id === quiz.id,
-          );
-          if (matchingScores.length === 0) return false;
-          const bestScore = Math.max(
-            ...matchingScores.map((sc) => Number(sc.score)),
-          );
-          return bestScore >= minScore;
-        });
+          const allPassed = quizzes.every((quiz) => {
+            const minScore = quiz.minScore ?? 80;
+            const matchingScores = userScores.filter(
+              (sc) => sc.quiz?.id === quiz.id,
+            );
+            if (matchingScores.length === 0) return false;
+            const bestScore = Math.max(
+              ...matchingScores.map((sc) => Number(sc.score)),
+            );
+            return bestScore >= minScore;
+          });
 
-        if (allPassed) {
-          userCourse.progress = true;
-          await this.userCourseRepository.save(userCourse);
+          if (allPassed) {
+            userCourse.progress = true;
+            await this.userCourseRepository.save(userCourse);
+          }
         }
       }
     }

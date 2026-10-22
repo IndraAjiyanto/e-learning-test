@@ -252,7 +252,7 @@ function programData(mode) {
       return ok;
     },
 
-    validateMoneyInput(nameAttr, elId, label, optional) {
+    validateMoneyInput(nameAttr, elId, label, optional, min) {
       const raw = this.hiddenValue(nameAttr);
       let msg = '';
       if (!raw) {

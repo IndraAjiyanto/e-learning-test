@@ -42,6 +42,8 @@
         overview: p.contentHtml || p.content || '',
         courseId: (p.course && p.course.id) ? p.course.id : '',
         program: (p.course && p.course.name) ? p.course.name : '',
+        courseStartEnd: (p.course && p.course.startEnd) || '',
+        courseMonth: (p.course && p.course.month) || 0,
         {{!-- overview dipakai panel detail (HTML siap tampil); contentRaw
              adalah JSON EditorJS aslinya, yang dibutuhkan mode edit. --}}
         contentRaw: p.content || '',

@@ -97,6 +97,8 @@
         createdAt: p.createdAt || '',
         courseId: (p.course && p.course.id) || '',
         program: (p.course && p.course.name) || this.programName,
+        courseStartEnd: (p.course && p.course.startEnd) || '',
+        courseMonth: (p.course && p.course.month) || 0,
         isMine: !!(p.user && p.user.id && p.user.id === this.currentUserId),
         // `classType` (tipe program) dan `category` (kategori) tadinya
         // sama-sama dibaca dari `course.category`, jadi filter Program Type
