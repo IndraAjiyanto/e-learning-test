@@ -11,6 +11,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  BadRequestException,
 } from '@nestjs/common';
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -24,7 +25,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -53,6 +54,9 @@ export class TeamController {
       createTeamDto.profile =
         (req.body as { uploadedImageUrls?: string[] })
           ?.uploadedImageUrls?.[0] || '';
+      if (!createTeamDto.profile) {
+        throw new BadRequestException('Profile photo is required');
+      }
       createTeamDto.teamOrder = await this.teamService.getNextOrder();
 
       await this.teamService.create(createTeamDto);
@@ -67,6 +71,11 @@ export class TeamController {
       await this.teamService.deleteFile(
         (req.body as { uploadedImageUrls?: string[] })
           ?.uploadedImageUrls?.[0] || '',
+      );
+      flashToastError(
+        req,
+        'Failed to Create Team Member',
+        err.message || 'Failed to create team member',
       );
       req.flash('error', err.message || 'Failed to create team member');
       res.redirect('/team');
@@ -128,6 +137,11 @@ export class TeamController {
       await this.teamService.deleteFile(
         (req.body as { uploadedImageUrls?: string[] })
           ?.uploadedImageUrls?.[0] || '',
+      );
+      flashToastError(
+        req,
+        'Failed to Update Team Member',
+        err.message || 'Failed to update team member',
       );
       req.flash('error', err.message || 'Failed to update team member');
       res.redirect('/team');
