@@ -61,10 +61,6 @@ export class MaterialController {
     return link;
   }
 
-  /**
-   * Jenis berkas dari segment route (`jenis_file`), atau null kalau nilainya
-   * bukan salah satu jenis yang dikenal.
-   */
   private parseFileType(jenisFile: string): FileType | null {
     if (jenisFile === 'pdf' || jenisFile === 'ppt' || jenisFile === 'video') {
       return jenisFile;
@@ -72,11 +68,6 @@ export class MaterialController {
     return null;
   }
 
-  /**
-   * Berkas sudah ditulis ke disk oleh ValidateFileInterceptor sebelum handler
-   * dipanggil. Kalau materi gagal dibuat (mis. batas upload syllabus sudah
-   * tercapai), berkasnya menjadi yatim di disk — hapus supaya tidak menumpuk.
-   */
   private async discardUploadedFile(req: Request): Promise<void> {
     const urls = (req.body as { uploadedFileUrls?: string[] })
       ?.uploadedFileUrls;
@@ -239,8 +230,6 @@ export class MaterialController {
   ) {
     let materialSaved = false;
     try {
-      // Batas upload syllabus: satu materi PDF per syllabus. Dicek sebelum
-      // materi dibuat supaya berkas yatim tidak tertinggal di disk.
       await this.materialService.assertSyllabusSlotAvailable(syllabusId, 'pdf');
 
       createMaterialDto.file =
@@ -289,8 +278,6 @@ export class MaterialController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      // Batas upload syllabus: satu materi PPT per syllabus. Dicek sebelum
-      // berkas dikirim ke Google Drive supaya tidak ada berkas yatim di Drive.
       await this.materialService.assertSyllabusSlotAvailable(syllabusId, 'ppt');
 
       const link = this.resolvePptLink(createMaterialDto);
@@ -345,7 +332,6 @@ export class MaterialController {
     @Req() req: Request,
   ) {
     try {
-      // Batas upload syllabus: satu materi Video per syllabus.
       await this.materialService.assertSyllabusSlotAvailable(
         syllabusId,
         'video',
@@ -399,8 +385,6 @@ export class MaterialController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    // Batas upload syllabus: satu materi per jenis berkas. Kalau jenis ini
-    // sudah terisi, admin diarahkan ke halaman syllabus untuk edit/delete.
     const fileType = this.parseFileType(jenis_file);
     if (fileType) {
       const existing = await this.materialService.findSyllabusMaterialByType(
@@ -468,15 +452,6 @@ export class MaterialController {
   ) {
     const session = await this.materialService.findSession(sessionId);
 
-    // Berkas yang diunggah bisa hilang dari disk - misalnya dipindahkan antar
-    // mesin sementara barisnya masih ada di basis data. Permintaannya lalu
-    // dijawab halaman 404 aplikasi, dan <iframe> penampil dengan patuh
-    // menampilkan halaman 404 itu LENGKAP dengan navbar dan tombol WhatsApp-nya
-    // di dalam kotak materi. Karena itu keberadaan berkas lokal diperiksa lebih
-    // dulu, dan penampil menampilkan keterangan yang jujur.
-    //
-    // Hanya berkas lokal yang bisa diperiksa; tautan luar (YouTube, Google
-    // Slides) dibiarkan apa adanya.
     const STATIC_ROOTS: Record<string, string> = {
       '/asset/': join(process.cwd(), 'public', 'asset'),
       '/uploads/': join(process.cwd(), 'uploads'),
@@ -495,13 +470,6 @@ export class MaterialController {
       return false;
     };
 
-    // Berkas mana yang langsung dibuka.
-    //
-    // Penampil ini dulu selalu terbuka kosong dengan tulisan "Select a PDF from
-    // the list", bahkan ketika sesinya hanya punya SATU berkas - student harus
-    // memilih meski tidak ada pilihan lain. Sekarang: berkas yang disebut
-    // `materialId` (ditautkan dari halaman sesi), kalau tidak ada ya yang
-    // pertama.
     const pick = <T extends { id: string }>(list: T[]): T | null =>
       (materialId && list.find((m) => m.id === materialId)) || list[0] || null;
 
