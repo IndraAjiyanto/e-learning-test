@@ -211,8 +211,28 @@ export class PortfoliosController {
         String(courseId),
       );
     }
-    const courses = userId
-      ? await this.portfoliosService.findEnrolledCourses(userId)
+    // Hanya program yang benar-benar sudah diselesaikan yang boleh dipilih.
+    // Bootcamp/LPK selesai bila final assignment-nya approved; program berbasis
+    // silabus (non_bootcamp) selesai bila kuis di silabus terakhir lulus dengan
+    // skor minimal. Program yang belum selesai tidak ditampilkan di sini supaya
+    // student tidak memilih program yang nanti ditolak saat menyimpan.
+    // Saat dibuka dari sebuah program, daftar ini tidak dipakai (programnya
+    // dikunci), jadi tidak perlu mengecek seluruh program yang diikuti.
+    const enrolledCourses =
+      userId && !isFromCourse
+        ? await this.portfoliosService.findEnrolledCourses(userId)
+        : [];
+    const completedCourses = userId
+      ? await Promise.all(
+          enrolledCourses.map(async (enrolledCourse) =>
+            (await this.portfoliosService.hasCompletedLearning(
+              userId,
+              enrolledCourse.id,
+            ))
+              ? { value: enrolledCourse.id, label: enrolledCourse.name }
+              : null,
+          ),
+        )
       : [];
 
     res.render('user/portofolios/create', {
@@ -220,7 +240,9 @@ export class PortfoliosController {
       isFromCourse,
       courseId,
       course,
-      courses,
+      courses: completedCourses.filter(
+        (item): item is { value: string; label: string } => item !== null,
+      ),
       bareShell: true,
     });
   }
