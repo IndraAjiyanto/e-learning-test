@@ -33,33 +33,6 @@ export class Syllabus {
   @Column({ name: 'isFinal', default: false })
   isFinal: boolean;
 
-  @Column({ nullable: true })
-  videoUrl?: string;
-
-  @Column({ nullable: true })
-  videoDuration?: string;
-
-  @Column({ nullable: true })
-  pdfFile?: string;
-
-  @Column({ nullable: true })
-  pdfOriginalName?: string;
-
-  @Column({ type: 'bigint', nullable: true })
-  pdfFileSize?: number | string;
-
-  @Column({ nullable: true })
-  pptFile?: string;
-
-  @Column({ nullable: true })
-  pptOriginalName?: string;
-
-  @Column({ type: 'bigint', nullable: true })
-  pptFileSize?: number | string;
-
-  @Column({ nullable: true })
-  pptDriveFileId?: string;
-
   @CreateDateColumn()
   createdAt: Date;
 

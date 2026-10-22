@@ -2,10 +2,15 @@
   Component: Material Row (Admin) — molecule, prefix material-
   Path: components/ui/admin/material/material-row.hbs
   Dipakai: {{> components/ui/admin/material/material-row}} di dalam x-for `materi`
-           pada sub_partials/session/materi_tab/{pdf,video,ppt}.hbs (3x).
+           pada sub_partials/session/materi_tab/{pdf,video,ppt}.hbs (3x) dan
+           sub_partials/syllabus/materi_tab/{pdf,video,ppt}.hbs (3x).
   Props: {{showFileLink}} (optional — tampilkan link file di bawah judul,
          dipakai ppt/video), {{detailLink}} (optional — bila set, tombol Detail
-         menjadi <a target=_blank>; bila tidak, dispatch open-materi-modal).
+         menjadi <a target=_blank>; bila tidak, dispatch open-materi-modal),
+         {{syllabusId}} (optional — bila set, delete action memakai route
+         syllabus-scoped /learning-material/syllabus/:id/:syllabusId),
+         {{readOnly}} (optional — bila truthy, tombol edit & delete
+         disembunyikan; dipakai saat sylabus locked/completed).
   Alpine scope (parent): `materi` { id, title, file, fileType }, `session` id
          server-side ({{session.id}}) untuk URL delete.
 
@@ -31,18 +36,23 @@
     {{/if}}
   </div>
 
+  {{#unless readOnly}}
   {{!-- Edit --}}
   <a :href="'/learning-material/formEdit/' + materi.id"
     class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#f5f5f5] transition-colors'
     title='Edit Material' aria-label='Edit Material'>
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
-      <path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/>
+      <path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0.623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/>
       <path d='m15 5 4 4'/>
     </svg>
   </a>
 
   {{!-- Delete --}}
+  {{#if syllabusId}}
+  <form :action="'/learning-material/syllabus/' + materi.id + '/{{syllabusId}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
+  {{else}}
   <form :action="'/learning-material/' + materi.id + '/{{session.id}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
+  {{/if}}
     <button type='button'
       onclick="openDeleteModal(this, 'Delete Material?', 'Are you sure you want to delete this material?')"
       class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
@@ -52,6 +62,7 @@
       </svg>
     </button>
   </form>
+  {{/unless}}
 
   {{!-- Detail --}}
   {{#if detailLink}}
