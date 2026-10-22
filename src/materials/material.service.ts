@@ -77,9 +77,6 @@ export class MaterialService {
         throw new NotFoundException('Syllabus not found');
       }
 
-      // Batas upload syllabus: satu materi per jenis berkas
-      // (1 PDF + 1 PPT + 1 Video). Materi yang sudah ada diganti lewat
-      // Edit, bukan lewat upload baru. Session tidak dibatasi.
       await this.assertSyllabusSlotAvailable(
         createMaterialDto.syllabusId,
         createMaterialDto.fileType,

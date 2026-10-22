@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { VoucherService } from './voucher.service';
 import { Voucher } from 'src/entities/voucher.entity';
 import { Course } from 'src/entities/course.entity';
@@ -76,7 +76,9 @@ describe('VoucherService', () => {
     it('queries voucher with case-insensitive lowercase match', async () => {
       const qb = {
         where: jest.fn().mockReturnThis(),
-        getOne: jest.fn().mockResolvedValue({ id: 'v1', code_voucher: 'DISKON50' }),
+        getOne: jest
+          .fn()
+          .mockResolvedValue({ id: 'v1', code_voucher: 'DISKON50' }),
       };
       voucherRepo.createQueryBuilder.mockReturnValue(qb);
 
@@ -142,8 +144,15 @@ describe('VoucherService', () => {
 
     it('creates and saves voucher successfully if code is available', async () => {
       jest.spyOn(service, 'isCodeAvailable').mockResolvedValue(true);
-      voucherRepo.create.mockImplementation((data) => data);
-      voucherRepo.save.mockImplementation(async (data) => ({ id: 'new-id', ...data }));
+      voucherRepo.create.mockImplementation(
+        (data: Partial<Voucher>) => data as Voucher,
+      );
+      voucherRepo.save.mockImplementation((data: Voucher) =>
+        Promise.resolve({
+          id: 'new-id',
+          ...data,
+        }),
+      );
 
       const result = await service.create({
         code_voucher: 'UNIQUECODE',
@@ -185,7 +194,9 @@ describe('VoucherService', () => {
       } as Voucher;
       jest.spyOn(service, 'findOne').mockResolvedValue(existing);
       jest.spyOn(service, 'isCodeAvailable').mockResolvedValue(true);
-      voucherRepo.save.mockImplementation(async (data) => data);
+      voucherRepo.save.mockImplementation((data: Voucher) =>
+        Promise.resolve(data),
+      );
 
       const result = await service.update('v1', {
         code_voucher: 'NEWCODE',
