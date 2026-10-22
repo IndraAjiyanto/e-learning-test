@@ -138,28 +138,45 @@
 
         // Batas mengikuti kontrak backend (ValidateImage pada TeamController):
         // JPEG/JPG/PNG, maks 5 MB.
-        validateImage(file) {
-          this.clearPreview();
-
-          if (!file) return;
-
-          this.hasFile = true;
-          this.fileName = file.name;
+        validateImageFile(file) {
+          if (!file) return false;
 
           const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.setImageError('Only JPEG, JPG, and PNG formats are allowed');
-            return;
+          const allowedExtensions = ['.jpg', '.jpeg', '.png'];
+          const extension = file.name
+            ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
+            : '';
+
+          const isTypeAllowed = file.type ? allowedTypes.includes(file.type.toLowerCase()) : false;
+          const isExtAllowed = allowedExtensions.includes(extension);
+
+          if (!isTypeAllowed && !isExtAllowed) {
+            this.setImageError('Only JPG, JPEG, and PNG formats are allowed.');
+            return false;
           }
 
           const maxSize = 5 * 1024 * 1024;
           if (file.size > maxSize) {
             this.setImageError(
-              `File size too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB`,
+              `File size is too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB.`,
             );
+            return false;
+          }
+
+          return true;
+        },
+
+        validateImage(file) {
+          this.clearPreview();
+
+          if (!file) return;
+
+          if (!this.validateImageFile(file)) {
             return;
           }
 
+          this.hasFile = true;
+          this.fileName = file.name;
           this.objectUrl = URL.createObjectURL(file);
           this.previewUrl = this.objectUrl;
           this.isValid = true;

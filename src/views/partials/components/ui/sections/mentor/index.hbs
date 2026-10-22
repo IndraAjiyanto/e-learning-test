@@ -1,0 +1,102 @@
+{{!--
+  Section: Mentor / Meet Your Mentors (Level 2 - Section)
+  Lokasi: src/views/partials/components/ui/sections/mentor/index.hbs
+
+  Menampilkan daftar mentor program (entity Mentors) pada halaman detail
+  program publik (free & paid). position dan description berbentuk objek
+  multilang {id,en,ja} sehingga dibaca lewat getByLang.
+
+  Props:
+  - mentors      : array (wajib, hasil coursesService.findCourseMentors)
+  - lang         : string
+  - badgeTitle   : string (opsional, default: MENTOR)
+  - title        : string (opsional, default: Meet Your Mentors)
+  - description  : string (opsional)
+--}}
+
+{{#if mentors.length}}
+<section
+  id="mentor"
+  class="relative w-full bg-white font-inter py-16 sm:py-20 lg:py-24"
+  data-node-id="mentor-section"
+>
+  <div class="w-full max-w-[1568px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-12 lg:gap-16">
+
+    {{!-- Header --}}
+    <div class="flex flex-col items-center gap-4 text-center max-w-[800px]">
+      <div class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#E0F2FE]">
+        <span class="font-inter text-xs sm:text-[14px] font-bold uppercase tracking-wider text-[#003060] leading-none">
+          {{default badgeTitle 'MENTOR'}}
+        </span>
+      </div>
+
+      <h2 class="font-montserrat text-2xl sm:text-3xl lg:text-[36px] font-extrabold leading-[120%] tracking-tight text-[#0B1F3B]">
+        {{default title (default (t 'test.detailProgram.mentor.title') 'Meet Your Mentors')}}
+      </h2>
+
+      {{#if description}}
+        <p class="font-inter text-sm sm:text-base font-normal leading-[160%] text-[#64748B] max-w-[680px]">
+          {{description}}
+        </p>
+      {{/if}}
+    </div>
+
+    {{!-- Mentor Cards --}}
+    <div class="grid w-full grid-cols-1 gap-6 {{#if (eq mentors.length 1)}}max-w-[520px] mx-auto{{else}}max-w-[1040px] md:grid-cols-2{{/if}}">
+      {{#each mentors}}
+        <div class="flex flex-col gap-4 rounded-[20px] border border-[#E5E7EB] bg-white p-6 shadow-[0px_8px_24px_-12px_rgba(0,0,0,0.08)]">
+          <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+            <img
+              src="{{#if this.profile}}{{this.profile}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}"
+              alt="{{this.name}}"
+              loading="lazy"
+              onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+              class="h-20 w-20 shrink-0 rounded-full border-4 border-white object-cover shadow"
+            />
+            <div class="flex flex-1 flex-col items-center gap-2 text-center sm:items-start sm:text-left">
+              <h3 class="font-montserrat text-lg font-bold text-[#0B1F3B]">{{this.name}}</h3>
+
+              {{#if this.position}}
+                <p class="font-inter text-sm font-medium text-[#64748B]">{{getByLang this.position ../lang}}</p>
+              {{/if}}
+
+              {{#if this.technologies.length}}
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  {{#each this.technologies}}
+                    <span class="flex h-6 w-6 items-center justify-center" title="{{this.name}}">
+                      {{#if this.svg}}
+                        {{{this.svg}}}
+                      {{else if this.imgUrl}}
+                        <img src="{{this.imgUrl}}" alt="{{this.name}}" class="h-full w-full object-contain" />
+                      {{/if}}
+                    </span>
+                  {{/each}}
+                </div>
+              {{/if}}
+
+              {{#if this.description}}
+                <p class="font-inter text-sm leading-[160%] text-[#475569]">{{getByLang this.description ../lang}}</p>
+              {{/if}}
+
+              {{#if this.linkedin}}
+                <a
+                  href="{{this.linkedin}}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-1 inline-flex items-center gap-1.5 font-inter text-sm font-semibold text-[#003060] hover:underline"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/>
+                  </svg>
+                  LinkedIn
+                </a>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+  </div>
+</section>
+{{/if}}

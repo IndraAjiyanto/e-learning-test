@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter } from 'events';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In, LessThan, Repository } from 'typeorm';
+import { In, LessThan, Repository } from 'typeorm';
 import { Request } from 'express';
 import {
   from,
@@ -26,12 +26,7 @@ import { ActivityLog } from 'src/entities/activity_log.entity';
 import { DailyStatistics } from 'src/entities/daily_statistics.entity';
 import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { format, startOfDay, subDays } from 'date-fns';
-import {
-  isAssetPath,
-  isNavigationRequest,
-  matchLearningScope,
-  ScopeContext,
-} from './learning-scope';
+import { matchLearningScope, ScopeContext } from './learning-scope';
 
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -214,7 +209,10 @@ export class UserActivityService {
    * - role 'user' + navigasi eksplisit ke luar scope   => reset currentCourseId + label.
    * - role lain / background request non-exit         => cukup update lastSeenAt.
    */
-  async handleRequest(user: any, req: Request) {
+  async handleRequest(
+    user: { id?: string; role?: string } | null | undefined,
+    req: Request,
+  ) {
     if (!user?.id) return;
     if (user.role !== 'user') {
       await this.touch(user.id);
@@ -234,7 +232,7 @@ export class UserActivityService {
       try {
         const resolution = await matched.rule.resolve(
           matched.ids,
-          req as any,
+          req,
           this.scopeContext(),
         );
         if (!resolution) {
@@ -246,7 +244,7 @@ export class UserActivityService {
           resolution.courseId,
           resolution.label,
         );
-      } catch (error) {
+      } catch {
         // Gagal resolve scope !== crash request.
       }
 
@@ -383,11 +381,11 @@ export class UserActivityService {
     }
 
     return activities.map((a, index) => {
-      const u = a.user as any;
-      const username = u?.username ?? '';
+      const u = a.user;
+      const username: string = u?.username ?? '';
       const palette = colorFor(index);
-      const courseId = a.currentCourseId ?? '';
-      const courseName =
+      const courseId: string = a.currentCourseId ?? '';
+      const courseName: string =
         (courseId ? courseNameById.get(courseId) : '') ||
         enrolledByName.get(a.userId) ||
         '';
@@ -443,13 +441,33 @@ export class UserActivityService {
     );
 
     // Batch query untuk memeriksa absensi, tugas, dan kuis secara parallel
+    interface AttRow {
+      userId: string;
+      courseId: string;
+      status: string;
+    }
+    interface CourseCountRow {
+      courseId: string;
+      total: number | string;
+    }
+    interface UserCourseSubRow {
+      userId: string;
+      courseId: string;
+      submitted: number | string;
+    }
+    interface QuizCompRow {
+      userId: string;
+      courseId: string;
+      completed: number | string;
+    }
+
     const [
       attendances,
       assignmentsTotal,
       assignmentsSubmitted,
       quizzesTotal,
       quizzesCompleted,
-    ] = await Promise.all([
+    ] = (await Promise.all([
       // 1. Data kehadiran user
       userIds.length > 0 && courseIds.length > 0
         ? this.activityRepository.manager.query(
@@ -526,34 +544,39 @@ export class UserActivityService {
             [...userIds, ...courseIds],
           )
         : Promise.resolve([]),
-    ]);
+    ])) as [
+      AttRow[],
+      CourseCountRow[],
+      UserCourseSubRow[],
+      CourseCountRow[],
+      QuizCompRow[],
+    ];
 
-    const attendanceMap = new Set(
-      attendances.map((a: any) => `${a.userId}:${a.courseId}`),
+    const attendanceMap = new Set<string>(
+      attendances.map((a) => `${a.userId}:${a.courseId}`),
     );
 
     const assignTotalMap = new Map<string, number>(
-      assignmentsTotal.map((r: any) => [r.courseId, Number(r.total) || 0]),
+      assignmentsTotal.map((r) => [r.courseId, Number(r.total) || 0]),
     );
     const assignSubMap = new Map<string, number>(
-      assignmentsSubmitted.map((r: any) => [
+      assignmentsSubmitted.map((r) => [
         `${r.userId}:${r.courseId}`,
         Number(r.submitted) || 0,
       ]),
     );
-
     const quizTotalMap = new Map<string, number>(
-      quizzesTotal.map((r: any) => [r.courseId, Number(r.total) || 0]),
+      quizzesTotal.map((r) => [r.courseId, Number(r.total) || 0]),
     );
     const quizCompMap = new Map<string, number>(
-      quizzesCompleted.map((r: any) => [
+      quizzesCompleted.map((r) => [
         `${r.userId}:${r.courseId}`,
         Number(r.completed) || 0,
       ]),
     );
 
     return activities.map((a, index) => {
-      const u = a.user as any;
+      const u = a.user;
       const username = u?.username ?? '';
       const courseId = a.currentCourseId ?? '';
       const palette = colorFor(index);
@@ -674,8 +697,12 @@ export class UserActivityService {
     const today = new Date();
     const start = startOfDay(subDays(today, 6));
 
+    interface DayCountRow {
+      day: string;
+      count: number | string;
+    }
     // Ambil data login dan user yang aktif belajar per hari selama 7 hari terakhir
-    const [loginRows, activeRows] = await Promise.all([
+    const [loginRows, activeRows] = (await Promise.all([
       this.activityRepository.manager.query(
         `
         SELECT TO_CHAR(ua."loginAt", 'YYYY-MM-DD') as day, COUNT(*)::int as count
@@ -710,19 +737,16 @@ export class UserActivityService {
       `,
         [start],
       ),
-    ]);
+    ])) as [DayCountRow[], DayCountRow[]];
 
     const loginMap = new Map<string, number>(
-      loginRows.map((r: any) => [r.day, Number(r.count) || 0]),
+      loginRows.map((r) => [r.day, Number(r.count) || 0]),
     );
     const activeMap = new Map<string, number>(
-      activeRows.map((r: any) => [r.day, Number(r.count) || 0]),
+      activeRows.map((r) => [r.day, Number(r.count) || 0]),
     );
     const statMap = new Map<string, { learningCount: number }>(
-      activeRows.map((r: any) => [
-        r.day,
-        { learningCount: Number(r.count) || 0 },
-      ]),
+      activeRows.map((r) => [r.day, { learningCount: Number(r.count) || 0 }]),
     );
 
     // Hari ini minimal memiliki nilai keaktifan sesuai user yang sedang belajar saat ini
@@ -771,20 +795,23 @@ export class UserActivityService {
       .select('COUNT(DISTINCT ua.userId)', 'count')
       .where('user.role = :role', { role: 'user' })
       .andWhere('ua.loginAt >= :start', { start })
-      .getRawOne();
+      .getRawOne<{ count?: string | number }>();
 
     // 2. User online sekarang
     const activeParticipants = await this.getActiveParticipants(5);
 
     // 3. Mentor yang aktif / terdaftar
-    const [mentorUserRows, mentorTableRows] = await Promise.all([
+    interface CountRow {
+      count?: string | number;
+    }
+    const [mentorUserRows, mentorTableRows] = (await Promise.all([
       this.activityRepository.manager.query(`
         SELECT COUNT(DISTINCT id)::int as count FROM "user" WHERE role = 'admin'
       `),
       this.activityRepository.manager.query(`
         SELECT COUNT(DISTINCT id)::int as count FROM mentors
       `),
-    ]);
+    ])) as [CountRow[], CountRow[]];
     const adminMentorCount = Number(mentorUserRows[0]?.count) || 0;
     const mentorTableCount = Number(mentorTableRows[0]?.count) || 0;
     const activeMentors = Math.max(adminMentorCount, mentorTableCount);
@@ -841,7 +868,7 @@ export class UserActivityService {
       .andWhere('course.startDate <= :today', { today })
       .andWhere('(course.startEnd IS NULL OR course.startEnd >= :today)')
       .andWhere('uc.progress = :progress', { progress: false })
-      .getRawOne();
+      .getRawOne<{ count?: string | number }>();
     return Number(row?.count ?? 0);
   }
 
@@ -856,7 +883,7 @@ export class UserActivityService {
       .andWhere('al.eventAt >= :start', { start })
       .andWhere('al.eventAt <= :end', { end })
       .andWhere('user.role = :role', { role: 'user' })
-      .getRawOne();
+      .getRawOne<{ count?: string | number }>();
     return Number(row?.count ?? 0);
   }
 

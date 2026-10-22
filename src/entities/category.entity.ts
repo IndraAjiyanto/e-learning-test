@@ -37,6 +37,12 @@ export class Category {
   @Column({ type: 'varchar', nullable: true })
   name_ja: string | null;
 
+  // Nomor urut untuk mengurutkan kategori di navbar user (dropdown "Class").
+  // Dijaga rapat 1..N tanpa duplikat/gap oleh CategoriesService (auto geser saat
+  // create/update/delete). Nullable: baris lama diisi lewat backfill migration.
+  @Column({ type: 'int', nullable: true })
+  no: number | null;
+
   @Column('jsonb', { nullable: true })
   text: string[];
 

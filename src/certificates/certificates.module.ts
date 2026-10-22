@@ -22,4 +22,4 @@ import { Portofolios } from 'src/entities/portofolios.entity';
   providers: [CertificatesService],
   exports: [CertificatesService],
 })
-export class CertificatesModule { }
+export class CertificatesModule {}

@@ -1,0 +1,482 @@
+{{!--
+  Komponen: Course Catalog Filter (Reusable Partial)
+  Lokasi: src/views/partials/components/ui/filter/course_catalog_filter/index.hbs
+
+  Komponen wrapper filter reaktif berbasis Alpine.js untuk section katalog program
+  (dipakai di paid_program, free_program, dan special_program).
+
+  Props:
+  - courses      : array (data course dari backend)
+  - lang         : string (bahasa aktif)
+  - showPayment  : boolean (default: true; set false untuk free_program)
+  - loadMoreText : string (opsional override teks load more)
+  - showLessText : string (opsional override teks show less)
+  - @partial-block : grid kartu program yang di-filter
+--}}
+
+<script>
+  function courseCatalogFilter_{{default filterId 'main'}}() {
+    return {
+      search: '',
+      selectedMethod: '',
+      selectedType: '',
+      selectedStructure: '',
+      selectedPayment: '',
+      typeSearch: '',
+      activeDropdown: null,
+      showPayment: {{#if (eq showPayment false)}}false{{else}}true{{/if}},
+      limit: 12,
+      initialLimit: 12,
+      init() {
+        var self = this;
+        ['search', 'selectedMethod', 'selectedType', 'selectedStructure', 'selectedPayment'].forEach(function(prop) {
+          self.$watch(prop, function() {
+            self.limit = self.initialLimit;
+          });
+        });
+      },
+      loadMore() {
+        this.limit = this.items.length;
+      },
+      showLess() {
+        this.limit = this.initialLimit;
+        if (this.$el && this.$el.scrollIntoView) {
+          this.$el.scrollIntoView({ behavior: 'smooth' });
+        }
+      },
+      items: [
+        {{#each courses}}
+        {
+          id: '{{this.id}}',
+          name: {{#if this.name}}{{{json (default (getByLang this.name ../lang) (default this.name ''))}}}{{else}}''{{/if}},
+          method: '{{default this.method 'online'}}'.toLowerCase(),
+          courseType: {{#if this.courseType}}{{{json (default (getByLang this.courseType.nameClassesType ../lang) (default this.courseType.nameClassesType ''))}}}{{else}}''{{/if}},
+          structure: '{{default this.programType 'bootcamp'}}'.toLowerCase(),
+          isPaid: {{#if (eq this.checkPaid false)}}false{{else}}true{{/if}}
+        }{{#unless @last}},{{/unless}}
+        {{/each}}
+      ],
+      get programTypes() {
+        return [...new Set(this.items.map(function(i) { return i.courseType; }).filter(Boolean))].sort();
+      },
+      get filteredProgramTypes() {
+        if (!this.typeSearch) return this.programTypes;
+        var q = this.typeSearch.trim().toLowerCase();
+        return this.programTypes.filter(function(t) { return t.toLowerCase().includes(q); });
+      },
+      get hasActiveFilters() {
+        return Boolean(this.search || this.selectedMethod || this.selectedType || this.selectedStructure || (this.showPayment && this.selectedPayment));
+      },
+      resetFilters() {
+        this.search = '';
+        this.selectedMethod = '';
+        this.selectedType = '';
+        this.selectedStructure = '';
+        this.selectedPayment = '';
+        this.typeSearch = '';
+        this.activeDropdown = null;
+        this.limit = this.initialLimit;
+      },
+      getMethodLabel() {
+        if (this.selectedMethod === 'online') return "{{default (t 'test.home.programSection.online') 'Online'}}";
+        if (this.selectedMethod === 'offline') return "{{default (t 'test.home.programSection.offline') 'Offline'}}";
+        return "{{default (t 'test.home.programSection.allMethod') 'Semua Metode'}}";
+      },
+      getStructureLabel() {
+        if (this.selectedStructure === 'week') return "{{default (t 'test.home.programSection.week') 'Week'}}";
+        if (this.selectedStructure === 'silabus') return "{{default (t 'test.home.programSection.silabus') 'Silabus'}}";
+        return "{{default (t 'test.home.programSection.allStructures') 'Semua Struktur'}}";
+      },
+      getPaymentLabel() {
+        if (this.selectedPayment === 'paid') return "{{default (t 'test.home.programSection.paid') 'Paid'}}";
+        if (this.selectedPayment === 'non_paid') return "{{default (t 'test.home.programSection.nonPaid') 'Non-Paid'}}";
+        return "{{default (t 'test.home.programSection.allPayment') 'Semua Pembayaran'}}";
+      },
+      get filteredIds() {
+        var q = this.search.trim().toLowerCase();
+        var self = this;
+        return this.items.filter(function(item) {
+          if (q && !item.name.toLowerCase().includes(q)) return false;
+          if (self.selectedMethod && item.method !== self.selectedMethod) return false;
+          if (self.selectedType && item.courseType !== self.selectedType) return false;
+          if (self.selectedStructure === 'week' && !(item.structure === 'bootcamp' || item.structure === 'lpk' || item.structure === 'week')) return false;
+          if (self.selectedStructure === 'silabus' && !(item.structure === 'non_bootcamp' || item.structure === 'silabus' || item.structure === 'syllabus')) return false;
+          if (self.showPayment && self.selectedPayment === 'paid' && !item.isPaid) return false;
+          if (self.showPayment && self.selectedPayment === 'non_paid' && item.isPaid) return false;
+          return true;
+        }).map(function(i) { return i.id; });
+      },
+      get visibleIds() {
+        return this.filteredIds.slice(0, this.limit);
+      }
+    };
+  }
+</script>
+
+<div
+  class="w-full max-w-[1568px] flex flex-col items-center gap-8 lg:gap-10"
+  x-data="courseCatalogFilter_{{default filterId 'main'}}()"
+  @keydown.escape.window="activeDropdown = null; typeSearch = ''"
+>
+  {{!-- Filter Bar Container --}}
+  <div class="w-full bg-[#FFFFFF] rounded-2xl border border-[#E5E7EB] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 {{#if (eq showPayment false)}}lg:grid-cols-4{{else}}lg:grid-cols-5{{/if}} gap-3 sm:gap-4 items-end">
+
+      {{!-- 1. Search Nama Program --}}
+      <div class="relative w-full">
+        <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+          <i class="fas fa-magnifying-glass text-[#6EB6E5] mr-1"></i>
+          {{default (t 'test.home.programSection.searchProgram') (default (t 'test.home.programSection.search') 'Cari Program')}}
+        </label>
+        <div class="relative">
+          <input
+            type="text"
+            x-model="search"
+            placeholder="{{default (t 'test.home.programSection.searchProgramPlaceholder') (default (t 'test.home.programSection.placeholderSearch') 'Cari nama program...')}}"
+            class="w-full h-11 pl-9 pr-8 rounded-xl border border-[#E5E7EB] bg-white font-inter text-xs sm:text-sm text-[#0B1F3B] placeholder-[#9CA3AF] transition focus:border-[#003060] focus:ring-1 focus:ring-[#003060] focus:outline-none"
+          />
+          <i class="fas fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#9CA3AF]"></i>
+          <button
+            type="button"
+            x-show="search"
+            x-cloak
+            @click="search = ''"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
+            aria-label="{{default (t 'test.home.programSection.clearSearch') 'Hapus pencarian'}}"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      {{!-- 2. Method Dropdown --}}
+      <div
+        class="relative w-full"
+        @click.outside="if (activeDropdown === 'method') activeDropdown = null"
+      >
+        <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+          <i class="fas fa-laptop text-[#6EB6E5] mr-1"></i>
+          {{default (t 'test.home.programSection.method') 'Metode'}}
+        </label>
+        <button
+          type="button"
+          @click="activeDropdown = activeDropdown === 'method' ? null : 'method'"
+          class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
+          :class="activeDropdown === 'method' && 'border-[#003060] ring-1 ring-[#003060]'"
+        >
+          <span class="truncate text-left" x-text="getMethodLabel()"></span>
+          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'method' && 'rotate-180'"></i>
+        </button>
+
+        <div
+          x-cloak
+          x-show="activeDropdown === 'method'"
+          x-transition.opacity.duration.150ms
+          class="absolute left-0 z-50 mt-1.5 w-full min-w-[180px] max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg space-y-0.5"
+        >
+          <button
+            type="button"
+            @click="selectedMethod = ''; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="!selectedMethod ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.allMethod') 'Semua Metode'}}</span>
+            <i class="fas fa-check text-xs" x-show="!selectedMethod"></i>
+          </button>
+          <button
+            type="button"
+            @click="selectedMethod = 'online'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="selectedMethod === 'online' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.online') 'Online'}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedMethod === 'online'"></i>
+          </button>
+          <button
+            type="button"
+            @click="selectedMethod = 'offline'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="selectedMethod === 'offline' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.offline') 'Offline'}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedMethod === 'offline'"></i>
+          </button>
+        </div>
+      </div>
+
+      {{!-- 3. Program Type (Search List) --}}
+      <div
+        class="relative w-full"
+        @click.outside="if (activeDropdown === 'type') { activeDropdown = null; typeSearch = ''; }"
+      >
+        <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+          <i class="fas fa-layer-group text-[#6EB6E5] mr-1"></i>
+          {{default (t 'test.home.programSection.programType') 'Tipe Program'}}
+        </label>
+        <button
+          type="button"
+          @click="activeDropdown = activeDropdown === 'type' ? null : 'type'; if (activeDropdown === 'type') $nextTick(() => $refs.typeSearchInput?.focus())"
+          class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
+          :class="activeDropdown === 'type' && 'border-[#003060] ring-1 ring-[#003060]'"
+        >
+          <span class="truncate text-left" x-text="selectedType || '{{default (t 'test.home.programSection.allTypes') 'Semua Tipe'}}'"></span>
+          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'type' && 'rotate-180'"></i>
+        </button>
+
+        <div
+          x-cloak
+          x-show="activeDropdown === 'type'"
+          x-transition.opacity.duration.150ms
+          class="absolute left-0 z-50 mt-1.5 w-full min-w-[220px] max-h-64 overflow-hidden flex flex-col rounded-xl border border-[#E5E7EB] bg-white shadow-lg"
+        >
+          {{!-- Search Input inside the list --}}
+          <div class="p-2 border-b border-[#F3F4F6] sticky top-0 bg-white z-10">
+            <div class="relative flex items-center">
+              <i class="fas fa-magnifying-glass absolute left-2.5 text-xs text-[#9CA3AF]"></i>
+              <input
+                type="text"
+                x-ref="typeSearchInput"
+                x-model="typeSearch"
+                @click.stop
+                placeholder="{{default (t 'test.home.programSection.searchTypePlaceholder') 'Cari tipe program...'}}"
+                class="w-full pl-7 pr-7 py-1.5 text-xs font-inter border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] text-[#0B1F3B] placeholder-[#9CA3AF]"
+              />
+              <button
+                type="button"
+                x-show="typeSearch"
+                x-cloak
+                @click.stop="typeSearch = ''; $refs.typeSearchInput?.focus()"
+                class="absolute right-2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
+                aria-label="{{default (t 'test.home.programSection.clearTypeSearch') 'Hapus pencarian tipe'}}"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          {{!-- Options List --}}
+          <div class="overflow-y-auto p-1.5 max-h-48 space-y-0.5">
+            <button
+              type="button"
+              @click="selectedType = ''; activeDropdown = null; typeSearch = ''"
+              class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+              :class="!selectedType ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+            >
+              <span>{{default (t 'test.home.programSection.allTypes') 'Semua Tipe'}}</span>
+              <i class="fas fa-check text-xs" x-show="!selectedType"></i>
+            </button>
+
+            <template x-for="type in filteredProgramTypes" :key="type">
+              <button
+                type="button"
+                @click="selectedType = type; activeDropdown = null; typeSearch = ''"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+                :class="selectedType === type ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span class="truncate" x-text="type"></span>
+                <i class="fas fa-check text-xs" x-show="selectedType === type"></i>
+              </button>
+            </template>
+
+            <div
+              x-show="filteredProgramTypes.length === 0"
+              class="py-3 px-2 text-center text-xs text-[#9CA3AF] font-inter"
+            >
+              {{default (t 'test.home.programSection.noTypesFound') 'Tidak ada tipe ditemukan'}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{!-- 4. Learning Structure Dropdown --}}
+      <div
+        class="relative w-full"
+        @click.outside="if (activeDropdown === 'structure') activeDropdown = null"
+      >
+        <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+          <i class="fas fa-graduation-cap text-[#6EB6E5] mr-1"></i>
+          {{default (t 'test.home.programSection.learningStructure') 'Struktur Belajar'}}
+        </label>
+        <button
+          type="button"
+          @click="activeDropdown = activeDropdown === 'structure' ? null : 'structure'"
+          class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
+          :class="activeDropdown === 'structure' && 'border-[#003060] ring-1 ring-[#003060]'"
+        >
+          <span class="truncate text-left" x-text="getStructureLabel()"></span>
+          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'structure' && 'rotate-180'"></i>
+        </button>
+
+        <div
+          x-cloak
+          x-show="activeDropdown === 'structure'"
+          x-transition.opacity.duration.150ms
+          class="absolute left-0 z-50 mt-1.5 w-full min-w-[180px] max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg space-y-0.5"
+        >
+          <button
+            type="button"
+            @click="selectedStructure = ''; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="!selectedStructure ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.allStructures') 'Semua Struktur'}}</span>
+            <i class="fas fa-check text-xs" x-show="!selectedStructure"></i>
+          </button>
+          <button
+            type="button"
+            @click="selectedStructure = 'week'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="selectedStructure === 'week' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.week') 'Week'}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedStructure === 'week'"></i>
+          </button>
+          <button
+            type="button"
+            @click="selectedStructure = 'silabus'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="selectedStructure === 'silabus' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.silabus') 'Silabus'}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedStructure === 'silabus'"></i>
+          </button>
+        </div>
+      </div>
+
+      {{!-- 5. Payment Dropdown (Opsional: disembunyikan jika showPayment=false) --}}
+      {{#unless (eq showPayment false)}}
+      <div
+        class="relative w-full"
+        @click.outside="if (activeDropdown === 'payment') activeDropdown = null"
+      >
+        <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
+          <i class="fas fa-money-bill-wave text-[#6EB6E5] mr-1"></i>
+          {{default (t 'test.home.programSection.payment') 'Pembayaran'}}
+        </label>
+        <button
+          type="button"
+          @click="activeDropdown = activeDropdown === 'payment' ? null : 'payment'"
+          class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
+          :class="activeDropdown === 'payment' && 'border-[#003060] ring-1 ring-[#003060]'"
+        >
+          <span class="truncate text-left" x-text="getPaymentLabel()"></span>
+          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'payment' && 'rotate-180'"></i>
+        </button>
+
+        <div
+          x-cloak
+          x-show="activeDropdown === 'payment'"
+          x-transition.opacity.duration.150ms
+          class="absolute left-0 z-50 mt-1.5 w-full min-w-[180px] max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg space-y-0.5"
+        >
+          <button
+            type="button"
+            @click="selectedPayment = ''; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="!selectedPayment ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.allPayment') 'Semua Pembayaran'}}</span>
+            <i class="fas fa-check text-xs" x-show="!selectedPayment"></i>
+          </button>
+          <button
+            type="button"
+            @click="selectedPayment = 'paid'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="selectedPayment === 'paid' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.paid') 'Paid'}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedPayment === 'paid'"></i>
+          </button>
+          <button
+            type="button"
+            @click="selectedPayment = 'non_paid'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="selectedPayment === 'non_paid' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.nonPaid') 'Non-Paid'}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedPayment === 'non_paid'"></i>
+          </button>
+        </div>
+      </div>
+      {{/unless}}
+
+    </div>
+
+    {{!-- Active Filters & Counter Row --}}
+    <div class="flex items-center justify-between pt-3 border-t border-[#F3F4F6] text-xs font-inter flex-wrap gap-2">
+      <div class="text-[#6B7280]">
+        {{default (t 'test.home.programSection.showing') 'Menampilkan'}}
+        <span class="font-bold text-[#003060]" x-text="visibleIds.length"></span>
+        {{default (t 'test.home.programSection.of') 'dari'}}
+        <span class="font-bold text-[#003060]" x-text="filteredIds.length"></span>
+        {{default (t 'test.home.programSection.program') 'program'}}
+      </div>
+
+      <button
+        type="button"
+        x-show="hasActiveFilters"
+        x-cloak
+        @click="resetFilters()"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E7EB] bg-white font-inter text-xs font-semibold text-[#003060] hover:bg-slate-50 hover:text-red-600 transition"
+      >
+        <i class="fas fa-rotate-left text-[11px]"></i>
+        <span>{{default (t 'test.home.programSection.resetFilter') (default (t 'test.home.programSection.resetAll') 'Reset Filter')}}</span>
+      </button>
+    </div>
+  </div>
+
+  {{!-- Program Cards Grid (Slot via Handlebars partial block) --}}
+  <div class="w-full flex flex-col items-center">
+    {{> @partial-block}}
+
+    {{!-- Load More / Show Less Button --}}
+    <div
+      x-show="filteredIds.length > initialLimit"
+      x-cloak
+      class="mt-10 flex justify-center w-full"
+    >
+      <button
+        type="button"
+        @click="filteredIds.length > visibleIds.length ? loadMore() : showLess()"
+        class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#003060] font-inter text-sm font-semibold text-white shadow-sm hover:bg-[#00244a] active:scale-95 transition-all cursor-pointer"
+      >
+        <span x-show="filteredIds.length > visibleIds.length">
+          {{default loadMoreText (default (t 'test.home.programSection.loadMore') 'Tampilkan Lebih Banyak')}}
+        </span>
+        <span x-show="filteredIds.length <= visibleIds.length">
+          {{default showLessText (default (t 'test.home.programSection.showLess') 'Tampilkan Lebih Sedikit')}}
+        </span>
+        <i
+          class="fas text-xs transition-transform"
+          :class="filteredIds.length > visibleIds.length ? 'fa-chevron-down' : 'fa-chevron-up'"
+        ></i>
+      </button>
+    </div>
+  </div>
+
+  {{!-- Empty State when no courses match filter --}}
+  <div
+    x-show="items.length > 0 && filteredIds.length === 0"
+    x-cloak
+    class="flex flex-col items-center justify-center py-12 px-4 text-center w-full"
+  >
+    <div class="size-16 rounded-full bg-slate-100 flex items-center justify-center text-[#9CA3AF] mb-4">
+      <i class="fas fa-magnifying-glass text-2xl"></i>
+    </div>
+    <h3 class="font-montserrat font-semibold text-lg text-[#0B1F3B] mb-1">
+      {{default (t 'test.home.programSection.noProgram') 'Program tidak ditemukan'}}
+    </h3>
+    <p class="font-inter text-sm text-[#6B7280] max-w-md mb-5">
+      {{default (t 'test.home.programSection.spanNoProgram') 'Coba sesuaikan kata kunci pencarian atau kriteria filter Anda.'}}
+    </p>
+    <button
+      type="button"
+      @click="resetFilters()"
+      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#003060] font-inter text-sm font-semibold text-white hover:bg-[#00244a] transition"
+    >
+      <i class="fas fa-rotate-left text-xs"></i>
+      <span>{{default (t 'test.home.programSection.resetAll') 'Reset Semua Filter'}}</span>
+    </button>
+  </div>
+</div>
+

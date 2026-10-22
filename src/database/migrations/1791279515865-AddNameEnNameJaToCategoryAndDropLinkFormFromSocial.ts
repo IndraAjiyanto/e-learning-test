@@ -13,45 +13,45 @@ export class AddNameEnNameJaToCategoryAndDropLinkFormFromSocial1791279515865 imp
 
   public async up(q: QueryRunner): Promise<void> {
     for (const column of ['name_en', 'name_ja']) {
-      const [existing] = await q.query(
+      const existingRows = (await q.query(
         `SELECT 1 FROM information_schema.columns
          WHERE table_name = 'category' AND column_name = $1`,
         [column],
-      );
-      if (!existing) {
+      )) as unknown[];
+      if (!existingRows.length) {
         await q.query(
           `ALTER TABLE "category" ADD "${column}" character varying NULL`,
         );
       }
     }
 
-    const [linkForm] = await q.query(
+    const linkFormRows = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'social' AND column_name = 'linkForm'`,
-    );
-    if (linkForm) {
+    )) as unknown[];
+    if (linkFormRows.length) {
       await q.query(`ALTER TABLE "social" DROP COLUMN "linkForm"`);
     }
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [linkForm] = await q.query(
+    const linkFormRows = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'social' AND column_name = 'linkForm'`,
-    );
-    if (!linkForm) {
+    )) as unknown[];
+    if (!linkFormRows.length) {
       await q.query(
         `ALTER TABLE "social" ADD "linkForm" character varying NULL`,
       );
     }
 
     for (const column of ['name_en', 'name_ja']) {
-      const [existing] = await q.query(
+      const existingRows = (await q.query(
         `SELECT 1 FROM information_schema.columns
          WHERE table_name = 'category' AND column_name = $1`,
         [column],
-      );
-      if (existing) {
+      )) as unknown[];
+      if (existingRows.length) {
         await q.query(`ALTER TABLE "category" DROP COLUMN "${column}"`);
       }
     }

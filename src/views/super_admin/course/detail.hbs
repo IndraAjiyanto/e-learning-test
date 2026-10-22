@@ -64,7 +64,7 @@
     <div class='flex w-full flex-col gap-4 lg:flex-row lg:items-stretch'>
       <div class='flex min-w-0 flex-1'>
         {{#> components/ui/super_admin/detail/section_card/index
-          title='Form & Information'
+          title='More information'
           iconPaths='<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'}}
           {{#if (isPaidProgram course)}}
             {{> components/ui/super_admin/detail/field/index label='Price' value=(formatRupiah course.price) }}
@@ -75,16 +75,6 @@
               <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>Paid</p>
             {{/components/ui/super_admin/detail/field/index}}
           {{else}}
-            {{#> components/ui/super_admin/detail/field/index label='Form link'}}
-              {{#if course.form}}
-                <a href='{{course.form}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.form}}</a>
-              {{else if course.locationLink}}
-                <a href='{{course.locationLink}}' target='_blank' rel='noopener noreferrer' class='break-all font-inter text-sm font-medium leading-[22.75px] text-[#737373] underline transition-colors hover:text-[#003060]'>{{course.locationLink}}</a>
-              {{else}}
-                <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>-</p>
-              {{/if}}
-            {{/components/ui/super_admin/detail/field/index}}
-
             {{#> components/ui/super_admin/detail/field/index label='Type'}}
               <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>Free</p>
             {{/components/ui/super_admin/detail/field/index}}
@@ -154,6 +144,15 @@
       x-data='tabData()'
     >
       <nav role='tablist' aria-label='Program sections' class='flex overflow-x-auto border-b border-[#d9d9d9]'>
+        {{#if (eq caps.structure 'weeks')}}
+          {{> components/ui/super_admin/tabs/panel/index name='week' label='Week' }}
+        {{/if}}
+        {{#if (eq caps.structure 'syllabus')}}
+          {{> components/ui/super_admin/tabs/panel/index name='sylabus' label='Sylabus' }}
+        {{/if}}
+        {{#if caps.finalAssignment}}
+          {{> components/ui/super_admin/tabs/panel/index name='final_assignment' label='Final Assignment' }}
+        {{/if}}
         {{> components/ui/super_admin/tabs/panel/index name='benefit' label='Benefit' }}
         {{!-- {{> components/ui/super_admin/tabs/panel/index name='participants' label='Participants' }} --}}
         {{> components/ui/super_admin/tabs/panel/index name='flow' label='Flow' }}
@@ -163,7 +162,9 @@
         {{else}}
           {{> components/ui/super_admin/tabs/panel/index name='registration' label='Registration' }}
         {{/if}}
+        {{#unless (eq course.category.type 'Free Program')}}
         {{> components/ui/super_admin/tabs/panel/index name='alumni' label='Alumni' }}
+        {{/unless}}
         {{> components/ui/super_admin/tabs/panel/index name='FAQs' label='FAQs' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
         {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
@@ -172,22 +173,97 @@
         {{> components/ui/super_admin/tabs/panel/index name='portfolio' label='Portfolio' }}
       </nav>
 
-      <div x-show="tab === 'benefit'">{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'participants'">{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'flow'">{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'FAQs'">{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
-      {{#if course.checkPaid}}
-        <div x-show="tab === 'payment'">{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
-        <div x-show="tab === 'installment'">{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
-      {{else}}
-        <div x-show="tab === 'registration'">{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
+      {{#if (eq caps.structure 'weeks')}}
+        <div x-show="tab === 'week'" class='w-full'>
+          <template x-if="loaded['week']">
+            <div class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
+          </template>
+        </div>
       {{/if}}
-      <div x-show="tab === 'alumni'">{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'user'">{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'log_book_user'">{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'log_book_mentor'">{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'mentor'">{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
-      <div x-show="tab === 'portfolio'">{{> components/ui/super_admin/program/portfolio_tab/index courseId=course.id }}</div>
+      {{#if (eq caps.structure 'syllabus')}}
+        <div x-show="tab === 'sylabus'" class='w-full'>
+          <template x-if="loaded['sylabus']">
+            <div class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
+          </template>
+        </div>
+      {{/if}}
+      {{#if caps.finalAssignment}}
+        <div x-show="tab === 'final_assignment'" class='w-full'>
+          <template x-if="loaded['final_assignment']">
+            <div class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab }}</div>
+          </template>
+        </div>
+      {{/if}}
+      <div x-show="tab === 'benefit'">
+        <template x-if="loaded['benefit']">
+          <div>{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'participants'">
+        <template x-if="loaded['participants']">
+          <div>{{> components/ui/super_admin/program/participants_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'flow'">
+        <template x-if="loaded['flow']">
+          <div>{{> components/ui/super_admin/program/flow_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'FAQs'">
+        <template x-if="loaded['FAQs']">
+          <div>{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      {{#if course.checkPaid}}
+        <div x-show="tab === 'payment'">
+          <template x-if="loaded['payment']">
+            <div>{{> components/ui/super_admin/program/payment_tab/index courseId=course.id checkPaid=course.checkPaid }}</div>
+          </template>
+        </div>
+        <div x-show="tab === 'installment'">
+          <template x-if="loaded['installment']">
+            <div>{{> components/ui/super_admin/program/installment_tab/index courseId=course.id }}</div>
+          </template>
+        </div>
+      {{else}}
+        <div x-show="tab === 'registration'">
+          <template x-if="loaded['registration']">
+            <div>{{> components/ui/super_admin/program/registration_tab/index courseId=course.id }}</div>
+          </template>
+        </div>
+      {{/if}}
+      {{#unless (eq course.category.type 'Free Program')}}
+      <div x-show="tab === 'alumni'">
+        <template x-if="loaded['alumni']">
+          <div>{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      {{/unless}}
+      <div x-show="tab === 'user'">
+        <template x-if="loaded['user']">
+          <div>{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'log_book_user'">
+        <template x-if="loaded['log_book_user']">
+          <div>{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'log_book_mentor'">
+        <template x-if="loaded['log_book_mentor']">
+          <div>{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'mentor'">
+        <template x-if="loaded['mentor']">
+          <div>{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'portfolio'">
+        <template x-if="loaded['portfolio']">
+          <div>{{> components/ui/super_admin/program/portfolio_tab/index courseId=course.id }}</div>
+        </template>
+      </div>
     </div>
 
   </div>
@@ -217,17 +293,40 @@
 <script>
   function tabData() {
     const isPaid = {{#if course.checkPaid}}true{{else}}false{{/if}};
+    const structure = '{{caps.structure}}';
+    const hasFinal = {{#if caps.finalAssignment}}true{{else}}false{{/if}};
+    const hasAlumni = {{#if (eq course.category.type 'Free Program')}}false{{else}}true{{/if}};
+    const fallbackTab = isPaid ? 'payment' : 'registration';
     return {
-      tab: localStorage.getItem('activeTabProgram') || (isPaid ? 'payment' : 'registration'),
+      tab: localStorage.getItem('activeTabProgram') || fallbackTab,
+      loaded: {},
 
       init() {
-        this.$watch('tab', (tabName) => localStorage.setItem('activeTabProgram', tabName));
+        this.$watch('tab', (tabName) => {
+          this.loaded[tabName] = true;
+          localStorage.setItem('activeTabProgram', tabName);
+        });
 
         if (!isPaid && (this.tab === 'installment' || this.tab === 'payment')) {
           this.tab = 'registration';
         } else if (isPaid && this.tab === 'registration') {
           this.tab = 'payment';
         }
+
+        // Tab Week/Sylabus/Final Assignment hanya ada pada tipe program tertentu,
+        // sedangkan kunci localStorage dipakai bersama - jadi nilai dari program
+        // lain bisa tertinggal lalu membuat tidak ada panel yang terbuka.
+        if (this.tab === 'week' && structure !== 'weeks') {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'sylabus' && structure !== 'syllabus') {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'final_assignment' && !hasFinal) {
+          this.tab = fallbackTab;
+        } else if (this.tab === 'alumni' && !hasAlumni) {
+          this.tab = fallbackTab;
+        }
+
+        this.loaded[this.tab] = true;
       },
     };
   }

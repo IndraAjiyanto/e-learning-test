@@ -63,7 +63,7 @@
               {{#> components/ui/super_admin/table/cell variant='media'}}
                 <span class='flex h-10 w-10 items-center justify-center [&>svg]:h-8 [&>svg]:w-8'>
                   <template x-if='row.svg'>
-                    <span class='flex h-8 w-8 items-center justify-center' x-html='row.svg'></span>
+                    <span class='flex h-8 w-8 items-center justify-center [&>svg]:h-full [&>svg]:w-full [&>svg]:max-h-full [&>svg]:max-w-full [&>svg]:object-contain' x-html='row.svg'></span>
                   </template>
                   <template x-if='!row.svg && !row.imgUrl'>
                     <span class='font-inter text-xs leading-[18px] text-[#a3a3a3]'>—</span>

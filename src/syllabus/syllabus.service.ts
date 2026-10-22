@@ -13,6 +13,7 @@ import { SyllabusProgress } from 'src/entities/syllabus_progress.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { Score } from 'src/entities/score.entity';
+import { Material } from 'src/entities/materials.entity';
 
 @Injectable()
 export class SyllabusService {
@@ -34,6 +35,9 @@ export class SyllabusService {
 
     @InjectRepository(Score)
     private readonly scoreRepository: Repository<Score>,
+
+    @InjectRepository(Material)
+    private readonly materialRepository: Repository<Material>,
   ) {}
 
   async findCourseSyllabus(courseId: string): Promise<number> {
@@ -84,23 +88,36 @@ export class SyllabusService {
       }
     }
 
-    let parsedContent = createSyllabusDto.content;
-    if (typeof parsedContent === 'string' && parsedContent.trim()) {
-      try {
-        parsedContent = JSON.parse(parsedContent);
-      } catch (e) {
-        parsedContent = null;
+    let parsedContent: object | string | null = null;
+    if (
+      typeof createSyllabusDto.content === 'string' &&
+      createSyllabusDto.content.trim()
+    ) {
+      const trimmed = createSyllabusDto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
+    } else if (
+      createSyllabusDto.content &&
+      typeof createSyllabusDto.content === 'object'
+    ) {
+      parsedContent = createSyllabusDto.content;
     }
 
     const isFinal =
       createSyllabusDto.isFinal === true ||
-      createSyllabusDto.isFinal === ('true' as any);
+      String(createSyllabusDto.isFinal) === 'true';
 
     const data = this.syllabusRepository.create({
       title: createSyllabusDto.title,
       description: createSyllabusDto.description,
-      content: parsedContent ?? undefined,
+      content: (parsedContent ?? undefined) as object | undefined,
       syllabusNumber: syllabusNumber,
       isFinal: isFinal,
       course: course,
@@ -169,15 +186,20 @@ export class SyllabusService {
     });
   }
 
-  /**
-   * Data untuk halaman detail silabus (area student, program non_bootcamp).
-   * Menggabungkan konten silabus, quiz-nya, status percobaan user, dan silabus
-   * berikutnya yang akan terbuka setelah lulus.
-   */
+  async findMaterialsByType(
+    syllabusId: string,
+    fileType: Material['fileType'],
+  ) {
+    return await this.materialRepository.find({
+      where: { syllabus: { id: syllabusId }, fileType },
+      order: { id: 'ASC' },
+    });
+  }
+
   async findDetailForUser(syllabusId: string, userId: string) {
     const syllabus = await this.syllabusRepository.findOne({
       where: { id: syllabusId },
-      relations: ['course', 'quiz', 'quiz.questions'],
+      relations: ['course', 'quiz', 'quiz.questions', 'materials'],
     });
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
@@ -209,6 +231,98 @@ export class SyllabusService {
     const idx = siblings.findIndex((s) => s.id === syllabus.id);
     const next = idx >= 0 ? siblings[idx + 1] || null : null;
 
+    const formatBytes = (bytes?: number | string | null): string => {
+      if (!bytes) return '';
+      const num = Number(bytes);
+      if (isNaN(num) || num <= 0) return '';
+      if (num < 1024) return `${num} B`;
+      if (num < 1024 * 1024) return `${(num / 1024).toFixed(1)} KB`;
+      return `${(num / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    const toEmbedUrl = (url?: string | null): string => {
+      if (!url) return '';
+      const trimmed = url.trim();
+      const ytMatch = trimmed.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/,
+      );
+      if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&enablejsapi=1&rel=0`;
+      }
+      return trimmed;
+    };
+
+    const materials = syllabus.materials || [];
+    const pdfMaterials = materials
+      .filter((m) => m.fileType === 'pdf')
+      .map((m) => ({
+        id: m.id,
+        fileType: 'pdf' as const,
+        title: m.title || 'Modul PDF',
+        file: m.file,
+        originalFileName: m.originalFileName || 'Modul.pdf',
+        fileSizeBytes: m.fileSizeBytes,
+        formattedSize: formatBytes(m.fileSizeBytes),
+      }));
+
+    const pptMaterials = materials
+      .filter((m) => m.fileType === 'ppt')
+      .map((m) => {
+        const fileUrl = m.file || '';
+        const isGoogleSlides = fileUrl.includes('docs.google.com/presentation');
+        const embedUrl = isGoogleSlides
+          ? fileUrl.replace('/pub?', '/pubembed?')
+          : fileUrl;
+        const isLocalFile =
+          !isGoogleSlides &&
+          (fileUrl.startsWith('/uploads/') || fileUrl.startsWith('/'));
+        return {
+          id: m.id,
+          fileType: 'ppt' as const,
+          title: m.title || 'Slide PPTX',
+          file: fileUrl,
+          embedUrl,
+          isGoogleSlides,
+          isLocalFile,
+          originalFileName: m.originalFileName || 'Slide.pptx',
+          fileSizeBytes: m.fileSizeBytes,
+          formattedSize: formatBytes(m.fileSizeBytes),
+          driveFileId: m.driveFileId,
+        };
+      });
+
+    const videoMaterialRow = materials.find((m) => m.fileType === 'video');
+    const rawVideoUrl = videoMaterialRow?.file || null;
+    const videoDuration = videoMaterialRow?.durationSeconds || null;
+    const videoTitle = videoMaterialRow?.title || 'Video Pembelajaran';
+
+    const hasVideo = !!(rawVideoUrl && rawVideoUrl.trim().length > 0);
+    const videoEmbedUrl = hasVideo ? toEmbedUrl(rawVideoUrl) : null;
+    const isYoutube = !!(
+      rawVideoUrl &&
+      (rawVideoUrl.includes('youtube.com') || rawVideoUrl.includes('youtu.be'))
+    );
+
+    const videoMaterial = hasVideo
+      ? {
+          id: videoMaterialRow?.id,
+          fileType: 'video' as const,
+          title: videoMaterialRow?.title || 'Video Pembelajaran',
+          file: rawVideoUrl,
+          embedUrl: videoEmbedUrl,
+          isYoutube,
+          durationSeconds: videoDuration,
+          originalFileName: videoMaterialRow?.originalFileName || '',
+          formattedSize: formatBytes(videoMaterialRow?.fileSizeBytes),
+        }
+      : null;
+
+    const hasPdf = pdfMaterials.length > 0;
+    const hasPpt = pptMaterials.length > 0;
+    const hasAnyMaterial = hasPdf || hasPpt || hasVideo;
+    const firstPdf = pdfMaterials[0] || null;
+    const firstPpt = pptMaterials[0] || null;
+
     return {
       syllabus,
       course: syllabus.course,
@@ -217,10 +331,32 @@ export class SyllabusService {
       minScore,
       quizStatus: { hasAttempt, bestScore, isPassed },
       next,
+      materials,
+      pdfMaterials,
+      pptMaterials,
+      firstPdf,
+      firstPpt,
+      hasVideo,
+      videoEmbedUrl,
+      videoDuration,
+      videoTitle,
+      isYoutube,
+      videoMaterial,
+      hasPdf,
+      hasPpt,
+      hasAnyMaterial,
     };
   }
 
-  async createQuiz(syllabusId: string, createQuizDto: any) {
+  async createQuiz(
+    syllabusId: string,
+    createQuizDto: {
+      quizName?: string;
+      title?: string;
+      minScore?: number | string;
+      duration?: number | string;
+    },
+  ) {
     const syllabus = await this.findOne(syllabusId);
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
@@ -290,27 +426,42 @@ export class SyllabusService {
       );
     }
 
-    let parsedContent = updateSyllabusDto.content;
-    if (typeof parsedContent === 'string' && parsedContent.trim()) {
-      try {
-        parsedContent = JSON.parse(parsedContent);
-      } catch (e) {
-        parsedContent = null;
+    let parsedContent: object | string | null = null;
+    if (
+      typeof updateSyllabusDto.content === 'string' &&
+      updateSyllabusDto.content.trim()
+    ) {
+      const trimmed = updateSyllabusDto.content.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          parsedContent = JSON.parse(trimmed) as object;
+        } catch {
+          parsedContent = trimmed;
+        }
+      } else {
+        parsedContent = trimmed;
       }
+    } else if (
+      updateSyllabusDto.content &&
+      typeof updateSyllabusDto.content === 'object'
+    ) {
+      parsedContent = updateSyllabusDto.content;
     }
 
     const isFinal =
       updateSyllabusDto.isFinal !== undefined
         ? updateSyllabusDto.isFinal === true ||
-          updateSyllabusDto.isFinal === ('true' as any)
+          String(updateSyllabusDto.isFinal) === 'true'
         : syllabus.isFinal;
 
     Object.assign(syllabus, {
       ...updateSyllabusDto,
-      ...(parsedContent !== undefined ? { content: parsedContent } : {}),
+      ...(parsedContent !== null ? { content: parsedContent } : {}),
       isFinal,
     });
-    return await this.syllabusRepository.save(syllabus);
+    const updatedSyllabus = await this.syllabusRepository.save(syllabus);
+
+    return updatedSyllabus;
   }
 
   async remove(id: string) {

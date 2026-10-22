@@ -27,7 +27,7 @@ export class SessionController {
     private readonly materialService: MaterialService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post()
   async create(
     @Body() CreateSessionDto: CreateSessionDto,
@@ -45,13 +45,14 @@ export class SessionController {
         'The new session has been added to this week.',
       );
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces create');
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':weeksId')
   async createPertemuan(
     @Body() createPertemuanDto: CreateSessionDto,
@@ -70,15 +71,16 @@ export class SessionController {
         'The new session has been added to this week.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces create');
       res.redirect(`/week/${weeksId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:weeksId')
-  async formCreate(
+  formCreate(
     @Param('weeksId') weeksId: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -86,17 +88,13 @@ export class SessionController {
     res.render('admin/session/create', { user: req.user, weeksId });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formAdd/:id')
-  async formAdd(
-    @Res() res: Response,
-    @Req() req: Request,
-    @Param('id') id: string,
-  ) {
+  formAdd(@Res() res: Response, @Req() req: Request, @Param('id') id: string) {
     res.render('admin/course/createPertemuan', { user: req.user, id });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formEdit/:id')
   async formEdit(
     @Res() res: Response,
@@ -126,7 +124,7 @@ export class SessionController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('logbooks/:sessionId')
   async getLogBook(
     @Param('sessionId') sessionId: string,
@@ -136,7 +134,7 @@ export class SessionController {
     res.json(logbooks);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('logbooks-mentor/:sessionId')
   async getLogBookMentor(
     @Param('sessionId') sessionId: string,
@@ -147,7 +145,7 @@ export class SessionController {
     res.json(mentor_logbook);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('attendance/:sessionId')
   async getAbsen(@Param('sessionId') sessionId: string, @Res() res: Response) {
     const session = await this.sessionService.findOne(sessionId);
@@ -158,14 +156,14 @@ export class SessionController {
     res.json(attendances);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('task/:sessionId')
   async getTugas(@Param('sessionId') sessionId: string, @Res() res: Response) {
     const assignments = await this.sessionService.findTugas(sessionId);
     res.json(assignments);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('pdf/:sessionId')
   async getMateriPdf(
     @Param('sessionId') sessionId: string,
@@ -175,7 +173,7 @@ export class SessionController {
     res.json(materialPdf);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('video/:sessionId')
   async getMateriVideo(
     @Param('sessionId') sessionId: string,
@@ -186,7 +184,7 @@ export class SessionController {
     res.json(materialVideo);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('ppt/:sessionId')
   async getMateriPpt(
     @Param('sessionId') sessionId: string,
@@ -196,7 +194,7 @@ export class SessionController {
     res.json(materialPpt);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get(':sessionId')
   async findOne(
     @Param('sessionId') sessionId: string,
@@ -214,7 +212,7 @@ export class SessionController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':sessionId')
   async update(
     @Param('sessionId') sessionId: string,
@@ -231,14 +229,15 @@ export class SessionController {
       );
       const session = await this.sessionService.findOne(sessionId);
       res.redirect(`/week/${session.weeks.id}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Session unsuccess update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Session unsuccess update');
       const session = await this.sessionService.findOne(sessionId);
       res.redirect(`/week/${session.weeks.id}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':id/:weeksId')
   async remove(
     @Param('id') id: string,
@@ -254,8 +253,9 @@ export class SessionController {
         'The session has been permanently removed.',
       );
       res.redirect(`/week/${weeksId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'session unsucces delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'session unsucces delete');
       res.redirect(`/week/${weeksId}`);
     }
   }

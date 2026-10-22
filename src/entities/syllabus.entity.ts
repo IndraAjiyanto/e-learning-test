@@ -11,8 +11,8 @@ import {
 import { Course } from './course.entity';
 import { Quiz } from './quiz.entity';
 import { SyllabusProgress } from './syllabus_progress.entity';
+import { Material } from './materials.entity';
 import { Exclude } from 'class-transformer';
-
 @Entity()
 export class Syllabus {
   @PrimaryGeneratedColumn('uuid')
@@ -56,6 +56,12 @@ export class Syllabus {
   })
   @Exclude()
   quiz: Quiz[];
+
+  @OneToMany(() => Material, (material) => material.syllabus, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  materials: Material[];
 
   @ManyToOne(() => Course, (course) => course.syllabus, {
     onDelete: 'CASCADE',

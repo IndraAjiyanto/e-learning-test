@@ -32,7 +32,7 @@ export class CertificatesService {
     private readonly biodataRepository: Repository<Biodata>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
-  ) { }
+  ) {}
 
   private async nextCertificateNumber(): Promise<string> {
     const certificates = await this.certificatesRepository.find({
@@ -56,6 +56,10 @@ export class CertificatesService {
       };
       return entities[character];
     });
+  }
+
+  private formatCategoryName(value: string): string {
+    return this.escapeHtml(value).replace(/\s+/g, '<br>');
   }
 
   private formatDate(date: Date): string {
@@ -120,7 +124,15 @@ export class CertificatesService {
       certificateTemplateForCourse(course),
     );
     const certificateDate = this.formatDate(certificate.createdAt);
-    const categoryName = this.escapeHtml(course.category?.name || 'Program');
+    const certificateStartDate = this.formatDate(course.startDate);
+    const certificateEndDate = this.formatDate(course.startEnd);
+    const certificateDateRange = `${certificateStartDate} - ${certificateEndDate}`;
+    const categoryName = this.formatCategoryName(
+      course.category?.name || 'Program',
+    );
+    const categoryNameDesc = this.escapeHtml(course.category.name);
+    const categoryType = this.escapeHtml(course.category?.type);
+    const courseMethod = this.escapeHtml(course.method);
     const courseName = this.escapeHtml(course.name);
     const classType = this.escapeHtml(
       course.courseType?.nameClassesType || 'Excellent',
@@ -138,14 +150,17 @@ export class CertificatesService {
       .replace('[Bootcamp Track Name]', courseName)
       .replace('[Class Title]', courseName)
       .replace('[Webinar Title]', courseName)
-      .replace('[Field of Scope]', categoryName)
+      .replace('[Method]', courseMethod)
+      .replace('[Field of Scope]', classType)
       .replace('[Month DD, YYYY]', certificateDate)
-      .replace('[Month YYYY] – [Month YYYY]', certificateDate)
+      .replace('[Month YYYY] – [Month YYYY]', certificateDateRange)
       .replace('>Excellent<', `>${classType}<`)
+      .replace('[Category name]', categoryNameDesc)
       .replace('Intensive<br>Bootcamp', categoryName)
       .replace('Kickstart<br>Class', categoryName)
       .replace('Faster<br>Class', categoryName)
       .replace('Starter<br>Class', categoryName)
+      .replace('[Type program]', categoryType)
       .replace(
         /(<div[^>]*(?:data-role="big"|id="k[12]")[^>]*>)[^<]*(<\/div>)/g,
         (_match, openingTag, closingTag) => {
@@ -341,7 +356,7 @@ export class CertificatesService {
         });
       }
 
-      const rows: any[] = [];
+      const rows: string[][] = [];
 
       const headers = ['Material', 'Interval', 'Predicate'];
       for (const m of course.weeks) {
@@ -401,22 +416,33 @@ export class CertificatesService {
       const buffer = Buffer.from(pdfBytes);
 
       // 4. Upload ke Cloudinary
-      const result: any = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'nestjs/certificates',
-            resource_type: 'raw', // wajib biar pdf diterima
-            public_id: `certificate-${user.username}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
-            allowed_formats: ['pdf'],
-          },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          },
-        );
+      const result = await new Promise<{ secure_url: string }>(
+        (resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'nestjs/certificates',
+              resource_type: 'raw', // wajib biar pdf diterima
+              public_id: `certificate-${user.username}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+              allowed_formats: ['pdf'],
+            },
+            (error, result) => {
+              if (error) {
+                return reject(
+                  new Error(error.message || 'Cloudinary upload failed'),
+                );
+              }
+              if (!result) {
+                return reject(
+                  new Error('Cloudinary upload returned undefined result'),
+                );
+              }
+              resolve(result);
+            },
+          );
 
-        uploadStream.end(buffer);
-      });
+          uploadStream.end(buffer);
+        },
+      );
 
       // sekarang result sudah berisi object Cloudinary
       const cert = this.certificatesRepository.create({

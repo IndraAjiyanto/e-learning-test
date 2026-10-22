@@ -465,6 +465,13 @@ export class DashboardService {
     return await this.categoryRepository.find();
   }
 
+  // Khusus navbar user: urutkan mengikuti nomor urut (`no`) yang diatur super
+  // admin lewat form Category, sehingga kategori nomor 1 tampil paling depan.
+  // findCategories() sengaja tetap tanpa order agar halaman lain tidak berubah.
+  async findCategoriesOrdered() {
+    return await this.categoryRepository.find({ order: { no: 'ASC' } });
+  }
+
   async findAllBenefits() {
     return await this.benefitRepository.find({ order: { no: 'ASC' } });
   }

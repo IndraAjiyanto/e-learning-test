@@ -53,7 +53,7 @@ export class AuthService {
     createUserDto.verificationTokenExpires = new Date(Date.now() + 60000);
 
     try {
-      const user_data = await this.userRepository.create({
+      const user_data = this.userRepository.create({
         ...createUserDto,
         isVerified: false,
       });
@@ -65,14 +65,19 @@ export class AuthService {
           createUserDto.username,
         );
       } catch (emailError) {
-        console.error('Failed to send verification email:', emailError.message);
+        console.error(
+          'Failed to send verification email:',
+          emailError instanceof Error ? emailError.message : String(emailError),
+        );
         throw new BadRequestException(
           'Verification email could not be sent. Please try again later.',
         );
       }
       return user;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(
+        error instanceof Error ? error.message : 'Registration failed',
+      );
     }
   }
 

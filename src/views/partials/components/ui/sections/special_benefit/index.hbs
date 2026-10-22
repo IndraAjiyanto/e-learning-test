@@ -8,10 +8,10 @@
 
     {{!-- section-header --}}
     {{#> components/ui/text/section_header/index
-        titleClass="font-montserrat font-bold text-3xl sm:text-[40px] leading-[1.2] sm:leading-[49px] text-[#111827] text-center max-w-[707px]"
+        titleClass="font-inter text-2xl sm:text-3xl lg:text-[36px] font-bold lg:leading-[44px] text-[#111827] text-center"
         description=(t 'test.special_program.whyChooseUs.descJapan')
-        descClass="font-inter font-normal text-base sm:text-[18px] leading-[160%] text-[#6B7280] text-center max-w-[760px]"
-        wrapperClass="gap-3 max-w-[760px]"
+        descClass="max-w-[592px] font-inter text-base lg:text-[20px] font-normal leading-[160%] text-[#4A5568] text-center"
+        wrapperClass="gap-4"
     }}
       {{#*inline "titleBlock"}}
         {{default (t 'test.special_program.whyChooseUs.titlePrefix') 'Why Choose'}} <span class="text-[#6EB6E5]">{{#if (includes category.name 'japan')}}{{default (t 'test.special_program.whyChooseUs.titleSuffixJapan') 'Our Japan Program'}}{{else}}{{default (t 'test.special_program.whyChooseUs.titleSuffixGeneral') (concat 'Our ' (default (nameByLang category lang) "Program"))}}{{/if}}</span>?

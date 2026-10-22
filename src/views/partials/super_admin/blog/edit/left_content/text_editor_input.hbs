@@ -1,16 +1,16 @@
 <!-- Editor ID -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content ID</label>
-<div id="editor-id" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<div id="editor-id" class="text-left text-black max-w-none min-h-[300px] border border-gray-300 rounded-md bg-white p-2"></div>
 <input type="hidden" name="details[id]" id="details-id">
 
 <!-- Editor EN -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content EN</label>
-<div id="editor-en" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<div id="editor-en" class="text-left text-black max-w-none min-h-[300px] border border-gray-300 rounded-md bg-white p-2"></div>
 <input type="hidden" name="details[en]" id="details-en">
 
 <!-- Editor JA -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content JP</label>
-<div id="editor-ja" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<div id="editor-ja" class="text-left text-black max-w-none min-h-[300px] border border-gray-300 rounded-md bg-white p-2"></div>
 <input type="hidden" name="details[ja]" id="details-ja">
 
 <script>
@@ -27,77 +27,52 @@ function tagInput(initialTags = '[]') {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // Load existing content per bahasa
+document.addEventListener('DOMContentLoaded', () => {
   const existingData = {
-    id: (() => { try { return JSON.parse(`{{{blog.editor_data.id}}}`); } catch { return {}; } })(),
-    en: (() => { try { return JSON.parse(`{{{blog.editor_data.en}}}`); } catch { return {}; } })(),
-    ja: (() => { try { return JSON.parse(`{{{blog.editor_data.ja}}}`); } catch { return {}; } })(),
+    id: `{{{default blog.editor_data.id (default blog.isi.id '')}}}`,
+    en: `{{{default blog.editor_data.en (default blog.isi.en '')}}}`,
+    ja: `{{{default blog.editor_data.ja (default blog.isi.ja '')}}}`
   };
 
-  const editorConfig = (holderId, lang) => ({
-    holder: holderId,
-    placeholder: 'Enter your content here...',
-    data: existingData[lang] || {},
-    tools: {
-      header: {
-        class: EditorTools.Header,
-        inlineToolbar: ['link']
-      },
-      paragraph: {
-        class: EditorTools.Paragraph,
-        inlineToolbar: true,
-      },
-      list: {
-        class: EditorTools.List,
-        inlineToolbar: true
-      },
-      marker: {
-        class: EditorTools.Marker,
-        shortcut: 'CMD+SHIFT+M'
-      },
-      image: {
-        class: EditorTools.ImageTool,
-        tunes: {
-          "stretched": false,
-          "withBorder": false,
-          "withBackground": false
-        },
-        config: {
-          endpoints: {
-            byFile: '/blog/upload-image',
-            byUrl: '/blog/fetch-image'
-          }
-        }
-      },
-      linkTool: {
-        class: EditorTools.LinkTool,
-        config: { endpoint: '/blog/fetch-link' }
-      }
+  const initQuill = (holderId, lang) => {
+    if (!window.QuillEditor) {
+      setTimeout(() => initQuill(holderId, lang), 100);
+      return null;
     }
-  });
+    return window.QuillEditor.create(holderId, {
+      placeholder: 'Enter your content here...',
+      initialContent: existingData[lang],
+      uploadUrl: '/blog/upload-image'
+    });
+  };
 
   const editors = {
-    id: new EditorJS(editorConfig('editor-id', 'id')),
-    en: new EditorJS(editorConfig('editor-en', 'en')),
-    ja: new EditorJS(editorConfig('editor-ja', 'ja')),
+    id: initQuill('editor-id', 'id'),
+    en: initQuill('editor-en', 'en'),
+    ja: initQuill('editor-ja', 'ja')
   };
 
   const form = document.querySelector('form');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      const getHtml = (quill) => {
+        if (!quill) return '';
+        const html = quill.getSemanticHTML ? quill.getSemanticHTML() : quill.root.innerHTML;
+        return html === '<p><br></p>' ? '' : html;
+      };
 
-    const [outputId, outputEn, outputJa] = await Promise.all([
-      editors.id.save(),
-      editors.en.save(),
-      editors.ja.save(),
-    ]);
+      const idVal = getHtml(editors.id);
+      const enVal = getHtml(editors.en);
+      const jaVal = getHtml(editors.ja);
 
-    document.getElementById('details-id').value = JSON.stringify(outputId);
-    document.getElementById('details-en').value = JSON.stringify(outputEn);
-    document.getElementById('details-ja').value = JSON.stringify(outputJa);
+      const elId = document.getElementById('details-id');
+      const elEn = document.getElementById('details-en');
+      const elJa = document.getElementById('details-ja');
 
-    form.submit();
-  });
+      if (elId) elId.value = idVal;
+      if (elEn) elEn.value = enVal;
+      if (elJa) elJa.value = jaVal;
+    });
+  }
 });
 </script>

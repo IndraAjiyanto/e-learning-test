@@ -19,7 +19,6 @@ import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import editorjsHTML from 'src/common/public/js/edjs';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -59,15 +58,17 @@ export class PortfoliosController {
     folder: 'portfolio/temp',
     skipTransformation: true,
   })
-  async uploadImage(@Res() res: Response, @Req() req: Request) {
+  uploadImage(@Res() res: Response, @Req() req: Request) {
     try {
-      const imageUrl = req.body.uploadedImageUrls?.[0];
+      const imageUrl = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       flashToastError(
         req,
         'Portfolio not saved',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       res.redirect('/portfolios');
     }
@@ -102,23 +103,24 @@ export class PortfoliosController {
       (req.headers.accept && req.headers.accept.includes('application/json'));
 
     try {
-      const editorjsData = await this.portfoliosService.ChangeImageEditorJS(
+      const contentHtml = this.portfoliosService.ChangeImageEditorJS(
         createPortfolioDto.content,
         '/asset/portfolio/temp',
         '/asset/portfolio/isi',
-        '/asset/portfolio/temp',
       );
 
-      createPortfolioDto.content = editorjsData;
-
-      const html = editorjsHTML.parse(JSON.parse(editorjsData));
-
-      createPortfolioDto.contentHtml = html;
+      createPortfolioDto.content = contentHtml;
+      createPortfolioDto.contentHtml = contentHtml;
 
       const courseId =
-        createPortfolioDto.courseId || (req.params.courseId as string);
+        createPortfolioDto.courseId || String(req.params.courseId || '');
       createPortfolioDto.courseId = courseId;
-      createPortfolioDto.image = req.body.uploadedImageUrls;
+      const body = req.body as {
+        uploadedImageUrls?: string[];
+        from?: string;
+        fromCourse?: unknown;
+      };
+      createPortfolioDto.image = body.uploadedImageUrls || [];
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
@@ -134,29 +136,38 @@ export class PortfoliosController {
       }
 
       const isFromProfile =
-        req.body.from === 'portfolio' ||
+        body.from === 'portfolio' ||
         req.query.from === 'portfolio' ||
-        (!req.body.fromCourse && !req.params.courseId);
+        (!body.fromCourse && !req.params.courseId);
 
-      req.flash('success', 'portofolios successfully upload');
+      flashToast(
+        req,
+        'Portfolio created',
+        'Your project is now in your portfolio list.',
+      );
       res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to upload portofolios';
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Failed to upload portofolios',
+          message,
         });
       }
 
       flashToastError(
         req,
         'Upload failed',
-        error.message || 'The image could not be uploaded. Please try again.',
+        error instanceof Error
+          ? error.message
+          : 'The image could not be uploaded. Please try again.',
       );
+      const body = req.body as { from?: string; fromCourse?: unknown };
       const isFromProfile =
-        req.body.from === 'portfolio' ||
+        body.from === 'portfolio' ||
         req.query.from === 'portfolio' ||
-        (!req.body.fromCourse && !req.params.courseId);
+        (!body.fromCourse && !req.params.courseId);
       res.redirect(
         this.portfolioRedirectUrl(createPortfolioDto.courseId, isFromProfile),
       );
@@ -336,20 +347,17 @@ export class PortfoliosController {
       );
 
       if (updatePortfolioDto.content) {
-        await this.portfoliosService.ChangeImageEditorJS(
-          oldPortfolio.content,
-          '/asset/portfolio/isi',
+        const finalHtml = this.portfoliosService.ChangeImageEditorJS(
+          updatePortfolioDto.content,
           '/asset/portfolio/temp',
+          '/asset/portfolio/isi',
         );
-        updatePortfolioDto.content =
-          await this.portfoliosService.ChangeImageEditorJS(
-            updatePortfolioDto.content,
-            '/asset/portfolio/temp',
-            '/asset/portfolio/isi',
-            '/asset/portfolio/temp',
-          );
-        updatePortfolioDto.contentHtml = editorjsHTML.parse(
-          JSON.parse(updatePortfolioDto.content),
+        updatePortfolioDto.content = finalHtml;
+        updatePortfolioDto.contentHtml = finalHtml;
+
+        await this.portfoliosService.cleanupRemovedContentImages(
+          oldPortfolio.content,
+          finalHtml,
         );
       }
 
@@ -359,17 +367,18 @@ export class PortfoliosController {
       // `image[]` sehingga tidak pernah terbaca DTO, dan setiap penyimpanan
       // menghapus seluruh gambar lamanya. `image` tetap dibaca sebagai
       // cadangan untuk pemanggil lama.
-      const rawKeep = (req.body.keepImages ??
-        req.body['keepImages[]'] ??
-        updatePortfolioDto.image ??
-        []) as string | string[];
+      interface PortfolioUpdateBody {
+        keepImages?: string | string[];
+        'keepImages[]'?: string | string[];
+        uploadedImageUrls?: string[];
+      }
+      const b = req.body as PortfolioUpdateBody;
+      const rawKeep =
+        b.keepImages ?? b['keepImages[]'] ?? updatePortfolioDto.image ?? [];
       const keptImages = (Array.isArray(rawKeep) ? rawKeep : [rawKeep]).filter(
         (url): url is string => typeof url === 'string' && url.length > 0,
       );
-      const combineImage = [
-        ...keptImages,
-        ...(req.body.uploadedImageUrls || []),
-      ];
+      const combineImage = [...keptImages, ...(b.uploadedImageUrls || [])];
       const newImageUrls = await this.portfoliosService.deleteUnusedImages(
         oldPortfolio.image,
         combineImage,
@@ -395,26 +404,26 @@ export class PortfoliosController {
         });
       }
 
+      const body = req.body as { from?: string };
       const isFromProfile =
-        req.body.from === 'portfolio' || req.query.from === 'portfolio';
+        body.from === 'portfolio' || req.query.from === 'portfolio';
 
       flashToast(req, 'Portfolio updated', 'Your changes have been saved.');
       return res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to update portfolio';
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Failed to update portfolio',
+          message,
         });
       }
 
-      flashToastError(
-        req,
-        'Portfolio not saved',
-        error.message || 'Please try again in a moment.',
-      );
+      flashToastError(req, 'Portfolio not saved', message);
+      const body = req.body as { from?: string };
       const isFromProfile =
-        req.body.from === 'portfolio' || req.query.from === 'portfolio';
+        body.from === 'portfolio' || req.query.from === 'portfolio';
       return res.redirect(this.portfolioRedirectUrl(courseId, isFromProfile));
     }
   }
@@ -455,18 +464,19 @@ export class PortfoliosController {
         return res.redirect(`/program/detail/program/admin/${courseId}`);
       }
       res.redirect(this.portfolioRedirectUrl(courseId));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       if (isAjax) {
         return res.status(400).json({
           success: false,
-          message: error.message || 'Failed to delete portfolio',
+          message: err.message || 'Failed to delete portfolio',
         });
       }
 
       flashToastError(
         req,
         'Portfolio not deleted',
-        error.message || 'Please try again in a moment.',
+        err.message || 'Please try again in a moment.',
       );
       if (isPrivileged) {
         return res.redirect(`/program/detail/program/admin/${courseId}`);

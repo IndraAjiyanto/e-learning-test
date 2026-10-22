@@ -21,7 +21,16 @@ import { Experience } from 'src/entities/experience.entity';
 
 // Multi-language jsonb helper: getByLang() reads obj[lang] || obj['id'].
 // Cast to any: entity columns are typed string[] but the app stores {id,en,ja} objects.
-const L = (id: string, en: string, ja: string): any => ({ id, en, ja });
+const L = (
+  id: string,
+  en: string,
+  ja: string,
+): { id: string; en: string; ja: string } & string[] =>
+  ({ id, en, ja }) as unknown as {
+    id: string;
+    en: string;
+    ja: string;
+  } & string[];
 const PHOTO = '/public/image/about/orang.png';
 
 async function bootstrap() {
@@ -638,4 +647,4 @@ async function bootstrap() {
   console.log('content.seed: done.');
   await app.close();
 }
-bootstrap();
+void bootstrap();

@@ -37,7 +37,7 @@ export class QuestionsController {
     private readonly userAnswersService: UserAnswersService,
   ) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post(':quizId')
   @UseInterceptors(
     FileInterceptor('image', multerConfigMemoryOnly),
@@ -55,8 +55,18 @@ export class QuestionsController {
     @Param('quizId') quizId: string,
   ) {
     try {
+      if (await this.quizService.hasAttempts(quizId)) {
+        flashToastError(
+          req,
+          'Cannot Add Question',
+          'Quiz cannot be edited because it has already been attempted by a user.',
+        );
+        return res.redirect(`/quiz/${quizId}`);
+      }
       createQuestionDto.quizId = quizId;
-      createQuestionDto.image = req.body.uploadedImageUrls?.[0];
+      createQuestionDto.image = (
+        req.body as { uploadedImageUrls?: string[] }
+      )?.uploadedImageUrls?.[0];
 
       const questions = await this.questionsService.create(createQuestionDto);
       for (let i = 0; i < createQuestionDto.options.length; i++) {
@@ -73,17 +83,18 @@ export class QuestionsController {
         'The new question has been added to this quiz.',
       );
       return res.redirect(`/quiz/${quizId}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       flashToastError(
         req,
         'Failed to Create Question',
-        err.message || 'Unable to create question.',
+        (err instanceof Error ? err.message : null) ||
+          'Unable to create question.',
       );
       return res.redirect(`/quiz/${quizId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('formCreate/:quizId')
   async formCreate(
     @Req() req: Request,
@@ -94,7 +105,7 @@ export class QuestionsController {
     res.render('admin/questions/create', { user: req.user, quiz });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('FormEdit/:questionId')
   async findQuestions(
     @Req() req: Request,
@@ -110,7 +121,7 @@ export class QuestionsController {
   async findQuestionsBySession(
     @Param('sessionId') sessionId: string,
     @Param('courseId') courseId: string,
-    @Req() req: any,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     const session = await this.sessionService.findOne(sessionId);
@@ -124,7 +135,7 @@ export class QuestionsController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':questionId/:quizId')
   @UseInterceptors(
     FileInterceptor('image', multerConfigMemoryOnly),
@@ -143,9 +154,22 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     try {
+      if (await this.quizService.hasAttempts(quizId)) {
+        flashToastError(
+          req,
+          'Cannot Update Question',
+          'Quiz cannot be edited because it has already been attempted by a user.',
+        );
+        return res.redirect(`/quiz/${quizId}`);
+      }
       const questions = await this.questionsService.findOne(questionId);
-      if (req.body.uploadedImageUrls?.length) {
-        updateQuestionDto.image = req.body.uploadedImageUrls[0];
+      if (
+        (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls
+          ?.length
+      ) {
+        updateQuestionDto.image =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
         if (questions.image) {
           await this.questionsService.deleteFile(questions.image);
         }
@@ -157,17 +181,18 @@ export class QuestionsController {
         'The question information has been updated.',
       );
       res.redirect(`/quiz/${quizId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Failed to Update Question',
-        error.message || 'Unable to update question.',
+        (error instanceof Error ? error.message : null) ||
+          'Unable to update question.',
       );
       res.redirect(`/quiz/${quizId}`);
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':questionId/:quizId')
   async remove(
     @Param('quizId') quizId: string,
@@ -176,6 +201,14 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     try {
+      if (await this.quizService.hasAttempts(quizId)) {
+        flashToastError(
+          req,
+          'Cannot Delete Question',
+          'Quiz cannot be edited because it has already been attempted by a user.',
+        );
+        return res.redirect(`/quiz/${quizId}`);
+      }
       const questions = await this.questionsService.findOne(questionId);
       if (questions.image) {
         await this.questionsService.deleteFile(questions.image);
@@ -187,11 +220,12 @@ export class QuestionsController {
         'The question has been permanently removed.',
       );
       res.redirect(`/quiz/${quizId}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       flashToastError(
         req,
         'Failed to Delete Question',
-        error.message || 'Unable to delete question.',
+        (error instanceof Error ? error.message : null) ||
+          'Unable to delete question.',
       );
       res.redirect(`/quiz/${quizId}`);
     }

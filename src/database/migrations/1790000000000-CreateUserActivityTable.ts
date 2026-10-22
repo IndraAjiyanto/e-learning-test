@@ -5,9 +5,9 @@ export class CreateUserActivityTable1790000000000 implements MigrationInterface 
 
   public async up(q: QueryRunner): Promise<void> {
     // Idempoten: skip jika tabel sudah ada
-    const [probe] = await q.query(
+    const [probe] = (await q.query(
       `SELECT to_regclass('public.user_activity') IS NOT NULL AS exists`,
-    );
+    )) as { exists?: boolean }[];
     if (probe.exists) return;
 
     await q.query(`

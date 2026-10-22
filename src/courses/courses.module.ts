@@ -37,6 +37,8 @@ import { Syllabus } from 'src/entities/syllabus.entity';
 import { PaymentSettingsModule } from 'src/payment-settings/payment-settings.module';
 import { QuestionsModule } from 'src/questions/questions.module';
 import { FinalAssignmentModule } from 'src/final_assignment/final_assignment.module';
+import { PortfolioGuide } from 'src/entities/portfolio-guide.entity';
+import { PortfoliosModule } from 'src/portfolios/portfolios.module';
 
 @Module({
   imports: [
@@ -73,10 +75,12 @@ import { FinalAssignmentModule } from 'src/final_assignment/final_assignment.mod
       Installment,
       Alumni,
       Portofolios,
+      PortfolioGuide,
     ]),
     QuestionsModule,
     UserAnswersModule,
     UsersModule,
+    PortfoliosModule,
     FinalAssignmentModule,
     PaymentSettingsModule,
   ],

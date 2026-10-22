@@ -38,19 +38,67 @@
       {{> components/ui/admin/form/underline-tabs activeTabVar="tab" fetchFn="toggleFetch"}}
     </div>
 
-    {{!-- Tab Content Areas (frozen) --}}
-    <div x-show="tab === 'week'" class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
-    <div x-show="tab === 'mentor'" class='w-full' x-data="mentorData()" x-init="fetchMentors()">{{> course/mentor_tab}}</div>
-    <div x-show="tab === 'flow'" class='w-full' x-data="flowData()" x-init="fetchFlow()">{{> course/flow_tab}}</div>
-    <div x-show="tab === 'benefit'" class='w-full' x-data="benefitData()" x-init="fetchBenefit()">{{> course/benefit_tab}}</div>
-    <div x-show="tab === 'participants'" class='w-full' x-data="participantData()" x-init="fetchParticipants()">{{> course/participants_tab}}</div>
-    <div x-show="tab === 'faq'" class='w-full' x-data="faqData()" x-init="fetchFaqs()">{{> course/faq_tab}}</div>
-    <div x-show="tab === 'installment'" class='w-full' x-data="installmentData()" x-init="fetchInstallment()">{{> course/installment_tab}}</div>
-    <div x-show="tab === 'alumni'" class='w-full' x-data="alumniData()" x-init="fetchAlumni()">{{> course/alumni_tab}}</div>
-    <div x-show="tab === 'user'" class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
-    <div x-show="tab === 'log_book_user'" class='w-full' x-data="logBookUserData()" x-init="fetchLogBookUsers()">{{> course/log_book_user_tab}}</div>
-    <div x-show="tab === 'log_book_mentor'" class='w-full' x-data="logBookMentorData()" x-init="fetchLogBookMentors()">{{> course/log_book_mentor_tab}}</div>
-    <div x-show="tab === 'payment'" class='w-full'>{{> course/payment_tab}}</div>
+    {{!-- Tab Content Areas --}}
+    <div x-show="tab === 'week'" class='w-full'>
+      <template x-if="loaded['week']">
+        <div class='w-full' x-data="weekData()" x-init="fetchWeeks()">{{> course/week_tab }}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'mentor'" class='w-full'>
+      <template x-if="loaded['mentor']">
+        <div class='w-full' x-data="mentorData()" x-init="fetchMentors()">{{> course/mentor_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'flow'" class='w-full'>
+      <template x-if="loaded['flow']">
+        <div class='w-full' x-data="flowData()" x-init="fetchFlow()">{{> course/flow_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'benefit'" class='w-full'>
+      <template x-if="loaded['benefit']">
+        <div class='w-full' x-data="benefitData()" x-init="fetchBenefit()">{{> course/benefit_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'participants'" class='w-full'>
+      <template x-if="loaded['participants']">
+        <div class='w-full' x-data="participantData()" x-init="fetchParticipants()">{{> course/participants_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'faq'" class='w-full'>
+      <template x-if="loaded['faq']">
+        <div class='w-full' x-data="faqData()" x-init="fetchFaqs()">{{> course/faq_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'installment'" class='w-full'>
+      <template x-if="loaded['installment']">
+        <div class='w-full' x-data="installmentData()" x-init="fetchInstallment()">{{> course/installment_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'alumni'" class='w-full'>
+      <template x-if="loaded['alumni']">
+        <div class='w-full' x-data="alumniData()" x-init="fetchAlumni()">{{> course/alumni_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'user'" class='w-full'>
+      <template x-if="loaded['user']">
+        <div class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'log_book_user'" class='w-full'>
+      <template x-if="loaded['log_book_user']">
+        <div class='w-full' x-data="logBookUserData()" x-init="fetchLogBookUsers()">{{> course/log_book_user_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'log_book_mentor'" class='w-full'>
+      <template x-if="loaded['log_book_mentor']">
+        <div class='w-full' x-data="logBookMentorData()" x-init="fetchLogBookMentors()">{{> course/log_book_mentor_tab}}</div>
+      </template>
+    </div>
+    <div x-show="tab === 'payment'" class='w-full'>
+      <template x-if="loaded['payment']">
+        <div>{{> course/payment_tab}}</div>
+      </template>
+    </div>
     {{!--
       Isi panel Final Assignment ikut bersyarat, bukan cuma tombolnya.
       `tabData().init()` di bawah membaca `activeTab` dari localStorage TANPA
@@ -61,7 +109,11 @@
       pernah mendapat opportunity untuk membukanya.
     --}}
     {{#if (and caps.finalAssignment lastWeek)}}
-    <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
+    <div x-show="tab === 'final_assignment'" class='w-full'>
+      <template x-if="loaded['final_assignment']">
+        <div class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
+      </template>
+    </div>
     {{/if}}
 
     </div>
@@ -75,6 +127,7 @@ function tabData() {
     search: '',
     tab: localStorage.getItem('activeTab'),
     data: [],
+    loaded: {},
     async init() {
       if(!this.tab) {
         if("{{user.role}}" === "admin") {
@@ -85,9 +138,15 @@ function tabData() {
           localStorage.setItem('activeTab', 'benefit');
         }
       }
+      this.loaded[this.tab] = true;
+      this.$watch('tab', (tabName) => {
+        this.loaded[tabName] = true;
+        localStorage.setItem('activeTab', tabName);
+      });
     },
     async toggleFetch(url, tabName) {
       this.tab = tabName;
+      this.loaded[tabName] = true;
       localStorage.setItem('activeTab', tabName);
       this.data = [];
     }

@@ -50,10 +50,22 @@
       </div>
 
       {{!-- Tab Content Areas --}}
-      <div x-show="tab === 'sylabus'" class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
-      <div x-show="tab === 'user'" class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
+      <div x-show="tab === 'sylabus'" class='w-full'>
+        <template x-if="loaded['sylabus']">
+          <div class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'user'" class='w-full'>
+        <template x-if="loaded['user']">
+          <div class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
+        </template>
+      </div>
       {{#if caps.finalAssignment}}
-      <div x-show="tab === 'final_assignment'" class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
+      <div x-show="tab === 'final_assignment'" class='w-full'>
+        <template x-if="loaded['final_assignment']">
+          <div class='w-full' x-data="finalAssignmentData()" x-init="fetchFinalAssignment()">{{> course/final_assignment_tab}}</div>
+        </template>
+      </div>
       {{/if}}
 
     </div>
@@ -67,15 +79,22 @@ function tabData() {
     search: '',
     tab: localStorage.getItem('activeTabNonBootcamp') || 'sylabus',
     data: [],
+    loaded: {},
     async init() {
       const validTabs = ['sylabus', 'user'{{#if caps.finalAssignment}}, 'final_assignment'{{/if}}];
       if (!this.tab || !validTabs.includes(this.tab)) {
         this.tab = 'sylabus';
         localStorage.setItem('activeTabNonBootcamp', 'sylabus');
       }
+      this.loaded[this.tab] = true;
+      this.$watch('tab', (tabName) => {
+        this.loaded[tabName] = true;
+        localStorage.setItem('activeTabNonBootcamp', tabName);
+      });
     },
     async toggleFetch(url, tabName) {
       this.tab = tabName;
+      this.loaded[tabName] = true;
       localStorage.setItem('activeTabNonBootcamp', tabName);
       this.data = [];
     }

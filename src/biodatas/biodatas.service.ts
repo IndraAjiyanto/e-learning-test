@@ -12,7 +12,7 @@ export class BiodatasService {
     private readonly biodataRepository: Repository<Biodata>,
   ) {}
   async create(createBiodataDto: CreateBiodataDto) {
-    const biodata = await this.biodataRepository.create(createBiodataDto);
+    const biodata = this.biodataRepository.create(createBiodataDto);
     return await this.biodataRepository.save(biodata);
   }
 

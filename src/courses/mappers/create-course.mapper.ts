@@ -177,7 +177,7 @@ export function mapCreateProgram(
   if (month) {
     dto.month = month;
     dto.day = 0;
-  } else if (day) {
+  } else if (day !== undefined) {
     dto.day = day;
     dto.month = 0;
   }

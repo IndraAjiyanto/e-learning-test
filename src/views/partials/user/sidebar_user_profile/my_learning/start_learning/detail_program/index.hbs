@@ -1,0 +1,265 @@
+{{!--
+  Fragment: Tab "Detail Program" (area student - Start Learning)
+  Lokasi: src/views/partials/user/sidebar_user_profile/my_learning/start_learning/detail_program/index.hbs
+  Dimuat lewat /program/myProgram/:id/fragment/detail-program.
+
+  Menampilkan ringkasan informasi program yang sedang dibuka: kategori, tipe,
+  metode belajar, durasi, lokasi, kuota, jadwal, deskripsi, teknologi, dan mentor.
+
+  Data: { course, technologies, mentors, course_flows, caps }
+--}}
+<div class='mx-auto mt-8 flex w-full max-w-[1268px] flex-col gap-6'>
+  {{#if course}}
+
+    {{!-- Kepala tab --}}
+    <div class='flex flex-col gap-1'>
+      <h2 class='font-inter text-xl font-bold leading-[28px] text-[#1E293B]'>
+        {{default (t 'test.startLearning.detailProgram') 'Detail Program'}}
+      </h2>
+      <p class='font-inter text-sm text-[#64748B]'>
+        {{#if course.name}}{{course.name}}{{/if}}
+      </p>
+    </div>
+
+    {{!-- Ringkasan program --}}
+    <div class='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+      {{#with course}}
+        {{!-- Kategori --}}
+        <div class='flex items-start gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-4'>
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#F8F9FA] text-[#003060]'>
+            <i class='ph ph-tag text-lg'></i>
+          </span>
+          <div class='flex min-w-0 flex-col'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.category') 'Category'}}
+            </span>
+            <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
+              {{#if category}}{{nameByLang category ../lang}}{{else}}-{{/if}}
+            </span>
+          </div>
+        </div>
+
+        {{!-- Tipe Program --}}
+        <div class='flex items-start gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-4'>
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#F8F9FA] text-[#003060]'>
+            <i class='ph ph-stack text-lg'></i>
+          </span>
+          <div class='flex min-w-0 flex-col'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.programType') 'Program Type'}}
+            </span>
+            <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
+              {{#if (eq programType 'non_bootcamp')}}Non-Bootcamp
+              {{else if (eq programType 'lpk')}}Japan Pathway (LPK)
+              {{else if programType}}Bootcamp
+              {{else}}-{{/if}}
+            </span>
+          </div>
+        </div>
+
+        {{!-- Sistem Belajar --}}
+        <div class='flex items-start gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-4'>
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#F8F9FA] text-[#003060]'>
+            <i class='ph ph-laptop text-lg'></i>
+          </span>
+          <div class='flex min-w-0 flex-col'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.method') 'Method'}}
+            </span>
+            <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
+              {{#if method}}{{method}}{{else}}-{{/if}}
+            </span>
+          </div>
+        </div>
+
+        {{!-- Durasi --}}
+        <div class='flex items-start gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-4'>
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#F8F9FA] text-[#003060]'>
+            <i class='ph ph-clock text-lg'></i>
+          </span>
+          <div class='flex min-w-0 flex-col'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.duration') 'Duration'}}
+            </span>
+            <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
+              {{#if month}}{{month}} {{#if (eq month 1)}}{{default (t 'test.detailProgram.infoProgram.month') 'Month'}}{{else}}{{default (t 'test.detailProgram.infoProgram.months') 'Months'}}{{/if}}{{/if}}
+              {{#if day}} {{day}} {{#if (eq day 1)}}{{default (t 'test.detailProgram.infoProgram.day') 'Day'}}{{else}}{{default (t 'test.detailProgram.infoProgram.days') 'Days'}}{{/if}}{{/if}}
+              {{#unless (or month day)}}-{{/unless}}
+            </span>
+          </div>
+        </div>
+
+        {{!-- Lokasi --}}
+        <div class='flex items-start gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-4'>
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#F8F9FA] text-[#003060]'>
+            <i class='ph ph-map-pin text-lg'></i>
+          </span>
+          <div class='flex min-w-0 flex-col'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.location') 'Location'}}
+            </span>
+            <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
+              {{#if locationLink}}
+                <a href='{{locationLink}}' target='_blank' rel='noopener noreferrer' class='underline decoration-[#003060]/40 hover:text-[#003060]'>{{#if locations}}{{getByLang locations ../lang}}{{else if method}}{{method}}{{else}}-{{/if}}</a>
+              {{else if locations}}
+                {{getByLang locations ../lang}}
+              {{else if method}}
+                {{method}}
+              {{else}}-{{/if}}
+            </span>
+          </div>
+        </div>
+
+        {{!-- Kuota --}}
+        <div class='flex items-start gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-4'>
+          <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[#F8F9FA] text-[#003060]'>
+            <i class='ph ph-users-three text-lg'></i>
+          </span>
+          <div class='flex min-w-0 flex-col'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.capacity') 'Capacity'}}
+            </span>
+            <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
+              {{#if quota}}{{quota}} {{default (t 'test.detailProgram.student') 'Student'}}{{else}}-{{/if}}
+            </span>
+          </div>
+        </div>
+      {{/with}}
+    </div>
+
+    {{!-- Jadwal --}}
+    <div class='flex flex-col gap-4 rounded-[16px] border border-[#E2E8F0] bg-white p-6'>
+      <h3 class='font-inter text-base font-bold text-[#1E293B]'>
+        {{default (t 'test.detailProgram.tabDetailProgram.programInfo') 'Program Info'}}
+      </h3>
+      <div class='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+        <div class='flex flex-col gap-1'>
+          <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+            {{default (t 'test.detailProgram.infoProgram.startDate') 'Start Date'}}
+          </span>
+          <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>
+            {{#if course.startDate}}{{formatDateSimple course.startDate lang}}{{else}}-{{/if}}
+          </span>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+            {{default (t 'test.detailProgram.infoProgram.endDate') 'End Date'}}
+          </span>
+          <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>
+            {{#if course.startEnd}}{{formatDateSimple course.startEnd lang}}{{else}}-{{/if}}
+          </span>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+            {{default (t 'test.detailProgram.infoProgram.registrationDeadline') 'Registration Deadline'}}
+          </span>
+          <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>
+            {{#if course.date_registration}}{{formatDateSimple course.date_registration lang}}{{else}}-{{/if}}
+          </span>
+        </div>
+        {{#if course.time_start}}
+          <div class='flex flex-col gap-1'>
+            <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+              {{default (t 'test.detailProgram.infoProgram.sessionTime') 'Session Time'}}
+            </span>
+            <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>
+              {{formatTime course.time_start}}{{#if course.time_end}} - {{formatTime course.time_end}}{{/if}}
+            </span>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+
+    {{!-- Deskripsi --}}
+    {{#if course.description}}
+      <div class='flex flex-col gap-3 rounded-[16px] border border-[#E2E8F0] bg-white p-6'>
+        <h3 class='font-inter text-base font-bold text-[#1E293B]'>
+          {{default (t 'test.detailProgram.infoProgram.description') 'Description'}}
+        </h3>
+        <p class='font-inter text-sm leading-[26px] text-[#475569]'>
+          {{getByLang course.description lang}}
+        </p>
+      </div>
+    {{/if}}
+
+    {{!-- Teknologi / Tools --}}
+    {{#if technologies.length}}
+      <div class='flex flex-col gap-4 rounded-[16px] border border-[#E2E8F0] bg-white p-6'>
+        <h3 class='font-inter text-base font-bold text-[#1E293B]'>
+          {{default (t 'test.detailProgram.infoProgram.technology') 'Technologies'}}
+        </h3>
+        <div class='flex flex-wrap items-center gap-3'>
+          {{#each technologies}}
+            <span class='inline-flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2'>
+              {{#if this.svg}}
+                <span class='flex h-5 w-5 items-center justify-center'>{{{this.svg}}}</span>
+              {{else if this.imgUrl}}
+                <img src='{{this.imgUrl}}' alt='{{this.name}}' class='h-5 w-5 object-contain' />
+              {{/if}}
+              <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>{{this.name}}</span>
+            </span>
+          {{/each}}
+        </div>
+      </div>
+    {{/if}}
+
+    {{!-- Mentor --}}
+    {{#if mentors.length}}
+      <div class='flex flex-col gap-4 rounded-[16px] border border-[#E2E8F0] bg-white p-6'>
+        <h3 class='font-inter text-base font-bold text-[#1E293B]'>
+          {{default (t 'test.detailProgram.mentor.title') 'Meet Your Mentors'}}
+        </h3>
+        <div class='grid grid-cols-1 gap-4 {{#if (eq mentors.length 1)}}max-w-[560px] mx-auto{{else}}sm:grid-cols-2{{/if}}'>
+          {{#each mentors}}
+            <div class='flex gap-4 rounded-[16px] border border-[#E2E8F0] bg-[#F8FAFC] p-4'>
+              <img
+                src='{{#if this.profile}}{{this.profile}}{{else}}/public/image/dashboard/bgHeroSection.png{{/if}}'
+                alt='{{this.name}}'
+                loading='lazy'
+                onerror="this.src='/public/image/dashboard/bgHeroSection.png'"
+                class='h-16 w-16 shrink-0 rounded-full border-4 border-white object-cover shadow'
+              />
+              <div class='flex min-w-0 flex-col gap-1'>
+                <span class='font-inter text-sm font-bold text-[#0B1F3B]'>{{this.name}}</span>
+                {{#if this.position}}
+                  <span class='font-inter text-xs font-medium text-[#64748B]'>{{getByLang this.position ../lang}}</span>
+                {{/if}}
+                {{#if this.technologies.length}}
+                  <div class='mt-1 flex flex-wrap items-center gap-1.5'>
+                    {{#each this.technologies}}
+                      <span class='inline-flex items-center gap-1 rounded-full border border-[#E2E8F0] bg-white px-2 py-0.5' title='{{this.name}}'>
+                        {{#if this.svg}}
+                          <span class='flex h-3.5 w-3.5 items-center justify-center'>{{{this.svg}}}</span>
+                        {{else if this.imgUrl}}
+                          <img src='{{this.imgUrl}}' alt='{{this.name}}' class='h-3.5 w-3.5 object-contain' />
+                        {{/if}}
+                        <span class='font-inter text-[10px] font-semibold text-[#475569]'>{{this.name}}</span>
+                      </span>
+                    {{/each}}
+                  </div>
+                {{/if}}
+                {{#if this.description}}
+                  <span class='font-inter text-xs leading-[20px] text-[#475569]'>{{getByLang this.description ../lang}}</span>
+                {{/if}}
+                {{#if this.linkedin}}
+                  <a href='{{this.linkedin}}' target='_blank' rel='noopener noreferrer' class='mt-1 inline-flex items-center gap-1 font-inter text-xs font-semibold text-[#003060] hover:underline'>
+                    <i class='ph ph-linkedin-logo text-sm'></i> LinkedIn
+                  </a>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    {{/if}}
+
+  {{else}}
+    <div class='flex w-full flex-col items-center gap-3 rounded-[16px] border border-[#D9D9D9] bg-white px-6 py-12 text-center'>
+      <span class='flex h-14 w-14 items-center justify-center rounded-full bg-[#E4F1F7] text-[#003060]'>
+        <i class='ph ph-info text-xl'></i>
+      </span>
+      <p class='font-inter text-base font-semibold text-[#003060]'>{{default (t 'test.startLearning.detailProgram') 'Detail Program'}}</p>
+      <p class='max-w-md font-inter text-sm leading-6 text-[#718096]'>{{default (t 'test.detailProgram.infoProgram.noSet') 'Not Set'}}</p>
+    </div>
+  {{/if}}
+</div>

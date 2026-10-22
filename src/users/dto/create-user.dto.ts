@@ -1,11 +1,9 @@
 import {
   IsArray,
-  IsBoolean,
   IsDate,
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,

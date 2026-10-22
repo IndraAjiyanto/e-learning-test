@@ -8,7 +8,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Generated,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Course } from './course.entity';

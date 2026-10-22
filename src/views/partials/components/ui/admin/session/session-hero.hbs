@@ -45,6 +45,12 @@
     {{/unless}}
   </div>
 
+  {{#if hasCompletedUser}}
+    {{> components/ui/admin/locked-notice/index
+      title='Session is locked'
+      message='This session cannot be edited or deleted because it has already been completed by a participant.' }}
+  {{/if}}
+
   {{!-- Info grid --}}
   <div class='flex flex-col gap-[12px] w-full'>
     <div class='flex flex-col sm:flex-row gap-[12px] sm:gap-[14px] w-full'>

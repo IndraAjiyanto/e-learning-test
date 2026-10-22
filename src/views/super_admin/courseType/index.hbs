@@ -151,8 +151,12 @@
   function programTypeIcon(value) {
     const icon = String(value || '').trim();
     if (!icon) return 'fa-solid fa-circle-question';
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(icon)
-      || icon.split(/\s+/).some((part) => /^fa-/i.test(part));
+    const STYLE_ONLY = /^(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-thin|fa-duotone|fa-brands|fa-)$/i;
+    if (STYLE_ONLY.test(icon)) return 'fa-solid fa-circle-question';
+    const parts = icon.split(/\s+/);
+    if (parts.length === 2 && STYLE_ONLY.test(parts[1])) return 'fa-solid fa-circle-question';
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-thin|fa-duotone|fa-brands)\b/i.test(icon)
+      || parts.some((part) => /^fa-/i.test(part));
     if (hasFaPrefix) return /^fa-\w+/i.test(icon) && !/\s/.test(icon) ? 'fa-solid ' + icon : icon;
     return icon.includes(' ') ? icon : 'fa-solid fa-' + icon;
   }
@@ -162,7 +166,7 @@
   // dibaca sebagai satu bahasa warna yang sama.
   const TYPE_BADGE = {
     hacker: { background: '#DCFCE7', color: '#166534', borderColor: '#16A34A' },
-    hipster: { background: '#FEF3C7', color: '#92400E', borderColor: '#F59E0B' },
+    hipster: { background: '#F3E8FF', color: '#642cc1', borderColor: '#8A51ED' },
     hustler: { background: '#DBEAFE', color: '#1E40AF', borderColor: '#3B82F6' },
   };
 

@@ -40,15 +40,16 @@ export class ProgramBenefitController {
         'The program benefit has been added successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Benefit Program failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Benefit Program failed to create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
   @Roles('super_admin')
   @Get('formCreate/:courseId')
-  async formCreateWithKelas(
+  formCreateWithKelas(
     @Res() res: Response,
     @Req() req: Request,
     @Param('courseId') courseId: string,
@@ -94,8 +95,9 @@ export class ProgramBenefitController {
         'The changes to this program benefit have been saved.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Benefit Program failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Benefit Program failed to update');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -121,8 +123,9 @@ export class ProgramBenefitController {
         'The program benefit has been removed successfully.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Benefit Program failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Benefit Program failed to delete');
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }

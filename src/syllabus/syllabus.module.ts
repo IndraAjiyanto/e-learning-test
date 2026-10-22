@@ -9,6 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { Score } from 'src/entities/score.entity';
+import { Material } from 'src/entities/materials.entity';
 import { CoursesModule } from 'src/courses/courses.module';
 import { QuizModule } from 'src/quiz/quiz.module';
 
@@ -22,6 +23,7 @@ import { QuizModule } from 'src/quiz/quiz.module';
       UserCourse,
       Quiz,
       Score,
+      Material,
     ]),
     CoursesModule,
     QuizModule,

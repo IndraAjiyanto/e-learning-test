@@ -83,7 +83,7 @@ export class GalleryService {
     Object.assign(gallery, rest);
 
     if (categoryId !== undefined) {
-      gallery.category = categoryId ? ({ id: categoryId } as any) : null;
+      gallery.category = categoryId ? ({ id: categoryId } as Category) : null;
     }
 
     const saved = await this.galleryRepository.save(gallery);
@@ -106,7 +106,7 @@ export class GalleryService {
     if (!url) return;
     try {
       await fs.unlink(path.join(process.cwd(), 'public', url));
-    } catch (error) {
+    } catch {
       // file tidak ada / sudah terhapus — abaikan
     }
   }

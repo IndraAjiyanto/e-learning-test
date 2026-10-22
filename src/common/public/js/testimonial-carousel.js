@@ -243,32 +243,33 @@ function alumniDeck(customData = []) {
 }
 
 /**
- * Partner Grid - 6 box per halaman dengan pagination per kategori tab.
- * Pagination API disamakan dengan alumniDeck (dots/active/goTo/prev/next circular),
- * tanpa autoplay.
+ * Partner Grid - tampil maksimal 36 (6 kolom x 6 baris) per kategori tab.
+ * Jika gambar pada kategori terpilih melebihi 36, tombol "Load More"
+ * akan menampilkan seluruh sisa gambar kategori tersebut sekaligus.
  */
 function partnerGrid(customData = [], defaultTab = 'Institutions') {
   return {
     allPartners: Array.isArray(customData) ? customData : [],
     activeTab: defaultTab,
-    active: 0,
-    perPage: 6,
+    showAll: false,
+    limit: 36,
     get filteredPartners() {
       return this.allPartners.filter(p => p.category === this.activeTab);
     },
-    get dots() {
-      return Math.max(1, Math.ceil(this.filteredPartners.length / this.perPage));
-    },
     get visiblePartners() {
-      const start = this.active * this.perPage;
-      return this.filteredPartners.slice(start, start + this.perPage);
+      return this.showAll ? this.filteredPartners : this.filteredPartners.slice(0, this.limit);
     },
-    next() { this.active = this.active >= this.dots - 1 ? 0 : this.active + 1; },
-    prev() { this.active = this.active <= 0 ? this.dots - 1 : this.active - 1; },
-    goTo(i) { this.active = Math.max(0, Math.min(i, this.dots - 1)); },
+    get hasMore() {
+      return !this.showAll && this.filteredPartners.length > this.limit;
+    },
+    get canCollapse() {
+      return this.showAll && this.filteredPartners.length > this.limit;
+    },
+    loadMore() { this.showAll = true; },
+    showLess() { this.showAll = false; },
     setTab(tab) {
       this.activeTab = tab;
-      this.active = 0;
+      this.showAll = false;
     }
   };
 }

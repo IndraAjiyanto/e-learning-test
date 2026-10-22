@@ -17,51 +17,51 @@ export class AddLearningScopeToUserActivity1788500000000 implements MigrationInt
   name = 'AddLearningScopeToUserActivity1788500000000';
 
   public async up(q: QueryRunner): Promise<void> {
-    const [col] = await q.query(
-      `SELECT to_regclass('public.user_activity') IS NOT NULL AS has_table`,
-    );
+    const [col] = (await q.query(
+      `SELECT to_regclass(col) IS NOT NULL AS has_table`,
+    )) as { has_table: boolean }[];
     if (!col.has_table) {
       return;
     }
 
-    const [currentCourseId] = await q.query(
+    const [currentCourseId] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'user_activity' AND column_name = 'currentCourseId'`,
-    );
+    )) as unknown[];
     if (!currentCourseId) {
       await q.query(`ALTER TABLE "user_activity" ADD "currentCourseId" uuid`);
     }
 
-    const [activityLabel] = await q.query(
+    const [activityLabel] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'user_activity' AND column_name = 'activityLabel'`,
-    );
+    )) as unknown[];
     if (!activityLabel) {
       await q.query(`ALTER TABLE "user_activity" ADD "activityLabel" varchar`);
     }
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    const [col] = await q.query(
-      `SELECT to_regclass('public.user_activity') IS NOT NULL AS has_table`,
-    );
+    const [col] = (await q.query(
+      `SELECT to_regclass(col) IS NOT NULL AS has_table`,
+    )) as { has_table: boolean }[];
     if (!col.has_table) {
       return;
     }
-    const [currentCourseId] = await q.query(
+    const [currentCourseId] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'user_activity' AND column_name = 'currentCourseId'`,
-    );
+    )) as unknown[];
     if (currentCourseId) {
       await q.query(
         `ALTER TABLE "user_activity" DROP COLUMN "currentCourseId"`,
       );
     }
 
-    const [activityLabel] = await q.query(
+    const [activityLabel] = (await q.query(
       `SELECT 1 FROM information_schema.columns
        WHERE table_name = 'user_activity' AND column_name = 'activityLabel'`,
-    );
+    )) as unknown[];
     if (activityLabel) {
       await q.query(`ALTER TABLE "user_activity" DROP COLUMN "activityLabel"`);
     }

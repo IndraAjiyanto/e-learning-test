@@ -79,13 +79,11 @@
 <script>
 function sessionData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
 
     async fetchSessions() {
       const res = await fetch(`/week/session/{{weeks.id}}`);
       this.data = await res.json();
-
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
         formatDate(value) {

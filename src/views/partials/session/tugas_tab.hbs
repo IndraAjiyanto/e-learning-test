@@ -42,13 +42,11 @@
   <script>
 function tugasData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
 
     async fetchTugas() {
       const res = await fetch('/session/task/{{session.id}}');
       this.data = await res.json();
-
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
   }
 }

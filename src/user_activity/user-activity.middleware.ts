@@ -20,7 +20,7 @@ export class UserActivityMiddleware implements NestMiddleware {
       return next();
     }
 
-    const user = (req as any).user;
+    const user = req.user;
     if (user?.id) {
       this.userActivityService.handleRequest(user, req).catch(() => undefined);
     }

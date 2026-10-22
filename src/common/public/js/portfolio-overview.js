@@ -16,7 +16,7 @@
     'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'A', 'BLOCKQUOTE', 'PRE', 'CODE', 'HR',
     'FIGURE', 'FIGCAPTION', 'IMG', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD'
   ];
-  var OVERVIEW_ALLOWED_ATTRS = ['href', 'src', 'alt', 'title', 'colspan', 'rowspan', 'class'];
+  var OVERVIEW_ALLOWED_ATTRS = ['href', 'src', 'alt', 'title', 'colspan', 'rowspan', 'class', 'style'];
 
   function sanitizeOverviewHtml(html) {
     // DOMParser menghasilkan dokumen inert: script tidak jalan, resource tidak di-fetch.
@@ -47,53 +47,107 @@
 
   function renderOverview(raw) {
     if (!raw) return '';
-    if (typeof raw !== 'string') return '';
-    var trimmed = raw.trim();
-    if (!trimmed) return '';
-    // 1. Editor.js JSON (kolom `content`)
-    if (trimmed.startsWith('{')) {
-      try {
-        var parsed = JSON.parse(trimmed);
-        if (parsed && Array.isArray(parsed.blocks)) {
-          return parsed.blocks.map(function (b) {
-            var d = b.data || {};
-            switch (b.type) {
-              case 'header': {
-                var lvl = Math.min(Math.max(d.level || 2, 1), 6);
-                return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
-              }
-              case 'list':
-                var items = (d.items || []).map(function (i) {
-                  var content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
-                  return '<li>' + content + '</li>';
-                }).join('');
-                return d.style === 'ordered' ? '<ol class="list-decimal pl-5">' + items + '</ol>' : '<ul class="list-disc pl-5">' + items + '</ul>';
-              case 'image':
-                return '<figure class="my-4"><img src="' + ((d.file && d.file.url) || '') + '" alt="overview image" class="max-w-full rounded-lg"/>' +
-                  (d.caption ? '<figcaption class="text-center text-sm text-[#737373] mt-2">' + d.caption + '</figcaption>' : '') + '</figure>';
-              case 'quote':
-                return '<blockquote class="border-l-4 border-[#D4D4D4] pl-4 italic my-4">' + (d.text || '') + '</blockquote>';
-              case 'code':
-                return '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto"><code>' + (d.code || '') + '</code></pre>';
-              case 'delimiter':
-                return '<hr class="my-6 border-t-2 border-[#E5E5E5]"/>';
-              default:
-                return '<p class="my-2">' + (d.text || '') + '</p>';
-            }
-          }).join('');
-        }
-      } catch (e) {
-        // not editor JSON, fallback below
+
+    var parsed = null;
+    var trimmed = '';
+
+    if (typeof raw === 'object' && raw !== null) {
+      if (Array.isArray(raw.blocks)) {
+        parsed = raw;
+      } else if (Array.isArray(raw.ops)) {
+        // Quill Delta object
+        return raw.ops
+          .map(function (op) {
+            if (typeof op.insert === 'string') return op.insert.replace(/\n/g, '<br>');
+            if (op.insert && op.insert.image) return '<p><img src="' + op.insert.image + '" alt="image" class="max-w-full rounded-lg"/></p>';
+            return '';
+          })
+          .join('');
+      } else if (typeof raw.html === 'string') {
+        return sanitizeOverviewHtml(raw.html);
+      } else if (typeof raw.content === 'string') {
+        return renderOverview(raw.content);
+      } else if (typeof raw.text === 'string') {
+        return renderOverview(raw.text);
       }
+    } else if (typeof raw === 'string') {
+      trimmed = raw.trim();
+      if (!trimmed || trimmed === '[object Object]') return '';
+
+      // 1. Editor.js JSON string
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          var j = JSON.parse(trimmed);
+          if (j && Array.isArray(j.blocks)) {
+            parsed = j;
+          }
+        } catch (e) {
+          // fallback ke html/text
+        }
+      }
+    } else {
+      return '';
     }
-    // 2. HTML jadi hasil editorjsHTML.parse() di server (kolom `contentHtml`)
-    if (/<\/?[a-z][\s\S]*>/i.test(trimmed)) {
+
+    // 1. Render jika berupa Editor.js blocks
+    if (parsed && Array.isArray(parsed.blocks)) {
+      return parsed.blocks
+        .map(function (b) {
+          var d = b.data || {};
+          switch (b.type) {
+            case 'header': {
+              var lvl = Math.min(Math.max(d.level || 2, 1), 6);
+              return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
+            }
+            case 'list': {
+              var items = (d.items || [])
+                .map(function (i) {
+                  var content = typeof i === 'object' && i !== null ? i.content || '' : i;
+                  return '<li>' + content + '</li>';
+                })
+                .join('');
+              return d.style === 'ordered'
+                ? '<ol class="list-decimal pl-5">' + items + '</ol>'
+                : '<ul class="list-disc pl-5">' + items + '</ul>';
+            }
+            case 'image':
+              return (
+                '<figure class="my-4"><img src="' +
+                ((d.file && d.file.url) || '') +
+                '" alt="overview image" class="max-w-full rounded-lg"/>' +
+                (d.caption
+                  ? '<figcaption class="text-center text-sm text-[#737373] mt-2">' +
+                    d.caption +
+                    '</figcaption>'
+                  : '') +
+                '</figure>'
+              );
+            case 'quote':
+              return '<blockquote class="border-l-4 border-[#D4D4D4] pl-4 italic my-4">' + (d.text || '') + '</blockquote>';
+            case 'code':
+              return '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto"><code>' + (d.code || '') + '</code></pre>';
+            case 'delimiter':
+              return '<hr class="my-6 border-t-2 border-[#E5E5E5]"/>';
+            default:
+              return '<p class="my-2">' + (d.text || '') + '</p>';
+          }
+        })
+        .join('');
+    }
+
+    // 2. HTML siap render
+    if (typeof trimmed === 'string' && /<\/?[a-z][\s\S]*>/i.test(trimmed)) {
       return sanitizeOverviewHtml(trimmed);
     }
+
     // 3. Teks biasa -> escape supaya aman
-    var el = document.createElement('div');
-    el.textContent = trimmed;
-    return el.innerHTML;
+    if (trimmed) {
+      var el = document.createElement('div');
+      el.textContent = trimmed;
+      return el.innerHTML;
+    }
+
+    return '';
   }
 
   global.sanitizeOverviewHtml = sanitizeOverviewHtml;

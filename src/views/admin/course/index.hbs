@@ -140,6 +140,7 @@
 <script>
 function kelasTable() {
   return {
+    isSuperAdmin: {{#if isSuperAdmin}}true{{else}}false{{/if}},
     kelasList: [],
     searchInput: '',
     selectedStatus: '',

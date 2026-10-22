@@ -6,11 +6,20 @@
   - cancelHref : string (default '/program') — tujuan tombol Cancel. Halaman
                  formCreate dibuka dari sebuah kategori, jadi ia mengembalikan
                  user ke kategori itu, bukan ke daftar program.
+
+  Cancel memakai openConfirmDiscard() (dari modal confirm_action): bila form
+  masih bersih langsung navigasi; bila sudah ada inputan, tampilkan modal
+  konfirmasi discard lebih dulu. Halaman pemanggil wajib me-render
+  components/ui/admin/modal/confirm_action/index dan meng-merge formDirtyGate()
+  ke x-data-nya supaya `isDirty` tersedia.
 --}}
 <div class='box-border w-full h-fit shrink-0 flex flex-col sm:flex-row gap-[12px] p-[16px_24px] justify-between items-stretch sm:items-center bg-[#FFFFFF] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] rounded-[12px]'>
 
   {{!-- Cancel --}}
-  {{> components/ui/admin/button/secondary-button text="Cancel" href=(default cancelHref "/program")}}
+  {{> components/ui/admin/button/secondary-button
+    text="Cancel"
+    atClick=(concat "openConfirmDiscard(isDirty, '" (default cancelHref "/program") "')")
+  }}
 
   {{!-- Right buttons --}}
   <div class='flex flex-col sm:flex-row gap-[12px] w-full sm:w-auto items-stretch sm:items-center'>

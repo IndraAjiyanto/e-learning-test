@@ -1,0 +1,33 @@
+<!-- Video Section -->
+<div x-show="tabMateri === 'video'" class='flex flex-col gap-[10px] w-full'>
+
+  <template x-if="dataMateri && dataMateri.length > 0">
+    <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
+      <template x-for="materi in dataMateri" :key="materi.id">
+        {{> components/ui/admin/material/material-row showFileLink=true syllabusId=syllabus.id readOnly=isCompleted}}
+      </template>
+    </div>
+  </template>
+
+  <template x-if="!dataMateri || dataMateri.length === 0">
+    <div class='flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-[10px]'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='h-12 w-12 text-gray-400 mb-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z'/>
+      </svg>
+      <p class='text-gray-600 font-medium'>No video available</p>
+      <p class='text-gray-500 text-sm mt-1'>Click <span class='font-semibold'>Add Material</span> to add new material.</p>
+    </div>
+  </template>
+
+  {{#unless isCompleted}}
+  <a href='/learning-material/formCreate/syllabus/video/{{syllabus.id}}'
+    x-cloak x-show="!dataMateri || dataMateri.length === 0"
+    class='box-border w-full shrink-0 h-[48px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#3B82F6] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#F0F7FF] transition-colors'>
+    <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Material</span>
+  </a>
+
+  <p x-cloak x-show="dataMateri && dataMateri.length > 0"
+    class='text-[13px]/[normal] text-gray-500 font-inter font-normal text-center'>
+  </p>
+  {{/unless}}
+</div>

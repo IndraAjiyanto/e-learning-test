@@ -9,7 +9,10 @@ import {
   Delete,
   Res,
   Req,
+  Query,
 } from '@nestjs/common';
+import { join } from 'path';
+import { existsSync } from 'fs';
 import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
@@ -19,6 +22,9 @@ import { Request, Response } from 'express';
 import { CoursesService } from 'src/courses/courses.service';
 import { QuizService } from 'src/quiz/quiz.service';
 import { flashToast } from 'src/common/utils/toast.util';
+import { Quiz } from 'src/entities/quiz.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
+import { Course } from 'src/entities/course.entity';
 
 @Controller('syllabus')
 export class SyllabusController {
@@ -44,8 +50,9 @@ export class SyllabusController {
         'The new syllabus has been added to the program.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Syllabus failed to create');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Syllabus failed to create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
@@ -159,8 +166,9 @@ export class SyllabusController {
         'The new quiz has been added to this syllabus.',
       );
       res.redirect(`/syllabus/${syllabusId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create quiz');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create quiz');
       res.redirect(`/syllabus/${syllabusId}`);
     }
   }
@@ -172,16 +180,16 @@ export class SyllabusController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    let quiz: any = null;
-    let syllabus: any = null;
-    let course: any = null;
+    let quiz: Quiz | null = null;
+    let syllabus: Syllabus | null = null;
+    let course: Course | null = null;
 
     // 1. Cek apakah id adalah id Quiz
     const foundQuiz = await this.quizService.findOne(id).catch(() => null);
     if (foundQuiz) {
       quiz = foundQuiz;
-      syllabus = foundQuiz.syllabus;
-      course = syllabus?.course || foundQuiz.weeks?.course;
+      syllabus = foundQuiz.syllabus || null;
+      course = syllabus?.course || foundQuiz.weeks?.course || null;
     }
 
     // 2. Jika bukan quiz, cek apakah id adalah id Syllabus
@@ -191,14 +199,14 @@ export class SyllabusController {
         .catch(() => null);
       if (foundSyllabus) {
         syllabus = foundSyllabus;
-        course = foundSyllabus.course;
+        course = foundSyllabus.course || null;
         quiz = foundSyllabus.quiz?.[0] || null;
       }
     }
 
     // 3. Jika bukan syllabus, cek apakah id adalah id Course
     if (!quiz) {
-      const syllabusList: any[] =
+      const syllabusList: Syllabus[] =
         (await this.syllabusService.findByCourse(id).catch(() => [])) || [];
       const syllabusWithQuiz = syllabusList.find(
         (s) => s?.quiz && s.quiz.length > 0,
@@ -206,7 +214,7 @@ export class SyllabusController {
       if (syllabusWithQuiz) {
         syllabus = await this.syllabusService.findOne(syllabusWithQuiz.id);
         quiz = syllabus?.quiz?.[0] || null;
-        course = syllabus?.course;
+        course = (syllabus?.course as Course) || null;
       }
     }
 
@@ -258,10 +266,35 @@ export class SyllabusController {
         return res.redirect(`/syllabus/${syllabusId}`);
       }
       return res.redirect('/program');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete quiz');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete quiz');
       return res.redirect('back');
     }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('pdf/:syllabusId')
+  async findPdfMaterials(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+  ) {
+    return this.syllabusService.findMaterialsByType(syllabusId, 'pdf');
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('ppt/:syllabusId')
+  async findPptMaterials(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+  ) {
+    return this.syllabusService.findMaterialsByType(syllabusId, 'ppt');
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('video/:syllabusId')
+  async findVideoMaterials(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+  ) {
+    return this.syllabusService.findMaterialsByType(syllabusId, 'video');
   }
 
   @Roles('admin', 'super_admin')
@@ -287,7 +320,7 @@ export class SyllabusController {
     });
   }
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Get('learn/:syllabusId')
   async detailForUser(
     @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
@@ -307,8 +340,111 @@ export class SyllabusController {
       minScore: detail.minScore,
       quizStatus: detail.quizStatus,
       next: detail.next,
+      materials: detail.materials,
+      pdfMaterials: detail.pdfMaterials,
+      pptMaterials: detail.pptMaterials,
+      firstPdf: detail.firstPdf,
+      firstPpt: detail.firstPpt,
+      hasVideo: detail.hasVideo,
+      videoEmbedUrl: detail.videoEmbedUrl,
+      videoDuration: detail.videoDuration,
+      videoTitle: detail.videoTitle,
+      isYoutube: detail.isYoutube,
+      videoMaterial: detail.videoMaterial,
+      hasPdf: detail.hasPdf,
+      hasPpt: detail.hasPpt,
+      hasAnyMaterial: detail.hasAnyMaterial,
       bareShell: true,
     });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('learn/:syllabusId/view/ppt')
+  async viewPpt(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Query('materialId') materialId: string | undefined,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.syllabusService.findDetailForUser(
+      syllabusId,
+      req.user!.id,
+    );
+    const pptList = detail.pptMaterials || [];
+    const selected =
+      (materialId && pptList.find((m) => m.id === materialId)) ||
+      pptList[0] ||
+      null;
+
+    if (!selected) {
+      req.flash('error', 'Slide presentasi belum tersedia.');
+      return res.redirect(`/syllabus/learn/${syllabusId}`);
+    }
+
+    let embedUrl = selected.file || '';
+    const isGoogleSlides = embedUrl.includes('docs.google.com/presentation');
+    if (isGoogleSlides) {
+      embedUrl = embedUrl.replace('/pub?', '/pubembed?');
+    }
+    const isLocalFile =
+      !isGoogleSlides &&
+      (embedUrl.startsWith('/uploads/') || embedUrl.startsWith('/'));
+
+    return res.render('user/syllabus/ppt_viewer', {
+      user: req.user,
+      syllabus: detail.syllabus,
+      course: detail.course,
+      pptList,
+      selected: {
+        ...selected,
+        embedUrl,
+        isGoogleSlides,
+        isLocalFile,
+      },
+      bareShell: true,
+    });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('learn/:syllabusId/materials/:materialId/download')
+  async downloadMaterialById(
+    @Param('syllabusId', new ParseUUIDPipe()) syllabusId: string,
+    @Param('materialId', new ParseUUIDPipe()) materialId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const detail = await this.syllabusService.findDetailForUser(
+      syllabusId,
+      req.user!.id,
+    );
+    const material = (detail.materials || []).find((m) => m.id === materialId);
+    if (!material || !material.file) {
+      req.flash('error', 'Berkas materi tidak ditemukan.');
+      return res.redirect(`/syllabus/learn/${syllabusId}`);
+    }
+
+    const fileUrl = material.file;
+    const originalName = material.originalFileName || 'materi-silabus';
+
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return res.redirect(fileUrl);
+    }
+
+    const rel = fileUrl.startsWith('/') ? fileUrl.slice(1) : fileUrl;
+    const candidates = [
+      join(process.cwd(), rel),
+      join(process.cwd(), 'uploads', rel),
+      join(process.cwd(), 'public', rel),
+    ];
+
+    for (const filePath of candidates) {
+      if (existsSync(filePath)) {
+        return res.download(filePath, originalName);
+      }
+    }
+
+    req.flash('error', 'Berkas fisik tidak ditemukan di server.');
+    return res.redirect(`/syllabus/learn/${syllabusId}`);
   }
 
   @Roles('admin', 'super_admin')
@@ -330,8 +466,9 @@ export class SyllabusController {
       res.redirect(
         `/program/detail/program/admin/${syllabus?.course?.id || ''}`,
       );
-    } catch (error: any) {
-      req.flash('error', error.message || 'Syllabus failed to update');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Syllabus failed to update');
       res.redirect('/program');
     }
   }
@@ -363,8 +500,9 @@ export class SyllabusController {
         'The syllabus has been permanently removed.',
       );
       res.redirect(`/program/detail/program/admin/${courseId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Syllabus failed to delete');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Syllabus failed to delete');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }

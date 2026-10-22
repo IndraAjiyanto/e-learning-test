@@ -144,13 +144,13 @@ async function bootstrap() {
             id: plan.description,
             en: plan.description,
             ja: plan.description,
-          } as any,
+          },
           image: 'logo.png',
           quota: 20,
           price: 1500000,
           promo: 0,
           group: 'https://chat.whatsapp.com/example',
-          locations: { id: 'Online', en: 'Online', ja: 'Online' } as any,
+          locations: { id: 'Online', en: 'Online', ja: 'Online' },
           locationLink: 'https://meet.google.com/example',
           method: 'online',
           process: 'approved',
@@ -794,7 +794,8 @@ async function bootstrap() {
   await app.close();
 }
 
-bootstrap().catch((err) => {
-  console.error('student.seed gagal:', err?.message ?? err);
+bootstrap().catch((err: unknown) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error('student.seed gagal:', msg);
   process.exit(1);
 });

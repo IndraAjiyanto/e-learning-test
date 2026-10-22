@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateMentorDto {
   @IsString()

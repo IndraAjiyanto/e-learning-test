@@ -51,7 +51,9 @@ export class TeamLeadController {
     @Req() req: Request,
   ) {
     try {
-      createTeamLeadDto.profile = req.body.uploadedImageUrls?.[0];
+      createTeamLeadDto.profile =
+        (req.body as { uploadedImageUrls?: string[] })
+          ?.uploadedImageUrls?.[0] || '';
       await this.teamLeadService.create(createTeamLeadDto);
       flashToast(
         req,
@@ -59,8 +61,9 @@ export class TeamLeadController {
         'The team lead profile has been added successfully.',
       );
       res.redirect('/team-lead');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create Team Lead');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create Team Lead');
       res.redirect('/team-lead');
     }
   }
@@ -74,7 +77,7 @@ export class TeamLeadController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/team_lead/create', { user: req.user });
   }
 
@@ -111,7 +114,9 @@ export class TeamLeadController {
       const teamLead = await this.teamLeadService.findOne(id);
       if (profile) {
         await this.teamLeadService.deleteFile(teamLead.profile);
-        updateTeamLeadDto.profile = req.body.uploadedImageUrls?.[0];
+        updateTeamLeadDto.profile =
+          (req.body as { uploadedImageUrls?: string[] })
+            ?.uploadedImageUrls?.[0] || '';
       }
       await this.teamLeadService.update(id, updateTeamLeadDto);
       flashToast(
@@ -120,8 +125,9 @@ export class TeamLeadController {
         'The team lead profile has been updated successfully.',
       );
       res.redirect('/team-lead');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update Team Lead');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to update Team Lead');
       res.redirect('/team-lead');
     }
   }
@@ -147,8 +153,9 @@ export class TeamLeadController {
         'The team lead profile has been removed successfully.',
       );
       res.redirect('/team-lead');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete Team Lead');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete Team Lead');
       res.redirect('/team-lead');
     }
   }

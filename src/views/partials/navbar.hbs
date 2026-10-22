@@ -62,8 +62,11 @@
     },
     async init() {
       this.active = window.location.pathname;
-      this.scrolled = window.scrollY > 8;
-      window.addEventListener('scroll', () => { this.scrolled = window.scrollY > 8; }, { passive: true });
+      const checkScroll = () => {
+        this.scrolled = (window.scrollY || document.documentElement.scrollTop || 0) > 8;
+      };
+      checkScroll();
+      window.addEventListener('scroll', checkScroll, { passive: true });
       window.addEventListener('resize', () => {
         this.isDesktop = window.innerWidth >= 1024;
         if (this.isDesktop) { this.open = false; }

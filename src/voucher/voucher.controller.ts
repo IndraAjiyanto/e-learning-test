@@ -1,10 +1,12 @@
 import {
+  ConflictException,
   Controller,
   Get,
   Post,
   Body,
   Patch,
   Param,
+  Query,
   Delete,
   UseGuards,
   Res,
@@ -16,13 +18,26 @@ import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Roles('super_admin')
 @Controller('voucher')
 export class VoucherController {
   constructor(private readonly voucherService: VoucherService) {}
+
+  // Deteksi konflik kode voucher, baik yang dilempar service (ConflictException)
+  // maupun pelanggaran unique constraint DB yang lolos dari pre-check karena
+  // balapan (dua submit hampir bersamaan).
+  private isDuplicateCode(error: unknown): boolean {
+    if (error instanceof ConflictException) return true;
+    const err = error as { message?: string; detail?: string; code?: string };
+    return (
+      err?.code === '23505' ||
+      /code_voucher/i.test(err?.detail ?? '') ||
+      /duplicate key value/i.test(err?.message ?? '')
+    );
+  }
 
   // ─── LIST ─────────────────────────────────────────────────────────────────
 
@@ -51,6 +66,22 @@ export class VoucherController {
   }
 
   // ─── FORM CREATE ──────────────────────────────────────────────────────────
+
+  // Cek ketersediaan kode sebelum form disubmit. Dipanggil dari Alpine saat
+  // super admin mengetik/meninggalkan field kode, supaya konflik terlihat
+  // sebelum tombol Create/Edit ditekan. `excludeId` diisi di halaman edit.
+  @Get('check-code')
+  async checkCode(
+    @Query('code') code: string,
+    @Query('excludeId') excludeId: string,
+    @Res() res: Response,
+  ) {
+    const available = await this.voucherService.isCodeAvailable(
+      code ?? '',
+      excludeId || undefined,
+    );
+    res.json({ available });
+  }
 
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
@@ -81,13 +112,24 @@ export class VoucherController {
         'The voucher has been issued successfully.',
       );
       res.redirect('/voucher');
-    } catch (error: any) {
-      console.error(
-        'CREATE VOUCHER ERROR:',
-        error.message,
-        error.detail || error,
-      );
-      req.flash('error', error.message || 'Voucher gagal dibuat');
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (this.isDuplicateCode(error)) {
+        console.warn(
+          `[Voucher] Rejected: duplicate voucher code "${createVoucherDto.code_voucher}"`,
+        );
+        flashToastError(
+          req,
+          'Voucher Code Already In Use',
+          'That code is already taken by another voucher. Please use a different code.',
+        );
+      } else {
+        flashToastError(
+          req,
+          'Voucher Not Created',
+          err?.message || 'The voucher could not be created. Please try again.',
+        );
+      }
       res.redirect('/voucher/formCreate');
     }
   }
@@ -112,8 +154,9 @@ export class VoucherController {
         users,
         error: req.flash('error')[0],
       });
-    } catch (error: any) {
-      req.flash('error', error.message || 'Voucher tidak ditemukan');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Voucher tidak ditemukan');
       res.redirect('/voucher');
     }
   }
@@ -137,8 +180,26 @@ export class VoucherController {
         'The changes to this voucher have been saved.',
       );
       res.redirect('/voucher');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Voucher gagal diperbarui');
+    } catch (error: unknown) {
+      const err = error as Error;
+      // Sama seperti create: kode duplikat harus tetap memunculkan notifikasi.
+      if (this.isDuplicateCode(error)) {
+        console.warn(
+          `[Voucher] Rejected: duplicate voucher code "${updateVoucherDto.code_voucher}" on update ID ${id}`,
+        );
+        flashToastError(
+          req,
+          'Voucher Code Already In Use',
+          'That code is already taken by another voucher. Please use a different code.',
+        );
+      } else {
+        console.error('UPDATE VOUCHER ERROR:', err?.message, err || error);
+        flashToastError(
+          req,
+          'Voucher Not Updated',
+          err.message || 'The voucher could not be updated. Please try again.',
+        );
+      }
       res.redirect(`/voucher/formEdit/${id}`);
     }
   }
@@ -161,8 +222,9 @@ export class VoucherController {
         'The voucher has been removed successfully.',
       );
       res.redirect('/voucher');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Voucher gagal dihapus');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Voucher gagal dihapus');
       res.redirect('/voucher');
     }
   }

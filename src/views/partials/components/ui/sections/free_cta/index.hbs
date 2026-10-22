@@ -5,14 +5,13 @@
 --}}
 <section id="explore-program" class="{{default sectionClass 'w-full bg-[#F9FAFB] py-16 font-inter lg:py-24'}}">
   <div class="page-shell flex flex-col items-center gap-6 text-center lg:gap-8">
-    <div class="flex max-w-[680px] flex-col items-center gap-3 lg:gap-4">
-      <h2 class="text-3xl font-extrabold tracking-tight text-[#003060] sm:text-4xl lg:text-[42px] lg:leading-tight">
-        {{default title (default (t 'test.categoryFreeProgram.cta.title') 'Transform your team today')}}
-      </h2>
-      <p class="text-base font-normal leading-relaxed text-[#4A5568] sm:text-lg">
-        {{default description (default (t 'test.categoryFreeProgram.cta.description') 'Get a customized training proposal for your organization.')}}
-      </p>
-    </div>
+    {{> components/ui/text/section_header/index
+        title=(default title (default (t 'test.categoryFreeProgram.cta.title') 'Transform your team today'))
+        titleClass="font-inter text-2xl font-bold leading-tight text-[#003060] sm:text-3xl lg:text-[36px] lg:leading-[44px]"
+        description=(default description (default (t 'test.categoryFreeProgram.cta.description') 'Get a customized training proposal for your organization.'))
+        descClass="max-w-[658px] font-inter text-sm font-normal leading-relaxed text-[#4A5568] sm:text-base lg:text-[20px] lg:leading-[160%]"
+        wrapperClass="gap-4 max-w-[680px]"
+    }}
 
     <div>
       <a

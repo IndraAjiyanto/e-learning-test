@@ -5,17 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Material } from 'src/entities/materials.entity';
 import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 import { LibreOfficeService } from 'src/common/config/libreoffice.service';
 import { CommonModule } from 'src/common/common.module';
 import { GoogleSlidesService } from './google-slides.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Material, Course, Session]),
+    TypeOrmModule.forFeature([Material, Course, Session, Syllabus]),
     CommonModule,
   ],
   controllers: [MaterialController],
   providers: [MaterialService, LibreOfficeService, GoogleSlidesService],
   exports: [MaterialService],
 })
-export class MaterialsModule { }
+export class MaterialsModule {}

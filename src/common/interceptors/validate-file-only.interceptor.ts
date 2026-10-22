@@ -17,10 +17,7 @@ import { Request } from 'express';
 export class ValidateFileOnlyInterceptor implements NestInterceptor {
   constructor(private reflector: Reflector) {}
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     const options = this.reflector.get<ValidateFileOnlyOptions>(
       VALIDATE_FILE_ONLY_KEY,
@@ -71,8 +68,9 @@ export class ValidateFileOnlyInterceptor implements NestInterceptor {
           }
         }
       }
-    } catch (err) {
-      throw new BadRequestException(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      throw new BadRequestException(error.message);
     }
 
     return next.handle();

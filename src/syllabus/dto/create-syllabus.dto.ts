@@ -9,7 +9,7 @@ export class CreateSyllabusDto {
   description: string;
 
   @IsOptional()
-  content?: any;
+  content?: string | object | null;
 
   @IsOptional()
   @Transform(

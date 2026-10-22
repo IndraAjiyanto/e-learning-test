@@ -1,0 +1,24 @@
+{{!--
+  Fragment: Tab "Portfolio Guide" (area student - Start Learning)
+  Lokasi: src/views/partials/user/sidebar_user_profile/my_learning/start_learning/portfolio_guide/index.hbs
+  Dimuat lewat /program/myProgram/:id/fragment/portfolio-guide.
+
+  Menampilkan isi panduan portfolio program yang sedang dibuka. Bila student
+  belum menyelesaikan syarat (syllabus/week terakhir) panduan terkunci; bila
+  program belum punya panduan tampil empty state.
+
+  Data: { course, guide, unlocked }
+--}}
+<div class='mx-auto mt-8 w-full max-w-[1268px]'>
+  {{#if guide}}
+    {{> components/ui/user/portfolio-guide/index guide=guide unlocked=unlocked course=course}}
+  {{else}}
+    <div class='flex w-full flex-col items-center gap-3 rounded-[16px] border border-[#D9D9D9] bg-white px-6 py-12 text-center'>
+      <span class='flex h-14 w-14 items-center justify-center rounded-full bg-[#E4F1F7] text-[#003060]'>
+        <i class='fa-solid fa-briefcase text-xl'></i>
+      </span>
+      <p class='font-inter text-base font-semibold text-[#003060]'>{{default (t 'test.startLearning.portfolioGuide') 'Portfolio Guide'}}</p>
+      <p class='max-w-md font-inter text-sm leading-6 text-[#718096]'>{{default (t 'test.startLearning.portfolioGuideEmpty') 'No portfolio guide is available for this program yet.'}}</p>
+    </div>
+  {{/if}}
+</div>

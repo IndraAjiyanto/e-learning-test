@@ -36,8 +36,9 @@ export class ParagraphsController {
       await this.paragraphsService.create(createParagraphsDto);
       flashToast(req, 'Paragraph Created', 'The new paragraph has been added.');
       res.redirect('/paragraphs');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to create paragraph');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to create paragraph');
       res.redirect('/paragraphs');
     }
   }
@@ -51,7 +52,7 @@ export class ParagraphsController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/paragraphs/create', { user: req.user });
   }
 
@@ -78,8 +79,9 @@ export class ParagraphsController {
       await this.paragraphsService.update(id, updateParagraphsDto);
       flashToast(req, 'Changes Saved', 'The paragraph has been updated.');
       res.redirect('/paragraphs');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to update paragraph');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to update paragraph');
       res.redirect('/paragraphs');
     }
   }
@@ -99,8 +101,9 @@ export class ParagraphsController {
         'The paragraph has been permanently removed.',
       );
       res.redirect('/paragraphs');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Failed to delete paragraph');
+    } catch (error: unknown) {
+      const err = error as Error;
+      req.flash('error', err.message || 'Failed to delete paragraph');
       res.redirect('/paragraphs');
     }
   }

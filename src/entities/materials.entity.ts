@@ -5,11 +5,23 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Session } from './session.entity';
+import { Syllabus } from './syllabus.entity';
 import { Exclude } from 'class-transformer';
 
 export type FileType = 'video' | 'pdf' | 'ppt';
+
+/**
+ * Label jenis berkas untuk pesan ke user (batas upload syllabus, judul
+ * notifikasi, dst).
+ */
+export const FILE_TYPE_LABEL: Record<FileType, string> = {
+  pdf: 'PDF',
+  ppt: 'PPT',
+  video: 'Video',
+};
 
 @Entity()
 export class Material {
@@ -22,12 +34,20 @@ export class Material {
   @Column()
   file: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  driveFileId?: string | null;
+
   @Column({ nullable: true })
-  driveFileId?: string;
+  originalFileName?: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  fileSizeBytes?: number | string;
+
+  @Column({ nullable: true })
+  durationSeconds?: string;
 
   @Column({ type: 'enum', enum: ['video', 'pdf', 'ppt'] })
   fileType: FileType;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -36,7 +56,17 @@ export class Material {
 
   @ManyToOne(() => Session, (session) => session.materials, {
     onDelete: 'CASCADE',
+    nullable: true,
   })
   @Exclude()
-  session: Session;
+  @JoinColumn({ name: 'sessionId' })
+  session?: Session;
+
+  @ManyToOne(() => Syllabus, (syllabus) => syllabus.materials, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @Exclude()
+  @JoinColumn({ name: 'syllabusId' })
+  syllabus?: Syllabus;
 }

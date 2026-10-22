@@ -53,7 +53,7 @@ export class AttendanceService {
         'User has already submitted attendance for this session',
       );
     }
-    const attendance = await this.attendanceRepository.create({
+    const attendance = this.attendanceRepository.create({
       ...CreateAttendanceDto,
       session: session,
       user: user,

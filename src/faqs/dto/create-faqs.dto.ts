@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsUUID } from 'class-validator';
 
 export class CreateFaqsDto {
   @IsArray()

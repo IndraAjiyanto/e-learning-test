@@ -3,18 +3,20 @@ import { DashboardService } from './dashboard.service';
 import { GalleryService } from '../gallery/gallery.service';
 import { Request, Response } from 'express';
 import { CategoriesService } from 'src/categories/categories.service';
+import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
 import {
   corporateTrainingFaqs,
   corporateTrainingPrograms,
 } from './corporate-training.data';
 
+@DenyRoles('super_admin', 'admin')
 @Controller('dashboard')
 export class DashboardController {
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly galleryService: GalleryService,
     private readonly kategorisService: CategoriesService,
-  ) { }
+  ) {}
 
   @Get('course/filter')
   async kelasFilter(
@@ -247,7 +249,9 @@ export class DashboardController {
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
     const kelasList = await this.dashboardService.findCourses();
-    const kategoriList = await this.dashboardService.findCategories();
+    const kategoriList = (await this.dashboardService.findCategories()).filter(
+      (c) => c.type !== 'Free Program',
+    );
 
     res.render('alumni', {
       user: req.user,
@@ -314,7 +318,7 @@ export class DashboardController {
 
   @Get('api/category')
   async getCategory(@Res() res: Response) {
-    const category = await this.dashboardService.findCategories();
+    const category = await this.dashboardService.findCategoriesOrdered();
     res.json(category);
   }
 

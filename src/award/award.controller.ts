@@ -39,7 +39,7 @@ export class AwardController {
         'The award has been added successfully.',
       );
       res.redirect('/award');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'award failed to create');
       res.redirect('/award');
     }
@@ -79,7 +79,7 @@ export class AwardController {
         'The changes to this award have been saved.',
       );
       res.redirect('/award');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'award failed to update');
       res.redirect('/award');
     }
@@ -100,7 +100,7 @@ export class AwardController {
         'The award has been removed successfully.',
       );
       res.redirect('/award');
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'award failed to delete');
       res.redirect('/award');
     }
@@ -108,7 +108,7 @@ export class AwardController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
+  formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/award/create', { user: req.user });
   }
 }

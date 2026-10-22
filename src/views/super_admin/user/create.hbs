@@ -120,6 +120,7 @@
       formErrors: { username: '', email: '', password: '', role: '' },
       // Error hanya ditampilkan setelah field disentuh atau setelah submit ditekan
       touched: { username: false, email: false, password: false, role: false },
+      duplicateEmail: '',
 
       validateImage(file) {
         this.clearPreview();
@@ -203,7 +204,14 @@
 
           case 'email': {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(val.trim()) ? '' : 'Please enter a valid work email.';
+            if (!emailRegex.test(val.trim())) return 'Please enter a valid work email.';
+            if (
+              this.duplicateEmail &&
+              val.trim().toLowerCase() === this.duplicateEmail.toLowerCase()
+            ) {
+              return 'Email sudah terdaftar. Silakan gunakan alamat email lain.';
+            }
+            return '';
           }
 
           case 'password':
@@ -264,7 +272,7 @@
 
       // Tombol Create User selalu aktif; validasi dijalankan di sini.
       // Bila ada field kosong/tidak valid, form tidak dikirim dan pesan merah muncul.
-      submitForm(event) {
+      async submitForm(event) {
         this.validateAll();
         if (!this.canSubmit()) {
           this.focusFirstInvalid();
@@ -272,7 +280,57 @@
         }
 
         this.loading = true;
-        event.target.submit();
+        try {
+          const form = event.target;
+          const formData = new FormData(form);
+
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              Accept: 'application/json',
+            },
+          });
+
+          const data = await res.json().catch(() => null);
+
+          if (res.ok && (!data || data.success !== false)) {
+            window.location.href = data?.redirect || '/users';
+            return;
+          }
+
+          const message = data?.message || 'Failed to create user';
+          if (
+            data?.field === 'email' ||
+            message.toLowerCase().includes('email')
+          ) {
+            this.duplicateEmail = this.formData.email.trim();
+            this.formErrors.email = message;
+            this.touched.email = true;
+            this.focusFirstInvalid();
+          }
+
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed to Create User',
+                description: message,
+              },
+            }),
+          );
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Network Error',
+                description: 'Failed to connect to the server.',
+              },
+            }),
+          );
+        } finally {
+          this.loading = false;
+        }
       },
     };
   }

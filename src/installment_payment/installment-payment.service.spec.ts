@@ -16,7 +16,11 @@ describe('InstallmentPaymentService', () => {
 
   beforeEach(async () => {
     repo = {
-      create: jest.fn((data) => ({ ...data })),
+      create: jest.fn(
+        (data: Record<string, unknown>): Record<string, unknown> => ({
+          ...data,
+        }),
+      ),
       save: jest.fn((row) => Promise.resolve(row)),
       findOne: jest.fn(),
       find: jest.fn(),

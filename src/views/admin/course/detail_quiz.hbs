@@ -136,17 +136,9 @@
           </div>
 
         {{#if isAttempted}}
-        {{!-- Info Notice: Quiz has been submitted by users --}}
-        <div class='box-border w-full bg-[#EFF6FF] border border-[#BFDBFE] rounded-[8px] p-[12px_16px] flex flex-row items-center gap-[12px]'>
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#2563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
-            <circle cx='12' cy='12' r='10'></circle>
-            <line x1='12' y1='16' x2='12' y2='12'></line>
-            <line x1='12' y1='8' x2='12.01' y2='8'></line>
-          </svg>
-          <span class='font-inter font-normal text-[14px] leading-[20px] text-[#1E40AF]'>
-            Quiz ini sudah dikerjakan oleh user. Perubahan, penambahan, dan penghapusan quiz maupun pertanyaan dinonaktifkan untuk menjaga integritas data.
-          </span>
-        </div>
+        {{> components/ui/admin/locked-notice/index
+          title='Quiz is locked'
+          message='This quiz cannot be edited or deleted because it has already been attempted by a participant. Its questions are locked too.' }}
         {{/if}}
 
       </div>
@@ -302,3 +294,6 @@
     title='Delete Confirmation'
     description='Are you sure you want to proceed with this deletion?'
     confirmLabel='Delete' }}
+
+{{!-- Toast sukses --}}
+{{> components/ui/admin/toast/success/index toast=toast }}

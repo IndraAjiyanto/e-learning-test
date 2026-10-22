@@ -27,7 +27,7 @@ export class BenefitCategoryController {
 
   @Roles('super_admin')
   @Get('formCreate/:categoryId')
-  async formCreate(
+  formCreate(
     @Param('categoryId') categoryId: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -55,7 +55,7 @@ export class BenefitCategoryController {
         'The new benefit has been added to this category.',
       );
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'Failed to create benefit category');
       res.redirect('/category/' + categoryId);
     }
@@ -92,7 +92,7 @@ export class BenefitCategoryController {
         'The benefit information has been updated.',
       );
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'Failed to update benefit category');
       res.redirect('/category/' + categoryId);
     }
@@ -114,7 +114,7 @@ export class BenefitCategoryController {
         'The benefit has been permanently removed.',
       );
       res.redirect('/category/' + categoryId);
-    } catch (error: any) {
+    } catch {
       req.flash('error', 'Failed to delete benefit category');
       res.redirect('/category/' + categoryId);
     }

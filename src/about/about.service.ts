@@ -19,7 +19,7 @@ export class AboutService {
   ) {}
 
   async create(createTentangDto: CreateAboutDto) {
-    const about = await this.aboutRepository.create({
+    const about = this.aboutRepository.create({
       ...createTentangDto,
     });
     return await this.aboutRepository.save(about);
@@ -36,7 +36,7 @@ export class AboutService {
     } catch (error) {
       throw new InternalServerErrorException(
         'Gagal mengambil data about',
-        error.message,
+        error instanceof Error ? error.message : undefined,
       );
     }
   }
@@ -73,6 +73,8 @@ export class AboutService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {}
+    } catch {
+      // File may not exist, ignore error
+    }
   }
 }
