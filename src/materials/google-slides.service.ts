@@ -97,7 +97,7 @@ export class GoogleSlidesService {
   async upload(
     file: Express.Multer.File,
     existingUrl?: string,
-    existingFileId?: string,
+    existingFileId?: string | null,
   ): Promise<{ url: string; fileId: string }> {
     const { drive, folderId } = this.getDriveClient();
     const existingId =
@@ -159,7 +159,7 @@ export class GoogleSlidesService {
     return { url: publishedUrl, fileId };
   }
 
-  async delete(fileUrl?: string, storedFileId?: string): Promise<void> {
+  async delete(fileUrl?: string, storedFileId?: string | null): Promise<void> {
     const fileId =
       storedFileId ||
       fileUrl?.match(/docs\.google\.com\/presentation\/d\/(?!e\/)([^/]+)/)?.[1];

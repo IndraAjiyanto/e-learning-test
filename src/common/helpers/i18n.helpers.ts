@@ -9,8 +9,30 @@ import { I18nContext } from 'nestjs-i18n';
  */
 const missingKeys = new Set<string>();
 
+/**
+ * Handlebars selalu menyisipkan objek options sebagai argumen terakhir helper.
+ * Hash parameter ada di `options.hash`, bukan di level atas options.
+ */
+const readHashParams = (rest: unknown[]): Record<string, unknown> => {
+  const last = rest[rest.length - 1];
+  if (!last || typeof last !== 'object') return {};
+  const hash = (last as { hash?: Record<string, unknown> }).hash;
+  return hash && typeof hash === 'object' ? hash : {};
+};
+
 export const i18nHelpers = {
-  t: (key: string) => {
+  /**
+   * Terjemahkan `key`, lalu ganti token `{nama}` dengan nilai yang dikirim
+   * sebagai hash parameter Handlebars.
+   *
+   *   {{t 'test.syllabus.quiz.passedMessage' minScore=minScore}}
+   *
+   * Bahasa berbeda menaruh angka di posisi berbeda, jadi menyisipkan angka
+   * dari luar kalimat (mis. "Nilai minimal 80 untuk lulus" dirakit manual di
+   * template) tidak bisa dipakai untuk tiga bahasa sekaligus. Token di dalam
+   * terjemahan yang menaruh angkanya sendiri.
+   */
+  t: (key: string, ...rest: unknown[]) => {
     try {
       const i18n = I18nContext.current();
       if (i18n) {
@@ -37,7 +59,24 @@ export const i18nHelpers = {
           }
           return '';
         }
-        return value;
+
+        if (typeof value !== 'string' || value === '') return value;
+
+        return value.replace(/\{(\w+)\}/g, (match, name: string): string => {
+          const params = readHashParams(rest);
+          const replacement = params[name];
+          if (replacement === undefined || replacement === null) return match;
+          // Hanya nilai sederhana yang aman diserialkan jadi teks. Objek
+          // dibiarkan apa adanya supaya tidak muncul "[object Object]".
+          if (typeof replacement === 'string') return replacement;
+          if (
+            typeof replacement === 'number' ||
+            typeof replacement === 'boolean'
+          ) {
+            return String(replacement);
+          }
+          return match;
+        });
       }
     } catch {
       // ignore

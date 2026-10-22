@@ -13,6 +13,16 @@ import { Exclude } from 'class-transformer';
 
 export type FileType = 'video' | 'pdf' | 'ppt';
 
+/**
+ * Label jenis berkas untuk pesan ke user (batas upload syllabus, judul
+ * notifikasi, dst).
+ */
+export const FILE_TYPE_LABEL: Record<FileType, string> = {
+  pdf: 'PDF',
+  ppt: 'PPT',
+  video: 'Video',
+};
+
 @Entity()
 export class Material {
   @PrimaryGeneratedColumn('uuid')
@@ -24,8 +34,8 @@ export class Material {
   @Column()
   file: string;
 
-  @Column({ nullable: true })
-  driveFileId?: string;
+  @Column({ type: 'varchar', nullable: true })
+  driveFileId?: string | null;
 
   @Column({ nullable: true })
   originalFileName?: string;

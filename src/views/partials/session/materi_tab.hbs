@@ -14,7 +14,7 @@
          x-data="materiData()" pembungkus di admin/session/detail.hbs — partial
          ini scope-less agar tidak double-init. --}}
 
-    {{!-- Sub-tab Materi / Video / Document --}}
+    {{!-- Sub-tab Materi / Video / PPT --}}
     <div class='flex flex-row gap-[12px] w-full mb-[12px]'>
       <button type='button' @click="toggleFetchMateri('/session/pdf/{{session.id}}', 'pdf')"
         :class="tabMateri === 'pdf' ? 'bg-[#003060] [outline:1px_solid_#003060]' : 'bg-[#FFFFFF] [outline:1px_solid_#003060] hover:bg-[#F0F7FF]'"
@@ -32,7 +32,7 @@
         :class="tabMateri === 'ppt' ? 'bg-[#003060] [outline:1px_solid_#003060]' : 'bg-[#FFFFFF] [outline:1px_solid_#003060] hover:bg-[#F0F7FF]'"
         class='box-border flex-1 min-w-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center rounded-[8px] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors'>
         <span class='text-[16px]/[normal] font-inter font-semibold whitespace-nowrap'
-          :class="tabMateri === 'ppt' ? 'text-[#FFFFFF]' : 'text-[#003060]'">Document</span>
+          :class="tabMateri === 'ppt' ? 'text-[#FFFFFF]' : 'text-[#003060]'">PPT</span>
       </button>
     </div>
 
