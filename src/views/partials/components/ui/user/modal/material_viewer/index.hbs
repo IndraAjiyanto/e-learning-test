@@ -1,0 +1,358 @@
+{{!--
+  Komponen: Modal Viewer Materi Silabus (User / Student)
+  Lokasi: src/views/partials/components/ui/user/modal/material_viewer/index.hbs
+
+  Satu modal untuk tiga jenis berkas materi silabus: PDF, PPT, dan Video.
+  Halaman student (user/syllabus/detail) tidak lagi menaruh player/embed
+  inline; tiap berkas direpresentasikan sebagai tombol yang membuka modal ini.
+
+  Cara pakai:
+  1. Render sekali per halaman:
+     {{> components/ui/user/modal/material_viewer/index syllabusId=syllabus.id}}
+  2. Dari tombol mana saja di halaman:
+     $dispatch('open-syllabus-material', {{json materi}})
+
+  Props:
+  - syllabusId : uuid silabus (wajib) - dipakai untuk URL unduhan berkas.
+
+  Payload event `open-syllabus-material`:
+  - id, title, fileType ('pdf' | 'ppt' | 'video'), file, embedUrl,
+    isGoogleSlides, isLocalFile, isYoutube, originalFileName, formattedSize.
+
+  Semua teks yang dipakai di dalam script Alpine diambil dari atribut
+  data-* pada elemen root, bukan dari literal di dalam JS. Handlebars
+  menulis hasil terjemahan ke HTML, jadi kutip di dalam teks (mis. tanda
+  kutip tunggal) tidak bisa merusak baris JavaScript.
+
+  Catatan:
+  - src untuk PDF memakai `file` (statis /asset/...), PPT memakai `embedUrl`
+    (Google Slides sudah diubah jadi /pubembed?), video memakai `embedUrl`.
+  - Unduhan selalu lewat route student supaya nama berkas asli terpakai:
+    /syllabus/learn/:syllabusId/materials/:materialId/download
+--}}
+<div
+  x-data='syllabusMaterialModal()'
+  x-show='open'
+  x-cloak
+  @open-syllabus-material.window='show($event.detail)'
+  @keydown.escape.window='close()'
+  class='fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-6'
+  @click.self='close()'
+  data-syllabus-id='{{syllabusId}}'
+  data-label-pdf='{{default (t "test.syllabus.materi.pdfLabel") "PDF"}}'
+  data-label-ppt='{{default (t "test.syllabus.materi.pptLabel") "PPTX"}}'
+  data-label-video='{{default (t "test.syllabus.materi.videoLabel") "VIDEO"}}'
+  data-download='{{default (t "test.syllabus.modal.download") "Unduh"}}'
+  data-download-pdf='{{default (t "test.syllabus.modal.downloadPdf") "Unduh PDF"}}'
+  data-download-ppt='{{default (t "test.syllabus.modal.downloadPpt") "Unduh .pptx"}}'
+  data-download-video='{{default (t "test.syllabus.modal.downloadVideo") "Unduh Video"}}'
+  data-close='{{default (t "test.syllabus.modal.close") "Tutup"}}'
+  data-close-title='{{default (t "test.syllabus.modal.closeTitle") "Tutup (Esc)"}}'
+  data-ppt-local-title='{{default (t "test.syllabus.modal.pptLocalTitle") "Slide-Presentasi.pptx"}}'
+  data-ppt-local-body='{{default (t "test.syllabus.modal.pptLocalBody") "File presentasi tersimpan dengan aman di server. Berkas ini siap diunduh untuk dibuka di Microsoft PowerPoint atau Google Slides Anda."}}'
+  data-ppt-local-cta='{{default (t "test.syllabus.modal.pptLocalCta") "Unduh & Buka Berkas (.pptx)"}}'
+  data-tips-title='{{default (t "test.syllabus.modal.tipsTitle") "Tips:"}}'
+  data-tips-body='{{default (t "test.syllabus.modal.tipsBody") "Agar slide tampil interaktif di layar ini seperti di Bootcamp, masukkan Link Google Slides pada menu Edit Silabus admin."}}'
+>
+  <div
+    role='dialog'
+    aria-modal='true'
+    aria-labelledby='syllabus-material-modal-title'
+    @click.stop
+    class='relative w-full max-w-[1280px] h-[90vh] bg-[#0F172A] rounded-[20px] shadow-2xl flex flex-col overflow-hidden border border-white/10'
+  >
+    {{!-- Header --}}
+    <div class='w-full h-14 bg-[#1E293B] border-b border-white/10 px-5 flex items-center justify-between gap-4 shrink-0'>
+      <div class='flex items-center gap-3 min-w-0'>
+        <span
+          class='px-2 py-0.5 rounded border text-[11px] font-bold shrink-0'
+          :class='badgeClass'
+          x-text='badgeText'
+        ></span>
+        <h3
+          id='syllabus-material-modal-title'
+          class='font-bold text-sm text-white truncate'
+          x-text='material.title || badgeText'
+        ></h3>
+        <span
+          class='hidden sm:inline-block text-xs text-slate-400 truncate'
+          x-text='material.originalFileName || material.formattedSize'
+        ></span>
+      </div>
+
+      <div class='flex items-center gap-2 shrink-0'>
+        <a
+          x-show='material.id && !isYoutube'
+          :href='downloadUrl'
+          class='inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#003060] border border-white/20 px-3 text-xs font-semibold text-white no-underline hover:bg-[#002244] transition-colors'
+          :title='downloadLabel'
+        >
+          <i class='fa-solid fa-download text-[11px]'></i>
+          <span class='hidden sm:inline' x-text='downloadLabel'></span>
+        </a>
+
+        <button
+          type='button'
+          @click='close()'
+          class='h-8 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors flex items-center gap-1.5'
+          :title='closeTitle'
+        >
+          <i class='fa-solid fa-xmark text-sm'></i>
+          <span x-text='closeLabel'></span>
+        </button>
+      </div>
+    </div>
+
+    {{!-- Body --}}
+    <div class='flex-1 w-full bg-[#0F172A] relative flex items-center justify-center overflow-hidden'>
+      {{!-- PDF --}}
+      <template x-if='fileType === "pdf"'>
+        <iframe
+          :src='material.file'
+          type='application/pdf'
+          class='w-full h-full border-none bg-white'
+          frameborder='0'
+        ></iframe>
+      </template>
+
+      {{!-- PPT Google Slides --}}
+      <template x-if='fileType === "ppt" && !isLocalFile'>
+        <iframe
+          :src='material.embedUrl || material.file'
+          class='w-full h-full border-none bg-slate-900'
+          allowfullscreen='true'
+          mozallowfullscreen='true'
+          webkitallowfullscreen='true'
+        ></iframe>
+      </template>
+
+      {{!-- PPT berkas lokal (tidak bisa dipratinjau inline) --}}
+      <template x-if='fileType === "ppt" && isLocalFile'>
+        <div class='flex flex-col items-center justify-center p-8 text-center text-white gap-4 max-w-lg'>
+          <div class='w-20 h-20 rounded-2xl bg-[#2563EB]/20 border border-[#2563EB]/40 flex items-center justify-center shadow-lg'>
+            <i class='fa-solid fa-file-powerpoint text-4xl text-[#60A5FA]'></i>
+          </div>
+          <div class='flex flex-col gap-1.5'>
+            <h4 class='font-bold text-lg text-white' x-text='material.originalFileName || pptLocalTitle'></h4>
+            <p class='text-xs text-slate-300' x-text='pptLocalBody'></p>
+          </div>
+          <div class='flex items-center gap-3 mt-2'>
+            <a
+              :href='downloadUrl'
+              class='inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#2563EB] px-5 font-semibold text-xs text-white no-underline hover:bg-[#1D4ED8] transition-colors shadow-md'
+            >
+              <i class='fa-solid fa-download text-xs'></i>
+              <span x-text='pptLocalCta'></span>
+            </a>
+          </div>
+          <div class='mt-4 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-[11px] text-slate-400 text-left'>
+            <i class='fa-solid fa-circle-info text-blue-400 mr-1'></i>
+            <span><strong x-text='tipsTitle'></strong> <span x-text='tipsBody'></span></span>
+          </div>
+        </div>
+      </template>
+
+      {{!-- Video berkas lokal --}}
+      <template x-if='fileType === "video" && !isYoutube'>
+        <video
+          x-ref='videoPlayer'
+          controls
+          autoplay
+          playsinline
+          class='w-full h-full object-contain bg-black'
+          :src='material.embedUrl || material.file'
+        ></video>
+      </template>
+
+      {{!-- Video YouTube --}}
+      <template x-if='fileType === "video" && isYoutube'>
+        <iframe
+          x-ref='youtubeIframe'
+          :src='material.embedUrl || material.file'
+          class='w-full h-full border-none bg-slate-900'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+          allowfullscreen
+          @load='onYoutubeLoaded()'
+        ></iframe>
+      </template>
+    </div>
+  </div>
+</div>
+
+<script>
+  function syllabusMaterialModal() {
+    return {
+      open: false,
+      material: {
+        id: '',
+        title: '',
+        fileType: '',
+        file: '',
+        embedUrl: '',
+        isGoogleSlides: false,
+        isLocalFile: false,
+        isYoutube: false,
+        originalFileName: '',
+        formattedSize: '',
+      },
+      badgeText: '',
+      badgeClass: '',
+      downloadLabel: '',
+      closeLabel: '',
+      closeTitle: '',
+      pptLocalTitle: '',
+      pptLocalBody: '',
+      pptLocalCta: '',
+      tipsTitle: '',
+      tipsBody: '',
+      youtubeListener: null,
+
+      get fileType() {
+        return this.material.fileType || '';
+      },
+
+      get isLocalFile() {
+        return !!this.material.isLocalFile;
+      },
+
+      // Wajib ada sebagai getter, bukan hanya property di dalam `material`.
+      // Template memakai `isYoutube` langsung di x-if, dan Alpine mengevaluasi
+      // ekspresi dengan `with (scope)`: nama yang tidak ada di scope lempar
+      // ReferenceError, jadi kedua template video gagal render dan isi modal
+      // tetap kosong.
+      get isYoutube() {
+        return !!this.material.isYoutube;
+      },
+
+      get downloadUrl() {
+        const syllabusId = this.$root.dataset.syllabusId;
+        if (!this.material.id || !syllabusId) return '#';
+        return `/syllabus/learn/${syllabusId}/materials/${this.material.id}/download`;
+      },
+
+      show(payload) {
+        if (!payload || !payload.fileType) return;
+
+        const data = this.$root.dataset;
+
+        this.material = { ...this.material, ...payload };
+        this.badgeText = this.pickBadgeText(data);
+        this.badgeClass = this.pickBadgeClass();
+        this.downloadLabel = this.pickDownloadLabel(data);
+        this.closeLabel = data.close || '';
+        this.closeTitle = data.closeTitle || '';
+        this.pptLocalTitle = data.pptLocalTitle || '';
+        this.pptLocalBody = data.pptLocalBody || '';
+        this.pptLocalCta = data.pptLocalCta || '';
+        this.tipsTitle = data.tipsTitle || '';
+        this.tipsBody = data.tipsBody || '';
+
+        this.open = true;
+        document.body.style.overflow = 'hidden';
+
+        if (this.material.fileType === 'video') this.listenYoutube();
+      },
+
+      close() {
+        if (!this.open) return;
+
+        this.open = false;
+        document.body.style.overflow = '';
+
+        // Hentikan playback supaya suara tidak lanjut setelah modal ditutup.
+        const player = this.$refs.videoPlayer;
+        if (player && typeof player.pause === 'function') player.pause();
+
+        const iframe = this.$refs.youtubeIframe;
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage(
+            '{"event":"command","func":"pauseVideo","args":""}',
+            '*',
+          );
+        }
+
+        this.material = {
+          id: '',
+          title: '',
+          fileType: '',
+          file: '',
+          embedUrl: '',
+          isGoogleSlides: false,
+          isLocalFile: false,
+          isYoutube: false,
+          originalFileName: '',
+          formattedSize: '',
+        };
+      },
+
+      listenYoutube() {
+        if (this.youtubeListener) return;
+
+        this.youtubeListener = (event) => {
+          try {
+            if (!event.data) return;
+            const data =
+              typeof event.data === 'string'
+                ? JSON.parse(event.data)
+                : event.data;
+            const isEnded =
+              (data.event === 'onStateChange' && data.info === 0) ||
+              (data.event === 'infoDelivery' &&
+                data.info &&
+                data.info.playerState === 0);
+            if (!isEnded) return;
+
+            const iframe = this.$refs.youtubeIframe;
+            if (!iframe || !iframe.contentWindow) return;
+            iframe.contentWindow.postMessage(
+              '{"event":"command","func":"seekTo","args":[0, true]}',
+              '*',
+            );
+            iframe.contentWindow.postMessage(
+              '{"event":"command","func":"pauseVideo","args":""}',
+              '*',
+            );
+          } catch (_) {
+            // ignore
+          }
+        };
+
+        window.addEventListener('message', this.youtubeListener);
+      },
+
+      onYoutubeLoaded() {
+        const iframe = this.$refs.youtubeIframe;
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage('{"event":"listening"}', '*');
+        }
+      },
+
+      pickBadgeText(data) {
+        if (this.material.fileType === 'pdf') return data.labelPdf || '';
+        if (this.material.fileType === 'ppt') return data.labelPpt || '';
+        if (this.material.fileType === 'video') return data.labelVideo || '';
+        return '';
+      },
+
+      pickBadgeClass() {
+        if (this.material.fileType === 'pdf')
+          return 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]';
+        if (this.material.fileType === 'ppt')
+          return 'bg-[#EFF6FF] border-[#DBEAFE] text-[#2563EB]';
+        if (this.material.fileType === 'video')
+          return 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]';
+        return 'bg-white/10 border-white/20 text-white';
+      },
+
+      pickDownloadLabel(data) {
+        if (this.material.fileType === 'pdf')
+          return data.downloadPdf || data.download || '';
+        if (this.material.fileType === 'ppt')
+          return data.downloadPpt || data.download || '';
+        if (this.material.fileType === 'video')
+          return data.downloadVideo || data.download || '';
+        return data.download || '';
+      },
+    };
+  }
+</script>

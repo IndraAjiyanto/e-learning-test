@@ -24,6 +24,7 @@
   - label     : string (default 'Profile Photo')
   - meta      : string (default 'JPG or PNG • Max 5 MB')
   - action    : string (default 'Update Photo')
+  - accept    : string (default 'image/*') — filter dialog file picker
   - crop      : boolean (opsional) — aktifkan modal crop sebelum validasi
   - cropAspect: number rasio area crop (default 1, persegi — foto profil bulat)
   - cropSize  : number lebar piksel hasil crop (default 1000)
@@ -66,11 +67,11 @@
         type='file'
         id='{{default id "profile"}}'
         name='{{default name "profile"}}'
-        accept='image/jpeg,image/jpg,image/png'
+        accept='{{default accept "image/*"}}'
         x-ref='fileInput'
         class='sr-only'
         {{#if crop}}
-        @change="$dispatch('crop-open-{{default id "profile"}}', { file: $event.target.files[0] })"
+        @change="if ($event.target.files[0]) { if (typeof validateImageFile === 'function' ? validateImageFile($event.target.files[0]) : true) { $dispatch('crop-open-{{default id "profile"}}', { file: $event.target.files[0] }); } else { $event.target.value = ''; } }"
         @crop-done-{{default id "profile"}}.window='validateImage($event.detail.file)'
         {{else}}
         @change='validateImage($event.target.files[0])'

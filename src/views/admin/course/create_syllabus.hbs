@@ -12,7 +12,7 @@
       subtitle="Fill in the information below to add new sylabus"
     }}
 
-    <form action="/syllabus/{{courseId}}" method="POST" enctype="multipart/form-data" @submit.prevent="handleSubmit($event)" class='box-border w-full flex flex-col gap-[16px] items-start'>
+    <form action="/syllabus/{{courseId}}" method="POST" enctype="application/x-www-form-urlencoded" @submit.prevent="handleSubmit($event)" class='box-border w-full flex flex-col gap-[16px] items-start'>
       {{!-- Feature Card 1: Form Inputs Card --}}
       {{#> components/ui/admin/form/form-card noNumber=true}}
 
@@ -46,59 +46,6 @@
             name="content"
             inputId="syllabus_content_input"
           }}
-        {{/components/ui/admin/form/form-field}}
-
-
-        {{!-- Divider --}}
-        <div class="w-full border-t border-[#E5E7EB] pt-4 mt-2">
-          <h3 class="text-[16px] font-bold text-[#003060] mb-1">Materi Pembelajaran & Video (Opsional)</h3>
-          <p class="text-[13px] text-[#64748B] mb-4">Tambahkan video pembelajaran atau modul dokumen pendukung. Batas ukuran berkas maksimal 5 MB per file.</p>
-        </div>
-
-        {{!-- Video URL Input --}}
-        {{#> components/ui/admin/form/form-field label="URL Video Pembelajaran (Opsional)" for="syllabus_video_url"}}
-          <input
-            type="url"
-            id="syllabus_video_url"
-            name="videoUrl"
-            class="w-full h-11 px-3 py-2 text-sm text-[#1E293B] bg-white border border-[#CBD5E1] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
-            placeholder="Contoh: https://www.youtube.com/watch?v=... atau link video MP4"
-          />
-        {{/components/ui/admin/form/form-field}}
-
-
-        {{!-- PDF Upload Input --}}
-        {{#> components/ui/admin/form/form-field label="Unggah Modul PDF (Opsional, Maks. 5 MB)" for="syllabus_pdf_file"}}
-          <input
-            type="file"
-            id="syllabus_pdf_file"
-            name="pdfFile"
-            accept=".pdf"
-            class="w-full px-3 py-2 text-sm text-[#1E293B] bg-white border border-[#CBD5E1] rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#003060] file:text-white hover:file:bg-[#002244]"
-          />
-        {{/components/ui/admin/form/form-field}}
-
-        {{!-- PPT Upload Input --}}
-        {{#> components/ui/admin/form/form-field label="Unggah Slide PPT / PPTX (Opsional, Maks. 5 MB)" for="syllabus_ppt_file"}}
-          <input
-            type="file"
-            id="syllabus_ppt_file"
-            name="pptFile"
-            accept=".ppt,.pptx"
-            class="w-full px-3 py-2 text-sm text-[#1E293B] bg-white border border-[#CBD5E1] rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#003060] file:text-white hover:file:bg-[#002244]"
-          />
-        {{/components/ui/admin/form/form-field}}
-
-        {{!-- PPT Google Slides URL Input --}}
-        {{#> components/ui/admin/form/form-field label="Link Google Slides Presentasi (Opsional)" for="syllabus_ppt_url"}}
-          <input
-            type="url"
-            id="syllabus_ppt_url"
-            name="pptUrl"
-            class="w-full h-11 px-3 py-2 text-sm text-[#1E293B] bg-white border border-[#CBD5E1] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
-            placeholder="Contoh: https://docs.google.com/presentation/d/e/.../pub?start=false..."
-          />
-          <p class="text-xs text-[#64748B] mt-1">Tempelkan link publikasi Google Slides (File → Bagikan / Share → Publikasikan ke web / Publish to web) agar slide dapat dipratinjau secara interaktif seperti di Bootcamp.</p>
         {{/components/ui/admin/form/form-field}}
       {{/components/ui/admin/form/form-card}}
 
@@ -186,21 +133,6 @@ function createSyllabusForm() {
         return;
       }
 
-      const pdfInput = document.getElementById('syllabus_pdf_file');
-      if (pdfInput && pdfInput.files && pdfInput.files[0]) {
-        if (pdfInput.files[0].size > 5 * 1024 * 1024) {
-          alert('Ukuran file Modul PDF melebihi batas 5 MB. Silakan pilih berkas yang lebih kecil.');
-          return;
-        }
-      }
-
-      const pptInput = document.getElementById('syllabus_ppt_file');
-      if (pptInput && pptInput.files && pptInput.files[0]) {
-        if (pptInput.files[0].size > 5 * 1024 * 1024) {
-          alert('Ukuran file Slide Presentasi melebihi batas 5 MB. Silakan pilih berkas yang lebih kecil.');
-          return;
-        }
-      }
       let contentHtml = '';
       if (this.quillInstance) {
         contentHtml = this.quillInstance.getSemanticHTML

@@ -1,8 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FileType, Material } from 'src/entities/materials.entity';
+import {
+  FileType,
+  FILE_TYPE_LABEL,
+  Material,
+} from 'src/entities/materials.entity';
 import { Repository } from 'typeorm';
 import { Session } from 'src/entities/session.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
@@ -21,6 +29,45 @@ export class MaterialService {
     private readonly syllabusRepository: Repository<Syllabus>,
     private readonly googleSlidesService: GoogleSlidesService,
   ) {}
+
+  /**
+   * Materi milik satu syllabus dengan jenis berkas tertentu (pdf/ppt/video).
+   */
+  async findSyllabusMaterialByType(
+    syllabusId: string,
+    fileType: FileType,
+  ): Promise<Material | null> {
+    return await this.materialRepository.findOne({
+      where: { syllabus: { id: syllabusId }, fileType },
+    });
+  }
+
+  /**
+   * Batas upload syllabus: satu syllabus hanya boleh punya SATU materi untuk
+   * tiap jenis berkas (1 PDF + 1 PPT + 1 Video).
+   *
+   * Materi yang sudah ada tidak boleh digandakan lewat upload baru — admin
+   * memakai Edit (replace berkas) atau Delete dulu bila ingin mengunggah
+   * berkas pengganti. Materi milik session TIDAK dibatasi jumlahnya.
+   */
+  async assertSyllabusSlotAvailable(
+    syllabusId: string,
+    fileType: FileType,
+  ): Promise<void> {
+    if (!fileType) return;
+
+    const existing = await this.findSyllabusMaterialByType(
+      syllabusId,
+      fileType,
+    );
+    if (existing) {
+      throw new BadRequestException(
+        `Materi ${FILE_TYPE_LABEL[fileType]} untuk syllabus ini sudah ada. ` +
+          'Silakan edit materi yang tersedia untuk menggantinya.',
+      );
+    }
+  }
+
   async create(createMaterialDto: CreateMaterialDto) {
     if (createMaterialDto.syllabusId) {
       const syllabus = await this.syllabusRepository.findOne({
@@ -29,6 +76,12 @@ export class MaterialService {
       if (!syllabus) {
         throw new NotFoundException('Syllabus not found');
       }
+
+      await this.assertSyllabusSlotAvailable(
+        createMaterialDto.syllabusId,
+        createMaterialDto.fileType,
+      );
+
       const material = this.materialRepository.create({
         ...createMaterialDto,
         driveFileId: createMaterialDto.driveFileId ?? undefined,
@@ -168,13 +221,28 @@ export class MaterialService {
 
   async deleteFile(url: string) {
     if (!url) return;
+    if (/^https?:\/\//i.test(url)) return;
 
-    try {
-      const filePath = path.join(process.cwd(), 'public', url);
+    const rel = url.startsWith('/') ? url.slice(1) : url;
 
-      await fs.unlink(filePath);
-    } catch {
-      // ignore if file doesn't exist
+    const candidates: string[] = [];
+    if (rel.startsWith('asset/')) {
+      candidates.push(path.join(process.cwd(), 'public', rel));
+    } else if (rel.startsWith('uploads/')) {
+      candidates.push(path.join(process.cwd(), rel));
+      candidates.push(path.join(process.cwd(), 'public', rel));
+    } else {
+      candidates.push(path.join(process.cwd(), 'public', rel));
+      candidates.push(path.join(process.cwd(), rel));
+    }
+
+    for (const candidate of candidates) {
+      try {
+        await fs.unlink(candidate);
+        return;
+      } catch {
+        // ignore - lanjut ke kandidat berikutnya
+      }
     }
   }
 
