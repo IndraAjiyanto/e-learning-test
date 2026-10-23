@@ -30,7 +30,8 @@
   - cropSize  : number lebar piksel hasil crop (default 1000)
 --}}
 <div class='flex flex-col items-start gap-6 border-b border-[#d9d9d9] pb-6 sm:flex-row sm:items-center'>
-  <div class='relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f9f5ff] ring-4 ring-white shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'>
+  <div class='relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f9f5ff] ring-4 ring-white shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.03),0px_12px_16px_-4px_rgba(0,0,0,0.08)]'
+     :class="errorMessage ? 'ring-[#dc2626]' : ''">
     <img
       x-show='previewUrl'
       x-cloak
@@ -71,7 +72,7 @@
         x-ref='fileInput'
         class='sr-only'
         {{#if crop}}
-        @change="if ($event.target.files[0]) { if (typeof validateImageFile === 'function' ? validateImageFile($event.target.files[0]) : true) { $dispatch('crop-open-{{default id "profile"}}', { file: $event.target.files[0] }); } else { $event.target.value = ''; } }"
+        @change="if ($event.target.files[0]) { if (typeof validateImageFile === 'function' ? validateImageFile($event.target.files[0]) : true) { const f = $event.target.files[0]; const allowed = ['image/jpeg', 'image/jpg', 'image/png']; if (!allowed.includes(f.type)) { $dispatch('file-type-error', { message: 'Only JPG, JPEG, and PNG formats are allowed.' }); $event.target.value = ''; } else { $dispatch('crop-open-{{default id "profile"}}', { file: f }); } } else { $event.target.value = ''; } }"
         @crop-done-{{default id "profile"}}.window='validateImage($event.detail.file)'
         {{else}}
         @change='validateImage($event.target.files[0])'
@@ -80,7 +81,8 @@
       <button
         type='button'
         @click='$refs.fileInput.click()'
-        class='inline-flex h-[38px] items-center justify-center rounded-lg border border-[#d9d9d9] bg-white px-4 py-2 font-inter text-sm font-semibold leading-5 text-[#003060] transition-colors hover:border-[#a3a3a3] hover:bg-[#f5f5f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#ededed]'
+        :class="errorMessage ? 'border-[#dc2626] bg-[#fef2f2] text-[#dc2626] hover:border-[#b91c1c] hover:bg-[#fee2e2]' : 'border-[#d9d9d9] bg-white text-[#003060] hover:border-[#a3a3a3] hover:bg-[#f5f5f5]'"
+        class='inline-flex h-[38px] items-center justify-center rounded-lg px-4 py-2 font-inter text-sm font-semibold leading-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#ededed]'
       >{{default action 'Update Photo'}}</button>
 
       <button
