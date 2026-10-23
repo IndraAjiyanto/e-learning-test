@@ -93,6 +93,13 @@
       open(file) {
         if (!file) return;
 
+        // Safety net: validasi tipe file sebelum inisialisasi Cropper
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.$dispatch('file-type-error', { message: 'Only JPG, JPEG, and PNG formats are allowed.' });
+          return;
+        }
+
         this.sourceFile = file;
         this.revokeObjectUrl();
         this.objectUrl = URL.createObjectURL(file);

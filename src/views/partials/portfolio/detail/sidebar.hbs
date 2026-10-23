@@ -98,7 +98,9 @@
       {{#if portfolio.course.technologies}}
         {{#each portfolio.course.technologies}}
           <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F1F5F9] text-[#334155] text-xs font-semibold rounded-full border border-[#D9D9D9]">
-            {{#if this.imgUrl}}
+            {{#if this.svg}}
+              <span class="size-3.5 flex items-center justify-center [&>svg]:w-3.5 [&>svg]:h-3.5">{{{this.svg}}}</span>
+            {{else if this.imgUrl}}
               <img src="{{this.imgUrl}}" alt="{{this.name}}" class="size-3.5 object-contain" />
             {{/if}}
             <span>{{this.name}}</span>

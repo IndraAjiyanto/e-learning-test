@@ -86,6 +86,12 @@
         hasFile: false,
         objectUrl: null,
 
+        init() {
+          window.addEventListener('file-type-error', (e) => {
+            this.setImageError(e.detail?.message || 'Invalid file type.');
+          });
+        },
+
         formData: {
           name: (teamLead && teamLead.name) || '',
           linkedin: (teamLead && teamLead.linkedin) || '',
