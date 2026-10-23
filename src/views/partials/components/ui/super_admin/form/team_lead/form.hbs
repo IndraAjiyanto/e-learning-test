@@ -84,6 +84,7 @@
         isValid: true,
         fileName: '',
         hasFile: false,
+        objectUrl: null,
 
         formData: {
           name: (teamLead && teamLead.name) || '',
@@ -109,63 +110,74 @@
           description: byLang(() => false),
         },
 
-        validateImage(file) {
-          this.errorMessage = '';
+        // Batas mengikuti kontrak backend (ValidateImage pada TeamLeadController):
+        // JPEG/JPG/PNG, maks 5 MB.
+        validateImageFile(file) {
+          if (!file) return false;
 
-          if (!file) {
-            this.hasFile = false;
-            this.previewUrl = originalPhoto || null;
-            this.isValid = isEdit;
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          const allowedExtensions = ['.jpg', '.jpeg', '.png'];
+          const extension = file.name
+            ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
+            : '';
+
+          const isTypeAllowed = file.type ? allowedTypes.includes(file.type.toLowerCase()) : false;
+          const isExtAllowed = allowedExtensions.includes(extension);
+
+          if (!isTypeAllowed && !isExtAllowed) {
+            this.setImageError('Only JPG, JPEG, and PNG formats are allowed.');
+            return false;
+          }
+
+          const maxSize = 5 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.setImageError(
+              `File size is too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB.`,
+            );
+            return false;
+          }
+
+          return true;
+        },
+
+        validateImage(file) {
+          this.clearPreview();
+
+          if (!file) return;
+
+          if (!this.validateImageFile(file)) {
             return;
           }
 
           this.hasFile = true;
           this.fileName = file.name;
-
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.setImageError('Only JPG, JPEG, and PNG formats are allowed.');
-            return;
-          }
-
-          const maxSize = 5 * 1024 * 1024;
-          if (file.size > maxSize) {
-            this.setImageError(`File size is too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum 5 MB.`);
-            return;
-          }
-
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-
-          img.onload = () => {
-            this.previewUrl = objectUrl;
-            this.isValid = true;
-            this.errorMessage = '';
-          };
-
-          img.onerror = () => {
-            URL.revokeObjectURL(objectUrl);
-            this.setImageError('Failed to load image preview.');
-          };
-
-          img.src = objectUrl;
+          this.objectUrl = URL.createObjectURL(file);
+          this.previewUrl = this.objectUrl;
+          this.isValid = true;
+          this.errorMessage = '';
         },
 
-        setImageError(msg) {
-          this.errorMessage = msg;
+        // Berkas ditolak dikosongkan dari input agar tidak ikut terkirim;
+        // di Edit pratinjau kembali ke foto tersimpan.
+        setImageError(message) {
+          this.clearPreview();
+          this.errorMessage = message;
           this.isValid = false;
-          this.previewUrl = originalPhoto || null;
+          if (this.$refs.fileInput) this.$refs.fileInput.value = null;
         },
 
-        clearFile() {
-          if (this.previewUrl && this.previewUrl !== originalPhoto) {
-            URL.revokeObjectURL(this.previewUrl);
-          }
+        clearPreview() {
+          if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
+          this.objectUrl = null;
           this.previewUrl = originalPhoto || null;
           this.errorMessage = '';
           this.isValid = true;
           this.fileName = '';
           this.hasFile = false;
+        },
+
+        clearFile() {
+          this.clearPreview();
           if (this.$refs.fileInput) this.$refs.fileInput.value = null;
         },
 

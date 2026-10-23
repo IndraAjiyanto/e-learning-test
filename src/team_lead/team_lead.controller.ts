@@ -25,7 +25,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -63,6 +63,16 @@ export class TeamLeadController {
       res.redirect('/team-lead');
     } catch (error: unknown) {
       const err = error as Error;
+      const uploadedFile = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
+      if (uploadedFile) {
+        await this.teamLeadService.deleteFile(uploadedFile);
+      }
+      flashToastError(
+        req,
+        'Failed to Create Team Lead',
+        err.message || 'Failed to create team lead',
+      );
       req.flash('error', err.message || 'Failed to create Team Lead');
       res.redirect('/team-lead');
     }
@@ -112,13 +122,15 @@ export class TeamLeadController {
   ) {
     try {
       const teamLead = await this.teamLeadService.findOne(id);
-      if (profile) {
-        await this.teamLeadService.deleteFile(teamLead.profile);
-        updateTeamLeadDto.profile =
-          (req.body as { uploadedImageUrls?: string[] })
-            ?.uploadedImageUrls?.[0] || '';
+      const newProfile = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
+      if (newProfile) {
+        updateTeamLeadDto.profile = newProfile;
       }
       await this.teamLeadService.update(id, updateTeamLeadDto);
+      if (newProfile && teamLead.profile) {
+        await this.teamLeadService.deleteFile(teamLead.profile);
+      }
       flashToast(
         req,
         'Changes Saved',
@@ -127,6 +139,16 @@ export class TeamLeadController {
       res.redirect('/team-lead');
     } catch (error: unknown) {
       const err = error as Error;
+      const uploadedFile = (req.body as { uploadedImageUrls?: string[] })
+        ?.uploadedImageUrls?.[0];
+      if (uploadedFile) {
+        await this.teamLeadService.deleteFile(uploadedFile);
+      }
+      flashToastError(
+        req,
+        'Failed to Update Team Lead',
+        err.message || 'Failed to update team lead',
+      );
       req.flash('error', err.message || 'Failed to update Team Lead');
       res.redirect('/team-lead');
     }
