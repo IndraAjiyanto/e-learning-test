@@ -506,8 +506,11 @@ export class PaymentsService {
                 : 0;
 
         const invoice = payment.invoice;
-        const hasXendit =
-          !!(invoice?.xendit_invoice_url || invoice?.xendit_invoice_id || invoice?.xendit_payment_channel);
+        const hasXendit = !!(
+          invoice?.xendit_invoice_url ||
+          invoice?.xendit_invoice_id ||
+          invoice?.xendit_payment_channel
+        );
         const paymentChannel = hasXendit ? 'xendit' : 'manual';
         const transactionType = isInstallment ? 'installment' : 'full payment';
 
@@ -525,12 +528,22 @@ export class PaymentsService {
           paidAt:
             invoice?.paid_at ??
             (payment.process === 'approved'
-              ? (invoice?.updatedAt ??
-                payment.updatedAt ??
-                payment.createdAt)
+              ? (invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
               : null),
-          method: invoice?.payment_method || (isInstallment ? 'Installment' : (paymentChannel === 'manual' ? 'Manual Transfer' : 'Xendit')),
-          paymentMethod: invoice?.payment_method || (isInstallment ? 'Installment' : (paymentChannel === 'manual' ? 'Manual Transfer' : 'Xendit')),
+          method:
+            invoice?.payment_method ||
+            (isInstallment
+              ? 'Installment'
+              : paymentChannel === 'manual'
+                ? 'Manual Transfer'
+                : 'Xendit'),
+          paymentMethod:
+            invoice?.payment_method ||
+            (isInstallment
+              ? 'Installment'
+              : paymentChannel === 'manual'
+                ? 'Manual Transfer'
+                : 'Xendit'),
           paymentChannel,
           channel: paymentChannel,
           amount: total,

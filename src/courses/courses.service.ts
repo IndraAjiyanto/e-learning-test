@@ -1870,24 +1870,6 @@ export class CoursesService {
       throw new NotFoundException('User not found');
     }
 
-    const hasPayment = await this.paymentRepository.findOne({
-      where: { user: { id: userId }, course: { id: courseId } },
-    });
-    if (hasPayment) {
-      throw new BadRequestException(
-        'User tidak dapat dihapus dari program karena sudah memiliki riwayat pembayaran.',
-      );
-    }
-
-    const hasRegistration = await this.registrationRepository.findOne({
-      where: { user: { id: userId }, course: { id: courseId } },
-    });
-    if (hasRegistration) {
-      throw new BadRequestException(
-        'User tidak dapat dihapus dari program karena sudah memiliki riwayat registration.',
-      );
-    }
-
     return await this.userCourseRepository.remove(userCourses);
   }
 
