@@ -21,6 +21,7 @@
 
 <div
   x-data="paymentChannel({
+    uid: '{{uid}}',
     gatewayEnabled: {{#if gatewayEnabled}}true{{else}}false{{/if}},
     gatewayHidden: {{#if gatewayHidden}}true{{else}}false{{/if}},
     manualEnabled: {{#if manualEnabled}}true{{else}}false{{/if}},
@@ -114,11 +115,12 @@
 
       <form
         id="manual-form-{{uid}}"
+        x-ref="manualForm"
         action="{{actionUrl}}"
         method="POST"
         enctype="multipart/form-data"
         class="flex flex-col gap-3"
-        @submit="syncPromoCode($event)"
+        @submit.prevent="promptConfirm($event)"
       >
         <input type="hidden" name="fullName" :value="formData.fullName" />
         <input type="hidden" name="email" :value="formData.email" />
@@ -143,7 +145,6 @@
             type="file"
             name="file"
             accept="image/jpeg,image/jpg,image/png"
-            required
             class="hidden"
             @change="onFileChange($event)"
           />
@@ -163,6 +164,109 @@
       </p>
     </div>
   </div>
+
+  {{!-- Modal Konfirmasi Bukti Pembayaran --}}
+  <template x-teleport="body">
+    <div
+      x-show="showConfirmModal"
+      x-cloak
+      @keydown.escape.window="closeConfirmModal()"
+      class="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0a0a0a]/70 p-4 backdrop-blur-[16px] w-screen h-screen overflow-y-auto"
+      @click.self="closeConfirmModal()"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-payment-title-{{uid}}"
+        class="flex w-full max-w-[420px] flex-col gap-5 rounded-2xl bg-white p-6 shadow-2xl border border-slate-100 my-auto"
+      >
+        {{!-- Icon & Header --}}
+        <div class="flex flex-col items-center gap-3">
+          <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-8 border-emerald-50 bg-emerald-100 text-emerald-600">
+            <i class="fa-solid fa-file-invoice text-lg"></i>
+          </span>
+
+          <div class="flex flex-col items-center gap-1 text-center">
+            <h2
+              id="confirm-payment-title-{{uid}}"
+              class="font-inter text-lg font-semibold leading-7 text-[#171717]"
+            >
+              {{t 'test.payment.channel.confirmTitle'}}
+            </h2>
+            <p class="font-inter text-xs font-normal leading-5 text-[#64748B]">
+              {{t 'test.payment.channel.confirmDesc'}}
+            </p>
+          </div>
+        </div>
+
+        {{!-- Thumbnail / Preview Card --}}
+        <div class="w-full flex flex-col gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3">
+          <div class="flex items-center justify-between text-xs text-[#64748B] font-inter">
+            <span class="flex items-center gap-1.5 font-medium truncate max-w-[260px]">
+              <i class="fa-solid fa-file-image text-emerald-600"></i>
+              <span class="truncate" x-text="fileName"></span>
+            </span>
+            <span class="text-[11px] text-[#94A3B8] shrink-0" x-text="fileSizeFormatted"></span>
+          </div>
+
+          <div class="relative w-full max-h-56 min-h-[140px] rounded-lg overflow-hidden bg-white border border-[#E2E8F0] flex items-center justify-center p-1">
+            <template x-if="previewUrl">
+              <img
+                :src="previewUrl"
+                alt="Preview Bukti Pembayaran"
+                class="max-h-52 w-auto max-w-full object-contain mx-auto rounded"
+              />
+            </template>
+            <template x-if="!previewUrl">
+              <div class="flex flex-col items-center gap-1 text-[#94A3B8] py-8">
+                <i class="fa-solid fa-file-image text-3xl"></i>
+                <span class="text-xs">{{t 'test.payment.channel.previewNotAvailable'}}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        {{!-- Info Notice --}}
+        <div class="flex items-start gap-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200/70 p-2.5 text-left">
+          <i class="fa-solid fa-shield-halved text-emerald-600 text-xs mt-0.5 shrink-0"></i>
+          <p class="font-inter text-[11px] leading-[15px] text-emerald-800">
+            {{t 'test.payment.channel.confirmNotice'}}
+          </p>
+        </div>
+
+        {{!-- Action Buttons --}}
+        <div class="flex items-center gap-3 pt-1">
+          <button
+            type="button"
+            @click="closeConfirmModal()"
+            :disabled="submitting"
+            class="inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#D4D4D4] bg-white px-4 py-2.5 font-inter text-sm font-semibold text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#A3A3A3] hover:bg-[#F5F5F5] active:bg-[#EDEDED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#404040]/40 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {{t 'test.payment.channel.confirmCancel'}}
+          </button>
+
+          <button
+            type="button"
+            @click="confirmAndSubmit()"
+            :disabled="submitting"
+            class="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-[#16A34A] bg-[#16A34A] px-4 py-2.5 font-inter text-sm font-semibold text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#15803D] hover:bg-[#15803D] active:bg-[#166534] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/40 disabled:cursor-wait disabled:opacity-80"
+          >
+            <span x-show="!submitting" class="flex items-center gap-2">
+              <i class="fa-solid fa-paper-plane text-xs"></i>
+              <span>{{t 'test.payment.channel.confirmSubmit'}}</span>
+            </span>
+            <span x-show="submitting" class="flex items-center gap-2" x-cloak>
+              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{t 'test.payment.channel.confirmSubmitting'}}</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
 </div>
 
 <script>
@@ -173,6 +277,7 @@
 
   function paymentChannel(data) {
     return {
+      uid: data?.uid || 'full',
       gatewayEnabled: !!data?.gatewayEnabled,
       gatewayHidden: !!data?.gatewayHidden,
       manualEnabled: !!data?.manualEnabled,
@@ -180,6 +285,9 @@
       copied: false,
       file: null,
       fileName: '',
+      previewUrl: null,
+      showConfirmModal: false,
+      submitting: false,
       formData: { fullName: '', email: '', whatsappNumber: '', source: '' },
 
       get gatewayAvailable() {
@@ -193,6 +301,20 @@
       // Jaring pengaman: kanal kosong hanya mungkin bila data tidak sinkron.
       get noChannel() {
         return !this.gatewayAvailable && !this.manualAvailable;
+      },
+
+      get fileSizeFormatted() {
+        if (!this.file || !this.file.size) return '';
+        const kb = this.file.size / 1024;
+        if (kb < 1024) return kb.toFixed(1) + ' KB';
+        return (kb / 1024).toFixed(2) + ' MB';
+      },
+
+      cleanPreviewUrl() {
+        if (this.previewUrl) {
+          URL.revokeObjectURL(this.previewUrl);
+          this.previewUrl = null;
+        }
       },
 
       init() {
@@ -251,9 +373,12 @@
 
       syncPromoCode(event) {
         const promo = this.getPromoCode();
-        const promoInput = event.target.querySelector('input[name="promoCode"]');
-        if (promoInput) {
-          promoInput.value = promo;
+        const form = (event && event.target) || this.$refs.manualForm || document.getElementById('manual-form-' + this.uid);
+        if (form) {
+          const promoInput = form.querySelector('input[name="promoCode"]');
+          if (promoInput) {
+            promoInput.value = promo;
+          }
         }
       },
 
@@ -261,6 +386,7 @@
         const input = event.target;
         const selected = input.files && input.files[0];
         if (!selected) {
+          this.cleanPreviewUrl();
           this.file = null;
           this.fileName = '';
           return;
@@ -268,12 +394,53 @@
         if (selected.size > 5 * 1024 * 1024) {
           showWarningToast(CHANNEL_FILE_TOO_LARGE_TITLE, CHANNEL_FILE_TOO_LARGE_BODY);
           input.value = '';
+          this.cleanPreviewUrl();
           this.file = null;
           this.fileName = '';
           return;
         }
+        this.cleanPreviewUrl();
         this.file = selected;
         this.fileName = selected.name;
+        if (selected.type && selected.type.startsWith('image/')) {
+          this.previewUrl = URL.createObjectURL(selected);
+        }
+      },
+
+      promptConfirm(event) {
+        if (event && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
+        this.syncPromoCode(event);
+        if (!this.file) {
+          if (typeof showWarningToast === 'function') {
+            showWarningToast(
+              '{{{t 'test.payment.channel.chooseFile'}}}',
+              '{{{t 'test.payment.channel.uploadHint'}}}'
+            );
+          }
+          return;
+        }
+        this.showConfirmModal = true;
+      },
+
+      closeConfirmModal() {
+        if (this.submitting) return;
+        this.showConfirmModal = false;
+      },
+
+      confirmAndSubmit() {
+        if (this.submitting) return;
+        this.submitting = true;
+        const form = this.$refs.manualForm || document.getElementById('manual-form-' + this.uid);
+        if (form) {
+          const promo = this.getPromoCode();
+          const promoInput = form.querySelector('input[name="promoCode"]');
+          if (promoInput) {
+            promoInput.value = promo;
+          }
+          form.submit();
+        }
       },
 
       async copyBank() {
