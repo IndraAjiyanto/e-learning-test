@@ -5,6 +5,7 @@
 
   Props:
   - course : object (wajib, data course beserta relation installments)
+  - lang   : string (opsional, bahasa aktif)
   - class  : string (opsional)
 --}}
 
@@ -77,17 +78,22 @@
       <div class="flex flex-col gap-3 w-full">
         {{#if course.installments.[0].price}}
           {{#each course.installments.[0].price}}
-            <div class="flex justify-between items-center w-full h-[17px]">
-              <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">
+            <div class="flex justify-between items-center w-full min-h-[17px] gap-2">
+              <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096] shrink-0">
                 {{t 'test.payment.installment.monthLabel'}} {{addOne @index}}
               </span>
-              <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">
+              {{#if (lookup ../course.installments.[0].dueDates @index)}}
+                <span class="font-montserrat font-normal text-[12px] sm:text-[13px] leading-[16px] text-[#718096] text-right sm:text-center flex-1">
+                  {{formatDateDayMonthYear (lookup ../course.installments.[0].dueDates @index) (default ../lang @root.lang)}}
+                </span>
+              {{/if}}
+              <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559] shrink-0 text-right">
                 {{formatRupiah this}}
               </span>
             </div>
           {{/each}}
         {{else}}
-          <div class="flex justify-between items-center w-full h-[17px]">
+          <div class="flex justify-between items-center w-full min-h-[17px]">
             <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">{{t 'test.payment.installment.monthLabel'}} 1</span>
             <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">Rp 0</span>
           </div>
