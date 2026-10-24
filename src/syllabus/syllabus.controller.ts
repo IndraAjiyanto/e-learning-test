@@ -348,11 +348,13 @@ export class SyllabusController {
       hasVideo: detail.hasVideo,
       videoEmbedUrl: detail.videoEmbedUrl,
       videoDuration: detail.videoDuration,
+      videoDurationFormatted: detail.videoDurationFormatted,
       videoTitle: detail.videoTitle,
       isYoutube: detail.isYoutube,
       videoMaterial: detail.videoMaterial,
       hasPdf: detail.hasPdf,
       hasPpt: detail.hasPpt,
+      hasDocMaterial: detail.hasDocMaterial,
       hasAnyMaterial: detail.hasAnyMaterial,
       bareShell: true,
     });

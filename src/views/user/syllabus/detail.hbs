@@ -5,12 +5,14 @@
   Menampilkan konten (dasar teori) milik silabus dan kartu quiz di sampingnya.
   Konten disimpan sebagai EditorJS JSON atau HTML (syllabus.content);
   dirender lewat components/ui/content-preview.
-
-  Berkas materi silabus (PDF, PPT, Video) TIDAK ditampilkan inline. Tiap berkas
-  direpresentasikan sebagai tombol; klik tombolnya memunculkan modal viewer
-  (components/ui/user/modal/material_viewer). Unduhan berkas juga lewat modal
-  itu, jadi kartu materi cukup satu baris tombol.
-
+  Tampilan Detail Silabus (Area Peserta):
+  - Kolom Kiri: Video Pembelajaran Inline (YouTube embed / direct video player)
+    dan Konten Teori Silabus (rendered via components/ui/content-preview).
+  - Kolom Kanan (Sidebar):
+    1. Materi Pembelajaran: Daftar modul PDF dan Slide PPTX (Lihat & Unduh).
+    2. Status & Aksi Quiz: Status kelulusan, skor, CTA kuis, info silabus berikutnya.
+    3. Cara Belajar: Panduan penyelesaian silabus.
+  - Modal Viewer: components/ui/user/modal/material_viewer untuk pratinjau slide/dokumen.
   Semua teks halaman ini memakai i18n (test.syllabus.*), dengan teks cadangan
   berbahasa Indonesia untuk jaga-jaga kalau kunci terjemahannya belum ada.
 --}}
@@ -41,11 +43,77 @@
       <div class="flex flex-col gap-[18px] p-5 py-[20px] sm:px-6 lg:px-7 lg:pb-7">
         <div class="w-full grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
 
-          <section
-            class="box-border flex flex-col items-start gap-6 p-6 sm:p-8 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0"
-          >
-            {{> components/ui/content-preview/index content=syllabus.content emptyMessage=(default (t 'test.syllabus.content.empty') 'Belum ada konten untuk silabus ini.')}}
-          </section>
+          {{!-- Kolom Kiri: Video Pembelajaran + Konten Teori --}}
+          <div class="flex flex-col gap-6 min-w-0">
+
+            {{!-- Card 1: Video Pembelajaran (Header Selalu Tampil) --}}
+            <section class="box-border flex flex-col gap-4 p-5 sm:p-6 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0">
+              <div class="w-full flex items-center justify-between border-b border-[#F1F5F9] pb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="grid place-items-center w-6 h-6 rounded-full bg-[#E6F0FA] text-[#003060]">
+                    <i class="fa-solid fa-play text-xs ml-0.5"></i>
+                  </span>
+                  <h2 class="font-bold text-[18px] leading-[24px] text-[#003060]">
+                    {{default (t 'test.syllabus.video.title') 'Video Pembelajaran'}}
+                  </h2>
+                </div>
+                {{#if hasVideo}}
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF5FF] text-[#003060] text-xs font-semibold">
+                    <i class="fa-solid fa-circle-play text-[11px]"></i>
+                    <span>{{default (t 'test.syllabus.video.available') 'Tersedia'}}{{#if videoDurationFormatted}} · {{videoDurationFormatted}}{{/if}}</span>
+                  </span>
+                {{else}}
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F1F5F9] text-[#64748B] text-xs font-medium">
+                    <span>{{default (t 'test.syllabus.video.unavailable') 'Belum tersedia'}}</span>
+                  </span>
+                {{/if}}
+              </div>
+
+              {{#if hasVideo}}
+                <div class="relative w-full rounded-[12px] overflow-hidden bg-black aspect-video flex flex-col justify-center items-center shadow-inner group">
+                  {{#if isYoutube}}
+                    <iframe
+                      src="{{videoEmbedUrl}}"
+                      class="w-full h-full border-none"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    ></iframe>
+                  {{else}}
+                    <video
+                      controls
+                      autoplay
+                      muted
+                      playsinline
+                      class="w-full h-full object-contain"
+                      src="{{videoEmbedUrl}}"
+                    ></video>
+                  {{/if}}
+                </div>
+              {{else}}
+                {{!-- Empty State Video: Header Tetap Utuh --}}
+                <div class="w-full min-h-[180px] sm:min-h-[220px] bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-[12px] flex flex-col items-center justify-center p-6 text-center gap-2.5">
+                  <span class="grid size-11 place-items-center rounded-full bg-[#E2E8F0] text-[#64748B]">
+                    <i class="fa-solid fa-video-slash text-lg"></i>
+                  </span>
+                  <div class="flex flex-col gap-1">
+                    <p class="font-semibold text-xs sm:text-sm text-[#003060]">
+                      {{default (t 'test.syllabus.video.emptyTitle') 'Video Pembelajaran Belum Tersedia'}}
+                    </p>
+                    <p class="text-[11px] sm:text-xs text-[#64748B] max-w-sm">
+                      {{default (t 'test.syllabus.video.emptyDesc') 'Materi video untuk silabus ini belum diunggah. Kamu tetap dapat mempelajari dasar teori di bawah.'}}
+                    </p>
+                  </div>
+                </div>
+              {{/if}}
+            </section>
+
+            {{!-- Card 2: Konten Teori Silabus --}}
+            <section
+              class="box-border flex flex-col items-start gap-6 p-6 sm:p-8 bg-white border border-[#D9D9D9] rounded-[16px] min-w-0"
+            >
+              {{> components/ui/content-preview/index content=syllabus.content emptyMessage=(default (t 'test.syllabus.content.empty') 'Belum ada konten untuk silabus ini.')}}
+            </section>
+          </div>
 
           {{!-- Kolom Kanan: Sidebar --}}
           <aside class="flex flex-col items-start gap-6">
@@ -66,81 +134,77 @@
                 </p>
               </div>
 
-              {{#if hasAnyMaterial}}
-                <div class="w-full flex flex-col gap-2.5">
+              {{#if (or pdfMaterials.length pptMaterials.length)}}
+                <div class="w-full flex flex-col gap-3">
                   {{#each pdfMaterials}}
-                    <button
-                      type="button"
-                      @click="$dispatch('open-syllabus-material', {{json this}})"
-                      class="w-full flex items-center gap-3 p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] text-left hover:border-[#003060] transition-colors shadow-sm"
-                    >
-                      <span class="px-2 py-0.5 rounded bg-[#FEF2F2] border border-[#FEE2E2] text-[#DC2626] font-bold text-[11px] shrink-0">
-                        {{default (t 'test.syllabus.materi.pdfLabel') 'PDF'}}
-                      </span>
-                      <span class="flex flex-col min-w-0 flex-1">
-                        <span class="font-semibold text-xs text-[#1E293B] truncate">
-                          {{default this.title (default (t 'test.syllabus.materi.defaultPdfTitle') 'Modul PDF')}}
+                    <div class="w-full p-3.5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] flex flex-col gap-2.5 hover:border-[#003060] transition-colors shadow-sm">
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="px-2 py-0.5 rounded bg-[#FEF2F2] border border-[#FEE2E2] text-[#DC2626] font-bold text-[11px] shrink-0">
+                          {{default (t 'test.syllabus.materi.pdfLabel') 'PDF'}}
                         </span>
-                        <span class="text-[11px] text-[#64748B] truncate">
-                          {{default this.originalFileName 'Modul.pdf'}}{{#if this.formattedSize}} · {{this.formattedSize}}{{/if}}
-                        </span>
-                      </span>
-                      <span class="shrink-0 inline-flex items-center gap-1.5 rounded-[6px] bg-[#003060] px-3 h-8 text-white text-xs font-semibold">
-                        <i class="fa-regular fa-eye text-[12px]"></i>
-                        <span>{{default (t 'test.syllabus.materi.openPdf') 'Buka PDF'}}</span>
-                      </span>
-                    </button>
+                        <div class="flex flex-col min-w-0">
+                          <h4 class="font-semibold text-xs text-[#1E293B] truncate">
+                            {{default this.title (default (t 'test.syllabus.materi.defaultPdfTitle') 'Modul PDF')}}
+                          </h4>
+                          <span class="text-[11px] text-[#64748B] truncate">
+                            {{default this.originalFileName 'Modul.pdf'}}{{#if this.formattedSize}} · {{this.formattedSize}}{{/if}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          @click="$dispatch('open-syllabus-material', {{json this}})"
+                          class="flex-1 h-8 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-[#003060] text-white text-xs font-semibold hover:bg-[#002244] transition-colors"
+                        >
+                          <i class="fa-regular fa-eye text-[12px]"></i>
+                          <span>{{default (t 'test.syllabus.materi.openPdf') 'Lihat PDF'}}</span>
+                        </button>
+                        <a
+                          href="/syllabus/learn/{{../syllabus.id}}/materials/{{this.id}}/download"
+                          class="w-8 h-8 inline-flex items-center justify-center rounded-[6px] border border-[#CBD5E1] bg-white text-[#475569] hover:bg-[#F1F5F9] transition-colors no-underline"
+                          title="{{default (t 'test.syllabus.modal.downloadPdf') 'Unduh Modul PDF'}}"
+                        >
+                          <i class="fa-solid fa-download text-[12px]"></i>
+                        </a>
+                      </div>
+                    </div>
                   {{/each}}
 
                   {{#each pptMaterials}}
-                    <button
-                      type="button"
-                      @click="$dispatch('open-syllabus-material', {{json this}})"
-                      class="w-full flex items-center gap-3 p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] text-left hover:border-[#003060] transition-colors shadow-sm"
-                    >
-                      <span class="px-2 py-0.5 rounded bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] font-bold text-[11px] shrink-0">
-                        {{default (t 'test.syllabus.materi.pptLabel') 'PPTX'}}
-                      </span>
-                      <span class="flex flex-col min-w-0 flex-1">
-                        <span class="font-semibold text-xs text-[#1E293B] truncate">
-                          {{default this.title (default (t 'test.syllabus.materi.defaultPptTitle') 'Slide PPTX')}}
+                    <div class="w-full p-3.5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] flex flex-col gap-2.5 hover:border-[#003060] transition-colors shadow-sm">
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="px-2 py-0.5 rounded bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] font-bold text-[11px] shrink-0">
+                          {{default (t 'test.syllabus.materi.pptLabel') 'PPTX'}}
                         </span>
-                        <span class="text-[11px] text-[#64748B] truncate">
-                          {{default this.originalFileName 'Slide.pptx'}}{{#if this.formattedSize}} · {{this.formattedSize}}{{/if}}
-                        </span>
-                      </span>
-                      <span class="shrink-0 inline-flex items-center gap-1.5 rounded-[6px] bg-[#003060] px-3 h-8 text-white text-xs font-semibold">
-                        <i class="fa-regular fa-eye text-[12px]"></i>
-                        <span>{{default (t 'test.syllabus.materi.openPpt') 'Buka Slide'}}</span>
-                      </span>
-                    </button>
-                  {{/each}}
-
-                  {{#if videoMaterial}}
-                    <button
-                      type="button"
-                      @click="$dispatch('open-syllabus-material', {{json videoMaterial}})"
-                      class="w-full flex items-center gap-3 p-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-[12px] text-left hover:border-[#003060] transition-colors shadow-sm"
-                    >
-                      <span class="px-2 py-0.5 rounded bg-[#ECFDF5] border border-[#A7F3D0] text-[#047857] font-bold text-[11px] shrink-0">
-                        {{default (t 'test.syllabus.materi.videoLabel') 'VIDEO'}}
-                      </span>
-                      <span class="flex flex-col min-w-0 flex-1">
-                        <span class="font-semibold text-xs text-[#1E293B] truncate">
-                          {{default videoMaterial.title (default (t 'test.syllabus.materi.defaultVideoTitle') 'Video Pembelajaran')}}
-                        </span>
-                        {{#if videoMaterial.originalFileName}}
+                        <div class="flex flex-col min-w-0">
+                          <h4 class="font-semibold text-xs text-[#1E293B] truncate">
+                            {{default this.title (default (t 'test.syllabus.materi.defaultPptTitle') 'Slide PPTX')}}
+                          </h4>
                           <span class="text-[11px] text-[#64748B] truncate">
-                            {{videoMaterial.originalFileName}}{{#if videoMaterial.formattedSize}} · {{videoMaterial.formattedSize}}{{/if}}
+                            {{default this.originalFileName 'Slide.pptx'}}{{#if this.formattedSize}} · {{this.formattedSize}}{{/if}}
                           </span>
-                        {{/if}}
-                      </span>
-                      <span class="shrink-0 inline-flex items-center gap-1.5 rounded-[6px] bg-[#003060] px-3 h-8 text-white text-xs font-semibold">
-                        <i class="fa-solid fa-play text-[11px]"></i>
-                        <span>{{default (t 'test.syllabus.materi.openVideo') 'Tonton Video'}}</span>
-                      </span>
-                    </button>
-                  {{/if}}
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          @click="$dispatch('open-syllabus-material', {{json this}})"
+                          class="flex-1 h-8 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-[#003060] text-white text-xs font-semibold hover:bg-[#002244] transition-colors"
+                        >
+                          <i class="fa-regular fa-eye text-[12px]"></i>
+                          <span>{{default (t 'test.syllabus.materi.openPpt') 'Lihat Slide'}}</span>
+                        </button>
+                        <a
+                          href="/syllabus/learn/{{../syllabus.id}}/materials/{{this.id}}/download"
+                          class="w-8 h-8 inline-flex items-center justify-center rounded-[6px] border border-[#CBD5E1] bg-white text-[#475569] hover:bg-[#F1F5F9] transition-colors no-underline"
+                          title="{{default (t 'test.syllabus.modal.downloadPpt') 'Unduh Slide PPTX'}}"
+                        >
+                          <i class="fa-solid fa-download text-[12px]"></i>
+                        </a>
+                      </div>
+                    </div>
+                  {{/each}}
                 </div>
               {{else}}
                 {{!-- Empty State Materi: Header Tetap Utuh --}}
@@ -149,7 +213,7 @@
                     <i class="fa-regular fa-folder-open text-base"></i>
                   </span>
                   <p class="font-medium text-xs text-[#64748B]">
-                    {{default (t 'test.syllabus.materi.empty') 'Belum ada materi PDF, slide, atau video untuk silabus ini.'}}
+                    {{default (t 'test.syllabus.materi.empty') 'Belum ada modul PDF atau slide materi untuk silabus ini.'}}
                   </p>
                 </div>
               {{/if}}
