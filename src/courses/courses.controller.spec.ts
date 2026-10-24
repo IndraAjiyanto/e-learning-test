@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Reflector } from '@nestjs/core';
+import { Request, Response } from 'express';
 import { CoursesController } from './courses.controller';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
@@ -65,21 +66,25 @@ describe('CoursesController', () => {
       coursesService.findTechnologies.mockResolvedValue(mockTech);
       coursesService.findMentoring.mockResolvedValue(mockMentorings);
 
+      const renderSpy = jest.fn();
+      const redirectSpy = jest.fn();
       const mockRes = {
-        render: jest.fn(),
-        redirect: jest.fn(),
-      } as any;
+        render: renderSpy,
+        redirect: redirectSpy,
+      } as unknown as Response;
 
+      const mockUser = { id: 'admin-1', role: 'super_admin' };
+      const flashSpy = jest.fn();
       const mockReq = {
-        user: { id: 'admin-1', role: 'super_admin' },
-        flash: jest.fn(),
-      } as any;
+        user: mockUser,
+        flash: flashSpy,
+      } as unknown as Request;
 
       await controller.formEdit(mockRes, 'course-1', 'cat-1', mockReq);
 
       expect(coursesService.findOne).toHaveBeenCalledWith('course-1');
-      expect(mockRes.render).toHaveBeenCalledWith('admin/course/edit', {
-        user: mockReq.user,
+      expect(renderSpy).toHaveBeenCalledWith('admin/course/edit', {
+        user: mockUser,
         course: mockCourse,
         category: mockCategories,
         courseType: mockTypes,
@@ -87,27 +92,30 @@ describe('CoursesController', () => {
         mentorings: mockMentorings,
         categoryId: 'cat-1',
       });
-      expect(mockRes.redirect).not.toHaveBeenCalled();
+      expect(redirectSpy).not.toHaveBeenCalled();
     });
 
     it('should redirect to /program if course is not found', async () => {
       coursesService.findOne.mockResolvedValue(null);
 
+      const renderSpy = jest.fn();
+      const redirectSpy = jest.fn();
       const mockRes = {
-        render: jest.fn(),
-        redirect: jest.fn(),
-      } as any;
+        render: renderSpy,
+        redirect: redirectSpy,
+      } as unknown as Response;
 
+      const flashSpy = jest.fn();
       const mockReq = {
         user: { id: 'admin-1' },
-        flash: jest.fn(),
-      } as any;
+        flash: flashSpy,
+      } as unknown as Request;
 
       await controller.formEdit(mockRes, 'invalid-id', '', mockReq);
 
-      expect(mockReq.flash).toHaveBeenCalledWith('error', 'Program not found');
-      expect(mockRes.redirect).toHaveBeenCalledWith('/program');
-      expect(mockRes.render).not.toHaveBeenCalled();
+      expect(flashSpy).toHaveBeenCalledWith('error', 'Program not found');
+      expect(redirectSpy).toHaveBeenCalledWith('/program');
+      expect(renderSpy).not.toHaveBeenCalled();
     });
   });
 });

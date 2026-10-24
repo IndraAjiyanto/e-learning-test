@@ -1870,7 +1870,6 @@ export class CoursesService {
       throw new NotFoundException('User not found');
     }
 
-
     return await this.userCourseRepository.remove(userCourses);
   }
 

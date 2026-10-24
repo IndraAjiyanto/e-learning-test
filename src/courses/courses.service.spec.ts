@@ -51,30 +51,60 @@ describe('CoursesService', () => {
       providers: [
         CoursesService,
         { provide: getRepositoryToken(Course), useValue: createMockRepo() },
-        { provide: getRepositoryToken(PortfolioGuide), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(PortfolioGuide),
+          useValue: createMockRepo(),
+        },
         { provide: getRepositoryToken(User), useValue: createMockRepo() },
         { provide: getRepositoryToken(Category), useValue: createMockRepo() },
         { provide: getRepositoryToken(CourseType), useValue: createMockRepo() },
         { provide: getRepositoryToken(Weeks), useValue: createMockRepo() },
-        { provide: getRepositoryToken(WeekProgress), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(WeekProgress),
+          useValue: createMockRepo(),
+        },
         { provide: getRepositoryToken(Quiz), useValue: createMockRepo() },
-        { provide: getRepositoryToken(SessionProgress), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(SessionProgress),
+          useValue: createMockRepo(),
+        },
         { provide: getRepositoryToken(Payment), useValue: paymentRepo },
         { provide: getRepositoryToken(UserCourse), useValue: userCourseRepo },
         { provide: getRepositoryToken(Mentors), useValue: createMockRepo() },
         { provide: getRepositoryToken(Logbook), useValue: createMockRepo() },
-        { provide: getRepositoryToken(MentorLogbook), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(MentorLogbook),
+          useValue: createMockRepo(),
+        },
         { provide: getRepositoryToken(Technology), useValue: createMockRepo() },
         { provide: getRepositoryToken(Mentorings), useValue: createMockRepo() },
-        { provide: getRepositoryToken(Registration), useValue: registrationRepo },
-        { provide: getRepositoryToken(CourseQuestions), useValue: createMockRepo() },
-        { provide: getRepositoryToken(ProgramBenefits), useValue: createMockRepo() },
-        { provide: getRepositoryToken(Participants), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(Registration),
+          useValue: registrationRepo,
+        },
+        {
+          provide: getRepositoryToken(CourseQuestions),
+          useValue: createMockRepo(),
+        },
+        {
+          provide: getRepositoryToken(ProgramBenefits),
+          useValue: createMockRepo(),
+        },
+        {
+          provide: getRepositoryToken(Participants),
+          useValue: createMockRepo(),
+        },
         { provide: getRepositoryToken(CourseFlow), useValue: createMockRepo() },
         { provide: getRepositoryToken(Alumni), useValue: createMockRepo() },
-        { provide: getRepositoryToken(Installment), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(Installment),
+          useValue: createMockRepo(),
+        },
         { provide: getRepositoryToken(Session), useValue: createMockRepo() },
-        { provide: getRepositoryToken(Portofolios), useValue: createMockRepo() },
+        {
+          provide: getRepositoryToken(Portofolios),
+          useValue: createMockRepo(),
+        },
       ],
     }).compile();
 
@@ -88,7 +118,11 @@ describe('CoursesService', () => {
   describe('removeCourseUser', () => {
     const userId = 'user-123';
     const courseId = 'course-456';
-    const mockUserCourse = { id: 'uc-1', user: { id: userId }, course: { id: courseId } };
+    const mockUserCourse = {
+      id: 'uc-1',
+      user: { id: userId },
+      course: { id: courseId },
+    };
 
     it('should throw NotFoundException if user is not enrolled in course', async () => {
       userCourseRepo.findOne.mockResolvedValue(null);
@@ -115,7 +149,10 @@ describe('CoursesService', () => {
     it('should remove user from course even if user has registration records', async () => {
       userCourseRepo.findOne.mockResolvedValue(mockUserCourse);
       paymentRepo.findOne.mockResolvedValue(null);
-      registrationRepo.findOne.mockResolvedValue({ id: 'reg-1', file: 'reg-bukti.jpg' });
+      registrationRepo.findOne.mockResolvedValue({
+        id: 'reg-1',
+        file: 'reg-bukti.jpg',
+      });
       userCourseRepo.remove.mockResolvedValue(mockUserCourse);
 
       const result = await service.removeCourseUser(userId, courseId);
