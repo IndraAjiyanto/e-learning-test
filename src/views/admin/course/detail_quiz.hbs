@@ -43,8 +43,8 @@
           </h1>
 
           {{!-- Frame 2147229614: Buttons (Delete + Edit) --}}
-          {{#unless isAttempted}}
           <div class='shrink-0 flex flex-row items-center gap-[12px]'>
+            {{#unless isAttempted}}
             {{!-- Delete button --}}
             <form action='/syllabus/quiz/{{quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
               <button
@@ -56,8 +56,8 @@
                 </span>
               </button>
             </form>
+            {{/unless}}
 
-            {{!-- Edit button --}}
             <a
               href='/quiz/formEdit/{{quiz.id}}'
               class='box-border min-w-[106px] h-[44px] bg-[#003060] border border-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#002244] transition-colors'>
@@ -66,7 +66,6 @@
               </span>
             </a>
           </div>
-          {{/unless}}
 
         </div>
 
@@ -138,7 +137,7 @@
         {{#if isAttempted}}
         {{> components/ui/admin/locked-notice/index
           title='Quiz is locked'
-          message='This quiz cannot be edited or deleted because it has already been attempted by a participant. Its questions are locked too.' }}
+          message='This quiz can be edited, but it cannot be deleted because it has already been attempted by a participant. Questions and answers can also be edited.' }}
         {{/if}}
 
       </div>
@@ -231,9 +230,9 @@
                 </div>
 
                 {{!-- Question Actions (Delete + Edit) --}}
-                {{#unless ../isAttempted}}
                 <div class='flex flex-row items-center gap-[12px]'>
                   {{!-- Delete question button --}}
+                  {{#unless ../isAttempted}}
                   <form action='/question/{{this.id}}/{{../quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
                     <button
                       type='button'
@@ -244,6 +243,7 @@
                       </span>
                     </button>
                   </form>
+                  {{/unless}}
 
                   {{!-- Edit question button --}}
                   <a
@@ -254,7 +254,6 @@
                     </span>
                   </a>
                 </div>
-                {{/unless}}
 
               </div>
             </div>

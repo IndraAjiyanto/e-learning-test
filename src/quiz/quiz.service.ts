@@ -195,12 +195,6 @@ export class QuizService {
       throw new NotFoundException('quiz not found');
     }
 
-    if (await this.hasAttempts(quizId)) {
-      throw new ForbiddenException(
-        'Quiz cannot be edited because it has already been attempted by a user',
-      );
-    }
-
     Object.assign(quiz, updateQuizDto);
     return await this.quizRepository.save(quiz);
   }

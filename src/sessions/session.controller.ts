@@ -101,15 +101,6 @@ export class SessionController {
     @Req() req: Request,
     @Param('id') id: string,
   ) {
-    const isCompleted = await this.sessionService.hasCompletedUser(id);
-    if (isCompleted) {
-      req.flash(
-        'error',
-        'Session cannot be edited because it has already been completed by user',
-      );
-      return res.redirect(`/session/${id}`);
-    }
-
     const session = await this.sessionService.findOne(id);
     const course = await this.sessionService.findAllCourses();
     let maxSession = 0;

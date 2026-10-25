@@ -98,10 +98,10 @@
       {{#if course.userCourses.length}}
         {{> components/ui/admin/locked-notice/index
           title='Program is locked'
-          message='This program cannot be edited or deleted because it already has enrolled participants.' }}
+          message='This program can be edited, but it cannot be deleted because it already has enrolled participants.' }}
       {{/if}}
-      {{#unless course.userCourses.length}}
       <div class='flex flex-wrap items-center gap-3'>
+        {{#unless course.userCourses.length}}
         <form
           action='/program/{{course.id}}?_method=DELETE'
           method='post'
@@ -115,6 +115,7 @@
             onclick='openDeleteModal(this)'
           }}
         </form>
+        {{/unless}}
 
         {{#if categoryId}}
           {{> components/ui/super_admin/form/button
@@ -130,7 +131,6 @@
           }}
         {{/if}}
       </div>
-      {{/unless}}
     </div>
   </div>
 </section>
