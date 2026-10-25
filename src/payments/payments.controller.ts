@@ -420,6 +420,31 @@ export class PaymentsController {
       createPaymentDto.courseId = courseId;
       createPaymentDto.userId = userId;
       createPaymentDto.process = 'process';
+      const bodyRecord = req.body as Record<string, unknown>;
+
+      const formSource =
+        typeof bodyRecord.source === 'string' ? bodyRecord.source : '';
+      createPaymentDto.referalSource = isReferalSource(formSource)
+        ? formSource
+        : 'Other';
+
+      const formCurrentStatus = bodyRecord.currentStatus;
+      if (
+        typeof formCurrentStatus === 'string' &&
+        CURRENT_STATUS_OPTIONS.includes(formCurrentStatus as currentStatus)
+      ) {
+        createPaymentDto.current_status = formCurrentStatus as currentStatus;
+      }
+
+      const extra = createPaymentDto as unknown as Record<string, unknown>;
+      extra.user_fullname =
+        typeof bodyRecord.fullName === 'string' ? bodyRecord.fullName : '';
+      extra.user_email =
+        typeof bodyRecord.email === 'string' ? bodyRecord.email : '';
+      extra.user_no =
+        typeof bodyRecord.whatsappNumber === 'string'
+          ? bodyRecord.whatsappNumber
+          : '';
       if (!createPaymentDto.no) {
         createPaymentDto.no = 'MAND-' + Date.now();
       }
@@ -498,11 +523,33 @@ export class PaymentsController {
         (req.body as { uploadedImageUrls?: string[] }).uploadedImageUrls?.[0] ??
         '';
       uploadedFile = file;
+const bodyRecord = req.body as Record<string, unknown>;
+      const formSource =
+        typeof bodyRecord.source === 'string' ? bodyRecord.source : '';
+      const formCurrentStatus = bodyRecord.currentStatus;
+      const str = (value: unknown) =>
+        typeof value === 'string' && value.trim() !== ''
+          ? value.trim()
+          : undefined;
+
+      const applicant = {
+        referalSource: isReferalSource(formSource) ? formSource : undefined,
+        current_status:
+          typeof formCurrentStatus === 'string' &&
+          CURRENT_STATUS_OPTIONS.includes(formCurrentStatus as currentStatus)
+            ? (formCurrentStatus as currentStatus)
+            : undefined,
+        user_fullname: str(bodyRecord.fullName),
+        user_email: str(bodyRecord.email),
+        user_no: str(bodyRecord.whatsappNumber),
+      };
+
       await this.paymentsService.createManualInstallmentPayment(
         req.user!.id,
         paymentId,
         Number(month),
         file,
+        applicant,
       );
 
       flashToast(

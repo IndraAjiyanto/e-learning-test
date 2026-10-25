@@ -11,13 +11,13 @@
       - Menampilkan harga Full Payment dari BE (kolom course.promo / course.price).
       - Menampilkan harga coret dan badge penghematan HANYA jika course.price > course.promo (diskon valid).
       - Countdown timer: Offer Ends In 15 Days 11 : 50 : 05
-      - Kotak jadwal (Registration & Start Learning)
+      - Kotak jadwal (Registration, Cicilan Per Bulan & Tanggal Jatuh Tempo, Start Learning)
       - Tombol "Registration Now" & link "Free Consultation"
     - Tab "Installment":
       - Menampilkan harga cicilan dari BE (kolom course.price / course.installments.[0].downPayment).
       - Countdown timer
       - Kotak kuning "Installment Information" dengan 4 poin penjelasan cicilan
-      - Kotak jadwal (Registration & Start Learning)
+      - Kotak jadwal (Registration, Cicilan Per Bulan & Tanggal Jatuh Tempo, Start Learning)
       - Tombol "Registration Now" & link "Free Consultation"
 
   Props:
@@ -175,14 +175,74 @@
   <div class="flex w-full flex-col gap-2.5 rounded-xl bg-[#F9FAFB] p-4 font-inter text-xs text-[#374151]">
     {{!-- Registration --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
-      <span class="font-bold text-[#374151] shrink-0">{{default (t 'test.paidProgram.pricing.registration') 'Registration'}}</span>
-      <span class="font-normal text-[#4B5563] sm:text-right">
-        {{ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) "Friday, 21 August 2026"}}
-      </span>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span class="font-bold text-[#374151]">{{default (t 'test.paidProgram.pricing.registration') 'Registration'}}</span>
+        <span x-show="tab === 'installment'" x-cloak class="font-bold text-[#374151]">(DP)</span>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 sm:text-right">
+        <span class="font-normal text-[#4B5563]">
+          {{ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) "Friday, 21 August 2026"}}
+        </span>
+        {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+          <span x-show="tab === 'installment'" x-cloak class="font-semibold text-[#003060]">
+            {{#if course.installments.[0].downPayment}}
+              ({{formatRupiah course.installments.[0].downPayment}})
+            {{else if installments.[0].downPayment}}
+              ({{formatRupiah installments.[0].downPayment}})
+            {{/if}}
+          </span>
+        {{/if}}
+      </div>
     </div>
+
+    {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+      {{!-- Monthly Installment Schedule (Only for Installment Tab) --}}
+      <div x-show="tab === 'installment'" x-cloak class="flex flex-col gap-2.5 border-t border-[#E5E7EB] pt-2.5">
+        {{#with (coalesce course.installments.[0] installments.[0])}}
+          {{#if (isArray price)}}
+            {{#each price}}
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-[#374151] shrink-0">
+                    {{default (t 'test.payment.installment.monthLabel') 'Bulan'}} {{addOne @index}}
+                  </span>
+                  <span class="font-semibold text-[#003060]">
+                    {{formatRupiah this}}
+                  </span>
+                </div>
+                <span class="font-normal text-[#4B5563] sm:text-right">
+                  {{#if (lookup ../dueDates @index)}}
+                    {{formatDateDayMonthYear (lookup ../dueDates @index) ../../lang}}
+                  {{/if}}
+                </span>
+              </div>
+            {{/each}}
+          {{else if (isNumber price)}}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-[#374151] shrink-0">
+                  {{default (t 'test.payment.installment.monthlyAfterDp') 'Cicilan Bulanan'}}
+                </span>
+                <span class="font-semibold text-[#003060]">
+                  {{formatRupiah price}}
+                </span>
+              </div>
+              <span class="font-normal text-[#4B5563] sm:text-right">
+                {{#if (lookup dueDates 0)}}
+                  {{formatDateDayMonthYear (lookup dueDates 0) ../lang}}
+                {{/if}}
+              </span>
+            </div>
+          {{/if}}
+        {{/with}}
+      </div>
+    {{/if}}
     
     {{!-- Start Learning --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
+    <div 
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3"
+      :class="tab === 'installment' ? 'border-t border-[#E5E7EB] pt-2.5' : ''"
+    >
       <span class="font-bold text-[#374151] shrink-0">{{default (t 'test.paidProgram.pricing.startLearning') 'Start Learning'}}</span>
       <span class="font-normal text-[#4B5563] sm:text-right">
         {{#if course.startDate}}

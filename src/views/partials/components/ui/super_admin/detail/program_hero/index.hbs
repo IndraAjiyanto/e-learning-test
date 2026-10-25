@@ -94,7 +94,7 @@
         </div>
       </div>
 
-      {{!-- Delete + Edit (hanya tampil jika program belum memiliki peserta) --}}
+      {{!-- Delete (hanya tampil jika program belum memiliki peserta) --}}
       {{#if course.userCourses.length}}
         {{> components/ui/admin/locked-notice/index
           title='Program is locked'

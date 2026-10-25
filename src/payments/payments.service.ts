@@ -603,8 +603,11 @@ export class PaymentsService {
                 : 0;
 
         const invoice = payment.invoice;
-        const hasXendit =
-          !!(invoice?.xendit_invoice_url || invoice?.xendit_invoice_id || invoice?.xendit_payment_channel);
+        const hasXendit = !!(
+          invoice?.xendit_invoice_url ||
+          invoice?.xendit_invoice_id ||
+          invoice?.xendit_payment_channel
+        );
         const paymentChannel = hasXendit ? 'xendit' : 'manual';
         const transactionType = isInstallment ? 'installment' : 'full payment';
 
@@ -622,12 +625,22 @@ export class PaymentsService {
           paidAt:
             invoice?.paid_at ??
             (payment.process === 'approved'
-              ? (invoice?.updatedAt ??
-                payment.updatedAt ??
-                payment.createdAt)
+              ? (invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
               : null),
-          method: invoice?.payment_method || (isInstallment ? 'Installment' : (paymentChannel === 'manual' ? 'Manual Transfer' : 'Xendit')),
-          paymentMethod: invoice?.payment_method || (isInstallment ? 'Installment' : (paymentChannel === 'manual' ? 'Manual Transfer' : 'Xendit')),
+          method:
+            invoice?.payment_method ||
+            (isInstallment
+              ? 'Installment'
+              : paymentChannel === 'manual'
+                ? 'Manual Transfer'
+                : 'Xendit'),
+          paymentMethod:
+            invoice?.payment_method ||
+            (isInstallment
+              ? 'Installment'
+              : paymentChannel === 'manual'
+                ? 'Manual Transfer'
+                : 'Xendit'),
           paymentChannel,
           channel: paymentChannel,
           amount: total,
@@ -1354,6 +1367,16 @@ export class PaymentsService {
     parentPaymentId: string,
     month: number,
     file: string,
+    applicant?: Partial<
+      Pick<
+        Payment,
+        | 'referalSource'
+        | 'current_status'
+        | 'user_fullname'
+        | 'user_email'
+        | 'user_no'
+      >
+    >,
   ) {
     if (!file) {
       throw new Error('Bukti pembayaran wajib diunggah');
@@ -1374,6 +1397,20 @@ export class PaymentsService {
     }
     if (parent.user && parent.user.id !== userId) {
       throw new Error('Payment tidak berhak diakses user ini');
+    }
+
+    if (applicant) {
+      let changed = false;
+      for (const [key, value] of Object.entries(applicant)) {
+        const target = parent as unknown as Record<string, unknown>;
+        if (value && !target[key]) {
+          target[key] = value;
+          changed = true;
+        }
+      }
+      if (changed) {
+        await this.paymentRepository.save(parent);
+      }
     }
 
     const schedule = parent.installment.price || [];
