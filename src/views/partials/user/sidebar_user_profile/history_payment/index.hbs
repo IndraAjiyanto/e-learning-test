@@ -503,6 +503,13 @@
 
       formatDate(value) {
         if (!value) return '—';
+        if (typeof value === 'string') {
+          const [datePart] = value.split('T');
+          const [year, month, day] = datePart.split('-').map(Number);
+          if (!year || !month || !day) return '—';
+          const date = new Date(year, month - 1, day);
+          return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return '—';
         return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });

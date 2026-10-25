@@ -77,13 +77,23 @@
       <div class="flex flex-col gap-3 w-full">
         {{#if course.installments.[0].price}}
           {{#each course.installments.[0].price}}
-            <div class="flex justify-between items-center w-full h-[17px]">
+            <div class="flex justify-between items-center w-full min-h-[34px]">
               <span class="font-montserrat font-medium text-[13px] leading-[16px] text-[#718096]">
                 {{t 'test.payment.installment.monthLabel'}} {{addOne @index}}
               </span>
-              <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">
-                {{formatRupiah this}}
-              </span>
+              <div class="flex flex-col items-end gap-0.5">
+                <span class="font-montserrat font-semibold text-[14px] leading-[17px] text-[#1B2559]">
+                  <span id="installment-month-original-{{addOne @index}}">{{formatRupiah this}}</span>
+                </span>
+                <span
+                  id="installment-month-discount-{{addOne @index}}"
+                  class="hidden font-montserrat font-medium text-[11px] leading-[14px] text-emerald-600"
+                ></span>
+                <span
+                  id="installment-month-final-{{addOne @index}}"
+                  class="hidden font-montserrat font-semibold text-[14px] leading-[17px] text-[#003060]"
+                ></span>
+              </div>
             </div>
           {{/each}}
         {{else}}

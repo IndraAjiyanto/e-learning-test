@@ -91,6 +91,19 @@
     {{/if}}
   {{/components/ui/dropdown/select/index}}
 
+  <!-- Current Status Dropdown -->
+  {{#> components/ui/dropdown/select/index
+    name="currentStatus"
+    id="current-status-input"
+    label=(default (t 'test.freeProgram.registrationModal.currentStatus') 'Current Status')
+    required=true
+    placeholder=(default (t 'test.freeProgram.registrationModal.selectStatus') 'Select your current status')
+  }}
+    {{#each currentStatusOptions}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  {{/components/ui/dropdown/select/index}}
+
   <!-- Agreement Box -->
   {{> components/ui/input/agreement_box/index
     name="agreement"
@@ -222,6 +235,8 @@
       const whatsappNumber = form.querySelector('input[name="whatsappNumber"]')?.value?.trim() || '';
       const sourceInput = form.querySelector('input[name="source"], select[name="source"]');
       const source = sourceInput?.value || '';
+      const currentStatus =
+        form.querySelector('select[name="currentStatus"]')?.value || '';
       const agreement = Boolean(form.querySelector('input[name="agreement"]')?.checked);
 
       return {
@@ -229,6 +244,7 @@
         email,
         whatsappNumber,
         source,
+        currentStatus,
         agreement,
       };
     };
@@ -251,16 +267,25 @@
       const form1 = draft.forms?.form1 || draft.formData;
       if (!form1) return;
 
-      const { fullName, email, whatsappNumber, source, agreement } = form1;
+      const {
+        fullName,
+        email,
+        whatsappNumber,
+        source,
+        currentStatus,
+        agreement,
+      } = form1;
 
       const fullNameInput = form.querySelector('input[name="fullName"]');
       const emailInput = form.querySelector('input[name="email"]');
       const whatsappInput = form.querySelector('input[name="whatsappNumber"]');
+      const currentStatusInput = form.querySelector('select[name="currentStatus"]');
       const agreementInput = form.querySelector('input[name="agreement"]');
 
       if (fullNameInput && fullName) fullNameInput.value = fullName;
       if (emailInput && email) emailInput.value = email;
       if (whatsappInput && whatsappNumber) whatsappInput.value = whatsappNumber;
+      if (currentStatusInput && currentStatus) currentStatusInput.value = currentStatus;
       if (agreementInput) agreementInput.checked = Boolean(agreement);
       applySourceValue(source);
     };

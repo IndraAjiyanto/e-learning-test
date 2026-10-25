@@ -27,6 +27,16 @@ export type currentStatus =
   | 'Entrepreneur'
   | 'Other';
 
+export const CURRENT_STATUS_OPTIONS = [
+  'University Student',
+  'Fresh Graduate',
+  'Job Seeker',
+  'Employee',
+  'Freelancer',
+  'Entrepreneur',
+  'Other',
+] as const;
+
 @Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
@@ -57,15 +67,7 @@ export class Payment {
 
   @Column({
     type: 'enum',
-    enum: [
-      'University Student',
-      'Fresh Graduate',
-      'Job Seeker',
-      'Employee',
-      'Freelancer',
-      'Entrepreneur',
-      'Other',
-    ],
+    enum: CURRENT_STATUS_OPTIONS,
     nullable: true,
   })
   current_status: currentStatus;
@@ -81,6 +83,15 @@ export class Payment {
 
   @Column({ nullable: true })
   attend_program: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  voucher_code: string | null;
+
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  voucher_discount_total: number | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  pricing_snapshot: Record<string, unknown> | null;
 
   @Column({ type: 'timestamp', nullable: true })
   dpPaidAt: Date;

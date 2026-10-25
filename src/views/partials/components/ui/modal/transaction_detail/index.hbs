@@ -85,10 +85,27 @@
         return this.row?.categoryName || 'General';
       },
 
+      get isInstallment() {
+        return this.row?.kind === 'installment' || this.row?.transactionType === 'installment';
+      },
+
       get rowKeyword() {
         if (this.row?.keyword) return this.row.keyword;
         if (this.row?.kind === 'installment') return '{{t "test.transactionDetail.installmentPlan"}}';
         return '—';
+      },
+
+      get referalSource() {
+        return (
+          this.row?.referalSource ||
+          this.row?.referal_source ||
+          this.row?.keyword ||
+          '—'
+        );
+      },
+
+      get currentStatus() {
+        return this.row?.current_status || this.row?.currentStatus || '—';
       },
 
       get rawStatus() {
@@ -196,6 +213,10 @@
           return '- Rp ' + disc.toLocaleString('id-ID');
         }
         return 'Rp 0';
+      },
+
+      get voucherCodeFormatted() {
+        return this.row?.voucherCode || '—';
       },
 
       get finalTotalFormatted() {
@@ -398,9 +419,10 @@
 
       formatDate(value) {
         if (!value) return '—';
-        if (typeof value === 'string' && value.includes('T')) {
-          const [datePart] = value.split('T');
-          const [y, m, d] = datePart.split('-').map(Number);
+        if (typeof value === 'string') {
+          const datePart = value.split('T')[0];
+          const parts = datePart.split('-').map(Number);
+          const [y, m, d] = parts;
           if (!y || !m || !d) return '—';
           return new Date(y, m - 1, d).toLocaleDateString('en-GB', {
             day: '2-digit',
@@ -701,6 +723,16 @@
               <span class="font-inter font-bold text-sm text-[#173B68]" x-text="invoiceDateFormatted"></span>
             </div>
 
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter text-xs text-[#718096]">{{t "test.freeProgram.registrationModal.referalSource"}}</span>
+              <span class="font-inter font-bold text-sm text-[#173B68]" x-text="referalSource"></span>
+            </div>
+
+            <div class="flex flex-col gap-0.5">
+              <span class="font-inter text-xs text-[#718096]">{{default (t "test.freeProgram.registrationModal.currentStatus") "Current Status"}}</span>
+              <span class="font-inter font-bold text-sm text-[#173B68]" x-text="currentStatus"></span>
+            </div>
+
           </div>
         </div>
 
@@ -721,28 +753,35 @@
               <span class="font-inter text-xs text-[#718096]" x-text="programCategory ? programCategory + ' Course' : 'Program Course'"></span>
             </div>
             <div class="text-right">
-              <span class="font-inter font-semibold text-sm sm:text-base text-[#173B68]" x-text="priceFormatted"></span>
+              <span class="font-inter font-semibold text-sm sm:text-base text-[#173B68]" x-text="isInstallment ? finalTotalFormatted : priceFormatted"></span>
             </div>
           </div>
 
           <!-- Summary Breakdown (Harga, Diskon, Promo Code, Total Dibayar) -->
           <div class="w-full flex flex-col gap-2.5 pt-4">
-            <!-- Harga -->
-            <div class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
-              <span>{{t "test.transactionDetail.price"}}</span>
-              <span class="font-medium text-[#173B68]" x-text="originalPriceFormatted || priceFormatted"></span>
-            </div>
+            <template x-if="!isInstallment">
+              <div class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
+                <span>{{t "test.transactionDetail.price"}}</span>
+                <span class="font-medium text-[#173B68]" x-text="originalPriceFormatted || priceFormatted"></span>
+              </div>
+            </template>
 
             <!-- Diskon -->
-            <div class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
+            <div x-show="!isInstallment" class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
               <span>{{t "test.transactionDetail.discount"}}</span>
               <span :class="discountFormatted !== 'Rp 0' && discountFormatted !== '- Rp 0' ? 'text-[#EF4444] font-medium' : 'text-[#718096]'" x-text="discountFormatted"></span>
             </div>
 
-            <!-- Promo Code -->
+            <!-- Voucher Code -->
             <div class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
-              <span>{{t "test.transactionDetail.promoCode"}}</span>
-              <span :class="promoCodeFormatted !== 'Rp 0' && promoCodeFormatted !== '- Rp 0' ? 'text-[#EF4444] font-medium' : 'text-[#718096]'" x-text="promoCodeFormatted"></span>
+              <span>Voucher Code</span>
+              <span :class="voucherCodeFormatted !== '—' ? 'text-emerald-600 font-medium' : 'text-[#718096]'" x-text="voucherCodeFormatted"></span>
+            </div>
+
+            <!-- Diskon Voucher -->
+            <div x-show="Number(row?.promoCode || 0) > 0" class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
+              <span>Diskon Voucher</span>
+              <span class="text-[#EF4444] font-medium" x-text="promoCodeFormatted"></span>
             </div>
 
             <!-- Total Dibayar -->
@@ -933,7 +972,19 @@
                       {{t "test.transactionDetail.dueDate"}}
                     </span>
                   </div>
-                  <span class="font-inter font-bold text-sm leading-4 text-[#173B68]" x-text="formatRupiah(m.amount)"></span>
+                  <div class="flex flex-col items-end gap-0.5">
+                    <span
+                      x-show="Number(m.discountAmount) > 0"
+                      class="font-inter text-[10px] leading-3 text-slate-400 line-through"
+                      x-text="formatRupiah(m.originalAmount)"
+                    ></span>
+                    <span
+                      x-show="Number(m.discountAmount) > 0"
+                      class="font-inter text-[10px] leading-3 text-emerald-600"
+                      x-text="'Diskon bulanan: - ' + formatRupiah(m.discountAmount)"
+                    ></span>
+                    <span class="font-inter font-bold text-sm leading-4 text-[#173B68]" x-text="formatRupiah(m.amount)"></span>
+                  </div>
                   <span
                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-inter font-semibold text-[10px] leading-3"
                     :class="monthStatusClass(m).bg + ' ' + monthStatusClass(m).text"

@@ -52,6 +52,22 @@ export type MonthlyInstallmentResult =
   | { blocked: true; existingInvoiceUrl: string; message: string }
   | InstallmentPayment;
 
+interface InstallmentPricing {
+  totalOriginal: number;
+  totalDiscount: number;
+  downPayment: {
+    originalAmount: number;
+    discountAmount: number;
+    amount: number;
+  };
+  monthly: Array<{
+    month: number;
+    originalAmount: number;
+    discountAmount: number;
+    amount: number;
+  }>;
+}
+
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -80,6 +96,68 @@ export class PaymentsService {
     private readonly invoiceService: InvoiceService,
     private readonly installmentPaymentService: InstallmentPaymentService,
   ) {}
+
+  private calculateInstallmentPricing(
+    installment: Installment,
+    totalDiscount: number,
+  ): InstallmentPricing {
+    const downPayment = Math.max(0, Number(installment.downPayment) || 0);
+    const monthlyOriginal = (installment.price || []).map((value) =>
+      Math.max(0, Number(value) || 0),
+    );
+    const totalOriginal =
+      downPayment + monthlyOriginal.reduce((sum, value) => sum + value, 0);
+    const cappedDiscount = Math.min(
+      Math.max(0, Number(totalDiscount) || 0),
+      totalOriginal,
+    );
+    const components = [downPayment, ...monthlyOriginal];
+    let allocated = 0;
+    const discounts = components.map((amount, index) => {
+      if (index === components.length - 1) {
+        return Math.max(0, cappedDiscount - allocated);
+      }
+      const discount =
+        totalOriginal > 0
+          ? Math.floor((amount / totalOriginal) * cappedDiscount)
+          : 0;
+      allocated += discount;
+      return discount;
+    });
+
+    return {
+      totalOriginal,
+      totalDiscount: cappedDiscount,
+      downPayment: {
+        originalAmount: downPayment,
+        discountAmount: discounts[0] || 0,
+        amount: Math.max(0, downPayment - (discounts[0] || 0)),
+      },
+      monthly: monthlyOriginal.map((amount, index) => ({
+        month: index + 1,
+        originalAmount: amount,
+        discountAmount: discounts[index + 1] || 0,
+        amount: Math.max(0, amount - (discounts[index + 1] || 0)),
+      })),
+    };
+  }
+
+  private async createInstallmentSnapshots(
+    payment: Payment,
+    pricing: InstallmentPricing,
+  ): Promise<void> {
+    await this.installmentPaymentService.createMany(
+      pricing.monthly.map((item) => ({
+        payment,
+        month: item.month,
+        original_amount: item.originalAmount,
+        discount_amount: item.discountAmount,
+        amount: item.amount,
+        status: 'process',
+        no: `INV-M${item.month}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      })),
+    );
+  }
 
   async create(createPaymentDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
@@ -113,43 +191,60 @@ export class PaymentsService {
       if (check == false) {
         return false;
       } else {
-        const basePrice = Number(installments.downPayment) || 0;
+        const contractTotal =
+          (Number(installments.downPayment) || 0) +
+          (installments.price || []).reduce(
+            (sum, value) => sum + (Number(value) || 0),
+            0,
+          );
         let discountAmount = 0;
-        let finalTotal = basePrice;
 
         if (promoCode) {
-          try {
-            const validationResult = await this.voucherService.validateVoucher(
-              promoCode,
-              createPaymentDto.courseId,
-              basePrice,
-              createPaymentDto.userId,
-            );
-            discountAmount = validationResult.discountAmount;
-            finalTotal = validationResult.finalTotal;
-          } catch (err: unknown) {
-            console.warn(
-              '[PaymentsService] Invalid voucher on manual installment:',
-              err instanceof Error ? err.message : String(err),
-            );
-          }
+            try {
+              const validationResult = await this.voucherService.validateVoucher(
+                promoCode,
+                createPaymentDto.courseId,
+                contractTotal,
+                createPaymentDto.userId,
+              );
+              discountAmount = validationResult.discountAmount;
+            } catch (err: unknown) {
+              console.warn(
+                '[PaymentsService] Invalid voucher on manual installment:',
+                err instanceof Error ? err.message : String(err),
+              );
+            }
         }
 
+        const pricing = this.calculateInstallmentPricing(
+          installments,
+          discountAmount,
+        );
         const payment: Payment = this.paymentRepository.create({
-          ...createPaymentDto,
-          user: user,
-          course: course,
-          installment: installments,
-        });
+            ...createPaymentDto,
+            user: user,
+            course: course,
+            installment: installments,
+            voucher_code: promoCode || null,
+            voucher_discount_total: promoCode ? pricing.totalDiscount : null,
+            pricing_snapshot: {
+              totalOriginal: pricing.totalOriginal,
+              totalDiscount: pricing.totalDiscount,
+              downPayment: pricing.downPayment,
+              monthly: pricing.monthly,
+            },
+          });
         const saved = await this.paymentRepository.save(payment);
+        await this.createInstallmentSnapshots(saved, pricing);
+
         await this.invoiceService
-          .createManualInvoice(
+            .createManualInvoice(
             saved,
             course,
             user,
             installments,
-            discountAmount,
-            finalTotal,
+            pricing.downPayment.discountAmount,
+            pricing.downPayment.amount,
           )
           .catch((err) => {
             console.error(
@@ -196,6 +291,8 @@ export class PaymentsService {
         ...createPaymentDto,
         user: user,
         course: course,
+        voucher_code: promoCode || null,
+        voucher_discount_total: promoCode ? Number(discountAmount) : null,
       });
       const saved = await this.paymentRepository.save(payment);
       await this.invoiceService
@@ -543,9 +640,14 @@ export class PaymentsService {
           promo,
           promoPrice: promo,
           promoCode,
+          voucherCode: payment.voucher_code || invoice?.voucher_code || null,
           proof: payment.file ?? null,
           no: payment.invoice?.invoice_number || payment.no || null,
           paymentLink: payment.invoice?.xendit_invoice_url ?? null,
+          referalSource: payment.referalSource || null,
+          referal_source: payment.referalSource || null,
+          current_status: payment.current_status || null,
+          currentStatus: payment.current_status || null,
           keyword:
             payment.referalSource ||
             (isInstallment ? 'Installment Plan' : 'Online Course'),
@@ -597,6 +699,10 @@ export class PaymentsService {
           paidAt: registration.createdAt,
           method: 'Registration',
           paymentMethod: 'Registration',
+          referalSource: registration.referal_source || null,
+          referal_source: registration.referal_source || null,
+          current_status: registration.current_status || null,
+          currentStatus: registration.current_status || null,
           paymentChannel: 'manual',
           channel: 'manual',
           amount: subtotal,
@@ -612,14 +718,9 @@ export class PaymentsService {
           paymentLink: null,
           keyword: registration.referal_source || 'Registration',
           userName:
-            registration.user_fullname ||
-            registration.user?.biodata?.fullName ||
-            registration.user?.username ||
-            null,
-          userEmail:
-            registration.user_email || registration.user?.email || null,
-          userPhone:
-            registration.user_no || registration.user?.biodata?.no || null,
+            registration.user_fullname || registration.user?.biodata?.fullName || registration.user?.username || null,
+          userEmail: registration.user_email || registration.user?.email || null,
+          userPhone: registration.user_no || registration.user?.biodata?.no || null,
           installmentDetail: null,
           ...statusOf(registration.process),
         };
@@ -716,12 +817,23 @@ export class PaymentsService {
 
     return parents.map((p) => {
       const schedule = p.installment?.price || [];
-      const dpAmount = p.installment?.downPayment || 0;
+      const snapshot = p.pricing_snapshot as {
+        downPayment?: { amount?: number };
+      } | null;
+      const dpAmount =
+        snapshot?.downPayment?.amount !== undefined
+          ? Number(snapshot.downPayment.amount)
+          : Number(p.installment?.downPayment || 0);
       const sumInstallments = schedule.reduce((a, b) => a + (b || 0), 0);
-      const totalProgramFee =
-        (p.installment?.downPayment || 0) + sumInstallments;
+      const totalProgramFee = dpAmount + sumInstallments;
 
       const rows = installmentRows.filter((r) => r.payment?.id === p.id);
+      const monthlyAmounts = schedule.map((amount, index) => {
+        const row = rows.find((item) => item.month === index + 1);
+        return row?.amount !== null && row?.amount !== undefined
+          ? Number(row.amount)
+          : Number(amount || 0);
+      });
       const paidSet = new Set<number>(
         rows.filter((r) => r.status === 'approved').map((r) => r.month),
       );
@@ -756,7 +868,12 @@ export class PaymentsService {
 
         return {
           month,
-          amount,
+          amount: monthlyAmounts[i],
+          originalAmount:
+            rows.find((row) => row.month === month)?.original_amount ??
+            Number(amount || 0),
+          discountAmount:
+            rows.find((row) => row.month === month)?.discount_amount ?? 0,
           dueDate,
           status,
           txId: tx?.id || null,
@@ -768,8 +885,12 @@ export class PaymentsService {
       const paidMonths = Array.from(paidSet);
       const totalPaid = paidSet.size
         ? dpAmount +
-          paidMonths.reduce((acc, m) => acc + (schedule[m - 1] || 0), 0)
+          paidMonths.reduce((acc, m) => acc + (monthlyAmounts[m - 1] || 0), 0)
         : dpAmount;
+      const storedTotal =
+        rows.length > 0
+          ? dpAmount + monthlyAmounts.reduce((sum, amount) => sum + amount, 0)
+          : totalProgramFee;
 
       return {
         id: p.id,
@@ -788,7 +909,7 @@ export class PaymentsService {
               month: p.installment.month,
               downPayment: p.installment.downPayment,
               price: p.installment.price,
-              dueDates: p.installment.dueDates,
+          dueDates: dateHelpers.toDateOnlyArray(p.installment.dueDates),
             }
           : null,
         process: p.process,
@@ -796,12 +917,12 @@ export class PaymentsService {
         dpPaidAt: p.dpPaidAt,
         planMonth: p.installment?.month || 3,
         downPayment: dpAmount,
-        totalProgramFee,
+        totalProgramFee: storedTotal,
         paidSoFar: totalPaid,
-        remainingBalance: totalProgramFee - totalPaid,
+        remainingBalance: storedTotal - totalPaid,
         progressPercentage:
-          totalProgramFee > 0
-            ? Math.round((totalPaid / totalProgramFee) * 100)
+          storedTotal > 0
+            ? Math.round((totalPaid / storedTotal) * 100)
             : 0,
         monthly: monthlyStatus,
       };
@@ -911,7 +1032,12 @@ export class PaymentsService {
         throw new Error('Installment plan is not available for this course');
       }
       selectedInstallment = course.installments[0];
-      basePrice = selectedInstallment.downPayment;
+      basePrice =
+        Number(selectedInstallment.downPayment) +
+        (selectedInstallment.price || []).reduce(
+          (sum, value) => sum + (Number(value) || 0),
+          0,
+        );
 
       // Cegah duplikasi: installment hanya boleh terhubung ke satu payment (OneToOne)
       const existingPayment = await this.paymentRepository.findOne({
@@ -972,22 +1098,53 @@ export class PaymentsService {
         undefined,
       referalSource: formData?.referal_source || undefined,
       attend_program: formData?.attend_program ? true : false,
+      voucher_code: promoCode || null,
+      voucher_discount_total: promoCode ? Number(discountAmount) : null,
     });
 
     await this.paymentRepository.save(payment);
 
-    if (finalTotal <= 0) {
+    let installmentPricing: InstallmentPricing | null = null;
+    if (paymentMethod === 'Installment' && selectedInstallment) {
+      installmentPricing = this.calculateInstallmentPricing(
+        selectedInstallment,
+        discountAmount,
+      );
+      payment.voucher_discount_total = promoCode
+        ? installmentPricing.totalDiscount
+        : null;
+      payment.pricing_snapshot = {
+        totalOriginal: installmentPricing.totalOriginal,
+        totalDiscount: installmentPricing.totalDiscount,
+        downPayment: installmentPricing.downPayment,
+        monthly: installmentPricing.monthly,
+      };
+      payment.process =
+        installmentPricing.downPayment.amount <= 0 ? 'approved' : 'process';
+      await this.paymentRepository.save(payment);
+      await this.createInstallmentSnapshots(payment, installmentPricing);
+    }
+
+    if (
+      paymentMethod !== 'Installment'
+        ? finalTotal <= 0
+        : (installmentPricing?.downPayment.amount || 0) <= 0
+    ) {
       await this.addUserToCourse(userId, courseId);
     }
 
     return this.invoiceService.createInvoiceForPayment(
       payment,
-      finalTotal,
+      installmentPricing?.downPayment.amount ?? finalTotal,
       user.email,
       course.name,
       paymentMethod,
-      basePrice,
-      discountAmount,
+      paymentMethod === 'Installment'
+        ? installmentPricing?.downPayment.originalAmount || 0
+        : basePrice,
+      paymentMethod === 'Installment'
+        ? installmentPricing?.downPayment.discountAmount || 0
+        : discountAmount,
       user,
       course,
     );
@@ -1060,8 +1217,8 @@ export class PaymentsService {
       }
     }
 
-    const amount = schedule[month - 1];
-    if (!amount && amount !== 0) {
+    const scheduleAmount = schedule[month - 1];
+    if (scheduleAmount === undefined || scheduleAmount === null) {
       throw new Error('Nominal cicilan tidak ditemukan');
     }
 
@@ -1102,7 +1259,17 @@ export class PaymentsService {
 
       // Sudah EXPIRED/FAILED atau belum pernah dibuat -> regenerasi invoice
       // baru agar user tetap bisa membayar.
-      row.amount = amount;
+      if (row.original_amount === null || row.original_amount === undefined) {
+        row.original_amount = Number(scheduleAmount);
+      }
+      if (row.discount_amount === null || row.discount_amount === undefined) {
+        row.discount_amount = 0;
+      }
+      const amountToPay =
+        row.amount !== null && row.amount !== undefined
+          ? Number(row.amount)
+          : Math.max(0, Number(row.original_amount || scheduleAmount) - Number(row.discount_amount || 0));
+      row.amount = amountToPay;
       row.no = `INV-M${month}-${Date.now()}-${Math.random()
         .toString(36)
         .slice(2, 8)}`;
@@ -1110,18 +1277,26 @@ export class PaymentsService {
       row.xendit_invoice_url = '';
       row.status = 'process';
     } else {
+      const originalAmount = Number(scheduleAmount);
       row = await this.installmentPaymentService.create({
         payment: parent,
         month,
-        amount,
+        original_amount: originalAmount,
+        discount_amount: 0,
+        amount: originalAmount,
         status: 'process',
         no: `INV-M${month}-${Date.now()}`,
       });
     }
 
+    const finalAmount =
+      row.amount !== null && row.amount !== undefined
+        ? Number(row.amount)
+        : Number(scheduleAmount);
+
     return this.invoiceService.createInvoiceForInstallment(
       row,
-      amount,
+      finalAmount,
       parent.user?.email || 'guest@example.com',
       course?.name || 'Program',
     );

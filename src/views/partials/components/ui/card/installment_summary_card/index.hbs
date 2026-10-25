@@ -90,7 +90,11 @@
           {{#each installmentPrices}}
             <div class="flex justify-between items-center text-[11px] leading-[15px] text-[#718096]">
               <span>{{t 'test.payment.installment.monthLabel'}} {{addOne @index}}</span>
-              <span class="font-semibold text-[#1B2559]">{{formatRupiah this}}</span>
+              <span class="flex flex-col items-end">
+                <span id="summary-month-original-{{addOne @index}}" class="font-semibold text-[#1B2559]">{{formatRupiah this}}</span>
+                <span id="summary-month-discount-{{addOne @index}}" class="hidden text-[10px] text-emerald-600"></span>
+                <span id="summary-month-final-{{addOne @index}}" class="hidden font-semibold text-[#003060]"></span>
+              </span>
             </div>
           {{/each}}
         </div>

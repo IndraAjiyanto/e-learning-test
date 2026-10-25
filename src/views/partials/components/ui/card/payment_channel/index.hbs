@@ -124,6 +124,7 @@
         <input type="hidden" name="email" :value="formData.email" />
         <input type="hidden" name="whatsappNumber" :value="formData.whatsappNumber" />
         <input type="hidden" name="source" :value="formData.source" />
+        <input type="hidden" name="currentStatus" :value="formData.currentStatus" />
         <input type="hidden" name="promoCode" :value="getPromoCode()" />
 
         <label
@@ -180,7 +181,13 @@
       copied: false,
       file: null,
       fileName: '',
-      formData: { fullName: '', email: '', whatsappNumber: '', source: '' },
+      formData: {
+        fullName: '',
+        email: '',
+        whatsappNumber: '',
+        source: '',
+        currentStatus: '',
+      },
 
       get gatewayAvailable() {
         return this.gatewayEnabled && !this.gatewayHidden;
@@ -219,6 +226,7 @@
             this.formData.email = f1.email || '';
             this.formData.whatsappNumber = f1.whatsappNumber || '';
             this.formData.source = f1.source || '';
+            this.formData.currentStatus = f1.currentStatus || '';
           }
         } catch (e) {
           /* abaikan draft rusak */

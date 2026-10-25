@@ -90,40 +90,22 @@
     </button>
 
     <!-- Gateway -->
-    <button
-      type="button"
-      @click="select('gateway')"
-      :aria-pressed="channel === 'gateway'"
-      :disabled="saving"
-      class="flex flex-1 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left font-sans transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-60"
-      :class="channelCardClass('gateway')"
+    <div
+      class="flex flex-1 items-center justify-between gap-3 rounded-xl border border-[#E5E7EB] px-4 py-3 text-left font-sans bg-[#F9FAFB] opacity-80 cursor-not-allowed"
     >
       <span class="flex flex-col gap-0.5">
-        <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
+        <span class="font-inter text-sm font-semibold leading-5 text-[#6B7280]">
           Payment Gateway (Xendit)
         </span>
-        <span class="font-inter text-xs leading-[18px] text-[#737373]">
+        <span class="font-inter text-xs leading-[18px] text-[#9CA3AF]">
           Instant online payment via Xendit.
         </span>
       </span>
-      <span
-        x-show="channel === 'gateway'"
-        x-cloak
-        class="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[11px] font-semibold text-[#15803D]"
-      >
-        <i class="fa-solid fa-circle-check text-[10px]"></i> Active
+      <span class="inline-flex shrink-0 items-center rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[11px] font-medium text-[#6B7280]">
+        Dinonaktifkan sementara
       </span>
-    </button>
+    </div>
   </div>
-
-  <p
-    x-show="gatewayHidden"
-    x-cloak
-    class="font-inter text-[11px] leading-4 text-[#B45309]"
-  >
-    XENDIT_SECRET_KEY belum dikonfigurasi — gateway otomatis nonaktif dan
-    pembayaran berjalan lewat kanal Manual.
-  </p>
 </div>
 
 <script>
