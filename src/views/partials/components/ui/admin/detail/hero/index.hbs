@@ -91,28 +91,28 @@
       {{#if course.userCourses.length}}
         {{> components/ui/admin/locked-notice/index
           title='Program is locked'
-          message='This program cannot be edited or deleted because it already has enrolled participants.' }}
+          message='This program can be edited, but it cannot be deleted because it already has enrolled participants.' }}
       {{/if}}
-      {{#unless course.userCourses.length}}
       <div class='flex flex-row gap-[12px] justify-start items-center'>
         {{!-- Aksi hapus entitas di halaman detail digating `showDelete` dan mati secara
      default — hapus dilakukan dari halaman list/edit. Kirim showDelete=true
      dari controller bila suatu saat perlu ditampilkan lagi. Tombol hapus
      pada tabel/daftar di halaman ini sengaja TIDAK ikut digating. --}}
         {{#if showDelete}}
+          {{#unless course.userCourses.length}}
           <form action='/program/{{course.id}}?_method=DELETE' method='post' class='inline'>
             <input type='hidden' name='previous' :value="localStorage.getItem('kelasPrevUrl') || '/program'">
             <button type='button' onclick="if (typeof openDeleteModal === 'function') { openDeleteModal(this, 'Delete Program', 'Are you sure you want to delete this program? This action cannot be undone.'); } else if (typeof confirmDelete === 'function') { confirmDelete(this, '{{course.name}}'); } else { this.closest('form').submit(); }" class='box-border w-[87px] h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#FEF2F2] [outline:1px_solid_#FCA5A5] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#FEE2E2] transition-colors'>
               <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
             </button>
           </form>
+          {{/unless}}
         {{/if}}
         <a href='/program/edit/{{course.id}}{{#if categoryId}}/{{categoryId}}{{/if}}'
           class='box-border w-[136px] h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#002040] transition-colors'>
           <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Program</span>
         </a>
       </div>
-      {{/unless}}
 
     </div>
   </div>

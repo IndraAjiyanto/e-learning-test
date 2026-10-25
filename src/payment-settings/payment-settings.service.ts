@@ -64,37 +64,12 @@ export class PaymentSettingsService {
   async update(patch: Partial<PaymentSettings>): Promise<PaymentSettings> {
     const settings = await this.get();
 
-    if (patch.manual_enabled === true) {
+    // Xendit/Gateway dinonaktifkan untuk sementara - selalu paksa ke manual
+    settings.gateway_enabled = false;
+    if (patch.manual_enabled === false && patch.gateway_enabled !== true) {
       settings.manual_enabled = true;
-      settings.gateway_enabled = false;
-    } else if (patch.gateway_enabled === true) {
-      settings.gateway_enabled = true;
-      settings.manual_enabled = false;
-    } else {
-      // Tidak ada kanal yang dinyalakan pada patch ini. Jaga agar minimal
-      // satu kanal tetap hidup: kalau patch mematikan kanal yang sedang
-      // aktif, kanal itu dinyalakan kembali (Manual yang menang bila
-      // keduanya disebut).
-      const wantsManual = patch.manual_enabled === false;
-      const wantsGateway = patch.gateway_enabled === false;
-
-      if (wantsManual && wantsGateway) {
-        settings.manual_enabled = true;
-        settings.gateway_enabled = false;
-      } else if (wantsGateway && !settings.manual_enabled) {
-        // Mematikan gateway tanpa menyalakan manual, sementara manual memang
-        // sedang mati -> harus pilih kanal, dan hanya manual yang tidak
-        // bergantung pada env.
-        settings.manual_enabled = true;
-        settings.gateway_enabled = false;
-      } else if (wantsManual && !settings.gateway_enabled) {
-        // Mematikan manual tanpa menyalakan gateway, sementara gateway memang
-        // sedang mati -> sama, jatuh ke manual.
-        settings.manual_enabled = true;
-        settings.gateway_enabled = false;
-      } else {
-        Object.assign(settings, patch);
-      }
+    } else if (patch.manual_enabled === true || patch.gateway_enabled !== true) {
+      settings.manual_enabled = true;
     }
 
     return this.settingsRepository.save(settings);
@@ -113,19 +88,17 @@ export class PaymentSettingsService {
    */
   async effective() {
     const s = await this.get();
-    const gatewayAvailable = Boolean(process.env.XENDIT_SECRET_KEY);
-    const gatewayHidden = s.gateway_enabled && !gatewayAvailable;
+    // Xendit/Gateway dinonaktifkan untuk sementara
+    const gatewayAvailable = false;
+    const gatewayHidden = true;
 
-    let manualEnabled = s.manual_enabled;
-    let gatewayEnabled = s.gateway_enabled && gatewayAvailable;
+    const manualEnabled = true;
+    const gatewayEnabled = false;
 
-    if (manualEnabled && gatewayEnabled) {
-      // Dua-duanya nyala di database: pilih satu. Manual tidak butuh
-      // konfigurasi eksternal, jadi dipilih lebih dulu.
-      gatewayEnabled = false;
-    }
-    if (!manualEnabled && !gatewayEnabled) {
-      manualEnabled = true;
+    if (!s.manual_enabled || s.gateway_enabled) {
+      s.manual_enabled = true;
+      s.gateway_enabled = false;
+      void this.settingsRepository.save(s).catch(() => undefined);
     }
 
     return {

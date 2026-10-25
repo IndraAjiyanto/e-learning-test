@@ -431,13 +431,6 @@ export class SyllabusService {
       throw new NotFoundException('Syllabus not found');
     }
 
-    const isCompleted = await this.isSyllabusCompleted(id);
-    if (isCompleted) {
-      throw new BadRequestException(
-        'Syllabus cannot be edited because it has already been completed by a user',
-      );
-    }
-
     let parsedContent: object | string | null = null;
     if (
       typeof updateSyllabusDto.content === 'string' &&

@@ -84,6 +84,39 @@
           placeholder="Search..."
         }}
       </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <select
+          x-model="currentStatusFilter"
+          class="h-11 w-full rounded-lg border border-[#D9D9D9] bg-white px-3 font-inter text-sm text-[#404040] focus:border-[#003060] focus:outline-none"
+          aria-label="Filter Current Status"
+        >
+          <option value="">All Current Status</option>
+          <option value="University Student">University Student</option>
+          <option value="Fresh Graduate">Fresh Graduate</option>
+          <option value="Job Seeker">Job Seeker</option>
+          <option value="Employee">Employee</option>
+          <option value="Freelancer">Freelancer</option>
+          <option value="Entrepreneur">Entrepreneur</option>
+          <option value="Other">Other</option>
+        </select>
+        <select
+          x-model="referralFilter"
+          class="h-11 w-full rounded-lg border border-[#D9D9D9] bg-white px-3 font-inter text-sm text-[#404040] focus:border-[#003060] focus:outline-none"
+          aria-label="Filter How did you know about the program"
+        >
+          <option value="">All Referral Sources</option>
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="Friends">Friends</option>
+          <option value="University">University</option>
+          <option value="WhatsApp Group">WhatsApp Group</option>
+          <option value="Webinar/Event">Webinar/Event</option>
+          <option value="Website">Website</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -208,6 +241,8 @@
     return {
       tabStatus: 'all',
       searchQuery: '',
+      currentStatusFilter: '',
+      referralFilter: '',
       items: [],
       loading: true,
 
@@ -247,6 +282,19 @@
 
           if (!matchesStatus) return false;
 
+          const currentStatus = item.current_status || item.currentStatus || '';
+          const referralSource =
+            item.referal_source || item.referalSource || item.keyword || '';
+          if (
+            this.currentStatusFilter &&
+            currentStatus !== this.currentStatusFilter
+          ) {
+            return false;
+          }
+          if (this.referralFilter && referralSource !== this.referralFilter) {
+            return false;
+          }
+
           // Search query filter
           if (!this.searchQuery || this.searchQuery.trim() === '') return true;
           const q = this.searchQuery.toLowerCase().trim();
@@ -254,7 +302,7 @@
           const email = (item.user_email || item.user?.email || '').toLowerCase();
           const phone = (item.user_no || item.user?.no || '').toLowerCase();
           const currentStatus = (item.current_status || '').toLowerCase();
-          const keyword = (item.referal_source || item.referalSource || item.keyword || '').toLowerCase();
+          const keyword = referralSource.toLowerCase();
 
           return (
             username.includes(q) ||

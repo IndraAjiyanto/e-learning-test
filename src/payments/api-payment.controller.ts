@@ -14,6 +14,10 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaymentsService } from './payments.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 import { isReferalSource } from 'src/entities/types/referal-source';
+import {
+  CURRENT_STATUS_OPTIONS,
+  currentStatus,
+} from 'src/entities/payment.entity';
 
 @UseGuards(AuthenticatedGuard)
 @Roles('user')
@@ -52,6 +56,13 @@ export class ApiPaymentController {
     const manualEnabled = body?.manualEnabled;
     const gatewayEnabled = body?.gatewayEnabled;
 
+    if (gatewayEnabled === true || (body as any).gateway_enabled === true) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Penggunaan Xendit dinonaktifkan untuk sementara.',
+      });
+    }
+
     if (
       typeof manualEnabled !== 'boolean' &&
       typeof gatewayEnabled !== 'boolean'
@@ -59,16 +70,6 @@ export class ApiPaymentController {
       return res.status(400).json({
         status: 'error',
         message: 'Tidak ada perubahan untuk disimpan.',
-      });
-    }
-
-    // Penjaga bila endpoint dipanggil langsung (UI sudah menonaktifkan pilihan
-    // ini): gateway tidak bisa dinyalakan tanpa kunci Xendit.
-    if (gatewayEnabled === true && !process.env.XENDIT_SECRET_KEY) {
-      return res.status(400).json({
-        status: 'error',
-        message:
-          'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.',
       });
     }
 
@@ -107,6 +108,7 @@ export class ApiPaymentController {
         email?: string;
         whatsappNumber?: string;
         source?: string;
+        currentStatus?: string;
       };
     },
     @Res() res: Response,
@@ -146,6 +148,11 @@ export class ApiPaymentController {
             referal_source: isReferalSource(formData.source)
               ? formData.source
               : null,
+            current_status: CURRENT_STATUS_OPTIONS.includes(
+              formData.currentStatus as currentStatus,
+            )
+              ? (formData.currentStatus as currentStatus)
+              : undefined,
           }
         : undefined;
 
