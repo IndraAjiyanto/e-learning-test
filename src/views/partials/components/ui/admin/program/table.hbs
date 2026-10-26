@@ -26,7 +26,7 @@
     {{!-- Header Row --}}
     <div class='w-full {{#if isSuperAdmin}}min-w-[1360px]{{else}}min-w-[1168px]{{/if}} h-[43.5px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
       {{#if isSuperAdmin}}
-      <div class='box-border w-[4%] min-w-[48px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-center items-center'>
+      <div x-show='selectMode' x-cloak class='box-border w-[4%] min-w-[48px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-center items-center' style='display: none;'>
         <input
           type='checkbox'
           class='w-4 h-4 rounded border-gray-300 text-[#003060] focus:ring-[#003060] cursor-pointer'
@@ -77,11 +77,11 @@
     {{!-- Body Rows --}}
     <template x-for='(course, index) in kelasList' :key='course.id'>
       <div class='w-full {{#if isSuperAdmin}}min-w-[1360px]{{else}}min-w-[1168px]{{/if}} h-[71.5px] shrink-0 flex flex-row gap-0 justify-start items-start [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] transition-colors'
-           :class="selectedCourses.includes(course.id) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : 'bg-[#FFFFFF] hover:bg-[#fafafa]'">
+           :class="(selectMode && selectedCourses.includes(course.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : 'bg-[#FFFFFF] hover:bg-[#fafafa]'">
 
         {{#if isSuperAdmin}}
         {{!-- Checkbox --}}
-        <div class='box-border w-[4%] min-w-[48px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-center items-center'>
+        <div x-show='selectMode' x-cloak class='box-border w-[4%] min-w-[48px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-center items-center' style='display: none;'>
           <input
             type='checkbox'
             class='w-4 h-4 rounded border-gray-300 text-[#003060] focus:ring-[#003060] cursor-pointer'

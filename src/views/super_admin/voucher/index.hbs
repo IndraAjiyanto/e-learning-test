@@ -42,6 +42,7 @@
 
       {{#> components/ui/super_admin/table/card tableClass='min-w-[1002px]'}}
         <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
           <col class='w-[150px]' />
           <col class='w-[110px]' />
           <col class='w-[90px]' />
@@ -52,6 +53,7 @@
         </colgroup>
         <thead>
           <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
             {{> components/ui/super_admin/table/header_cell label='Code' }}
             {{> components/ui/super_admin/table/header_cell label='Type' }}
             {{> components/ui/super_admin/table/header_cell label='Percent' }}
@@ -63,7 +65,11 @@
         </thead>
         <tbody>
           <template x-for='row in rows' :key='row.id'>
-            <tr class='transition-colors hover:bg-[#fafafa]'>
+            <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
 
               {{#> components/ui/super_admin/table/cell}}
                 <span
@@ -117,7 +123,7 @@
             </tr>
           </template>
 
-          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='7'}}
+          {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='8'}}
             No vouchers found.
           {{/components/ui/super_admin/table/message_row}}
         </tbody>

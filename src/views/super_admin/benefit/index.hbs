@@ -60,6 +60,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[66px]' />
               <col class='w-[94px]' />
               <col class='w-[73px]' />
@@ -69,6 +70,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='No' }}
                 {{> components/ui/super_admin/table/header_cell label='Number' }}
                 {{> components/ui/super_admin/table/header_cell label='Icon' }}
@@ -79,7 +81,11 @@
             </thead>
             <tbody>
               <template x-for='(row, index) in rows' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
 
                   {{> components/ui/super_admin/table/cell
                     text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
@@ -125,7 +131,7 @@
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='6'}}
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='7'}}
                 No benefits found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>

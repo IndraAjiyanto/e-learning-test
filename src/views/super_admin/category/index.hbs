@@ -46,6 +46,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[90px]' />
               <col class='w-[260px]' />
               <col class='w-[340px]' />
@@ -54,6 +55,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='Icon' }}
                 {{> components/ui/super_admin/table/header_cell label='Category Name' }}
                 {{> components/ui/super_admin/table/header_cell label='Description' }}
@@ -63,7 +65,11 @@
             </thead>
             <tbody>
               <template x-for='row in rows' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
                   {{#> components/ui/super_admin/table/cell}}
                     {{> components/ui/super_admin/table/avatar src='row.icon' name='row.name' }}
                   {{/components/ui/super_admin/table/cell}}
@@ -123,8 +129,8 @@
                             if ((row.courses || []).length > 0) {
                               window.dispatchEvent(new CustomEvent('toast:error', {
                                 detail: {
-                                  title: 'Gagal Menghapus Kategori',
-                                  description: 'Kategori &quot;' + row.name + '&quot; tidak dapat dihapus karena masih memiliki ' + (row.courses || []).length + ' program. Hapus atau pindahkan program tersebut terlebih dahulu.'
+                                  title: 'Failed to Delete Category',
+                                  description: 'Category &quot;' + row.name + '&quot; cannot be deleted because it still has ' + (row.courses || []).length + ' program(s). Please delete or reassign those programs first.'
                                 }
                               }));
                             } else {
@@ -150,7 +156,7 @@
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='5'}}
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='6'}}
                 No categories found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>

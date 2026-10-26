@@ -49,6 +49,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1000px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[240px]' />
               <col class='w-[140px]' />
               <col class='w-[366px]' />
@@ -58,6 +59,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='Program Type' }}
                 {{> components/ui/super_admin/table/header_cell label='Type' }}
                 {{> components/ui/super_admin/table/header_cell label='Description' }}
@@ -67,12 +69,16 @@
               </tr>
             </thead>
             <tbody>
-              {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+              {{#> components/ui/super_admin/table/message_row show='loading' colspan='7'}}
                 <i class='fas fa-spinner fa-spin text-xl'></i>
               {{/components/ui/super_admin/table/message_row}}
 
               <template x-for='row in (loading ? [] : items)' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
 
                   {{#> components/ui/super_admin/table/cell}}
                     <span
@@ -187,6 +193,185 @@
       size: 10,
       loading: false,
       searchTimeout: null,
+      selectedIds: [],
+      selectMode: false,
+
+      get rows() {
+        return this.items;
+      },
+
+      toggleSelectMode() {
+        this.selectMode = !this.selectMode;
+        if (!this.selectMode) {
+          this.selectedIds = [];
+        }
+      },
+
+      toggleSelectAllOnPage() {
+        if (!this.items || this.items.length === 0) return;
+        if (this.isAllSelected()) {
+          const currentSet = new Set(this.items.map((i) => String(i.id)));
+          this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
+        } else {
+          const currentIds = this.items.map((i) => i.id);
+          const currentSet = new Set(this.selectedIds.map(String));
+          currentIds.forEach((id) => {
+            if (!currentSet.has(String(id))) {
+              this.selectedIds.push(id);
+              currentSet.add(String(id));
+            }
+          });
+        }
+      },
+
+      confirmDeleteAll() {
+        if (!this.items || this.items.length === 0) return;
+
+        openDeleteModal({
+          title: 'Delete ALL Program Types?',
+          description: 'WARNING: You are about to delete ALL program types. This action is permanent and cannot be undone!',
+          confirmLabel: 'Yes, Delete ALL Program Types',
+          cancelLabel: 'Cancel',
+          onConfirm: async () => {
+            await this.executeDeleteAll();
+          },
+        });
+      },
+
+      async executeDeleteAll() {
+        try {
+          const res = await fetch('/api/bulk-delete/all', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity: 'course_type',
+            }),
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            this.selectedIds = [];
+            this.selectMode = false;
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description: json.message || 'All program types have been deleted.',
+                },
+              }),
+            );
+            await this.fetchProgramTypes();
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json.message || 'Failed to delete all program types.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description: 'A network or server error occurred while deleting data.',
+              },
+            }),
+          );
+        }
+      },
+
+      isAllSelected() {
+        if (!this.items || this.items.length === 0) return false;
+        return this.items.every((item) => this.selectedIds.some((id) => String(id) === String(item.id)));
+      },
+
+      toggleSelectAll(event) {
+        if (!this.items || this.items.length === 0) return;
+        if (event.target.checked) {
+          const currentIds = this.items.map((i) => i.id);
+          const currentSet = new Set(this.selectedIds.map(String));
+          currentIds.forEach((id) => {
+            if (!currentSet.has(String(id))) {
+              this.selectedIds.push(id);
+              currentSet.add(String(id));
+            }
+          });
+        } else {
+          const currentSet = new Set(this.items.map((i) => String(i.id)));
+          this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
+        }
+      },
+
+      clearSelection() {
+        this.selectedIds = [];
+      },
+
+      confirmDeleteSelected() {
+        const count = this.selectedIds.length;
+        if (count === 0) return;
+
+        openDeleteModal({
+          title: `Delete ${count} Selected Program Types?`,
+          description: `Are you sure you want to delete ${count} selected program types? This action is permanent and cannot be undone.`,
+          confirmLabel: `Delete (${count})`,
+          cancelLabel: 'Cancel',
+          onConfirm: async () => {
+            await this.executeDeleteSelected();
+          },
+        });
+      },
+
+      async executeDeleteSelected() {
+        try {
+          const res = await fetch('/api/bulk-delete/selected', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity: 'course_type',
+              ids: this.selectedIds,
+            }),
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            this.selectedIds = [];
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description: json.message || 'Selected program types have been deleted successfully.',
+                },
+              }),
+            );
+            await this.fetchProgramTypes();
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json.message || 'An error occurred while deleting data.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description: 'A network or server error occurred while deleting data.',
+              },
+            }),
+          );
+        }
+      },
 
       typeBadgeStyle,
 

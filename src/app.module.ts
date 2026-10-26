@@ -75,6 +75,7 @@ import { PaymentSettingsModule } from './payment-settings/payment-settings.modul
 import { SyllabusModule } from './syllabus/syllabus.module';
 import { FinalAssignmentModule } from './final_assignment/final_assignment.module';
 import { SearchModule } from './search/search.module';
+import { BulkDeleteModule } from './bulk_delete/bulk-delete.module';
 import path from 'path';
 
 @Module({
@@ -160,6 +161,7 @@ import path from 'path';
     SyllabusModule,
     FinalAssignmentModule,
     SearchModule,
+    BulkDeleteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

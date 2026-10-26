@@ -103,6 +103,32 @@
         </div>
 
         <div class='flex flex-row items-center gap-[10px] shrink-0 self-end sm:self-auto'>
+          {{#if isSuperAdmin}}
+          <button
+            type='button'
+            @click='toggleSelectMode()'
+            class='box-border h-[44px] flex flex-row items-center rounded-[8px] font-inter text-[14px] font-semibold transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-pointer'
+            :class="selectMode ? 'bg-[#F5F5F5] border border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-11 px-0 justify-center' : 'bg-white border border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-[16px]'"
+            :title="selectMode ? 'Close' : 'Manage Delete'"
+            :aria-label="selectMode ? 'Close' : 'Manage Delete'"
+          >
+            <template x-if='!selectMode'>
+              <div class='flex items-center gap-2'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
+                  <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+                <span>Manage Delete</span>
+              </div>
+            </template>
+            <template x-if='selectMode'>
+              <div class='flex items-center justify-center'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
+                  <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+                </svg>
+              </div>
+            </template>
+          </button>
+          {{/if}}
 
           <div class='w-[158px] shrink-0'>
             {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
@@ -113,42 +139,71 @@
       {{#if isSuperAdmin}}
       {{!-- Bulk Selection Action Bar --}}
       <div
-        x-show='selectedCourses.length > 0'
+        x-show='selectMode'
+        x-cloak
         x-transition:enter='transition ease-out duration-150'
         x-transition:enter-start='opacity-0 -translate-y-2'
         x-transition:enter-end='opacity-100 translate-y-0'
         x-transition:leave='transition ease-in duration-100'
         x-transition:leave-start='opacity-100 translate-y-0'
         x-transition:leave-end='opacity-0 -translate-y-2'
-        class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-[10px] gap-2 shadow-sm'
+        class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-[10px] gap-2.5 shadow-sm'
         style='display: none;'
       >
-        <div class='flex items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
+        <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
           <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
           </svg>
           <span>
-            <strong x-text='selectedCourses.length'></strong> data program dipilih
+            <strong x-text='selectedCourses.length'></strong> of <span x-text='totalItems'></span> programs selected
           </span>
+
+          <span class='text-[#FCA5A5] mx-1'>•</span>
+
           <button
             type='button'
-            @click='clearSelection()'
-            class='ml-2 text-xs text-[#DC2626] hover:underline font-semibold cursor-pointer'
-          >
-            Batalkan Pilihan
-          </button>
+            @click='toggleSelectAllOnPage()'
+            class='text-xs text-[#DC2626] hover:underline font-semibold cursor-pointer'
+            x-text="isAllSelected() ? 'Deselect Page' : 'Select All on Page'"
+          ></button>
+
+          <template x-if='selectedCourses.length > 0'>
+            <button
+              type='button'
+              @click='clearSelection()'
+              class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
+            >
+              (Clear Selection)
+            </button>
+          </template>
         </div>
 
-        <div class='flex items-center gap-2 w-full sm:w-auto justify-end'>
+        <div class='flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end'>
+          {{!-- Tombol Hapus Terpilih --}}
           <button
             type='button'
             @click='confirmDeleteSelected()'
-            class='box-border h-[38px] px-4 flex flex-row items-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white rounded-[8px] font-inter text-[13px] font-semibold transition-colors shadow-sm cursor-pointer'
+            :disabled='selectedCourses.length === 0'
+            :class="selectedCourses.length === 0 ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-[#DC2626] hover:bg-[#B91C1C] cursor-pointer'"
+            class='box-border h-[38px] px-3.5 flex flex-row items-center gap-2 text-white rounded-[8px] font-inter text-[13px] font-semibold transition-colors shadow-sm'
           >
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
               <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
             </svg>
-            <span>Hapus Data yang di Select (<span x-text='selectedCourses.length'></span>)</span>
+            <span>Delete Selected (<span x-text='selectedCourses.length'></span>)</span>
+          </button>
+
+          {{!-- Tombol Tutup (Tanda X) --}}
+          <button
+            type='button'
+            @click='toggleSelectMode()'
+            class='box-border h-[38px] w-[38px] flex items-center justify-center bg-white hover:bg-[#F5F5F5] text-[#525252] hover:text-[#171717] border border-[#D4D4D4] rounded-[8px] transition-colors shadow-sm cursor-pointer'
+            title='Close'
+            aria-label='Close'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+              <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+            </svg>
           </button>
         </div>
       </div>
@@ -164,23 +219,12 @@
        confirmStatusChange() di kelasTable()) dan perpindahan kanal pembayaran
        (select() di paymentSettingsPanel()) --}}
   {{> components/ui/admin/modal/confirm_action/index}}
+  {{> components/ui/admin/modal/delete_confirm/index}}
 </div>
 
 <script>
   function confirmDelete(el, name) {
-    Swal.fire({
-      title: 'Delete Program',
-      text: 'Are you sure you want to delete "' + name + '"?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#DC2626',
-      cancelButtonColor: '#525252',
-      confirmButtonText: 'Delete'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        el.closest('form').submit();
-      }
-    });
+    openDeleteModal(el, 'Delete Program', 'Are you sure you want to delete "' + name + '"?');
   }
 </script>
 
@@ -189,6 +233,7 @@ function kelasTable() {
   return {
     isSuperAdmin: {{#if isSuperAdmin}}true{{else}}false{{/if}},
     kelasList: [],
+    selectMode: false,
     selectedCourses: [],
     searchInput: '',
     selectedStatus: '',
@@ -210,6 +255,13 @@ function kelasTable() {
     loading: false,
     searchTimeout: null,
 
+    toggleSelectMode() {
+      this.selectMode = !this.selectMode;
+      if (!this.selectMode) {
+        this.selectedCourses = [];
+      }
+    },
+
     isAllSelected() {
       if (!this.kelasList || this.kelasList.length === 0) return false;
       return this.kelasList.every(c => this.selectedCourses.includes(c.id));
@@ -225,6 +277,16 @@ function kelasTable() {
       }
     },
 
+    toggleSelectAllOnPage() {
+      if (this.isAllSelected()) {
+        const currentIds = new Set(this.kelasList.map(c => c.id));
+        this.selectedCourses = this.selectedCourses.filter(id => !currentIds.has(id));
+      } else {
+        const currentIds = this.kelasList.map(c => c.id);
+        this.selectedCourses = Array.from(new Set([...this.selectedCourses, ...currentIds]));
+      }
+    },
+
     clearSelection() {
       this.selectedCourses = [];
     },
@@ -233,34 +295,18 @@ function kelasTable() {
       const count = this.selectedCourses.length;
       if (count === 0) return;
 
-      Swal.fire({
-        title: 'Hapus Data yang di Select?',
-        html: `Apakah Anda yakin ingin menghapus <b>${count}</b> program yang dipilih?<br><span class="text-sm text-red-600">Semua data terkait program ini akan dihapus secara permanen.</span>`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DC2626',
-        cancelButtonColor: '#525252',
-        confirmButtonText: 'Ya, Hapus Data Terpilih',
-        cancelButtonText: 'Batal',
-        reverseButtons: true,
-        focusCancel: true,
-      }).then(async (result) => {
-        if (result.isConfirmed) {
+      openDeleteModal({
+        title: `Delete ${count} Selected Programs?`,
+        description: `Are you sure you want to delete ${count} selected programs? This action is permanent and cannot be undone.`,
+        confirmLabel: `Delete (${count})`,
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
           await this.executeBulkDelete();
-        }
+        },
       });
     },
 
     async executeBulkDelete() {
-      Swal.fire({
-        title: 'Menghapus Data...',
-        text: 'Mohon tunggu beberapa saat.',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
       try {
         const res = await fetch('/program/bulk-delete', {
           method: 'POST',
@@ -273,62 +319,53 @@ function kelasTable() {
 
         if (json.success) {
           this.selectedCourses = [];
-          await Swal.fire({
-            icon: 'success',
-            title: 'Berhasil Dihapus',
-            text: json.message || 'Program yang dipilih berhasil dihapus.',
-            timer: 2000,
-            showConfirmButton: false,
-          });
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: 'Deleted Successfully',
+                description: json.message || 'Selected programs have been deleted.',
+              },
+            }),
+          );
           await this.fetchKelas();
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal Menghapus',
-            text: json.message || 'Terjadi kesalahan saat menghapus data.',
-          });
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed to Delete',
+                description: json.message || 'Failed to delete selected programs.',
+              },
+            }),
+          );
         }
       } catch (err) {
         console.error('Bulk delete error:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Terjadi gangguan jaringan atau server saat menghapus data.',
-        });
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'A network or server error occurred while deleting data.',
+            },
+          }),
+        );
       }
     },
 
     confirmDeleteAll() {
       if (this.totalItems === 0) return;
 
-      Swal.fire({
-        title: 'Hapus SEMUA Data Program?',
-        html: `Peringatan: Anda akan menghapus <b>SEMUA</b> data program (<span class="font-bold">${this.totalItems}</span> program).<br><br><span class="text-sm font-semibold text-red-600">Seluruh data program dan relasi terkait akan dihapus secara permanen dan tindakan ini tidak dapat dibatalkan!</span>`,
-        icon: 'error',
-        showCancelButton: true,
-        confirmButtonColor: '#DC2626',
-        cancelButtonColor: '#525252',
-        confirmButtonText: 'Ya, Hapus SEMUA Data',
-        cancelButtonText: 'Batal',
-        reverseButtons: true,
-        focusCancel: true,
-      }).then(async (result) => {
-        if (result.isConfirmed) {
+      openDeleteModal({
+        title: 'Delete ALL Programs?',
+        description: `WARNING: You are about to delete ALL programs (${this.totalItems} programs). This action is permanent and cannot be undone!`,
+        confirmLabel: 'Yes, Delete ALL Programs',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
           await this.executeDeleteAll();
-        }
+        },
       });
     },
 
     async executeDeleteAll() {
-      Swal.fire({
-        title: 'Menghapus Semua Data...',
-        text: 'Mohon tunggu beberapa saat.',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
       try {
         const res = await fetch('/program/delete-all', {
           method: 'POST',
@@ -340,48 +377,49 @@ function kelasTable() {
 
         if (json.success) {
           this.selectedCourses = [];
+          this.selectMode = false;
           this.currentPage = 1;
-          await Swal.fire({
-            icon: 'success',
-            title: 'Berhasil Dihapus',
-            text: json.message || 'Semua data program berhasil dihapus.',
-            timer: 2000,
-            showConfirmButton: false,
-          });
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: 'Deleted Successfully',
+                description: json.message || 'All programs have been deleted.',
+              },
+            }),
+          );
           await this.fetchKelas();
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: json.message || 'Terjadi kesalahan saat menghapus seluruh program.',
-          });
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed to Delete',
+                description: json.message || 'Failed to delete all programs.',
+              },
+            }),
+          );
         }
       } catch (err) {
         console.error('Delete all error:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Terjadi gangguan jaringan atau server saat menghapus seluruh program.',
-        });
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'A network or server error occurred while deleting all programs.',
+            },
+          }),
+        );
       }
     },
 
     confirmDeleteSingle(courseId, name) {
-      Swal.fire({
-        title: 'Hapus Program?',
-        html: `Apakah Anda yakin ingin menghapus program "<b>${name}</b>"?<br><span class="text-sm text-red-600">Data program akan dihapus permanen.</span>`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DC2626',
-        cancelButtonColor: '#525252',
-        confirmButtonText: 'Ya, Hapus',
-        cancelButtonText: 'Batal',
-        reverseButtons: true,
-        focusCancel: true,
-      }).then(async (result) => {
-        if (result.isConfirmed) {
+      openDeleteModal({
+        title: 'Delete Program?',
+        description: `Are you sure you want to delete program "${name}"? Program data will be permanently deleted.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
           await this.executeDeleteSingle(courseId);
-        }
+        },
       });
     },
 
@@ -397,28 +435,35 @@ function kelasTable() {
 
         if (json.success) {
           this.selectedCourses = this.selectedCourses.filter(id => id !== courseId);
-          await Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: json.message || 'Program berhasil dihapus.',
-            timer: 1500,
-            showConfirmButton: false,
-          });
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: 'Deleted Successfully',
+                description: json.message || 'Program has been deleted successfully.',
+              },
+            }),
+          );
           await this.fetchKelas();
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal Menghapus',
-            text: json.message || 'Gagal menghapus program.',
-          });
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed to Delete',
+                description: json.message || 'Failed to delete program.',
+              },
+            }),
+          );
         }
       } catch (err) {
         console.error('Delete single error:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Terjadi gangguan jaringan atau server.',
-        });
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'A network or server error occurred.',
+            },
+          }),
+        );
       }
     },
 
@@ -604,23 +649,25 @@ function kelasTable() {
           this.kelasList[index].launch = json.launch;
         } else {
           console.error('Update status failed:', json.message);
-          if (typeof Swal !== 'undefined') {
-            Swal.fire({
-              icon: 'error',
-              title: 'Failed',
-              text: json.message || 'Failed to update program status',
-            });
-          }
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed',
+                description: json.message || 'Failed to update program status',
+              },
+            }),
+          );
         }
       } catch (err) {
         console.error('Update status error:', err);
-        if (typeof Swal !== 'undefined') {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Network or server error while updating status',
-          });
-        }
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'Network or server error while updating status',
+            },
+          }),
+        );
       }
     },
 
