@@ -104,6 +104,7 @@
     apiNotFound: '{{{t 'test.payment.voucher.apiNotFound'}}}',
     checkFailed: '{{{t 'test.payment.voucher.checkFailed'}}}',
     typing: '{{{t 'test.payment.voucher.typing'}}}',
+    monthlyDiscount: '{{{t 'test.payment.installment.monthlyDiscount'}}}',
     paymentFailed: '{{{t 'test.payment.toast.paymentFailed'}}}',
     processError: '{{{t 'test.payment.toast.processError'}}}',
     connectionError: '{{{t 'test.payment.toast.connectionError'}}}',
@@ -145,11 +146,17 @@
   const courseBasePrice = Number('{{course.price}}') || 0;
   const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
   const courseInstallmentDP = Number('{{course.installments.[0].downPayment}}') || 0;
+  const courseInstallmentPrices = [
+    {{#each course.installments.[0].price}}{{#unless @first}},{{/unless}}{{this}}{{/each}}
+  ].map(Number).filter(Number.isFinite);
 
-  // Nominal yang divalidasi voucher adalah nominal metode yang sedang
-  // dibayar, bukan harga program penuh - sama seperti sebelumnya, hanya kini
-  // tidak pernah berubah karena user tidak bisa ganti metode di step 2.
-  const currentSubtotal = IS_INSTALLMENT ? courseInstallmentDP : courseFullPrice;
+  // Untuk installment, voucher berlaku pada seluruh kontrak: DP + semua cicilan.
+  const installmentContractTotal =
+    courseInstallmentDP +
+    courseInstallmentPrices.reduce((sum, amount) => sum + amount, 0);
+  const currentSubtotal = IS_INSTALLMENT
+    ? installmentContractTotal
+    : courseFullPrice;
 
   let activePromo = null;
 
@@ -290,7 +297,46 @@
 
     if (elSub) elSub.textContent = `Rp${currentSubtotal.toLocaleString('id-ID')}`;
     if (elVoucher) elVoucher.textContent = `- Rp${disc.toLocaleString('id-ID')}`;
-    if (elTotal) elTotal.textContent = `Rp${total.toLocaleString('id-ID')}`;
+    if (IS_INSTALLMENT) {
+      const components = [courseInstallmentDP, ...courseInstallmentPrices];
+      const allocated = [];
+      let allocatedTotal = 0;
+      components.forEach((amount, index) => {
+        const discount = index === components.length - 1
+          ? Math.max(0, disc - allocatedTotal)
+          : Math.floor((amount / currentSubtotal) * disc);
+        allocated.push(discount);
+        allocatedTotal += discount;
+      });
+
+      const dpDiscount = allocated[0] || 0;
+      const dpTotal = Math.max(0, courseInstallmentDP - dpDiscount);
+      if (elSub) elSub.textContent = `Rp${courseInstallmentDP.toLocaleString('id-ID')}`;
+      if (elVoucher) elVoucher.textContent = `- Rp${dpDiscount.toLocaleString('id-ID')}`;
+      if (elTotal) elTotal.textContent = `Rp${dpTotal.toLocaleString('id-ID')}`;
+
+      courseInstallmentPrices.forEach((amount, index) => {
+        const month = index + 1;
+        const monthDiscount = allocated[index + 1] || 0;
+        const monthTotal = Math.max(0, amount - monthDiscount);
+        ['installment', 'summary'].forEach((prefix) => {
+          const discountEl = document.getElementById(`${prefix}-month-discount-${month}`);
+          const finalEl = document.getElementById(`${prefix}-month-final-${month}`);
+          if (discountEl) {
+            discountEl.textContent = monthDiscount > 0
+              ? `${I18N.monthlyDiscount}: - Rp${monthDiscount.toLocaleString('id-ID')}`
+              : '';
+            discountEl.classList.toggle('hidden', monthDiscount <= 0);
+          }
+          if (finalEl) {
+            finalEl.textContent = `Bayar: Rp${monthTotal.toLocaleString('id-ID')}`;
+            finalEl.classList.toggle('hidden', monthDiscount <= 0);
+          }
+        });
+      });
+    } else if (elTotal) {
+      elTotal.textContent = `Rp${total.toLocaleString('id-ID')}`;
+    }
 
     if (disc > 0) {
       if (displayPromo) displayPromo.textContent = activePromo;

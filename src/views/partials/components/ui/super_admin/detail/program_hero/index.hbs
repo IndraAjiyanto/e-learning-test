@@ -97,25 +97,24 @@
       {{!-- Delete (hanya tampil jika program belum memiliki peserta) --}}
       {{#if course.userCourses.length}}
         {{> components/ui/admin/locked-notice/index
-          title='Program cannot be deleted'
-          message='This program cannot be deleted because it already has enrolled participants.' }}
+          title='Program is locked'
+          message='This program can be edited, but it cannot be deleted because it already has enrolled participants.' }}
       {{/if}}
-
       <div class='flex flex-wrap items-center gap-3'>
         {{#unless course.userCourses.length}}
-          <form
-            action='/program/{{course.id}}?_method=DELETE'
-            method='post'
-          >
-            {{!-- Controller memakai `previous` untuk redirect balik ke list yang sama setelah hapus. --}}
-            <input type='hidden' name='previous' :value="localStorage.getItem('kelasPrevUrl') || '/program'" />
+        <form
+          action='/program/{{course.id}}?_method=DELETE'
+          method='post'
+        >
+          {{!-- Controller memakai `previous` untuk redirect balik ke list yang sama setelah hapus. --}}
+          <input type='hidden' name='previous' :value="localStorage.getItem('kelasPrevUrl') || '/program'" />
 
-            {{> components/ui/super_admin/form/button
-              variant='danger-soft'
-              label='Delete'
-              onclick='openDeleteModal(this)'
-            }}
-          </form>
+          {{> components/ui/super_admin/form/button
+            variant='danger-soft'
+            label='Delete'
+            onclick='openDeleteModal(this)'
+          }}
+        </form>
         {{/unless}}
 
         {{#if categoryId}}

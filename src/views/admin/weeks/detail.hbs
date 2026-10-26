@@ -31,8 +31,8 @@
         </div>
 
         {{!-- Actions --}}
-        {{#unless hasCompletedUser}}
         <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
+          {{#unless hasCompletedUser}}
           <form action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE' method='POST'>
             <button type='button'
               onclick='openDeleteModal(this)'
@@ -41,19 +41,19 @@
               <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
             </button>
           </form>
+          {{/unless}}
           <a href='/week/formEdit/{{weeks.id}}'
             class='box-border w-[114px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
             title='Edit Week' aria-label='Edit Week'>
             <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Week</span>
           </a>
         </div>
-        {{/unless}}
       </div>
 
       {{#if hasCompletedUser}}
         {{> components/ui/admin/locked-notice/index
           title='Week is locked'
-          message='This week cannot be edited or deleted because it has already been completed by a participant.' }}
+          message='This week can be edited, but it cannot be deleted because it has already been completed by a participant.' }}
       {{/if}}
 
     </div>
