@@ -239,6 +239,16 @@ export class SyllabusService {
       if (num < 1024 * 1024) return `${(num / 1024).toFixed(1)} KB`;
       return `${(num / (1024 * 1024)).toFixed(1)} MB`;
     };
+    const formatDuration = (val?: string | null): string => {
+      if (!val) return '';
+      const trimmed = val.trim();
+      const num = parseInt(trimmed, 10);
+      if (isNaN(num) || num <= 0) return trimmed;
+      if (num < 60) return `${num} detik`;
+      const m = Math.floor(num / 60);
+      const s = num % 60;
+      return s > 0 ? `${m} m ${s} s` : `${m} menit`;
+    };
 
     const toEmbedUrl = (url?: string | null): string => {
       if (!url) return '';
@@ -342,8 +352,10 @@ export class SyllabusService {
       videoTitle,
       isYoutube,
       videoMaterial,
+      videoDurationFormatted: formatDuration(videoDuration),
       hasPdf,
       hasPpt,
+      hasDocMaterial: hasPdf || hasPpt,
       hasAnyMaterial,
     };
   }
@@ -417,13 +429,6 @@ export class SyllabusService {
     const syllabus = await this.findOne(id);
     if (!syllabus) {
       throw new NotFoundException('Syllabus not found');
-    }
-
-    const isCompleted = await this.isSyllabusCompleted(id);
-    if (isCompleted) {
-      throw new BadRequestException(
-        'Syllabus cannot be edited because it has already been completed by a user',
-      );
     }
 
     let parsedContent: object | string | null = null;

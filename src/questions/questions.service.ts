@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -62,7 +62,6 @@ export class QuestionsService {
 
     questions.questionText = updateQuestionDto.questionText;
     questions.image = updateQuestionDto.image;
-    await this.questionRepository.save(questions);
 
     const oldAnswers = await this.answerRepository.find({
       where: { question: { id: questionId } },
@@ -72,17 +71,20 @@ export class QuestionsService {
       throw new NotFoundException('Answer not found');
     }
 
-    await this.answerRepository.remove(oldAnswers);
+    if (oldAnswers.length !== updateQuestionDto.answer.length) {
+      throw new BadRequestException(
+        'The number of answers cannot be changed after a user has attempted this quiz',
+      );
+    }
 
-    const newAnswers = updateQuestionDto.answer.map((answers, index) => {
-      return this.answerRepository.create({
-        answer: answers,
-        isCorrect: Number(updateQuestionDto.answers) === index,
-        question: questions,
-      });
+    await this.questionRepository.save(questions);
+
+    oldAnswers.forEach((answer, index) => {
+      answer.answer = updateQuestionDto.answer[index];
+      answer.isCorrect = Number(updateQuestionDto.answers) === index;
     });
 
-    return await this.answerRepository.save(newAnswers);
+    return await this.answerRepository.save(oldAnswers);
   }
 
   async remove(questionId: string) {

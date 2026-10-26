@@ -60,6 +60,9 @@ export class Invoice {
   })
   promo_code: number | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  voucher_code: string | null;
+
   @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
   subtotal: number | null;
 

@@ -67,6 +67,7 @@
               {{/if}}
 
               <!-- Location Card -->
+              {{#if (or course.location course.locations course.link_lokasi)}}
               <div
                 class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
               >
@@ -98,6 +99,7 @@
                 </div>
 
               </div>
+              {{/if}}
 
               <!-- Capacity Card -->
               {{#if course.quota}}

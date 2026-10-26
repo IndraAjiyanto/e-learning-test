@@ -79,9 +79,9 @@
               </span>
             </button>
 
-            {{#unless isCompleted}}
             {{!-- Delete button --}}
-            <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
+            {{#unless isCompleted}}
+              <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
               <button
                 type='button'
                 onclick='openDeleteModal(this)'
@@ -90,7 +90,8 @@
                   Delete
                 </span>
               </button>
-            </form>
+              </form>
+            {{/unless}}
 
             {{!-- Edit Syllabus button --}}
             <a
@@ -100,7 +101,6 @@
                 Edit Syllabus
               </span>
             </a>
-            {{/unless}}
           </div>
 
         </div>
@@ -108,7 +108,7 @@
         {{#if isCompleted}}
           {{> components/ui/admin/locked-notice/index
             title='Syllabus is locked'
-            message='This syllabus cannot be edited or deleted because it has already been completed by a participant.' }}
+            message='This syllabus can be edited, but it cannot be deleted because it has already been completed by a participant.' }}
         {{/if}}
       </div>
 

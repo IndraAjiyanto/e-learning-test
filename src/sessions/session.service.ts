@@ -273,13 +273,6 @@ export class SessionService {
       throw new NotFoundException('session tidak ditemukan');
     }
 
-    const isCompleted = await this.hasCompletedUser(id);
-    if (isCompleted) {
-      throw new BadRequestException(
-        'Session cannot be edited because it has already been completed by user',
-      );
-    }
-
     if (updateSessionDto.isFinalCheck === 'true') {
       updateSessionDto.isFinal = true;
       // Hanya satu session per week yang boleh final — lepas flag dari session
