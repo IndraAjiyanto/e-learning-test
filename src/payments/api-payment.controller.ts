@@ -50,13 +50,18 @@ export class ApiPaymentController {
   @Roles('super_admin')
   @Patch('settings')
   async updateSettings(
-    @Body() body: { manualEnabled?: boolean; gatewayEnabled?: boolean },
+    @Body()
+    body: {
+      manualEnabled?: boolean;
+      gatewayEnabled?: boolean;
+      gateway_enabled?: boolean;
+    },
     @Res() res: Response,
   ) {
     const manualEnabled = body?.manualEnabled;
     const gatewayEnabled = body?.gatewayEnabled;
 
-    if (gatewayEnabled === true || (body as any).gateway_enabled === true) {
+    if (gatewayEnabled === true || body?.gateway_enabled === true) {
       return res.status(400).json({
         status: 'error',
         message: 'Penggunaan Xendit dinonaktifkan untuk sementara.',
