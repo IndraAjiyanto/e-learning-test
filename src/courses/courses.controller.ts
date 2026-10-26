@@ -1872,6 +1872,93 @@ export class CoursesController {
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
+  @Roles('super_admin')
+  @Post('delete-all')
+  async removeAllPost(@Res() res: Response) {
+    try {
+      const result = await this.coursesService.removeAll();
+      return res.json({
+        success: true,
+        message: `Berhasil menghapus seluruh program (${result.count} data).`,
+        count: result.count,
+      });
+    } catch (error: unknown) {
+      return res.status(400).json({
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Gagal menghapus seluruh program',
+      });
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('delete-all')
+  async removeAllDelete(@Res() res: Response) {
+    return this.removeAllPost(res);
+  }
+
+  @Roles('super_admin')
+  @Post('bulk-delete')
+  async removeManyPost(
+    @Body('ids') ids: string[],
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.coursesService.removeMany(ids);
+      return res.json({
+        success: true,
+        message: `Berhasil menghapus ${result.count} program yang dipilih.`,
+        count: result.count,
+      });
+    } catch (error: unknown) {
+      return res.status(400).json({
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Gagal menghapus program yang dipilih',
+      });
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('bulk-delete')
+  async removeManyDelete(
+    @Body('ids') ids: string[],
+    @Res() res: Response,
+  ) {
+    return this.removeManyPost(ids, res);
+  }
+
+  @Roles('super_admin')
+  @Delete(':courseId/json')
+  async removeJson(
+    @Param('courseId') courseId: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const course = await this.coursesService.findOne(courseId);
+      if (!course) {
+        return res
+          .status(404)
+          .json({ success: false, message: 'Program not found' });
+      }
+      await this.coursesService.remove(courseId, true);
+      await this.coursesService.deleteFile(course.image);
+      return res.json({
+        success: true,
+        message: 'Program berhasil dihapus.',
+      });
+    } catch (error: unknown) {
+      return res.status(400).json({
+        success: false,
+        message:
+          error instanceof Error ? error.message : 'Gagal menghapus program',
+      });
+    }
+  }
 
   @Roles('admin', 'super_admin')
   @Delete(':courseId')

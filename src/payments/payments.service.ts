@@ -756,7 +756,14 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installment', 'invoice'],
+      relations: [
+        'course',
+        'course.category',
+        'installment',
+        'invoice',
+        'installmentPayments',
+      ],
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -821,7 +828,13 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installment', 'invoice'],
+      relations: [
+        'course',
+        'course.category',
+        'installment',
+        'invoice',
+        'installmentPayments',
+      ],
       order: { createdAt: 'DESC' },
     });
 
@@ -859,7 +872,11 @@ export class PaymentsService {
       let hasPreviousUnpaid = false;
       const monthlyStatus = schedule.map((amount, i) => {
         const month = i + 1;
-        const dpDate = p.dpPaidAt ? new Date(p.dpPaidAt) : new Date();
+        const dpDate = p.dpPaidAt
+          ? new Date(p.dpPaidAt)
+          : p.createdAt
+            ? new Date(p.createdAt)
+            : new Date();
         dpDate.setHours(0, 0, 0, 0);
         const storedDate = p.installment?.dueDates?.[month - 1];
         const dueDate = storedDate
@@ -867,19 +884,38 @@ export class PaymentsService {
           : dateHelpers.getMonthlyDueDate(dpDate, month, dpDate.getDate());
 
         const tx = rows.find((r) => r.month === month);
+        const hasSubmittedPayment = Boolean(
+          tx && (tx.file || tx.xendit_invoice_id || tx.xendit_invoice_url),
+        );
+        const isMonthPaid = Boolean(
+          paidSet.has(month) || (tx && tx.status === 'approved'),
+        );
+        const isMonthUnderReview = Boolean(
+          hasSubmittedPayment && tx && tx.status === 'process',
+        );
+        const isMonthRejected = Boolean(tx && tx.status === 'rejected');
 
-        let status: 'paid' | 'process' | 'due' | 'upcoming' = 'upcoming';
-        if (paidSet.has(month)) {
+        let status: 'paid' | 'process' | 'due' | 'upcoming' | 'rejected' =
+          'upcoming';
+        if (isMonthPaid) {
           status = 'paid';
-        } else if (tx && tx.status === 'process') {
+        } else if (isMonthUnderReview) {
           status = 'process';
-        } else if (today.getTime() >= dueDate.getTime()) {
+        } else if (isMonthRejected) {
+          status = 'rejected';
+        } else if (!hasPreviousUnpaid && today.getTime() >= dueDate.getTime()) {
           status = 'due';
+        } else {
+          status = 'upcoming';
         }
 
-        const isDpApproved = p.process === 'approved';
+        const isDpApproved =
+          p.process === 'approved' ||
+          (p as any).status === 'paid' ||
+          (p.process as string) === 'paid';
         const isPaid = status === 'paid';
-        const canPay = isDpApproved && !isPaid && !hasPreviousUnpaid;
+        const canPay =
+          isDpApproved && !isPaid && !isMonthUnderReview && !hasPreviousUnpaid;
         if (!isPaid) {
           hasPreviousUnpaid = true;
         }
@@ -895,7 +931,14 @@ export class PaymentsService {
           dueDate,
           status,
           txId: tx?.id || null,
-          process: tx?.status || null,
+          process: isMonthUnderReview
+            ? 'process'
+            : isMonthRejected
+              ? 'rejected'
+              : isMonthPaid
+                ? 'approved'
+                : null,
+          file: tx?.file || null,
           canPay,
         };
       });
@@ -1199,7 +1242,8 @@ export class PaymentsService {
       throw new Error('Pembayaran DP belum lunas/approved');
     }
     if (!parent.dpPaidAt) {
-      throw new Error('Pembayaran DP belum tercatat');
+      parent.dpPaidAt = parent.createdAt || new Date();
+      await this.paymentRepository.save(parent);
     }
     if (parent.user && parent.user.id !== userId) {
       throw new Error('Payment tidak berhak diakses user ini');

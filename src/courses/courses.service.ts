@@ -1846,20 +1846,56 @@ export class CoursesService {
     return saved;
   }
 
-  async remove(id: string) {
+  async remove(id: string, force: boolean = false) {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException('Program not found');
     }
 
     const participantCount = course.userCourses?.length || 0;
-    if (participantCount > 0) {
+    if (participantCount > 0 && !force) {
       throw new BadRequestException(
         `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
       );
     }
 
     return await this.courseRepository.remove(course);
+  }
+
+  async removeMany(ids: string[]) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException('Pilih setidaknya satu program untuk dihapus.');
+    }
+
+    const courses = await this.courseRepository.findBy({ id: In(ids) });
+    if (!courses || courses.length === 0) {
+      throw new NotFoundException('Tidak ada data program yang ditemukan.');
+    }
+
+    for (const course of courses) {
+      if (course.image) {
+        await this.deleteFile(course.image);
+      }
+    }
+
+    await this.courseRepository.remove(courses);
+    return { success: true, count: courses.length };
+  }
+
+  async removeAll() {
+    const courses = await this.courseRepository.find();
+    if (!courses || courses.length === 0) {
+      return { success: true, count: 0 };
+    }
+
+    for (const course of courses) {
+      if (course.image) {
+        await this.deleteFile(course.image);
+      }
+    }
+
+    await this.courseRepository.remove(courses);
+    return { success: true, count: courses.length };
   }
 
   async removeCourseUser(userId: string, courseId: string) {
