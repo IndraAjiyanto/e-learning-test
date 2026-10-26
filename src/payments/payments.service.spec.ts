@@ -195,7 +195,64 @@ describe('PaymentsService', () => {
       expect(result[0].downPayment).toBe(1000000);
       expect(result[0].monthly).toHaveLength(3);
       expect(result[0].monthly[0].status).toBe('paid');
+      expect(result[0].monthly[0].canPay).toBe(false);
       expect(result[0].monthly[1].status).toBe('upcoming');
+      expect(result[0].monthly[1].canPay).toBe(true);
+      expect(result[0].monthly[2].status).toBe('upcoming');
+      expect(result[0].monthly[2].canPay).toBe(false);
+    });
+
+    it('does not treat snapshot rows without proof as under review', async () => {
+      const parent = {
+        id: 'p1',
+        process: 'approved',
+        dpPaidAt: new Date('2030-01-01'),
+        createdAt: new Date('2030-01-01'),
+        installment: {
+          downPayment: 1000000,
+          price: [500000, 500000, 500000],
+          month: 3,
+        },
+        course: { id: 'c1', name: 'UI/UX', category: { name: 'Design' } },
+        invoice: {},
+      };
+      paymentRepo.find.mockResolvedValue([parent]);
+      installmentService.findByPaymentIds.mockResolvedValue([
+        {
+          payment: { id: 'p1' },
+          month: 1,
+          status: 'approved',
+          file: 'proof1.jpg',
+          paidAt: new Date('2026-02-01'),
+        },
+        {
+          payment: { id: 'p1' },
+          month: 2,
+          status: 'process',
+          file: null,
+          xendit_invoice_id: null,
+        },
+        {
+          payment: { id: 'p1' },
+          month: 3,
+          status: 'process',
+          file: null,
+          xendit_invoice_id: null,
+        },
+      ]);
+
+      jest.spyOn(service, 'reconcileUserPayments').mockResolvedValue(undefined);
+
+      const result = await service.getUserInstallmentDetail('u1');
+
+      expect(result[0].monthly[0].status).toBe('paid');
+      expect(result[0].monthly[0].canPay).toBe(false);
+      expect(result[0].monthly[1].status).toBe('upcoming');
+      expect(result[0].monthly[1].canPay).toBe(true);
+      expect(result[0].monthly[1].process).toBeNull();
+      expect(result[0].monthly[2].status).toBe('upcoming');
+      expect(result[0].monthly[2].canPay).toBe(false);
+      expect(result[0].monthly[2].process).toBeNull();
     });
   });
 

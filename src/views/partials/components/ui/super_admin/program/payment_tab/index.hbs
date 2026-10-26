@@ -322,7 +322,10 @@
       getTermStatus(item, month) {
         const term = this.getTerm(item, month);
         if (!term) return 'unpaid';
-        return term.status || 'process';
+        if (term.status === 'approved') return 'approved';
+        if (term.status === 'rejected') return 'rejected';
+        if (term.file || term.xendit_invoice_id) return 'process';
+        return 'unpaid';
       },
 
       getTermStatusLabel(item, month) {

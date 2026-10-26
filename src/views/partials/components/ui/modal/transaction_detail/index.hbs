@@ -148,12 +148,29 @@
         return this.row?.no || '—';
       },
 
+      getLocale() {
+        // Read 'lang' cookie to determine the locale
+        const name = 'lang=';
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return 'id'; // Default to 'id' if no cookie is found
+      },
+
       get invoiceDateFormatted() {
         const raw = this.row?.invoiceDate || this.row?.createdAt || this.row?.date;
         if (!raw) return '—';
         const d = new Date(raw);
         if (Number.isNaN(d.getTime())) return '—';
-        return d.toLocaleDateString('id-ID', {
+        return d.toLocaleDateString(this.getLocale() === 'en' ? 'en-US' : 'id-ID', {
           day: '2-digit',
           month: 'long',
           year: 'numeric',
@@ -166,12 +183,12 @@
         if (!raw) return '—';
         const d = new Date(raw);
         if (Number.isNaN(d.getTime())) return '—';
-        const datePart = d.toLocaleDateString('id-ID', {
+        const datePart = d.toLocaleDateString(this.getLocale() === 'en' ? 'en-US' : 'id-ID', {
           day: '2-digit',
           month: 'long',
           year: 'numeric',
         });
-        const timePart = d.toLocaleTimeString('id-ID', {
+        const timePart = d.toLocaleTimeString(this.getLocale() === 'en' ? 'en-US' : 'id-ID', {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false,
@@ -305,7 +322,7 @@
           }
         } catch (error) {
           console.error('Download invoice PDF error:', error);
-          alert('Gagal mengunduh invoice PDF secara otomatis. Silakan coba kembali.');
+          alert('{{t "test.transactionDetail.downloadError"}}');
         } finally {
           this.downloadingInvoice = false;
         }
@@ -377,6 +394,11 @@
         return tpl.replace('{paid}', paid).replace('{total}', total).replace('{percent}', percent);
       },
 
+      monthTitle(month) {
+        const tpl = '{{t "test.transactionDetail.monthTitle"}}';
+        return tpl.replace('{month}', month);
+      },
+
       monthStatusLabel(m) {
         const map = {
           paid: '{{t "test.transactionDetail.monthStatus.paid"}}',
@@ -384,27 +406,28 @@
           rejected: '{{t "test.transactionDetail.monthStatus.rejected"}}',
           due: '{{t "test.transactionDetail.monthStatus.due"}}',
           upcoming: '{{t "test.transactionDetail.monthStatus.upcoming"}}',
+          unpaid: '{{t "test.transactionDetail.monthStatus.unpaid"}}',
         };
-        return map[m.status] || m.status || '—';
+        return map[m.status] || map[m.process] || m.status || '—';
       },
 
       monthStatusClass(m) {
         const map = {
-          paid: ['bg-[#CFF3DF]', 'text-[#139B59]'],
-          process: ['bg-[#FFF0C7]', 'text-[#E99A0C]'],
-          rejected: ['bg-[#FFDADA]', 'text-[#D9333F]'],
-          due: ['bg-[#FFDADA]', 'text-[#D9333F]'],
-          upcoming: ['bg-[#F1F5F9]', 'text-[#64748B]'],
+          paid: { bg: 'bg-[#CFF3DF]', text: 'text-[#139B59]' },
+          process: { bg: 'bg-[#FFF0C7]', text: 'text-[#E99A0C]' },
+          rejected: { bg: 'bg-[#FFDADA]', text: 'text-[#D9333F]' },
+          due: { bg: 'bg-[#FFDADA]', text: 'text-[#D9333F]' },
+          upcoming: { bg: 'bg-[#F1F5F9]', text: 'text-[#64748B]' },
+          unpaid: { bg: 'bg-[#F1F5F9]', text: 'text-[#64748B]' },
         };
-        const [bg, text] = map[m.status] || map.upcoming;
-        return { bg, text };
+        return map[m.status] || map.unpaid;
       },
 
       canPayMonth(m) {
-        if (!this.settings.manual_enabled) return false;
         if (!m) return false;
-        if (m.status === 'paid' || m.process === 'approved') return false;
-        return m.canPay !== false;
+        if (this.settings && this.settings.manual_enabled === false) return false;
+        if (m.status === 'paid' || m.process === 'approved' || m.status === 'process' || m.process === 'process') return false;
+        return m.canPay === true || (m.canPay !== false && !m.isPaid);
       },
 
       formatRupiah(n) {
@@ -724,12 +747,12 @@
             </div>
 
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter text-xs text-[#718096]">{{t "test.freeProgram.registrationModal.referalSource"}}</span>
+              <span class="font-inter text-xs text-[#718096]">{{t "test.transactionDetail.referalSource"}}</span>
               <span class="font-inter font-bold text-sm text-[#173B68]" x-text="referalSource"></span>
             </div>
 
             <div class="flex flex-col gap-0.5">
-              <span class="font-inter text-xs text-[#718096]">{{default (t "test.freeProgram.registrationModal.currentStatus") "Current Status"}}</span>
+              <span class="font-inter text-xs text-[#718096]">{{t "test.transactionDetail.currentStatus"}}</span>
               <span class="font-inter font-bold text-sm text-[#173B68]" x-text="currentStatus"></span>
             </div>
 
@@ -774,13 +797,13 @@
 
             <!-- Voucher Code -->
             <div class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
-              <span>Voucher Code</span>
+              <span>{{t "test.transactionDetail.voucherCode"}}</span>
               <span :class="voucherCodeFormatted !== '—' ? 'text-emerald-600 font-medium' : 'text-[#718096]'" x-text="voucherCodeFormatted"></span>
             </div>
 
             <!-- Diskon Voucher -->
             <div x-show="Number(row?.promoCode || 0) > 0" class="flex justify-between items-center text-xs sm:text-sm text-[#4A5568] px-4">
-              <span>Diskon Voucher</span>
+              <span>{{t "test.transactionDetail.discountVoucher"}}</span>
               <span class="text-[#EF4444] font-medium" x-text="promoCodeFormatted"></span>
             </div>
 
@@ -816,7 +839,7 @@
             </div>
 
             <span class="font-inter font-bold text-sm text-[#173B68]" x-text="row?.approvedBy || 'Adipura Arya Kangsadewa, S.Bns.'"></span>
-            <span class="font-inter text-xs text-[#718096]">Manager Edukasi dan Budaya</span>
+            <span class="font-inter text-xs text-[#718096]">{{t "test.transactionDetail.educationManager"}}</span>
           </div>
         </template>
 
@@ -885,7 +908,7 @@
               <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
                 <div>
                   <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.accountHolder"}}</p>
-                  <p class="text-xs font-semibold">PT. WIRATEK SOLUSI ASIA</p>
+                            <p class="text-xs font-semibold">{{t "test.transactionDetail.bankAccountName"}}</p>
                 </div>
                 <div class="text-right">
                   <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.bank"}}</p>
@@ -966,10 +989,12 @@
             <template x-for="(m, index) in installmentData" :key="m.month">
               <div class="flex flex-col border-b border-[#EDF1F7] last:border-b-0 py-3">
                 <div class="flex flex-wrap items-center gap-3 w-full">
-                  <div class="flex flex-col gap-0.5 min-w-[110px]">
-                    <span class="font-inter font-semibold text-[13px] leading-4 text-[#173B68]" x-text="formatDate(installmentDueDates[index] || m.dueDate)"></span>
+                  <div class="flex flex-col gap-0.5 min-w-[120px]">
+                    <div class="flex items-center gap-1.5">
+                      <span class="font-inter font-bold text-[13px] leading-4 text-[#003060]" x-text="monthTitle(m.month)"></span>
+                    </div>
                     <span class="font-inter font-normal text-[11px] leading-[13px] text-[#9CA3AF]">
-                      {{t "test.transactionDetail.dueDate"}}
+                      {{t "test.transactionDetail.dueDate"}}: <span class="font-medium text-[#173B68]" x-text="formatDate(installmentDueDates[index] || m.dueDate)"></span>
                     </span>
                   </div>
                   <div class="flex flex-col items-end gap-0.5">
@@ -981,7 +1006,7 @@
                     <span
                       x-show="Number(m.discountAmount) > 0"
                       class="font-inter text-[10px] leading-3 text-emerald-600"
-                      x-text="'Diskon bulanan: - ' + formatRupiah(m.discountAmount)"
+                      x-text="'{{t "test.transactionDetail.discountMonthly"}}' + ': - ' + formatRupiah(m.discountAmount)"
                     ></span>
                     <span class="font-inter font-bold text-sm leading-4 text-[#173B68]" x-text="formatRupiah(m.amount)"></span>
                   </div>
@@ -989,20 +1014,60 @@
                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-inter font-semibold text-[10px] leading-3"
                     :class="monthStatusClass(m).bg + ' ' + monthStatusClass(m).text"
                   >
-                    <span class="w-[7px] h-[7px] rounded-full shrink-0" :class="monthStatusClass(m).text"></span>
+                    <span class="w-[7px] h-[7px] rounded-full shrink-0 bg-current"></span>
                     <span x-text="monthStatusLabel(m)"></span>
                   </span>
 
                   <div class="flex items-center gap-2 ml-auto shrink-0">
-                    <template x-if="canPayMonth(m)">
+                    <!-- Tombol Lihat Bukti untuk semua status cicilan jika ada file -->
+                    <template x-if="m.file || (m.month === 1 && row?.proof)">
+                      <button
+                        type="button"
+                        @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                        class="inline-flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F1F5F9] text-[#1E293B] font-inter font-semibold text-[11px] leading-4 transition-colors cursor-pointer shadow-xs hover:border-[#94A3B8]"
+                        title="{{t "test.transactionDetail.viewUploadedProof"}}"
+                      >
+                        <i class="fa-solid fa-eye text-[#003060] text-[11px]"></i>
+                        <span>{{t "test.transactionDetail.viewProof"}}</span>
+                      </button>
+                    </template>
+
+                    <!-- Status Under Review (Clickable toggle accordion) -->
+                    <template x-if="m.status === 'process' || m.process === 'process'">
+                      <button
+                        type="button"
+                        @click="toggleManualMonth(m.month)"
+                        class="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 font-inter font-semibold text-[11px] leading-4 transition-colors cursor-pointer"
+                        title="Toggle Details"
+                      >
+                        <i class="fa-solid fa-clock text-[10px]"></i>
+                        <span>{{t "test.transactionDetail.underReviewBadge"}}</span>
+                        <i class="fa-solid text-[9px] transition-transform ml-0.5" :class="activeManualMonth === m.month ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                      </button>
+                    </template>
+
+                    <!-- Tombol Bayar / Upload Ulang jika belum lunas / ditolak -->
+                    <template x-if="(m.status !== 'process' && m.process !== 'process') && canPayMonth(m)">
                       <button
                         type="button"
                         @click="toggleManualMonth(m.month)"
                         class="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-[#D9333F] text-[#D9333F] font-inter font-semibold text-[11px] leading-4 transition-colors hover:bg-[#D9333F] hover:text-white cursor-pointer"
                         :class="activeManualMonth === m.month ? 'bg-[#D9333F] text-white' : ''"
                       >
-                        <i class="fa-solid fa-rotate-left text-[10px]"></i>
-                        <span x-text="m.process ? '{{t "test.transactionDetail.reupload"}}' : '{{t "test.transactionDetail.pay"}}'"></span>
+                        <i class="text-[10px]" :class="m.process === 'rejected' || m.status === 'rejected' ? 'fa-solid fa-rotate-left' : 'fa-solid fa-credit-card'"></i>
+                        <span x-text="m.process === 'rejected' || m.status === 'rejected' ? '{{t "test.transactionDetail.reupload"}}' : '{{t "test.transactionDetail.pay"}}'"></span>
+                      </button>
+                    </template>
+
+                    <!-- Toggle expand untuk status lunas/approved jika ada bukti -->
+                    <template x-if="(m.status === 'paid' || m.process === 'approved') && (m.file || (m.month === 1 && row?.proof))">
+                      <button
+                        type="button"
+                        @click="toggleManualMonth(m.month)"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer"
+                        title="Detail"
+                      >
+                        <i class="fa-solid text-[10px] transition-transform" :class="activeManualMonth === m.month ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                       </button>
                     </template>
                   </div>
@@ -1014,72 +1079,255 @@
                   x-transition
                   class="mt-3 rounded-xl border border-[#D8E6F6] bg-[#F8FAFC] p-4 flex flex-col gap-3"
                 >
-                  <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-xl p-4 flex flex-col gap-3">
-                    <div class="flex items-start justify-between gap-3">
-                      <div>
-                        <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.transferInstruction"}}</p>
-                        <p class="text-lg font-bold tracking-wider mt-0.5">2847 9237 4298 1234</p>
+                  <!-- 1. State: Under Review -->
+                  <template x-if="m.status === 'process' || m.process === 'process'">
+                    <div class="w-full rounded-xl border border-amber-200 bg-amber-50 p-4 flex flex-col gap-3">
+                      <div class="flex items-center gap-2 text-amber-800 font-inter font-semibold text-[13px]">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>{{t "test.transactionDetail.installmentUnderReview"}}</span>
                       </div>
-                      <button
-                        type="button"
-                        @click="copyBank()"
-                        class="p-2 rounded-full bg-slate-700/60 hover:bg-emerald-600 transition-colors shrink-0"
-                        :class="{'bg-emerald-600': copied}"
-                      >
-                        <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
-                      </button>
+                      <p class="text-amber-700 font-inter text-[12px] leading-4">{{t "test.transactionDetail.installmentUnderReviewDesc"}}</p>
+                      <template x-if="m.file || (m.month === 1 && row?.proof)">
+                        <div class="flex flex-col gap-2 pt-2 border-t border-amber-200">
+                          <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-semibold text-amber-900">{{t "test.transactionDetail.uploadedProof"}}</p>
+                            <div class="flex items-center gap-2">
+                              <button
+                                type="button"
+                                @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                                class="text-xs font-semibold text-blue-700 hover:text-blue-900 inline-flex items-center gap-1 cursor-pointer"
+                              >
+                                <i class="fa-solid fa-eye text-[11px]"></i>
+                                <span>{{t "test.transactionDetail.viewUploadedProofFull"}}</span>
+                              </button>
+                              <a
+                                :href="m.file || row?.proof"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-xs font-semibold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+                              >
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="rounded-lg border border-amber-200 bg-white p-2 flex items-center justify-center max-h-52 overflow-hidden cursor-pointer hover:border-amber-400 transition-colors"
+                            @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                            title="{{t "test.transactionDetail.viewProof"}}"
+                          >
+                            <img :src="m.file || row?.proof" alt="Payment Proof" class="max-h-48 object-contain rounded" />
+                          </div>
+                        </div>
+                      </template>
                     </div>
-                    <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
-                      <div>
-                        <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.accountHolder"}}</p>
-                        <p class="text-xs font-semibold">PT. WIRATEK SOLUSI ASIA</p>
-                      </div>
-                      <div class="text-right">
-                        <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.bank"}}</p>
-                        <p class="text-xs font-semibold">BANK BCA</p>
-                      </div>
-                    </div>
-                  </div>
+                  </template>
 
-                  <form
-                    method="POST"
-                    :action="'/payment/manual/installment/' + row.id + '/' + m.month"
-                    enctype="multipart/form-data"
-                    class="flex flex-col gap-3"
-                  >
-                    <label
-                      class="flex flex-col items-center justify-center gap-2 w-full min-h-[96px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-white hover:border-[#003060] transition-colors cursor-pointer p-4 text-center"
-                      :class="monthlyFilenames[m.month] ? 'border-emerald-400 bg-emerald-50' : ''"
-                    >
-                      <i class="fa-solid fa-cloud-arrow-up text-lg text-[#64748B]" x-show="!monthlyFilenames[m.month]"></i>
-                      <i class="fa-solid fa-file-image text-lg text-emerald-500" x-show="monthlyFilenames[m.month]"></i>
-                      <span class="font-inter text-[12px] text-[#475569]">
-                        <span x-show="!monthlyFilenames[m.month]">{{t "test.transactionDetail.uploadInstruction"}}</span>
-                        <span x-show="monthlyFilenames[m.month]" class="font-semibold text-[#003060]" x-text="monthlyFilenames[m.month]"></span>
-                      </span>
-                      <input
-                        type="file"
-                        name="file"
-                        accept="image/jpeg,image/jpg,image/png"
-                        required
-                        class="hidden"
-                        @change="onMonthlyFile(m.month, $event)"
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-2.5 font-inter font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <i class="fa-solid fa-paper-plane text-xs"></i>
-                      {{t "test.transactionDetail.sendMonthProof"}} <span x-text="m.month"></span>
-                    </button>
-                  </form>
+                  <!-- 2. State: Approved / Lunas -->
+                  <template x-if="m.status === 'paid' || m.process === 'approved'">
+                    <div class="w-full rounded-xl border border-emerald-200 bg-emerald-50 p-4 flex flex-col gap-3">
+                      <div class="flex items-center gap-2 text-emerald-800 font-inter font-semibold text-[13px]">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>{{t "test.transactionDetail.approvedProofTitle"}}</span>
+                      </div>
+                      <p class="text-emerald-700 font-inter text-[12px] leading-4">{{t "test.transactionDetail.approvedProofDesc"}}</p>
+                      <template x-if="m.file || (m.month === 1 && row?.proof)">
+                        <div class="flex flex-col gap-2 pt-2 border-t border-emerald-200">
+                          <div class="flex items-center justify-between">
+                            <p class="text-[11px] font-semibold text-emerald-900">{{t "test.transactionDetail.uploadedProof"}}</p>
+                            <div class="flex items-center gap-2">
+                              <button
+                                type="button"
+                                @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                                class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 cursor-pointer"
+                              >
+                                <i class="fa-solid fa-eye text-[11px]"></i>
+                                <span>{{t "test.transactionDetail.viewUploadedProofFull"}}</span>
+                              </button>
+                              <a
+                                :href="m.file || row?.proof"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 inline-flex items-center gap-1"
+                              >
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="rounded-lg border border-emerald-200 bg-white p-2 flex items-center justify-center max-h-52 overflow-hidden cursor-pointer hover:border-emerald-400 transition-colors"
+                            @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                            title="{{t "test.transactionDetail.viewProof"}}"
+                          >
+                            <img :src="m.file || row?.proof" alt="Approved Payment Proof" class="max-h-48 object-contain rounded" />
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+
+                  <!-- 3. State: Belum Bayar / Ditolak (Menampilkan bukti ditolak jika ada + Form Bayar/Reupload) -->
+                  <template x-if="!(m.status === 'process' || m.process === 'process') && !(m.status === 'paid' || m.process === 'approved')">
+                    <div class="flex flex-col gap-3">
+                      <!-- Tampilkan info bukti sebelumnya yang ditolak jika ada -->
+                      <template x-if="(m.status === 'rejected' || m.process === 'rejected') && (m.file || (m.month === 1 && row?.proof))">
+                        <div class="w-full rounded-xl border border-red-200 bg-red-50 p-4 flex flex-col gap-3">
+                          <div class="flex items-center gap-2 text-red-800 font-inter font-semibold text-[13px]">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>{{t "test.transactionDetail.rejectedProofTitle"}}</span>
+                          </div>
+                          <p class="text-red-700 font-inter text-[12px] leading-4">{{t "test.transactionDetail.rejectedProofDesc"}}</p>
+                          <div class="flex flex-col gap-2 pt-2 border-t border-red-200">
+                            <div class="flex items-center justify-between">
+                              <p class="text-[11px] font-semibold text-red-900">{{t "test.transactionDetail.uploadedProof"}}</p>
+                              <div class="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                                  class="text-xs font-semibold text-red-700 hover:text-red-900 inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  <i class="fa-solid fa-eye text-[11px]"></i>
+                                  <span>{{t "test.transactionDetail.viewUploadedProofFull"}}</span>
+                                </button>
+                                <a
+                                  :href="m.file || row?.proof"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  class="text-xs font-semibold text-red-600 hover:text-red-800 inline-flex items-center gap-1"
+                                >
+                                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                              </div>
+                            </div>
+                            <div
+                              class="rounded-lg border border-red-200 bg-white p-2 flex items-center justify-center max-h-52 overflow-hidden cursor-pointer hover:border-red-400 transition-colors"
+                              @click="openProofViewer(m.file || row?.proof, monthTitle(m.month))"
+                              title="{{t "test.transactionDetail.viewProof"}}"
+                            >
+                              <img :src="m.file || row?.proof" alt="Rejected Payment Proof" class="max-h-48 object-contain rounded" />
+                            </div>
+                          </div>
+                        </div>
+                      </template>
+                    <div>
+                      <div class="w-full bg-gradient-to-br from-[#003060] to-[#0B3C69] text-white rounded-xl p-4 flex flex-col gap-3">
+                        <div class="flex items-start justify-between gap-3">
+                          <div>
+                            <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.transferInstruction"}}</p>
+                            <p class="text-lg font-bold tracking-wider mt-0.5">2847 9237 4298 1234</p>
+                          </div>
+                          <button
+                            type="button"
+                            @click="copyBank()"
+                            class="p-2 rounded-full bg-slate-700/60 hover:bg-emerald-600 transition-colors shrink-0"
+                            :class="{'bg-emerald-600': copied}"
+                          >
+                            <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                          </button>
+                        </div>
+                        <div class="flex justify-between items-end gap-3 pt-2 border-t border-slate-700">
+                          <div>
+                            <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.accountHolder"}}</p>
+                  <p class="text-xs font-semibold">{{t "test.transactionDetail.bankAccountName"}}</p>
+                          </div>
+                          <div class="text-right">
+                            <p class="text-[10px] text-slate-300">{{t "test.transactionDetail.bank"}}</p>
+                            <p class="text-xs font-semibold">BANK BCA</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <form
+                        method="POST"
+                        :action="'/payment/manual/installment/' + row.id + '/' + m.month"
+                        enctype="multipart/form-data"
+                        class="flex flex-col gap-3 mt-3"
+                      >
+                        <label
+                          class="flex flex-col items-center justify-center gap-2 w-full min-h-[96px] rounded-xl border-2 border-dashed border-[#CBD5E1] bg-white hover:border-[#003060] transition-colors cursor-pointer p-4 text-center"
+                          :class="monthlyFilenames[m.month] ? 'border-emerald-400 bg-emerald-50' : ''"
+                        >
+                          <i class="fa-solid fa-cloud-arrow-up text-lg text-[#64748B]" x-show="!monthlyFilenames[m.month]"></i>
+                          <i class="fa-solid fa-file-image text-lg text-emerald-500" x-show="monthlyFilenames[m.month]"></i>
+                          <span class="font-inter text-[12px] text-[#475569]">
+                            <span x-show="!monthlyFilenames[m.month]">{{t "test.transactionDetail.uploadInstruction"}}</span>
+                            <span x-show="monthlyFilenames[m.month]" class="font-semibold text-[#003060]" x-text="monthlyFilenames[m.month]"></span>
+                          </span>
+                          <input
+                            type="file"
+                            name="file"
+                            accept="image/jpeg,image/jpg,image/png"
+                            required
+                            class="hidden"
+                            @change="onMonthlyFile(m.month, $event)"
+                          />
+                        </label>
+                        <button
+                          type="submit"
+                          class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-2.5 font-inter font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <i class="fa-solid fa-paper-plane text-xs"></i>
+                          {{t "test.transactionDetail.sendMonthProof"}} <span x-text="m.month"></span>
+                        </button>
+                      </form>
+                    </div>
+                  </template>
                 </div>
               </div>
             </template>
           </div>
         </div>
       </template>
+    </div>
+  </div>
+
+  <!-- Dedicated Proof Viewer Lightbox Modal (High z-index, transparent & clear view) -->
+  <div
+    x-show="proofModalOpen"
+    x-cloak
+    class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-xs transition-opacity"
+    @keydown.escape.window="closeProofViewer()"
+  >
+    <div
+      class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-[#D8E6F6]"
+      @click.outside="closeProofViewer()"
+    >
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-5 sm:px-7 py-4 bg-[#003060] text-white shrink-0">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-image text-emerald-400 text-base"></i>
+          <h3 class="font-montserrat font-bold text-sm sm:text-base tracking-wide" x-text="proofModalTitle || '{{t "test.transactionDetail.proofViewerTitle"}}'"></h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <a
+            :href="proofModalUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-inter text-xs transition-colors"
+          >
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            <span>{{t "test.transactionDetail.viewOriginalFile"}}</span>
+          </a>
+          <button
+            type="button"
+            @click="closeProofViewer()"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Image preview) -->
+      <div class="p-4 sm:p-6 bg-[#F8FAFC] overflow-auto flex items-center justify-center min-h-[260px] max-h-[calc(92vh-70px)]">
+        <template x-if="proofModalUrl">
+          <img
+            :src="proofModalUrl"
+            :alt="proofModalTitle"
+            class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-md border border-[#E2E8F0] bg-white"
+          />
+        </template>
+      </div>
     </div>
   </div>
 </div>

@@ -59,11 +59,14 @@ export class CertificatesController {
         'Content-Disposition',
         `attachment; filename="certificate-${courseId}.pdf"`,
       );
-      return res.type('application/pdf').send(pdf);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Length', pdf.length);
+      return res.end(pdf);
     } catch (error: unknown) {
+      console.error('[CertificatesController] Error rendering certificate download:', error);
       const status =
         typeof error === 'object' && error && 'status' in error
-          ? Number(error.status) || 500
+          ? Number((error as any).status) || 500
           : 500;
       const message =
         error instanceof Error
